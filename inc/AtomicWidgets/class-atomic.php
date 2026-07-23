@@ -52,6 +52,11 @@ final class Atomic
 	 *   'default'     => bool     Default enabled state (on fresh install),
 	 *   'keywords'    => string[] Search keywords,
 	 *   'category'    => string   Widget group for dashboard display,
+	 *   'is_internal' => bool     Optional. True hides this entry from the
+	 *                             dashboard widget list entirely — for
+	 *                             sub-elements of a composite widget (e.g. a
+	 *                             Flip Box's Front/Back/Title/Text) that
+	 *                             should never be individually toggled.
 	 * ]
 	 *
 	 * @var array
@@ -269,14 +274,27 @@ final class Atomic
 			'aae-a-countdown-unit',
 			'aae-a-toggle-pane',
 			'aae-a-toggle-pane-main',
+			'aae-a-toggle-switcher-tabs',
+			'aae-a-toggle-switcher-tab',
+			'aae-a-toggle-pane-title',
+			'aae-a-toggle-pane-desc',
 			'aae-a-video-mask-btn',
-			'aae-a-flip-box-main-face',
+			'aae-a-flip-box-front',
+			'aae-a-flip-box-back',
+			'aae-a-flip-box-title',
+			'aae-a-flip-box-text',
 			'aae-a-post-card',
 			'aae-a-offcanvas-panel',
 			'aae-a-offcanvas-trigger',
 			'aae-a-offcanvas-close',
 			'aae-a-timeline-item',
-			'aae-a-timeline-main-item',
+			'aae-a-timeline-number',
+			'aae-a-timeline-year',
+			'aae-a-timeline-title',
+			'aae-a-timeline-desc',
+			'aae-a-progressbar-track',
+			'aae-a-progressbar-fill',
+			'aae-a-progressbar-label',
 			'aae-a-social-share-main-item',
 			'aae-a-social-share-item',
 			'aae-a-nav-item',
@@ -417,6 +435,13 @@ final class Atomic
 		$widgets = [];
 
 		foreach ($this->widgets_registry as $slug => $def) {
+			// Sub-elements of a composite widget (e.g. Flip Box's own
+			// Front/Back/Title/Text) are never individually toggleable —
+			// keep them out of the dashboard list entirely.
+			if (! empty($def['is_internal'])) {
+				continue;
+			}
+
 			$widgets[$slug] = array_merge($def, [
 				'is_active' => isset($saved[$slug]),
 			]);
@@ -1338,45 +1363,62 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
-			'aae-a-timeline-main' => [
-				'label'        => 'Timeline Main',
-				'description'  => 'A composite vertical timeline with four locked event items — each marker, date, title, and description is an independent atomic child styleable from its own Style panel.',
-				'icon'         => 'eicon-time-line',
+			'aae-a-timeline-number' => [
+				'label'        => 'Timeline — Number',
+				'description'  => 'Internal milestone-index label used by Timeline — Item.',
+				'icon'         => 'eicon-number-field',
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
 				'default'      => true,
-				'keywords'     => [
-					'timeline',
-					'history',
-					'roadmap',
-					'atomic',
-					'composite',
-					'main',
-				],
+				'keywords'     => [ 'timeline', 'number', 'atomic' ],
 				'category'     => 'general',
 				'order'        => 15,
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
 
-			'aae-a-timeline-main-item' => [
-				'label'        => 'Timeline Main — Item',
-				'description'  => 'Internal event-row sub-element used by Timeline Main (marker + date + title + description).',
-				'icon'         => 'eicon-bullet-list',
+			'aae-a-timeline-year' => [
+				'label'        => 'Timeline — Year',
+				'description'  => 'Internal milestone-date label used by Timeline — Item.',
+				'icon'         => 'eicon-calendar',
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
 				'default'      => true,
-				'keywords'     => [
-					'timeline',
-					'item',
-					'event',
-					'atomic',
-					'main',
-				],
+				'keywords'     => [ 'timeline', 'year', 'date', 'atomic' ],
 				'category'     => 'general',
 				'order'        => 16,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-timeline-title' => [
+				'label'        => 'Timeline — Title',
+				'description'  => 'Internal milestone-title label used by Timeline — Item.',
+				'icon'         => 'eicon-t-letter-bold',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [ 'timeline', 'title', 'heading', 'atomic' ],
+				'category'     => 'general',
+				'order'        => 17,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-timeline-desc' => [
+				'label'        => 'Timeline — Description',
+				'description'  => 'Internal milestone-description paragraph used by Timeline — Item.',
+				'icon'         => 'eicon-paragraph',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [ 'timeline', 'description', 'paragraph', 'atomic' ],
+				'category'     => 'general',
+				'order'        => 18,
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
@@ -1418,6 +1460,51 @@ final class Atomic
 					'container',
 					'atomic',
 				],
+				'category'     => 'general',
+				'order'        => 12,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-progressbar-track' => [
+				'label'        => 'Progress Bar — Track',
+				'description'  => 'Internal track sub-element used by the Progress Bar Template.',
+				'icon'         => 'eicon-skill-bar',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [ 'progress', 'progressbar', 'track', 'atomic' ],
+				'category'     => 'general',
+				'order'        => 12,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-progressbar-fill' => [
+				'label'        => 'Progress Bar — Fill',
+				'description'  => 'Internal fill sub-element used by the Progress Bar Template\'s Track.',
+				'icon'         => 'eicon-skill-bar',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [ 'progress', 'progressbar', 'fill', 'atomic' ],
+				'category'     => 'general',
+				'order'        => 12,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-progressbar-label' => [
+				'label'        => 'Progress Bar — Label',
+				'description'  => 'Internal percentage-label sub-element used by the Progress Bar Template.',
+				'icon'         => 'eicon-t-letter-bold',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [ 'progress', 'progressbar', 'label', 'atomic' ],
 				'category'     => 'general',
 				'order'        => 12,
 				'demo_url'     => '',
@@ -1479,6 +1566,66 @@ final class Atomic
 					'toggle pane',
 					'internal',
 				],
+				'category'     => 'general',
+				'order'        => 14,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-toggle-switcher-tabs' => [
+				'label'        => 'Toggle Switcher — Tabs',
+				'description'  => 'Internal tabs row used by the Toggle Switcher.',
+				'icon'         => 'eicon-t-letter',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [ 'toggle', 'switch', 'tabs', 'atomic' ],
+				'category'     => 'general',
+				'order'        => 14,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-toggle-switcher-tab' => [
+				'label'        => 'Toggle Switcher — Tab',
+				'description'  => 'Internal tab button used by the Toggle Switcher Tabs row.',
+				'icon'         => 'eicon-t-letter',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [ 'toggle', 'switch', 'tab', 'atomic' ],
+				'category'     => 'general',
+				'order'        => 14,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-toggle-pane-title' => [
+				'label'        => 'Toggle Pane — Title',
+				'description'  => 'Internal pane-title label used by the Toggle Pane.',
+				'icon'         => 'eicon-t-letter-bold',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [ 'toggle', 'pane', 'title', 'atomic' ],
+				'category'     => 'general',
+				'order'        => 14,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-toggle-pane-desc' => [
+				'label'        => 'Toggle Pane — Description',
+				'description'  => 'Internal pane-description paragraph used by the Toggle Pane.',
+				'icon'         => 'eicon-paragraph',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [ 'toggle', 'pane', 'description', 'atomic' ],
 				'category'     => 'general',
 				'order'        => 14,
 				'demo_url'     => '',
@@ -2013,42 +2160,66 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
-			'aae-a-flip-box-main' => [
-				'label'        => 'Flip Box Main',
-				'description'  => 'A hover-triggered flip card with front and back faces. Each face is an open atomic container — drop in any heading, paragraph, image, or button.',
-				'icon'         => 'eicon-flip-box',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'flip',
-					'box',
-					'card',
-					'hover',
-					'atomic',
-					'animation',
-				],
-				'category'     => 'general',
-				'order'        => 15,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
-			'aae-a-flip-box-main-face' => [
-				'label'        => 'Flip Box Main Face (Internal)',
-				'description'  => 'Internal front/back face container for Flip Box Main.',
+			'aae-a-flip-box-front' => [
+				'label'        => 'Flip Box Front (Internal)',
+				'description'  => 'Internal front face container for the AAE Flip Box.',
 				'icon'         => 'eicon-inner-section',
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
-				'keywords'     => [
-					'flip face',
-					'internal',
-				],
+				'keywords'     => [ 'flip face', 'internal' ],
 				'category'     => 'general',
-				'order'        => 16,
+				'order'        => 17,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-flip-box-back' => [
+				'label'        => 'Flip Box Back (Internal)',
+				'description'  => 'Internal back face container for the AAE Flip Box.',
+				'icon'         => 'eicon-inner-section',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'is_internal'  => true,
+				'default'      => true,
+				'keywords'     => [ 'flip face', 'internal' ],
+				'category'     => 'general',
+				'order'        => 18,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-flip-box-title' => [
+				'label'        => 'Flip Box Title (Internal)',
+				'description'  => 'Internal face title used by the AAE Flip Box front/back faces.',
+				'icon'         => 'eicon-t-letter-bold',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'is_internal'  => true,
+				'default'      => true,
+				'keywords'     => [ 'flip title', 'internal' ],
+				'category'     => 'general',
+				'order'        => 19,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-flip-box-text' => [
+				'label'        => 'Flip Box Text (Internal)',
+				'description'  => 'Internal face body copy used by the AAE Flip Box front/back faces.',
+				'icon'         => 'eicon-paragraph',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'is_internal'  => true,
+				'default'      => true,
+				'keywords'     => [ 'flip text', 'internal' ],
+				'category'     => 'general',
+				'order'        => 20,
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
@@ -2848,28 +3019,33 @@ final class Atomic
 			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Timeline\AAE_A_Timeline',
 			'file'       => 'Widgets/Timeline/class-aae-a-timeline.php',
 			'has_script' => false,
-			// No external CSS: all per-element styles live in the widget's
-			// define_base_styles() (compound selectors) + a tiny inline
-			// <style> in the item Twig for the spine shorthand + the
-			// marker's negative-inset positioning. No `style_handle`.
+			// No external CSS and no inline <style> in any Twig: every visual
+			// detail (including the marker/year/title/desc typography) is a
+			// real base style on its own dedicated widget type. No `style_handle`.
 		],
 		'aae-a-timeline-item' => [
 			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Timeline\AAE_A_Timeline_Item',
 			'file'       => 'Widgets/Timeline/class-aae-a-timeline-item.php',
 			'has_script' => false,
 		],
-		'aae-a-timeline-main' => [
-			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\TimelineMain\AAE_A_Timeline_Main',
-			'file'       => 'Widgets/TimelineMain/class-aae-a-timeline-main.php',
+		'aae-a-timeline-number' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Timeline\AAE_A_Timeline_Number',
+			'file'       => 'Widgets/Timeline/Parts/class-aae-a-timeline-number.php',
 			'has_script' => false,
-			// No external CSS: all per-element styles live in the widget's
-			// define_base_styles() (compound selectors) + a tiny inline
-			// <style> in the item Twig for the spine shorthand + the
-			// marker's negative-inset positioning. No `style_handle`.
 		],
-		'aae-a-timeline-main-item' => [
-			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\TimelineMain\AAE_A_Timeline_Main_Item',
-			'file'       => 'Widgets/TimelineMain/class-aae-a-timeline-main-item.php',
+		'aae-a-timeline-year' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Timeline\AAE_A_Timeline_Year',
+			'file'       => 'Widgets/Timeline/Parts/class-aae-a-timeline-year.php',
+			'has_script' => false,
+		],
+		'aae-a-timeline-title' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Timeline\AAE_A_Timeline_Title',
+			'file'       => 'Widgets/Timeline/Parts/class-aae-a-timeline-title.php',
+			'has_script' => false,
+		],
+		'aae-a-timeline-desc' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Timeline\AAE_A_Timeline_Desc',
+			'file'       => 'Widgets/Timeline/Parts/class-aae-a-timeline-desc.php',
 			'has_script' => false,
 		],
 		// Add new atomic widgets below...
@@ -2911,6 +3087,22 @@ final class Atomic
 				'style_path'    => '/assets/atomic/js/progressbar.css',
 			],
 
+			'aae-a-progressbar-track' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Progressbar\AAE_A_Progressbar_Track',
+				'file'       => 'Widgets/Progressbar/Parts/class-aae-a-progressbar-track.php',
+				'has_script' => false,
+			],
+			'aae-a-progressbar-fill' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Progressbar\AAE_A_Progressbar_Fill',
+				'file'       => 'Widgets/Progressbar/Parts/class-aae-a-progressbar-fill.php',
+				'has_script' => false,
+			],
+			'aae-a-progressbar-label' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Progressbar\AAE_A_Progressbar_Label',
+				'file'       => 'Widgets/Progressbar/Parts/class-aae-a-progressbar-label.php',
+				'has_script' => false,
+			],
+
 			'aae-a-progressbar-main' => [
 				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\ProgressbarMain\AAE_A_Progressbar_Main',
 				'file'          => 'Widgets/ProgressbarMain/class-aae-a-progressbar-main.php',
@@ -2934,6 +3126,27 @@ final class Atomic
 			'aae-a-toggle-pane' => [
 				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Pane',
 				'file'       => 'Widgets/ToggleSwitcher/class-aae-a-toggle-pane.php',
+				'has_script' => false,
+			],
+
+			'aae-a-toggle-switcher-tabs' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Switcher_Tabs',
+				'file'       => 'Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-switcher-tabs.php',
+				'has_script' => false,
+			],
+			'aae-a-toggle-switcher-tab' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Switcher_Tab',
+				'file'       => 'Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-switcher-tab.php',
+				'has_script' => false,
+			],
+			'aae-a-toggle-pane-title' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Pane_Title',
+				'file'       => 'Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-pane-title.php',
+				'has_script' => false,
+			],
+			'aae-a-toggle-pane-desc' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Pane_Desc',
+				'file'       => 'Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-pane-desc.php',
 				'has_script' => false,
 			],
 
@@ -3149,19 +3362,27 @@ final class Atomic
 			'style_path'    => '/assets/atomic/js/flip-box.css',
 		],
 
-		'aae-a-flip-box-main' => [
-			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\FlipBoxMain\AAE_A_Flip_Box_Main',
-			'file'          => 'Widgets/FlipBoxMain/class-aae-a-flip-box-main.php',
-			'script_handle' => 'aae-a-flip-box-main-js',
-			'script_path'   => '/assets/atomic/js/flip-box-main.js',
-			'has_script'    => true,
-			'style_handle'  => 'aae-a-flip-box-main-css',
-			'style_path'    => '/assets/atomic/js/flip-box-main.css',
+		'aae-a-flip-box-front' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\FlipBox\AAE_A_Flip_Box_Front',
+			'file'       => 'Widgets/FlipBox/Parts/class-aae-a-flip-box-front.php',
+			'has_script' => false,
 		],
 
-		'aae-a-flip-box-main-face' => [
-			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\FlipBoxMain\AAE_A_Flip_Box_Main_Face',
-			'file'       => 'Widgets/FlipBoxMain/class-aae-a-flip-box-main-face.php',
+		'aae-a-flip-box-back' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\FlipBox\AAE_A_Flip_Box_Back',
+			'file'       => 'Widgets/FlipBox/Parts/class-aae-a-flip-box-back.php',
+			'has_script' => false,
+		],
+
+		'aae-a-flip-box-title' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\FlipBox\AAE_A_Flip_Box_Title',
+			'file'       => 'Widgets/FlipBox/Parts/class-aae-a-flip-box-title.php',
+			'has_script' => false,
+		],
+
+		'aae-a-flip-box-text' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\FlipBox\AAE_A_Flip_Box_Text',
+			'file'       => 'Widgets/FlipBox/Parts/class-aae-a-flip-box-text.php',
 			'has_script' => false,
 		],
 

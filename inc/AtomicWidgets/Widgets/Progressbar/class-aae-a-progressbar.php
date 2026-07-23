@@ -10,8 +10,6 @@ if (! class_exists('\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Elemen
 	return;
 }
 
-use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
-use Elementor\Modules\AtomicWidgets\Elements\Div_Block\Div_Block;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
@@ -24,18 +22,32 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Number_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Dimensions_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
+
+require_once __DIR__ . '/Parts/class-aae-a-progressbar-track.php';
+require_once __DIR__ . '/Parts/class-aae-a-progressbar-label.php';
+
+use WCF_ADDONS\AtomicWidgets\Widgets\Progressbar\AAE_A_Progressbar_Track;
+use WCF_ADDONS\AtomicWidgets\Widgets\Progressbar\AAE_A_Progressbar_Label;
 
 /**
  * AAE Basic Progress Bar — an open atomic container styled like a progress
  * bar. Mirrors the Btn/BtnPro pattern: no `style` select here — the actual
  * look (line / circle / dot) is composed entirely from real child elements
- * (Div_Block track+fill, an SVG ring, or dot spans) supplied by a preset, or
- * by hand. This widget only owns the data that's genuinely per-instance and
- * needs JS (the percentage + whether to show it); everything cosmetic is a
- * native child element the user can restyle with Elementor's own Style tab.
+ * (Track+Fill, an SVG ring, or dot spans) supplied by a preset, or by hand.
+ * This widget only owns the data that's genuinely per-instance and needs JS
+ * (the percentage + whether to show it); everything cosmetic is a native
+ * child element the user can restyle with Elementor's own Style tab.
+ *
+ * The default Track/Fill/Label are each a dedicated small widget type
+ * (AAE_A_Progressbar_Track/_Fill/_Label) carrying its own fixed look via its
+ * own define_base_styles() — see class-aae-a-progressbar-track.php for why
+ * plain Div_Block/e-paragraph reuse can't express that (base styles are
+ * owned by the widget TYPE, not a per-instance override).
  *
  * The bundled JS auto-detects which shape is present (.aae-progressbar-fill /
  * .aae-progressbar-path / .aae-progressbar-dot) rather than branching on a
@@ -135,52 +147,50 @@ class AAE_A_Progressbar extends Atomic_Element_Base
 					Style_Variant::make()
 						->add_prop('display', String_Prop_Type::generate('block'))
 						->add_prop('width', String_Prop_Type::generate('100%'))
+						->add_prop('max-width', Size_Prop_Type::generate(['size' => 480, 'unit' => 'px']))
 						->add_prop('position', String_Prop_Type::generate('relative'))
+						->add_prop('margin', Dimensions_Prop_Type::generate([
+							'block-start'  => Size_Prop_Type::generate(['size' => 48, 'unit' => 'px']),
+							'inline-end'   => Size_Prop_Type::generate(['size' => null, 'unit' => 'auto']),
+							'block-end'    => Size_Prop_Type::generate(['size' => 48, 'unit' => 'px']),
+							'inline-start' => Size_Prop_Type::generate(['size' => null, 'unit' => 'auto']),
+						]))
+						->add_prop('padding', Dimensions_Prop_Type::generate([
+							'block-start'  => Size_Prop_Type::generate(['size' => 0, 'unit' => 'px']),
+							'inline-end'   => Size_Prop_Type::generate(['size' => 24, 'unit' => 'px']),
+							'block-end'    => Size_Prop_Type::generate(['size' => 0, 'unit' => 'px']),
+							'inline-start' => Size_Prop_Type::generate(['size' => 24, 'unit' => 'px']),
+						]))
 				),
 		];
 	}
 
 	/**
 	 * Out-of-the-box look for a freshly dropped instance: a plain Line bar
-	 * (track + fill, both real Div_Block children the user can restyle
-	 * natively) plus the percentage counter span JS animates into. Circle
-	 * and Dot looks come from presets that replace these children entirely.
+	 * (Track containing Fill, each its own dedicated widget type carrying
+	 * real base styles) plus the percentage counter span JS animates into.
+	 * Circle and Dot looks come from presets that replace these children
+	 * entirely.
 	 */
 	protected function define_default_children()
 	{
 		return [
-			// `aae-pb-default` marks these as the widget's own fallback children
-			// (not preset-applied): Element_Builder has no way to attach a real
-			// local `styles` block the way a hand-authored JSON preset can, so
-			// this bare look is carried by the small scoped fallback in
-			// progressbar.scss instead of a native Style-tab value. Every
-			// bundled preset styles its own track/fill/dot/label children
-			// natively and does NOT carry this class, so the fallback CSS
-			// never touches a preset-applied instance.
-			Div_Block::generate()
-				->settings([
-					'classes' => Classes_Prop_Type::generate(['aae-progressbar-track', 'aae-pb-default']),
-				])
-				->children([
-					Div_Block::generate()
-						->editor_settings(['title' => 'Fill'])
-						->settings([
-							'classes' => Classes_Prop_Type::generate(['aae-progressbar-fill', 'aae-pb-default']),
-						])
-						->build(),
-				])
+			AAE_A_Progressbar_Track::generate()
 				->editor_settings(['title' => 'Track'])
+				->children(
+					AAE_A_Progressbar_Track::build_default_inner_children()
+				)
 				->build(),
 
-			Atomic_Paragraph::generate()
+			AAE_A_Progressbar_Label::generate()
 				->editor_settings(['title' => 'Percentage'])
 				->settings([
-					'paragraph' => Html_V3_Prop_Type::generate([
+					'classes' => Classes_Prop_Type::generate(['aae-pb-pct']),
+					'text' => Html_V3_Prop_Type::generate([
 						'content'  => String_Prop_Type::generate('0%'),
 						'children' => [],
 					]),
-					'tag'     => String_Prop_Type::generate('span'),
-					'classes' => Classes_Prop_Type::generate(['aae-pb-pct', 'aae-pb-default']),
+					'tag' => String_Prop_Type::generate('span'),
 				])
 				->build(),
 		];
@@ -190,6 +200,8 @@ class AAE_A_Progressbar extends Atomic_Element_Base
 	{
 		return [
 			'widget',
+			'e-aae-a-progressbar-track',
+			'e-aae-a-progressbar-label',
 			'e-heading',
 			'e-paragraph',
 			'e-svg',

@@ -49,7 +49,7 @@ class AAE_A_Loop_Arrow extends Atomic_Widget_Base {
 		return 'eicon-chevron-right';
 	}
 
-	public function should_show_in_panel() {
+	public function show_in_panel() {
 		return false;
 	}
 

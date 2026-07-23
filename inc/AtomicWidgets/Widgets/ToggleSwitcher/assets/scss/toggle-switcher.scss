@@ -1,45 +1,22 @@
-// // Everything about the look (colors, sizing, position, resting transform/
-// // opacity) lives as real, native Elementor styles on the elements inside
-// // each ready-made template — see z_temp/templates/ToggleSwitcher/*.json.
-// // Only the 3 rules below stay here, because each one depends on a
-// // JS-toggled .active/.show class that Elementor's Style panel has no way
-// // to target (it has no concept of an arbitrary custom-class "state").
-// .aae-a-toggle-switcher {
-// 	.aae-ts-pane:not(.show) {
-// 		display: none;
-// 	}
-
-// 	.aae-ts-switch.active .aae-ts-knob {
-// 		transform: translate(calc(100% - 4px), -50%);
-// 	}
-
-// 	.aae-ts-label-before.active .aae-ts-highlight,
-// 	.aae-ts-label-after.active .aae-ts-highlight {
-// 		opacity: 1;
-// 	}
-// }
-
-
-
-
-
-
-
-
-
-
-// ==================================================================================================
-// ==================================================================================================
-// ==================================================================================================
-// ==================================================================================================
-// ==================================================================================================
-// ==================================================================================================
-
-
-
+// Everything about the look (colors, sizing, position, resting transform/
+// opacity) lives as real, native Elementor styles on the elements inside
+// each ready-made template. Only the rules below stay here, because each one
+// depends on a JS-toggled .active/.show/.e--selected class that Elementor's
+// Style panel has no way to target directly — aae-ts-tab is a plain leaf
+// widget (Atomic_Widget_Base, like e-paragraph), not a container-family
+// element, specifically so it never gets Elementor's empty-container "+" add
+// overlay in the editor canvas — so it can't expose a native class-based
+// Style-panel state either. Its "active tab" look is the one rule below
+// keyed off .e--selected, the same class toggle-switcher.js toggles for it.
 .aae-a-toggle-switcher {
 	.aae-ts-pane:not(.show) {
 		display: none;
+	}
+
+	.aae-ts-tab.e--selected {
+		color: #d4537e;
+		border-color: #d4537e;
+		font-weight: 500;
 	}
 
 	.aae-ts-switch.active .aae-ts-knob {
@@ -56,5 +33,4 @@
 		opacity: 1;
 		transform: translateX(0);
 	}
-
 }

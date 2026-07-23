@@ -74,7 +74,7 @@ class AAE_A_Btn extends Atomic_Element_Base
 			'classes'    => Classes_Prop_Type::make()->default([]),
 			'attributes' => Attributes_Prop_Type::make()->meta(Overridable_Prop_Type::ignore()),
 
-			'btn_url'      => String_Prop_Type::make()->default('#'),
+			'btn_url'      => String_Prop_Type::make()->default(''),
 			'btn_target'   => String_Prop_Type::make()->default('_self'),
 			'btn_nofollow' => Boolean_Prop_Type::make()->default(false),
 		];

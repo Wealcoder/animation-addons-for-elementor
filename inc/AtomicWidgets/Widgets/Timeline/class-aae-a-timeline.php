@@ -16,6 +16,7 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Dimensions_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
@@ -124,9 +125,21 @@ class AAE_A_Timeline extends Atomic_Element_Base {
 				->add_variant(
 					Style_Variant::make()
 						->add_prop( 'width',         Size_Prop_Type::generate( [ 'size' => 100, 'unit' => '%' ] ) )
-						->add_prop( 'margin-inline',  String_Prop_Type::generate( 'auto' ) )
+						->add_prop( 'max-width',     Size_Prop_Type::generate( [ 'size' => 640, 'unit' => 'px' ] ) )
 						->add_prop( 'display',        String_Prop_Type::generate( 'flex' ) )
 						->add_prop( 'flex-direction', String_Prop_Type::generate( 'column' ) )
+						->add_prop( 'margin', Dimensions_Prop_Type::generate( [
+							'block-start'  => Size_Prop_Type::generate( [ 'size' => 48, 'unit' => 'px' ] ),
+							'inline-end'   => Size_Prop_Type::generate( [ 'size' => null, 'unit' => 'auto' ] ),
+							'block-end'    => Size_Prop_Type::generate( [ 'size' => 48, 'unit' => 'px' ] ),
+							'inline-start' => Size_Prop_Type::generate( [ 'size' => null, 'unit' => 'auto' ] ),
+						] ) )
+						->add_prop( 'padding', Dimensions_Prop_Type::generate( [
+							'block-start'  => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+							'inline-end'   => Size_Prop_Type::generate( [ 'size' => 24, 'unit' => 'px' ] ),
+							'block-end'    => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+							'inline-start' => Size_Prop_Type::generate( [ 'size' => 24, 'unit' => 'px' ] ),
+						] ) )
 				),
 		];
 	}

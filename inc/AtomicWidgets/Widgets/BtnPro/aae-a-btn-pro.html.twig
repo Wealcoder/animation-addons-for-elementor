@@ -9,7 +9,11 @@
 {% endif %}
 
 <a class="{{ btn_classes | join(' ') }} {{ editor_classes | default('') }}"
-   href="{{ settings.btn_url | default('#') | e('html_attr') }}"
+   {% if settings.btn_url is defined and settings.btn_url is not empty and settings.btn_url != '#' %}
+       href="{{ settings.btn_url | e('html_attr') }}"
+   {% else %}
+       tabindex="0" role="button"
+   {% endif %}
    {% if settings.btn_target == '_blank' %}target="_blank"{% endif %}
    {% if rel_attr is not empty %}rel="{{ rel_attr }}"{% endif %}
    data-id="{{ id }}"
