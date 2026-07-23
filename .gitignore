@@ -9,6 +9,7 @@ assets/js/*
 assets/atomic/css/*
 assets/atomic/js/*
 log/
+composer.lock
 .DS_Store
 .project
 Thumbs.db
