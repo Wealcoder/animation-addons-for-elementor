@@ -1649,7 +1649,7 @@ final class Atomic
 
 			'aae-a-offcanvas' => [
 				'label'        => 'Offcanvas',
-				'description'  => 'Animated offcanvas drawer with trigger button and panel — vanilla JS, no GSAP.',
+				'description'  => 'Offcanvas drawer with trigger + panel and selectable GSAP open/close animations.',
 				'icon'         => 'eicon-sidebar',
 				'is_pro'       => false,
 				'is_extension' => false,
@@ -3170,6 +3170,11 @@ final class Atomic
 				'script_handle' => 'aae-a-offcanvas-js',
 				'script_path'   => '/assets/atomic/js/offcanvas.js',
 				'has_script'    => true,
+				// GSAP powers the open/close animations, but the `gsap` handle is
+				// registered only by the Pro plugin. Depend on it ONLY when Pro is
+				// present (an unregistered dep would silently block the script);
+				// the runtime falls back to a CSS slide when GSAP is absent.
+				'script_deps'   => defined( 'WCF_ADDONS_PRO_VERSION' ) ? [ 'gsap' ] : [],
 			],
 
 			'aae-a-offcanvas-panel' => [
