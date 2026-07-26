@@ -250,123 +250,154 @@ final class Atomic
 	 *
 	 * @return bool
 	 */
+	/**
+	 * Sub-widgets that stay independently toggleable in the dashboard (they
+	 * are NOT flagged `is_internal` in widgets_registry) even though they
+	 * also get seeded as a structural default child elsewhere — e.g. Post
+	 * Title/Image are real standalone widgets AND are auto-dropped inside
+	 * Loop Grid items. Their own explicit toggle must keep working
+	 * regardless of that other parent's state, so they are force-active
+	 * here rather than routed through WIDGET_PARENT_MAP below.
+	 */
+	private const ALWAYS_ACTIVE_WIDGETS = [
+		'aae-a-post-title',
+		'aae-a-post-image',
+		'aae-a-counter-number',
+	];
+
+	/**
+	 * Maps every purely-internal child widget (`is_internal => true` in
+	 * widgets_registry — never shown/toggleable in the dashboard on its
+	 * own) to the composite parent widget it structurally belongs to.
+	 * Verified against each parent's own `define_default_children()`.
+	 *
+	 * is_widget_active() consults this so disabling the parent from the
+	 * dashboard also disables — and hides from the Elementor editor —
+	 * every one of its internal children, instead of them always being
+	 * force-active regardless of the parent's state.
+	 */
+	private const WIDGET_PARENT_MAP = [
+		// Nested Slider
+		'aae-a-slide'                  => 'aae-a-slider',
+		'aae-a-slider-track'           => 'aae-a-slider',
+		'aae-a-slider-nav-prev'        => 'aae-a-slider',
+		'aae-a-slider-nav-next'        => 'aae-a-slider',
+		'aae-a-slider-pagination'      => 'aae-a-slider',
+		'aae-a-slider-dot'             => 'aae-a-slider',
+		'aae-a-slider-indicators'      => 'aae-a-slider',
+		'aae-a-slider-current'         => 'aae-a-slider',
+		'aae-a-slider-total'           => 'aae-a-slider',
+		'aae-a-slider-percentage'      => 'aae-a-slider',
+		'aae-a-slider-progress'        => 'aae-a-slider',
+		'aae-a-slider-counter'         => 'aae-a-slider',
+		'aae-a-slider-divider'         => 'aae-a-slider',
+		'aae-a-slider-progress-fill'   => 'aae-a-slider',
+
+		// Accordion / Icon List / Countdown
+		'aae-a-accordion-item'         => 'aae-a-accordion',
+		'aae-a-icon-list-item'         => 'aae-a-icon-list',
+		'aae-a-countdown-unit'         => 'aae-a-countdown',
+
+		// Toggle Switcher — two independent parents
+		'aae-a-toggle-pane'            => 'aae-a-toggle-switcher',
+		'aae-a-toggle-switcher-tabs'   => 'aae-a-toggle-switcher',
+		'aae-a-toggle-switcher-tab'    => 'aae-a-toggle-switcher',
+		'aae-a-toggle-pane-title'      => 'aae-a-toggle-switcher',
+		'aae-a-toggle-pane-desc'       => 'aae-a-toggle-switcher',
+		'aae-a-toggle-pane-main'       => 'aae-a-toggle-switcher-main',
+
+		// Video Mask / Flip Box
+		'aae-a-video-mask-btn'         => 'aae-a-video-mask',
+		'aae-a-flip-box-front'         => 'aae-a-flip-box',
+		'aae-a-flip-box-back'          => 'aae-a-flip-box',
+		'aae-a-flip-box-title'         => 'aae-a-flip-box',
+		'aae-a-flip-box-text'          => 'aae-a-flip-box',
+
+		// Posts / Loop Grid / Loop Grid Slider
+		'aae-a-post-card'              => 'aae-a-posts',
+		'aae-a-loop-item'              => 'aae-a-loop-grid',
+		'aae-a-loop-layout'            => 'aae-a-loop-grid',
+		'aae-a-loop-pagination'        => 'aae-a-loop-grid',
+		'aae-a-loop-prev'              => 'aae-a-loop-grid',
+		'aae-a-loop-next'              => 'aae-a-loop-grid',
+		'aae-a-loop-numbers'           => 'aae-a-loop-grid',
+		'aae-a-loop-number'            => 'aae-a-loop-grid',
+		'aae-a-loop-loadmore'          => 'aae-a-loop-grid',
+		'aae-a-loop-arrow'             => 'aae-a-loop-grid',
+		'aae-a-loop-nav-wrap'          => 'aae-a-loop-grid',
+		'aae-a-loop-slide-track'       => 'aae-a-loop-grid-slider',
+		'aae-a-loop-slide-item'        => 'aae-a-loop-grid-slider',
+		'aae-a-loop-slide-pagination'  => 'aae-a-loop-grid-slider',
+
+		// Offcanvas
+		'aae-a-offcanvas-panel'        => 'aae-a-offcanvas',
+		'aae-a-offcanvas-trigger'      => 'aae-a-offcanvas',
+		'aae-a-offcanvas-close'        => 'aae-a-offcanvas',
+
+		// Timeline
+		'aae-a-timeline-item'          => 'aae-a-timeline',
+		'aae-a-timeline-number'        => 'aae-a-timeline',
+		'aae-a-timeline-year'          => 'aae-a-timeline',
+		'aae-a-timeline-title'         => 'aae-a-timeline',
+		'aae-a-timeline-desc'          => 'aae-a-timeline',
+
+		// Progress Bar Template (first parent — Progress Bar Main is separate)
+		'aae-a-progressbar-track'      => 'aae-a-progressbar',
+		'aae-a-progressbar-fill'       => 'aae-a-progressbar',
+		'aae-a-progressbar-label'      => 'aae-a-progressbar',
+
+		// Social Share (base) / Social Share Main (separate widget family)
+		'aae-a-social-share-item'      => 'aae-a-social-share',
+		'aae-a-social-share-main-item' => 'aae-a-social-share-main',
+
+		// Nav
+		'aae-a-nav-item'               => 'aae-a-nav',
+		'aae-a-nav-sub-item'           => 'aae-a-nav',
+		'aae-a-mobile-nav'             => 'aae-a-nav',
+
+		// Search Form
+		'aae-a-search-toggle'          => 'aae-a-search-form',
+		'aae-a-search-panel'           => 'aae-a-search-form',
+		'aae-a-search-field'           => 'aae-a-search-form',
+		'aae-a-search-input'           => 'aae-a-search-form',
+		'aae-a-search-filter-date'     => 'aae-a-search-form',
+		'aae-a-search-filter-category' => 'aae-a-search-form',
+		'aae-a-search-submit'          => 'aae-a-search-form',
+		'aae-a-search-results'         => 'aae-a-search-form',
+
+		// Form
+		'aae-a-form-label'             => 'aae-a-form',
+		'aae-a-form-input'             => 'aae-a-form',
+		'aae-a-form-textarea'          => 'aae-a-form',
+		'aae-a-form-checkbox'          => 'aae-a-form',
+		'aae-a-form-radio'             => 'aae-a-form',
+		'aae-a-form-select'            => 'aae-a-form',
+		'aae-a-form-submit'            => 'aae-a-form',
+		'aae-a-form-success-message'   => 'aae-a-form',
+		'aae-a-form-error-message'     => 'aae-a-form',
+		'aae-a-form-field-error'       => 'aae-a-form',
+		'aae-a-form-file'              => 'aae-a-form',
+		'aae-a-form-step'              => 'aae-a-form',
+		'aae-a-form-next'              => 'aae-a-form',
+		'aae-a-form-prev'              => 'aae-a-form',
+		'aae-a-form-rating'            => 'aae-a-form',
+		'aae-a-form-range'             => 'aae-a-form',
+		'aae-a-form-password'          => 'aae-a-form',
+		'aae-a-form-calculation'       => 'aae-a-form',
+		'aae-a-form-country'           => 'aae-a-form',
+	];
+
 	public function is_widget_active(string $slug): bool
 	{
-		// Force internal child widgets to be active always
-		$internal_widgets = [
-			'aae-a-slide',
-			'aae-a-slider-track',
-			'aae-a-slider-nav-prev',
-			'aae-a-slider-nav-next',
-			'aae-a-slider-pagination',
-			'aae-a-slider-dot',
-			'aae-a-slider-indicators',
-			'aae-a-slider-current',
-			'aae-a-slider-total',
-			'aae-a-slider-percentage',
-			'aae-a-slider-progress',
-			'aae-a-slider-counter',
-			'aae-a-slider-divider',
-			'aae-a-slider-progress-fill',
-			'aae-a-counter-number',
-			'aae-a-accordion-item',
-			'aae-a-icon-list-item',	
-			'aae-a-countdown-unit',
-			'aae-a-toggle-pane',
-			'aae-a-toggle-pane-main',
-			'aae-a-toggle-switcher-tabs',
-			'aae-a-toggle-switcher-tab',
-			'aae-a-toggle-pane-title',
-			'aae-a-toggle-pane-desc',
-			'aae-a-video-mask-btn',
-			'aae-a-flip-box-front',
-			'aae-a-flip-box-back',
-			'aae-a-flip-box-title',
-			'aae-a-flip-box-text',
-			'aae-a-post-card',
-			'aae-a-offcanvas-panel',
-			'aae-a-offcanvas-trigger',
-			'aae-a-offcanvas-close',
-			'aae-a-timeline-item',
-			'aae-a-timeline-number',
-			'aae-a-timeline-year',
-			'aae-a-timeline-title',
-			'aae-a-timeline-desc',
-			'aae-a-progressbar-track',
-			'aae-a-progressbar-fill',
-			'aae-a-progressbar-label',
-			'aae-a-social-share-main-item',
-			'aae-a-social-share-item',
-			'aae-a-nav-item',
-			'aae-a-nav-sub-item',
-			'aae-a-mobile-nav',
-			// Loop Grid structural pieces — always-on internal elements. The Loop
-			// Grid seeds them as default children, so they must be registered even
-			// when not toggled in the dashboard (otherwise the editor throws
-			// ElementTypeNotFound on drop and nothing renders).
-			'aae-a-loop-item',
-			'aae-a-loop-layout',
-			'aae-a-loop-pagination',
-			'aae-a-loop-prev',
-			'aae-a-loop-next',
-			'aae-a-loop-numbers',
-			'aae-a-loop-number',
-			'aae-a-loop-loadmore',
-			'aae-a-loop-arrow',
-			'aae-a-loop-nav-wrap',
-			// Loop Grid Slider structural pieces — always-on internal elements,
-			// seeded as default children of the slider root (same reasoning as the
-			// Loop Grid pieces above).
-			'aae-a-loop-slide-track',
-			'aae-a-loop-slide-item',
-			'aae-a-loop-slide-pagination',
-			// Loop Grid current-post building blocks: seeded as default loop-item
-			// children — must always be registered so the featured image / title
-			// resolve per post.
-			'aae-a-post-image',
-			'aae-a-post-title',
-			// AAE Form parts — seeded as the form's default children, so they
-			// must always be registered (same reasoning as the Loop pieces).
-			'aae-a-form-label',
-			'aae-a-form-input',
-			'aae-a-form-textarea',
-			'aae-a-form-checkbox',
-			'aae-a-form-radio',
-			'aae-a-form-select',
-			'aae-a-form-submit',
-			'aae-a-form-success-message',
-			'aae-a-form-error-message',
-			// Style source for injected validation errors — forms saved with
-			// one must never hit ElementTypeNotFound.
-			'aae-a-form-field-error',
-			'aae-a-form-file',
-			// Multi-Step preset drops these as default children too — same
-			// always-on reasoning.
-			'aae-a-form-step',
-			'aae-a-form-next',
-			'aae-a-form-prev',
-			// Advanced Field Types (Pro) — not individually toggleable; only
-			// usable once the Form widget itself is enabled/dropped on canvas,
-			// same reasoning as the base field widgets above.
-			'aae-a-form-rating',
-			'aae-a-form-range',
-			'aae-a-form-password',
-			'aae-a-form-calculation',
-			'aae-a-form-country',
-			// Search Form composite sub-elements — seeded as locked default
-			// children of the Search Form root; always-on so the editor never
-			// throws ElementTypeNotFound on drop.
-			'aae-a-search-toggle',
-			'aae-a-search-panel',
-			'aae-a-search-field',
-			'aae-a-search-input',
-			'aae-a-search-filter-date',
-			'aae-a-search-filter-category',
-			'aae-a-search-submit',
-			'aae-a-search-results',
-		];
-		if (in_array($slug, $internal_widgets)) {
+		if (in_array($slug, self::ALWAYS_ACTIVE_WIDGETS, true)) {
 			return true;
+		}
+
+		// Internal child widgets inherit their parent's active state, so
+		// disabling the parent also disables (and hides from the editor)
+		// every one of its children.
+		if (isset(self::WIDGET_PARENT_MAP[$slug])) {
+			return $this->is_widget_active(self::WIDGET_PARENT_MAP[$slug]);
 		}
 
 		$saved = $this->get_saved_options();
@@ -1108,8 +1139,9 @@ final class Atomic
 			],
 
 			'aae-a-social-share-item' => [
+				'is_internal'  => true,
 				'label'        => 'Social Share Item',
-				'description'  => 'An open icon+label link item used inside Social Share, or on its own.',
+				'description'  => 'Internal child item for Social Share.',
 				'icon'         => 'eicon-share',
 				'is_pro'       => false,
 				'is_extension' => false,
