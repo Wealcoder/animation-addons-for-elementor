@@ -1,5 +1,7 @@
 <?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace WCF_ADDONS\Widgets;
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 use Elementor\Controls_Manager;
 use Elementor\Core\Kits\Documents\Tabs\Global_Typography;
@@ -594,7 +596,7 @@ class Advance_Pricing_Table extends Widget_Base {
 			[
 				'name'      => 'currency_typography',
 				'selector'  => '{{WRAPPER}} .pt-currency',
-				'exclude' => ['text_transform', 'text_decoration', 'letter_spacing', 'word_spacing'],
+				'exclude' => ['text_transform', 'text_decoration', 'letter_spacing', 'word_spacing'],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'condition' => [
 					'currency_symbol!' => '',
 				],

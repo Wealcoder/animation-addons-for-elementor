@@ -8,7 +8,9 @@
  * localStorage so each day it only warms once (configurable).
  */
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace WCF_ADDONS\Admin\Dashboard;
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
@@ -63,7 +65,7 @@ class Editor_Image_Preload {
                 'https://block.animation-addons.com/wp-json/wp/v2/wcf-templates?page=1&per_page=100&subtype=block',
                 'https://www.themecrowdy.com/wp-json/wp/v2/starter-templates?page=1&per_page=40',
             ],
-            'debug'          => apply_filters('aae_editor_preload_debug', false),
+            'debug'          => apply_filters('aae_editor_preload_debug', false),  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
         ]);
 
 

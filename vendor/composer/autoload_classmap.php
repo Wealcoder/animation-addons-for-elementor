@@ -7,4 +7,16 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
+    'WCF_ADDONS\\AAE_Post_Handler_Trait' => $baseDir . '/inc/AAE_Post_Handler_Trait.php',
+    'WCF_ADDONS\\CodeSnippet\\CodeSnippet' => $baseDir . '/inc/CodeSnippet/CodeSnippet.php',
+    'WCF_ADDONS\\CodeSnippet\\CodeSnippetAjax' => $baseDir . '/inc/CodeSnippet/CodeSnippetAjax.php',
+    'WCF_ADDONS\\CodeSnippet\\CodeSnippetCompatibility' => $baseDir . '/inc/CodeSnippet/CodeSnippetCompatibility.php',
+    'WCF_ADDONS\\CodeSnippet\\CodeSnippetFrontend' => $baseDir . '/inc/CodeSnippet/CodeSnippetFrontend.php',
+    'WCF_ADDONS\\CodeSnippet\\CodeSnippetSettingsTrait' => $baseDir . '/inc/CodeSnippet/CodeSnippetSettingsTrait.php',
+    'WCF_ADDONS\\CodeSnippet\\Helpers' => $baseDir . '/inc/CodeSnippet/Helpers.php',
+    'WCF_ADDONS\\CodeSnippet\\Notices' => $baseDir . '/inc/CodeSnippet/Notices.php',
+    'WCF_ADDONS\\CodeSnippet\\listTables\\AbstractListTable' => $baseDir . '/inc/CodeSnippet/listTables/AbstractListTable.php',
+    'WCF_ADDONS\\CodeSnippet\\listTables\\CodeSnippetListTable' => $baseDir . '/inc/CodeSnippet/listTables/CodeSnippetListTable.php',
+    'WCF_ADDONS\\WCF_Extension_Widgets_Trait' => $baseDir . '/inc/WCF_Extension_Widgets_Trait.php',
+    'WCF_ADDONS\\WCF_Post_Handler_Trait' => $baseDir . '/inc/WCF_Post_Handler_Trait.php',
 );

@@ -7,14 +7,14 @@ namespace Composer\Autoload;
 class ComposerStaticInit29593bdbf416014cb72a7f7f6c7bd854
 {
     public static $prefixLengthsPsr4 = array (
-        'W' => 
+        'W' =>
         array (
             'WCF_ADDONS\\' => 11,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'WCF_ADDONS\\' => 
+        'WCF_ADDONS\\' =>
         array (
             0 => __DIR__ . '/../..' . '/inc',
         ),
@@ -22,6 +22,18 @@ class ComposerStaticInit29593bdbf416014cb72a7f7f6c7bd854
 
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
+        'WCF_ADDONS\\AAE_Post_Handler_Trait' => __DIR__ . '/../..' . '/inc/AAE_Post_Handler_Trait.php',
+        'WCF_ADDONS\\CodeSnippet\\CodeSnippet' => __DIR__ . '/../..' . '/inc/CodeSnippet/CodeSnippet.php',
+        'WCF_ADDONS\\CodeSnippet\\CodeSnippetAjax' => __DIR__ . '/../..' . '/inc/CodeSnippet/CodeSnippetAjax.php',
+        'WCF_ADDONS\\CodeSnippet\\CodeSnippetCompatibility' => __DIR__ . '/../..' . '/inc/CodeSnippet/CodeSnippetCompatibility.php',
+        'WCF_ADDONS\\CodeSnippet\\CodeSnippetFrontend' => __DIR__ . '/../..' . '/inc/CodeSnippet/CodeSnippetFrontend.php',
+        'WCF_ADDONS\\CodeSnippet\\CodeSnippetSettingsTrait' => __DIR__ . '/../..' . '/inc/CodeSnippet/CodeSnippetSettingsTrait.php',
+        'WCF_ADDONS\\CodeSnippet\\Helpers' => __DIR__ . '/../..' . '/inc/CodeSnippet/Helpers.php',
+        'WCF_ADDONS\\CodeSnippet\\Notices' => __DIR__ . '/../..' . '/inc/CodeSnippet/Notices.php',
+        'WCF_ADDONS\\CodeSnippet\\listTables\\AbstractListTable' => __DIR__ . '/../..' . '/inc/CodeSnippet/listTables/AbstractListTable.php',
+        'WCF_ADDONS\\CodeSnippet\\listTables\\CodeSnippetListTable' => __DIR__ . '/../..' . '/inc/CodeSnippet/listTables/CodeSnippetListTable.php',
+        'WCF_ADDONS\\WCF_Extension_Widgets_Trait' => __DIR__ . '/../..' . '/inc/WCF_Extension_Widgets_Trait.php',
+        'WCF_ADDONS\\WCF_Post_Handler_Trait' => __DIR__ . '/../..' . '/inc/WCF_Post_Handler_Trait.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

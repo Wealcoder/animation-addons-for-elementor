@@ -1,6 +1,8 @@
 <?php
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace WCF_ADDONS\Widgets;
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 use Elementor\Group_Control_Background;
 use Elementor\Group_Control_Border;
@@ -244,7 +246,7 @@ class Icon_Box extends Widget_Base
 			[
 				'name'     => 'wrapper_background',
 				'types'    => ['classic', 'gradient'],
-				'exclude'  => ['image'],
+				'exclude'  => ['image'],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector' => '{{WRAPPER}} .wcf__iconbox',
 			]
 		);
@@ -678,7 +680,7 @@ class Icon_Box extends Widget_Base
 			[
 				'name'     => 'wrapper_hover_background',
 				'types'    => ['classic', 'gradient'],
-				'exclude'  => ['image'],
+				'exclude'  => ['image'],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector' => '{{WRAPPER}} .wcf__iconbox:hover:after, {{WRAPPER}} .wcf__iconbox::after',
 			]
 		);
@@ -784,7 +786,7 @@ class Icon_Box extends Widget_Base
 			[
 				'name'     => 'icon_box_btn_hover_background',
 				'types'    => ['classic', 'gradient'],
-				'exclude'  => ['image'],
+				'exclude'  => ['image'],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector' => '{{WRAPPER}}  .wcf__iconbox:hover .wcf__btn a',
 			]
 		);

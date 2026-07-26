@@ -1,6 +1,10 @@
 <?php
-
+/**
+ * @phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
+ */
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace WCF_ADDONS;
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 use Elementor\Group_Control_Image_Size;
 use Elementor\Icons_Manager;
@@ -76,7 +80,8 @@ trait WCF_Post_Handler_Trait
 			// Force the manually-generated Excerpt length as well if the user chose to enable 'apply_to_custom_excerpt'.
 			if (empty($post->post_excerpt)) {
 				$max_length = (int) $this->get_settings('excerpt_length');
-				$excerpt    = apply_filters('the_excerpt', get_the_excerpt());
+				// 'the_excerpt' is a WordPress core filter, not a plugin-defined hook.
+				$excerpt    = apply_filters('the_excerpt', get_the_excerpt()); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 				$excerpt    = $this->trim_words($excerpt, $max_length);
 				echo wp_kses_post($excerpt);
 			} else {
@@ -460,8 +465,8 @@ trait WCF_Post_Handler_Trait
 						<?php
 						$date = get_the_date();
 						/** This filter is documented in wp-includes/general-template.php */
-						// PHPCS - The date is safe.
-						echo apply_filters('the_date', $date, get_option('date_format'), '', ''); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+						echo esc_html( apply_filters('the_date', $date, get_option('date_format'), '', '') );
 						?>
 					</span>
 				</div>
@@ -477,8 +482,8 @@ trait WCF_Post_Handler_Trait
 				<?php
 				$date = get_the_date();
 				/** This filter is documented in wp-includes/general-template.php */
-				// PHPCS - The date is safe.
-				echo apply_filters('the_date', $date, get_option('date_format'), '', ''); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+				echo esc_html( apply_filters('the_date', $date, get_option('date_format'), '', '') );
 				?>
 			</span>
 		<?php
@@ -551,7 +556,8 @@ trait WCF_Post_Handler_Trait
 			array(
 				'post_type'   => 'aaeaddon_post_rating',
 				'post_status' => 'publish',
-				'meta_query'  => array(
+				// Ratings are stored as separate posts keyed by post_id meta; lookup by meta is required here.
+				'meta_query'  => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 					array(
 						'key'   => 'post_id',
 						'value' => $post_id,

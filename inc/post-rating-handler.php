@@ -1,4 +1,7 @@
 <?php
+/**
+ * @phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
+ */
 if (! defined('ABSPATH')) {
 	exit;
 }

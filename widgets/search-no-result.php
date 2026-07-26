@@ -1,6 +1,8 @@
 <?php
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace WCF_ADDONS\Widgets;
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 use Elementor\Controls_Manager;
 use Elementor\Utils;
@@ -241,7 +243,8 @@ class Search_No_Result extends Widget_Base {
 
 		$settings = $this->get_settings_for_display();
 
-		if ( \Elementor\Plugin::$instance->editor->is_edit_mode() || \Elementor\Plugin::$instance->preview->is_preview_mode() || ( isset( $_GET['preview_id'] ) && isset( $_GET['preview_nonce'] ) ) ) {
+		// Read-only presence check for Elementor preview query vars; no values are read, so no nonce applies.
+		if ( \Elementor\Plugin::$instance->editor->is_edit_mode() || \Elementor\Plugin::$instance->preview->is_preview_mode() || ( isset( $_GET['preview_id'] ) && isset( $_GET['preview_nonce'] ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$search_found_title = $settings['search_text'];
 		} else {
 			$search_found_title = $settings['search_text'];

@@ -1,6 +1,8 @@
 <?php
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace WCF_ADDONS\Widgets;
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 use Elementor\Group_Control_Border;
 use Elementor\Group_Control_Box_Shadow;
@@ -124,7 +126,7 @@ class Image extends Widget_Base {
 			array(
 				'name'      => 'image_size',
 				'separator' => 'none',
-                    'exclude' => ['custom'],
+                    'exclude' => ['custom'],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
                     'include' => [],
                     'default' => 'full',
 			)

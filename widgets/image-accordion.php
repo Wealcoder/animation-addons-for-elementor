@@ -1,6 +1,8 @@
 <?php
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace WCF_ADDONS\Widgets;
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 use Elementor\Control_Media;
 use Elementor\Group_Control_Background;
@@ -133,7 +135,7 @@ class Image_Accordion extends Widget_Base
 			Group_Control_Image_Size::get_type(),
 			[
 				'name'    => 'image_size',
-				'exclude' => ['custom'],
+				'exclude' => ['custom'],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'include' => [],
 				'default' => 'full',
 			]

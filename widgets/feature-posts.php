@@ -1,6 +1,8 @@
 <?php
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace WCF_ADDONS\Widgets;
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 use Elementor\Group_Control_Background;
 use Elementor\Group_Control_Border;
@@ -175,7 +177,7 @@ class Feature_Posts extends Widget_Base
 			Group_Control_Image_Size::get_type(),
 			[
 				'name'    => 'thumbnail_size',
-				'exclude' => ['custom'],
+				'exclude' => ['custom'],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'default' => 'medium',
 			]
 		);
@@ -1473,7 +1475,7 @@ class Feature_Posts extends Widget_Base
 			[
 				'name'     => 'read_more_background',
 				'types'    => ['classic', 'gradient'],
-				'exclude'  => ['image'],
+				'exclude'  => ['image'],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector' => '{{WRAPPER}} .wcf-post-link',
 			]
 		);
@@ -1503,7 +1505,7 @@ class Feature_Posts extends Widget_Base
 			[
 				'name'     => 'read_more_hover_background',
 				'types'    => ['classic', 'gradient'],
-				'exclude'  => ['image'],
+				'exclude'  => ['image'],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector' => '{{WRAPPER}} .wcf-post-link:hover',
 			]
 		);
@@ -1860,7 +1862,7 @@ class Feature_Posts extends Widget_Base
 					'active' => false,
 				],
 				'condition'   => [
-					'exclude' => 'terms',
+					'exclude' => 'terms',  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				],
 			]
 		);
@@ -1876,7 +1878,7 @@ class Feature_Posts extends Widget_Base
 					'active' => false,
 				],
 				'condition'   => [
-					'exclude' => 'authors',
+					'exclude' => 'authors',  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				],
 			]
 		);
@@ -2135,7 +2137,7 @@ class Feature_Posts extends Widget_Base
 
 		if (! empty($this->get_settings('include'))) {
 			if (in_array('terms', $this->get_settings('include'))) {
-				$query_args['tax_query'] = [];
+				$query_args['tax_query'] = [];  // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
 
 				if (! empty($this->get_settings('include_term_ids'))) {
 					$terms = [];
@@ -2222,7 +2224,7 @@ class Feature_Posts extends Widget_Base
 
 		if (! empty($this->get_settings('grid_include'))) {
 			if (in_array('terms', $this->get_settings('grid_include'))) {
-				$query_args['tax_query'] = [];
+				$query_args['tax_query'] = [];  // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
 
 				if (! empty($this->get_settings('grid_include_term_ids'))) {
 					$terms = [];

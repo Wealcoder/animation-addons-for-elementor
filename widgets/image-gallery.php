@@ -1,6 +1,10 @@
 <?php
-
+/**
+ * @phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
+ */
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace WCF_ADDONS\Widgets;
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 use Elementor\Control_Media;
 use Elementor\Group_Control_Image_Size;
@@ -683,6 +687,7 @@ class Image_Gallery extends Widget_Base {
 		 *
 		 * @since 2.4.0
 		 */
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility hook.
 		return apply_filters( 'wcf/image_size/get_gallery_attachment_image_html', $html, $settings, $image_size_key, $image_key, $attr_key );
 	}
 

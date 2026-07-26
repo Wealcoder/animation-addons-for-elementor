@@ -1,6 +1,8 @@
 <?php
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace WCF_ADDONS\Widgets;
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 use Elementor\Group_Control_Background;
 use Elementor\Group_Control_Border;
@@ -748,7 +750,7 @@ class Mailchimp extends Widget_Base
 				'label'    => esc_html__('Background', 'animation-addons-for-elementor'),
 				'types'    => ['classic', 'gradient'],
 				'selector' => '{{WRAPPER}} .input input',
-				'exclude'  => [
+				'exclude'  => [  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 					'image',
 				],
 			]
@@ -923,7 +925,7 @@ class Mailchimp extends Widget_Base
 				'label'    => esc_html__('Background', 'animation-addons-for-elementor'),
 				'types'    => ['classic', 'gradient'],
 				'selector' => '{{WRAPPER}} .input .icon',
-				'exclude'  => [
+				'exclude'  => [  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 					'image',
 				],
 			]
@@ -1039,7 +1041,7 @@ class Mailchimp extends Widget_Base
 				'label'    => esc_html__('Background', 'animation-addons-for-elementor'),
 				'types'    => ['classic', 'gradient'],
 				'selector' => '{{WRAPPER}} .wcf-mc-button',
-				'exclude'  => [
+				'exclude'  => [  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 					'image',
 				],
 			]
@@ -1072,7 +1074,7 @@ class Mailchimp extends Widget_Base
 				'label'    => esc_html__('Background', 'animation-addons-for-elementor'),
 				'types'    => ['classic', 'gradient'],
 				'selector' => '{{WRAPPER}} .wcf-mc-button:hover, {{WRAPPER}} .wcf-mc-button:focus',
-				'exclude'  => [
+				'exclude'  => [  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 					'image',
 				],
 			]

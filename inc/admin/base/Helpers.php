@@ -5,7 +5,9 @@
  *
  * @package WCF_ADDONS
  */
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace WCF_ADDONS\Admin\Base;
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 defined( 'ABSPATH' ) || die();
 /**
@@ -358,16 +360,16 @@ class Helpers {
 		);
 
 		// Register the import file types and their mime types.
-		add_filter( 'upload_mimes', function ( $defaults ) {
+		// add_filter( 'upload_mimes', function ( $defaults ) {
 
-			$custom = [
-				'xml'  => 'text/xml',
-				'json' => 'application/json',		
-			];
+		// 	$custom = [
+		// 		'xml'  => 'text/xml',
+		// 		'json' => 'application/json',		
+		// 	];
 		
 			
-			return array_merge( $custom, $defaults );
-		} );
+		// 	return array_merge( $custom, $defaults );
+		// } );
 
 		// Error data if the demo file was not provided.
 		$file_not_provided_error = array(
@@ -471,13 +473,13 @@ class Helpers {
 	}
 	
 	public static function apply_filters( $hook, $default_data ) {
-		$new_data = apply_filters( $hook, $default_data );
+		$new_data = apply_filters( $hook, $default_data );  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
 
 		if ( $new_data !== $default_data ) {
 			return $new_data;
 		}
 
-		$old_data = apply_filters( "st-$hook", $default_data );
+		$old_data = apply_filters( "st-$hook", $default_data );  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 
 		if ( $old_data !== $default_data ) {
 			return $old_data;
@@ -499,7 +501,7 @@ class Helpers {
 	 *                       functions hooked to the action. Default empty.
 	 */
 	public static function do_action( $hook, ...$arg ) {
-		do_action( $hook, ...$arg );
+		do_action( $hook, ...$arg );  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
 
 		$args = [];
 		foreach ( $arg as $argument ) {

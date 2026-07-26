@@ -4,7 +4,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;  // Exit if accessed directly.
 }
 
-$config = [
+// Local config array, assigned to the prefixed $GLOBALS['wcf_addons_config'] at the end of this file.
+$config = [ // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 	'widgets'            => [
 		'is_active' => false,
 		'elements'  => [
@@ -1896,4 +1897,4 @@ $config = [
 	]
 ];
 
-$GLOBALS['wcf_addons_config'] = $config;
+$GLOBALS['wcf_addons_config'] = $config; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound

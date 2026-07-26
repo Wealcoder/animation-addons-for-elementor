@@ -4,7 +4,9 @@
  * WPML integration and compatibility manager
  */
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace WCF_ADDONS\INC\WPML;
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 defined('ABSPATH') || die();
 

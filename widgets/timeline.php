@@ -1,6 +1,8 @@
 <?php
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace WCF_ADDONS\Widgets;
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 use Elementor\Control_Media;
 use Elementor\Group_Control_Background;
@@ -848,7 +850,7 @@ class Timeline extends Widget_Base {
 			Group_Control_Typography::get_type(),
 			[
 				'name' => 'step_typography',
-				'exclude' => ['font_size', 'text_decoration', 'line_height'],
+				'exclude' => ['font_size', 'text_decoration', 'line_height'],  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 				'selector' => '{{WRAPPER}} .step-box .icon',
 			]
 		);

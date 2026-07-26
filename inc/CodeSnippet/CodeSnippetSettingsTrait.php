@@ -1,6 +1,10 @@
 <?php
-
+/**
+ * @phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
+ */
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace WCF_ADDONS\CodeSnippet;
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -40,7 +44,7 @@ trait CodeSnippetSettingsTrait {
 		 *
 		 * @param array $defaults The default settings.
 		 */
-		$defaults = apply_filters( 'wcf_code_snippet_default_settings', $defaults );
+		$defaults = apply_filters( 'wcf_code_snippet_default_settings', $defaults ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility with existing wcf hooks.
 
 		$settings = array();
 		if ( ! empty( $id ) ) {
@@ -70,6 +74,6 @@ trait CodeSnippetSettingsTrait {
 		 * @param array $settings The code snippet settings.
 		 * @param array $defaults The default settings.
 		 */
-		return apply_filters( 'wcf_code_snippet_settings', $settings, $defaults );
+		return apply_filters( 'wcf_code_snippet_settings', $settings, $defaults ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility with existing wcf hooks.
 	}
 }

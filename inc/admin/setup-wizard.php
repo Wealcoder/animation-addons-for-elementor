@@ -1,6 +1,8 @@
 <?php
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace WCF_ADDONS\Admin;
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 if (! defined('ABSPATH')) {
 	exit();
@@ -207,7 +209,9 @@ class WCF_Setup_Wizard_Init
 		// CSS
 		wp_enqueue_style(
 			'wcf-admin',
-			WCF_ADDONS_URL . 'assets/build/modules/dashboard/wizardSetup.css'
+			WCF_ADDONS_URL . 'assets/build/modules/dashboard/wizardSetup.css',
+			array(),
+			WCF_ADDONS_VERSION
 		);
 
 		// JS
@@ -243,7 +247,7 @@ class WCF_Setup_Wizard_Init
 			'nonce'         => wp_create_nonce('wcf_admin_nonce'),
 
 			'addons_config' => apply_filters(
-				'wcf_addons_dashboard_config',
+				'wcf_addons_dashboard_config',  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 				$config
 			),
 
