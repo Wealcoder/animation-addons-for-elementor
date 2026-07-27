@@ -93,3 +93,33 @@
 	opacity: 0.6;
 	font-style: italic;
 }
+
+.aae-pp-loaded-image img {
+	display: block;
+	width: 100%;
+	height: auto;
+	margin-bottom: 20px;
+}
+
+// Infinite-scroll loading spinner — inserted right where the next post will
+// land, removed the moment the request settles (success or failure).
+.aae-pp-loader {
+	display: flex;
+	justify-content: center;
+	padding: 32px 0;
+}
+
+.aae-pp-spinner {
+	width: 28px;
+	height: 28px;
+	border: 3px solid rgba(0, 0, 0, 0.15);
+	border-top-color: rgba(0, 0, 0, 0.55);
+	border-radius: 50%;
+	animation: aae-pp-spin 0.7s linear infinite;
+}
+
+@keyframes aae-pp-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}

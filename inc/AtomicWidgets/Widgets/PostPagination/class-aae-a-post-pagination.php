@@ -86,20 +86,27 @@ class AAE_A_Post_Pagination extends Atomic_Element_Base {
 	}
 
 	protected static function define_props_schema(): array {
+		// NOTE on polarity: Elementor's 4.1.x dependency evaluator fires the
+		// `effect` when the where() condition does NOT match — a `hide`
+		// effect is really "hide UNLESS this holds" (see AAE_A_Loop_Grid's
+		// tax-prop dependencies for the same documented gotcha, verified
+		// empirically there too). So every clause below states the condition
+		// under which the field should be VISIBLE, not the condition under
+		// which it should hide.
 		$has_taxonomy = Dependency_Manager::make()
-			->where( [ 'operator' => 'eq', 'path' => [ 'constrain_taxonomy' ], 'value' => 'none', 'effect' => 'hide' ] )
+			->where( [ 'operator' => 'ne', 'path' => [ 'constrain_taxonomy' ], 'value' => 'none', 'effect' => 'hide' ] )
 			->get();
 
 		$is_meta_order = Dependency_Manager::make()
-			->where( [ 'operator' => 'ne', 'path' => [ 'order_by' ], 'value' => 'meta_value', 'effect' => 'hide' ] )
+			->where( [ 'operator' => 'eq', 'path' => [ 'order_by' ], 'value' => 'meta_value', 'effect' => 'hide' ] )
 			->get();
 
 		$not_inline = Dependency_Manager::make()
-			->where( [ 'operator' => 'eq', 'path' => [ 'display_mode' ], 'value' => 'inline', 'effect' => 'hide' ] )
+			->where( [ 'operator' => 'ne', 'path' => [ 'display_mode' ], 'value' => 'inline', 'effect' => 'hide' ] )
 			->get();
 
 		$infinite_off = Dependency_Manager::make()
-			->where( [ 'operator' => 'eq', 'path' => [ 'enable_infinite_scroll' ], 'value' => false, 'effect' => 'hide' ] )
+			->where( [ 'operator' => 'eq', 'path' => [ 'enable_infinite_scroll' ], 'value' => true, 'effect' => 'hide' ] )
 			->get();
 
 		return [
@@ -125,13 +132,22 @@ class AAE_A_Post_Pagination extends Atomic_Element_Base {
 			'enable_swipe'        => Boolean_Prop_Type::make()->default( false ),
 			'enable_prefetch'     => Boolean_Prop_Type::make()->default( true ),
 
-			// Infinite scroll.
-			'enable_infinite_scroll'    => Boolean_Prop_Type::make()->default( false ),
-			'infinite_scroll_target'    => String_Prop_Type::make()->default( '' )->set_dependencies( $infinite_off ),
-			'infinite_scroll_threshold' => Number_Prop_Type::make()->default( 600 )->set_dependencies( $infinite_off ),
-			'no_more_text'              => String_Prop_Type::make()->default(
+			// Infinite scroll. No manual threshold/target: an IntersectionObserver
+			// watches the Prev/Next buttons themselves (see post-pagination.js) —
+			// since they always end up trailing the last-loaded post (see
+			// `initInfiniteScroll`'s insert-before-root strategy), that IS "near
+			// the end of the current post," with no pixel number to configure.
+			'enable_infinite_scroll' => Boolean_Prop_Type::make()->default( false ),
+			'no_more_text'           => String_Prop_Type::make()->default(
 				__( "You've reached the end.", 'animation-addons-for-elementor' )
 			)->set_dependencies( $infinite_off ),
+
+			// What the loaded-post block actually renders — each is also a
+			// server-side switch (ajax_post_pagination_load skips fetching
+			// content/image entirely when off, not just hiding them client-side).
+			'infinite_fetch_title'   => Boolean_Prop_Type::make()->default( true )->set_dependencies( $infinite_off ),
+			'infinite_fetch_content' => Boolean_Prop_Type::make()->default( true )->set_dependencies( $infinite_off ),
+			'infinite_fetch_image'   => Boolean_Prop_Type::make()->default( true )->set_dependencies( $infinite_off ),
 		];
 	}
 
@@ -237,17 +253,17 @@ class AAE_A_Post_Pagination extends Atomic_Element_Base {
 					Switch_Control::bind_to( 'enable_infinite_scroll' )
 						->set_label( __( 'Enable Infinite Scroll', 'animation-addons-for-elementor' ) ),
 
-					Number_Control::bind_to( 'infinite_scroll_threshold' )
-						->set_label( __( 'Load When Within (px) Of Bottom', 'animation-addons-for-elementor' ) )
-						->set_min( 0 )
-						->set_max( 5000 ),
-
-					Text_Control::bind_to( 'infinite_scroll_target' )
-						->set_label( __( 'Insert After (CSS Selector)', 'animation-addons-for-elementor' ) )
-						->set_placeholder( __( 'Leave blank to insert after this widget', 'animation-addons-for-elementor' ) ),
-
 					Text_Control::bind_to( 'no_more_text' )
 						->set_label( __( 'End-Of-Posts Text', 'animation-addons-for-elementor' ) ),
+
+					Switch_Control::bind_to( 'infinite_fetch_title' )
+						->set_label( __( 'Fetch Title', 'animation-addons-for-elementor' ) ),
+
+					Switch_Control::bind_to( 'infinite_fetch_content' )
+						->set_label( __( 'Fetch Content', 'animation-addons-for-elementor' ) ),
+
+					Switch_Control::bind_to( 'infinite_fetch_image' )
+						->set_label( __( 'Fetch Featured Image', 'animation-addons-for-elementor' ) ),
 				] ),
 		];
 	}
@@ -274,14 +290,16 @@ class AAE_A_Post_Pagination extends Atomic_Element_Base {
 	}
 
 	protected function define_default_children() {
+		// NOT locked, deliberately: unlike Loop Grid's structural Nav/Prev/
+		// Next wrappers (pure scaffolding), these ARE the actual buttons —
+		// label text, icon, and style are exactly what a user drops this
+		// widget to customize.
 		return [
 			AAE_A_Post_Pagination_Prev::generate()
 				->editor_settings( [ 'title' => 'Previous Post' ] )
-				->is_locked( true )
 				->build(),
 			AAE_A_Post_Pagination_Next::generate()
 				->editor_settings( [ 'title' => 'Next Post' ] )
-				->is_locked( true )
 				->build(),
 		];
 	}
@@ -341,8 +359,6 @@ class AAE_A_Post_Pagination extends Atomic_Element_Base {
 			'swipe'            => ! empty( $s['enable_swipe'] ),
 			'prefetch'         => ! empty( $s['enable_prefetch'] ),
 			'infiniteScroll'   => ! empty( $s['enable_infinite_scroll'] ),
-			'infiniteTarget'   => isset( $s['infinite_scroll_target'] ) ? $s['infinite_scroll_target'] : '',
-			'infiniteThreshold' => isset( $s['infinite_scroll_threshold'] ) ? (int) $s['infinite_scroll_threshold'] : 600,
 			'noMoreText'       => isset( $s['no_more_text'] ) ? $s['no_more_text'] : '',
 			'settings'         => isset( $ctx['settings'] ) ? $ctx['settings'] : [],
 			'nonce'            => wp_create_nonce( 'aae_post_pagination' ),
@@ -403,9 +419,24 @@ class AAE_A_Post_Pagination extends Atomic_Element_Base {
 		if ( $taxonomy ) {
 			$terms    = wp_get_object_terms( $current_id, $taxonomy, [ 'fields' => 'ids' ] );
 			$term_ids = is_wp_error( $terms ) ? [] : array_map( 'intval', $terms );
-			// No terms in the constraining taxonomy on this post — constraint
-			// can't apply, fall through to the unconstrained list rather than
-			// rendering an empty/broken nav.
+
+			// Drop any of the CURRENT post's own terms that are also in the
+			// exclude list BEFORE using them as the "must match" set. Without
+			// this, excluding a term that happens to be the current post's
+			// ONLY category makes the query self-contradictory — "must be in
+			// Uncategorized" AND "must not be in Uncategorized" — which
+			// returns zero posts (not even reachable via prev/next), hiding
+			// both buttons entirely. A post with other, non-excluded terms
+			// still constrains correctly on those; only when NONE remain do
+			// we fall through to unconstrained below.
+			$exclude_terms_for_match = self::extract_ids( $settings['exclude_terms'] ?? null );
+			if ( $exclude_terms_for_match ) {
+				$term_ids = array_values( array_diff( $term_ids, $exclude_terms_for_match ) );
+			}
+
+			// No (remaining) terms in the constraining taxonomy on this post
+			// — constraint can't apply, fall through to the unconstrained
+			// list rather than rendering an empty/broken nav.
 			if ( ! $term_ids ) {
 				$taxonomy = '';
 			}
@@ -496,27 +527,39 @@ class AAE_A_Post_Pagination extends Atomic_Element_Base {
 			: 'date';
 		$order = ( isset( $settings['order'] ) && 'desc' === strtolower( (string) $settings['order'] ) ) ? 'DESC' : 'ASC';
 
+		$primary_field = $order_by;
+		$meta_key      = '';
+
+		if ( 'meta_value' === $order_by ) {
+			$meta_key = isset( $settings['meta_key'] ) ? sanitize_text_field( (string) $settings['meta_key'] ) : '';
+			if ( '' === $meta_key ) {
+				$primary_field = 'date';
+			} else {
+				$primary_field = ( isset( $settings['meta_type'] ) && 'NUMERIC' === $settings['meta_type'] ) ? 'meta_value_num' : 'meta_value';
+			}
+		}
+
 		$args = [
 			'post_type'              => $post_type,
 			'post_status'            => 'publish',
 			'posts_per_page'         => -1,
 			'fields'                 => 'ids',
-			'orderby'                => $order_by,
-			'order'                  => $order,
+			// `ID` as a secondary key: a single-field orderby leaves ties
+			// (every post's menu_order defaults to 0 until someone actually
+			// sets values via Page Attributes — the common case; likewise
+			// duplicate titles or a shared meta value) in whatever order
+			// MySQL happens to return them, which is unstable across
+			// requests and reads as "the query is broken." `ID` is always
+			// unique, so the full ordering is deterministic regardless.
+			'orderby'                => [ $primary_field => $order, 'ID' => $order ],
 			'ignore_sticky_posts'    => true,
 			'no_found_rows'          => true,
 			'update_post_meta_cache' => false,
 			'update_post_term_cache' => false,
 		];
 
-		if ( 'meta_value' === $order_by ) {
-			$meta_key = isset( $settings['meta_key'] ) ? sanitize_text_field( (string) $settings['meta_key'] ) : '';
-			if ( '' === $meta_key ) {
-				$args['orderby'] = 'date';
-			} else {
-				$args['meta_key'] = $meta_key; // phpcs:ignore WordPress.DB.SlowDBQuery
-				$args['orderby']  = ( isset( $settings['meta_type'] ) && 'NUMERIC' === $settings['meta_type'] ) ? 'meta_value_num' : 'meta_value';
-			}
+		if ( $meta_key ) {
+			$args['meta_key'] = $meta_key; // phpcs:ignore WordPress.DB.SlowDBQuery
 		}
 
 		if ( $taxonomy && $term_ids ) {
@@ -590,8 +633,26 @@ class AAE_A_Post_Pagination extends Atomic_Element_Base {
 			[ 'value' => 'none', 'label' => __( 'None (All Posts)', 'animation-addons-for-elementor' ) ],
 		];
 
-		foreach ( get_taxonomies( [ 'public' => true, 'show_ui' => true ], 'objects' ) as $tax ) {
-			$options[] = [ 'value' => $tax->name, 'label' => $tax->label ];
+		$taxonomies = get_taxonomies( [ 'public' => true, 'show_ui' => true ], 'objects' );
+
+		// Some taxonomies reuse a generic label like "Categories" for a
+		// custom post type (e.g. this plugin's own Pro "Video Story" widget
+		// registers `video-story-category` with the label hardcoded to just
+		// "Categories") — indistinguishable from core's `category` in a
+		// plain dropdown. Disambiguate with the taxonomy's own slug
+		// whenever two labels collide, rather than trusting every
+		// registered taxonomy's label to be unique.
+		$label_counts = [];
+		foreach ( $taxonomies as $tax ) {
+			$label_counts[ $tax->label ] = ( $label_counts[ $tax->label ] ?? 0 ) + 1;
+		}
+
+		foreach ( $taxonomies as $tax ) {
+			$label = $tax->label;
+			if ( $label_counts[ $label ] > 1 ) {
+				$label = sprintf( '%1$s (%2$s)', $label, $tax->name );
+			}
+			$options[] = [ 'value' => $tax->name, 'label' => $label ];
 		}
 
 		return $options;

@@ -4104,25 +4104,44 @@ final class Atomic
 		$post = get_post($post_id);
 		setup_postdata($post);
 
+		// Editor toggles for what the loaded-post block actually shows —
+		// content/image are skipped SERVER-SIDE (not just hidden client-side)
+		// when off, so a "Fetch Content off" page doesn't pay for rendering
+		// or transferring content it'll never display.
+		$fetch_title   = ! isset($settings['infinite_fetch_title']) || $settings['infinite_fetch_title'];
+		$fetch_content = ! isset($settings['infinite_fetch_content']) || $settings['infinite_fetch_content'];
+		$fetch_image   = ! isset($settings['infinite_fetch_image']) || $settings['infinite_fetch_image'];
+
+		// Always resolved regardless of the "Fetch Title" toggle — the
+		// browser tab title / URL bar (document.title + pushState) should
+		// stay accurate even when the visible in-page heading is turned off.
 		$title = get_the_title($post_id);
 
-		$post_content_file = __DIR__ . '/Widgets/PostContent/class-aae-a-post-content.php';
-		if (! class_exists('\WCF_ADDONS\AtomicWidgets\Widgets\PostContent\AAE_A_Post_Content') && file_exists($post_content_file)) {
-			require_once $post_content_file;
-		}
+		$content_html = null;
+		if ($fetch_content) {
+			$post_content_file = __DIR__ . '/Widgets/PostContent/class-aae-a-post-content.php';
+			if (! class_exists('\WCF_ADDONS\AtomicWidgets\Widgets\PostContent\AAE_A_Post_Content') && file_exists($post_content_file)) {
+				require_once $post_content_file;
+			}
 
-		ob_start();
-		if (class_exists('\WCF_ADDONS\AtomicWidgets\Widgets\PostContent\AAE_A_Post_Content')) {
-			try {
-				$pc = new \WCF_ADDONS\AtomicWidgets\Widgets\PostContent\AAE_A_Post_Content([], null);
-				$pc->render_post_content(false, false);
-			} catch (\Throwable $e) {
+			ob_start();
+			if (class_exists('\WCF_ADDONS\AtomicWidgets\Widgets\PostContent\AAE_A_Post_Content')) {
+				try {
+					$pc = new \WCF_ADDONS\AtomicWidgets\Widgets\PostContent\AAE_A_Post_Content([], null);
+					$pc->render_post_content(false, false);
+				} catch (\Throwable $e) {
+					the_content();
+				}
+			} else {
 				the_content();
 			}
-		} else {
-			the_content();
+			$content_html = ob_get_clean();
 		}
-		$content_html = ob_get_clean();
+
+		$image_html = null;
+		if ($fetch_image && has_post_thumbnail($post_id)) {
+			$image_html = get_the_post_thumbnail($post_id, 'large');
+		}
 
 		require_once __DIR__ . '/Widgets/PostPagination/class-aae-a-post-pagination.php';
 		$adjacent = \WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination::resolve_adjacent($post_id, $settings);
@@ -4130,11 +4149,13 @@ final class Atomic
 		wp_reset_postdata();
 
 		wp_send_json_success([
-			'post_id'   => $post_id,
-			'title'     => $title,
-			'permalink' => get_permalink($post_id),
-			'content'   => $content_html,
-			'next'      => $adjacent['next'],
+			'post_id'    => $post_id,
+			'title'      => $title,
+			'show_title' => $fetch_title,
+			'permalink'  => get_permalink($post_id),
+			'content'    => $content_html,
+			'image'      => $image_html,
+			'next'       => $adjacent['next'],
 		]);
 	}
 

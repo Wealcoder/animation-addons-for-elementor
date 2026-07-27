@@ -15,11 +15,15 @@
  *   - Sticky/side-arrow reveal: toggles a class once the page has scrolled
  *                             past the configured offset (sticky_bar /
  *                             side_arrows display modes only).
- *   - Infinite scroll       : AJAX-appends the next post's title+content when
- *                             the reader nears the bottom, updates the URL via
- *                             pushState, and clones the trigger widget after
- *                             the newly-loaded post so scrolling can keep
- *                             chaining forward.
+ *   - Infinite scroll       : AJAX-fetches the next post (title/content/image,
+ *                             each independently toggleable) as the Prev/Next
+ *                             buttons approach the viewport (IntersectionObserver,
+ *                             no configurable threshold), inserts it right
+ *                             before the buttons, and updates the URL via
+ *                             pushState. The SAME single button element is
+ *                             reused every time — never cloned — so it always
+ *                             ends up trailing the last-loaded post: main post
+ *                             → fetched 01 → 02 → 03 → … → buttons, once.
  */
 
 (function () {
@@ -173,16 +177,6 @@
 	 * Infinite scroll
 	 * ------------------------------------------------------------------- */
 
-	function resolveTarget(root, cfg) {
-		if (cfg.infiniteTarget) {
-			var custom = document.querySelector(cfg.infiniteTarget);
-			if (custom) {
-				return custom;
-			}
-		}
-		return root;
-	}
-
 	function requestNext(cfg) {
 		var body = new window.FormData();
 		body.append('action', 'aae_post_pagination_load');
@@ -197,21 +191,60 @@
 		var article = document.createElement('article');
 		article.className = 'aae-pp-loaded-post';
 
-		var h = document.createElement('h2');
-		h.className = 'aae-pp-loaded-title';
-		h.textContent = data.title;
-		article.appendChild(h);
+		if (data.image) {
+			var img = document.createElement('div');
+			img.className = 'aae-pp-loaded-image';
+			img.innerHTML = data.image; // server-rendered <img>, same as any other featured-image output.
+			article.appendChild(img);
+		}
 
-		var body = document.createElement('div');
-		body.className = 'aae-pp-loaded-content';
-		body.innerHTML = data.content; // phpcs-ignore: server-rendered, same pipeline as the post's own page.
-		article.appendChild(body);
+		if (data.show_title && data.title) {
+			var h = document.createElement('h2');
+			h.className = 'aae-pp-loaded-title';
+			h.textContent = data.title;
+			article.appendChild(h);
+		}
+
+		if (data.content) {
+			var body = document.createElement('div');
+			body.className = 'aae-pp-loaded-content';
+			body.innerHTML = data.content; // phpcs-ignore: server-rendered, same pipeline as the post's own page.
+			article.appendChild(body);
+		}
 
 		return article;
 	}
 
-	function initInfiniteScroll(root, cfg, scrollHooks) {
-		if (!cfg.infiniteScroll) {
+	function showLoader(beforeNode) {
+		var loader = document.createElement('div');
+		loader.className = 'aae-pp-loader';
+		loader.innerHTML = '<span class="aae-pp-spinner" aria-hidden="true"></span>';
+		if (beforeNode && beforeNode.parentNode) {
+			beforeNode.parentNode.insertBefore(loader, beforeNode);
+		}
+		return loader;
+	}
+
+	function removeLoader(loader) {
+		if (loader && loader.parentNode) {
+			loader.parentNode.removeChild(loader);
+		}
+	}
+
+	/**
+	 * `root` (the Prev/Next buttons) is never cloned or moved explicitly —
+	 * every loaded post is inserted right BEFORE root's CURRENT position, so
+	 * root naturally ends up trailing the newest post every time, with only
+	 * ONE set of buttons ever on the page (matches the requested layout:
+	 * main post → fetched post 01 → 02 → 03 → … → buttons, always last).
+	 *
+	 * Trigger: an IntersectionObserver on `root` itself, with a generous
+	 * bottom rootMargin — since root always sits right after the current
+	 * post's content, root approaching the viewport IS "near the end of the
+	 * current post." No configurable pixel threshold needed.
+	 */
+	function initInfiniteScroll(root, cfg) {
+		if (!cfg.infiniteScroll || !('IntersectionObserver' in window)) {
 			return;
 		}
 
@@ -221,56 +254,73 @@
 			if (state.busy || state.done) {
 				return;
 			}
-			var threshold = cfg.infiniteThreshold || 600;
-			var nearBottom = (window.innerHeight + window.scrollY) >= (document.body.offsetHeight - threshold);
-			if (!nearBottom) {
-				return;
-			}
 
 			state.busy = true;
+			var loader = showLoader(root);
+
 			requestNext(state.current).then(function (res) {
+				removeLoader(loader);
+
 				if (!res || !res.success || !res.data) {
 					state.done = true;
+					observer.disconnect();
 					return;
 				}
 				var data = res.data;
-				var target = resolveTarget(root, cfg);
 				var article = buildLoadedPost(data);
 
-				var clone = root.cloneNode(true);
-				clone.removeAttribute('data-aae-pp-bound');
-				var cloneCfg = Object.assign({}, cfg, { next: data.next, postId: data.post_id });
-				clone.setAttribute('data-aae-pp-config', JSON.stringify(cloneCfg));
-				article.appendChild(clone);
-
-				if (target.parentNode) {
-					target.parentNode.insertBefore(article, target.nextSibling);
+				if (root.parentNode) {
+					root.parentNode.insertBefore(article, root);
 				}
-
-				bindInstance(clone);
 
 				try {
 					document.title = data.title;
 					window.history.pushState({ aaePostPagination: data.post_id }, '', data.permalink);
 				} catch (e) { /* no-op */ }
 
-				state.current = cloneCfg;
+				state.current = Object.assign({}, cfg, { next: data.next, postId: data.post_id });
 				state.done = !data.next;
 
-				if (state.done && cfg.noMoreText) {
-					var end = document.createElement('div');
-					end.className = 'aae-pp-end-of-posts';
-					end.textContent = cfg.noMoreText;
-					article.appendChild(end);
+				if (state.done) {
+					observer.disconnect();
+					if (cfg.noMoreText && root.parentNode) {
+						var end = document.createElement('div');
+						end.className = 'aae-pp-end-of-posts';
+						end.textContent = cfg.noMoreText;
+						root.parentNode.insertBefore(end, root);
+					}
 				}
 			}).catch(function () {
+				removeLoader(loader);
 				state.done = true;
+				observer.disconnect();
 			}).then(function () {
 				state.busy = false;
 			});
 		}
 
-		scrollHooks.push(maybeLoad);
+		// Zero rootMargin deliberately — root only fires once ACTUALLY
+		// visible, not pre-emptively 600px early. A lookahead margin was
+		// tried first, but it fires as soon as root is within that many
+		// px of the viewport regardless of how tall the last-loaded post
+		// is — for a short (e.g. title-only) post, root sits right below
+		// it and enters that radius almost immediately, triggering the
+		// next fetch before the reader has scrolled through it at all; a
+		// full-content post only happened to "work" because it's tall
+		// enough that 600px isn't reached until near its actual bottom.
+		// Zero margin ties the trigger to root's REAL position — which,
+		// since root always sits right at the bottom edge of the last
+		// post, means "reached the end of that post," independent of its
+		// height.
+		var observer = new window.IntersectionObserver(function (entries) {
+			entries.forEach(function (entry) {
+				if (entry.isIntersecting) {
+					maybeLoad();
+				}
+			});
+		});
+
+		observer.observe(root);
 	}
 
 	/* ---------------------------------------------------------------------
@@ -308,7 +358,7 @@
 			scrollHooks.push(revealCheck);
 		}
 
-		initInfiniteScroll(root, cfg, scrollHooks);
+		initInfiniteScroll(root, cfg);
 	}
 
 	function init() {
