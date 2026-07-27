@@ -7,7 +7,6 @@
 const gulp = require('gulp');
 const babel = require('gulp-babel');
 const eslint = require('gulp-eslint');
-const prettify = require('gulp-js-prettify');
 const terser = require('gulp-terser');
 const rename = require('gulp-rename');
 const {sass} = require("@mr-hope/gulp-sass");
@@ -31,7 +30,14 @@ gulp.task('compile:js', () => {
         .pipe(mode.development(eslint.format()))
        // .pipe(babel({ presets: [['@babel/preset-env', {modules: false}]] }))
         // .pipe(mode.production(terser()))
-        .pipe(mode.development(prettify({"indent_with_tabs": true,})))
+        // gulp-js-prettify REMOVED 2026-07-27: its tokenizer predates ES2020
+        // and mangles `=>`, `?.`, `??` into invalid syntax (e.g. `=>` becomes
+        // `= >`), silently corrupting the built file's entire parse. It ran
+        // in dev mode only, so any dev rebuild of a source file using those
+        // operators broke it. Cosmetic-only step (babel/terser already
+        // handle real transforms elsewhere) — dropping it just means dev
+        // output is an unmodified copy of source, same as production always
+        // was.
         .pipe(mode.development(sourcemaps.write('/.')))
         .pipe(gulp.dest('assets/js'));
 });
