@@ -345,6 +345,14 @@ final class Atomic
 			'aae-a-form-step',
 			'aae-a-form-next',
 			'aae-a-form-prev',
+			// Advanced Field Types (Pro) — not individually toggleable; only
+			// usable once the Form widget itself is enabled/dropped on canvas,
+			// same reasoning as the base field widgets above.
+			'aae-a-form-rating',
+			'aae-a-form-range',
+			'aae-a-form-password',
+			'aae-a-form-calculation',
+			'aae-a-form-country',
 			// Search Form composite sub-elements — seeded as locked default
 			// children of the Search Form root; always-on so the editor never
 			// throws ElementTypeNotFound on drop.
@@ -577,6 +585,7 @@ final class Atomic
 			],
 
 			'aae-a-loop-item' => [
+				'is_internal'  => true,
 				'label'        => 'Loop Item',
 				'description'  => 'Container widget for Loop Grid items with default flex column layout.',
 				'icon'         => 'eicon-container',
@@ -601,6 +610,7 @@ final class Atomic
 			],
 
 			'aae-a-loop-layout' => [
+				'is_internal'  => true,
 				'label'        => 'Loop Layout',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Layout',
 				'icon'         => 'eicon-loop-builder',
@@ -608,6 +618,7 @@ final class Atomic
 				'hide_from_panel' => true,
 			],
 			'aae-a-loop-pagination' => [
+				'is_internal'  => true,
 				'label'        => 'Loop Pagination',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Pagination',
 				'icon'         => 'eicon-ellipsis-h',
@@ -615,6 +626,7 @@ final class Atomic
 				'hide_from_panel' => true,
 			],
 			'aae-a-loop-prev' => [
+				'is_internal'  => true,
 				'label'        => 'Loop Previous',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Prev',
 				'icon'         => 'eicon-chevron-left',
@@ -622,6 +634,7 @@ final class Atomic
 				'hide_from_panel' => true,
 			],
 			'aae-a-loop-next' => [
+				'is_internal'  => true,
 				'label'        => 'Loop Next',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Next',
 				'icon'         => 'eicon-chevron-right',
@@ -629,6 +642,7 @@ final class Atomic
 				'hide_from_panel' => true,
 			],
 			'aae-a-loop-numbers' => [
+				'is_internal'  => true,
 				'label'        => 'Loop Page Numbers',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Numbers',
 				'icon'         => 'eicon-number-field',
@@ -636,6 +650,7 @@ final class Atomic
 				'hide_from_panel' => true,
 			],
 			'aae-a-loop-number' => [
+				'is_internal'  => true,
 				'label'        => 'Loop Page Number',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Number',
 				'icon'         => 'eicon-number-field',
@@ -643,6 +658,7 @@ final class Atomic
 				'hide_from_panel' => true,
 			],
 			'aae-a-loop-loadmore' => [
+				'is_internal'  => true,
 				'label'        => 'Loop Load More',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_LoadMore',
 				'icon'         => 'eicon-plus-circle',
@@ -650,6 +666,7 @@ final class Atomic
 				'hide_from_panel' => true,
 			],
 			'aae-a-loop-arrow' => [
+				'is_internal'  => true,
 				'label'        => 'Loop Arrow',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Arrow',
 				'icon'         => 'eicon-chevron-right',
@@ -657,6 +674,7 @@ final class Atomic
 				'hide_from_panel' => true,
 			],
 			'aae-a-loop-nav-wrap' => [
+				'is_internal'  => true,
 				'label'        => 'Loop Nav',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Nav_Wrap',
 				'icon'         => 'eicon-navigation-horizontal',
@@ -680,6 +698,7 @@ final class Atomic
 				'doc_url'      => '',
 			],
 			'aae-a-search-toggle' => [
+				'is_internal'  => true,
 				'label'        => 'Search Toggle',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Toggle',
 				'icon'         => 'eicon-search',
@@ -687,6 +706,7 @@ final class Atomic
 				'hide_from_panel' => true,
 			],
 			'aae-a-search-panel' => [
+				'is_internal'  => true,
 				'label'        => 'Search Panel',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Panel',
 				'icon'         => 'eicon-container',
@@ -694,6 +714,7 @@ final class Atomic
 				'hide_from_panel' => true,
 			],
 			'aae-a-search-field' => [
+				'is_internal'  => true,
 				'label'        => 'Search Field',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Field',
 				'icon'         => 'eicon-form-horizontal',
@@ -701,6 +722,7 @@ final class Atomic
 				'hide_from_panel' => true,
 			],
 			'aae-a-search-input' => [
+				'is_internal'  => true,
 				'label'        => 'Search Input',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Input',
 				'icon'         => 'eicon-form-horizontal',
@@ -708,6 +730,7 @@ final class Atomic
 				'hide_from_panel' => true,
 			],
 			'aae-a-search-filter-date' => [
+				'is_internal'  => true,
 				'label'        => 'Date Filter',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Filter_Date',
 				'icon'         => 'eicon-calendar',
@@ -715,6 +738,7 @@ final class Atomic
 				'hide_from_panel' => true,
 			],
 			'aae-a-search-filter-category' => [
+				'is_internal'  => true,
 				'label'        => 'Category Filter',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Filter_Category',
 				'icon'         => 'eicon-folder',
@@ -722,6 +746,7 @@ final class Atomic
 				'hide_from_panel' => true,
 			],
 			'aae-a-search-submit' => [
+				'is_internal'  => true,
 				'label'        => 'Search Submit',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Submit',
 				'icon'         => 'eicon-button',
@@ -729,6 +754,7 @@ final class Atomic
 				'hide_from_panel' => true,
 			],
 			'aae-a-search-results' => [
+				'is_internal'  => true,
 				'label'        => 'Search Results',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Results',
 				'icon'         => 'eicon-post-list',
@@ -774,6 +800,7 @@ final class Atomic
 			],
 
 			'aae-a-post-card' => [
+				'is_internal'  => true,
 				'label'        => 'Post Card (Internal)',
 				'description'  => 'Internal child card for the Posts Grid widget.',
 				'icon'         => 'eicon-post-list',
@@ -833,6 +860,7 @@ final class Atomic
 				'doc_url'      => '',
 			],
 			'aae-a-loop-slide-track' => [
+				'is_internal'  => true,
 				'label'        => 'Slider Track',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGridSlider\AAE_A_Loop_Slide_Track',
 				'icon'         => 'eicon-slider-push',
@@ -840,6 +868,7 @@ final class Atomic
 				'hide_from_panel' => true,
 			],
 			'aae-a-loop-slide-item' => [
+				'is_internal'  => true,
 				'label'        => 'Loop Slide Item',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGridSlider\AAE_A_Loop_Slide_Item',
 				'icon'         => 'eicon-container',
@@ -847,6 +876,7 @@ final class Atomic
 				'hide_from_panel' => true,
 			],
 			'aae-a-loop-slide-pagination' => [
+				'is_internal'  => true,
 				'label'        => 'Slider Pagination',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGridSlider\AAE_A_Loop_Slide_Pagination',
 				'icon'         => 'eicon-ellipsis-h',
@@ -912,13 +942,16 @@ final class Atomic
 				'doc_url'      => '',
 			],
 			'aae-a-slide' => [
+				'is_internal'  => true,
 				'label'        => 'Slide (Internal)',
+				'description'  => 'Internal child container for Nested Slider.',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slide',
-				'keywords'     => ['atomic', 'slide'],
+				'keywords'     => ['atomic', 'slide', 'internal'],
 				'icon'         => 'eicon-slide',
 				'hide_from_panel' => true,
 			],
 			'aae-a-slider-track' => [
+				'is_internal'  => true,
 				'label'        => 'Slider Track',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Track',
 				'keywords'     => ['atomic', 'slider', 'track'],
@@ -926,6 +959,7 @@ final class Atomic
 				'hide_from_panel' => true,
 			],
 			'aae-a-slider-nav-prev' => [
+				'is_internal'  => true,
 				'label'        => 'Slider Prev Nav',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Nav_Prev',
 				'keywords'     => ['atomic', 'slider', 'navigator', 'prev'],
@@ -933,6 +967,7 @@ final class Atomic
 				'hide_from_panel' => true,
 			],
 			'aae-a-slider-nav-next' => [
+				'is_internal'  => true,
 				'label'        => 'Slider Next Nav',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Nav_Next',
 				'keywords'     => ['atomic', 'slider', 'navigator', 'next'],
@@ -940,115 +975,12 @@ final class Atomic
 				'hide_from_panel' => true,
 			],
 			'aae-a-slider-pagination' => [
+				'is_internal'  => true,
 				'label'        => 'Slider Pagination',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Pagination',
 				'keywords'     => ['atomic', 'slider', 'pagination', 'dots'],
 				'icon'         => 'eicon-ellipsis-h',
 				'hide_from_panel' => true,
-			],
-
-			'aae-a-slide' => [
-				'label'        => 'Slide (Internal)',
-				'description'  => 'Internal child container for Nested Slider.',
-				'icon'         => 'eicon-document-file',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'slide',
-					'internal',
-				],
-				'category'     => 'general',
-				'order'        => 2,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
-			'aae-atomic-button' => [
-				'label'        => 'Button',
-				'description'  => 'A fully atomic button widget with advanced styling, hover effects, and icon support.',
-				'icon'         => 'wcf-icon-Button',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'button',
-					'cta',
-					'call to action',
-					'atomic button',
-					'click',
-				],
-				'category'     => 'general',
-				'order'        => 1,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
-			'aae-atomic-image-box' => [
-				'label'        => 'Image Box',
-				'description'  => 'An atomic image box widget combining image, heading, and description with animation support.',
-				'icon'         => 'wcf-icon-Image-Box',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'image box',
-					'image card',
-					'photo box',
-					'atomic image box',
-					'media box',
-				],
-				'category'     => 'general',
-				'order'        => 2,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
-			'aae-atomic-nav-menu' => [
-				'label'        => 'Nav Menu (Mobile Support)',
-				'description'  => 'Atomic navigation menu with full responsive mobile hamburger/off-canvas support.',
-				'icon'         => 'wcf-icon-One-Page-Nav',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'nav menu',
-					'navigation',
-					'mobile menu',
-					'hamburger menu',
-					'responsive nav',
-					'atomic nav',
-				],
-				'category'     => 'header-footer',
-				'order'        => 4,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
-			'aae-atomic-offcanvas' => [
-				'label'        => 'Offcanvas',
-				'description'  => 'Atomic off-canvas panel for slide-in menus, sidebars, and overlay content areas.',
-				'icon'         => 'wcf-icon-Floating-Elements',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'offcanvas',
-					'off-canvas',
-					'sidebar',
-					'slide panel',
-					'drawer',
-					'mobile panel',
-				],
-				'category'     => 'general',
-				'order'        => 5,
-				'demo_url'     => '',
-				'doc_url'      => '',
 			],
 
 			'aae-a-accordion' => [
@@ -1096,6 +1028,7 @@ final class Atomic
 			],
 
 			'aae-a-accordion-item' => [
+				'is_internal'  => true,
 				'label'        => 'Accordion Item',
 				'description'  => 'Internal child container for Accordion.',
 				'icon'         => 'eicon-accordion',
@@ -1135,6 +1068,7 @@ final class Atomic
 			],
 
 			'aae-a-icon-list-item' => [
+				'is_internal'  => true,
 				'label'        => 'Icon List Item',
 				'description'  => 'Internal child item for Icon List.',
 				'icon'         => 'eicon-bullet-list',
@@ -1216,6 +1150,7 @@ final class Atomic
 			],
 
 			'aae-a-social-share-main-item' => [
+				'is_internal'  => true,
 				'label'        => 'Social Share Main Item',
 				'description'  => 'Internal child item for Social Share Main.',
 				'icon'         => 'eicon-share',
@@ -1304,6 +1239,7 @@ final class Atomic
 			],
 
 			'aae-a-countdown-unit' => [
+				'is_internal'  => true,
 				'label'        => 'Countdown — Unit',
 				'description'  => 'Internal time-fragment sub-element used by Countdown (days, hours, minutes, seconds).',
 				'icon'         => 'eicon-clock-o',
@@ -1322,6 +1258,8 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			// ── Timeline — PARENT widget. This is the only Timeline entry
+			// exposed in the dashboard widget list / editor panel.
 			'aae-a-timeline' => [
 				'label'        => 'Timeline',
 				'description'  => 'A composite vertical timeline with four locked event items — each marker, date, title, and description is an independent atomic child styleable from its own Style panel.',
@@ -1343,6 +1281,9 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			// ── Timeline — HELPER widgets below. `is_internal => true` hides
+			// each of these from the dashboard widget list; they are never
+			// individually toggled, only used internally by Timeline above.
 			'aae-a-timeline-item' => [
 				'label'        => 'Timeline — Item',
 				'description'  => 'Internal event-row sub-element used by Timeline (marker + date + title + description).',
@@ -1350,6 +1291,7 @@ final class Atomic
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
 				'keywords'     => [
 					'timeline',
@@ -1370,6 +1312,7 @@ final class Atomic
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
 				'keywords'     => [ 'timeline', 'number', 'atomic' ],
 				'category'     => 'general',
@@ -1385,6 +1328,7 @@ final class Atomic
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
 				'keywords'     => [ 'timeline', 'year', 'date', 'atomic' ],
 				'category'     => 'general',
@@ -1400,6 +1344,7 @@ final class Atomic
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
 				'keywords'     => [ 'timeline', 'title', 'heading', 'atomic' ],
 				'category'     => 'general',
@@ -1415,6 +1360,7 @@ final class Atomic
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
 				'keywords'     => [ 'timeline', 'description', 'paragraph', 'atomic' ],
 				'category'     => 'general',
@@ -1444,8 +1390,10 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			// ── Progress Bar Template — PARENT widget #1. The only entry of
+			// this sub-group exposed in the dashboard widget list.
 			'aae-a-progressbar' => [
-				'label'        => 'Progress Bar Template',
+				'label'        => 'Progress Bar',
 				'description'  => 'A very basic open progress-bar container — no style presets, just track/fill or ring children you can fill or restyle natively.',
 				'icon'         => 'eicon-skill-bar',
 				'is_pro'       => false,
@@ -1466,6 +1414,9 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			// ── Progress Bar Template — HELPER widgets below. `is_internal
+			// => true` hides these from the dashboard widget list; they are
+			// only used internally by "Progress Bar Template" above.
 			'aae-a-progressbar-track' => [
 				'label'        => 'Progress Bar — Track',
 				'description'  => 'Internal track sub-element used by the Progress Bar Template.',
@@ -1473,6 +1424,7 @@ final class Atomic
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
 				'keywords'     => [ 'progress', 'progressbar', 'track', 'atomic' ],
 				'category'     => 'general',
@@ -1488,6 +1440,7 @@ final class Atomic
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
 				'keywords'     => [ 'progress', 'progressbar', 'fill', 'atomic' ],
 				'category'     => 'general',
@@ -1503,6 +1456,7 @@ final class Atomic
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
 				'keywords'     => [ 'progress', 'progressbar', 'label', 'atomic' ],
 				'category'     => 'general',
@@ -1511,6 +1465,9 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			// ── Progress Bar Main — PARENT widget #2 (a second, standalone
+			// variant powered by ProgressBar.js; it has no helper widgets of
+			// its own). Exposed in the dashboard widget list.
 			'aae-a-progressbar-main' => [
 				'label'        => 'Progress Bar Main',
 				'description'  => 'Animated line, circle, and dot progress bar powered by ProgressBar.js.',
@@ -1533,6 +1490,8 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			// ── Toggle Switcher — PARENT widget #1. The only entry of this
+			// sub-group exposed in the dashboard widget list.
 			'aae-a-toggle-switcher' => [
 				'label'        => 'Toggle Switcher',
 				'description'  => 'A dual-panel content toggle with two styles — classic switch or label highlight.',
@@ -1554,6 +1513,9 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			// ── Toggle Switcher — HELPER widgets below. `is_internal =>
+			// true` hides these from the dashboard widget list; they are
+			// only used internally by "Toggle Switcher" above.
 			'aae-a-toggle-pane' => [
 				'label'        => 'Toggle Pane (Internal)',
 				'description'  => 'Internal child container for Toggle Switcher.',
@@ -1561,6 +1523,7 @@ final class Atomic
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
 				'keywords'     => [
 					'toggle pane',
@@ -1579,6 +1542,7 @@ final class Atomic
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
 				'keywords'     => [ 'toggle', 'switch', 'tabs', 'atomic' ],
 				'category'     => 'general',
@@ -1594,6 +1558,7 @@ final class Atomic
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
 				'keywords'     => [ 'toggle', 'switch', 'tab', 'atomic' ],
 				'category'     => 'general',
@@ -1609,6 +1574,7 @@ final class Atomic
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
 				'keywords'     => [ 'toggle', 'pane', 'title', 'atomic' ],
 				'category'     => 'general',
@@ -1624,6 +1590,7 @@ final class Atomic
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
 				'keywords'     => [ 'toggle', 'pane', 'description', 'atomic' ],
 				'category'     => 'general',
@@ -1632,6 +1599,9 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			// ── Toggle Switcher Main — PARENT widget #2 (a second,
+			// standalone variant of Toggle Switcher, own JS/CSS bundle).
+			// Exposed in the dashboard widget list.
 			'aae-a-toggle-switcher-main' => [
 				'label'        => 'Toggle Switcher Main',
 				'description'  => 'A dual-panel content toggle with two styles — classic switch or label highlight.',
@@ -1654,6 +1624,9 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			// ── Toggle Switcher Main — HELPER widget. `is_internal =>
+			// true` hides it from the dashboard widget list; only used
+			// internally by "Toggle Switcher Main" above.
 			'aae-a-toggle-pane-main' => [
 				'label'        => 'Toggle Pane Main (Internal)',
 				'description'  => 'Internal child container for Toggle Switcher Main.',
@@ -1661,6 +1634,7 @@ final class Atomic
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
 				'keywords'     => [
 					'toggle pane',
@@ -1695,6 +1669,7 @@ final class Atomic
 			],
 
 			'aae-a-offcanvas-panel' => [
+				'is_internal'  => true,
 				'label'        => 'Offcanvas Panel (Internal)',
 				'description'  => 'Internal locked panel container for Offcanvas.',
 				'icon'         => 'eicon-inner-section',
@@ -1713,6 +1688,7 @@ final class Atomic
 			],
 
 			'aae-a-offcanvas-trigger' => [
+				'is_internal'  => true,
 				'label'           => 'Offcanvas Trigger',
 				'class_name'      => 'WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Trigger',
 				'icon'            => 'eicon-menu-bar',
@@ -1720,6 +1696,7 @@ final class Atomic
 				'hide_from_panel' => true,
 			],
 			'aae-a-offcanvas-close' => [
+				'is_internal'  => true,
 				'label'           => 'Offcanvas Close',
 				'class_name'      => 'WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Close',
 				'icon'            => 'eicon-close',
@@ -1748,6 +1725,7 @@ final class Atomic
 			],
 
 			'aae-a-form-label' => [
+				'is_internal'  => true,
 				'label'        => 'Form Label',
 				'description'  => 'Label widget for AAE Form — linked to an input by ID; drag from the panel to add more fields.',
 				'icon'         => 'eicon-t-letter',
@@ -1766,6 +1744,7 @@ final class Atomic
 			],
 
 			'aae-a-form-input' => [
+				'is_internal'  => true,
 				'label'        => 'Form Input',
 				'description'  => 'Input widget for AAE Form — text/email/number/tel/password via a type prop.',
 				'icon'         => 'eicon-form-horizontal',
@@ -1784,6 +1763,7 @@ final class Atomic
 			],
 
 			'aae-a-form-textarea' => [
+				'is_internal'  => true,
 				'label'        => 'Form Textarea',
 				'description'  => 'Textarea widget for AAE Form.',
 				'icon'         => 'eicon-textarea',
@@ -1802,6 +1782,7 @@ final class Atomic
 			],
 
 			'aae-a-form-checkbox' => [
+				'is_internal'  => true,
 				'label'        => 'Form Checkbox',
 				'description'  => 'Checkbox widget for AAE Form — fully styleable, with checked state.',
 				'icon'         => 'eicon-check-circle',
@@ -1819,6 +1800,7 @@ final class Atomic
 			],
 
 			'aae-a-form-radio' => [
+				'is_internal'  => true,
 				'label'        => 'Form Radio',
 				'description'  => 'Radio button widget for AAE Form — radios sharing a group name are exclusive.',
 				'icon'         => 'eicon-circle-o',
@@ -1836,6 +1818,7 @@ final class Atomic
 			],
 
 			'aae-a-form-select' => [
+				'is_internal'  => true,
 				'label'        => 'Form Select',
 				'description'  => 'Select/dropdown widget for AAE Form — options one per line, value|Label.',
 				'icon'         => 'eicon-select',
@@ -1854,6 +1837,7 @@ final class Atomic
 			],
 
 			'aae-a-form-success-message' => [
+				'is_internal'  => true,
 				'label'        => 'Form Success Message (Internal)',
 				'description'  => 'Locked status container shown when the form submits successfully.',
 				'icon'         => 'eicon-check',
@@ -1872,6 +1856,7 @@ final class Atomic
 			],
 
 			'aae-a-form-error-message' => [
+				'is_internal'  => true,
 				'label'        => 'Form Error Message (Internal)',
 				'description'  => 'Locked status container shown when the form submission fails.',
 				'icon'         => 'eicon-close',
@@ -1890,6 +1875,7 @@ final class Atomic
 			],
 
 			'aae-a-form-file' => [
+				'is_internal'  => true,
 				'label'        => 'Form File Upload',
 				'description'  => 'File upload field for AAE Form — files land in private local storage, validated server-side (type, size), downloadable only by admins.',
 				'icon'         => 'eicon-upload',
@@ -1909,6 +1895,7 @@ final class Atomic
 			],
 
 			'aae-a-form-field-error' => [
+				'is_internal'  => true,
 				'label'        => 'Form Field Error',
 				'description'  => 'Style source for inline validation messages — its look and text are copied onto every "This field is required." error the form shows. Deleting it never removes validation; errors just fall back to the default look.',
 				'icon'         => 'eicon-warning',
@@ -1928,6 +1915,7 @@ final class Atomic
 			],
 
 			'aae-a-form-rating' => [
+				'is_internal'  => true,
 				'label'        => 'Form Rating',
 				'description'  => 'Advanced Field (Pro) — a star-rating field. Progressively enhances a real number input, so submit and validation work exactly like any other number field.',
 				'icon'         => 'eicon-star-o',
@@ -1948,6 +1936,7 @@ final class Atomic
 			],
 
 			'aae-a-form-range' => [
+				'is_internal'  => true,
 				'label'        => 'Form Range',
 				'description'  => 'Advanced Field (Pro) — a range slider. Style tab → Background Color sets the slider\'s own color.',
 				'icon'         => 'eicon-slider-push',
@@ -1967,6 +1956,7 @@ final class Atomic
 			],
 
 			'aae-a-form-password' => [
+				'is_internal'  => true,
 				'label'        => 'Form Password',
 				'description'  => 'Advanced Field (Pro) — a masked password field with an optional reveal button, minimum length and confirm-match. Never stored, emailed or sent to webhooks in readable form.',
 				'icon'         => 'eicon-lock-user',
@@ -1987,6 +1977,7 @@ final class Atomic
 			],
 
 			'aae-a-form-calculation' => [
+				'is_internal'  => true,
 				'label'        => 'Form Calculation',
 				'description'  => 'Advanced Field (Pro) — a read-only total computed from other fields by a formula, e.g. {quantity} * {price}. The server recomputes it on submit, so the stored value can never be tampered with.',
 				'icon'         => 'eicon-number-field',
@@ -2009,6 +2000,7 @@ final class Atomic
 			],
 
 			'aae-a-form-country' => [
+				'is_internal'  => true,
 				'label'        => 'Form Country',
 				'description'  => 'Advanced Field (Pro) — a country dropdown with the full ISO country list built in. Prune or reorder the list to pin priority countries; values submit as ISO codes.',
 				'icon'         => 'eicon-globe',
@@ -2029,6 +2021,7 @@ final class Atomic
 			],
 
 			'aae-a-form-submit' => [
+				'is_internal'  => true,
 				'label'        => 'Form Submit Button',
 				'description'  => 'Submit button widget for AAE Form — drag from the panel to place it anywhere inside the form.',
 				'icon'         => 'eicon-button',
@@ -2047,6 +2040,7 @@ final class Atomic
 			],
 
 			'aae-a-form-step' => [
+				'is_internal'  => true,
 				'label'        => 'Form Step',
 				'description'  => 'Multi-Step Forms (Pro) — one page of a multi-step form. Add 2+ inside a form to turn it into a wizard with Next/Previous navigation and per-step validation.',
 				'icon'         => 'eicon-single-page',
@@ -2067,6 +2061,7 @@ final class Atomic
 			],
 
 			'aae-a-form-next' => [
+				'is_internal'  => true,
 				'label'        => 'Next Step Button',
 				'description'  => 'Multi-Step Forms (Pro) — advances a multi-step form to the next step. Validates the current step first.',
 				'icon'         => 'eicon-arrow-right',
@@ -2087,6 +2082,7 @@ final class Atomic
 			],
 
 			'aae-a-form-prev' => [
+				'is_internal'  => true,
 				'label'        => 'Previous Step Button',
 				'description'  => 'Multi-Step Forms (Pro) — steps a multi-step form back one step. Never validated.',
 				'icon'         => 'eicon-arrow-left',
@@ -2123,6 +2119,7 @@ final class Atomic
 			],
 
 			'aae-a-nav-item' => [
+				'is_internal'  => true,
 				'label'        => 'Nav Item (Internal)',
 				'description'  => 'Internal child item for Nav.',
 				'icon'         => 'eicon-nav-menu',
@@ -2267,6 +2264,7 @@ final class Atomic
 			],
 
 			'aae-a-video-mask-btn' => [
+				'is_internal'  => true,
 				'label'        => 'Video Mask Button (Internal)',
 				'description'  => 'Internal button container for Video Mask. Positioned via the native Style panel.',
 				'icon'         => 'eicon-button',
@@ -2304,7 +2302,7 @@ final class Atomic
 			],
 
 			'aae-a-btn' => [
-				'label'        => 'ButtonTemplate',
+				'label'        => 'Button',
 				'description'  => 'A very basic open button container — no style presets, just a link wrapper you can fill with any nested elements.',
 				'icon'         => 'wcf-icon-Button',
 				'is_pro'       => false,
@@ -2325,7 +2323,7 @@ final class Atomic
 			],
 
 			'aae-a-btn-pro' => [
-				'label'        => 'ButtonTemplate Pro',
+				'label'        => 'Button Pro',
 				'description'  => 'A very basic open button container — no style presets, just a link wrapper you can fill with any nested elements.',
 				'icon'         => 'wcf-icon-Button',
 				'is_pro'       => true,
@@ -4455,43 +4453,32 @@ final class Atomic
 
 	/**
 	 * On first activation (option does not exist), seed with defaults.
+	 *
+	 * Only runs the seed on a true first install. Deliberately does NOT
+	 * merge in defaults for widgets missing from an already-existing saved
+	 * option — that used to also cover "newly added in a plugin update",
+	 * but couldn't tell that case apart from "user explicitly disabled it",
+	 * so every request silently re-enabled anything the user had turned
+	 * off. Matches maybe_seed_extension_defaults() below and V3's widget
+	 * save (inc/admin/dashboard.php), neither of which re-seeds an existing
+	 * install either.
 	 */
 	private function maybe_seed_widgets_defaults(): void
 	{
-		$saved = get_option(self::OPTION_NAME);
-
-		// First install: option doesn't exist yet, seed all defaults.
-		if (false === $saved) {
-			$defaults = [];
-
-			foreach ($this->widgets_registry as $slug => $def) {
-				if (! empty($def['default'])) {
-					$defaults[$slug] = true;
-				}
-			}
-
-			add_option(self::OPTION_NAME, $defaults, '', false);
+		// Only act on true first install — option doesn't exist yet.
+		if (false !== get_option(self::OPTION_NAME)) {
 			return;
 		}
 
-		// Existing install: merge in any newly-added default widgets
-		// that aren't yet in the saved option. This allows new widgets
-		// (added in a plugin update) to auto-activate by default.
-		if (! is_array($saved)) {
-			$saved = [];
-		}
+		$defaults = [];
 
-		$changed = false;
 		foreach ($this->widgets_registry as $slug => $def) {
-			if (! empty($def['default']) && ! isset($saved[$slug])) {
-				$saved[$slug] = true;
-				$changed = true;
+			if (! empty($def['default'])) {
+				$defaults[$slug] = true;
 			}
 		}
 
-		if ($changed) {
-			update_option(self::OPTION_NAME, $saved, false);
-		}
+		add_option(self::OPTION_NAME, $defaults, '', false);
 	}
 
 	/**
