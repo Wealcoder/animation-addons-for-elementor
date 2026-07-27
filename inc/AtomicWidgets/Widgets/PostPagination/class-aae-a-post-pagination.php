@@ -35,6 +35,7 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Select_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Switch_Control;
+use Elementor\Modules\AtomicWidgets\Controls\Types\Toggle_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Number_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
@@ -109,14 +110,46 @@ class AAE_A_Post_Pagination extends Atomic_Element_Base {
 			->where( [ 'operator' => 'eq', 'path' => [ 'enable_infinite_scroll' ], 'value' => true, 'effect' => 'hide' ] )
 			->get();
 
+		// Terms/Posts each get an exclusive Exclude/Include toggle (a plain
+		// boolean AND of "taxonomy chosen" + "mode matches" for terms, just
+		// "mode matches" for posts) — only the active mode's field is ever
+		// shown, so a user can't fill in both at once and get an ambiguous
+		// (or, pre-2026-07-27, self-contradictory) combination.
+		$show_include_terms = Dependency_Manager::make( Dependency_Manager::RELATION_AND )
+			->where( [ 'operator' => 'ne', 'path' => [ 'constrain_taxonomy' ], 'value' => 'none', 'effect' => 'hide' ] )
+			->where( [ 'operator' => 'eq', 'path' => [ 'terms_filter_mode' ], 'value' => 'include', 'effect' => 'hide' ] )
+			->get();
+
+		$show_exclude_terms = Dependency_Manager::make( Dependency_Manager::RELATION_AND )
+			->where( [ 'operator' => 'ne', 'path' => [ 'constrain_taxonomy' ], 'value' => 'none', 'effect' => 'hide' ] )
+			->where( [ 'operator' => 'eq', 'path' => [ 'terms_filter_mode' ], 'value' => 'exclude', 'effect' => 'hide' ] )
+			->get();
+
+		$show_include_posts = Dependency_Manager::make()
+			->where( [ 'operator' => 'eq', 'path' => [ 'posts_filter_mode' ], 'value' => 'include', 'effect' => 'hide' ] )
+			->get();
+
+		$show_exclude_posts = Dependency_Manager::make()
+			->where( [ 'operator' => 'eq', 'path' => [ 'posts_filter_mode' ], 'value' => 'exclude', 'effect' => 'hide' ] )
+			->get();
+
 		return [
 			'classes'    => Classes_Prop_Type::make()->default( [] ),
 			'attributes' => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
 
 			// Query.
 			'constrain_taxonomy' => String_Prop_Type::make()->default( 'none' ),
-			'exclude_terms'      => String_Array_Prop_Type::make()->default( [] )->set_dependencies( $has_taxonomy ),
-			'exclude_posts'      => String_Array_Prop_Type::make()->default( [] ),
+			// Include broadens the "same term as current post" match (union,
+			// not a replacement — a post's own term still counts even if not
+			// separately re-picked here); Exclude narrows it. Both apply to
+			// whichever taxonomy Constrain To is currently set to. Only ONE
+			// is ever active at a time — see terms_filter_mode.
+			'terms_filter_mode'  => String_Prop_Type::make()->default( 'exclude' )->set_dependencies( $has_taxonomy ),
+			'include_terms'      => String_Array_Prop_Type::make()->default( [] )->set_dependencies( $show_include_terms ),
+			'exclude_terms'      => String_Array_Prop_Type::make()->default( [] )->set_dependencies( $show_exclude_terms ),
+			'posts_filter_mode'  => String_Prop_Type::make()->default( 'exclude' ),
+			'include_posts'      => String_Array_Prop_Type::make()->default( [] )->set_dependencies( $show_include_posts ),
+			'exclude_posts'      => String_Array_Prop_Type::make()->default( [] )->set_dependencies( $show_exclude_posts ),
 			'order_by'           => String_Prop_Type::make()->default( 'date' ),
 			'meta_key'           => String_Prop_Type::make()->default( '' )->set_dependencies( $is_meta_order ),
 			'meta_type'          => String_Prop_Type::make()->default( 'CHAR' )->set_dependencies( $is_meta_order ),
@@ -173,11 +206,42 @@ class AAE_A_Post_Pagination extends Atomic_Element_Base {
 						->set_label( __( 'Constrain To', 'animation-addons-for-elementor' ) )
 						->set_options( self::get_taxonomy_options() ),
 
+					Toggle_Control::bind_to( 'terms_filter_mode' )
+						->set_label( __( 'Terms Filter Mode', 'animation-addons-for-elementor' ) )
+						->add_options( [
+							'exclude' => [ 'title' => __( 'Exclude', 'animation-addons-for-elementor' ) ],
+							'include' => [ 'title' => __( 'Include', 'animation-addons-for-elementor' ) ],
+						] )
+						->set_exclusive( true )
+						->set_full_width( true )
+						->set_convert_options( true ),
+
+					AAE_Query_Chips_Control::bind_to( 'include_terms' )
+						->set_label( __( 'Include Terms', 'animation-addons-for-elementor' ) )
+						->set_kind( 'term' )
+						->set_taxonomy( $chips_taxonomy )
+						->set_placeholder( __( 'Search terms…', 'animation-addons-for-elementor' ) ),
+
 					AAE_Query_Chips_Control::bind_to( 'exclude_terms' )
 						->set_label( __( 'Exclude Terms', 'animation-addons-for-elementor' ) )
 						->set_kind( 'term' )
 						->set_taxonomy( $chips_taxonomy )
 						->set_placeholder( __( 'Search terms…', 'animation-addons-for-elementor' ) ),
+
+					Toggle_Control::bind_to( 'posts_filter_mode' )
+						->set_label( __( 'Posts Filter Mode', 'animation-addons-for-elementor' ) )
+						->add_options( [
+							'exclude' => [ 'title' => __( 'Exclude', 'animation-addons-for-elementor' ) ],
+							'include' => [ 'title' => __( 'Include', 'animation-addons-for-elementor' ) ],
+						] )
+						->set_exclusive( true )
+						->set_full_width( true )
+						->set_convert_options( true ),
+
+					AAE_Query_Chips_Control::bind_to( 'include_posts' )
+						->set_label( __( 'Include Posts', 'animation-addons-for-elementor' ) )
+						->set_kind( 'post' )
+						->set_placeholder( __( 'Search by title or ID…', 'animation-addons-for-elementor' ) ),
 
 					AAE_Query_Chips_Control::bind_to( 'exclude_posts' )
 						->set_label( __( 'Exclude Posts', 'animation-addons-for-elementor' ) )
@@ -420,18 +484,27 @@ class AAE_A_Post_Pagination extends Atomic_Element_Base {
 			$terms    = wp_get_object_terms( $current_id, $taxonomy, [ 'fields' => 'ids' ] );
 			$term_ids = is_wp_error( $terms ) ? [] : array_map( 'intval', $terms );
 
-			// Drop any of the CURRENT post's own terms that are also in the
-			// exclude list BEFORE using them as the "must match" set. Without
-			// this, excluding a term that happens to be the current post's
-			// ONLY category makes the query self-contradictory — "must be in
-			// Uncategorized" AND "must not be in Uncategorized" — which
-			// returns zero posts (not even reachable via prev/next), hiding
-			// both buttons entirely. A post with other, non-excluded terms
-			// still constrains correctly on those; only when NONE remain do
-			// we fall through to unconstrained below.
-			$exclude_terms_for_match = self::extract_ids( $settings['exclude_terms'] ?? null );
-			if ( $exclude_terms_for_match ) {
-				$term_ids = array_values( array_diff( $term_ids, $exclude_terms_for_match ) );
+			// terms_filter_mode makes Include/Exclude mutually exclusive in
+			// the panel (only one field is ever visible/fillable), so only
+			// the ACTIVE mode's value is applied here — a stale value left
+			// over in the hidden field from before a mode switch is never
+			// read, which also means the two can no longer combine into the
+			// self-contradictory "must be IN and NOT IN the same term"
+			// query the exclude-only version of this code could hit.
+			if ( 'include' === self::filter_mode( $settings, 'terms_filter_mode' ) ) {
+				// BROADENS the match (union) — useful when the current post
+				// has no terms at all, or when the admin wants the sequence
+				// to also cover categories the current post doesn't itself
+				// belong to.
+				$include_terms_for_match = self::extract_ids( $settings['include_terms'] ?? null );
+				if ( $include_terms_for_match ) {
+					$term_ids = array_values( array_unique( array_merge( $term_ids, $include_terms_for_match ) ) );
+				}
+			} else {
+				$exclude_terms_for_match = self::extract_ids( $settings['exclude_terms'] ?? null );
+				if ( $exclude_terms_for_match ) {
+					$term_ids = array_values( array_diff( $term_ids, $exclude_terms_for_match ) );
+				}
 			}
 
 			// No (remaining) terms in the constraining taxonomy on this post
@@ -480,6 +553,11 @@ class AAE_A_Post_Pagination extends Atomic_Element_Base {
 		];
 	}
 
+	/** 'include' or 'exclude' (the only two valid values) — defaults to 'exclude'. */
+	private static function filter_mode( array $settings, string $key ): string {
+		return ( isset( $settings[ $key ] ) && 'include' === $settings[ $key ] ) ? 'include' : 'exclude';
+	}
+
 	/**
 	 * The full ordered id list for a (post_type, taxonomy, term combination,
 	 * excludes, ordering) fingerprint — cached, since the SAME list serves
@@ -508,8 +586,23 @@ class AAE_A_Post_Pagination extends Atomic_Element_Base {
 			self::cache_version( $post_type ),
 			$post_type,
 			$taxonomy,
+			// $term_ids is already the FULLY RESOLVED set (current post's own
+			// terms, broadened by include_terms, narrowed by exclude_terms —
+			// see resolve_adjacent()), so include_terms doesn't need its own
+			// entry here: any change to it that actually affects the result
+			// already shows up as a different $term_ids. exclude_terms DOES
+			// still need its own entry — it has a SECOND, independent effect
+			// inside query_ordered_ids() (a NOT-IN filter on candidate posts,
+			// not just on which terms define the match).
 			implode( ',', $term_ids ),
+			// Modes included explicitly (not just relied upon via $term_ids)
+			// so a stale value left in whichever field is currently INACTIVE
+			// can never coincidentally collide two different effective
+			// queries onto the same cache key.
+			self::filter_mode( $settings, 'terms_filter_mode' ),
+			self::filter_mode( $settings, 'posts_filter_mode' ),
 			implode( ',', self::extract_ids( $settings['exclude_terms'] ?? null ) ),
+			implode( ',', self::extract_ids( $settings['include_posts'] ?? null ) ),
 			implode( ',', self::extract_ids( $settings['exclude_posts'] ?? null ) ),
 			isset( $settings['order_by'] ) ? $settings['order_by'] : 'date',
 			isset( $settings['order'] ) ? $settings['order'] : 'asc',
@@ -567,17 +660,33 @@ class AAE_A_Post_Pagination extends Atomic_Element_Base {
 				[ 'taxonomy' => $taxonomy, 'field' => 'term_id', 'terms' => $term_ids ],
 			];
 
-			$exclude_terms = self::extract_ids( $settings['exclude_terms'] ?? null );
-			if ( $exclude_terms ) {
-				$tax_query[] = [ 'taxonomy' => $taxonomy, 'field' => 'term_id', 'terms' => $exclude_terms, 'operator' => 'NOT IN' ];
+			// This NOT-IN clause is a SEPARATE effect from the term_ids
+			// cleanup in resolve_adjacent() — it filters CANDIDATE posts
+			// that have an excluded term (even via a different category
+			// than the one matched above), not just which terms define the
+			// match. Only relevant in 'exclude' mode.
+			if ( 'exclude' === self::filter_mode( $settings, 'terms_filter_mode' ) ) {
+				$exclude_terms = self::extract_ids( $settings['exclude_terms'] ?? null );
+				if ( $exclude_terms ) {
+					$tax_query[] = [ 'taxonomy' => $taxonomy, 'field' => 'term_id', 'terms' => $exclude_terms, 'operator' => 'NOT IN' ];
+				}
 			}
 
 			$args['tax_query'] = $tax_query; // phpcs:ignore WordPress.DB.SlowDBQuery
 		}
 
-		$exclude_posts = self::extract_ids( $settings['exclude_posts'] ?? null );
-		if ( $exclude_posts ) {
-			$args['post__not_in'] = $exclude_posts;
+		if ( 'include' === self::filter_mode( $settings, 'posts_filter_mode' ) ) {
+			$include_posts = self::extract_ids( $settings['include_posts'] ?? null );
+			if ( $include_posts ) {
+				$args['post__in'] = $include_posts;
+			}
+		}
+
+		if ( 'exclude' === self::filter_mode( $settings, 'posts_filter_mode' ) ) {
+			$exclude_posts = self::extract_ids( $settings['exclude_posts'] ?? null );
+			if ( $exclude_posts ) {
+				$args['post__not_in'] = $exclude_posts;
+			}
 		}
 
 		return ( new \WP_Query( $args ) )->posts;
