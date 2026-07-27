@@ -1,0 +1,5 @@
+{% import 'elementor/macros' as m %}
+{% set classes = ['aae-a-comment-date'] | merge([ base_styles.base ]) | merge(settings.classes | default([])) | join(' ') %}
+<time class="{{ classes }}" datetime="{{ settings.datetime_attr | default('') }}" data-interaction-id="{{ interaction_id | default('') }}" {{- m.render_custom_attributes(settings) }}>
+    {{ settings.comment_date | default('') }}{% if settings.comment_time is defined and settings.comment_time is not empty %}<span class="aae-a-comment-time">{{ settings.separator | default(' at ') }}{{ settings.comment_time }}</span>{% endif %}
+</time>

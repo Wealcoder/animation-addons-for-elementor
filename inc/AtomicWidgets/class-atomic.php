@@ -325,6 +325,19 @@ final class Atomic
 			// resolve per post.
 			'aae-a-post-image',
 			'aae-a-post-title',
+			// AAE Post Comments — DISABLED 2026-07-27: the senior dev is
+			// building the comments/reply-form feature himself. Whole family
+			// kept (not deleted), root class renamed to AAE_A_Comments_Ny /
+			// e-aae-a-comments-ny so it can't collide with his own version.
+			// Uncomment to re-enable:
+			// 'aae-a-comment-list',
+			// 'aae-a-comment-item',
+			// 'aae-a-comment-avatar',
+			// 'aae-a-comment-author',
+			// 'aae-a-comment-date',
+			// 'aae-a-comment-content',
+			// 'aae-a-comment-reply-link',
+			// 'aae-a-comment-form',
 			// AAE Form parts — seeded as the form's default children, so they
 			// must always be registered (same reasoning as the Loop pieces).
 			'aae-a-form-label',
@@ -883,6 +896,163 @@ final class Atomic
 				'keywords'     => [ 'loop', 'slider', 'pagination' ],
 				'hide_from_panel' => true,
 			],
+
+			/*
+			 * AAE Post Comments family — DISABLED 2026-07-27: the senior dev
+			 * is building the comments/reply-form feature himself. Kept here
+			 * (not deleted) for reference; root class renamed to
+			 * AAE_A_Comments_Ny / e-aae-a-comments-ny so it can't collide
+			 * with whatever he ends up calling his own version. Uncomment
+			 * this whole block (and the matching block in
+			 * get_available_widgets(), and the internal-widgets list in
+			 * is_widget_active()) to re-enable.
+			 *
+			'aae-a-comments-ny' => [
+				'label'        => 'Post Comments',
+				'description'  => 'Query the current post\'s comments and repeat a custom comment-item template per comment (avatar/author/date/content/reply-link, freely mixed with Paragraph/Image/Button/Heading), plus a native reply form.',
+				'icon'         => 'eicon-comments',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'comment',
+					'comments',
+					'discussion',
+					'reply',
+					'template',
+					'dynamic',
+				],
+				'category'     => 'general',
+				'order'        => 0,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-comment-list' => [
+				'is_internal'  => true,
+				'label'        => 'Comment List',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\Comments\AAE_A_Comment_List',
+				'icon'         => 'eicon-comments',
+				'keywords'     => [ 'comment', 'list' ],
+				'hide_from_panel' => true,
+			],
+
+			'aae-a-comment-item' => [
+				'is_internal'  => true,
+				'label'        => 'Comment Item',
+				'description'  => 'Container widget for Post Comments items with default flex column layout.',
+				'icon'         => 'eicon-container',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\Comments\AAE_A_Comment_Item',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'comment',
+					'item',
+					'container',
+					'flex',
+					'column',
+					'atomic',
+				],
+				'category'     => 'general',
+				'order'        => 0,
+				'demo_url'     => '',
+				'doc_url'      => '',
+				'default_children' => [],
+			],
+
+			'aae-a-comment-avatar' => [
+				'label'        => 'AAE Comment Avatar',
+				'description'  => 'The current comment\'s avatar — resolves per comment inside a Post Comments item.',
+				'icon'         => 'eicon-person',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [ 'comment', 'avatar', 'gravatar', 'atomic', 'dynamic' ],
+				'category'     => 'general',
+				'order'        => 0,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-comment-author' => [
+				'label'        => 'AAE Comment Author',
+				'description'  => 'The current comment\'s author name — resolves per comment inside a Post Comments item.',
+				'icon'         => 'eicon-t-letter',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [ 'comment', 'author', 'name', 'atomic', 'dynamic' ],
+				'category'     => 'general',
+				'order'        => 0,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-comment-date' => [
+				'label'        => 'AAE Comment Date',
+				'description'  => 'The current comment\'s date/time — resolves per comment inside a Post Comments item.',
+				'icon'         => 'eicon-calendar',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [ 'comment', 'date', 'time', 'atomic', 'dynamic' ],
+				'category'     => 'general',
+				'order'        => 0,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-comment-content' => [
+				'label'        => 'AAE Comment Content',
+				'description'  => 'The current comment\'s text — resolves per comment inside a Post Comments item.',
+				'icon'         => 'eicon-text-align-left',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [ 'comment', 'content', 'text', 'atomic', 'dynamic' ],
+				'category'     => 'general',
+				'order'        => 0,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-comment-reply-link' => [
+				'label'        => 'AAE Comment Reply Link',
+				'description'  => 'The current comment\'s reply link — resolves per comment inside a Post Comments item.',
+				'icon'         => 'eicon-reply',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [ 'comment', 'reply', 'link', 'atomic', 'dynamic' ],
+				'category'     => 'general',
+				'order'        => 0,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-comment-form' => [
+				'label'        => 'AAE Comment Form',
+				'description'  => 'A restyleable wrapper around WordPress\'s native comment_form() — real submissions, nonces and comment-reply threading included.',
+				'icon'         => 'eicon-form-horizontal',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [ 'comment', 'form', 'reply', 'submit', 'atomic', 'dynamic' ],
+				'category'     => 'general',
+				'order'        => 0,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+			*/
 
 			'aae-a-counter' => [
 				'label'        => 'Counter',
@@ -2891,6 +3061,67 @@ final class Atomic
 
 			// Loop Grid Slider — reuses the Loop Grid query engine + the shared
 			// nested-slider runtime. Its only own script is the load-more bridge
+			/*
+			 * AAE Post Comments family — DISABLED 2026-07-27 (see the matching
+			 * commented block in register_widget_definitions() for why).
+			 * Root file/class renamed to class-aae-a-comments-ny.php /
+			 * AAE_A_Comments_Ny. Uncomment to re-enable.
+			 *
+			'aae-a-comments-ny' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Comments\AAE_A_Comments_Ny',
+				'file' => 'Widgets/Comments/class-aae-a-comments-ny.php',
+				'has_script' => false,
+				'style_handle' => 'aae-a-comments-css',
+				'style_path' => '/assets/atomic/css/comments.css',
+			],
+
+			'aae-a-comment-list' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Comments\AAE_A_Comment_List',
+				'file' => 'Widgets/Comments/class-aae-a-comment-list.php',
+			],
+
+			'aae-a-comment-item' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Comments\AAE_A_Comment_Item',
+				'file' => 'Widgets/Comments/class-aae-a-comment-item.php',
+			],
+
+			'aae-a-comment-avatar' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Comments\AAE_A_Comment_Avatar',
+				'file' => 'Widgets/Comments/class-aae-a-comment-avatar.php',
+				'has_script' => false,
+			],
+
+			'aae-a-comment-author' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Comments\AAE_A_Comment_Author',
+				'file' => 'Widgets/Comments/class-aae-a-comment-author.php',
+				'has_script' => false,
+			],
+
+			'aae-a-comment-date' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Comments\AAE_A_Comment_Date',
+				'file' => 'Widgets/Comments/class-aae-a-comment-date.php',
+				'has_script' => false,
+			],
+
+			'aae-a-comment-content' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Comments\AAE_A_Comment_Content',
+				'file' => 'Widgets/Comments/class-aae-a-comment-content.php',
+				'has_script' => false,
+			],
+
+			'aae-a-comment-reply-link' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Comments\AAE_A_Comment_Reply_Link',
+				'file' => 'Widgets/Comments/class-aae-a-comment-reply-link.php',
+				'has_script' => false,
+			],
+
+			'aae-a-comment-form' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Comments\AAE_A_Comment_Form',
+				'file' => 'Widgets/Comments/class-aae-a-comment-form.php',
+				'has_script' => false,
+			],
+			*/
+
 			'aae-a-loop-grid-slider' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGridSlider\AAE_A_Loop_Grid_Slider',
 				'file' => 'Widgets/LoopGridSlider/class-aae-a-loop-grid-slider.php',
