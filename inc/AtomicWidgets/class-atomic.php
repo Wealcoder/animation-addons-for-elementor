@@ -325,6 +325,11 @@ final class Atomic
 			// resolve per post.
 			'aae-a-post-image',
 			'aae-a-post-title',
+			// AAE Post Pagination structural pieces — seeded as default children of
+			// the root, so they must always be registered (same reasoning as
+			// the Loop Grid pieces above).
+			'aae-a-post-pagination-prev',
+			'aae-a-post-pagination-next',
 			// AAE Post Comments — DISABLED 2026-07-27: the senior dev is
 			// building the comments/reply-form feature himself. Whole family
 			// kept (not deleted), root class renamed to AAE_A_Comments_Ny /
@@ -894,6 +899,48 @@ final class Atomic
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGridSlider\AAE_A_Loop_Slide_Pagination',
 				'icon'         => 'eicon-ellipsis-h',
 				'keywords'     => [ 'loop', 'slider', 'pagination' ],
+				'hide_from_panel' => true,
+			],
+
+			'aae-a-post-pagination' => [
+				'label'        => 'Post Pagination',
+				'description'  => 'Prev/Next single-post navigation — taxonomy-constrained, orderable (date/title/menu-order/custom-field), loop-around, sticky-bar/side-arrow display modes, keyboard/swipe/prefetch, and optional infinite scroll. Works on WooCommerce single Product pages too.',
+				'icon'         => 'eicon-post-navigation',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'post',
+					'nav',
+					'navigation',
+					'prev',
+					'next',
+					'pagination',
+					'infinite scroll',
+					'dynamic',
+				],
+				'category'     => 'general',
+				'order'        => 0,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-post-pagination-prev' => [
+				'is_internal'  => true,
+				'label'        => 'Previous Post',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Prev',
+				'icon'         => 'eicon-chevron-left',
+				'keywords'     => [ 'post', 'nav', 'prev' ],
+				'hide_from_panel' => true,
+			],
+
+			'aae-a-post-pagination-next' => [
+				'is_internal'  => true,
+				'label'        => 'Next Post',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Next',
+				'icon'         => 'eicon-chevron-right',
+				'keywords'     => [ 'post', 'nav', 'next' ],
 				'hide_from_panel' => true,
 			],
 
@@ -2768,6 +2815,29 @@ final class Atomic
 		add_action('wp_ajax_aae_loop_grid_page', [$this, 'ajax_loop_grid_page']);
 		add_action('wp_ajax_nopriv_aae_loop_grid_page', [$this, 'ajax_loop_grid_page']);
 
+		// AAE Post Pagination: infinite-scroll next-post fetch (title + rendered
+		// content). Public — available to logged-out visitors too.
+		add_action('wp_ajax_aae_post_pagination_load', [$this, 'ajax_post_pagination_load']);
+		add_action('wp_ajax_nopriv_aae_post_pagination_load', [$this, 'ajax_post_pagination_load']);
+
+		// AAE Post Pagination: invalidate the cached ordered-id lists for a post
+		// type the moment content actually changes, rather than trusting the
+		// transient TTL alone.
+		add_action('save_post', [$this, 'bump_post_pagination_cache_version']);
+		add_action('deleted_post', [$this, 'bump_post_pagination_cache_version']);
+		add_action('trashed_post', [$this, 'bump_post_pagination_cache_version']);
+		add_action('untrashed_post', [$this, 'bump_post_pagination_cache_version']);
+
+		// AAE Post Pagination: "Order By > Menu Order / Manual Sequence" needs the
+		// Order field available on plain Posts (Pages/WooCommerce Products
+		// already support it natively) — Document > Page Attributes > Order
+		// in the block editor, or the classic Page Attributes meta box.
+		add_action('init', function () {
+			if (post_type_exists('post') && ! post_type_supports('post', 'page-attributes')) {
+				add_post_type_support('post', 'page-attributes');
+			}
+		}, 20);
+
 		// Seed defaults on first install (option doesn't exist yet).
 		$this->maybe_seed_widgets_defaults();
 		$this->maybe_seed_extension_defaults();
@@ -3061,6 +3131,26 @@ final class Atomic
 
 			// Loop Grid Slider — reuses the Loop Grid query engine + the shared
 			// nested-slider runtime. Its only own script is the load-more bridge
+			'aae-a-post-pagination' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination',
+				'file' => 'Widgets/PostPagination/class-aae-a-post-pagination.php',
+				'script_handle' => 'aae-a-post-pagination-js',
+				'script_path' => '/assets/atomic/js/post-pagination.js',
+				'has_script' => true,
+				'style_handle' => 'aae-a-post-pagination-css',
+				'style_path' => '/assets/atomic/css/post-pagination.css',
+			],
+
+			'aae-a-post-pagination-prev' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Prev',
+				'file' => 'Widgets/PostPagination/class-aae-a-post-pagination-prev.php',
+			],
+
+			'aae-a-post-pagination-next' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Next',
+				'file' => 'Widgets/PostPagination/class-aae-a-post-pagination-next.php',
+			],
+
 			/*
 			 * AAE Post Comments family — DISABLED 2026-07-27 (see the matching
 			 * commented block in register_widget_definitions() for why).
@@ -3980,6 +4070,86 @@ final class Atomic
 			'paged'     => $paged,
 			'max_pages' => $max_pages,
 		]);
+	}
+
+	/**
+	 * AAE Post Pagination — infinite scroll: fetch the next post's title + rendered
+	 * content, plus that post's OWN next-adjacent (so the client can keep
+	 * chaining further scrolls without a second round trip to resolve it).
+	 *
+	 * Reuses AAE_A_Post_Content::render_post_content() for the content body
+	 * (same builder-content / Theme-Builder-aware pipeline the frontend
+	 * already uses), captured via output buffering — so an Elementor-built
+	 * post loads identically here to how it renders on its own page.
+	 */
+	public function ajax_post_pagination_load() {
+		check_ajax_referer('aae_post_pagination', 'nonce');
+
+		$post_id = isset($_POST['post_id']) ? absint($_POST['post_id']) : 0;
+		$post    = $post_id ? get_post($post_id) : null;
+
+		if (! $post || 'publish' !== $post->post_status) {
+			wp_send_json_error(['message' => 'Post not found.'], 404);
+		}
+
+		$settings = [];
+		if (isset($_POST['settings'])) {
+			$decoded = json_decode(wp_unslash($_POST['settings']), true);
+			if (is_array($decoded)) {
+				$settings = $decoded;
+			}
+		}
+
+		global $post; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		$post = get_post($post_id);
+		setup_postdata($post);
+
+		$title = get_the_title($post_id);
+
+		$post_content_file = __DIR__ . '/Widgets/PostContent/class-aae-a-post-content.php';
+		if (! class_exists('\WCF_ADDONS\AtomicWidgets\Widgets\PostContent\AAE_A_Post_Content') && file_exists($post_content_file)) {
+			require_once $post_content_file;
+		}
+
+		ob_start();
+		if (class_exists('\WCF_ADDONS\AtomicWidgets\Widgets\PostContent\AAE_A_Post_Content')) {
+			try {
+				$pc = new \WCF_ADDONS\AtomicWidgets\Widgets\PostContent\AAE_A_Post_Content([], null);
+				$pc->render_post_content(false, false);
+			} catch (\Throwable $e) {
+				the_content();
+			}
+		} else {
+			the_content();
+		}
+		$content_html = ob_get_clean();
+
+		require_once __DIR__ . '/Widgets/PostPagination/class-aae-a-post-pagination.php';
+		$adjacent = \WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination::resolve_adjacent($post_id, $settings);
+
+		wp_reset_postdata();
+
+		wp_send_json_success([
+			'post_id'   => $post_id,
+			'title'     => $title,
+			'permalink' => get_permalink($post_id),
+			'content'   => $content_html,
+			'next'      => $adjacent['next'],
+		]);
+	}
+
+	/**
+	 * Invalidate AAE Post Pagination's cached ordered-id lists for a post type the
+	 * moment its content changes (save/trash/delete), rather than relying on
+	 * the transient TTL alone. Cheap no-op for post types that never used the
+	 * widget (bumping a version nobody reads costs nothing).
+	 */
+	public function bump_post_pagination_cache_version($post_id): void {
+		$post_type = get_post_type($post_id);
+		if (! $post_type || ! class_exists('\WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination')) {
+			return;
+		}
+		\WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination::bump_cache_version($post_type);
 	}
 
 	/**

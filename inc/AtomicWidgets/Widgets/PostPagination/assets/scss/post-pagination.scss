@@ -1,0 +1,95 @@
+// AAE Post Pagination — baseline styling.
+// Color/spacing/typography for the buttons themselves is native atomic Style
+// tab territory (each piece is its own selectable element with reasonable
+// base styles, see class-aae-a-post-pagination-prev/next.php). This file only
+// covers structural bits Style tab controls can't express: hiding an
+// unavailable prev/next end, the sticky-bar/side-arrows reveal-on-scroll
+// mechanics, and the infinite-scroll-loaded post markup (which isn't an
+// atomic element).
+
+.aae-a-post-pagination {
+	// Frontend-only edge hiding — no prev on the first post, no next on the
+	// last (unless Loop Around is on, in which case both ends always resolve
+	// and neither class is ever added). The editor keeps every piece visible
+	// so it stays selectable/styleable regardless of state.
+	body:not(.elementor-editor-active) &.aae-pp-no-prev [data-aae-nav="prev"] {
+		display: none;
+	}
+	body:not(.elementor-editor-active) &.aae-pp-no-next [data-aae-nav="next"] {
+		display: none;
+	}
+
+	.aae-pp-disabled {
+		pointer-events: none;
+		opacity: 0.4;
+	}
+}
+
+// Sticky Bottom Bar.
+.aae-a-post-pagination[data-aae-pp-mode="sticky_bar"] {
+	body:not(.elementor-editor-active) &.aae-pp-reveal {
+		position: fixed;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		z-index: 999;
+		background: #fff;
+		box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.08);
+		padding: 12px 20px;
+		transform: translateY(100%);
+		transition: transform 0.3s ease;
+	}
+	body:not(.elementor-editor-active) &.aae-pp-reveal.aae-pp-visible {
+		transform: translateY(0);
+	}
+}
+
+// Floating Side Arrows.
+.aae-a-post-pagination[data-aae-pp-mode="side_arrows"] {
+	body:not(.elementor-editor-active) &.aae-pp-reveal [data-aae-nav="prev"] {
+		position: fixed;
+		left: 16px;
+		top: 50%;
+		transform: translateY(-50%) translateX(-24px);
+		opacity: 0;
+		z-index: 999;
+		transition: opacity 0.3s ease, transform 0.3s ease;
+		background: #fff;
+		box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+	}
+	body:not(.elementor-editor-active) &.aae-pp-reveal [data-aae-nav="next"] {
+		position: fixed;
+		right: 16px;
+		top: 50%;
+		transform: translateY(-50%) translateX(24px);
+		opacity: 0;
+		z-index: 999;
+		transition: opacity 0.3s ease, transform 0.3s ease;
+		background: #fff;
+		box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+	}
+	body:not(.elementor-editor-active) &.aae-pp-reveal.aae-pp-visible [data-aae-nav="prev"] {
+		opacity: 1;
+		transform: translateY(-50%) translateX(0);
+	}
+	body:not(.elementor-editor-active) &.aae-pp-reveal.aae-pp-visible [data-aae-nav="next"] {
+		opacity: 1;
+		transform: translateY(-50%) translateX(0);
+	}
+}
+
+// Infinite-scroll-loaded posts — plain, theme-agnostic defaults; the site's
+// own typography generally cascades in since these ride inside the same
+// content column as the original post.
+.aae-pp-loaded-post {
+	margin-top: 48px;
+	padding-top: 32px;
+	border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.aae-pp-end-of-posts {
+	margin-top: 24px;
+	text-align: center;
+	opacity: 0.6;
+	font-style: italic;
+}
