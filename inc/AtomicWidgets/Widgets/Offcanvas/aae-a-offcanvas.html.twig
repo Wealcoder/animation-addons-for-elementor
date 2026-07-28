@@ -1,15 +1,14 @@
 {#
   AAE Offcanvas — parent template.
 
-  Renders: trigger button, scrim overlay, and the Panel child (via
-  children_placeholder). The <style> block below is the ONLY CSS this widget
-  emits, and it is deliberately tiny — it carries just what a base style can't:
-    1. a structural reset for the plain-markup trigger (not an atomic element),
-    2. a frontend flash-guard that hides the panel/overlay until the JS wires
-       them (the JS teleports both to <body>), and
-    3. an editor override that keeps the panel visible & in-flow so its content
-       stays editable (the JS never runs in edit mode, so nothing teleports).
-  Everything else (panel look, drawer geometry) lives in base styles / the JS.
+  Renders its children via children_placeholder: the Trigger, the Overlay
+  (scrim — a real, styleable AAE_A_Offcanvas_Overlay element) and the Panel —
+  all real atomic elements. The <style> block carries just two things a base
+  style can't: (1) force the root to hug the trigger (override `.e-con`'s flex +
+  min-height) so the closed offcanvas is only the toggle icon, and (2) a
+  flash-guard that keeps the scrim out of flow / invisible until offcanvas.js
+  teleports and drives it (also keeps it from covering the editor canvas).
+  Everything else (look, drawer geometry) lives in the child base styles / JS.
 #}
 {% set position = settings.position | default('left') %}
 {# The "Preview Open (Editor)" reveal is applied by offcanvas.js (editor
@@ -23,9 +22,9 @@
     data-e-type="{{ type }}"
     data-interaction-id="{{ interaction_id | default('') }}"
     data-position="{{ position }}"
-    data-overlay-color="{{ overlay_color | e('html_attr') }}"
-    data-close-on-overlay="{{ close_on_overlay }}"
-    data-close-on-esc="{{ close_on_esc }}"
+    data-overlay-anim="{{ settings.overlay_animation | default('fade') }}"
+    data-close-on-overlay="{{ (settings.close_on_overlay is defined and not settings.close_on_overlay) ? 'false' : 'true' }}"
+    data-close-on-esc="{{ (settings.close_on_esc is defined and not settings.close_on_esc) ? 'false' : 'true' }}"
     data-enter-anim="{{ settings.open_animation | default('slide') }}"
     data-exit-anim="{{ settings.close_animation | default('reverse') }}"
     data-anim-duration="{{ settings.anim_duration | default(400) }}"
@@ -39,34 +38,29 @@
     {{ editor_attributes | default('') | raw }}>
 
     <style>
-        /* 0. Root hugs the trigger — the closed offcanvas is just the bar icon,
-              not a full-width tall container. Overrides Elementor's `.e-con`
-              (display:flex + min-height) which would otherwise stretch it. */
+        /* Root hugs the trigger — the closed offcanvas is just the toggle icon,
+           not a full-width tall container. Overrides Elementor's `.e-con`
+           (display:flex + min-height) which would otherwise stretch it. */
         [data-id="{{ id }}"] {
             display: inline-block !important;
             min-height: 0 !important;
             vertical-align: top;
         }
 
-        /* 1. Trigger reset — plain <button>, low specificity so Style edits win. */
-        :where([data-id="{{ id }}"]) .aae-offcanvas-trigger {
-            display: inline-flex; align-items: center; justify-content: center;
-            cursor: pointer; background: transparent; border: 0; color: inherit; padding: 0;
-        }
-        :where([data-id="{{ id }}"]) .aae-offcanvas-trigger :is(img, svg) {
-            display: block; width: 24px; height: 24px;
+        /* Flash-guard: keep the scrim out of flow + invisible until offcanvas.js
+           positions/drives it. Matches by element-type attr (the editor strips
+           custom classes off atomic children). visibility:hidden also stops it
+           catching clicks, so it never covers the editor canvas. Once the JS
+           teleports it to the body portal this selector stops matching and the
+           inline runtime styles take over. */
+        [data-id="{{ id }}"] [data-e-type="e-aae-a-offcanvas-overlay"] {
+            position: fixed;
+            inset: 0;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
         }
     </style>
-
-    <button class="aae-offcanvas-trigger" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="{{ 'Open panel' | e('html_attr') }}">
-        {% if trigger_icon_url is not empty %}
-            <img src="{{ trigger_icon_url | e('html_attr') }}" alt="" aria-hidden="true">
-        {% else %}
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24" aria-hidden="true"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
-        {% endif %}
-    </button>
-
-    <div class="aae-offcanvas-overlay" aria-hidden="true"></div>
 
     {{ children_placeholder | raw }}
 </div>

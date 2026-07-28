@@ -44,7 +44,6 @@ use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Number_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Select_Control;
-use Elementor\Modules\AtomicWidgets\Controls\Types\Svg_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Switch_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
@@ -52,13 +51,16 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Number_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Svg_Src_Prop_Type;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 
+require_once __DIR__ . '/class-aae-a-offcanvas-trigger.php';
+require_once __DIR__ . '/class-aae-a-offcanvas-overlay.php';
 require_once __DIR__ . '/class-aae-a-offcanvas-panel.php';
 
+use WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Trigger;
+use WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Overlay;
 use WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Panel;
 
 class AAE_A_Offcanvas extends Atomic_Element_Base {
@@ -101,14 +103,18 @@ class AAE_A_Offcanvas extends Atomic_Element_Base {
 			// slide transform applied by the JS (POS / TRANSFORMS tables).
 			'position'         => String_Prop_Type::make()->enum( [ 'left', 'right', 'top', 'bottom' ] )->default( 'left' ),
 
-			// Trigger icon. The default hamburger ships as an SVG asset so the
-			// widget is usable the moment it's dropped.
-			'trigger_icon'     => Svg_Src_Prop_Type::make()->default_url( WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/Offcanvas/assets/icons/hamburger.svg' ),
+			// The trigger icon now lives on the real, styleable AAE_A_Offcanvas_Trigger
+			// child element (its own Icon control), not a prop here — so the toggle is
+			// selectable in the structure and fully Style-tab overridable.
 
-			// Scrim intensity behind the open panel. Structural, not a design
-			// choice — no color control exists in atomic content controls, and a
-			// dimming scrim rarely needs a bespoke color, so an enum is enough.
-			'overlay'          => String_Prop_Type::make()->enum( [ 'dark', 'darker', 'none' ] )->default( 'dark' ),
+			// The scrim COLOUR now lives on the real AAE_A_Offcanvas_Overlay child
+			// element (Style tab → Background → Color), not an enum here.
+
+			// How the scrim/backdrop itself reveals. `fade` = plain opacity (default,
+			// original behaviour); `circle` = the backdrop blooms outward as a growing
+			// clip-path circle from the trigger (inspired by the GSAP "circle reveal"
+			// menus). Independent of the panel's own open_animation.
+			'overlay_animation'=> String_Prop_Type::make()->enum( [ 'fade', 'circle', 'blinds' ] )->default( 'fade' ),
 
 			// Behaviour toggles (mirrors what the v3 drawer did implicitly).
 			'close_on_overlay' => Boolean_Prop_Type::make()->default( true ),
@@ -148,20 +154,18 @@ class AAE_A_Offcanvas extends Atomic_Element_Base {
 							[ 'value' => 'top',    'label' => __( 'Top',    'animation-addons-for-elementor' ) ],
 							[ 'value' => 'bottom', 'label' => __( 'Bottom', 'animation-addons-for-elementor' ) ],
 						] ),
-					Svg_Control::bind_to( 'trigger_icon' )
-						->set_label( __( 'Trigger Icon', 'animation-addons-for-elementor' ) ),
 				] ),
 
 			Section::make()
 				->set_id( 'behavior' )
 				->set_label( __( 'Behavior', 'animation-addons-for-elementor' ) )
 				->set_items( [
-					Select_Control::bind_to( 'overlay' )
-						->set_label( __( 'Overlay', 'animation-addons-for-elementor' ) )
+					Select_Control::bind_to( 'overlay_animation' )
+						->set_label( __( 'Overlay Reveal', 'animation-addons-for-elementor' ) )
 						->set_options( [
-							[ 'value' => 'dark',   'label' => __( 'Dark',   'animation-addons-for-elementor' ) ],
-							[ 'value' => 'darker', 'label' => __( 'Darker', 'animation-addons-for-elementor' ) ],
-							[ 'value' => 'none',   'label' => __( 'None',   'animation-addons-for-elementor' ) ],
+							[ 'value' => 'fade',   'label' => __( 'Fade',           'animation-addons-for-elementor' ) ],
+							[ 'value' => 'circle', 'label' => __( 'Circle Reveal',  'animation-addons-for-elementor' ) ],
+							[ 'value' => 'blinds', 'label' => __( 'Blinds / Stripes', 'animation-addons-for-elementor' ) ],
 						] ),
 					Switch_Control::bind_to( 'close_on_overlay' )
 						->set_label( __( 'Close on Overlay Click', 'animation-addons-for-elementor' ) ),
@@ -241,6 +245,18 @@ class AAE_A_Offcanvas extends Atomic_Element_Base {
 
 	protected function define_default_children(): array {
 		return [
+			// The toggle. Locked so it can't be deleted (it's the only way to open
+			// the drawer) but stays fully selectable + styleable via the Style tab.
+			AAE_A_Offcanvas_Trigger::generate()
+				->is_locked( true )
+				->editor_settings( [ 'title' => 'Trigger' ] )
+				->build(),
+			// The scrim/backdrop — locked, but selectable so its colour is editable
+			// from the Style tab (Background → Color).
+			AAE_A_Offcanvas_Overlay::generate()
+				->is_locked( true )
+				->editor_settings( [ 'title' => 'Overlay' ] )
+				->build(),
 			AAE_A_Offcanvas_Panel::generate()
 				->is_locked( true )
 				->editor_settings( [ 'title' => 'Panel' ] )
@@ -249,7 +265,7 @@ class AAE_A_Offcanvas extends Atomic_Element_Base {
 	}
 
 	protected function define_allowed_child_types(): array {
-		return [ 'e-aae-a-offcanvas-panel' ];
+		return [ 'e-aae-a-offcanvas-trigger', 'e-aae-a-offcanvas-overlay', 'e-aae-a-offcanvas-panel' ];
 	}
 
 	protected function define_default_html_tag() {
