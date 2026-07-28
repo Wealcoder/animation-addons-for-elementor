@@ -123,8 +123,8 @@ class AAE_A_Offcanvas extends Atomic_Element_Base {
 			// Open (enter) + close (exit) motion. Self-contained drawer presets
 			// applied by offcanvas.js via GSAP (falls back to a CSS slide when
 			// GSAP isn't present). `reverse` plays the open animation backwards.
-			'open_animation'   => String_Prop_Type::make()->enum( [ 'slide', 'fade', 'fade-slide', 'zoom', 'flip', 'blur', 'circle', 'none' ] )->default( 'slide' ),
-			'close_animation'  => String_Prop_Type::make()->enum( [ 'reverse', 'slide', 'fade', 'fade-slide', 'zoom', 'flip', 'blur', 'circle', 'none' ] )->default( 'reverse' ),
+			'open_animation'   => String_Prop_Type::make()->enum( [ 'blinds', 'stripes', 'tiles', 'curtain', 'circle', 'stagger', 'slide', 'fade', 'fade-slide', 'zoom', 'flip', 'blur', 'none' ] )->default( 'slide' ),
+			'close_animation'  => String_Prop_Type::make()->enum( [ 'reverse', 'blinds', 'stripes', 'tiles', 'curtain', 'circle', 'stagger', 'slide', 'fade', 'fade-slide', 'zoom', 'flip', 'blur', 'none' ] )->default( 'reverse' ),
 			'anim_duration'    => Number_Prop_Type::make()->default( 400 ),
 			'anim_easing'      => String_Prop_Type::make()->enum( [ 'power2.out', 'power3.out', 'back.out', 'elastic.out', 'expo.out', 'none' ] )->default( 'power2.out' ),
 
@@ -180,26 +180,36 @@ class AAE_A_Offcanvas extends Atomic_Element_Base {
 					Select_Control::bind_to( 'open_animation' )
 						->set_label( __( 'Open Animation', 'animation-addons-for-elementor' ) )
 						->set_options( [
+							[ 'value' => 'blinds',     'label' => __( 'Blinds Reveal',  'animation-addons-for-elementor' ) ],
+							[ 'value' => 'stripes',    'label' => __( 'Stripes Reveal', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'tiles',      'label' => __( 'Tiles Reveal',   'animation-addons-for-elementor' ) ],
+							[ 'value' => 'curtain',    'label' => __( 'Curtain Split',  'animation-addons-for-elementor' ) ],
+							[ 'value' => 'circle',     'label' => __( 'Circle Reveal',  'animation-addons-for-elementor' ) ],
+							[ 'value' => 'stagger',    'label' => __( 'Stagger Content','animation-addons-for-elementor' ) ],
 							[ 'value' => 'slide',      'label' => __( 'Slide',        'animation-addons-for-elementor' ) ],
 							[ 'value' => 'fade',       'label' => __( 'Fade',         'animation-addons-for-elementor' ) ],
 							[ 'value' => 'fade-slide', 'label' => __( 'Fade + Slide', 'animation-addons-for-elementor' ) ],
 							[ 'value' => 'zoom',       'label' => __( 'Zoom',         'animation-addons-for-elementor' ) ],
 							[ 'value' => 'flip',       'label' => __( 'Flip',         'animation-addons-for-elementor' ) ],
 							[ 'value' => 'blur',       'label' => __( 'Blur',         'animation-addons-for-elementor' ) ],
-							[ 'value' => 'circle',     'label' => __( 'Circle Reveal', 'animation-addons-for-elementor' ) ],
 							[ 'value' => 'none',       'label' => __( 'None',         'animation-addons-for-elementor' ) ],
 						] ),
 					Select_Control::bind_to( 'close_animation' )
 						->set_label( __( 'Close Animation', 'animation-addons-for-elementor' ) )
 						->set_options( [
 							[ 'value' => 'reverse',    'label' => __( 'Same as Open (reverse)', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'blinds',     'label' => __( 'Blinds Reveal',  'animation-addons-for-elementor' ) ],
+							[ 'value' => 'stripes',    'label' => __( 'Stripes Reveal', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'tiles',      'label' => __( 'Tiles Reveal',   'animation-addons-for-elementor' ) ],
+							[ 'value' => 'curtain',    'label' => __( 'Curtain Split',  'animation-addons-for-elementor' ) ],
+							[ 'value' => 'circle',     'label' => __( 'Circle Reveal',  'animation-addons-for-elementor' ) ],
+							[ 'value' => 'stagger',    'label' => __( 'Stagger Content','animation-addons-for-elementor' ) ],
 							[ 'value' => 'slide',      'label' => __( 'Slide',        'animation-addons-for-elementor' ) ],
 							[ 'value' => 'fade',       'label' => __( 'Fade',         'animation-addons-for-elementor' ) ],
 							[ 'value' => 'fade-slide', 'label' => __( 'Fade + Slide', 'animation-addons-for-elementor' ) ],
 							[ 'value' => 'zoom',       'label' => __( 'Zoom',         'animation-addons-for-elementor' ) ],
 							[ 'value' => 'flip',       'label' => __( 'Flip',         'animation-addons-for-elementor' ) ],
 							[ 'value' => 'blur',       'label' => __( 'Blur',         'animation-addons-for-elementor' ) ],
-							[ 'value' => 'circle',     'label' => __( 'Circle Reveal', 'animation-addons-for-elementor' ) ],
 							[ 'value' => 'none',       'label' => __( 'None',         'animation-addons-for-elementor' ) ],
 						] ),
 					Number_Control::bind_to( 'anim_duration' )
