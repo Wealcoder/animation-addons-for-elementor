@@ -112,12 +112,30 @@ class AAE_A_Post_Pagination_Next extends Atomic_Element_Base {
 		return $children;
 	}
 
+	/**
+	 * True if $type is registered as EITHER a leaf widget (Atomic_Widget_Base,
+	 * via widgets_manager — e.g. e-aae-a-loop-arrow) OR a container element
+	 * (Atomic_Element_Base, via elements_manager — e.g.
+	 * e-aae-a-post-pagination-preview). Checking widgets_manager alone (the
+	 * original version of this method) silently misses container-family
+	 * types, which register with a DIFFERENT manager entirely — that bug
+	 * meant the Preview card never got seeded on freshly-dropped instances,
+	 * even though it was correctly registered.
+	 */
 	private static function type_registered( string $type ): bool {
 		if ( ! class_exists( '\Elementor\Plugin' ) ) {
 			return false;
 		}
 		try {
-			return (bool) \Elementor\Plugin::$instance->widgets_manager->get_widget_types( $type );
+			$widgets_manager = \Elementor\Plugin::$instance->widgets_manager;
+			if ( $widgets_manager->get_widget_types( $type ) ) {
+				return true;
+			}
+			$elements_manager = \Elementor\Plugin::$instance->elements_manager;
+			if ( method_exists( $elements_manager, 'get_element_types' ) && $elements_manager->get_element_types( $type ) ) {
+				return true;
+			}
+			return false;
 		} catch ( \Throwable $e ) {
 			return false;
 		}
