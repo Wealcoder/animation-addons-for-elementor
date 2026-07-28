@@ -2,21 +2,37 @@
 /**
  * AAE Hotspot Point — atomic element (repeating child).
  *
- * One marker positioned over the parent Image Hotspot's canvas. Inserted only
- * via the "Hotspots" element-control (AAE_A_Hotspots_Control) on the parent —
- * never dragged from the panel directly (should_show_in_panel() => false),
- * same convention as AAE_A_Slide.
+ * One marker+content pair positioned over the parent Image Hotspot's canvas.
+ * Inserted only via the "Hotspots" element-control (AAE_A_Hotspots_Control)
+ * on the parent — never dragged from the panel directly
+ * (should_show_in_panel() => false), same convention as AAE_A_Slide.
  *
- * Position is a plain X/Y percent CONTENT prop (pos_left/pos_top), not a Style
- * tab override — this keeps every default point trivially positionable at
- * generate() time (see AAE_A_Image_Hotspot::define_default_children()) without
- * needing per-instance base-style overrides, and leaves room for a future
- * click-to-place editor UX to just write these two numbers.
+ * Position is a plain X/Y percent CONTENT prop (pos_left/pos_top), not a
+ * Style tab override — this keeps every default point trivially positionable
+ * at generate() time (see AAE_A_Image_Hotspot::define_default_children())
+ * without needing per-instance base-style overrides, and leaves room for a
+ * future click-to-place editor UX to just write these two numbers.
  *
- * Children are UNRESTRICTED (mirrors AAE_A_Flip_Box, not the Offcanvas Panel
- * whitelist) — they ARE the tooltip/lightbox content, and dropping another
- * e-aae-a-image-hotspot in here is exactly how drill-down hotspots work; no
- * special-case "nested hotspot" code exists anywhere, it's pure composition.
+ * The MARKER's own look (background/color/radius/padding/size) and the
+ * CONTENT box's own look (background/padding/width/radius) each live on
+ * their OWN real child element (AAE_A_Hotspot_Marker / AAE_A_Hotspot_Content)
+ * — split out specifically so a builder can select either part in the
+ * Navigator and restyle it from Elementor's generic Style tab, instead of
+ * those looks being hardcoded in image-hotspot.scss. This element itself is
+ * ALWAYS a plain <div> (role="button"/"link" + tabindex, never a real
+ * <button>/<a>) — Content, its other child, always contains a real <button>
+ * (Close) and may contain arbitrary user content including links/buttons;
+ * nesting that inside a real interactive tag is invalid HTML and real
+ * browsers auto-close the outer tag on parse, which silently reparented
+ * Close + the tooltip body onto the page as trailing siblings on the
+ * frontend (invisible in the editor, which builds the DOM via direct JS
+ * calls rather than parsing an HTML string). image-hotspot.js wires click +
+ * Enter/Space keyboard activation onto this div instead.
+ *
+ * Content's children are UNRESTRICTED (mirrors AAE_A_Flip_Box) — they ARE
+ * the tooltip/lightbox content, and dropping another e-aae-a-image-hotspot
+ * in there is exactly how drill-down hotspots work; no special-case "nested
+ * hotspot" code exists anywhere, it's pure composition.
  *
  * @package AnimationAddonsForElementor
  * @since   4.0.0
@@ -34,19 +50,15 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Elem
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
-use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Number_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Select_Control;
-use Elementor\Modules\AtomicWidgets\Controls\Types\Svg_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Switch_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Link_Control;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Link_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Svg_Src_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
@@ -55,6 +67,12 @@ use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropDependencies\Manager as Dependency_Manager;
+
+require_once __DIR__ . '/Parts/class-aae-a-hotspot-marker.php';
+require_once __DIR__ . '/class-aae-a-hotspot-content.php';
+
+use WCF_ADDONS\AtomicWidgets\Widgets\ImageHotspot\AAE_A_Hotspot_Marker;
+use WCF_ADDONS\AtomicWidgets\Widgets\ImageHotspot\AAE_A_Hotspot_Content;
 
 class AAE_A_Hotspot_Point extends Atomic_Element_Base {
 
@@ -93,24 +111,6 @@ class AAE_A_Hotspot_Point extends Atomic_Element_Base {
 	}
 
 	protected static function define_props_schema(): array {
-		$show_if_icon = Dependency_Manager::make()
-			->where( [
-				'operator' => 'in',
-				'path'     => [ 'hsp_layout' ],
-				'value'    => [ 'icon', 'icon-text' ],
-				'effect'   => 'hide',
-			] )
-			->get();
-
-		$show_if_text = Dependency_Manager::make()
-			->where( [
-				'operator' => 'in',
-				'path'     => [ 'hsp_layout' ],
-				'value'    => [ 'text', 'icon-text' ],
-				'effect'   => 'hide',
-			] )
-			->get();
-
 		$show_if_link = Dependency_Manager::make()
 			->where( [
 				'operator' => 'eq',
@@ -128,34 +128,14 @@ class AAE_A_Hotspot_Point extends Atomic_Element_Base {
 			'pos_left' => Number_Prop_Type::make()->default( 50 ),
 			'pos_top'  => Number_Prop_Type::make()->default( 50 ),
 
-			// Marker layout — 'number' is the auto-badge option (JS fills the
-			// digit from DOM order; nothing is computed server-side, so it stays
-			// correct across drag-reorders in the Hotspots control).
-			'hsp_layout' => String_Prop_Type::make()
-				->enum( [ 'dot', 'icon', 'text', 'icon-text', 'number' ] )
-				->default( 'dot' ),
-
-			'hsp_icon' => Svg_Src_Prop_Type::make()
-				->default_url( WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/ImageHotspot/assets/icons/dot.svg' )
-				->set_dependencies( $show_if_icon ),
-
-			'hsp_text' => String_Prop_Type::make()
-				->default( __( 'Hotspot', 'animation-addons-for-elementor' ) )
-				->set_dependencies( $show_if_text ),
-
-			// tooltip = inline popover, lightbox = teleported modal (new),
-			// link = marker becomes a plain <a>, no popup.
+			// tooltip = inline popover, lightbox = teleported modal, link =
+			// this element itself renders as a real <a>, no popup at all.
 			'tooltip_type' => String_Prop_Type::make()
 				->enum( [ 'tooltip', 'lightbox', 'link' ] )
 				->default( 'tooltip' ),
 
 			'tlp_link'          => Link_Prop_Type::make()->set_dependencies( $show_if_link ),
 			'tlp_link_nofollow' => Boolean_Prop_Type::make()->default( false )->set_dependencies( $show_if_link ),
-
-			// Per-point override of the container's global marker_anim.
-			'marker_anim_override' => String_Prop_Type::make()
-				->enum( [ 'inherit', 'none', 'beat', 'pulse', 'ripple', 'ring', 'glow', 'bounce' ] )
-				->default( 'inherit' ),
 		];
 	}
 
@@ -169,37 +149,6 @@ class AAE_A_Hotspot_Point extends Atomic_Element_Base {
 						->set_label( __( 'Horizontal (%)', 'animation-addons-for-elementor' ) ),
 					Number_Control::bind_to( 'pos_top' )
 						->set_label( __( 'Vertical (%)', 'animation-addons-for-elementor' ) ),
-				] ),
-
-			Section::make()
-				->set_id( 'content' )
-				->set_label( __( 'Marker', 'animation-addons-for-elementor' ) )
-				->set_items( [
-					Select_Control::bind_to( 'hsp_layout' )
-						->set_label( __( 'Layout', 'animation-addons-for-elementor' ) )
-						->set_options( [
-							[ 'value' => 'dot',       'label' => __( 'Dot', 'animation-addons-for-elementor' ) ],
-							[ 'value' => 'icon',      'label' => __( 'Icon', 'animation-addons-for-elementor' ) ],
-							[ 'value' => 'text',      'label' => __( 'Text', 'animation-addons-for-elementor' ) ],
-							[ 'value' => 'icon-text', 'label' => __( 'Icon + Text', 'animation-addons-for-elementor' ) ],
-							[ 'value' => 'number',    'label' => __( 'Number', 'animation-addons-for-elementor' ) ],
-						] ),
-					Svg_Control::bind_to( 'hsp_icon' )
-						->set_label( __( 'Icon', 'animation-addons-for-elementor' ) ),
-					Text_Control::bind_to( 'hsp_text' )
-						->set_label( __( 'Text', 'animation-addons-for-elementor' ) ),
-					Select_Control::bind_to( 'marker_anim_override' )
-						->set_label( __( 'Marker Animation', 'animation-addons-for-elementor' ) )
-						->set_options( [
-							[ 'value' => 'inherit', 'label' => __( 'Inherit', 'animation-addons-for-elementor' ) ],
-							[ 'value' => 'none',    'label' => __( 'None', 'animation-addons-for-elementor' ) ],
-							[ 'value' => 'beat',    'label' => __( 'Beat', 'animation-addons-for-elementor' ) ],
-							[ 'value' => 'pulse',   'label' => __( 'Pulse', 'animation-addons-for-elementor' ) ],
-							[ 'value' => 'ripple',  'label' => __( 'Ripple', 'animation-addons-for-elementor' ) ],
-							[ 'value' => 'ring',    'label' => __( 'Ring', 'animation-addons-for-elementor' ) ],
-							[ 'value' => 'glow',    'label' => __( 'Glow', 'animation-addons-for-elementor' ) ],
-							[ 'value' => 'bounce',  'label' => __( 'Bounce', 'animation-addons-for-elementor' ) ],
-						] ),
 				] ),
 
 			Section::make()
@@ -232,18 +181,12 @@ class AAE_A_Hotspot_Point extends Atomic_Element_Base {
 	}
 
 	/**
-	 * Structural only — visual defaults (marker look, tooltip placement, portal
-	 * geometry) live in assets/scss/image-hotspot.scss, since they're shared
-	 * across every point and driven by data-attrs, not per-element style props.
-	 *
-	 * width/height/display are set EXPLICITLY (fit-content via the custom-unit
-	 * trick, inline-flex) rather than left unset — Elementor's own `.e-con`
-	 * class (present in every atomic container's class list, see the twig)
-	 * otherwise stretches this element to 100% of its containing block. Since
-	 * the tooltip content is `position: absolute` relative to THIS element,
-	 * an unset width silently made the point as wide as the whole image, which
-	 * re-centered the tooltip under the image's middle instead of the marker
-	 * (the `left: 50%` in image-hotspot.scss was 50% of the wrong box).
+	 * Structural only. width/height/display are set EXPLICITLY (fit-content
+	 * via the custom-unit trick, inline-flex) rather than left unset —
+	 * Elementor's own `.e-con` class otherwise stretches this element to
+	 * 100% of its containing block, which re-centers the Content box (its
+	 * `left: 50%` in image-hotspot.scss is 50% of THIS box) under the whole
+	 * image instead of under the marker.
 	 */
 	protected function define_base_styles(): array {
 		$fit_content = Size_Prop_Type::generate( [ 'size' => 'fit-content', 'unit' => 'custom' ] );
@@ -256,22 +199,25 @@ class AAE_A_Hotspot_Point extends Atomic_Element_Base {
 						->add_prop( 'display', String_Prop_Type::generate( 'inline-flex' ) )
 						->add_prop( 'width', $fit_content )
 						->add_prop( 'height', $fit_content )
+						->add_prop( 'cursor', String_Prop_Type::generate( 'pointer' ) )
 				),
 		];
 	}
 
 	protected function define_default_children() {
 		return [
-			Atomic_Paragraph::generate()
-				->editor_settings( [ 'title' => 'Tooltip Content' ] )
-				->settings( [
-					'paragraph' => Html_V3_Prop_Type::generate( [
-						'content'  => String_Prop_Type::generate( __( 'Tooltip content', 'animation-addons-for-elementor' ) ),
-						'children' => [],
-					] ),
-				] )
+			AAE_A_Hotspot_Marker::generate()
+				->editor_settings( [ 'title' => 'Marker' ] )
+				->build(),
+
+			AAE_A_Hotspot_Content::generate()
+				->editor_settings( [ 'title' => 'Content' ] )
 				->build(),
 		];
+	}
+
+	protected function define_allowed_child_types() {
+		return [ 'e-aae-a-hotspot-marker', 'e-aae-a-hotspot-content' ];
 	}
 
 	protected function get_templates(): array {

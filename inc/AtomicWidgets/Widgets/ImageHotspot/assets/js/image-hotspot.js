@@ -3,9 +3,16 @@
 /**
  * AAE Image Hotspot — frontend runtime.
  *
- * Four independent concerns, each reading its own data-attrs off the root
- * (see aae-a-image-hotspot.html.twig / aae-a-hotspot-point.html.twig):
- *   - Auto-numbering  : fills `.hotspot-number` badges from DOM order.
+ * The Hotspot Point is now the real interactive element (a <button> for
+ * tooltip/lightbox modes, a real <a> for link mode — see
+ * aae-a-hotspot-point.html.twig); its Marker child renders as a plain
+ * non-interactive <span> (aae-a-hotspot-marker.html.twig) and its Content
+ * child as a real styleable box (aae-a-hotspot-content.html.twig). All
+ * click/hover wiring below therefore targets the POINT, not the marker.
+ *
+ * Four independent concerns, each reading its own data-attrs:
+ *   - Auto-numbering  : fills `.hotspot-number` badges (inside the Marker)
+ *                       from DOM order.
  *   - Tooltip (inline): CSS handles hover/"none" triggers entirely; this file
  *                       only wires the click-to-toggle case.
  *   - Lightbox        : teleports a point's content + a scrim into a shared
@@ -48,22 +55,38 @@ const numAttr = ( el, name, fallback ) => {
 
 // ── Auto-numbering (feature: number badges) ──────────────────────────────
 const renumber = ( root ) => {
-	root.querySelectorAll( '.aae-hotspot-point[data-layout="number"] .hotspot-number' )
+	root.querySelectorAll( '.aae-hotspot-marker[data-layout="number"] .hotspot-number' )
 		.forEach( ( el, index ) => { el.textContent = String( index + 1 ); } );
 };
 
 // ── Marker animation class (feature: ripple/ring/glow/bounce + beat/pulse) ─
 const applyMarkerAnim = ( root, containerAnim ) => {
-	root.querySelectorAll( '.aae-hotspot-point' ).forEach( ( point ) => {
-		const marker = point.querySelector( '.aae-hotspot-marker' );
-		if ( ! marker ) {
-			return;
-		}
-		const override = point.dataset.aaeHotspotAnim || 'inherit';
+	root.querySelectorAll( '.aae-hotspot-marker' ).forEach( ( marker ) => {
+		const override = marker.dataset.aaeHotspotAnim || 'inherit';
 		const anim = override !== 'inherit' ? override : containerAnim;
 		marker.classList.remove( ...ANIM_CLASSES );
 		if ( anim && anim !== 'none' ) {
 			marker.classList.add( `anim-${ anim }` );
+		}
+	} );
+};
+
+// ── Content ARIA role (dialog for lightbox, tooltip otherwise) ───────────
+// Content can't read its own ancestor Point's `tooltip_type` in Twig (a
+// child element's twig has no access to a parent's props), so this is set
+// here from the Point's own `data-aae-hotspot-mode` instead.
+const applyContentRoles = ( root ) => {
+	root.querySelectorAll( '.aae-hotspot-point' ).forEach( ( point ) => {
+		const content = point.querySelector( '.aae-hotspot-content' );
+		if ( ! content ) {
+			return;
+		}
+		if ( point.dataset.aaeHotspotMode === 'lightbox' ) {
+			content.setAttribute( 'role', 'dialog' );
+			content.setAttribute( 'aria-modal', 'true' );
+		} else {
+			content.setAttribute( 'role', 'tooltip' );
+			content.removeAttribute( 'aria-modal' );
 		}
 	} );
 };
@@ -77,12 +100,11 @@ const initTooltips = ( root, trigger ) => {
 		if ( point.dataset.aaeHotspotMode !== 'tooltip' ) {
 			return;
 		}
-		const marker = point.querySelector( '.aae-hotspot-marker' );
 		const content = point.querySelector( '.aae-hotspot-content' );
-		if ( ! marker || ! content ) {
+		if ( ! content ) {
 			return;
 		}
-		marker.addEventListener( 'click', ( ev ) => {
+		point.addEventListener( 'click', ( ev ) => {
 			ev.preventDefault();
 			const isOpen = content.classList.contains( 'active' );
 			root.querySelectorAll( '.aae-hotspot-content.active' ).forEach( ( c ) => c.classList.remove( 'active' ) );
@@ -107,10 +129,9 @@ const initLightboxes = ( root ) => {
 		}
 		point.dataset.aaeHspLightboxInit = 'true';
 
-		const marker = point.querySelector( '.aae-hotspot-marker' );
 		const content = point.querySelector( '.aae-hotspot-content' );
 		const closeBtn = content?.querySelector( '.aae-hotspot-close' );
-		if ( ! marker || ! content ) {
+		if ( ! content ) {
 			return;
 		}
 
@@ -127,17 +148,17 @@ const initLightboxes = ( root ) => {
 		const open = () => {
 			scrim.classList.add( 'active' );
 			content.classList.add( 'active' );
-			marker.setAttribute( 'aria-expanded', 'true' );
+			point.setAttribute( 'aria-expanded', 'true' );
 			document.body.style.overflow = 'hidden';
 		};
 		const close = () => {
 			scrim.classList.remove( 'active' );
 			content.classList.remove( 'active' );
-			marker.setAttribute( 'aria-expanded', 'false' );
+			point.setAttribute( 'aria-expanded', 'false' );
 			document.body.style.overflow = '';
 		};
 
-		marker.addEventListener( 'click', ( ev ) => {
+		point.addEventListener( 'click', ( ev ) => {
 			ev.preventDefault();
 			open();
 		} );
@@ -146,6 +167,46 @@ const initLightboxes = ( root ) => {
 		document.addEventListener( 'keydown', ( ev ) => {
 			if ( ev.key === 'Escape' && content.classList.contains( 'active' ) ) {
 				close();
+			}
+		} );
+	} );
+};
+
+// ── Link mode (Point is a plain <div role="link">, not a real <a> — see
+// aae-a-hotspot-point.html.twig for why — so navigation is JS-driven).
+// Trade-off worth knowing: `rel="nofollow"` has no JS equivalent — it's a
+// crawler hint that only means anything on a real <a>, so it's inert here.
+const initLinks = ( root ) => {
+	root.querySelectorAll( '.aae-hotspot-point' ).forEach( ( point ) => {
+		if ( point.dataset.aaeHotspotMode !== 'link' ) {
+			return;
+		}
+		const href = point.dataset.aaeHotspotHref;
+		if ( ! href ) {
+			return;
+		}
+		const target = point.dataset.aaeHotspotTarget || '_self';
+		point.addEventListener( 'click', () => {
+			if ( target === '_blank' ) {
+				window.open( href, '_blank', 'noopener' );
+			} else {
+				window.location.href = href;
+			}
+		} );
+	} );
+};
+
+// ── Keyboard activation — every Point is a plain <div>, so it needs an
+// explicit Enter/Space handler to behave like the native control its
+// role="button"/"link" claims it is; dispatching a real click lets every
+// other init* function above stay tag-agnostic (they just listen for
+// 'click', regardless of what triggered it).
+const initKeyboardActivation = ( root ) => {
+	root.querySelectorAll( '.aae-hotspot-point' ).forEach( ( point ) => {
+		point.addEventListener( 'keydown', ( ev ) => {
+			if ( ev.key === 'Enter' || ev.key === ' ' ) {
+				ev.preventDefault();
+				point.click();
 			}
 		} );
 	} );
@@ -241,6 +302,7 @@ const initImageHotspot = ( root ) => {
 	const refreshVisuals = () => {
 		renumber( root );
 		applyMarkerAnim( root, root.dataset.aaeHspMarkerAnim || 'pulse' );
+		applyContentRoles( root );
 	};
 
 	if ( typeof elementorFrontend !== 'undefined' && elementorFrontend.isEditMode() ) {
@@ -252,8 +314,10 @@ const initImageHotspot = ( root ) => {
 	}
 
 	refreshVisuals();
+	initKeyboardActivation( root );
 	initTooltips( root, root.dataset.aaeHspTrigger || 'hover' );
 	initLightboxes( root );
+	initLinks( root );
 	initTour( root );
 };
 

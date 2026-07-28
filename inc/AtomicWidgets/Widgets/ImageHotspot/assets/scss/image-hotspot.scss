@@ -1,51 +1,43 @@
-// AAE Image Hotspot — marker, tooltip, lightbox, and animation styles.
+// AAE Image Hotspot — structural/behavioral CSS only.
 //
-// Ported the base mechanics from the legacy V3 widget
-// (assets/src/scss/widgets/image-hotspot.scss): same --anim-speed custom
-// property, same 4-direction tooltip placement math with a --tlp-gap
-// additive margin. --pulse-color intentionally defaults to `currentColor`
-// (not a hardcoded hex) so the marker's own Style-tab `color` drives every
-// animation — atomic widgets have no dedicated Content-tab color control
-// (see CLAUDE.md's Range-widget note), so this sidesteps needing one.
+// The Marker's and Content's own LOOK (background, color, border-radius,
+// padding, width, font-size) live on their own real elements' PHP
+// define_base_styles() (AAE_A_Hotspot_Marker / AAE_A_Hotspot_Content) and are
+// editable from Elementor's Style tab — see those classes' docblocks. What's
+// left here is narrowly: (a) keyframe animations and their pseudo-elements
+// (no PropType expresses those), (b) the one genuine "different box model
+// per layout value" case (dot/icon/number need an equal width+height square;
+// text/icon-text need auto width) that a single base-style class can't
+// express, and (c) "look when a runtime-toggled class/mode is present" rules
+// (tooltip/lightbox placement, portal mechanics, tour highlight) — the exact
+// same dividing line ToggleSwitcher's `.show`/`.e--selected`/`.active` rules
+// draw in toggle-switcher.scss.
+//
+// --anim-speed is set container-wide via inline style (aae-a-image-hotspot.
+// html.twig); --pulse-color defaults to `currentColor` so the Marker's own
+// (Style-tab) `color` drives every animation.
+
+// ── Marker: the one legitimate per-layout box-model difference ───────────
+// `.elementor` prefix intentionally matches (then exceeds) the specificity of
+// the base-style rule Elementor generates for the Marker's own 'base' key
+// (`.elementor .e-aae-a-hotspot-marker-base { padding: ... }`, specificity
+// 0,2,0) — without it this tie could lose to the base rule depending on
+// stylesheet order (the exact class of bug documented in this plugin's
+// CLAUDE.md under "CSS specificity tie").
+.elementor .aae-hotspot-marker[data-layout="dot"],
+.elementor .aae-hotspot-marker[data-layout="icon"],
+.elementor .aae-hotspot-marker[data-layout="number"] {
+	width: 32px;
+	height: 32px;
+	padding: 0;
+}
 
 .aae-hotspot-marker {
+	// Anchor for the ::before/::after pseudo-elements every animation below
+	// uses — structural, not a "look" (background/radius/etc. are the
+	// Marker's own base style).
 	position: relative;
-	background: #000;
-	border-radius: 100px;
-	cursor: pointer;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	gap: 5px;
-	border: 0;
-	padding: 0;
-	color: #fff;
-	fill: #fff;
-	text-decoration: none;
-	font-family: inherit;
-	font-size: 16px;
-	line-height: 1.5;
 	--pulse-color: currentColor;
-
-	&.dot,
-	&.icon,
-	&.number {
-		width: 30px;
-		height: 30px;
-	}
-
-	&.icon {
-		font-size: 18px;
-	}
-
-	&.number {
-		font-weight: 600;
-	}
-
-	&.text,
-	&.icon-text {
-		padding: 6px 16px;
-	}
 }
 
 .aae-hotspot-marker-icon,
@@ -66,23 +58,21 @@
 	line-height: 1;
 }
 
-// ── Inline tooltip ───────────────────────────────────────────────────────
+// ── Inline tooltip placement/visibility (Content's own look is base-style) ─
 .aae-hotspot-point[data-aae-hotspot-mode="tooltip"] .aae-hotspot-content {
 	position: absolute;
-	width: 260px;
-	background: #e8e8e8;
-	color: #222;
-	padding: 15px;
 	opacity: 0;
 	visibility: hidden;
 	pointer-events: none;
 	transition: opacity 0.25s ease, visibility 0s 0.25s;
 	z-index: 20;
 
+	// Inherits Content's OWN background (Style tab) rather than a hardcoded
+	// hex, so the arrow always matches whatever color the builder picked.
 	&::after {
 		position: absolute;
 		content: "";
-		background-color: #e8e8e8;
+		background-color: inherit;
 	}
 
 	&.active {
@@ -104,7 +94,8 @@
 	pointer-events: auto;
 }
 
-// 4-direction placement, ported from V3's .aae--tlp-position-* blocks.
+// 4-direction placement, ported from the legacy V3 widget's
+// .aae--tlp-position-* blocks — pure geometry, no PropType covers it.
 .aae-image-hotspot[data-aae-hsp-tooltip-pos="top"] .aae-hotspot-point[data-aae-hotspot-mode="tooltip"] .aae-hotspot-content {
 	bottom: calc(100% + 15px);
 	left: 50%;
@@ -181,7 +172,10 @@
 	text-align: right;
 }
 
-// ── Lightbox ─────────────────────────────────────────────────────────────
+// ── Lightbox mechanics (Content's own look is base-style; this is only
+// the fixed/centered/portal geometry, which legitimately differs from the
+// tooltip mode above and can't be a base-style prop since a child element
+// can't read its parent Point's `tooltip_type`) ───────────────────────────
 // Shared portal appended once to <body> by image-hotspot.js (mirrors
 // offcanvas.js's getPortal()) — an `.elementor`-classed host so teleported
 // content keeps matching its `.elementor .e-xxx` scoped atomic base styles.
@@ -215,13 +209,13 @@
 	top: 50%;
 	left: 50%;
 	z-index: 99999;
-	width: min(90vw, 560px);
+	// Content's own base-style `width` still applies; this only caps it so a
+	// wide custom width can't overflow a small viewport.
+	max-width: 90vw;
 	max-height: 85vh;
 	overflow-y: auto;
-	background: #fff;
-	color: #222;
-	padding: 32px;
-	border-radius: 8px;
+	// Elevation is modal-specific chrome, not part of the shared resting
+	// look, so it stays here rather than on Content's base style.
 	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
 	opacity: 0;
 	visibility: hidden;
@@ -238,20 +232,12 @@
 	}
 }
 
-.aae-hotspot-close {
-	position: absolute;
-	top: 12px;
-	right: 12px;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	width: 28px;
-	height: 28px;
-	background: transparent;
-	border: 0;
-	cursor: pointer;
-	color: inherit;
-	padding: 0;
+// The Close button (AAE_A_Hotspot_Close) is seeded unconditionally, but only
+// makes sense in lightbox mode — no PropType expresses "hidden unless an
+// ancestor is in a given mode", same reasoning as ToggleSwitcher's
+// `.aae-ts-pane:not(.show)`.
+.aae-hotspot-point:not([data-aae-hotspot-mode="lightbox"]) .aae-hotspot-close {
+	display: none;
 }
 
 // ── Guided tour highlight ────────────────────────────────────────────────

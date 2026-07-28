@@ -1,0 +1,23 @@
+{#
+  AAE Hotspot Content — the tooltip/lightbox box. `role`/`aria-modal` are set
+  by image-hotspot.js at init (it already reads the ancestor Point's
+  data-aae-hotspot-mode for the JS behaviour, so it sets these there too,
+  rather than needing this element to know its own mode).
+#}
+{% set classes = ['aae-hotspot-content', 'e-con', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') | trim %}
+
+<div class="{{ classes }} {{ editor_classes | default('') }}"
+	data-id="{{ id }}"
+	data-element_type="{{ type }}"
+	data-e-type="{{ type }}"
+	data-interaction-id="{{ interaction_id | default('') }}"
+	{% if settings._cssid is defined and settings._cssid is not empty %}
+		id="{{ settings._cssid | e('html_attr') }}"
+	{% endif %}
+	{% if settings.attributes is defined and settings.attributes is not empty %}
+		{{ settings.attributes | raw }}
+	{% endif %}
+	{{ editor_attributes | default('') | raw }}>
+
+	{{ children_placeholder | raw }}
+</div>

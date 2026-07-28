@@ -394,6 +394,13 @@ final class Atomic
 			// Hotspots element-control, never dragged from the panel directly
 			// (same reasoning as aae-a-slide).
 			'aae-a-hotspot-point',
+			// Seeded as the Hotspot Point's default children so each part
+			// (marker look, content box look, lightbox close button) is its
+			// own Style-tab-editable element — always-on for the same reason
+			// as the Flip Box / Toggle Switcher parts above.
+			'aae-a-hotspot-marker',
+			'aae-a-hotspot-content',
+			'aae-a-hotspot-close',
 		];
 		if (in_array($slug, $internal_widgets)) {
 			return true;
@@ -2529,6 +2536,54 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			'aae-a-hotspot-marker' => [
+				'label'        => 'Hotspot Marker (Internal)',
+				'description'  => 'Internal marker (icon/dot/text) for the AAE Hotspot Point.',
+				'icon'         => 'eicon-point',
+				'is_pro'       => true,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'is_internal'  => true,
+				'default'      => true,
+				'keywords'     => [ 'hotspot marker', 'internal' ],
+				'category'     => 'general',
+				'order'        => 22,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-hotspot-content' => [
+				'label'        => 'Hotspot Content (Internal)',
+				'description'  => 'Internal tooltip/lightbox box for the AAE Hotspot Point.',
+				'icon'         => 'eicon-post-content',
+				'is_pro'       => true,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'is_internal'  => true,
+				'default'      => true,
+				'keywords'     => [ 'hotspot content', 'internal' ],
+				'category'     => 'general',
+				'order'        => 23,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-hotspot-close' => [
+				'label'        => 'Hotspot Close (Internal)',
+				'description'  => 'Internal close button for the AAE Hotspot Point\'s lightbox.',
+				'icon'         => 'eicon-close',
+				'is_pro'       => true,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'is_internal'  => true,
+				'default'      => true,
+				'keywords'     => [ 'hotspot close', 'internal' ],
+				'category'     => 'general',
+				'order'        => 24,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
 			'aae-a-flip-box-title' => [
 				'label'        => 'Flip Box Title (Internal)',
 				'description'  => 'Internal face title used by the AAE Flip Box front/back faces.',
@@ -3857,6 +3912,24 @@ final class Atomic
 		'aae-a-hotspot-point' => [
 			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ImageHotspot\AAE_A_Hotspot_Point',
 			'file'       => 'Widgets/ImageHotspot/class-aae-a-hotspot-point.php',
+			'has_script' => false,
+		],
+
+		'aae-a-hotspot-marker' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ImageHotspot\AAE_A_Hotspot_Marker',
+			'file'       => 'Widgets/ImageHotspot/Parts/class-aae-a-hotspot-marker.php',
+			'has_script' => false,
+		],
+
+		'aae-a-hotspot-content' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ImageHotspot\AAE_A_Hotspot_Content',
+			'file'       => 'Widgets/ImageHotspot/class-aae-a-hotspot-content.php',
+			'has_script' => false,
+		],
+
+		'aae-a-hotspot-close' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ImageHotspot\AAE_A_Hotspot_Close',
+			'file'       => 'Widgets/ImageHotspot/Parts/class-aae-a-hotspot-close.php',
 			'has_script' => false,
 		],
 

@@ -1,30 +1,19 @@
 {#
-  AAE Hotspot Point.
+  AAE Hotspot Point — always a plain <div>, NEVER a real <button>/<a>.
 
-  Renders: the marker (a <button> normally, or a real <a> when tooltip_type is
-  "link") + one .aae-hotspot-content wrapper that always contains
-  children_placeholder — used as an inline tooltip, a teleported lightbox, or
-  left inert in link mode. image-hotspot.js decides which behaviour applies
-  from data-aae-hotspot-mode; nothing here is JS-computed.
+  Content (a child of this element) always seeds a real <button> (the Close
+  control) and may contain arbitrary user content, including links/buttons —
+  a <button> or <a> can't legally contain another interactive element; real
+  browsers auto-close the outer tag the instant they parse the inner one,
+  silently popping everything after it out as trailing siblings (this is
+  exactly the bug that had Close + the tooltip paragraph escaping onto the
+  frontend, even though the editor — which builds the DOM via direct JS
+  calls, never by parsing an HTML string — never showed it). image-hotspot.js
+  wires click + Enter/Space keyboard activation (and link navigation for
+  link mode) onto this div instead.
 #}
-{% import 'elementor/macros' as m %}
 {% set mode = settings.tooltip_type | default('tooltip') %}
-{% set layout = settings.hsp_layout | default('dot') %}
-{% set anim = settings.marker_anim_override | default('inherit') %}
-{% set icon_url = settings.hsp_icon.url | default('') %}
 {% set classes = ['aae-hotspot-point', 'e-con', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') | trim %}
-
-{% set marker_inner %}
-	{% if layout == 'icon' or layout == 'icon-text' %}
-		<span class="aae-hotspot-marker-icon" aria-hidden="true">{% if icon_url is not empty %}<img src="{{ icon_url | e('html_attr') }}" alt="">{% else %}<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="1em" height="1em" fill="currentColor"><circle cx="12" cy="12" r="8"/></svg>{% endif %}</span>
-	{% endif %}
-	{% if layout == 'text' or layout == 'icon-text' %}
-		<span class="aae-hotspot-marker-text">{{ settings.hsp_text | default('') }}</span>
-	{% endif %}
-	{% if layout == 'number' %}
-		<span class="hotspot-number" aria-hidden="true"></span>
-	{% endif %}
-{% endset %}
 
 <div class="{{ classes }} {{ editor_classes | default('') }}"
 	data-id="{{ id }}"
@@ -32,9 +21,20 @@
 	data-e-type="{{ type }}"
 	data-interaction-id="{{ interaction_id | default(id) }}"
 	data-aae-hotspot-mode="{{ mode }}"
-	data-aae-hotspot-anim="{{ anim }}"
-	data-layout="{{ layout }}"
 	style="inset-inline-start: {{ settings.pos_left | default(50) }}%; inset-block-start: {{ settings.pos_top | default(50) }}%;"
+	role="{{ mode == 'link' ? 'link' : 'button' }}"
+	tabindex="0"
+	{% if mode == 'link' %}
+		{% if settings.tlp_link.href is defined and settings.tlp_link.href is not empty %}
+			data-aae-hotspot-href="{{ settings.tlp_link.href | e('html_attr') }}"
+			data-aae-hotspot-target="{{ settings.tlp_link.target | default('_self') | e('html_attr') }}"
+		{% endif %}
+		aria-label="{{ 'Open link' | e('html_attr') }}"
+	{% else %}
+		aria-haspopup="{{ mode == 'lightbox' ? 'dialog' : 'true' }}"
+		aria-expanded="false"
+		aria-label="{{ 'Toggle hotspot content' | e('html_attr') }}"
+	{% endif %}
 	{% if settings._cssid is defined and settings._cssid is not empty %}
 		id="{{ settings._cssid | e('html_attr') }}"
 	{% endif %}
@@ -42,26 +42,5 @@
 		{{ settings.attributes | raw }}
 	{% endif %}
 	{{ editor_attributes | default('') | raw }}>
-
-	{% if mode == 'link' %}
-		<a class="aae-hotspot-icon aae-hotspot-marker {{ layout }}"
-			{{- ' ' }}{{ m.render_link_attributes(settings.tlp_link | default(null)) }}
-			{% if settings.tlp_link_nofollow %} rel="nofollow"{% endif %}
-			aria-label="{{ 'Open link' | e('html_attr') }}">{{ marker_inner | raw }}</a>
-	{% else %}
-		<button type="button" class="aae-hotspot-icon aae-hotspot-marker {{ layout }}"
-			aria-haspopup="{{ mode == 'lightbox' ? 'dialog' : 'true' }}"
-			aria-expanded="false"
-			aria-label="{{ 'Toggle hotspot content' | e('html_attr') }}">{{ marker_inner | raw }}</button>
-	{% endif %}
-
-	<div class="aae-hotspot-content"
-		{% if mode == 'lightbox' %}role="dialog" aria-modal="true"{% else %}role="tooltip"{% endif %}>
-		{% if mode == 'lightbox' %}
-			<button type="button" class="aae-hotspot-close" aria-label="{{ 'Close' | e('html_attr') }}">
-				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="1em" height="1em" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-			</button>
-		{% endif %}
-		{{ children_placeholder | raw }}
-	</div>
+	{{ children_placeholder | raw }}
 </div>
