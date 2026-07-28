@@ -179,18 +179,11 @@ class AAE_A_Post_Pagination_Next extends Atomic_Element_Base {
 		$ctx  = Render_Context::get( AAE_A_Post_Pagination::class );
 		$next = isset( $ctx['next'] ) ? $ctx['next'] : null;
 
-		// While Infinite Scroll is on, Prev/Next are rendered disabled (same
-		// aria-disabled/tabindex=-1/no-href/.aae-pp-disabled path already
-		// used when there's simply no adjacent post) — a real page navigation
-		// away from the current post would break the infinite-scroll flow the
-		// widget is otherwise driving.
-		$infinite_active = ! empty( $ctx['settings']['enable_infinite_scroll'] );
-
 		return array_merge( $this->build_base_template_context(), [
 			'nav_role'      => 'next',
 			'nav_url'       => $next ? $next['url'] : '',
 			'nav_title'     => $next ? $next['title'] : '',
-			'nav_available' => (bool) $next && ! $infinite_active,
+			'nav_available' => (bool) $next,
 		] );
 	}
 }

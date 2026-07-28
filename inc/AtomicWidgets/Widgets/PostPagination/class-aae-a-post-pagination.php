@@ -48,7 +48,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 require_once __DIR__ . '/class-aae-a-post-pagination-prev.php';
 require_once __DIR__ . '/class-aae-a-post-pagination-next.php';
-require_once __DIR__ . '/class-aae-a-post-pagination-loader.php';
 require_once __DIR__ . '/../LoopGrid/class-aae-query-chips-control.php';
 
 use WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_Query_Chips_Control;
@@ -84,7 +83,7 @@ class AAE_A_Post_Pagination extends Atomic_Element_Base {
 	}
 
 	public function get_keywords() {
-		return [ 'post', 'nav', 'navigation', 'prev', 'next', 'pagination', 'infinite scroll', 'atomic', 'dynamic' ];
+		return [ 'post', 'nav', 'navigation', 'prev', 'next', 'pagination', 'atomic', 'dynamic' ];
 	}
 
 	protected static function define_props_schema(): array {
@@ -105,10 +104,6 @@ class AAE_A_Post_Pagination extends Atomic_Element_Base {
 
 		$not_inline = Dependency_Manager::make()
 			->where( [ 'operator' => 'ne', 'path' => [ 'display_mode' ], 'value' => 'inline', 'effect' => 'hide' ] )
-			->get();
-
-		$infinite_off = Dependency_Manager::make()
-			->where( [ 'operator' => 'eq', 'path' => [ 'enable_infinite_scroll' ], 'value' => true, 'effect' => 'hide' ] )
 			->get();
 
 		// Terms/Posts each get an exclusive Exclude/Include toggle (a plain
@@ -165,23 +160,6 @@ class AAE_A_Post_Pagination extends Atomic_Element_Base {
 			'enable_keyboard_nav' => Boolean_Prop_Type::make()->default( false ),
 			'enable_swipe'        => Boolean_Prop_Type::make()->default( false ),
 			'enable_prefetch'     => Boolean_Prop_Type::make()->default( true ),
-
-			// Infinite scroll. No manual threshold/target: an IntersectionObserver
-			// watches the Prev/Next buttons themselves (see post-pagination.js) —
-			// since they always end up trailing the last-loaded post (see
-			// `initInfiniteScroll`'s insert-before-root strategy), that IS "near
-			// the end of the current post," with no pixel number to configure.
-			'enable_infinite_scroll' => Boolean_Prop_Type::make()->default( false ),
-			'no_more_text'           => String_Prop_Type::make()->default(
-				__( "You've reached the end.", 'animation-addons-for-elementor' )
-			)->set_dependencies( $infinite_off ),
-
-			// What the loaded-post block actually renders — each is also a
-			// server-side switch (ajax_post_pagination_load skips fetching
-			// content/image entirely when off, not just hiding them client-side).
-			'infinite_fetch_title'   => Boolean_Prop_Type::make()->default( true )->set_dependencies( $infinite_off ),
-			'infinite_fetch_content' => Boolean_Prop_Type::make()->default( true )->set_dependencies( $infinite_off ),
-			'infinite_fetch_image'   => Boolean_Prop_Type::make()->default( true )->set_dependencies( $infinite_off ),
 
 			// Visibility. Each is an independent widget-level "hide the whole
 			// nav" switch — distinct from the always-on per-button hiding
@@ -335,26 +313,6 @@ class AAE_A_Post_Pagination extends Atomic_Element_Base {
 				] ),
 
 			Section::make()
-				->set_id( 'aae_post_pagination_infinite' )
-				->set_label( __( 'Infinite Scroll', 'animation-addons-for-elementor' ) )
-				->set_items( [
-					Switch_Control::bind_to( 'enable_infinite_scroll' )
-						->set_label( __( 'Enable Infinite Scroll', 'animation-addons-for-elementor' ) ),
-
-					Text_Control::bind_to( 'no_more_text' )
-						->set_label( __( 'End-Of-Posts Text', 'animation-addons-for-elementor' ) ),
-
-					Switch_Control::bind_to( 'infinite_fetch_title' )
-						->set_label( __( 'Fetch Title', 'animation-addons-for-elementor' ) ),
-
-					Switch_Control::bind_to( 'infinite_fetch_content' )
-						->set_label( __( 'Fetch Content', 'animation-addons-for-elementor' ) ),
-
-					Switch_Control::bind_to( 'infinite_fetch_image' )
-						->set_label( __( 'Fetch Featured Image', 'animation-addons-for-elementor' ) ),
-				] ),
-
-			Section::make()
 				->set_id( 'aae_post_pagination_visibility' )
 				->set_label( __( 'Visibility', 'animation-addons-for-elementor' ) )
 				->set_items( [
@@ -402,30 +360,20 @@ class AAE_A_Post_Pagination extends Atomic_Element_Base {
 	}
 
 	protected function define_allowed_child_types() {
-		return [ 'e-aae-a-post-pagination-prev', 'e-aae-a-post-pagination-next', 'e-aae-a-post-pagination-loader' ];
+		return [ 'e-aae-a-post-pagination-prev', 'e-aae-a-post-pagination-next' ];
 	}
 
 	protected function define_default_children() {
-		// Prev/Next NOT locked, deliberately: unlike Loop Grid's structural
-		// Nav/Prev/Next wrappers (pure scaffolding), these ARE the actual
-		// buttons — label text, icon, and style are exactly what a user
-		// drops this widget to customize.
-		//
-		// The Loader is a real child too (not locked either) so its size/
-		// border/colors are editable from the Style tab — see
-		// class-aae-a-post-pagination-loader.php. It sits hidden in the tree
-		// until post-pagination.js clones it during an infinite-scroll fetch
-		// (see initInfiniteScroll/showLoader) — never removed/locked, since a
-		// user styling it needs to select it like any other element.
+		// NOT locked, deliberately: unlike Loop Grid's structural Nav/Prev/
+		// Next wrappers (pure scaffolding), these ARE the actual buttons —
+		// label text, icon, and style are exactly what a user drops this
+		// widget to customize.
 		return [
 			AAE_A_Post_Pagination_Prev::generate()
 				->editor_settings( [ 'title' => 'Previous Post' ] )
 				->build(),
 			AAE_A_Post_Pagination_Next::generate()
 				->editor_settings( [ 'title' => 'Next Post' ] )
-				->build(),
-			AAE_A_Post_Pagination_Loader::generate()
-				->editor_settings( [ 'title' => 'Infinite Scroll Loader' ] )
 				->build(),
 		];
 	}
@@ -457,8 +405,7 @@ class AAE_A_Post_Pagination extends Atomic_Element_Base {
 				'context'     => array_merge(
 					$adjacent,
 					[
-						'post_id'      => $post_id,
-						'settings'     => $s,
+						'post_id' => $post_id,
 					]
 				),
 			],
@@ -467,14 +414,12 @@ class AAE_A_Post_Pagination extends Atomic_Element_Base {
 
 	/**
 	 * Config JSON for the frontend runtime (post-pagination.js): everything it needs
-	 * to wire keyboard nav / swipe / prefetch / sticky-reveal / infinite
-	 * scroll without re-deriving anything server already resolved.
+	 * to wire keyboard nav / swipe / prefetch / sticky-reveal without
+	 * re-deriving anything server already resolved.
 	 */
 	protected function build_template_context(): array {
 		$ctx = Render_Context::get( self::class );
 		$s   = $this->get_atomic_settings();
-
-		$infinite_scroll_on = ! empty( $s['enable_infinite_scroll'] );
 
 		$cfg = [
 			'postId'           => isset( $ctx['post_id'] ) ? (int) $ctx['post_id'] : 0,
@@ -483,19 +428,9 @@ class AAE_A_Post_Pagination extends Atomic_Element_Base {
 			'next'             => isset( $ctx['next'] ) ? $ctx['next'] : null,
 			'displayMode'      => isset( $s['display_mode'] ) ? $s['display_mode'] : 'inline',
 			'revealOffset'     => isset( $s['scroll_reveal_offset'] ) ? (int) $s['scroll_reveal_offset'] : 300,
-			// Suppressed while Infinite Scroll drives navigation — a keyboard
-			// arrow / swipe / prefetched hover-link that jumped to a full new
-			// page would otherwise fight the append-in-place experience the
-			// buttons are already rendered disabled for (see
-			// AAE_A_Post_Pagination_{Prev,Next}::build_template_context()).
-			'keyboardNav'      => ! $infinite_scroll_on && ! empty( $s['enable_keyboard_nav'] ),
-			'swipe'            => ! $infinite_scroll_on && ! empty( $s['enable_swipe'] ),
-			'prefetch'         => ! $infinite_scroll_on && ! empty( $s['enable_prefetch'] ),
-			'infiniteScroll'   => $infinite_scroll_on,
-			'noMoreText'       => isset( $s['no_more_text'] ) ? $s['no_more_text'] : '',
-			'settings'         => isset( $ctx['settings'] ) ? $ctx['settings'] : [],
-			'nonce'            => wp_create_nonce( 'aae_post_pagination' ),
-			'ajaxUrl'          => admin_url( 'admin-ajax.php' ),
+			'keyboardNav'      => ! empty( $s['enable_keyboard_nav'] ),
+			'swipe'            => ! empty( $s['enable_swipe'] ),
+			'prefetch'         => ! empty( $s['enable_prefetch'] ),
 			// Which fields show is no longer decided here — it's whichever
 			// child pieces the user kept inside the real "Hover Preview Card"
 			// element (see class-aae-a-post-pagination-preview.php) nested in
@@ -548,8 +483,8 @@ class AAE_A_Post_Pagination extends Atomic_Element_Base {
 
 	/**
 	 * Resolve the previous/next post for $current_id under the given
-	 * (already-unwrapped, plain) settings. Public + static so the infinite
-	 * scroll AJAX endpoint (which has no element instance) can reuse it.
+	 * (already-unwrapped, plain) settings. Public + static so callers
+	 * without an element instance can reuse it.
 	 *
 	 * @return array{prev: ?array, next: ?array, post_type: string}
 	 */
@@ -642,9 +577,7 @@ class AAE_A_Post_Pagination extends Atomic_Element_Base {
 	/**
 	 * id/title/url plus the Hover Preview Card fields (thumbnail, excerpt,
 	 * category, date, author). The extra fields are cheap (one call each) so
-	 * they're always resolved rather than gated behind enable_hover_preview —
-	 * simpler, and this same summary already gets reused by the infinite
-	 * scroll AJAX endpoint's "next" payload.
+	 * they're always resolved rather than gated behind enable_hover_preview.
 	 */
 	private static function post_summary( int $id, array $settings = [] ): array {
 		$taxonomy = ( isset( $settings['constrain_taxonomy'] ) && is_string( $settings['constrain_taxonomy'] ) && 'none' !== $settings['constrain_taxonomy'] && taxonomy_exists( $settings['constrain_taxonomy'] ) )

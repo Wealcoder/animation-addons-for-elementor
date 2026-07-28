@@ -330,7 +330,6 @@ final class Atomic
 			// the Loop Grid pieces above).
 			'aae-a-post-pagination-prev',
 			'aae-a-post-pagination-next',
-			'aae-a-post-pagination-loader',
 			'aae-a-post-pagination-preview',
 			'aae-a-post-pagination-preview-image',
 			'aae-a-post-pagination-preview-category',
@@ -923,7 +922,7 @@ final class Atomic
 
 			'aae-a-post-pagination' => [
 				'label'        => 'Post Pagination',
-				'description'  => 'Prev/Next single-post navigation — taxonomy-constrained, orderable (date/title/menu-order/custom-field), loop-around, sticky-bar/side-arrow display modes, keyboard/swipe/prefetch, and optional infinite scroll. Works on WooCommerce single Product pages too.',
+				'description'  => 'Prev/Next single-post navigation — taxonomy-constrained, orderable (date/title/menu-order/custom-field), loop-around, sticky-bar/side-arrow display modes, keyboard/swipe/prefetch, and a customizable Hover Preview Card. Works on WooCommerce single Product pages too.',
 				'icon'         => 'eicon-post-navigation',
 				'is_pro'       => false,
 				'is_extension' => false,
@@ -936,7 +935,6 @@ final class Atomic
 					'prev',
 					'next',
 					'pagination',
-					'infinite scroll',
 					'dynamic',
 				],
 				'category'     => 'general',
@@ -963,15 +961,6 @@ final class Atomic
 				'hide_from_panel' => true,
 			],
 
-			'aae-a-post-pagination-loader' => [
-				'is_internal'  => true,
-				'label'        => 'Infinite Scroll Loader',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Loader',
-				'icon'         => 'eicon-loading',
-				'keywords'     => [ 'post', 'loader', 'spinner', 'loading', 'infinite scroll' ],
-				'hide_from_panel' => true,
-			],
-
 			'aae-a-post-pagination-preview' => [
 				'is_internal'  => true,
 				'label'        => 'Hover Preview Card',
@@ -983,55 +972,55 @@ final class Atomic
 
 			'aae-a-post-pagination-preview-image' => [
 				'is_internal'  => true,
-				'label'        => 'Preview Thumbnail',
+				'label'        => 'Post Pagination Preview Thumbnail',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Image',
 				'icon'         => 'eicon-image',
-				'keywords'     => [ 'post', 'preview', 'thumbnail', 'image' ],
+				'keywords'     => [ 'post', 'pagination', 'preview', 'thumbnail', 'image' ],
 				'hide_from_panel' => true,
 			],
 
 			'aae-a-post-pagination-preview-category' => [
 				'is_internal'  => true,
-				'label'        => 'Preview Category',
+				'label'        => 'Post Pagination Preview Category',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Category',
 				'icon'         => 'eicon-tags',
-				'keywords'     => [ 'post', 'preview', 'category' ],
+				'keywords'     => [ 'post', 'pagination', 'preview', 'category' ],
 				'hide_from_panel' => true,
 			],
 
 			'aae-a-post-pagination-preview-title' => [
 				'is_internal'  => true,
-				'label'        => 'Preview Title',
+				'label'        => 'Post Pagination Preview Title',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Title',
 				'icon'         => 'eicon-t-letter',
-				'keywords'     => [ 'post', 'preview', 'title' ],
+				'keywords'     => [ 'post', 'pagination', 'preview', 'title' ],
 				'hide_from_panel' => true,
 			],
 
 			'aae-a-post-pagination-preview-date' => [
 				'is_internal'  => true,
-				'label'        => 'Preview Date',
+				'label'        => 'Post Pagination Preview Date',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Date',
 				'icon'         => 'eicon-calendar',
-				'keywords'     => [ 'post', 'preview', 'date' ],
+				'keywords'     => [ 'post', 'pagination', 'preview', 'date' ],
 				'hide_from_panel' => true,
 			],
 
 			'aae-a-post-pagination-preview-author' => [
 				'is_internal'  => true,
-				'label'        => 'Preview Author',
+				'label'        => 'Post Pagination Preview Author',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Author',
 				'icon'         => 'eicon-user-circle-o',
-				'keywords'     => [ 'post', 'preview', 'author' ],
+				'keywords'     => [ 'post', 'pagination', 'preview', 'author' ],
 				'hide_from_panel' => true,
 			],
 
 			'aae-a-post-pagination-preview-excerpt' => [
 				'is_internal'  => true,
-				'label'        => 'Preview Excerpt',
+				'label'        => 'Post Pagination Preview Excerpt',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Excerpt',
 				'icon'         => 'eicon-text-align-left',
-				'keywords'     => [ 'post', 'preview', 'excerpt' ],
+				'keywords'     => [ 'post', 'pagination', 'preview', 'excerpt' ],
 				'hide_from_panel' => true,
 			],
 
@@ -2993,11 +2982,6 @@ final class Atomic
 		add_action('wp_ajax_aae_loop_grid_page', [$this, 'ajax_loop_grid_page']);
 		add_action('wp_ajax_nopriv_aae_loop_grid_page', [$this, 'ajax_loop_grid_page']);
 
-		// AAE Post Pagination: infinite-scroll next-post fetch (title + rendered
-		// content). Public — available to logged-out visitors too.
-		add_action('wp_ajax_aae_post_pagination_load', [$this, 'ajax_post_pagination_load']);
-		add_action('wp_ajax_nopriv_aae_post_pagination_load', [$this, 'ajax_post_pagination_load']);
-
 		// AAE Post Pagination: invalidate the cached ordered-id lists for a post
 		// type the moment content actually changes, rather than trusting the
 		// transient TTL alone.
@@ -3327,11 +3311,6 @@ final class Atomic
 			'aae-a-post-pagination-next' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Next',
 				'file' => 'Widgets/PostPagination/class-aae-a-post-pagination-next.php',
-			],
-
-			'aae-a-post-pagination-loader' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Loader',
-				'file' => 'Widgets/PostPagination/class-aae-a-post-pagination-loader.php',
 			],
 
 			'aae-a-post-pagination-preview' => [
@@ -4321,93 +4300,6 @@ final class Atomic
 			'html'      => $html,
 			'paged'     => $paged,
 			'max_pages' => $max_pages,
-		]);
-	}
-
-	/**
-	 * AAE Post Pagination — infinite scroll: fetch the next post's title + rendered
-	 * content, plus that post's OWN next-adjacent (so the client can keep
-	 * chaining further scrolls without a second round trip to resolve it).
-	 *
-	 * Reuses AAE_A_Post_Content::render_post_content() for the content body
-	 * (same builder-content / Theme-Builder-aware pipeline the frontend
-	 * already uses), captured via output buffering — so an Elementor-built
-	 * post loads identically here to how it renders on its own page.
-	 */
-	public function ajax_post_pagination_load() {
-		check_ajax_referer('aae_post_pagination', 'nonce');
-
-		$post_id = isset($_POST['post_id']) ? absint($_POST['post_id']) : 0;
-		$post    = $post_id ? get_post($post_id) : null;
-
-		if (! $post || 'publish' !== $post->post_status) {
-			wp_send_json_error(['message' => 'Post not found.'], 404);
-		}
-
-		$settings = [];
-		if (isset($_POST['settings'])) {
-			$decoded = json_decode(wp_unslash($_POST['settings']), true);
-			if (is_array($decoded)) {
-				$settings = $decoded;
-			}
-		}
-
-		global $post; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
-		$post = get_post($post_id);
-		setup_postdata($post);
-
-		// Editor toggles for what the loaded-post block actually shows —
-		// content/image are skipped SERVER-SIDE (not just hidden client-side)
-		// when off, so a "Fetch Content off" page doesn't pay for rendering
-		// or transferring content it'll never display.
-		$fetch_title   = ! isset($settings['infinite_fetch_title']) || $settings['infinite_fetch_title'];
-		$fetch_content = ! isset($settings['infinite_fetch_content']) || $settings['infinite_fetch_content'];
-		$fetch_image   = ! isset($settings['infinite_fetch_image']) || $settings['infinite_fetch_image'];
-
-		// Always resolved regardless of the "Fetch Title" toggle — the
-		// browser tab title / URL bar (document.title + pushState) should
-		// stay accurate even when the visible in-page heading is turned off.
-		$title = get_the_title($post_id);
-
-		$content_html = null;
-		if ($fetch_content) {
-			$post_content_file = __DIR__ . '/Widgets/PostContent/class-aae-a-post-content.php';
-			if (! class_exists('\WCF_ADDONS\AtomicWidgets\Widgets\PostContent\AAE_A_Post_Content') && file_exists($post_content_file)) {
-				require_once $post_content_file;
-			}
-
-			ob_start();
-			if (class_exists('\WCF_ADDONS\AtomicWidgets\Widgets\PostContent\AAE_A_Post_Content')) {
-				try {
-					$pc = new \WCF_ADDONS\AtomicWidgets\Widgets\PostContent\AAE_A_Post_Content([], null);
-					$pc->render_post_content(false, false);
-				} catch (\Throwable $e) {
-					the_content();
-				}
-			} else {
-				the_content();
-			}
-			$content_html = ob_get_clean();
-		}
-
-		$image_html = null;
-		if ($fetch_image && has_post_thumbnail($post_id)) {
-			$image_html = get_the_post_thumbnail($post_id, 'large');
-		}
-
-		require_once __DIR__ . '/Widgets/PostPagination/class-aae-a-post-pagination.php';
-		$adjacent = \WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination::resolve_adjacent($post_id, $settings);
-
-		wp_reset_postdata();
-
-		wp_send_json_success([
-			'post_id'    => $post_id,
-			'title'      => $title,
-			'show_title' => $fetch_title,
-			'permalink'  => get_permalink($post_id),
-			'content'    => $content_html,
-			'image'      => $image_html,
-			'next'       => $adjacent['next'],
 		]);
 	}
 

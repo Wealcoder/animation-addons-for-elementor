@@ -44,15 +44,24 @@ class AAE_A_Post_Pagination_Preview_Image extends Atomic_Widget_Base {
 	}
 
 	public function get_title() {
-		return esc_html__( 'Preview Thumbnail', 'animation-addons-for-elementor' );
+		return esc_html__( 'Post Pagination Preview Thumbnail', 'animation-addons-for-elementor' );
 	}
 
 	public function get_icon() {
 		return 'eicon-image';
 	}
 
+	/**
+	 * Visible in Elementor's own widget panel (unlike Prev/Next/the wrapper
+	 * card) — this is a real recovery path: `define_allowed_child_types()`
+	 * on AAE_A_Post_Pagination_Preview already restricts where it can
+	 * actually be DROPPED, so making it panel-visible only means a user who
+	 * accidentally deletes it can search "Post Pagination Preview
+	 * Thumbnail" and drag a fresh one back in — it still can't land
+	 * anywhere else.
+	 */
 	public function should_show_in_panel() {
-		return false;
+		return true;
 	}
 
 	protected static function define_props_schema(): array {

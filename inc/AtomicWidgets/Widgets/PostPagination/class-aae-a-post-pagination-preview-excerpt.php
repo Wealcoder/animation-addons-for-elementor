@@ -47,15 +47,16 @@ class AAE_A_Post_Pagination_Preview_Excerpt extends Atomic_Widget_Base {
 	}
 
 	public function get_title() {
-		return esc_html__( 'Preview Excerpt', 'animation-addons-for-elementor' );
+		return esc_html__( 'Post Pagination Preview Excerpt', 'animation-addons-for-elementor' );
 	}
 
 	public function get_icon() {
 		return 'eicon-text-align-left';
 	}
 
+	/** See the identical note in class-aae-a-post-pagination-preview-image.php. */
 	public function should_show_in_panel() {
-		return false;
+		return true;
 	}
 
 	protected static function define_props_schema(): array {

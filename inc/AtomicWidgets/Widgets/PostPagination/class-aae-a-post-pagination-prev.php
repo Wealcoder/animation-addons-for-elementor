@@ -189,15 +189,11 @@ class AAE_A_Post_Pagination_Prev extends Atomic_Element_Base {
 		$ctx  = Render_Context::get( AAE_A_Post_Pagination::class );
 		$prev = isset( $ctx['prev'] ) ? $ctx['prev'] : null;
 
-		// See AAE_A_Post_Pagination_Next::build_template_context() for why
-		// Infinite Scroll disables this rather than just leaving it be.
-		$infinite_active = ! empty( $ctx['settings']['enable_infinite_scroll'] );
-
 		return array_merge( $this->build_base_template_context(), [
 			'nav_role'    => 'prev',
 			'nav_url'     => $prev ? $prev['url'] : '',
 			'nav_title'   => $prev ? $prev['title'] : '',
-			'nav_available' => (bool) $prev && ! $infinite_active,
+			'nav_available' => (bool) $prev,
 		] );
 	}
 }
