@@ -154,6 +154,100 @@
 	}
 
 	/* ---------------------------------------------------------------------
+	 * Hover Preview Card — a REAL, user-customizable atomic element tree
+	 * (AAE_A_Post_Pagination_Preview + its Thumbnail/Category/Title/Date/
+	 * Author/Excerpt children — see class-aae-a-post-pagination-preview*.php)
+	 * nested INSIDE each Prev/Next link and already server-rendered with
+	 * that side's real post data. This is pure show/position/hide — no
+	 * templating, no escaping, no "which fields are on" logic, since the
+	 * user's own child-element choices already decided all of that.
+	 *
+	 * Being a DESCENDANT of the `<a>`, the card stays part of the link's
+	 * hover chain even once positioned elsewhere on screen via `position:
+	 * fixed` — CSS :hover follows DOM containment, not visual position.
+	 *
+	 * Scoped to the ORIGINAL cfg the page rendered with — like keyboard nav
+	 * and swipe, it does not follow infinite-scroll-loaded posts (see the
+	 * "Known limitations" note in project memory; same reasoning applies).
+	 * ------------------------------------------------------------------- */
+
+	function positionPreviewCard(card, anchor) {
+		var rect = anchor.getBoundingClientRect();
+		var cardRect = card.getBoundingClientRect();
+		var margin = 10;
+
+		var top = rect.top - cardRect.height - margin;
+		if (top < margin) {
+			top = rect.bottom + margin; // Not enough room above — place below instead.
+		}
+
+		var left = rect.left + (rect.width / 2) - (cardRect.width / 2);
+		left = Math.max(margin, Math.min(left, window.innerWidth - cardRect.width - margin));
+		top = Math.max(margin, Math.min(top, window.innerHeight - cardRect.height - margin));
+
+		// `top`/`left` above are computed relative to the VIEWPORT (that's
+		// what window.innerWidth/innerHeight clamping assumes). But a plain
+		// `position: fixed` element is only viewport-relative when NO
+		// ancestor has a transform/filter/perspective/will-change:transform —
+		// any one of those on ANY ancestor (very common: theme entrance
+		// animations, sticky headers, Elementor's own section effects)
+		// hijacks the containing block, silently turning our "fixed" card
+		// into something positioned relative to THAT ancestor instead —
+		// still visually correct-looking in isolation, but wildly off once
+		// the page has any such ancestor. `offsetParent` reveals exactly
+		// that ancestor when it happens (null when there isn't one, i.e.
+		// genuinely viewport-relative), so converting into ITS coordinate
+		// space here keeps the math correct either way.
+		var containingBox = card.offsetParent
+			? card.offsetParent.getBoundingClientRect()
+			: { top: 0, left: 0 };
+
+		card.style.top = (top - containingBox.top) + 'px';
+		card.style.left = (left - containingBox.left) + 'px';
+	}
+
+	function initHoverPreview(root, cfg) {
+		if (!cfg.hoverPreviewEnabled) {
+			return;
+		}
+		// Hover cards are a desktop affordance — coarse-pointer/no-hover
+		// devices (touch) skip entirely rather than fighting tap-to-navigate.
+		if (window.matchMedia && !window.matchMedia('(hover: hover)').matches) {
+			return;
+		}
+
+		var links = root.querySelectorAll('[data-aae-nav]:not(.aae-pp-disabled)');
+		var hideTimer = null;
+
+		function show(link, card) {
+			window.clearTimeout(hideTimer);
+			card.classList.add('aae-pp-preview-visible');
+			positionPreviewCard(card, link);
+			// Re-position next frame too: the thumbnail <img> can change the
+			// card's height once it decodes, shifting where "above" should be.
+			window.requestAnimationFrame(function () { positionPreviewCard(card, link); });
+		}
+
+		function hide(card) {
+			hideTimer = window.setTimeout(function () {
+				card.classList.remove('aae-pp-preview-visible');
+			}, 80);
+		}
+
+		Array.prototype.forEach.call(links, function (link) {
+			var card = link.querySelector('.aae-a-post-pagination-preview');
+			if (!card) {
+				return; // Piece deleted by the user, or a pre-existing page saved before this element existed.
+			}
+
+			link.addEventListener('mouseenter', function () { show(link, card); }, { passive: true });
+			link.addEventListener('mouseleave', function () { hide(card); }, { passive: true });
+			link.addEventListener('focus', function () { show(link, card); });
+			link.addEventListener('blur', function () { hide(card); });
+		});
+	}
+
+	/* ---------------------------------------------------------------------
 	 * Sticky bar / side arrows — reveal on scroll
 	 * ------------------------------------------------------------------- */
 
@@ -215,12 +309,35 @@
 		return article;
 	}
 
-	function showLoader(beforeNode) {
+	/**
+	 * Fallback only — pages built before the Infinite Scroll Loader element
+	 * existed as a default child (see class-aae-a-post-pagination-loader.php)
+	 * won't have one in their saved _elementor_data. New instances always
+	 * have the real element, so this path is legacy-content-only.
+	 */
+	function buildFallbackLoader() {
 		var loader = document.createElement('div');
-		loader.className = 'aae-pp-loader';
+		loader.className = 'aae-pp-loader-fallback';
 		loader.innerHTML = '<span class="aae-pp-spinner" aria-hidden="true"></span>';
-		if (beforeNode && beforeNode.parentNode) {
-			beforeNode.parentNode.insertBefore(loader, beforeNode);
+		return loader;
+	}
+
+	/**
+	 * Clones the real, user-customizable Loader element (a default child of
+	 * `root`'s container — see class-aae-a-post-pagination-loader.php) rather
+	 * than building a hardcoded spinner div, so whatever size/border/colors
+	 * (or a swapped-in e-svg/e-image) the user set on it in the Style/Content
+	 * tabs are what shows up during an actual fetch. The template itself
+	 * (hidden by default, see post-pagination.scss) is never touched — only
+	 * the clone gets the `.aae-pp-loader-active` class that makes it visible,
+	 * and the clone is discarded once the fetch settles.
+	 */
+	function showLoader(root) {
+		var template = root.querySelector('.aae-a-post-pagination-loader');
+		var loader = template ? template.cloneNode(true) : buildFallbackLoader();
+		loader.classList.add('aae-pp-loader-active');
+		if (root.parentNode) {
+			root.parentNode.insertBefore(loader, root);
 		}
 		return loader;
 	}
@@ -352,6 +469,7 @@
 		initPrefetch(root, cfg);
 		initKeyboard(cfg);
 		initSwipe(cfg);
+		initHoverPreview(root, cfg);
 
 		var revealCheck = initScrollReveal(root, cfg);
 		if (revealCheck) {

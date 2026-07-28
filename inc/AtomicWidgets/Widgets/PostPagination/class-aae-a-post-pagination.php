@@ -48,6 +48,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 require_once __DIR__ . '/class-aae-a-post-pagination-prev.php';
 require_once __DIR__ . '/class-aae-a-post-pagination-next.php';
+require_once __DIR__ . '/class-aae-a-post-pagination-loader.php';
 require_once __DIR__ . '/../LoopGrid/class-aae-query-chips-control.php';
 
 use WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_Query_Chips_Control;
@@ -181,6 +182,29 @@ class AAE_A_Post_Pagination extends Atomic_Element_Base {
 			'infinite_fetch_title'   => Boolean_Prop_Type::make()->default( true )->set_dependencies( $infinite_off ),
 			'infinite_fetch_content' => Boolean_Prop_Type::make()->default( true )->set_dependencies( $infinite_off ),
 			'infinite_fetch_image'   => Boolean_Prop_Type::make()->default( true )->set_dependencies( $infinite_off ),
+
+			// Visibility. Each is an independent widget-level "hide the whole
+			// nav" switch — distinct from the always-on per-button hiding
+			// (.aae-pp-no-prev/.aae-pp-no-next in post-pagination.scss), and
+			// distinct from EACH OTHER once Loop Around is on: with looping,
+			// prev/next always resolve to something (so the no-prev/no-next
+			// conditions never fire), but "is this the first/last post in the
+			// sequence" is still a real, separate condition.
+			'hide_if_no_prev'    => Boolean_Prop_Type::make()->default( false ),
+			'hide_if_no_next'    => Boolean_Prop_Type::make()->default( false ),
+			'hide_if_first_post' => Boolean_Prop_Type::make()->default( false ),
+			'hide_if_last_post'  => Boolean_Prop_Type::make()->default( false ),
+
+			// Hover Preview Card — a real, customizable element tree now (see
+			// class-aae-a-post-pagination-preview.php), nested inside both
+			// Prev and Next. This is the only root-level setting left for it:
+			// a master on/off switch that gates whether post-pagination.js
+			// binds hover/focus listeners at all. Which fields show
+			// (Thumbnail/Category/Title/Date/Author/Excerpt) is no longer a
+			// boolean here — it's just whichever of those child pieces the
+			// user kept vs. deleted from the Preview Card's own children, and
+			// excerpt length is the Excerpt piece's own control.
+			'enable_hover_preview' => Boolean_Prop_Type::make()->default( false ),
 		];
 	}
 
@@ -287,7 +311,7 @@ class AAE_A_Post_Pagination extends Atomic_Element_Base {
 						->set_options( [
 							[ 'value' => 'inline',      'label' => __( 'Inline (Normal Flow)', 'animation-addons-for-elementor' ) ],
 							[ 'value' => 'sticky_bar',  'label' => __( 'Sticky Bottom Bar', 'animation-addons-for-elementor' ) ],
-							[ 'value' => 'side_arrows', 'label' => __( 'Floating Side Arrows', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'side_arrows', 'label' => __( 'Floating Navigation (Side Arrows)', 'animation-addons-for-elementor' ) ],
 						] ),
 
 					Number_Control::bind_to( 'scroll_reveal_offset' )
@@ -329,6 +353,34 @@ class AAE_A_Post_Pagination extends Atomic_Element_Base {
 					Switch_Control::bind_to( 'infinite_fetch_image' )
 						->set_label( __( 'Fetch Featured Image', 'animation-addons-for-elementor' ) ),
 				] ),
+
+			Section::make()
+				->set_id( 'aae_post_pagination_visibility' )
+				->set_label( __( 'Visibility', 'animation-addons-for-elementor' ) )
+				->set_items( [
+					Switch_Control::bind_to( 'hide_if_no_prev' )
+						->set_label( __( 'Hide If No Previous Post', 'animation-addons-for-elementor' ) ),
+
+					Switch_Control::bind_to( 'hide_if_no_next' )
+						->set_label( __( 'Hide If No Next Post', 'animation-addons-for-elementor' ) ),
+
+					Switch_Control::bind_to( 'hide_if_first_post' )
+						->set_label( __( 'Hide If First Post', 'animation-addons-for-elementor' ) ),
+
+					Switch_Control::bind_to( 'hide_if_last_post' )
+						->set_label( __( 'Hide If Last Post', 'animation-addons-for-elementor' ) ),
+				] ),
+
+			Section::make()
+				->set_id( 'aae_post_pagination_hover_preview' )
+				->set_label( __( 'Hover Preview Card', 'animation-addons-for-elementor' ) )
+				->set_items( [
+					Switch_Control::bind_to( 'enable_hover_preview' )
+						->set_label( __( 'Enable Hover Preview', 'animation-addons-for-elementor' ) )
+						->set_description(
+							__( 'Customize what shows by editing the "Hover Preview Card" element nested inside Prev/Next — add, remove, or restyle its Thumbnail/Category/Title/Date/Author/Excerpt pieces freely.', 'animation-addons-for-elementor' )
+						),
+				] ),
 		];
 	}
 
@@ -350,20 +402,30 @@ class AAE_A_Post_Pagination extends Atomic_Element_Base {
 	}
 
 	protected function define_allowed_child_types() {
-		return [ 'e-aae-a-post-pagination-prev', 'e-aae-a-post-pagination-next' ];
+		return [ 'e-aae-a-post-pagination-prev', 'e-aae-a-post-pagination-next', 'e-aae-a-post-pagination-loader' ];
 	}
 
 	protected function define_default_children() {
-		// NOT locked, deliberately: unlike Loop Grid's structural Nav/Prev/
-		// Next wrappers (pure scaffolding), these ARE the actual buttons —
-		// label text, icon, and style are exactly what a user drops this
-		// widget to customize.
+		// Prev/Next NOT locked, deliberately: unlike Loop Grid's structural
+		// Nav/Prev/Next wrappers (pure scaffolding), these ARE the actual
+		// buttons — label text, icon, and style are exactly what a user
+		// drops this widget to customize.
+		//
+		// The Loader is a real child too (not locked either) so its size/
+		// border/colors are editable from the Style tab — see
+		// class-aae-a-post-pagination-loader.php. It sits hidden in the tree
+		// until post-pagination.js clones it during an infinite-scroll fetch
+		// (see initInfiniteScroll/showLoader) — never removed/locked, since a
+		// user styling it needs to select it like any other element.
 		return [
 			AAE_A_Post_Pagination_Prev::generate()
 				->editor_settings( [ 'title' => 'Previous Post' ] )
 				->build(),
 			AAE_A_Post_Pagination_Next::generate()
 				->editor_settings( [ 'title' => 'Next Post' ] )
+				->build(),
+			AAE_A_Post_Pagination_Loader::generate()
+				->editor_settings( [ 'title' => 'Infinite Scroll Loader' ] )
 				->build(),
 		];
 	}
@@ -412,6 +474,8 @@ class AAE_A_Post_Pagination extends Atomic_Element_Base {
 		$ctx = Render_Context::get( self::class );
 		$s   = $this->get_atomic_settings();
 
+		$infinite_scroll_on = ! empty( $s['enable_infinite_scroll'] );
+
 		$cfg = [
 			'postId'           => isset( $ctx['post_id'] ) ? (int) $ctx['post_id'] : 0,
 			'postType'         => isset( $ctx['post_type'] ) ? $ctx['post_type'] : '',
@@ -419,21 +483,44 @@ class AAE_A_Post_Pagination extends Atomic_Element_Base {
 			'next'             => isset( $ctx['next'] ) ? $ctx['next'] : null,
 			'displayMode'      => isset( $s['display_mode'] ) ? $s['display_mode'] : 'inline',
 			'revealOffset'     => isset( $s['scroll_reveal_offset'] ) ? (int) $s['scroll_reveal_offset'] : 300,
-			'keyboardNav'      => ! empty( $s['enable_keyboard_nav'] ),
-			'swipe'            => ! empty( $s['enable_swipe'] ),
-			'prefetch'         => ! empty( $s['enable_prefetch'] ),
-			'infiniteScroll'   => ! empty( $s['enable_infinite_scroll'] ),
+			// Suppressed while Infinite Scroll drives navigation — a keyboard
+			// arrow / swipe / prefetched hover-link that jumped to a full new
+			// page would otherwise fight the append-in-place experience the
+			// buttons are already rendered disabled for (see
+			// AAE_A_Post_Pagination_{Prev,Next}::build_template_context()).
+			'keyboardNav'      => ! $infinite_scroll_on && ! empty( $s['enable_keyboard_nav'] ),
+			'swipe'            => ! $infinite_scroll_on && ! empty( $s['enable_swipe'] ),
+			'prefetch'         => ! $infinite_scroll_on && ! empty( $s['enable_prefetch'] ),
+			'infiniteScroll'   => $infinite_scroll_on,
 			'noMoreText'       => isset( $s['no_more_text'] ) ? $s['no_more_text'] : '',
 			'settings'         => isset( $ctx['settings'] ) ? $ctx['settings'] : [],
 			'nonce'            => wp_create_nonce( 'aae_post_pagination' ),
 			'ajaxUrl'          => admin_url( 'admin-ajax.php' ),
+			// Which fields show is no longer decided here — it's whichever
+			// child pieces the user kept inside the real "Hover Preview Card"
+			// element (see class-aae-a-post-pagination-preview.php) nested in
+			// Prev/Next. This flag only gates whether post-pagination.js
+			// binds the hover/focus/positioning behavior at all.
+			'hoverPreviewEnabled' => ! empty( $s['enable_hover_preview'] ),
 		];
+
+		// Widget-level visibility — hides the WHOLE nav (both buttons), unlike
+		// the always-on per-button .aae-pp-no-prev/.aae-pp-no-next hiding in
+		// post-pagination.scss. Frontend-only (see the twig/CSS gate on
+		// body:not(.elementor-editor-active)) so the editor keeps everything
+		// visible/selectable regardless of these switches.
+		$pn_hidden =
+			( ! empty( $s['hide_if_no_prev'] ) && empty( $cfg['prev'] ) ) ||
+			( ! empty( $s['hide_if_no_next'] ) && empty( $cfg['next'] ) ) ||
+			( ! empty( $s['hide_if_first_post'] ) && ! empty( $ctx['is_first'] ) ) ||
+			( ! empty( $s['hide_if_last_post'] ) && ! empty( $ctx['is_last'] ) );
 
 		return array_merge( $this->build_base_template_context(), [
 			'pn_config'  => wp_json_encode( $cfg ),
 			'pn_mode'    => $cfg['displayMode'],
 			'pn_no_prev' => empty( $cfg['prev'] ),
 			'pn_no_next' => empty( $cfg['next'] ),
+			'pn_hidden'  => $pn_hidden,
 		] );
 	}
 
@@ -467,7 +554,7 @@ class AAE_A_Post_Pagination extends Atomic_Element_Base {
 	 * @return array{prev: ?array, next: ?array, post_type: string}
 	 */
 	public static function resolve_adjacent( int $current_id, array $settings ): array {
-		$result = [ 'prev' => null, 'next' => null, 'post_type' => '' ];
+		$result = [ 'prev' => null, 'next' => null, 'post_type' => '', 'is_first' => false, 'is_last' => false ];
 
 		$post_type = get_post_type( $current_id );
 		if ( ! $post_type ) {
@@ -539,17 +626,55 @@ class AAE_A_Post_Pagination extends Atomic_Element_Base {
 			$next_id = $ids[0];
 		}
 
-		$result['prev'] = $prev_id ? self::post_summary( (int) $prev_id ) : null;
-		$result['next'] = $next_id ? self::post_summary( (int) $next_id ) : null;
+		// Distinct from prev_id/next_id being null: "first/last in the
+		// sequence" stays true regardless of Loop Around, which is exactly
+		// what makes hide_if_first_post/hide_if_last_post meaningfully
+		// different from hide_if_no_prev/hide_if_no_next once looping is on.
+		$result['is_first'] = ( 0 === $index );
+		$result['is_last']  = ( $count - 1 === $index );
+
+		$result['prev'] = $prev_id ? self::post_summary( (int) $prev_id, $settings ) : null;
+		$result['next'] = $next_id ? self::post_summary( (int) $next_id, $settings ) : null;
 
 		return $result;
 	}
 
-	private static function post_summary( int $id ): array {
+	/**
+	 * id/title/url plus the Hover Preview Card fields (thumbnail, excerpt,
+	 * category, date, author). The extra fields are cheap (one call each) so
+	 * they're always resolved rather than gated behind enable_hover_preview —
+	 * simpler, and this same summary already gets reused by the infinite
+	 * scroll AJAX endpoint's "next" payload.
+	 */
+	private static function post_summary( int $id, array $settings = [] ): array {
+		$taxonomy = ( isset( $settings['constrain_taxonomy'] ) && is_string( $settings['constrain_taxonomy'] ) && 'none' !== $settings['constrain_taxonomy'] && taxonomy_exists( $settings['constrain_taxonomy'] ) )
+			? $settings['constrain_taxonomy']
+			: ( taxonomy_exists( 'category' ) ? 'category' : '' );
+
+		$category = '';
+		if ( $taxonomy ) {
+			$terms = get_the_terms( $id, $taxonomy );
+			if ( is_array( $terms ) && ! empty( $terms ) ) {
+				$category = implode( ', ', wp_list_pluck( $terms, 'name' ) );
+			}
+		}
+
+		$author_id = (int) get_post_field( 'post_author', $id );
+
 		return [
-			'id'    => $id,
-			'title' => get_the_title( $id ),
-			'url'   => get_permalink( $id ),
+			'id'        => $id,
+			'title'     => get_the_title( $id ),
+			'url'       => get_permalink( $id ),
+			'thumbnail' => has_post_thumbnail( $id ) ? get_the_post_thumbnail_url( $id, 'medium' ) : '',
+			// Generously capped at WP core's own default excerpt length —
+			// AAE_A_Post_Pagination_Preview_Excerpt::get_atomic_settings()
+			// re-trims this down to its OWN "Length (words)" setting at
+			// render time, so the length control lives on the piece that
+			// actually displays it, not here.
+			'excerpt'   => wp_trim_words( get_the_excerpt( $id ), 55 ),
+			'category'  => $category,
+			'date'      => get_the_date( '', $id ),
+			'author'    => $author_id ? get_the_author_meta( 'display_name', $author_id ) : '',
 		];
 	}
 

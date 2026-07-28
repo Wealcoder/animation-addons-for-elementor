@@ -23,6 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 require_once __DIR__ . '/../LoopGrid/class-aae-a-loop-arrow.php';
+require_once __DIR__ . '/class-aae-a-post-pagination-preview.php';
 
 use WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Arrow;
 
@@ -59,7 +60,7 @@ class AAE_A_Post_Pagination_Next extends Atomic_Element_Base {
 	}
 
 	protected function define_allowed_child_types() {
-		return [ 'e-paragraph', 'e-button', 'e-svg', 'e-aae-a-loop-arrow' ];
+		return [ 'e-paragraph', 'e-button', 'e-svg', 'e-aae-a-loop-arrow', 'e-aae-a-post-pagination-preview' ];
 	}
 
 	protected static function define_props_schema(): array {
@@ -98,6 +99,13 @@ class AAE_A_Post_Pagination_Next extends Atomic_Element_Base {
 			$children[] = AAE_A_Loop_Arrow::generate()
 				->editor_settings( [ 'title' => 'Next Icon' ] )
 				->settings( [ 'direction' => [ '$$type' => 'string', 'value' => 'next' ] ] )
+				->build();
+		}
+
+		if ( self::type_registered( 'e-aae-a-post-pagination-preview' ) ) {
+			$children[] = AAE_A_Post_Pagination_Preview::generate()
+				->editor_settings( [ 'title' => 'Hover Preview Card' ] )
+				->children( AAE_A_Post_Pagination_Preview::build_default_inner_children( 'next' ) )
 				->build();
 		}
 
@@ -153,11 +161,18 @@ class AAE_A_Post_Pagination_Next extends Atomic_Element_Base {
 		$ctx  = Render_Context::get( AAE_A_Post_Pagination::class );
 		$next = isset( $ctx['next'] ) ? $ctx['next'] : null;
 
+		// While Infinite Scroll is on, Prev/Next are rendered disabled (same
+		// aria-disabled/tabindex=-1/no-href/.aae-pp-disabled path already
+		// used when there's simply no adjacent post) — a real page navigation
+		// away from the current post would break the infinite-scroll flow the
+		// widget is otherwise driving.
+		$infinite_active = ! empty( $ctx['settings']['enable_infinite_scroll'] );
+
 		return array_merge( $this->build_base_template_context(), [
 			'nav_role'      => 'next',
 			'nav_url'       => $next ? $next['url'] : '',
 			'nav_title'     => $next ? $next['title'] : '',
-			'nav_available' => (bool) $next,
+			'nav_available' => (bool) $next && ! $infinite_active,
 		] );
 	}
 }

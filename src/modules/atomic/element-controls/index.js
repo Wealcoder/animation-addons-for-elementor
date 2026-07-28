@@ -24,9 +24,11 @@ import { FormConditionsControl } from './FormConditionsControl';
 import { MobileNavLifecycleControl, NavItemsControl, NavSubItemsControl } from './NavItemsControl';
 import { QueryChipsControl } from './QueryChipsControl';
 import { DrawPlayControl } from './DrawPlayControl';
+import { HotspotsControl } from './HotspotsControl';
 
 const ELEMENT_CONTROLS = [
 	{ type: 'aae-slides', component: SlidesControl, layout: 'full' },
+	{ type: 'aae-hotspots', component: HotspotsControl, layout: 'full' },
 	{ type: 'aae-items', component: AccordionItemsControl, layout: 'full' },
 	{ type: 'aae-timeline-items', component: TimelineItemsControl, layout: 'full' },
 	{ type: 'aae-nav-items', component: NavItemsControl, layout: 'full' },

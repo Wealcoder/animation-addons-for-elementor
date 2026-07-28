@@ -1,0 +1,357 @@
+// AAE Image Hotspot — marker, tooltip, lightbox, and animation styles.
+//
+// Ported the base mechanics from the legacy V3 widget
+// (assets/src/scss/widgets/image-hotspot.scss): same --anim-speed custom
+// property, same 4-direction tooltip placement math with a --tlp-gap
+// additive margin. --pulse-color intentionally defaults to `currentColor`
+// (not a hardcoded hex) so the marker's own Style-tab `color` drives every
+// animation — atomic widgets have no dedicated Content-tab color control
+// (see CLAUDE.md's Range-widget note), so this sidesteps needing one.
+
+.aae-hotspot-marker {
+	position: relative;
+	background: #000;
+	border-radius: 100px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 5px;
+	border: 0;
+	padding: 0;
+	color: #fff;
+	fill: #fff;
+	text-decoration: none;
+	font-family: inherit;
+	font-size: 16px;
+	line-height: 1.5;
+	--pulse-color: currentColor;
+
+	&.dot,
+	&.icon,
+	&.number {
+		width: 30px;
+		height: 30px;
+	}
+
+	&.icon {
+		font-size: 18px;
+	}
+
+	&.number {
+		font-weight: 600;
+	}
+
+	&.text,
+	&.icon-text {
+		padding: 6px 16px;
+	}
+}
+
+.aae-hotspot-marker-icon,
+.aae-hotspot-marker-text {
+	display: inline-flex;
+	align-items: center;
+}
+
+.aae-hotspot-marker-icon svg,
+.aae-hotspot-marker-icon img {
+	width: 1em;
+	height: 1em;
+	display: block;
+}
+
+.hotspot-number {
+	display: inline-block;
+	line-height: 1;
+}
+
+// ── Inline tooltip ───────────────────────────────────────────────────────
+.aae-hotspot-point[data-aae-hotspot-mode="tooltip"] .aae-hotspot-content {
+	position: absolute;
+	width: 260px;
+	background: #e8e8e8;
+	color: #222;
+	padding: 15px;
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+	transition: opacity 0.25s ease, visibility 0s 0.25s;
+	z-index: 20;
+
+	&::after {
+		position: absolute;
+		content: "";
+		background-color: #e8e8e8;
+	}
+
+	&.active {
+		opacity: 1;
+		visibility: visible;
+		pointer-events: auto;
+		transition: opacity 0.25s ease, visibility 0s;
+	}
+
+	p {
+		margin: 0;
+	}
+}
+
+.aae-image-hotspot[data-aae-hsp-trigger="hover"] .aae-hotspot-point[data-aae-hotspot-mode="tooltip"]:hover .aae-hotspot-content,
+.aae-image-hotspot[data-aae-hsp-trigger="none"] .aae-hotspot-point[data-aae-hotspot-mode="tooltip"] .aae-hotspot-content {
+	opacity: 1;
+	visibility: visible;
+	pointer-events: auto;
+}
+
+// 4-direction placement, ported from V3's .aae--tlp-position-* blocks.
+.aae-image-hotspot[data-aae-hsp-tooltip-pos="top"] .aae-hotspot-point[data-aae-hotspot-mode="tooltip"] .aae-hotspot-content {
+	bottom: calc(100% + 15px);
+	left: 50%;
+	transform: translateX(-50%);
+	margin-bottom: var(--tlp-gap, 20px);
+
+	&::after {
+		width: 20px;
+		height: 15px;
+		clip-path: polygon(100% 0, 0 0, 50% 100%);
+		bottom: -14px;
+		left: 50%;
+		transform: translateX(-50%);
+	}
+}
+
+.aae-image-hotspot[data-aae-hsp-tooltip-pos="bottom"] .aae-hotspot-point[data-aae-hotspot-mode="tooltip"] .aae-hotspot-content {
+	top: calc(100% + 15px);
+	left: 50%;
+	transform: translateX(-50%);
+	margin-top: var(--tlp-gap, 20px);
+
+	&::after {
+		width: 20px;
+		height: 15px;
+		clip-path: polygon(50% 0, 0 100%, 100% 100%);
+		top: -14px;
+		left: 50%;
+		transform: translateX(-50%);
+	}
+}
+
+.aae-image-hotspot[data-aae-hsp-tooltip-pos="left"] .aae-hotspot-point[data-aae-hotspot-mode="tooltip"] .aae-hotspot-content {
+	right: calc(100% + 15px);
+	top: 50%;
+	transform: translateY(-50%);
+	margin-right: var(--tlp-gap, 20px);
+
+	&::after {
+		width: 15px;
+		height: 20px;
+		clip-path: polygon(0 0, 0 100%, 100% 50%);
+		right: -14px;
+		top: 50%;
+		transform: translateY(-50%);
+	}
+}
+
+.aae-image-hotspot[data-aae-hsp-tooltip-pos="right"] .aae-hotspot-point[data-aae-hotspot-mode="tooltip"] .aae-hotspot-content {
+	left: calc(100% + 15px);
+	top: 50%;
+	transform: translateY(-50%);
+	margin-left: var(--tlp-gap, 20px);
+
+	&::after {
+		width: 15px;
+		height: 20px;
+		clip-path: polygon(100% 0, 0 50%, 100% 100%);
+		left: -14px;
+		top: 50%;
+		transform: translateY(-50%);
+	}
+}
+
+.aae-image-hotspot[data-aae-hsp-tooltip-align="left"] .aae-hotspot-content {
+	text-align: left;
+}
+
+.aae-image-hotspot[data-aae-hsp-tooltip-align="center"] .aae-hotspot-content {
+	text-align: center;
+}
+
+.aae-image-hotspot[data-aae-hsp-tooltip-align="right"] .aae-hotspot-content {
+	text-align: right;
+}
+
+// ── Lightbox ─────────────────────────────────────────────────────────────
+// Shared portal appended once to <body> by image-hotspot.js (mirrors
+// offcanvas.js's getPortal()) — an `.elementor`-classed host so teleported
+// content keeps matching its `.elementor .e-xxx` scoped atomic base styles.
+.aae-hsp-portal {
+	position: fixed;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+}
+
+.aae-hotspot-scrim {
+	position: fixed;
+	inset: 0;
+	z-index: 99998;
+	background: rgba(0, 0, 0, 0.6);
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+	transition: opacity 0.25s ease, visibility 0s 0.25s;
+
+	&.active {
+		opacity: 1;
+		visibility: visible;
+		pointer-events: auto;
+		transition: opacity 0.25s ease, visibility 0s;
+	}
+}
+
+.aae-hotspot-point[data-aae-hotspot-mode="lightbox"] .aae-hotspot-content {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	z-index: 99999;
+	width: min(90vw, 560px);
+	max-height: 85vh;
+	overflow-y: auto;
+	background: #fff;
+	color: #222;
+	padding: 32px;
+	border-radius: 8px;
+	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+	transform: translate(-50%, -50%) scale(0.92);
+	transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s 0.25s;
+
+	&.active {
+		opacity: 1;
+		visibility: visible;
+		pointer-events: auto;
+		transform: translate(-50%, -50%) scale(1);
+		transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s;
+	}
+}
+
+.aae-hotspot-close {
+	position: absolute;
+	top: 12px;
+	right: 12px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	background: transparent;
+	border: 0;
+	cursor: pointer;
+	color: inherit;
+	padding: 0;
+}
+
+// ── Guided tour highlight ────────────────────────────────────────────────
+.aae-hotspot-tour-active .aae-hotspot-marker {
+	box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.5), 0 0 0 6px currentColor;
+}
+
+// Flash-highlight used only by the editor's Hotspots list (HotspotsControl.jsx).
+.aae-hotspot-editor-focus .aae-hotspot-marker {
+	outline: 2px solid #6d5cff;
+	outline-offset: 2px;
+}
+
+// ── Marker animations ────────────────────────────────────────────────────
+.anim-beat {
+	animation: AAEHspBeat var(--anim-speed, 1s) infinite;
+}
+
+.anim-pulse {
+	&::before,
+	&::after {
+		position: absolute;
+		content: "";
+		inset: 0;
+		border-radius: 100px;
+		animation: AAEHspPulse var(--anim-speed, 3s) infinite cubic-bezier(0.4, 0, 1, 1) both;
+	}
+
+	&::after {
+		animation-delay: 0.5s;
+	}
+}
+
+.anim-ripple::before {
+	position: absolute;
+	content: "";
+	inset: 0;
+	border-radius: 100px;
+	animation: AAEHspRipple var(--anim-speed, 1.6s) infinite cubic-bezier(0.2, 0.6, 0.4, 1) both;
+}
+
+.anim-ring::before {
+	position: absolute;
+	content: "";
+	inset: -4px;
+	border-radius: 100px;
+	border: 2px solid var(--pulse-color, currentColor);
+	animation: AAEHspRing var(--anim-speed, 2s) infinite ease-in-out both;
+}
+
+.anim-glow {
+	animation: AAEHspGlow var(--anim-speed, 2s) infinite ease-in-out both;
+}
+
+.anim-bounce {
+	animation: AAEHspBounce var(--anim-speed, 1.2s) infinite ease-in-out both;
+}
+
+@keyframes AAEHspBeat {
+	0% { transform: scale(1.15); }
+	50% { transform: scale(1); }
+	100% { transform: scale(1.15); }
+}
+
+@keyframes AAEHspPulse {
+	0% { box-shadow: 0 0 0 0 var(--pulse-color, currentColor); }
+	70% { box-shadow: 0 0 0 30px var(--pulse-color, currentColor); opacity: 0; }
+	100% { box-shadow: 0 0 0 0 var(--pulse-color, currentColor); opacity: 0; }
+}
+
+@keyframes AAEHspRipple {
+	0% { box-shadow: 0 0 0 0 var(--pulse-color, currentColor); opacity: 0.6; }
+	100% { box-shadow: 0 0 0 22px var(--pulse-color, currentColor); opacity: 0; }
+}
+
+@keyframes AAEHspRing {
+	0%, 100% { opacity: 0.35; transform: scale(1); }
+	50% { opacity: 0.9; transform: scale(1.12); }
+}
+
+@keyframes AAEHspGlow {
+	0%, 100% { box-shadow: 0 0 4px 0 var(--pulse-color, currentColor); }
+	50% { box-shadow: 0 0 16px 6px var(--pulse-color, currentColor); }
+}
+
+@keyframes AAEHspBounce {
+	0%, 100% { transform: translateY(0); }
+	50% { transform: translateY(-8px); }
+}
+
+// Stop looping marker animations for reduced-motion users; everything else
+// (tooltip fade, lightbox fade/scale) already sits under ~0.25s, left as-is.
+@media (prefers-reduced-motion: reduce) {
+	.anim-beat,
+	.anim-pulse::before,
+	.anim-pulse::after,
+	.anim-ripple::before,
+	.anim-ring::before,
+	.anim-glow,
+	.anim-bounce {
+		animation: none !important;
+	}
+}

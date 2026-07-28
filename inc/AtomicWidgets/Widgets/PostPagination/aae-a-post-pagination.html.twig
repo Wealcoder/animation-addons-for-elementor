@@ -2,6 +2,7 @@
 {% set extra = '' %}
 {% if pn_no_prev %}{% set extra = extra ~ ' aae-pp-no-prev' %}{% endif %}
 {% if pn_no_next %}{% set extra = extra ~ ' aae-pp-no-next' %}{% endif %}
+{% if pn_hidden %}{% set extra = extra ~ ' aae-pp-force-hidden' %}{% endif %}
 <div class="{{ classes }}{{ extra }} {{ editor_classes | default('') }}"
     data-id="{{ id }}"
     data-element_type="{{ type }}"

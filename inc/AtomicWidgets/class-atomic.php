@@ -330,6 +330,14 @@ final class Atomic
 			// the Loop Grid pieces above).
 			'aae-a-post-pagination-prev',
 			'aae-a-post-pagination-next',
+			'aae-a-post-pagination-loader',
+			'aae-a-post-pagination-preview',
+			'aae-a-post-pagination-preview-image',
+			'aae-a-post-pagination-preview-category',
+			'aae-a-post-pagination-preview-title',
+			'aae-a-post-pagination-preview-date',
+			'aae-a-post-pagination-preview-author',
+			'aae-a-post-pagination-preview-excerpt',
 			// AAE Post Comments — DISABLED 2026-07-27: the senior dev is
 			// building the comments/reply-form feature himself. Whole family
 			// kept (not deleted), root class renamed to AAE_A_Comments_Ny /
@@ -382,6 +390,10 @@ final class Atomic
 			'aae-a-search-filter-category',
 			'aae-a-search-submit',
 			'aae-a-search-results',
+			// AAE Image Hotspot's repeating marker — inserted only via the
+			// Hotspots element-control, never dragged from the panel directly
+			// (same reasoning as aae-a-slide).
+			'aae-a-hotspot-point',
 		];
 		if (in_array($slug, $internal_widgets)) {
 			return true;
@@ -941,6 +953,78 @@ final class Atomic
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Next',
 				'icon'         => 'eicon-chevron-right',
 				'keywords'     => [ 'post', 'nav', 'next' ],
+				'hide_from_panel' => true,
+			],
+
+			'aae-a-post-pagination-loader' => [
+				'is_internal'  => true,
+				'label'        => 'Infinite Scroll Loader',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Loader',
+				'icon'         => 'eicon-loading',
+				'keywords'     => [ 'post', 'loader', 'spinner', 'loading', 'infinite scroll' ],
+				'hide_from_panel' => true,
+			],
+
+			'aae-a-post-pagination-preview' => [
+				'is_internal'  => true,
+				'label'        => 'Hover Preview Card',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview',
+				'icon'         => 'eicon-post-navigation',
+				'keywords'     => [ 'post', 'preview', 'hover', 'card' ],
+				'hide_from_panel' => true,
+			],
+
+			'aae-a-post-pagination-preview-image' => [
+				'is_internal'  => true,
+				'label'        => 'Preview Thumbnail',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Image',
+				'icon'         => 'eicon-image',
+				'keywords'     => [ 'post', 'preview', 'thumbnail', 'image' ],
+				'hide_from_panel' => true,
+			],
+
+			'aae-a-post-pagination-preview-category' => [
+				'is_internal'  => true,
+				'label'        => 'Preview Category',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Category',
+				'icon'         => 'eicon-tags',
+				'keywords'     => [ 'post', 'preview', 'category' ],
+				'hide_from_panel' => true,
+			],
+
+			'aae-a-post-pagination-preview-title' => [
+				'is_internal'  => true,
+				'label'        => 'Preview Title',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Title',
+				'icon'         => 'eicon-t-letter',
+				'keywords'     => [ 'post', 'preview', 'title' ],
+				'hide_from_panel' => true,
+			],
+
+			'aae-a-post-pagination-preview-date' => [
+				'is_internal'  => true,
+				'label'        => 'Preview Date',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Date',
+				'icon'         => 'eicon-calendar',
+				'keywords'     => [ 'post', 'preview', 'date' ],
+				'hide_from_panel' => true,
+			],
+
+			'aae-a-post-pagination-preview-author' => [
+				'is_internal'  => true,
+				'label'        => 'Preview Author',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Author',
+				'icon'         => 'eicon-user-circle-o',
+				'keywords'     => [ 'post', 'preview', 'author' ],
+				'hide_from_panel' => true,
+			],
+
+			'aae-a-post-pagination-preview-excerpt' => [
+				'is_internal'  => true,
+				'label'        => 'Preview Excerpt',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Excerpt',
+				'icon'         => 'eicon-text-align-left',
+				'keywords'     => [ 'post', 'preview', 'excerpt' ],
 				'hide_from_panel' => true,
 			],
 
@@ -2406,6 +2490,45 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			'aae-a-image-hotspot' => [
+				'label'        => 'AAE Image Hotspot',
+				'description'  => 'Interactive markers over an image — inline tooltips, teleported lightboxes (with drill-down support), a guided auto-tour, auto-numbered badges, and 6 marker animations.',
+				'icon'         => 'eicon-image-hotspot',
+				'is_pro'       => true,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'hotspot',
+					'image',
+					'tooltip',
+					'lightbox',
+					'tour',
+					'marker',
+					'atomic',
+				],
+				'category'     => 'general',
+				'order'        => 20,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-hotspot-point' => [
+				'label'        => 'Hotspot Point (Internal)',
+				'description'  => 'Internal repeating marker for the AAE Image Hotspot. Inserted only via its Hotspots control.',
+				'icon'         => 'eicon-point',
+				'is_pro'       => true,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'is_internal'  => true,
+				'default'      => true,
+				'keywords'     => [ 'hotspot point', 'internal' ],
+				'category'     => 'general',
+				'order'        => 21,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
 			'aae-a-flip-box-title' => [
 				'label'        => 'Flip Box Title (Internal)',
 				'description'  => 'Internal face title used by the AAE Flip Box front/back faces.',
@@ -3151,6 +3274,46 @@ final class Atomic
 				'file' => 'Widgets/PostPagination/class-aae-a-post-pagination-next.php',
 			],
 
+			'aae-a-post-pagination-loader' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Loader',
+				'file' => 'Widgets/PostPagination/class-aae-a-post-pagination-loader.php',
+			],
+
+			'aae-a-post-pagination-preview' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview',
+				'file' => 'Widgets/PostPagination/class-aae-a-post-pagination-preview.php',
+			],
+
+			'aae-a-post-pagination-preview-image' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Image',
+				'file' => 'Widgets/PostPagination/class-aae-a-post-pagination-preview-image.php',
+			],
+
+			'aae-a-post-pagination-preview-category' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Category',
+				'file' => 'Widgets/PostPagination/class-aae-a-post-pagination-preview-category.php',
+			],
+
+			'aae-a-post-pagination-preview-title' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Title',
+				'file' => 'Widgets/PostPagination/class-aae-a-post-pagination-preview-title.php',
+			],
+
+			'aae-a-post-pagination-preview-date' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Date',
+				'file' => 'Widgets/PostPagination/class-aae-a-post-pagination-preview-date.php',
+			],
+
+			'aae-a-post-pagination-preview-author' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Author',
+				'file' => 'Widgets/PostPagination/class-aae-a-post-pagination-preview-author.php',
+			],
+
+			'aae-a-post-pagination-preview-excerpt' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Excerpt',
+				'file' => 'Widgets/PostPagination/class-aae-a-post-pagination-preview-excerpt.php',
+			],
+
 			/*
 			 * AAE Post Comments family — DISABLED 2026-07-27 (see the matching
 			 * commented block in register_widget_definitions() for why).
@@ -3679,6 +3842,22 @@ final class Atomic
 			'has_script'    => true,
 			'style_handle'  => 'aae-a-flip-box-css',
 			'style_path'    => '/assets/atomic/js/flip-box.css',
+		],
+
+		'aae-a-image-hotspot' => [
+			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\ImageHotspot\AAE_A_Image_Hotspot',
+			'file'          => 'Widgets/ImageHotspot/class-aae-a-image-hotspot.php',
+			'script_handle' => 'aae-a-image-hotspot-js',
+			'script_path'   => '/assets/atomic/js/image-hotspot.js',
+			'has_script'    => true,
+			'style_handle'  => 'aae-a-image-hotspot-css',
+			'style_path'    => '/assets/atomic/css/image-hotspot.css',
+		],
+
+		'aae-a-hotspot-point' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ImageHotspot\AAE_A_Hotspot_Point',
+			'file'       => 'Widgets/ImageHotspot/class-aae-a-hotspot-point.php',
+			'has_script' => false,
 		],
 
 		'aae-a-flip-box-front' => [

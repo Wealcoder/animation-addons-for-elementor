@@ -1,11 +1,31 @@
-// AAE Post Pagination — baseline styling.
-// Color/spacing/typography for the buttons themselves is native atomic Style
-// tab territory (each piece is its own selectable element with reasonable
-// base styles, see class-aae-a-post-pagination-prev/next.php). This file only
-// covers structural bits Style tab controls can't express: hiding an
-// unavailable prev/next end, the sticky-bar/side-arrows reveal-on-scroll
-// mechanics, and the infinite-scroll-loaded post markup (which isn't an
-// atomic element).
+// AAE Post Pagination — baseline styling, kept as minimal as the toggle
+// switcher's own stylesheet (see toggle-switcher.scss) for the same reason:
+// every STATIC per-element look already lives as real, native Elementor
+// styles on the element itself — root/Prev/Next/Loader/Preview-and-its-six-
+// pieces each own their look via define_base_styles() in their respective
+// class-aae-a-post-pagination*.php (Style-tab-editable, per instance). Only
+// the Hover Preview Card's WRAPPER show/hide fade lives here — the pieces
+// inside it (Thumbnail/Category/Title/Date/Author/Excerpt) are fully atomic
+// now too, not JS-templated. What's left here falls into two buckets that
+// structurally CANNOT move into a define_base_styles() call:
+//
+//   1. Rules gated on a JS-toggled or server-conditional class/attribute
+//      (.aae-pp-no-prev/no-next, .aae-pp-disabled, .aae-pp-force-hidden,
+//      [data-aae-pp-mode], .aae-pp-reveal/.aae-pp-visible,
+//      .aae-pp-loader-active, .aae-pp-preview-visible). Elementor's
+//      Style_Variant only supports a breakpoint or a CSS pseudo-class
+//      `state` (hover/focus/etc) — there is no way to say "apply this style
+//      only when this OTHER prop equals X" or "only when this class was
+//      added by JS." Same category as toggle-switcher.scss's own
+//      `.e--selected`/`.active`/`.show` leftovers.
+//   2. Markup that isn't an atomic element at all — the infinite-scroll
+//      loaded-post article, the "end of posts" text, and the legacy
+//      fallback spinner are all built by post-pagination.js via plain
+//      document.createElement(), so there's no PHP widget class to hold a
+//      define_base_styles() for them. Turning these into real atomic
+//      elements too (the way the Hover Preview Card and the old JS-only
+//      spinner did) is possible but a bigger change than a style
+//      migration — ask before doing it.
 
 .aae-a-post-pagination {
 	// Frontend-only edge hiding — no prev on the first post, no next on the
@@ -22,6 +42,13 @@
 	.aae-pp-disabled {
 		pointer-events: none;
 		opacity: 0.4;
+	}
+
+	// Visibility conditions (hide_if_no_prev/no_next/first_post/last_post) —
+	// hides the WHOLE widget, unlike aae-pp-no-prev/no-next above which only
+	// hide the one unavailable button. Editor keeps it visible/selectable.
+	body:not(.elementor-editor-active) &.aae-pp-force-hidden {
+		display: none;
 	}
 }
 
@@ -101,9 +128,11 @@
 	margin-bottom: 20px;
 }
 
-// Infinite-scroll loading spinner — inserted right where the next post will
-// land, removed the moment the request settles (success or failure).
-.aae-pp-loader {
+// Legacy fallback only — see buildFallbackLoader() in post-pagination.js
+// (pages saved before the Infinite Scroll Loader element existed as a real
+// default child). New instances render .aae-a-post-pagination-loader instead,
+// styled below.
+.aae-pp-loader-fallback {
 	display: flex;
 	justify-content: center;
 	padding: 32px 0;
@@ -122,4 +151,87 @@
 	to {
 		transform: rotate(360deg);
 	}
+}
+
+// Infinite Scroll Loader — the real, customizable atomic element (see
+// class-aae-a-post-pagination-loader.php) seeded as a default child of the
+// pagination root. Hidden on the FRONTEND by default (same
+// body:not(.elementor-editor-active) gate as .aae-pp-no-prev/no-next above)
+// so the editor keeps it visible/selectable/stylable — this is the whole
+// point of making it a real element instead of a JS-injected div. JS clones
+// it and adds .aae-pp-loader-active to the CLONE only while a fetch is in
+// flight (the template itself is never shown on the frontend or mutated).
+// `.elementor` is included in both selectors so they beat the atomic base
+// style's own specificity — same fix as the Hide-After-Success /
+// Multi-Step-Form reveal classes elsewhere in this plugin (see CLAUDE.md's
+// CSS specificity gotcha).
+body:not(.elementor-editor-active) .elementor .aae-a-post-pagination-loader {
+	display: none;
+}
+body:not(.elementor-editor-active) .elementor .aae-a-post-pagination-loader.aae-pp-loader-active {
+	display: flex;
+}
+
+.aae-a-post-pagination-loader {
+	// Size/shape/position/margin are real base styles on the element itself
+	// now (class-aae-a-post-pagination-loader.php's define_base_styles()) —
+	// only the ::after ring stays here, since Style_Variant has no way to
+	// express a pseudo-element or the @keyframes it animates with. Decoupled
+	// from whatever border/background the user sets on the real element in
+	// the Style tab, so customizing the element's own look never fights the
+	// spin animation for which border wins.
+	&::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+		border: 3px solid rgba(0, 0, 0, 0.15);
+		border-top-color: rgba(0, 0, 0, 0.55);
+		animation: aae-pp-spin 0.7s linear infinite;
+		pointer-events: none;
+	}
+}
+
+// Hover Preview Card — AAE_A_Post_Pagination_Preview and its Thumbnail/
+// Category/Title/Date/Author/Excerpt children (class-aae-a-post-pagination-
+// preview*.php) are real atomic elements now; their static look (size,
+// colors, fonts, spacing) is real base styles on each of those, fully
+// Style-tab-editable — see define_base_styles() in each. Only the show/hide
+// fade (a JS-toggled class, same category as every other runtime-state rule
+// in this file) and the Date→Author separator (a ::after pseudo-element,
+// no atomic equivalent) stay here.
+// Hidden on the FRONTEND by default, fully opaque in the editor (so the user
+// can see/select/style the card and its pieces live) — same
+// body:not(.elementor-editor-active) gate as .aae-pp-no-prev/no-next and the
+// Loader above.
+body:not(.elementor-editor-active) .aae-a-post-pagination-preview {
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+}
+body:not(.elementor-editor-active) .aae-a-post-pagination-preview.aae-pp-preview-visible {
+	opacity: 1;
+	visibility: visible;
+	pointer-events: auto;
+}
+
+.aae-a-post-pagination-preview {
+	transform: translateY(4px);
+	transition: opacity 0.15s ease, transform 0.15s ease;
+
+	&.aae-pp-preview-visible {
+		transform: translateY(0);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		transition: none;
+	}
+}
+
+// Purely decorative — sits between the Date and Author pieces (their
+// default order, see AAE_A_Post_Pagination_Preview::build_default_inner_children())
+// when both are present. Author no-ops harmlessly if Date was deleted.
+.aae-a-post-pagination-preview-author::before {
+	content: '· ';
+	opacity: 0.6;
 }
