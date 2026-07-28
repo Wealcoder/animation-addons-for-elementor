@@ -1,7 +1,17 @@
 <?php
 /**
- * AAE Post Pagination Next — the "Next Post" button. Mirror of
- * AAE_A_Post_Pagination_Prev — see that file for the design rationale.
+ * AAE Post Pagination Previous — the "Previous Post" button.
+ *
+ * Structural container (like AAE_A_Loop_Prev) seeding an arrow icon (reuses
+ * AAE_A_Loop_Arrow directly rather than duplicating it) + a text label, both
+ * independently restyleable/replaceable — same composability the Loop Grid
+ * pagination pieces already offer.
+ *
+ * Renders as a REAL `<a href>` to the resolved previous post's permalink
+ * (not a JS-only click target) so it works with no JS, is crawlable, and
+ * supports native "open in new tab" / prefetch — unlike Loop Prev/Next,
+ * which stay `<div>`s clicked via event delegation because they trigger an
+ * in-place AJAX swap rather than a real page-to-page navigation.
  *
  * @package AnimationAddonsForElementor
  */
@@ -22,7 +32,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-require_once __DIR__ . '/../LoopGrid/class-aae-a-loop-arrow.php';
+require_once __DIR__ . '/../../LoopGrid/class-aae-a-loop-arrow.php';
 require_once __DIR__ . '/class-aae-a-post-pagination-preview.php';
 
 use WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Arrow;
@@ -31,7 +41,7 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Elem
 	return;
 }
 
-class AAE_A_Post_Pagination_Next extends Atomic_Element_Base {
+class AAE_A_Post_Pagination_Prev extends Atomic_Element_Base {
 	use Has_Element_Template;
 
 	public function __construct( $data = [], $args = null ) {
@@ -40,19 +50,19 @@ class AAE_A_Post_Pagination_Next extends Atomic_Element_Base {
 	}
 
 	public static function get_type() {
-		return 'e-aae-a-post-pagination-next';
+		return 'e-aae-a-post-pagination-prev';
 	}
 
 	public static function get_element_type(): string {
-		return 'e-aae-a-post-pagination-next';
+		return 'e-aae-a-post-pagination-prev';
 	}
 
 	public function get_title() {
-		return esc_html__( 'Next Post', 'animation-addons-for-elementor' );
+		return esc_html__( 'Previous Post', 'animation-addons-for-elementor' );
 	}
 
 	public function get_icon() {
-		return 'eicon-chevron-right';
+		return 'eicon-chevron-left';
 	}
 
 	public function should_show_in_panel() {
@@ -67,7 +77,7 @@ class AAE_A_Post_Pagination_Next extends Atomic_Element_Base {
 		return [
 			'classes'    => Classes_Prop_Type::make()->default( [] ),
 			'attributes' => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
-			'label'      => String_Prop_Type::make()->default( __( 'Next Post', 'animation-addons-for-elementor' ) ),
+			'label'      => String_Prop_Type::make()->default( __( 'Previous Post', 'animation-addons-for-elementor' ) ),
 		];
 	}
 
@@ -76,36 +86,36 @@ class AAE_A_Post_Pagination_Next extends Atomic_Element_Base {
 	}
 
 	protected function define_default_children() {
-		$children = [
-			[
-				'elType'          => 'widget',
-				'widgetType'      => 'e-paragraph',
-				'settings'        => [
-					'paragraph' => [
-						'$$type' => 'html-v3',
-						'value'  => [
-							'content'  => [ '$$type' => 'string', 'value' => __( 'Next Post', 'animation-addons-for-elementor' ) ],
-							'children' => [],
-						],
-					],
-					'tag'       => [ '$$type' => 'string', 'value' => 'span' ],
-				],
-				'editor_settings' => [ 'title' => 'Next Label' ],
-				'elements'        => [],
-			],
-		];
+		$children = [];
 
 		if ( self::type_registered( 'e-aae-a-loop-arrow' ) ) {
 			$children[] = AAE_A_Loop_Arrow::generate()
-				->editor_settings( [ 'title' => 'Next Icon' ] )
-				->settings( [ 'direction' => [ '$$type' => 'string', 'value' => 'next' ] ] )
+				->editor_settings( [ 'title' => 'Prev Icon' ] )
+				->settings( [ 'direction' => [ '$$type' => 'string', 'value' => 'prev' ] ] )
 				->build();
 		}
+
+		$children[] = [
+			'elType'          => 'widget',
+			'widgetType'      => 'e-paragraph',
+			'settings'        => [
+				'paragraph' => [
+					'$$type' => 'html-v3',
+					'value'  => [
+						'content'  => [ '$$type' => 'string', 'value' => __( 'Previous Post', 'animation-addons-for-elementor' ) ],
+						'children' => [],
+					],
+				],
+				'tag'       => [ '$$type' => 'string', 'value' => 'span' ],
+			],
+			'editor_settings' => [ 'title' => 'Prev Label' ],
+			'elements'        => [],
+		];
 
 		if ( self::type_registered( 'e-aae-a-post-pagination-preview' ) ) {
 			$children[] = AAE_A_Post_Pagination_Preview::generate()
 				->editor_settings( [ 'title' => 'Hover Preview Card' ] )
-				->children( AAE_A_Post_Pagination_Preview::build_default_inner_children( 'next' ) )
+				->children( AAE_A_Post_Pagination_Preview::build_default_inner_children( 'prev' ) )
 				->build();
 		}
 
@@ -167,7 +177,7 @@ class AAE_A_Post_Pagination_Next extends Atomic_Element_Base {
 
 	protected function get_templates(): array {
 		return [
-			'elementor/elements/aae-a-post-pagination-next' => __DIR__ . '/aae-a-post-pagination-item.html.twig',
+			'elementor/elements/aae-a-post-pagination-prev' => __DIR__ . '/aae-a-post-pagination-item.html.twig',
 		];
 	}
 
@@ -177,13 +187,13 @@ class AAE_A_Post_Pagination_Next extends Atomic_Element_Base {
 
 	protected function build_template_context(): array {
 		$ctx  = Render_Context::get( AAE_A_Post_Pagination::class );
-		$next = isset( $ctx['next'] ) ? $ctx['next'] : null;
+		$prev = isset( $ctx['prev'] ) ? $ctx['prev'] : null;
 
 		return array_merge( $this->build_base_template_context(), [
-			'nav_role'      => 'next',
-			'nav_url'       => $next ? $next['url'] : '',
-			'nav_title'     => $next ? $next['title'] : '',
-			'nav_available' => (bool) $next,
+			'nav_role'    => 'prev',
+			'nav_url'     => $prev ? $prev['url'] : '',
+			'nav_title'   => $prev ? $prev['title'] : '',
+			'nav_available' => (bool) $prev,
 		] );
 	}
 }

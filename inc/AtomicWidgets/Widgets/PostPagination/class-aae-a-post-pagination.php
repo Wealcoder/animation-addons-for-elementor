@@ -46,8 +46,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-require_once __DIR__ . '/class-aae-a-post-pagination-prev.php';
-require_once __DIR__ . '/class-aae-a-post-pagination-next.php';
+require_once __DIR__ . '/Parts/class-aae-a-post-pagination-prev.php';
+require_once __DIR__ . '/Parts/class-aae-a-post-pagination-next.php';
 require_once __DIR__ . '/../LoopGrid/class-aae-query-chips-control.php';
 
 use WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_Query_Chips_Control;

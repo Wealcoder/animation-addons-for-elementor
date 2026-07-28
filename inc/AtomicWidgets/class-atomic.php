@@ -3305,47 +3305,47 @@ final class Atomic
 
 			'aae-a-post-pagination-prev' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Prev',
-				'file' => 'Widgets/PostPagination/class-aae-a-post-pagination-prev.php',
+				'file' => 'Widgets/PostPagination/Parts/class-aae-a-post-pagination-prev.php',
 			],
 
 			'aae-a-post-pagination-next' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Next',
-				'file' => 'Widgets/PostPagination/class-aae-a-post-pagination-next.php',
+				'file' => 'Widgets/PostPagination/Parts/class-aae-a-post-pagination-next.php',
 			],
 
 			'aae-a-post-pagination-preview' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview',
-				'file' => 'Widgets/PostPagination/class-aae-a-post-pagination-preview.php',
+				'file' => 'Widgets/PostPagination/Parts/class-aae-a-post-pagination-preview.php',
 			],
 
 			'aae-a-post-pagination-preview-image' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Image',
-				'file' => 'Widgets/PostPagination/class-aae-a-post-pagination-preview-image.php',
+				'file' => 'Widgets/PostPagination/Parts/class-aae-a-post-pagination-preview-image.php',
 			],
 
 			'aae-a-post-pagination-preview-category' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Category',
-				'file' => 'Widgets/PostPagination/class-aae-a-post-pagination-preview-category.php',
+				'file' => 'Widgets/PostPagination/Parts/class-aae-a-post-pagination-preview-category.php',
 			],
 
 			'aae-a-post-pagination-preview-title' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Title',
-				'file' => 'Widgets/PostPagination/class-aae-a-post-pagination-preview-title.php',
+				'file' => 'Widgets/PostPagination/Parts/class-aae-a-post-pagination-preview-title.php',
 			],
 
 			'aae-a-post-pagination-preview-date' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Date',
-				'file' => 'Widgets/PostPagination/class-aae-a-post-pagination-preview-date.php',
+				'file' => 'Widgets/PostPagination/Parts/class-aae-a-post-pagination-preview-date.php',
 			],
 
 			'aae-a-post-pagination-preview-author' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Author',
-				'file' => 'Widgets/PostPagination/class-aae-a-post-pagination-preview-author.php',
+				'file' => 'Widgets/PostPagination/Parts/class-aae-a-post-pagination-preview-author.php',
 			],
 
 			'aae-a-post-pagination-preview-excerpt' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Excerpt',
-				'file' => 'Widgets/PostPagination/class-aae-a-post-pagination-preview-excerpt.php',
+				'file' => 'Widgets/PostPagination/Parts/class-aae-a-post-pagination-preview-excerpt.php',
 			],
 
 			/*
