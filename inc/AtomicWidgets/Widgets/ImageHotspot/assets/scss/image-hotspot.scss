@@ -1,36 +1,18 @@
 // AAE Image Hotspot — structural/behavioral CSS only.
 //
 // The Marker's and Content's own LOOK (background, color, border-radius,
-// padding, width, font-size) live on their own real elements' PHP
+// padding, width, height, font-size) live on their own real elements' PHP
 // define_base_styles() (AAE_A_Hotspot_Marker / AAE_A_Hotspot_Content) and are
 // editable from Elementor's Style tab — see those classes' docblocks. What's
 // left here is narrowly: (a) keyframe animations and their pseudo-elements
-// (no PropType expresses those), (b) the one genuine "different box model
-// per layout value" case (dot/icon/number need an equal width+height square;
-// text/icon-text need auto width) that a single base-style class can't
-// express, and (c) "look when a runtime-toggled class/mode is present" rules
-// (tooltip/lightbox placement, portal mechanics, tour highlight) — the exact
-// same dividing line ToggleSwitcher's `.show`/`.e--selected`/`.active` rules
-// draw in toggle-switcher.scss.
+// (no PropType expresses those), and (b) "look when a runtime-toggled
+// class/mode is present" rules (tooltip/lightbox placement, portal
+// mechanics, tour highlight) — the exact same dividing line ToggleSwitcher's
+// `.show`/`.e--selected`/`.active` rules draw in toggle-switcher.scss.
 //
 // --anim-speed is set container-wide via inline style (aae-a-image-hotspot.
 // html.twig); --pulse-color defaults to `currentColor` so the Marker's own
 // (Style-tab) `color` drives every animation.
-
-// ── Marker: the one legitimate per-layout box-model difference ───────────
-// `.elementor` prefix intentionally matches (then exceeds) the specificity of
-// the base-style rule Elementor generates for the Marker's own 'base' key
-// (`.elementor .e-aae-a-hotspot-marker-base { padding: ... }`, specificity
-// 0,2,0) — without it this tie could lose to the base rule depending on
-// stylesheet order (the exact class of bug documented in this plugin's
-// CLAUDE.md under "CSS specificity tie").
-.elementor .aae-hotspot-marker[data-layout="dot"],
-.elementor .aae-hotspot-marker[data-layout="icon"],
-.elementor .aae-hotspot-marker[data-layout="number"] {
-	width: 32px;
-	height: 32px;
-	padding: 0;
-}
 
 .aae-hotspot-marker {
 	// Anchor for the ::before/::after pseudo-elements every animation below
@@ -249,6 +231,13 @@
 .aae-hotspot-editor-focus .aae-hotspot-marker {
 	outline: 2px solid #6d5cff;
 	outline-offset: 2px;
+}
+
+// Drag-to-reposition feedback (editor canvas only — see initDragReposition
+// in image-hotspot.js). `!important` because it must beat the Point's own
+// Style-tab `cursor` override while a drag is actually in progress.
+.aae-hotspot-dragging {
+	cursor: grabbing !important;
 }
 
 // ── Marker animations ────────────────────────────────────────────────────

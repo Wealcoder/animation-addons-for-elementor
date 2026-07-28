@@ -1,20 +1,3 @@
-// .aae-a-post-pagination {
-// 	body:not(.elementor-editor-active) &.aae-pp-no-prev [data-aae-nav="prev"] {
-// 		display: none;
-// 	}
-// 	body:not(.elementor-editor-active) &.aae-pp-no-next [data-aae-nav="next"] {
-// 		display: none;
-// 	}
-
-// 	.aae-pp-disabled {
-// 		pointer-events: none;
-// 		opacity: 0.4;
-// 	}
-// 	body:not(.elementor-editor-active) &.aae-pp-force-hidden {
-// 		display: none;
-// 	}
-// }
-
 // Sticky Bottom Bar.
 .aae-a-post-pagination[data-aae-pp-mode="sticky_bar"] {
 	body:not(.elementor-editor-active) &.aae-pp-reveal {
@@ -70,16 +53,6 @@
 
 // Hidden AT REST everywhere (editor included, no exemption) — reveal-on-
 // hover (.aae-pp-preview-visible) only takes visual effect on the FRONTEND.
-// Why not "always visible in editor for styling" (this widget's usual
-// pattern, used for the no-prev/no-next rules): each piece's real
-// content comes from a PHP-only Render_Context lookup
-// (AAE_A_Post_Pagination_Preview_*::get_atomic_settings()), which only runs
-// on an actual server round-trip — the editor's constant client-side
-// re-render (same "no editor-bridge mirroring" limitation this widget's
-// query settings already have, see project memory) can't see it, so the
-// pieces render EMPTY. Showing an always-visible-but-empty card in the
-// canvas read as broken, not "ready to style" — hiding it unconditionally
-// avoids that.
 .aae-a-post-pagination-preview {
 	opacity: 0;
 	visibility: hidden;
@@ -106,24 +79,6 @@ body:not(.elementor-editor-active) .aae-a-post-pagination-preview.aae-pp-preview
 
 // Editor-only: `position: fixed` (define_base_styles() in
 // class-aae-a-post-pagination-preview.php) is what lets post-pagination.js
-// plant the card next to the CURSOR on the frontend — but in the editor
-// canvas nothing ever hovers it that way, so it just sits fixed whenever
-// no inline top/left has been set, at whatever arbitrary spot its (or an
-// ancestor's) layout implies. Clicking/selecting it then made Elementor's
-// own "scroll the selected element into view" behavior jump the WHOLE
-// canvas toward that arbitrary fixed position.
-//
-// `position: absolute` (not `static`) is the fix: `static` first, it turned
-// out, put the card back in NORMAL FLOW — since it's only hidden via
-// opacity/visibility (not display:none, see above), an in-flow 260px-wide
-// card was still occupying real layout space INSIDE the Prev/Next `<a>`,
-// inflating each button's width enough to force them onto separate lines.
-// `absolute` keeps it OUT of flow (so the buttons shrink back to just
-// icon+label) while also not jumping the canvas — anchored to the button
-// itself (`.aae-a-post-pagination-item` gets `position: relative` below,
-// editor-only) rather than the viewport or some transformed ancestor.
-// `.elementor` is included so this beats the atomic base style's own
-// specificity (same fix as the no-prev/no-next rules above).
 body.elementor-editor-active .elementor .aae-a-post-pagination-preview {
 	position: absolute;
 	top: 0;

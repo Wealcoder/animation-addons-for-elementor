@@ -164,14 +164,17 @@ class AAE_A_Hotspot_Marker extends Atomic_Widget_Base {
 
 	/**
 	 * Universal resting look, shared by every layout — fully Style-tab
-	 * overridable. The one thing that legitimately differs PER layout (dot/
-	 * icon/number need equal width+height to read as a circle; text/icon-text
-	 * need auto width) can't be expressed as a single base-style value keyed
-	 * off a content prop, so that narrow difference stays in
-	 * image-hotspot.scss (`[data-layout="dot|icon|number"] { width/height }`).
+	 * overridable, including `width`/`height` (default 32px, a square that
+	 * reads as a dot/icon by default) — a builder using the text/icon-text
+	 * layout can widen it from the same Style-tab fields if the default is
+	 * too narrow for their label. Elementor's own global reset
+	 * (`.elementor * { box-sizing: border-box }`) means width/height already
+	 * include padding, so 32px really renders as 32px regardless of the
+	 * padding value below.
 	 */
 	protected function define_base_styles(): array {
 		$pad = Size_Prop_Type::generate( [ 'size' => 8, 'unit' => 'px' ] );
+		$size = Size_Prop_Type::generate( [ 'size' => 32, 'unit' => 'px' ] );
 
 		return [
 			'base' => Style_Definition::make()
@@ -189,6 +192,8 @@ class AAE_A_Hotspot_Marker extends Atomic_Widget_Base {
 						)
 						->add_prop( 'border-radius', Size_Prop_Type::generate( [ 'size' => 999, 'unit' => 'px' ] ) )
 						->add_prop( 'font-size', Size_Prop_Type::generate( [ 'size' => 14, 'unit' => 'px' ] ) )
+						->add_prop( 'width', $size )
+						->add_prop( 'height', $size )
 						->add_prop(
 							'padding',
 							Dimensions_Prop_Type::generate( [

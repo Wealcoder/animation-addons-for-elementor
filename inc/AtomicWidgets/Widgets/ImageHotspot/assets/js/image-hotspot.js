@@ -293,6 +293,100 @@ const initTour = ( root ) => {
 	start();
 };
 
+// ── Drag-to-reposition (editor canvas only) ──────────────────────────────
+// Commits through Elementor's own settings command on drop — same
+// window.parent.elementor bridging offcanvas.js already uses to read the
+// live model from inside a frontend-handler script (this is the write-side
+// mirror of that). Native HTML5 drag (Elementor's own structural
+// drag-to-reorder, the reason every element ships `draggable="true"`) is
+// turned off on points specifically so it can't fight this pointer-based
+// reposition drag or accidentally move a point into a different container.
+const getEditorWindow = () => ( window.parent && window.parent !== window ? window.parent : window );
+
+const commitPosition = ( point, left, top ) => {
+	if ( left == null || top == null ) {
+		return;
+	}
+	try {
+		const editorWindow = getEditorWindow();
+		const id = point.getAttribute( 'data-id' );
+		const container = editorWindow.elementor?.getContainer?.( id );
+		if ( ! container || ! editorWindow.$e ) {
+			return;
+		}
+		editorWindow.$e.run( 'document/elements/settings', {
+			container,
+			settings: {
+				pos_left: { $$type: 'number', value: left },
+				pos_top: { $$type: 'number', value: top },
+			},
+		} );
+	} catch ( _e ) {
+		/* editor not ready — ignore */
+	}
+};
+
+const initDragReposition = ( root ) => {
+	root.querySelectorAll( '.aae-hotspot-point' ).forEach( ( point ) => {
+		if ( point.dataset.aaeHspDragInit === 'true' ) {
+			return;
+		}
+		point.dataset.aaeHspDragInit = 'true';
+		point.setAttribute( 'draggable', 'false' );
+		point.style.touchAction = 'none';
+
+		let dragging = false;
+		let startX = 0;
+		let startY = 0;
+		let pendingLeft = null;
+		let pendingTop = null;
+
+		const onPointerMove = ( ev ) => {
+			const dx = ev.clientX - startX;
+			const dy = ev.clientY - startY;
+			if ( ! dragging && Math.hypot( dx, dy ) > 4 ) {
+				dragging = true;
+				point.classList.add( 'aae-hotspot-dragging' );
+			}
+			if ( ! dragging ) {
+				return;
+			}
+			ev.preventDefault();
+
+			// % of the ROOT image-hotspot canvas — the same box pos_left/
+			// pos_top's inset-inline-start/inset-block-start resolve against.
+			const rect = root.getBoundingClientRect();
+			const left = Math.min( 100, Math.max( 0, ( ( ev.clientX - rect.left ) / rect.width ) * 100 ) );
+			const top = Math.min( 100, Math.max( 0, ( ( ev.clientY - rect.top ) / rect.height ) * 100 ) );
+			pendingLeft = Math.round( left * 10 ) / 10;
+			pendingTop = Math.round( top * 10 ) / 10;
+			point.style.insetInlineStart = `${ pendingLeft }%`;
+			point.style.insetBlockStart = `${ pendingTop }%`;
+		};
+
+		const onPointerUp = () => {
+			document.removeEventListener( 'pointermove', onPointerMove );
+			document.removeEventListener( 'pointerup', onPointerUp );
+			point.classList.remove( 'aae-hotspot-dragging' );
+			if ( ! dragging ) {
+				return;
+			}
+			dragging = false;
+			commitPosition( point, pendingLeft, pendingTop );
+		};
+
+		point.addEventListener( 'pointerdown', ( ev ) => {
+			if ( ev.button !== 0 ) {
+				return;
+			}
+			startX = ev.clientX;
+			startY = ev.clientY;
+			document.addEventListener( 'pointermove', onPointerMove );
+			document.addEventListener( 'pointerup', onPointerUp );
+		} );
+	} );
+};
+
 const initImageHotspot = ( root ) => {
 	if ( root.dataset.aaeHspInit === 'true' ) {
 		return;
@@ -307,9 +401,14 @@ const initImageHotspot = ( root ) => {
 
 	if ( typeof elementorFrontend !== 'undefined' && elementorFrontend.isEditMode() ) {
 		refreshVisuals();
+		initDragReposition( root );
 		// Elementor repaints child nodes on unrelated settings changes, which
-		// would otherwise leave numbering/animation classes stale until reload.
-		window.setInterval( refreshVisuals, 1000 );
+		// would otherwise leave numbering/animation classes (and the drag
+		// listener, guarded by its own dataset flag) stale/missing until reload.
+		window.setInterval( () => {
+			refreshVisuals();
+			initDragReposition( root );
+		}, 1000 );
 		return;
 	}
 
