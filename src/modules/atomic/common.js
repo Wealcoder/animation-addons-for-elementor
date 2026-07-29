@@ -412,15 +412,63 @@ if (typeof document !== 'undefined') {
 	}
 }
 
-window.addEventListener('resize', () => {
-	const newBp = currentBreakpoint();
-	if (newBp !== activeBp) {
-		activeBp = newBp;
-		updateBodyDeviceMode(newBp);
-		document.querySelectorAll('[data-interaction-id]').forEach((el) => {
-			try { rebind(el); } catch (_) { }
-		});
+/**
+ * Cheap per-element signature of every kind's EFFECTIVE config (post
+ * pickConfigResponsive) at the current breakpoint. Used only by the
+ * resize/device-mode path below to tell "this element's animation settings
+ * actually differ at the new breakpoint" apart from "same settings, viewport
+ * just changed" — most widgets never override per-breakpoint, so most
+ * elements hit the latter and can skip the GSAP/ScrollTrigger teardown.
+ */
+const CONFIG_SIG_KEY = '__aaeConfigSig';
+
+function configSignature(el) {
+	const kinds = kindsFor(el);
+	if (!kinds.length) return '';
+	let sig = '';
+	for (const kind of kinds) {
+		const config = kind.read(el);
+		sig += kind.name + ':' + (config ? JSON.stringify(config) : '') + '|';
 	}
+	return sig;
+}
+
+/**
+ * Resize/device-mode entry point (NOT used by the settings-panel path in
+ * settings-bridge.js, which must always force a full rebind when the user
+ * actually edits a setting). Only pays for reset→unbind→bind when this
+ * element's effective config really changed at the new breakpoint;
+ * otherwise the previous bind is left running untouched.
+ */
+function rebindIfChanged(el) {
+	if (!el) return;
+	const sig = configSignature(el);
+	if (el[CONFIG_SIG_KEY] === sig) return;
+	el[CONFIG_SIG_KEY] = sig;
+	rebind(el);
+}
+
+// Device-mode switches (in the editor) and real window resizes both fire
+// native `resize` on this window. Elementor's device-mode switch can emit a
+// short burst of resize events while the preview iframe settles, and a real
+// window drag fires many events per second — debounce so the (potentially
+// page-wide) rebind pass runs once per settle, not once per event.
+let resizeSettleTimer = null;
+const RESIZE_SETTLE_MS = 120;
+
+window.addEventListener('resize', () => {
+	if (resizeSettleTimer) clearTimeout(resizeSettleTimer);
+	resizeSettleTimer = setTimeout(() => {
+		resizeSettleTimer = null;
+		const newBp = currentBreakpoint();
+		if (newBp !== activeBp) {
+			activeBp = newBp;
+			updateBodyDeviceMode(newBp);
+			document.querySelectorAll('[data-interaction-id]').forEach((el) => {
+				try { rebindIfChanged(el); } catch (_) { }
+			});
+		}
+	}, RESIZE_SETTLE_MS);
 });
 
 /**
