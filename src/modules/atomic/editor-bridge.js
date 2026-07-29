@@ -126,6 +126,7 @@ import { startSlideSelectNav } from './editor-bridge/slide-select-nav';
 import { startSliderEditorPreview } from './editor-bridge/slider-editor-preview';
 import { startAutoPreset } from './editor-bridge/auto-preset';
 import { startFormGuards } from './editor-bridge/form-guards';
+import { startAdvancedHeadingInline } from './editor-bridge/advanced-heading-inline';
 
 function bootstrap() {
 	// `preview:loaded` fires on EVERY preview (re)load — switching documents,
@@ -152,6 +153,10 @@ function bootstrap() {
 	// Save-time warnings: form without a Submit button / nested forms
 	// (spec hard rules — warn, never block the save).
 	startFormGuards();
+
+	// Advanced Heading: click its text in the canvas to edit inline, with the
+	// same floating format toolbar core gives e-paragraph plus a colour field.
+	startAdvancedHeadingInline();
 }
 
 if (window.elementor && window.elementor.on) {
