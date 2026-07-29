@@ -59,7 +59,44 @@ final class Cache {
 			? $this->fetch_remote_fresh( $type, $category )
 			: $this->get_remote_cached_or_fetch( $type, $category );
 
-		return array_merge( $this->tag_remote( $remote ), $local );
+		return array_merge( $this->tag_remote( $this->resolve_asset_urls( $remote ) ), $local );
+	}
+
+	/**
+	 * Remote preset models are authored/uploaded against the same
+	 * `{{AAE_ASSET_URL}}` placeholder convention this plugin's own bundled
+	 * local presets use (see Local_Fallback::parse_preset_file()) — the
+	 * remote server has no knowledge of any one install's plugin URL, so it
+	 * stores the literal token and expects each consuming site to resolve it
+	 * to its own `WCF_ADDONS_URL . 'inc/AtomicWidgets/'`.
+	 *
+	 * Local_Fallback resolves this at parse-time for local files; remote
+	 * entries were never getting the same treatment, so any remote preset
+	 * carrying an image-src/svg-src (or any other) URL built from this token
+	 * shipped the literal placeholder string straight to the browser —
+	 * rendering no icon/image, and failing Elementor's save-time URL
+	 * validation with "Settings validation failed. <prop>: invalid_value" on
+	 * publish. Resolved on every read (not baked into the transient) so it
+	 * always reflects the CURRENT site's URL, exactly like Local_Fallback.
+	 *
+	 * @param array<int, array> $entries
+	 * @return array<int, array>
+	 */
+	private function resolve_asset_urls( array $entries ): array {
+		if ( empty( $entries ) || ! defined( 'WCF_ADDONS_URL' ) ) {
+			return $entries;
+		}
+
+		$json = wp_json_encode( $entries );
+		if ( ! is_string( $json ) ) {
+			return $entries;
+		}
+
+		$json = str_replace( '{{AAE_ASSET_URL}}', WCF_ADDONS_URL . 'inc/AtomicWidgets/', $json );
+
+		$decoded = json_decode( $json, true );
+
+		return is_array( $decoded ) ? $decoded : $entries;
 	}
 
 	private function tag_remote( array $entries ): array {
