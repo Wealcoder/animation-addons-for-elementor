@@ -1,6 +1,6 @@
 {
-  "name": "wcf-addons",
-  "version": "1.0.0",
+  "name": "animation-addons",
+  "version": "4.0.0",
   "description": "Elementor WCF Addons",
   "main": "echo \"Nothing much here.\" && exit 1",
   "dependencies": {
@@ -86,7 +86,6 @@
     "gulp-rtlcss": "^1.4.1",
     "gulp-sourcemaps": "^2.6.5",
     "gulp-terser": "^1.2.0",
-    "gulp-zip": "^6.1.0",
     "po-csv": "github:marek-saji/po-csv",
     "postcss": "^8.4.40",
     "sass": "^1.36.0",

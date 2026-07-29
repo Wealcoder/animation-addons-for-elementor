@@ -15,6 +15,8 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Svg_Src_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
+use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
+use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 
 require_once __DIR__ . '/class-aae-a-nav-item.php';
 require_once __DIR__ . '/class-aae-a-nav-sub-item.php';
@@ -58,6 +60,15 @@ class AAE_A_Nav extends Atomic_Element_Base {
 		return [
 			'classes'    => Classes_Prop_Type::make()->default( [] ),
 			'attributes' => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
+			/* Set when the menu was populated via "Import from WordPress menu".
+			 * Binds this nav to that WP menu so the panel offers "Update from
+			 * WordPress" (id-based smart sync) instead of a duplicate import. */
+			'imported_menu_id' => String_Prop_Type::make()->default( '' ),
+			/* Desktop dropdown indicator icon. nav.js inlines this SVG next to the
+			 * label of every item that has a dropdown (see injectDropdownIcons). */
+			'show_dropdown_icon' => Boolean_Prop_Type::make()->default( true ),
+			'dropdown_icon' => Svg_Src_Prop_Type::make()
+				->default_url( WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/Nav/assets/icons/chevron-down.svg' ),
 			'mobile_enabled' => Boolean_Prop_Type::make()->default( false ),
 			'mobile_breakpoint' => String_Prop_Type::make()->default( '767' ),
 			'mobile_position' => String_Prop_Type::make()->default( 'right' ),
@@ -114,6 +125,15 @@ class AAE_A_Nav extends Atomic_Element_Base {
 						->set_meta( [ 'layout' => 'custom' ] ),
 				] ),
 			Section::make()
+				->set_label( __( 'Dropdown Icon', 'animation-addons-for-elementor' ) )
+				->set_id( 'dropdown_icon_section' )
+				->set_items( [
+					Switch_Control::bind_to( 'show_dropdown_icon' )
+						->set_label( __( 'Show Icon on Dropdown Items', 'animation-addons-for-elementor' ) ),
+					Svg_Control::bind_to( 'dropdown_icon' )
+						->set_label( __( 'Icon', 'animation-addons-for-elementor' ) ),
+				] ),
+			Section::make()
 				->set_label( __( 'Menu Items', 'animation-addons-for-elementor' ) )
 				->set_id( 'menu_items' )
 				->set_items( [
@@ -132,8 +152,26 @@ class AAE_A_Nav extends Atomic_Element_Base {
 		];
 	}
 
+	/**
+	 * Bare-drop structural CSS moved out of the external nav.scss into the
+	 * element's own base style (atomic optimization: each element ships the CSS
+	 * it needs). `position: relative` gives the menu a positioning context;
+	 * `overflow: visible` lets future dropdowns escape. Emitted WITHOUT
+	 * `!important` (base styles never do) so the user's Style tab always wins —
+	 * safe here because nothing else sets position/overflow on this element.
+	 * The bare 'base' key also feeds the Twig root its scope class.
+	 * NOTE: `min-height: unset` stays in nav.scss — `unset` is not expressible
+	 * as an atomic Size prop.
+	 */
 	protected function define_base_styles(): array {
-		return [];
+		return [
+			'base' => Style_Definition::make()
+				->add_variant(
+					Style_Variant::make()
+						->add_prop( 'position', String_Prop_Type::generate( 'relative' ) )
+						->add_prop( 'overflow', String_Prop_Type::generate( 'visible' ) )
+				),
+		];
 	}
 
 	protected function define_default_children() {

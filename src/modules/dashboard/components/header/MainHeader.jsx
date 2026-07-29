@@ -19,7 +19,7 @@ const MainHeader = ({ open, setOpen }) => {
   }, []);
 
   return (
-    <div className="flex justify-between items-center gap-6 py-5 px-8 border-b border-border-secondary">
+    <div className="flex justify-between items-center gap-3 px-4 py-5 sm:gap-6 sm:px-8 border-b border-border-secondary">
       <div>
         <ShortLogo />
       </div>

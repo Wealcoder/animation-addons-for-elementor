@@ -9,6 +9,14 @@ export const useWidgets = () => {
   return { allWidgets, setAllWidgets };
 };
 
+export const useAtomicWidgets = () => {
+  const {
+    mainState: { allAtomicWidgets },
+    setAllAtomicWidgets,
+  } = useContext(AppContext);
+  return { allAtomicWidgets, setAllAtomicWidgets };
+};
+
 export const useExtensions = () => {
   const {
     mainState: { allExtensions },
@@ -17,11 +25,25 @@ export const useExtensions = () => {
   return { allExtensions, setAllExtensions };
 };
 
+export const useAtomicExtensions = () => {
+  const {
+    mainState: { allAtomicExtensions },
+    setAllAtomicExtensions,
+  } = useContext(AppContext);
+  return { allAtomicExtensions, setAllAtomicExtensions };
+};
+
 export const useActiveItem = () => {
   const {
     updateActiveWidget,
     updateActiveGroupWidget,
     updateActiveFullWidget,
+    updateActiveAtomicWidget,
+    updateActiveAtomicGroupWidget,
+    updateActiveAtomicFullWidget,
+    updateActiveAtomicExtension,
+    updateActiveAtomicGroupExtension,
+    updateActiveAtomicFullExtension,
     updateActiveGeneralExtension,
     updateActiveGeneralGroupExtension,
     updateActiveGsapExtension,
@@ -33,6 +55,12 @@ export const useActiveItem = () => {
     updateActiveWidget,
     updateActiveGroupWidget,
     updateActiveFullWidget,
+    updateActiveAtomicWidget,
+    updateActiveAtomicGroupWidget,
+    updateActiveAtomicFullWidget,
+    updateActiveAtomicExtension,
+    updateActiveAtomicGroupExtension,
+    updateActiveAtomicFullExtension,
     updateActiveGeneralExtension,
     updateActiveGeneralGroupExtension,
     updateActiveGsapExtension,

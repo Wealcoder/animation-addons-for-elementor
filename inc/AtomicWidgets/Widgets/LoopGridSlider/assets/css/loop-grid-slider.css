@@ -1,0 +1,38 @@
+@charset "UTF-8";
+/**
+ * AAE Loop Grid Slider — frontend styles.
+ *
+ * The slider MOTION (track transform, autoplay, effects) is owned by the shared
+ * nested-slider runtime. But the runtime only SETS the `--aae-slides-per-view`
+ * / `--aae-slide-gap` custom properties — the rule that turns them into a real
+ * slide WIDTH lives in the Nested Slider's own stylesheet, which this widget
+ * deliberately does not load (to avoid a cross-widget CSS dependency). So we
+ * replicate that one sizing rule here, scoped to this widget. Without it every
+ * slide takes its natural width and only one shows regardless of slidesPerView.
+ */
+.aae-a-loop-grid-slider {
+  position: relative;
+}
+.aae-a-loop-grid-slider .aae-slider-track {
+  flex-wrap: nowrap;
+}
+.aae-a-loop-grid-slider .aae-slider-track > * {
+  flex: 0 0 calc((100% - var(--aae-slide-gap, 0px) * (var(--aae-slides-per-view, 1) - 1)) / var(--aae-slides-per-view, 1));
+  max-width: calc((100% - var(--aae-slide-gap, 0px) * (var(--aae-slides-per-view, 1) - 1)) / var(--aae-slides-per-view, 1));
+  box-sizing: border-box;
+  transform-style: preserve-3d;
+  transition: transform 0.5s ease-out;
+  height: var(--aae-slide-height, auto);
+}
+.aae-a-loop-grid-slider .aae-a-loop-grid-empty {
+  width: 100%;
+  padding: 2rem;
+  text-align: center;
+  opacity: 0.7;
+}
+
+body:not(.elementor-editor-active) .aae-a-loop-grid-slider .aae-pg-first [data-aae-nav=prev],
+body:not(.elementor-editor-active) .aae-a-loop-grid-slider .aae-pg-last [data-aae-nav=next],
+body:not(.elementor-editor-active) .aae-a-loop-grid-slider .aae-pg-last [data-aae-loadmore] {
+  display: none;
+}/*# sourceMappingURL=loop-grid-slider.css.map */

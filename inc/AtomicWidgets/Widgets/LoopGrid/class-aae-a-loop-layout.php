@@ -3,8 +3,9 @@
  * AAE Loop Layout — the CSS-grid wrapper inside the Loop Grid.
  *
  * Structural container (Pro replica). Holds exactly one Loop Item, which repeats
- * per post at render. This element renders the `.aae-a-loop-grid` grid; the
- * column layout is flexbox-driven (each Loop Item's base style: flex 1 1 32%).
+ * per post at render. This element renders the `.aae-a-loop-grid` grid using
+ * real CSS grid (display: grid; grid-template-columns), editable from the
+ * Style panel.
  *
  * @package AnimationAddonsForElementor
  */
@@ -20,6 +21,7 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -77,9 +79,10 @@ class AAE_A_Loop_Layout extends Atomic_Element_Base {
 			'base' => Style_Definition::make()
 				->add_variant(
 					Style_Variant::make()
-						->add_prop( 'display', String_Prop_Type::generate( 'flex' ) )
-						->add_prop( 'flex-direction', String_Prop_Type::generate( 'row' ) )
-						->add_prop( 'flex-wrap', String_Prop_Type::generate( 'wrap' ) )
+						->add_prop( 'display', String_Prop_Type::generate( 'grid' ) )
+						->add_prop( 'grid-template-columns', String_Prop_Type::generate( 'repeat(3, 1fr)' ) )
+						->add_prop( 'gap', Size_Prop_Type::generate( [ 'size' => 10, 'unit' => 'px' ] ) )
+						 ->add_prop( 'padding', Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ) )
 				),
 		];
 	}

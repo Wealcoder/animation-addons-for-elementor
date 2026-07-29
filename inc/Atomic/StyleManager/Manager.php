@@ -86,6 +86,7 @@ class Manager {
 				'aae-a-w-full'      => [ 'width' => '100%' ],
 				'aae-a-h-full'      => [ 'height' => '100%' ],
 				'aae-a-svg'         => [ 'width' => '20px', 'height' => '20px' ],
+				'aae-a-svg-30'      => [ 'width' => '30px', 'height' => '30px' ],
 
 				// Border reset (no `border` shorthand in the schema — zero the width)
 				'aae-a-b0'          => [ 'border-width' => '0px' ],

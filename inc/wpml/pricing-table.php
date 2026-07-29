@@ -21,7 +21,7 @@ class Pricing_Table extends \WPML_Elementor_Module_With_Items  {
 	 * @return array
 	 */
 	public function get_fields() {
-		return ['text'];
+		return ['item_text'];
 	}
 
 	/**
@@ -31,7 +31,7 @@ class Pricing_Table extends \WPML_Elementor_Module_With_Items  {
 	 */
 	protected function get_title( $field ) {
 		switch ( $field ) {
-			case 'text':
+			case 'item_text':
 				return __( 'Pricing Table: Feature Text', 'animation-addons-for-elementor' );
 			default:
 				return '';
@@ -45,7 +45,7 @@ class Pricing_Table extends \WPML_Elementor_Module_With_Items  {
 	 */
 	protected function get_editor_type( $field ) {
 		switch ( $field ) {
-			case 'text':
+			case 'item_text':
 				return 'AREA';
 			default:
 				return '';

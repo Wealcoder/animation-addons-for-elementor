@@ -12,8 +12,24 @@
         max-width: calc((100% - (var(--aae-slide-gap) * (var(--aae-slides-per-view) - 1))) / var(--aae-slides-per-view));
         box-sizing: border-box;
         transform-style: preserve-3d;
-        transition: transform 0.5s ease-out;      
-        height: var(--aae-slide-height, auto);        
+        transition: transform 0.5s ease-out;
+        height: var(--aae-slide-height, auto);
+    }
+
+    // Contain the nav arrow's SVG to the fixed 44px badge. The nav button is a
+    // constant round badge (see AAE_A_Slider_Nav_{Prev,Next}::define_base_styles()),
+    // but its SVG child can be a huge 65px (an element saved before the `aae-a-svg`
+    // 20px utility existed) — which would overflow the badge and break the circle.
+    // Cap it to the badge's inner box (44px − 8px padding × 2 ≈ 24px) so old-saved
+    // and freshly-dropped arrows look identical. The SVG carries inline
+    // width/height:100%, so constraining its `e-svg-base` wrapper is what bites.
+    .aae-a-navigator-prev,
+    .aae-a-navigator-next {
+        .e-svg-base,
+        svg {
+            max-width: 24px;
+            max-height: 24px;
+        }
     }
 }
 

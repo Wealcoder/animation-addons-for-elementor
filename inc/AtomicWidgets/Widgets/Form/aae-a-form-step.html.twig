@@ -1,0 +1,24 @@
+{#
+  AAE Form Step — one page of a multi-step form. Hidden via the base style
+  (display:none); form.js reveals exactly one step at a time by adding
+  aae-form-step-active (rule in form.scss). data-aae-form-step-title feeds
+  the runtime's step-progress indicator without needing a JS re-read of the
+  atomic prop.
+#}
+{% set classes = ['aae-a-form-step', 'e-con', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') | trim %}
+
+<div class="{{ classes }} {{ editor_classes | default('') }}"
+    data-id="{{ id }}"
+    data-element_type="{{ type }}"
+    data-e-type="{{ type }}"
+    data-interaction-id="{{ interaction_id | default(id) }}"
+    data-aae-form-step="true"
+    data-aae-form-step-title="{{ settings.step_title | default('') | e('html_attr') }}"
+    data-aae-form-step-nav-auto="{{ (settings.step_nav_auto is not defined or settings.step_nav_auto) ? 'true' : 'false' }}"
+    data-aae-form-step-transition="{{ settings.step_transition | default('fade-slide') }}"
+    {% if settings._cssid is defined and settings._cssid is not empty %}id="{{ settings._cssid | e('html_attr') }}"{% endif %}
+    {% if settings.attributes is defined and settings.attributes is not empty %}{{ settings.attributes | raw }}{% endif %}
+    {{ editor_attributes | default('') | raw }}>
+
+    {{ children_placeholder | raw }}
+</div>

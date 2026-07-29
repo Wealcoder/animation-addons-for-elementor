@@ -12,11 +12,33 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useActiveItem, useExtensions } from "@/hooks/app.hooks";
+import {
+  useActiveItem,
+  useAtomicExtensions,
+  useExtensions,
+} from "@/hooks/app.hooks";
 
-const ExtensionTopBar = ({ filterKey, setFilterKey, extensionCount }) => {
+const ExtensionTopBar = ({
+  filterKey,
+  setFilterKey,
+  extensionCount,
+  system = "v3",
+}) => {
   const { allExtensions } = useExtensions();
-  const { updateActiveFullExtension } = useActiveItem();
+  const { allAtomicExtensions } = useAtomicExtensions();
+  const { updateActiveFullExtension, updateActiveAtomicFullExtension } =
+    useActiveItem();
+
+  const isAtomic = system === "atomic";
+  const activeExtensions = isAtomic ? allAtomicExtensions : allExtensions;
+
+  const setCheck = (data) => {
+    if (isAtomic) {
+      updateActiveAtomicFullExtension(data);
+    } else {
+      updateActiveFullExtension(data);
+    }
+  };
 
   return (
     <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 xl:gap-11 justify-between items-center">
@@ -26,7 +48,11 @@ const ExtensionTopBar = ({ filterKey, setFilterKey, extensionCount }) => {
         </div>
         <div className="flex flex-col gap-1">
           <div className="flex items-center">
-            <h2 className="text-[18px] font-medium ">{__("Extensions", "animation-addons-for-elementor")}</h2>
+            <h2 className="text-[18px] font-medium ">
+              {isAtomic
+                ? __("Atomic Extensions", "animation-addons-for-elementor")
+                : __("Extensions", "animation-addons-for-elementor")}
+            </h2>
           </div>
           <div className="flex items-center">
             <p className="text-sm text-label">
@@ -43,8 +69,8 @@ const ExtensionTopBar = ({ filterKey, setFilterKey, extensionCount }) => {
         <div className="flex items-center gap-x-2">
           <Switch
             id="global-enable-all"
-            checked={allExtensions.is_active}
-            onCheckedChange={(value) => updateActiveFullExtension({ value })}
+            checked={activeExtensions?.is_active}
+            onCheckedChange={(value) => setCheck({ value })}
             reverse
           />
           <Label htmlFor="global-enable-all">{__("Enable All", "animation-addons-for-elementor")}</Label>

@@ -53,7 +53,20 @@ class AAE_A_Slide extends Atomic_Element_Base {
 	}
 
 	protected function define_atomic_controls(): array {
+		require_once __DIR__ . '/class-aae-a-slide-preset-picker-control.php';
+
 		return [
+			Section::make()
+				->set_label( __( 'Presets', 'animation-addons-for-elementor' ) )
+				->set_id( 'aae_presets' )
+				->set_items(
+					[
+						AAE_A_Slide_Preset_Picker_Control::make()
+							->set_label( __( 'Apply Preset', 'animation-addons-for-elementor' ) )
+							->set_meta( [ 'layout' => 'custom' ] ),
+					]
+				),
+
 			Section::make()
 				->set_label( __( 'Settings', 'animation-addons-for-elementor' ) )
 				->set_id( 'settings' )

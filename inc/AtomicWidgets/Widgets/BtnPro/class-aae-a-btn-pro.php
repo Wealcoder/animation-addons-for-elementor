@@ -31,11 +31,7 @@ if (! defined('ABSPATH')) {
 }
 
 /**
- * AAE Basic Button Pro — an open atomic container styled like a button.
- *
- * Same shape as the basic Btn widget (link container, no presets), kept
- * as a separate widget/type so Pro-only controls can be layered onto
- * this class without touching the free Btn widget.
+ * AAE Button Pro — an open atomic container styled like a button.
  */
 class AAE_A_Btn_Pro extends Atomic_Element_Base
 {
@@ -64,7 +60,7 @@ class AAE_A_Btn_Pro extends Atomic_Element_Base
 
 	public function get_icon()
 	{
-		return 'wcf-icon-Button';
+		return 'eicon-button';
 	}
 
 	public function get_keywords()
@@ -78,7 +74,7 @@ class AAE_A_Btn_Pro extends Atomic_Element_Base
 			'classes'    => Classes_Prop_Type::make()->default([]),
 			'attributes' => Attributes_Prop_Type::make()->meta(Overridable_Prop_Type::ignore()),
 
-			'btn_url'      => String_Prop_Type::make()->default('#'),
+			'btn_url'      => String_Prop_Type::make()->default(''),
 			'btn_target'   => String_Prop_Type::make()->default('_self'),
 			'btn_nofollow' => Boolean_Prop_Type::make()->default(false),
 		];
@@ -86,7 +82,18 @@ class AAE_A_Btn_Pro extends Atomic_Element_Base
 
 	protected function define_atomic_controls(): array
 	{
+		require_once __DIR__ . '/class-aae-a-preset-picker-control.php';
+
 		return [
+			Section::make()
+				->set_label(__('Presets', 'animation-addons-for-elementor'))
+				->set_id('aae_presets')
+				->set_items([
+					AAE_A_Preset_Picker_Control::make()
+						->set_label(__('Apply Preset', 'animation-addons-for-elementor'))
+						->set_meta(['layout' => 'custom']),
+				]),
+
 			Section::make()
 				->set_label(__('Button', 'animation-addons-for-elementor'))
 				->set_id('content')
@@ -144,7 +151,7 @@ class AAE_A_Btn_Pro extends Atomic_Element_Base
 				]),
 			]),
 
-			'display'         => String_Prop_Type::generate('flex'),
+			'display'         => String_Prop_Type::generate('inline-flex'),
 			'flex-direction'  => String_Prop_Type::generate('row'),
 			'gap'             => Size_Prop_Type::generate(['size' => 8, 'unit' => 'px']),
 			'align-items'     => String_Prop_Type::generate('center'),
@@ -203,5 +210,15 @@ class AAE_A_Btn_Pro extends Atomic_Element_Base
 		return [
 			'elementor/elements/aae-a-btn-pro' => __DIR__ . '/aae-a-btn-pro.html.twig',
 		];
+	}
+
+	public function get_script_depends(): array
+	{
+		return ['aae-a-btn-pro-js'];
+	}
+
+	public function get_style_depends(): array
+	{
+		return ['aae-a-btn-pro-css'];
 	}
 }

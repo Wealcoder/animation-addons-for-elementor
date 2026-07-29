@@ -1,0 +1,20 @@
+.aae-social-pulse {
+	position: relative;
+}
+.aae-social-pulse::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	border: 2px solid currentColor;
+	opacity: 0;
+	pointer-events: none;
+}
+.aae-social-pulse:hover::after,
+.aae-social-pulse:focus-visible::after {
+	animation: aae_social_pulse_ring 0.9s ease-out;
+}
+@keyframes aae_social_pulse_ring {
+	0%   { transform: scale(1);    opacity: 0.6; }
+	100% { transform: scale(1.35); opacity: 0; }
+}

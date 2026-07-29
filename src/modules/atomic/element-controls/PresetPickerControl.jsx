@@ -8,254 +8,249 @@
  * wherever the PHP side places an AAE_A_Preset_Picker_Control.
  *
  * This is an ACTION control, not a prop-bound control: it carries no stored
- * value. It lists the bundled presets for the selected element's type and, on
- * choosing one, REPLACES the selected element in place with the preset's design
- * (settings + styles + children). Presets are authored as Elementor exports;
- * a preset whose root is a flex/container is UNWRAPPED — its children are placed
- * at the selected element's position, the wrapper dropped.
+ * value. A button opens a Dialog showing every preset for the selected
+ * element's type as a branded card grid, grouped by category, each with a
+ * larger thumbnail (or the placeholder image) and a PRO badge for premium
+ * presets. Picking a card REPLACES the selected element in place with the
+ * preset's design (settings + styles + children) via the shared
+ * applyPresetModel() engine in preset-apply.js (the same engine
+ * editor-bridge/auto-preset.js uses for the drag-drop default preset, so
+ * both call sites stay in lock-step), then closes the dialog.
  *
- * Presets are provided by PHP as window.AAE_WIDGET_PRESETS, keyed by element
- * type (e.g. 'e-aae-a-advanced-heading'). See class-atomic.php::get_widget_presets().
+ * Presets are fetched on demand (per element type, on mount) from this
+ * plugin's own REST proxy — window.AAE_PRESET_CONFIG.restUrl (aae/v1/presets,
+ * see inc/Atomic/Presets/Rest.php) — which merges remote (themecrowdy.com)
+ * presets with any bundled local JSON server-side.
  *
- * Uses the proper @elementor/editor-elements helpers (createElements /
- * removeElements / getContainer) rather than raw $e.run, matching SlidesControl.
+ * Dialog/DialogTitle/DialogContent are the same @elementor/ui components
+ * FormActionsControl.jsx already uses for its own element-control popup —
+ * kept consistent with that existing convention rather than introducing a
+ * different modal primitive. The accent color (#ff7a00) matches this
+ * plugin's own established brand/upgrade color (see e.g.
+ * inc/admin/row-actions.php's "Upgrade to Pro" link), not a new palette.
  */
 
 import * as React from "react";
-import {
-  createElements,
-  getContainer,
-  removeElements,
-  selectElement,
-} from "@elementor/editor-elements";
 import { useElement } from "@elementor/editor-editing-panel";
-import { Stack, Typography, MenuItem, Select } from "@elementor/ui";
+import {
+  Box,
+  Button,
+  Chip,
+  CircularProgress,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Grid,
+  IconButton,
+  Skeleton,
+  Stack,
+  Typography,
+} from "@elementor/ui";
+import { applyPresetModel, ensurePresetsLoaded } from "./preset-apply";
 
-// Container element types whose wrapper is unwrapped on apply.
-const CONTAINER_TYPES = ["e-flexbox", "e-div-block", "e-grid", "container"];
+const UPGRADE_URL = "https://animation-addons.com/";
+const BRAND = "#ff7a00";
+const BRAND_DARK = "#e35f00";
 
-function getPresetsForType(type) {
-  const all = window.AAE_WIDGET_PRESETS;
-  if (!all || typeof all !== "object") {
-    return [];
-  }
-  const list = all[type];
-  return Array.isArray(list) ? list : [];
-}
+/** Group + sort presets by category for the grouped card grid render. */
+function groupByCategory(presets) {
+  const groups = new Map();
 
-function isContainerModel(model) {
-  const type = model.widgetType || model.elType;
-  return CONTAINER_TYPES.indexOf(type) !== -1;
-}
-
-/**
- * Sanitize a preset model so it passes Elementor's save-time style validation.
- *
- * Elementor's Image_Src prop enforces an XOR rule: an image source may carry an
- * attachment `id` OR a `url`, but NOT both. Native exports routinely include
- * both (id + cached url), which renders fine in the editor but is REJECTED on
- * publish with "...background: invalid_value". We walk the whole model and, for
- * every image-src that has both, drop the `url` (the attachment id is the source
- * of truth; WP regenerates the url from it).
- *
- * Generic deep walk so it covers image-src anywhere — background overlays,
- * settings, nested children, any depth.
- */
-function sanitizeImageSrc(node) {
-  if (Array.isArray(node)) {
-    node.forEach(sanitizeImageSrc);
-    return;
-  }
-  if (!node || typeof node !== "object") {
-    return;
-  }
-
-  if (node.$$type === "image-src" && node.value && typeof node.value === "object") {
-    const src = node.value;
-    const hasId = src.id && src.id.value !== undefined && src.id.value !== null && src.id.value !== "";
-    const hasUrl =
-      src.url &&
-      (typeof src.url.value === "string"
-        ? src.url.value !== ""
-        : src.url.value !== undefined && src.url.value !== null);
-    // XOR: keep id, drop url when both are present.
-    if (hasId && hasUrl) {
-      delete src.url;
+  presets.forEach((preset) => {
+    const category = preset.category || "";
+    if (!groups.has(category)) {
+      groups.set(category, []);
     }
-  }
-
-  Object.keys(node).forEach((key) => {
-    const child = node[key];
-    if (child && typeof child === "object") {
-      sanitizeImageSrc(child);
-    }
+    groups.get(category).push(preset);
   });
+
+  return Array.from(groups.entries())
+    .sort((a, b) => a[0].localeCompare(b[0]))
+    .map(([category, items]) => ({ category, items }));
 }
 
-/**
- * Generate a fresh, collision-resistant local style id.
- * Mirrors Elementor's getRandomStyleId shape: e-<rand>-<rand>.
+/* eslint-disable react/prop-types --
+ * Internal-only presentational helpers (not exported, no external callers) —
+ * prop-types validation is skipped here the same way the pre-existing
+ * `label` prop on the exported PresetPickerControl below is (this file has
+ * never used the PropTypes package).
  */
-function randomStyleId() {
-  const rand = () => Math.random().toString(36).slice(2, 9);
-  return `e-${rand()}-${rand()}`;
+function PresetCard({ preset, placeholderSrc, locked, onSelect }) {
+  const src = preset.thumbnail_url || placeholderSrc;
+
+  return (
+    <Box
+      onClick={() => onSelect(preset)}
+      role="button"
+      tabIndex={0}
+      sx={{
+        cursor: "pointer",
+        borderRadius: 1.5,
+        overflow: "hidden",
+        bgcolor: "background.paper",
+        border: "1px solid",
+        borderColor: "divider",
+        boxShadow: "0 1px 2px rgba(16, 24, 40, 0.04)",
+        transition: "transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease",
+        "&:hover": {
+          borderColor: locked ? "divider" : BRAND,
+          boxShadow: locked
+            ? "0 1px 2px rgba(16, 24, 40, 0.04)"
+            : `0 8px 20px rgba(255, 122, 0, 0.18)`,
+          transform: locked ? "none" : "translateY(-2px)",
+        },
+      }}
+    >
+      <Box
+        sx={{
+          position: "relative",
+          width: "100%",
+          pt: "62.5%" /* ~8:5, matches the 300x200 server thumb */,
+          bgcolor: "action.hover",
+        }}
+      >
+        <Box
+          component="img"
+          src={src}
+          alt=""
+          sx={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            filter: locked ? "grayscale(0.5) opacity(0.55)" : "none",
+          }}
+        />
+        {locked ? (
+          <Box
+            sx={{
+              position: "absolute",
+              inset: 0,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              bgcolor: "rgba(20, 20, 20, 0.15)",
+            }}
+          >
+            <Box
+              sx={{
+                width: 26,
+                height: 26,
+                borderRadius: "50%",
+                bgcolor: "rgba(255,255,255,0.92)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "13px",
+              }}
+            >
+              {"🔒"}
+            </Box>
+          </Box>
+        ) : null}
+        {preset.pro ? (
+          <Chip
+            label="PRO"
+            size="small"
+            sx={{
+              position: "absolute",
+              top: 6,
+              right: 6,
+              height: 18,
+              fontSize: "9px",
+              fontWeight: 700,
+              letterSpacing: "0.03em",
+              color: "#fff",
+              background: `linear-gradient(135deg, ${BRAND}, ${BRAND_DARK})`,
+              boxShadow: "0 1px 3px rgba(0,0,0,0.25)",
+            }}
+          />
+        ) : null}
+      </Box>
+      <Box sx={{ px: 1.25, py: 1 }}>
+        <Typography
+          variant="caption"
+          sx={{
+            display: "block",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+            fontWeight: 600,
+          }}
+        >
+          {preset.name}
+        </Typography>
+      </Box>
+    </Box>
+  );
 }
-
-/**
- * Recursively regenerate every element's LOCAL style ids in a preset model and
- * rewrite the matching `classes` references, so applying the same styled preset
- * to multiple widgets never shares (collides on) style-id classes.
- *
- * Elementor only auto-regenerates style ids on paste/import/duplicate hooks —
- * not on `create` — so we do it here before createElements(). Mirrors
- * modules/atomic-widgets/.../regenerate-local-style-ids.js.
- */
-function regenerateModelStyleIds(model) {
-  if (!model || typeof model !== "object") {
-    return model;
-  }
-
-  const styles = model.styles;
-  if (styles && typeof styles === "object" && !Array.isArray(styles)) {
-    const changed = {};
-    const newStyles = {};
-
-    Object.keys(styles).forEach((oldId) => {
-      const newId = randomStyleId();
-      changed[oldId] = newId;
-      newStyles[newId] = { ...styles[oldId], id: newId };
-    });
-
-    model.styles = newStyles;
-
-    // Rewrite settings.classes that referenced the old ids.
-    const classesProp = model.settings && model.settings.classes;
-    if (
-      classesProp &&
-      classesProp.$$type === "classes" &&
-      Array.isArray(classesProp.value)
-    ) {
-      classesProp.value = classesProp.value.map((cls) => changed[cls] || cls);
-    }
-  }
-
-  if (Array.isArray(model.elements)) {
-    model.elements.forEach(regenerateModelStyleIds);
-  }
-
-  return model;
-}
-
-/**
- * Resolve the selected element's parent container + its index within it, using
- * the V1 container model (not the DOM), matching how SlidesControl works.
- */
-function getParentAndIndex(elementId) {
-  const container = getContainer(elementId);
-  const parent = container?.parent || null;
-  if (!parent) {
-    return { parent: null, index: 0 };
-  }
-
-  let index = 0;
-  const children = parent.model?.get?.("elements");
-  if (children?.each) {
-    let i = 0;
-    children.each((child) => {
-      if (child.get("id") === elementId) {
-        index = i;
-      }
-      i += 1;
-    });
-  }
-  return { parent, index };
-}
+/* eslint-enable react/prop-types */
 
 export function PresetPickerControl({ label }) {
   const { element } = useElement();
   const elementId = element.id;
   const type = element.type || element.model?.get?.("elType");
 
-  const presets = getPresetsForType(type);
+  const [open, setOpen] = React.useState(false);
+  const [presets, setPresets] = React.useState(null); // null = loading
+  const config = window.AAE_PRESET_CONFIG || {};
+  const proActive = !!config.proActive;
+  const placeholderSrc = config.placeholderThumb || "";
+
+  React.useEffect(() => {
+    let cancelled = false;
+
+    setPresets(null);
+    ensurePresetsLoaded(type).then((list) => {
+      if (!cancelled) {
+        setPresets(Array.isArray(list) ? list : []);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [type]);
 
   const applyPreset = (preset) => {
     if (!preset?.model) {
       return;
     }
 
-    const { parent, index } = getParentAndIndex(elementId);
-    if (!parent) {
-      return;
-    }
-
-    // Unwrap: a flex/container preset applies its children; otherwise itself.
-    const root = JSON.parse(JSON.stringify(preset.model));
-    const models = isContainerModel(root)
-      ? Array.isArray(root.elements)
-        ? root.elements
-        : []
-      : [root];
-
-    if (!models.length) {
-      return;
-    }
-
-    // Regenerate local style ids so applying the same styled preset multiple
-    // times never shares (collides on) style-id classes. `create` does NOT
-    // auto-regenerate style ids (only paste/import/duplicate hooks do), so we
-    // do it explicitly here. Element ids are intentionally NOT pre-assigned:
-    // Elementor's create command ignores any model.id and mints its own, so we
-    // capture the real ids from the command result instead (see below).
-    const elementsToCreate = models.map((child, i) => {
-      const model = JSON.parse(JSON.stringify(child));
-      delete model.id;
-      regenerateModelStyleIds(model);
-      sanitizeImageSrc(model);
-      return {
-        container: parent,
-        model,
-        options: { at: index + i, clone: true },
-      };
-    });
-
-    // createElements() executes immediately and returns { createdElements: [...] },
-    // each entry carrying the REAL containerId Elementor assigned. We need the
-    // first one so we can re-select it after removing the original — otherwise
-    // the panel goes blank (nothing selected) once the original is gone.
-    const result = createElements({
+    // The target type is always the selected element's own type — even when
+    // its presets were fetched under an alias (see PRESET_TYPE_ALIASES in
+    // preset-apply.js), applyPresetModel rewrites a non-container preset
+    // root to `type` so e.g. a slide item stays a slide item rather than
+    // becoming the loop-item type its preset was authored against.
+    applyPresetModel(preset.model, elementId, type, {
       title: "Preset",
       subtitle: `Applied "${preset.name}"`,
-      elements: elementsToCreate,
     });
-
-    const firstNewId =
-      result &&
-      Array.isArray(result.createdElements) &&
-      result.createdElements[0]
-        ? result.createdElements[0].containerId
-        : null;
-
-    // Replace in place: remove the original after the preset children are added.
-    removeElements({
-      elementIds: [elementId],
-      title: "Preset",
-      subtitle: "Replaced element",
-    });
-
-    // Re-select the first newly created element so the editing panel stays on a
-    // valid target instead of going blank after the original is removed.
-    if (firstNewId) {
-      try {
-        selectElement(firstNewId);
-      } catch (_) {
-        /* selection is best-effort; ignore if the container isn't ready */
-      }
-    }
   };
 
-  if (!presets.length) {
+  const handleSelect = (preset) => {
+    if (preset.pro && !proActive) {
+      window.open(UPGRADE_URL, "_blank", "noopener");
+      return;
+    }
+
+    applyPreset(preset);
+    setOpen(false);
+  };
+
+  // Nothing resolved for this type from either remote or local, once loaded —
+  // hide the trigger entirely, matching the control's original empty
+  // behaviour. This is also the correct end-state once every bundled local
+  // .json is eventually removed and a type has no remote presets configured
+  // yet either.
+  if (presets !== null && !presets.length) {
     return null;
   }
+
+  const grouped = presets ? groupByCategory(presets) : [];
+  const proCount = presets ? presets.filter((p) => p.pro).length : 0;
 
   return (
     <Stack gap={1}>
@@ -265,26 +260,195 @@ export function PresetPickerControl({ label }) {
       >
         {label || "Presets"}
       </Typography>
-      <Select
-        size="tiny"
-        displayEmpty
-        value=""
-        onChange={(e) => {
-          const preset = presets.find((p) => p.id === e.target.value);
-          if (preset) {
-            applyPreset(preset);
-          }
+      <Button
+        size="small"
+        onClick={() => setOpen(true)}
+        disabled={presets === null}
+        endIcon={presets === null ? null : <span aria-hidden="true">{"+"}</span>}
+        sx={{
+          alignSelf: "flex-end",
+          justifyContent: "center",
+          px: 1.75,
+          py: 0.75,
+          textTransform: "none",
+          fontWeight: 600,
+          color: "#fff",
+          background: `linear-gradient(135deg, ${BRAND}, ${BRAND_DARK})`,
+          boxShadow: "0 1px 3px rgba(227, 95, 0, 0.35)",
+          "&:hover": {
+            background: `linear-gradient(135deg, ${BRAND_DARK} 0%, ${BRAND_DARK} 100%)`,
+            opacity: 0.92,
+            boxShadow: "0 2px 6px rgba(227, 95, 0, 0.45)",
+          },
+          "&.Mui-disabled": {
+            color: "#fff !important",
+            background: `linear-gradient(135deg, ${BRAND}, ${BRAND_DARK}) !important`,
+          },
         }}
       >
-        <MenuItem value="" disabled>
-          {"Apply a preset…"}
-        </MenuItem>
-        {presets.map((p) => (
-          <MenuItem key={p.id} value={p.id}>
-            {p.name}
-          </MenuItem>
-        ))}
-      </Select>
+        {presets === null ? "Loading presets…" : "Apply a preset…"}
+      </Button>
+
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        fullWidth
+        maxWidth="md"
+        // Full-screen below the "sm" breakpoint (roughly narrow/mobile
+        // viewports) so the card grid gets real width to work with instead
+        // of being squeezed into a small centered box — CSS-only via sx,
+        // matching how the rest of this control already handles responsive
+        // sizing (Grid's xs/sm/md props) rather than a JS media-query hook.
+        sx={{
+          "& .MuiDialog-paper": {
+            "@media (max-width: 599.95px)": {
+              margin: 0,
+              width: "100%",
+              maxWidth: "100%",
+              height: "100%",
+              maxHeight: "100%",
+              borderRadius: 0,
+            },
+          },
+        }}
+        PaperProps={{ sx: { borderRadius: 2, overflow: "hidden" } }}
+      >
+        <DialogTitle
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            background: `linear-gradient(135deg, ${BRAND} 0%, ${BRAND_DARK} 100%)`,
+            color: "#fff",
+            py: { xs: 1.25, sm: 1.75 },
+            px: { xs: 2, sm: 3 },
+          }}
+        >
+          <Stack sx={{ minWidth: 0 }}>
+            <Typography
+              sx={{
+                fontWeight: 700,
+                fontSize: { xs: "15px", sm: "17px" },
+                lineHeight: 1.3,
+              }}
+            >
+              {"Apply Preset"}
+            </Typography>
+            <Typography
+              sx={{
+                fontSize: "12px",
+                opacity: 0.85,
+                display: { xs: "none", sm: "block" },
+              }}
+            >
+              {(() => {
+                if (presets === null) {
+                  return "Loading designs…";
+                }
+
+                const total = presets.length;
+                const designWord = total === 1 ? "design" : "designs";
+                return proCount > 0
+                  ? `${total} ${designWord} — ${proCount} premium`
+                  : `${total} ${designWord} available`;
+              })()}
+            </Typography>
+          </Stack>
+          <IconButton
+            size="small"
+            onClick={() => setOpen(false)}
+            aria-label="Close"
+            sx={{
+              flexShrink: 0,
+              width: 28,
+              height: 28,
+              padding: 0,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              lineHeight: 1,
+              color: "#fff",
+              bgcolor: "rgba(255,255,255,0.15)",
+              "&:hover": { bgcolor: "rgba(255,255,255,0.28)" },
+            }}
+          >
+            <Box
+              component="span"
+              aria-hidden="true"
+              sx={{ fontSize: "14px", lineHeight: 1, transform: "translateY(-0.5px)" }}
+            >
+              {"✕"}
+            </Box>
+          </IconButton>
+        </DialogTitle>
+        <DialogContent
+          dividers
+          sx={{ bgcolor: "background.default", py: 2.5, px: { xs: 1.5, sm: 3 } }}
+        >
+          {presets === null ? (
+            <>
+              <Stack
+                direction="row"
+                alignItems="center"
+                gap={1}
+                sx={{ mb: 2, color: "text.secondary" }}
+              >
+                <CircularProgress size={14} thickness={5} sx={{ color: BRAND }} />
+                <Typography variant="caption" sx={{ fontWeight: 600 }}>
+                  {"Fetching presets…"}
+                </Typography>
+              </Stack>
+              <Grid container spacing={{ xs: 1.5, sm: 2 }}>
+                {[0, 1, 2, 3].map((i) => (
+                  <Grid item xs={6} sm={4} md={3} key={i}>
+                    <Skeleton variant="rounded" height={100} />
+                    <Skeleton variant="text" width="70%" />
+                  </Grid>
+                ))}
+              </Grid>
+            </>
+          ) : (
+            grouped.map(({ category, items }) => (
+              <Box key={category || "__uncategorized"} sx={{ mb: 3 }}>
+                {category ? (
+                  <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.25 }}>
+                    <Box
+                      sx={{
+                        width: 4,
+                        height: 14,
+                        borderRadius: "2px",
+                        background: `linear-gradient(180deg, ${BRAND}, ${BRAND_DARK})`,
+                      }}
+                    />
+                    <Typography
+                      variant="subtitle2"
+                      sx={{ fontWeight: 700, letterSpacing: "0.01em" }}
+                    >
+                      {category}
+                    </Typography>
+                  </Stack>
+                ) : null}
+                <Grid container spacing={{ xs: 1.5, sm: 2 }}>
+                  {items.map((p) => {
+                    const locked = !!p.pro && !proActive;
+
+                    return (
+                      <Grid item xs={6} sm={4} md={3} key={p.id}>
+                        <PresetCard
+                          preset={p}
+                          placeholderSrc={placeholderSrc}
+                          locked={locked}
+                          onSelect={handleSelect}
+                        />
+                      </Grid>
+                    );
+                  })}
+                </Grid>
+              </Box>
+            ))
+          )}
+        </DialogContent>
+      </Dialog>
     </Stack>
   );
 }

@@ -1,0 +1,46 @@
+{#
+  AAE Form — parent template. Renders the <form> shell and its children
+  (label/input/textarea/checkbox-row/submit/status-messages, all real child
+  widgets).
+
+  form-state-{value} class (native e-form pattern): the States toggle in the
+  panel sets settings['form-state']; the class reveals the matching hidden
+  status-message container via a rule in form.scss. The Milestone-5 runtime
+  (form.js) toggles the same classes after a real submit; data-aae-form-key
+  tells it which schema to submit against (empty until the first save).
+#}
+{% set form_state = settings['form-state'] | default('default') %}
+{% set classes = ['aae-a-form', 'e-con', 'e-atomic-element', base_styles.base | default(''), 'form-state-' ~ form_state] | merge(settings.classes | default([])) | join(' ') | trim %}
+
+<form class="{{ classes }} {{ editor_classes | default('') }}"
+    data-id="{{ id }}"
+    data-element_type="{{ type }}"
+    data-e-type="{{ type }}"
+    data-interaction-id="{{ interaction_id | default(id) }}"
+    data-aae-form-ready="false"
+    data-aae-form-behavior="{{ settings.behavior | default('store_email') }}"
+    data-aae-form-reset-delay="{{ settings.success_reset_delay | default(5) }}"
+    {% if settings.success_hide_form %}data-aae-form-hide-on-success="true"{% endif %}
+    data-aae-form-hide-delay="{{ settings.success_hide_delay | default(0) }}"
+    {% if settings.captcha_provider is defined and settings.captcha_provider == 'recaptcha_v3' %}data-aae-form-recaptcha="v3"{% endif %}
+    {% if settings.form_key is defined and settings.form_key is not empty %}data-aae-form-key="{{ settings.form_key | e('html_attr') }}"{% endif %}
+    novalidate
+    {% if settings._cssid is defined and settings._cssid is not empty %}
+        id="{{ settings._cssid | e('html_attr') }}"
+    {% endif %}
+    {% if settings.attributes is defined and settings.attributes is not empty %}
+        {{ settings.attributes | raw }}
+    {% endif %}
+    {{ editor_attributes | default('') | raw }}>
+
+    {% if settings.spam_honeypot is not defined or settings.spam_honeypot %}
+        {# Bot Shield honeypot (Milestone 8): visually hidden, tab-skipped,
+           never announced. Humans leave it empty; a filled aae_hp makes the
+           submit endpoint log spam and answer a fake success. #}
+        <div class="aae-form-hp" aria-hidden="true">
+            <input type="text" name="aae_hp" value="" tabindex="-1" autocomplete="off">
+        </div>
+    {% endif %}
+
+    {{ children_placeholder | raw }}
+</form>

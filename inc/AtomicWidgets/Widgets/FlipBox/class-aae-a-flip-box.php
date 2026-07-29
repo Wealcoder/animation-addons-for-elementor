@@ -6,24 +6,39 @@ use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Number_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
+use Elementor\Modules\AtomicWidgets\Controls\Section;
+use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
-use Elementor\Modules\AtomicWidgets\Controls\Section;
-use Elementor\Modules\AtomicWidgets\Controls\Types\Select_Control;
-use Elementor\Modules\AtomicWidgets\Controls\Types\Switch_Control;
-use Elementor\Modules\AtomicWidgets\Controls\Types\Number_Control;
-use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
-require_once __DIR__ . '/class-aae-a-flip-box-face.php';
+use WCF_ADDONS\AtomicWidgets\Widgets\FlipBox\AAE_A_Flip_Box_Front;
+use WCF_ADDONS\AtomicWidgets\Widgets\FlipBox\AAE_A_Flip_Box_Back;
+
+require_once __DIR__ . '/Parts/class-aae-a-flip-box-front.php';
+require_once __DIR__ . '/Parts/class-aae-a-flip-box-back.php';
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * AAE Flip Box — an open hover-flip card. No flip_type/show_back_face
+ * controls: each design (direction, 3D depth, single- vs double-sided) is
+ * baked into a preset (see Widgets/FlipBox/presets/) as a fixed hook class
+ * on this element plus real, natively-styleable front/back containers.
+ *
+ * The default front/back faces are each a dedicated sub-widget
+ * (AAE_A_Flip_Box_Front/_Back, Widgets/FlipBox/Parts/) carrying real
+ * background/color/radius/padding via their own define_base_styles() — a
+ * reused e-flexbox can't express that (base styles are owned by the widget
+ * TYPE, not a per-instance override; see the AAE Timeline sub-parts for the
+ * same reasoning). The flip's 3D mechanics (position, backface-visibility,
+ * hover-driven rotate) still live in flip-box.scss, since the atomic style
+ * schema has no backface-visibility key and can't express a parent-hover
+ * affecting a descendant's transform.
+ */
 class AAE_A_Flip_Box extends Atomic_Element_Base {
 	use Has_Element_Template;
 
@@ -49,53 +64,30 @@ class AAE_A_Flip_Box extends Atomic_Element_Base {
 	}
 
 	public function get_keywords(): array {
-		return [ 'flip', 'box', 'card', 'hover', 'atomic', 'animation' ];
+		return [ 'flip', 'box', 'card', 'hover', 'atomic', 'animation', 'preset' ];
 	}
 
 	protected static function define_props_schema(): array {
 		return [
-			'classes'    => Classes_Prop_Type::make()->default( [] ),
+			// flip-box-animate-left makes a freshly dropped box actually flip
+			// out of the box, matching the very-basic reference design — a
+			// preset can still swap this for -right/-up/-down/etc.
+			'classes'    => Classes_Prop_Type::make()->default( [ 'flip-box-animate-left' ] ),
 			'attributes' => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
-
-			'flip_type'   => String_Prop_Type::make()
-				->enum( [ 'animate-left', 'animate-right', 'animate-up', 'animate-down', 'animate-zoom-in', 'animate-zoom-out', 'animate-fade-in' ] )
-				->default( 'animate-left' ),
-
-			'flip_3d'        => Boolean_Prop_Type::make()->default( false ),
-
-			'flip_height'    => Number_Prop_Type::make()->default( 300 ),
-
-			'show_back_face' => Boolean_Prop_Type::make()->default( true ),
 		];
 	}
 
 	protected function define_atomic_controls(): array {
+		require_once __DIR__ . '/class-aae-a-preset-picker-control.php';
+
 		return [
 			Section::make()
-				->set_id( 'content' )
-				->set_label( __( 'Flip Box', 'animation-addons-for-elementor' ) )
+				->set_label( __( 'Presets', 'animation-addons-for-elementor' ) )
+				->set_id( 'aae_presets' )
 				->set_items( [
-					Select_Control::bind_to( 'flip_type' )
-						->set_label( __( 'Flip Type', 'animation-addons-for-elementor' ) )
-						->set_options( [
-							[ 'value' => 'animate-left',     'label' => __( 'Flip Left',   'animation-addons-for-elementor' ) ],
-							[ 'value' => 'animate-right',    'label' => __( 'Flip Right',  'animation-addons-for-elementor' ) ],
-							[ 'value' => 'animate-up',       'label' => __( 'Flip Top',    'animation-addons-for-elementor' ) ],
-							[ 'value' => 'animate-down',     'label' => __( 'Flip Bottom', 'animation-addons-for-elementor' ) ],
-							[ 'value' => 'animate-zoom-in',  'label' => __( 'Zoom In',     'animation-addons-for-elementor' ) ],
-							[ 'value' => 'animate-zoom-out', 'label' => __( 'Zoom Out',    'animation-addons-for-elementor' ) ],
-							[ 'value' => 'animate-fade-in',  'label' => __( 'Fade In',     'animation-addons-for-elementor' ) ],
-						] ),
-
-					Switch_Control::bind_to( 'flip_3d' )
-						->set_label( __( '3D Depth', 'animation-addons-for-elementor' ) ),
-
-					Number_Control::bind_to( 'flip_height' )
-						->set_label( __( 'Height (px)', 'animation-addons-for-elementor' ) )
-						->set_meta( [ 'min' => 100, 'max' => 1000, 'step' => 1 ] ),
-
-					Switch_Control::bind_to( 'show_back_face' )
-						->set_label( __( 'Show Back Face', 'animation-addons-for-elementor' ) ),
+					AAE_A_Preset_Picker_Control::make()
+						->set_label( __( 'Apply Preset', 'animation-addons-for-elementor' ) )
+						->set_meta( [ 'layout' => 'custom' ] ),
 				] ),
 
 			Section::make()
@@ -113,38 +105,39 @@ class AAE_A_Flip_Box extends Atomic_Element_Base {
 		return [
 			'base' => Style_Definition::make()
 				->add_variant( Style_Variant::make()->add_props( [
-					'display'          => String_Prop_Type::generate( 'block' ),
-					'width'            => String_Prop_Type::generate( '100%' ),
-					'position'         => String_Prop_Type::generate( 'relative' ),
-					'background-color' => String_Prop_Type::generate( 'transparent' ),
-					'overflow'         => String_Prop_Type::generate( 'hidden' ),
+					'display'  => String_Prop_Type::generate( 'block' ),
+					'width'    => Size_Prop_Type::generate( [ 'size' => 300, 'unit' => 'px' ] ),
+					'height'   => Size_Prop_Type::generate( [ 'size' => 200, 'unit' => 'px' ] ),
+					'position' => String_Prop_Type::generate( 'relative' ),
+					'overflow' => String_Prop_Type::generate( 'hidden' ),
 				] ) ),
 		];
 	}
 
+	/**
+	 * Default drop-in content: a dedicated Front/Back face pair, each
+	 * seeded with its own Title/Text children — see AAE_A_Flip_Box_Front /
+	 * AAE_A_Flip_Box_Back for the styling. Presets can still replace this
+	 * subtree wholesale with plain e-flexbox faces.
+	 */
 	protected function define_default_children(): array {
 		return [
-			AAE_A_Flip_Box_Face::generate()
-				->settings( [
-					'face_side' => String_Prop_Type::generate( 'front' ),
-				] )
+			AAE_A_Flip_Box_Front::generate()
 				->editor_settings( [ 'title' => 'Front Face' ] )
-				->children( AAE_A_Flip_Box_Face::build_default_children( 'Front Title', 'This is front side content.' ) )
+				->children( AAE_A_Flip_Box_Front::build_default_inner_children() )
 				->build(),
 
-			AAE_A_Flip_Box_Face::generate()
-				->settings( [
-					'face_side' => String_Prop_Type::generate( 'back' ),
-				] )
+			AAE_A_Flip_Box_Back::generate()
 				->editor_settings( [ 'title' => 'Back Face' ] )
-				->children( AAE_A_Flip_Box_Face::build_default_children( 'Back Title', 'This is back side content.' ) )
+				->children( AAE_A_Flip_Box_Back::build_default_inner_children() )
 				->build(),
 		];
 	}
 
-	protected function define_allowed_child_types(): array {
-		return [ 'e-aae-a-flip-box-face' ];
-	}
+	// No allowed-child-types whitelist — a non-empty list makes the
+	// editor's drag-drop gate strict and can silently block AAE atomic
+	// widgets not in it. Returning the base default (allow all) matches
+	// Advanced Heading's open-container convention.
 
 	protected function get_templates(): array {
 		return [
