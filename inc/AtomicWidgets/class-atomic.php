@@ -1385,6 +1385,8 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			// ── Social Share — PARENT widget. This is the only Social Share
+			// entry exposed in the dashboard widget list / editor panel.
 			'aae-a-social-share' => [
 				'label'        => 'Social Share',
 				'description'  => 'An open, unlocked social-share row — three editable icon+label items to duplicate, restyle, or delete. Pair with the ready-made minimal/outlined/solid templates.',
@@ -1406,9 +1408,14 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			// ── Social Share — HELPER widget below. `is_internal => true`
+			// hides it from the dashboard widget list; it is never
+			// individually toggled, only used internally by Social Share
+			// above (managed via its "Items" repeater control).
 			'aae-a-social-share-item' => [
+				'is_internal'  => true,
 				'label'        => 'Social Share Item',
-				'description'  => 'An open icon+label link item used inside Social Share, or on its own.',
+				'description'  => 'Internal child item for Social Share.',
 				'icon'         => 'eicon-share',
 				'is_pro'       => false,
 				'is_extension' => false,

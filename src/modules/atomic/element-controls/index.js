@@ -18,6 +18,7 @@ import { stringArrayPropTypeUtil } from '@elementor/editor-props';
 import { SlidesControl } from './SlidesControl';
 import { AccordionItemsControl } from './AccordionItemsControl';
 import { TimelineItemsControl } from './TimelineItemsControl';
+import { SocialShareItemsControl } from './SocialShareItemsControl';
 import { PresetPickerControl } from './PresetPickerControl';
 import { FormActionsControl } from './FormActionsControl';
 import { FormConditionsControl } from './FormConditionsControl';
@@ -31,6 +32,7 @@ const ELEMENT_CONTROLS = [
 	{ type: 'aae-hotspots', component: HotspotsControl, layout: 'full' },
 	{ type: 'aae-items', component: AccordionItemsControl, layout: 'full' },
 	{ type: 'aae-timeline-items', component: TimelineItemsControl, layout: 'full' },
+	{ type: 'aae-social-share-items', component: SocialShareItemsControl, layout: 'full' },
 	{ type: 'aae-nav-items', component: NavItemsControl, layout: 'full' },
 	{ type: 'aae-nav-sub-items', component: NavSubItemsControl, layout: 'full' },
 	{ type: 'aae-mobile-nav-lifecycle', component: MobileNavLifecycleControl, layout: 'full' },

@@ -73,6 +73,12 @@ class AAE_A_Social_Share_Item extends Atomic_Element_Base {
 		return [ 'social', 'share', 'item', 'aae', 'atomic', 'link', 'container' ];
 	}
 
+	public function should_show_in_panel() {
+		// Internal sub-element — managed via the parent's "Items" repeater
+		// control, never dragged in independently from the widget panel.
+		return false;
+	}
+
 	protected static function define_props_schema(): array {
 		return [
 			'classes'    => Classes_Prop_Type::make()->default( [] ),

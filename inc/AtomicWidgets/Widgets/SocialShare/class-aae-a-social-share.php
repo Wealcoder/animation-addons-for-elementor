@@ -23,8 +23,10 @@ use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
 require_once __DIR__ . '/class-aae-a-social-share-item.php';
+require_once __DIR__ . '/class-aae-a-social-share-items-control.php';
 
 use WCF_ADDONS\AtomicWidgets\Widgets\SocialShare\AAE_A_Social_Share_Item;
+use WCF_ADDONS\AtomicWidgets\Widgets\SocialShare\AAE_A_Social_Share_Items_Control;
 
 class AAE_A_Social_Share extends Atomic_Element_Base {
 
@@ -76,6 +78,21 @@ class AAE_A_Social_Share extends Atomic_Element_Base {
 				->set_items( [
 					AAE_A_Preset_Picker_Control::make()
 						->set_label( __( 'Apply Preset', 'animation-addons-for-elementor' ) )
+						->set_meta( [ 'layout' => 'custom' ] ),
+				] ),
+
+			// "Items": a live projection of the social share's real
+			// <e-aae-a-social-share-item> children — one repeater row each,
+			// with drag-reorder, duplicate, remove and rename. Mirrors the
+			// Timeline's "Items" element-control. Rendered by the React
+			// component registered under 'aae-social-share-items'
+			// (src/modules/atomic/element-controls).
+			Section::make()
+				->set_label( __( 'Items', 'animation-addons-for-elementor' ) )
+				->set_id( 'items' )
+				->set_items( [
+					AAE_A_Social_Share_Items_Control::make()
+						->set_label( __( 'Items', 'animation-addons-for-elementor' ) )
 						->set_meta( [ 'layout' => 'custom' ] ),
 				] ),
 
