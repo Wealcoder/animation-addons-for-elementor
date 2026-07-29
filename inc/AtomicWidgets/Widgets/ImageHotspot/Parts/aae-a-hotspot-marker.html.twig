@@ -1,23 +1,25 @@
 {#
-  AAE Hotspot Marker — renders a plain <span> (decorative, aria-hidden). The
-  Hotspot Point that contains this is a plain <div> with role="button"/"link"
-  + tabindex (see aae-a-hotspot-point.html.twig) — image-hotspot.js wires the
-  actual click/keyboard handling there, not on this span. data-layout/-anim
-  feed image-hotspot.js (auto-numbering, marker animation class); everything
-  visual is the base style (Style tab) plus the tiny per-layout size rule in
-  image-hotspot.scss.
+  AAE Hotspot Marker — renders a <div> (decorative, aria-hidden). Was a plain
+  <span> before this became a real container — a span is phrasing content and
+  can't validly hold the block-level markup a builder-added e-svg/e-paragraph
+  child renders, so this switched to <div> to match Point/Content's own
+  choice. The Hotspot Point that contains this is itself a plain <div> with
+  role="button"/"link" + tabindex (see aae-a-hotspot-point.html.twig) —
+  image-hotspot.js wires the actual click/keyboard handling there, not here.
+  `data-aae-hotspot-anim` feeds image-hotspot.js's marker-animation class;
+  everything else visual is the base style (Style tab) plus whatever real
+  e-svg/e-image/e-paragraph children a builder drops in (see
+  class-aae-a-hotspot-marker.php docblock — empty by default, no more
+  `hsp_layout` enum).
 #}
-{% set layout = settings.hsp_layout | default('dot') %}
 {% set anim = settings.marker_anim | default('inherit') %}
-{% set icon_url = settings.hsp_icon.url | default('') %}
-{% set classes = ['aae-hotspot-marker', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') | trim %}
+{% set classes = ['aae-hotspot-marker', 'e-con', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') | trim %}
 
-<span class="{{ classes }} {{ editor_classes | default('') }}"
+<div class="{{ classes }} {{ editor_classes | default('') }}"
 	data-id="{{ id }}"
 	data-element_type="{{ type }}"
 	data-e-type="{{ type }}"
 	data-interaction-id="{{ interaction_id | default(id) }}"
-	data-layout="{{ layout }}"
 	data-aae-hotspot-anim="{{ anim }}"
 	{% if settings._cssid is defined and settings._cssid is not empty %}
 		id="{{ settings._cssid | e('html_attr') }}"
@@ -27,13 +29,5 @@
 	{% endif %}
 	{{ editor_attributes | default('') | raw }}
 	aria-hidden="true">
-	{% if layout == 'icon' or layout == 'icon-text' %}
-		<span class="aae-hotspot-marker-icon">{% if icon_url is not empty %}<img src="{{ icon_url | e('html_attr') }}" alt="">{% else %}<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="1em" height="1em" fill="currentColor"><circle cx="12" cy="12" r="8"/></svg>{% endif %}</span>
-	{% endif %}
-	{% if layout == 'text' or layout == 'icon-text' %}
-		<span class="aae-hotspot-marker-text">{{ settings.hsp_text | default('') }}</span>
-	{% endif %}
-	{% if layout == 'number' %}
-		<span class="hotspot-number"></span>
-	{% endif %}
-</span>
+	{{ children_placeholder | raw }}
+</div>

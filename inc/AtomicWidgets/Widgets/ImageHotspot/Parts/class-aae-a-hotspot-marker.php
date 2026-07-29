@@ -1,15 +1,36 @@
 <?php
 /**
- * AAE Hotspot Marker — atomic leaf widget.
+ * AAE Hotspot Marker — atomic element (container).
  *
- * The visible icon/dot/text bit inside a Hotspot Point. Split out as its own
- * real, selectable element (mirrors AAE_A_Progressbar_Fill / AAE_A_Toggle_
+ * The clickable marker inside a Hotspot Point. Split out as its own real,
+ * selectable element (mirrors AAE_A_Progressbar_Fill / AAE_A_Toggle_
  * Switcher_Tab) specifically so its look — background, color, border-radius,
  * padding, font-size — is editable from Elementor's generic Style tab instead
  * of being hardcoded in image-hotspot.scss.
  *
+ * Out of the box it's an EMPTY container — its own base style (background
+ * circle, 32x32, border-radius:999px) already reads as a plain "dot" marker
+ * with nothing inside, matching the old default before this was rewritten.
+ * A builder who wants an icon and/or label drops a real `e-svg`/`e-image`
+ * (icon) and/or `e-paragraph` (text) child in directly — no more `hsp_layout`
+ * Select control choosing between 5 preset looks. This mirrors
+ * AAE_A_Hotspot_Content's own "unrestricted children, builder manages them"
+ * philosophy rather than a closed enum, and means icon/text sizing is a
+ * normal per-instance Style-tab edit on that REAL child element instead of
+ * plugin CSS — there's no API in this codebase (or Elementor core) for
+ * seeding a child with a per-instance style override at generate() time, so
+ * a builder-added icon starts at that widget's own generic default size and
+ * gets resized like any other element, same as everywhere else in this
+ * plugin.
+ *
+ * Auto-numbering (post-pagination-style badges) is now opt-in by class
+ * presence rather than a "Number" layout mode: image-hotspot.js's
+ * renumber() fills any descendant carrying the `hotspot-number` CSS class
+ * (added via Elementor's generic "CSS Classes" field on a builder-added
+ * `e-paragraph` child) with its 1-based position among sibling Points.
+ *
  * Seeded as the Hotspot Point's first default child; never dragged from the
- * panel directly (show_in_panel() => false).
+ * panel directly (should_show_in_panel() => false).
  *
  * @package AnimationAddonsForElementor
  * @since   4.0.0
@@ -21,19 +42,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Widget_Base' ) ) {
+if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base' ) ) {
 	return;
 }
 
-use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Widget_Base;
-use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Template;
+use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
+use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Select_Control;
-use Elementor\Modules\AtomicWidgets\Controls\Types\Svg_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Svg_Src_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Color_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Background_Prop_Type;
@@ -42,13 +61,21 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropDependencies\Manager as Dependency_Manager;
 
-class AAE_A_Hotspot_Marker extends Atomic_Widget_Base {
+class AAE_A_Hotspot_Marker extends Atomic_Element_Base {
 
-	use Has_Template;
+	use Has_Element_Template;
 
-	public static $widget_description = 'The clickable marker inside a Hotspot Point. Seeded automatically; fully styleable via the Style tab.';
+	public static $widget_description = 'The clickable marker inside a Hotspot Point. Seeded automatically (empty by default); drop in an Icon/Image and/or Paragraph child, fully styleable via the Style tab.';
+
+	public function __construct( $data = [], $args = null ) {
+		parent::__construct( $data, $args );
+		$this->meta( 'is_container', true );
+	}
+
+	public static function get_type() {
+		return 'e-aae-a-hotspot-marker';
+	}
 
 	public static function get_element_type(): string {
 		return 'e-aae-a-hotspot-marker';
@@ -66,7 +93,7 @@ class AAE_A_Hotspot_Marker extends Atomic_Widget_Base {
 		return [ 'hotspot', 'marker', 'icon', 'atomic' ];
 	}
 
-	public function show_in_panel() {
+	protected function should_show_in_panel() {
 		return false;
 	}
 
@@ -75,42 +102,9 @@ class AAE_A_Hotspot_Marker extends Atomic_Widget_Base {
 	}
 
 	protected static function define_props_schema(): array {
-		$show_if_icon = Dependency_Manager::make()
-			->where( [
-				'operator' => 'in',
-				'path'     => [ 'hsp_layout' ],
-				'value'    => [ 'icon', 'icon-text' ],
-				'effect'   => 'hide',
-			] )
-			->get();
-
-		$show_if_text = Dependency_Manager::make()
-			->where( [
-				'operator' => 'in',
-				'path'     => [ 'hsp_layout' ],
-				'value'    => [ 'text', 'icon-text' ],
-				'effect'   => 'hide',
-			] )
-			->get();
-
 		return [
 			'classes'    => Classes_Prop_Type::make()->default( [] ),
 			'attributes' => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
-
-			// 'number' is the auto-badge layout (JS fills the digit from DOM
-			// order — nothing computed server-side, so it stays correct across
-			// drag-reorders in the parent's Hotspots control).
-			'hsp_layout' => String_Prop_Type::make()
-				->enum( [ 'dot', 'icon', 'text', 'icon-text', 'number' ] )
-				->default( 'dot' ),
-
-			'hsp_icon' => Svg_Src_Prop_Type::make()
-				->default_url( WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/ImageHotspot/assets/icons/dot.svg' )
-				->set_dependencies( $show_if_icon ),
-
-			'hsp_text' => String_Prop_Type::make()
-				->default( __( 'Hotspot', 'animation-addons-for-elementor' ) )
-				->set_dependencies( $show_if_text ),
 
 			// 'inherit' = use the parent Image Hotspot's global marker_anim.
 			'marker_anim' => String_Prop_Type::make()
@@ -124,19 +118,6 @@ class AAE_A_Hotspot_Marker extends Atomic_Widget_Base {
 			Section::make()
 				->set_label( __( 'Content', 'animation-addons-for-elementor' ) )
 				->set_items( [
-					Select_Control::bind_to( 'hsp_layout' )
-						->set_label( __( 'Layout', 'animation-addons-for-elementor' ) )
-						->set_options( [
-							[ 'value' => 'dot',       'label' => __( 'Dot', 'animation-addons-for-elementor' ) ],
-							[ 'value' => 'icon',      'label' => __( 'Icon', 'animation-addons-for-elementor' ) ],
-							[ 'value' => 'text',      'label' => __( 'Text', 'animation-addons-for-elementor' ) ],
-							[ 'value' => 'icon-text', 'label' => __( 'Icon + Text', 'animation-addons-for-elementor' ) ],
-							[ 'value' => 'number',    'label' => __( 'Number', 'animation-addons-for-elementor' ) ],
-						] ),
-					Svg_Control::bind_to( 'hsp_icon' )
-						->set_label( __( 'Icon', 'animation-addons-for-elementor' ) ),
-					Text_Control::bind_to( 'hsp_text' )
-						->set_label( __( 'Text', 'animation-addons-for-elementor' ) ),
 					Select_Control::bind_to( 'marker_anim' )
 						->set_label( __( 'Animation', 'animation-addons-for-elementor' ) )
 						->set_options( [
@@ -163,18 +144,19 @@ class AAE_A_Hotspot_Marker extends Atomic_Widget_Base {
 	}
 
 	/**
-	 * Universal resting look, shared by every layout — fully Style-tab
-	 * overridable, including `width`/`height` (default 32px, a square that
-	 * reads as a dot/icon by default) — a builder using the text/icon-text
-	 * layout can widen it from the same Style-tab fields if the default is
-	 * too narrow for their label. Elementor's own global reset
+	 * Universal resting look, fully Style-tab overridable, including
+	 * `width`/`height` (default 32px, a square that reads as a plain dot by
+	 * default with no children) — a builder who drops in a text child can
+	 * widen it from the same Style-tab fields if the default is too narrow
+	 * for their label. Elementor's own global reset
 	 * (`.elementor * { box-sizing: border-box }`) means width/height already
 	 * include padding, so 32px really renders as 32px regardless of the
 	 * padding value below.
 	 *
 	 * `position: relative` also moved here (was plain CSS) — it's the anchor
 	 * every marker animation's ::before/::after pseudo-element in
-	 * image-hotspot.scss attaches to; nothing about it varies by layout.
+	 * image-hotspot.scss attaches to; nothing about it depends on which
+	 * children (if any) are present.
 	 */
 	protected function define_base_styles(): array {
 		$pad = Size_Prop_Type::generate( [ 'size' => 8, 'unit' => 'px' ] );
@@ -199,6 +181,7 @@ class AAE_A_Hotspot_Marker extends Atomic_Widget_Base {
 						->add_prop( 'font-size', Size_Prop_Type::generate( [ 'size' => 14, 'unit' => 'px' ] ) )
 						->add_prop( 'width', $size )
 						->add_prop( 'height', $size )
+						->add_prop( 'min-height', Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ) )
 						->add_prop(
 							'padding',
 							Dimensions_Prop_Type::generate( [
@@ -210,6 +193,16 @@ class AAE_A_Hotspot_Marker extends Atomic_Widget_Base {
 						)
 				),
 		];
+	}
+
+	protected function define_allowed_child_types() {
+		return [ 'e-svg', 'e-image', 'e-paragraph' ];
+	}
+
+	// Empty by default — matches the old 'dot' default (which rendered none
+	// of the icon/text/number spans), see class docblock.
+	protected function define_default_children() {
+		return [];
 	}
 
 	protected function get_templates(): array {

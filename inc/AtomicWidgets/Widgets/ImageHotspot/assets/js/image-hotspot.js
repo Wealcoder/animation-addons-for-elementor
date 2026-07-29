@@ -54,8 +54,12 @@ const numAttr = ( el, name, fallback ) => {
 };
 
 // ── Auto-numbering (feature: number badges) ──────────────────────────────
+// Opt-in by class presence now, not a "Number" layout mode — a builder adds
+// an e-paragraph child inside Marker and gives it the `hotspot-number` CSS
+// class (Elementor's own generic "CSS Classes" field) to get an auto-filled
+// 1-based badge; markers with no such child are simply never matched here.
 const renumber = ( root ) => {
-	root.querySelectorAll( '.aae-hotspot-marker[data-layout="number"] .hotspot-number' )
+	root.querySelectorAll( '.aae-hotspot-marker .hotspot-number' )
 		.forEach( ( el, index ) => { el.textContent = String( index + 1 ); } );
 };
 

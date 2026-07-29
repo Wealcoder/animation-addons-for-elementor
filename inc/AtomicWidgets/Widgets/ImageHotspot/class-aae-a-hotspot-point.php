@@ -199,6 +199,7 @@ class AAE_A_Hotspot_Point extends Atomic_Element_Base {
 						->add_prop( 'display', String_Prop_Type::generate( 'inline-flex' ) )
 						->add_prop( 'width', $fit_content )
 						->add_prop( 'height', $fit_content )
+						->add_prop( 'min-height', Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ) )
 						->add_prop( 'cursor', String_Prop_Type::generate( 'pointer' ) )
 				),
 		];

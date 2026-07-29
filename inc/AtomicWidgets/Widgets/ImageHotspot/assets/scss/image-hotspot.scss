@@ -1,21 +1,3 @@
-.aae-hotspot-marker-icon,
-.aae-hotspot-marker-text {
-	display: inline-flex;
-	align-items: center;
-}
-
-.aae-hotspot-marker-icon svg,
-.aae-hotspot-marker-icon img {
-	width: 1em;
-	height: 1em;
-	display: block;
-}
-
-.hotspot-number {
-	display: inline-block;
-	line-height: 1;
-}
-
 // ── Inline tooltip visibility (Content's own look, INCLUDING position,
 // offset, centering transform, and margin — is base-style now, see
 // AAE_A_Hotspot_Content::define_base_styles()) ───────────────────────────
