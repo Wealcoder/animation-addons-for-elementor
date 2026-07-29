@@ -63,7 +63,12 @@ const animFrom = ( name, position ) => {
 	const signOut = ( position === 'left' || position === 'top' ) ? -1 : 1; // toward its own edge
 	switch ( name ) {
 		case 'none':
-		case 'circle': // shape reveal — handled via clip-path, not a transform tween
+		case 'circle':  // shape reveal — handled via clip-path, not a transform tween
+		case 'blinds':  // bar reveal — handled by a cover layer, not a transform tween
+		case 'stripes': // ditto (vertical bars)
+		case 'tiles':   // mosaic reveal — cover layer of grid tiles
+		case 'curtain': // two cover panes part in opposite directions
+		case 'stagger': // panel in place, its children cascade in
 			return null;
 		case 'fade':
 			return { opacity: 0 };
@@ -121,14 +126,52 @@ const getPortal = () => {
 	return portal;
 };
 
+// Tabbable elements inside the panel — used by the focus trap while open.
+const FOCUSABLE = 'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+// Body scroll-lock shared across every drawer on the page: only the FIRST open
+// locks and only the LAST close unlocks, so closing one drawer never re-enables
+// page scroll while another one is still open.
+let bodyLockCount = 0;
+let savedBodyPadR = '';
+const lockScroll = () => {
+	if ( bodyLockCount === 0 ) {
+		// Compensate the scrollbar width BEFORE hiding overflow, otherwise removing
+		// the scrollbar reflows the whole page sideways (~15px) — a jarring "jump"
+		// right as the drawer opens. Measure, then pad the body by that width.
+		const scrollbar = window.innerWidth - document.documentElement.clientWidth;
+		savedBodyPadR = document.body.style.paddingRight;
+		if ( scrollbar > 0 ) {
+			const current = parseFloat( getComputedStyle( document.body ).paddingRight ) || 0;
+			document.body.style.paddingRight = ( current + scrollbar ) + 'px';
+		}
+		document.body.style.overflow = 'hidden';
+	}
+	bodyLockCount += 1;
+};
+const unlockScroll = () => {
+	bodyLockCount = Math.max( 0, bodyLockCount - 1 );
+	if ( bodyLockCount === 0 ) {
+		document.body.style.overflow = '';
+		document.body.style.paddingRight = savedBodyPadR;
+	}
+};
+
 const initOffcanvas = ( root ) => {
 	if ( root.dataset.aaeOffcanvasInit === 'true' ) {
 		return;
 	}
 	root.dataset.aaeOffcanvasInit = 'true';
 
-	const trigger  = root.querySelector( '.aae-offcanvas-trigger' );
-	const overlay  = root.querySelector( '.aae-offcanvas-overlay' );
+	// The trigger is a real atomic child element (AAE_A_Offcanvas_Trigger) seeded
+	// in the offcanvas root. Match its hook class, falling back to its element-type
+	// attr (the v4 editor strips custom classes off atomic children; data-attrs stay).
+	let trigger    = root.querySelector( '.aae-offcanvas-trigger' )
+		|| root.querySelector( '[data-e-type="e-aae-a-offcanvas-trigger"]' );
+	// The scrim is a real atomic child element (AAE_A_Offcanvas_Overlay). Match its
+	// hook class, falling back to its element-type attr (editor strips classes).
+	let overlay = root.querySelector( '.aae-offcanvas-overlay' )
+		|| root.querySelector( '[data-e-type="e-aae-a-offcanvas-overlay"]' );
 	// Find the panel by class, falling back to its element-type attr — the v4
 	// editor strips custom classes off atomic child elements, but data-attrs stay.
 	const panel    = root.querySelector( '.aae-a-offcanvas-panel' )
@@ -141,7 +184,7 @@ const initOffcanvas = ( root ) => {
 			|| panel.querySelector( '[data-e-type="e-aae-a-offcanvas-close"]' ) )
 		: null;
 
-	if ( ! trigger || ! panel ) {
+	if ( ! panel ) {
 		return;
 	}
 
@@ -150,6 +193,26 @@ const initOffcanvas = ( root ) => {
 	// Twig with a baked show-rule — no JS needed. Bail out.
 	if ( typeof elementorFrontend !== 'undefined' && elementorFrontend.isEditMode() ) {
 		return;
+	}
+
+	// Migration safety-net: offcanvas instances saved BEFORE the trigger became a
+	// real child element have no trigger (the old plain-markup trigger was removed
+	// from the parent Twig). Inject a minimal functional one so the drawer can
+	// still be opened. New offcanvases ship the styleable trigger element instead.
+	if ( ! trigger ) {
+		trigger = document.createElement( 'button' );
+		trigger.type = 'button';
+		trigger.className = 'aae-offcanvas-trigger';
+		trigger.setAttribute( 'aria-haspopup', 'dialog' );
+		trigger.setAttribute( 'aria-expanded', 'false' );
+		trigger.setAttribute( 'aria-label', 'Open panel' );
+		Object.assign( trigger.style, {
+			display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+			cursor: 'pointer', background: 'transparent', border: '0', color: 'inherit',
+			padding: '0', fontSize: '24px', lineHeight: '0',
+		} );
+		trigger.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>';
+		root.insertBefore( trigger, root.firstChild );
 	}
 
 	// Migration safety-net: offcanvas instances saved BEFORE the close became a
@@ -170,12 +233,22 @@ const initOffcanvas = ( root ) => {
 		panel.insertBefore( closeBtn, panel.firstChild );
 	}
 
+	// Migration safety-net: instances saved BEFORE the overlay became a real child
+	// element have none (the old plain-markup scrim was removed from the Twig).
+	// Inject a minimal one with the default scrim colour so the backdrop still works.
+	if ( ! overlay ) {
+		overlay = document.createElement( 'div' );
+		overlay.className = 'aae-offcanvas-overlay';
+		overlay.setAttribute( 'aria-hidden', 'true' );
+		overlay.style.background = 'rgba(0, 0, 0, 0.5)';
+	}
+
 	const position        = root.dataset.position || 'left';
 	const closedTransform  = TRANSFORMS[ position ] || TRANSFORMS.left;
 	const posStyles        = POS[ position ] || POS.left;
-	const overlayColor     = root.dataset.overlayColor || 'rgba(0,0,0,0.5)';
 	const closeOnOverlay   = root.dataset.closeOnOverlay !== 'false';
 	const closeOnEsc       = root.dataset.closeOnEsc !== 'false';
+	const overlayAnim      = root.dataset.overlayAnim || 'fade';
 
 	// Teleport into a transform-free `.elementor` host so fixed positioning uses
 	// the viewport WHILE the panel keeps its `.elementor`-scoped atomic styles
@@ -214,11 +287,12 @@ const initOffcanvas = ( root ) => {
 	}
 
 	if ( overlay ) {
+		// NB: no `background` here — the scrim colour comes from the overlay
+		// element's own base style / Style-tab Background, so it stays user-editable.
 		Object.assign( overlay.style, {
 			position:      'fixed',
 			inset:         '0',
 			zIndex:        '9998',
-			background:     overlayColor,
 			opacity:       '0',
 			visibility:    'hidden',
 			pointerEvents: 'none',
@@ -227,6 +301,41 @@ const initOffcanvas = ( root ) => {
 	}
 
 	let closeTimer;
+	let panelEnterTimer;
+	let previouslyFocused = null;
+
+	// Panel is the modal surface — make it programmatically focusable so focus
+	// can land on it when it holds no natural tab stop.
+	panel.setAttribute( 'tabindex', '-1' );
+
+	// Visible, tabbable elements inside the panel right now.
+	const getFocusable = () =>
+		Array.from( panel.querySelectorAll( FOCUSABLE ) ).filter(
+			( el ) => el.offsetWidth > 0 || el.offsetHeight > 0 || el === document.activeElement
+		);
+
+	// Keep Tab / Shift+Tab inside the open drawer — `aria-modal` promises this,
+	// so without it keyboard focus silently escapes to the page behind.
+	const trapFocus = ( ev ) => {
+		if ( ev.key !== 'Tab' ) {
+			return;
+		}
+		const focusables = getFocusable();
+		if ( ! focusables.length ) {
+			ev.preventDefault();
+			panel.focus();
+			return;
+		}
+		const first = focusables[ 0 ];
+		const last  = focusables[ focusables.length - 1 ];
+		if ( ev.shiftKey && document.activeElement === first ) {
+			ev.preventDefault();
+			last.focus();
+		} else if ( ! ev.shiftKey && document.activeElement === last ) {
+			ev.preventDefault();
+			first.focus();
+		}
+	};
 
 	const killTween = () => {
 		if ( panel.__aaeTween ) {
@@ -235,61 +344,563 @@ const initOffcanvas = ( root ) => {
 		}
 	};
 
+	// Circle-reveal geometry for the backdrop: bloom from the trigger's centre,
+	// radius = the farthest viewport corner (so the scrim fully covers). The
+	// overlay is `position:fixed; inset:0`, so its box == the viewport and the
+	// trigger's viewport-relative rect maps straight onto the clip coordinates.
+	const overlayCircle = () => {
+		const r  = trigger.getBoundingClientRect();
+		const cx = r.left + r.width / 2;
+		const cy = r.top + r.height / 2;
+		const vw = window.innerWidth;
+		const vh = window.innerHeight;
+		const radius = Math.ceil( Math.max(
+			Math.hypot( cx, cy ),
+			Math.hypot( vw - cx, cy ),
+			Math.hypot( cx, vh - cy ),
+			Math.hypot( vw - cx, vh - cy )
+		) ) + 2;
+		return { cx, cy, radius };
+	};
+	const killOverlayTween = () => {
+		if ( overlay && overlay.__aaeOvTween ) {
+			overlay.__aaeOvTween.kill();
+			overlay.__aaeOvTween = null;
+		}
+	};
+	const clearOverlayClip = () => {
+		if ( ! overlay ) return;
+		overlay.style.clipPath = '';
+		overlay.style.webkitClipPath = '';
+	};
+
+	// Blinds / stripes: split the backdrop into N vertical bars that drop in one
+	// after another (stagger). The scrim colour moves onto the bars; the overlay
+	// itself becomes a transparent, clipping container. Bars are built once and
+	// reused across open/close cycles.
+	const BLIND_COUNT = 6;
+	// Bars must be OPAQUE: with a translucent fill the 1px overlap (that hides
+	// sub-pixel gaps) stacks alpha into a visible dark seam line, and a see-through
+	// scrim makes the staggered reveal almost imperceptible. Force full opacity
+	// from the chosen scrim colour so each column reads as a solid, clear cover.
+	// Read the scrim colour off the overlay element's OWN computed background
+	// (its base style / the user's Style-tab pick) and force it fully opaque.
+	const opaqueBarFill = () => {
+		const c = overlay ? getComputedStyle( overlay ).backgroundColor : '';
+		if ( ! c || c === 'transparent' || c === 'rgba(0, 0, 0, 0)' ) return 'rgb(0, 0, 0)';
+		const m = c.match( /rgba?\(([^)]+)\)/ );
+		if ( m ) {
+			const p = m[ 1 ].split( ',' ).map( ( s ) => s.trim() );
+			return `rgb(${ p[ 0 ] }, ${ p[ 1 ] }, ${ p[ 2 ] })`;
+		}
+		return c;
+	};
+	const buildBlinds = () => {
+		if ( ! overlay ) return [];
+		if ( overlay.__aaeBars ) return overlay.__aaeBars;
+		// Capture the colour BEFORE clearing the container's background.
+		const fill = opaqueBarFill();
+		overlay.style.background = 'transparent';
+		overlay.style.overflow   = 'hidden';
+		const bars = [];
+		const w = 100 / BLIND_COUNT;
+		for ( let i = 0; i < BLIND_COUNT; i++ ) {
+			const bar = document.createElement( 'div' );
+			Object.assign( bar.style, {
+				position:        'absolute',
+				top:             '0',
+				bottom:          '0',
+				// +1px overlap kills sub-pixel seams (safe now the fill is opaque).
+				left:            `calc(${ i * w }% - 0.5px)`,
+				width:           `calc(${ w }% + 1px)`,
+				background:      fill,
+				transform:       'scaleY(0)',
+				transformOrigin: 'top',
+				willChange:      'transform',
+			} );
+			overlay.appendChild( bar );
+			bars.push( bar );
+		}
+		overlay.__aaeBars = bars;
+		return bars;
+	};
+
+	// How long the backdrop reveal takes (ms). Used to delay the panel's entrance
+	// on open so a non-fade backdrop (blinds/circle) plays FULLY and stays visible
+	// before the drawer slides over it — otherwise the panel covers the staircase.
+	// `fade` and reduced-motion return 0 (panel enters immediately, as before).
+	const overlayRevealMs = () => {
+		if ( reduce() ) return 0;
+		if ( overlayAnim === 'blinds' ) {
+			const n    = ( overlay && overlay.__aaeBars ) ? overlay.__aaeBars.length : BLIND_COUNT;
+			const stag = duration / ( n * 2 );
+			return ( duration + stag * ( n - 1 ) ) * 1000;
+		}
+		if ( overlayAnim === 'circle' ) {
+			return duration * 1000;
+		}
+		return 0;
+	};
+
 	const showOverlay = () => {
 		if ( ! overlay ) return;
-		overlay.style.transition    = 'opacity 0.3s ease';
 		overlay.style.visibility    = 'visible';
-		overlay.style.opacity       = '1';
 		overlay.style.pointerEvents = 'auto';
+
+		if ( overlayAnim === 'blinds' && ! reduce() ) {
+			// Bars drop in left→right; the container carries no colour of its own.
+			const bars = buildBlinds();
+			overlay.style.opacity = '1';
+			killOverlayTween();
+			const stag = duration / ( bars.length * 2 );
+			if ( hasGsap ) {
+				overlay.__aaeOvTween = gsap().to( bars, {
+					scaleY: 1, transformOrigin: 'top', duration, ease,
+					stagger: stag,
+					onComplete: () => { overlay.__aaeOvTween = null; },
+				} );
+			} else {
+				bars.forEach( ( bar, i ) => {
+					bar.style.transition = `transform ${ duration }s ease ${ i * stag }s`;
+					bar.style.transform  = 'scaleY(1)';
+				} );
+			}
+			return;
+		}
+
+		if ( overlayAnim === 'circle' && ! reduce() ) {
+			// Backdrop blooms outward as a growing clip-path circle.
+			killOverlayTween();
+			const g    = overlayCircle();
+			const from = `circle(0px at ${ g.cx }px ${ g.cy }px)`;
+			const to   = `circle(${ g.radius }px at ${ g.cx }px ${ g.cy }px)`;
+			overlay.style.opacity = '1';
+			if ( hasGsap ) {
+				overlay.style.transition = 'none';
+				overlay.__aaeOvTween = gsap().fromTo( overlay,
+					{ clipPath: from, webkitClipPath: from },
+					{ clipPath: to, webkitClipPath: to, duration, ease, onComplete: () => { overlay.__aaeOvTween = null; } }
+				);
+			} else {
+				overlay.style.transition   = 'none';
+				overlay.style.clipPath     = from;
+				overlay.style.webkitClipPath = from;
+				requestAnimationFrame( () => {
+					const t = `clip-path ${ duration }s ease, -webkit-clip-path ${ duration }s ease`;
+					overlay.style.transition     = t;
+					overlay.style.clipPath       = to;
+					overlay.style.webkitClipPath = to;
+				} );
+			}
+			return;
+		}
+
+		// Default: plain opacity fade.
+		clearOverlayClip();
+		overlay.style.transition = 'opacity 0.3s ease';
+		overlay.style.opacity    = '1';
 	};
+
 	const hideOverlay = () => {
 		if ( ! overlay ) return;
+		overlay.style.pointerEvents = 'none';
+
+		if ( overlayAnim === 'blinds' && ! reduce() ) {
+			// Bars retract right→left (reverse stagger), then the overlay hides.
+			const bars = overlay.__aaeBars || buildBlinds();
+			killOverlayTween();
+			const stag = duration / ( bars.length * 2 );
+			if ( hasGsap ) {
+				overlay.__aaeOvTween = gsap().to( bars, {
+					scaleY: 0, transformOrigin: 'top', duration, ease,
+					stagger: { each: stag, from: 'end' },
+					onComplete: () => { overlay.__aaeOvTween = null; overlay.style.visibility = 'hidden'; },
+				} );
+			} else {
+				bars.forEach( ( bar, i ) => {
+					const rev = bars.length - 1 - i;
+					bar.style.transition = `transform ${ duration }s ease ${ rev * stag }s`;
+					bar.style.transform  = 'scaleY(0)';
+				} );
+				window.setTimeout(
+					() => { overlay.style.visibility = 'hidden'; },
+					( duration + stag * bars.length ) * 1000 + 50
+				);
+			}
+			return;
+		}
+
+		if ( overlayAnim === 'circle' && ! reduce() ) {
+			// Backdrop shrinks back into the trigger, then hides.
+			killOverlayTween();
+			const g    = overlayCircle();
+			const from = `circle(${ g.radius }px at ${ g.cx }px ${ g.cy }px)`;
+			const to   = `circle(0px at ${ g.cx }px ${ g.cy }px)`;
+			if ( hasGsap ) {
+				overlay.style.transition = 'none';
+				overlay.__aaeOvTween = gsap().fromTo( overlay,
+					{ clipPath: from, webkitClipPath: from },
+					{ clipPath: to, webkitClipPath: to, duration, ease, onComplete: () => {
+						overlay.__aaeOvTween = null;
+						overlay.style.visibility = 'hidden';
+						clearOverlayClip();
+					} }
+				);
+			} else {
+				const t = `clip-path ${ duration }s ease, -webkit-clip-path ${ duration }s ease`;
+				overlay.style.transition     = t;
+				overlay.style.clipPath       = to;
+				overlay.style.webkitClipPath = to;
+				window.setTimeout( () => {
+					overlay.style.visibility = 'hidden';
+					clearOverlayClip();
+				}, duration * 1000 + 50 );
+			}
+			return;
+		}
+
+		// Default: plain opacity fade.
+		clearOverlayClip();
 		overlay.style.transition    = 'opacity 0.3s ease, visibility 0s 0.3s';
 		overlay.style.opacity       = '0';
-		overlay.style.pointerEvents = 'none';
 		overlay.style.visibility    = 'hidden';
 	};
 
+	// ── Panel cover-layer reveals (Blinds / Stripes / Tiles / Curtain) ────────
+	// The drawer is unveiled through opaque shapes laid OVER it in a temporary
+	// cover layer: on open they clear off the panel in a stagger so the content
+	// appears piece-by-piece; on close they sweep back to cover it. The layer is
+	// removed the moment the reveal finishes, so it never touches the panel's own
+	// layout or the focus trap. Each effect only differs in what shapes fill the
+	// layer and how they animate. `stagger` (below) is separate — it moves the
+	// panel's real children, not a cover layer.
+	const PANEL_BLIND_COUNT = 6;   // bars (blinds / stripes)
+	const TILE_COLS = 6, TILE_ROWS = 4; // tiles (mosaic)
+
+	// Shape colour: the SCRIM colour (same source as the backdrop blinds), forced
+	// opaque, so the cover reads as the backdrop opening to reveal the drawer.
+	// Using the panel's OWN background instead looked broken — a white cover over
+	// a white drawer is invisible, so the reveal appeared to do nothing. The scrim
+	// colour contrasts with a typical light panel and keeps all cover effects
+	// visually unified. Users retint it via the Overlay element's Style-tab
+	// Background, exactly like the backdrop blinds.
+	const panelBarFill = () => opaqueBarFill();
+
+	const clearPanelBars = () => {
+		if ( panel.__aaeBarLayer ) {
+			panel.__aaeBarLayer.remove();
+			panel.__aaeBarLayer = null;
+		}
+	};
+
+	// The absolute, clipping host all cover shapes live in (tracked for cleanup).
+	const coverLayer = () => {
+		const layer = document.createElement( 'div' );
+		Object.assign( layer.style, {
+			position: 'absolute', inset: '0', overflow: 'hidden',
+			pointerEvents: 'none', zIndex: '3',
+		} );
+		panel.appendChild( layer );
+		panel.__aaeBarLayer = layer;
+		return layer;
+	};
+
+	// Blinds (horizontal bars) / Stripes (vertical bars).
+	const buildPanelBars = ( vertical ) => {
+		const layer = coverLayer();
+		const fill  = panelBarFill();
+		const bars  = [];
+		const size  = 100 / PANEL_BLIND_COUNT;
+		for ( let i = 0; i < PANEL_BLIND_COUNT; i++ ) {
+			const bar = document.createElement( 'div' );
+			const common = { position: 'absolute', background: fill, willChange: 'transform' };
+			if ( vertical ) {
+				Object.assign( bar.style, common, {
+					top: '0', bottom: '0',
+					left: `calc(${ i * size }% - 0.5px)`,
+					width: `calc(${ size }% + 1px)`,
+					transformOrigin: 'left',
+				} );
+			} else {
+				Object.assign( bar.style, common, {
+					left: '0', right: '0',
+					top: `calc(${ i * size }% - 0.5px)`,
+					height: `calc(${ size }% + 1px)`,
+					transformOrigin: 'top',
+				} );
+			}
+			layer.appendChild( bar );
+			bars.push( bar );
+		}
+		return { layer, els: bars };
+	};
+
+	// Tiles (mosaic grid). Row-major order so a GSAP grid stagger flows diagonally.
+	const buildPanelTiles = () => {
+		const layer = coverLayer();
+		const fill  = panelBarFill();
+		const tiles = [];
+		const w = 100 / TILE_COLS, h = 100 / TILE_ROWS;
+		for ( let r = 0; r < TILE_ROWS; r++ ) {
+			for ( let c = 0; c < TILE_COLS; c++ ) {
+				const t = document.createElement( 'div' );
+				Object.assign( t.style, {
+					position: 'absolute', background: fill, willChange: 'transform',
+					left: `calc(${ c * w }% - 0.5px)`, top: `calc(${ r * h }% - 0.5px)`,
+					width: `calc(${ w }% + 1px)`, height: `calc(${ h }% + 1px)`,
+					transformOrigin: 'center',
+				} );
+				layer.appendChild( t );
+				tiles.push( t );
+			}
+		}
+		return { layer, els: tiles };
+	};
+
+	// Curtain (two panes that part in opposite directions).
+	const buildCurtain = () => {
+		const layer = coverLayer();
+		const fill  = panelBarFill();
+		const panes = [];
+		for ( let i = 0; i < 2; i++ ) {
+			const p = document.createElement( 'div' );
+			Object.assign( p.style, {
+				position: 'absolute', top: '0', bottom: '0', background: fill,
+				willChange: 'transform',
+				left: i === 0 ? '-0.5px' : 'calc(50% - 0.5px)',
+				width: 'calc(50% + 1px)',
+			} );
+			layer.appendChild( p );
+			panes.push( p );
+		}
+		return { layer, els: panes };
+	};
+
+	// Run a cover-layer reveal. `reveal` true → clear off the panel (open); false →
+	// sweep back to cover it (close). GSAP if present, else a CSS-transition
+	// stagger (start state pinned + reflowed first, so a freshly-inserted node's
+	// transition actually runs instead of the whole thing popping in one paint).
+	const runCoverReveal = ( name, reveal, done ) => {
+		clearPanelBars();
+		const finish = () => { panel.__aaeTween = null; clearPanelBars(); if ( done ) done(); };
+
+		// Per-effect: the builder, the transform axis, and each element's delay unit.
+		let els, gsapVars, cssFrom, cssTo, cssDelay, span;
+		if ( name === 'tiles' ) {
+			( { els } = buildPanelTiles() );
+			const s0 = reveal ? 1 : 0, s1 = reveal ? 0 : 1;
+			span = duration; // total stagger spread
+			gsapVars = {
+				set: { scale: s0 },
+				to: { scale: s1, duration, ease,
+					stagger: { grid: [ TILE_ROWS, TILE_COLS ], from: reveal ? 'start' : 'end', amount: span } },
+			};
+			cssFrom  = ( ) => `scale(${ s0 })`;
+			cssTo    = ( ) => `scale(${ s1 })`;
+			cssDelay = ( i ) => {
+				const r = Math.floor( i / TILE_COLS ), c = i % TILE_COLS;
+				const d = reveal ? ( r + c ) : ( ( TILE_ROWS - 1 - r ) + ( TILE_COLS - 1 - c ) );
+				return ( d / ( ( TILE_ROWS - 1 ) + ( TILE_COLS - 1 ) ) ) * span;
+			};
+		} else if ( name === 'curtain' ) {
+			( { els } = buildCurtain() );
+			const out = ( i ) => ( i === 0 ? -101 : 101 );
+			span = 0;
+			gsapVars = {
+				set: reveal ? { xPercent: 0 } : { xPercent: ( i ) => out( i ) },
+				to:  reveal ? { xPercent: ( i ) => out( i ), duration, ease }
+					: { xPercent: 0, duration, ease },
+			};
+			cssFrom  = ( i ) => `translateX(${ reveal ? 0 : out( i ) }%)`;
+			cssTo    = ( i ) => `translateX(${ reveal ? out( i ) : 0 }%)`;
+			cssDelay = ( ) => 0;
+		} else { // blinds / stripes
+			const vertical = name === 'stripes';
+			const fn = vertical ? 'scaleX' : 'scaleY';
+			const origin = vertical ? 'left' : 'top';
+			( { els } = buildPanelBars( vertical ) );
+			const s0 = reveal ? 1 : 0, s1 = reveal ? 0 : 1;
+			const stag = duration / ( els.length * 2 );
+			span = stag * els.length;
+			gsapVars = {
+				set: { [ fn === 'scaleX' ? 'scaleX' : 'scaleY' ]: s0, transformOrigin: origin },
+				to: { [ fn === 'scaleX' ? 'scaleX' : 'scaleY' ]: s1, transformOrigin: origin, duration, ease,
+					stagger: reveal ? stag : { each: stag, from: 'end' } },
+			};
+			cssFrom  = ( ) => `${ fn }(${ s0 })`;
+			cssTo    = ( ) => `${ fn }(${ s1 })`;
+			cssDelay = ( i ) => ( reveal ? i : ( els.length - 1 - i ) ) * stag;
+		}
+
+		if ( hasGsap ) {
+			gsap().set( els, gsapVars.set );
+			panel.__aaeTween = gsap().to( els, { ...gsapVars.to, onComplete: finish } );
+		} else {
+			els.forEach( ( el, i ) => {
+				el.style.transition = 'none';
+				el.style.transform  = cssFrom( i );
+			} );
+			void panel.__aaeBarLayer.offsetHeight; // commit the start state
+			requestAnimationFrame( () => {
+				els.forEach( ( el, i ) => {
+					el.style.transition = `transform ${ duration }s ease ${ cssDelay( i ) }s`;
+					el.style.transform  = cssTo( i );
+				} );
+			} );
+			window.setTimeout( finish, ( duration + span ) * 1000 + 80 );
+		}
+	};
+
+	// ── Panel "Stagger Content" reveal ────────────────────────────────────────
+	// Not a cover layer: the panel shows in place and its own children cascade in
+	// (fade + rise) one after another — the "premium menu" look. Transient inline
+	// styles only, cleared on finish so the panel returns to its authored state.
+	const staggerTargets = () => {
+		let kids = Array.from( panel.children ).filter(
+			( el ) => el.nodeType === 1 && el !== panel.__aaeBarLayer
+		);
+		// A single wrapper child → descend one level so there's something to cascade.
+		if ( kids.length === 1 && kids[ 0 ].children.length > 1 ) {
+			kids = Array.from( kids[ 0 ].children ).filter( ( el ) => el.nodeType === 1 );
+		}
+		return kids;
+	};
+	const resetStagger = () => {
+		if ( panel.__aaeStaggerEls ) {
+			panel.__aaeStaggerEls.forEach( ( t ) => {
+				t.style.opacity = ''; t.style.transform = ''; t.style.transition = '';
+			} );
+			panel.__aaeStaggerEls = null;
+		}
+	};
+	const animateStagger = ( reveal, done ) => {
+		resetStagger();
+		const targets = staggerTargets();
+		const finish  = () => { panel.__aaeTween = null; resetStagger(); if ( done ) done(); };
+		if ( ! targets.length ) { // nothing to cascade → just settle the panel
+			panel.style.opacity = '1';
+			finish();
+			return;
+		}
+		panel.__aaeStaggerEls = targets;
+		const each = Math.min( 0.08, ( duration * 0.9 ) / targets.length );
+
+		if ( hasGsap ) {
+			panel.__aaeTween = reveal
+				? gsap().fromTo( targets, { opacity: 0, y: 24 },
+					{ opacity: 1, y: 0, duration: duration * 0.8, ease, stagger: each, onComplete: finish } )
+				: gsap().to( targets,
+					{ opacity: 0, y: 16, duration: duration * 0.6, ease, stagger: { each, from: 'end' }, onComplete: finish } );
+		} else {
+			const per = duration * 0.8;
+			targets.forEach( ( t ) => {
+				t.style.transition = 'none';
+				t.style.opacity   = reveal ? '0' : '1';
+				t.style.transform = reveal ? 'translateY(24px)' : 'none';
+			} );
+			void panel.offsetHeight; // commit the start state
+			requestAnimationFrame( () => {
+				targets.forEach( ( t, i ) => {
+					const order = reveal ? i : ( targets.length - 1 - i );
+					const delay = order * each;
+					t.style.transition = `opacity ${ per }s ease ${ delay }s, transform ${ per }s ease ${ delay }s`;
+					t.style.opacity   = reveal ? '1' : '0';
+					t.style.transform = reveal ? 'none' : 'translateY(16px)';
+				} );
+			} );
+			window.setTimeout( finish, ( per + each * targets.length ) * 1000 + 80 );
+		}
+	};
+
+	// The animation names driven by a cover layer (vs. transform tween / stagger).
+	const COVER_REVEALS = [ 'blinds', 'stripes', 'tiles', 'curtain' ];
+
 	const open = () => {
+		// Already open → don't re-run (would double-count the scroll-lock).
+		if ( root.classList.contains( 'is-open' ) ) {
+			return;
+		}
+		// Remember where focus was so we can return it on close.
+		previouslyFocused = document.activeElement;
 		window.clearTimeout( closeTimer );
+		window.clearTimeout( panelEnterTimer );
 		killTween();
-		panel.style.visibility    = 'visible';
+		clearPanelBars(); // drop any cover layer left by a killed reveal
+		resetStagger();   // and clear any half-applied stagger inline styles
 		panel.style.pointerEvents = 'auto';
 		showOverlay();
 		root.classList.add( 'is-open' );
 		trigger.setAttribute( 'aria-expanded', 'true' );
-		document.body.style.overflow = 'hidden'; // scroll-lock while open
+		lockScroll(); // scroll-lock while open (shared across drawers)
+		panel.addEventListener( 'keydown', trapFocus );
 
-		const from = animFrom( enterAnim, position );
-		if ( hasGsap && enterAnim === 'circle' && ! reduce() ) {
-			// Shape reveal: grow a clip-path circle from the corner (0% → 150%, full).
-			panel.style.transform = 'none';
-			const o = CIRCLE_ORIGIN[ position ] || CIRCLE_ORIGIN.left;
-			panel.__aaeTween = gsap().fromTo( panel,
-				{ clipPath: circleClip( '0%', o ), webkitClipPath: circleClip( '0%', o ) },
-				{
-					clipPath:       circleClip( '150%', o ),
-					webkitClipPath: circleClip( '150%', o ),
+		// The drawer's own entrance. Runs immediately for a plain `fade` backdrop,
+		// but is delayed until AFTER a blinds/circle backdrop has fully revealed —
+		// so the backdrop effect plays over the whole screen instead of being hidden
+		// behind the incoming panel.
+		const runPanelEnter = () => {
+			panel.style.visibility = 'visible';
+			const focusables = getFocusable();
+			( focusables[ 0 ] || panel ).focus();
+
+			const from = animFrom( enterAnim, position );
+			if ( COVER_REVEALS.includes( enterAnim ) && ! reduce() ) {
+				// Cover reveal: panel sits fully in place, cover shapes clear off it.
+				panel.style.transform = 'none';
+				panel.style.opacity   = '1';
+				panel.style.filter    = 'none';
+				runCoverReveal( enterAnim, true, null );
+			} else if ( enterAnim === 'stagger' && ! reduce() ) {
+				// Panel shows in place; its children cascade in.
+				panel.style.transform = 'none';
+				panel.style.opacity   = '1';
+				panel.style.filter    = 'none';
+				animateStagger( true, null );
+			} else if ( hasGsap && enterAnim === 'circle' && ! reduce() ) {
+				// Shape reveal: grow a clip-path circle from the corner (0% → 150%, full).
+				panel.style.transform = 'none';
+				const o = CIRCLE_ORIGIN[ position ] || CIRCLE_ORIGIN.left;
+				panel.__aaeTween = gsap().fromTo( panel,
+					{ clipPath: circleClip( '0%', o ), webkitClipPath: circleClip( '0%', o ) },
+					{
+						clipPath:       circleClip( '150%', o ),
+						webkitClipPath: circleClip( '150%', o ),
+						duration,
+						ease,
+						onComplete: () => { panel.__aaeTween = null; clearClip( panel ); },
+					}
+				);
+			} else if ( hasGsap && from && ! reduce() ) {
+				// Enter tween: from the preset's closed vars → the resting state.
+				panel.__aaeTween = gsap().fromTo( panel, from, {
+					...REST,
 					duration,
 					ease,
-					onComplete: () => { panel.__aaeTween = null; clearClip( panel ); },
-				}
-			);
-		} else if ( hasGsap && from && ! reduce() ) {
-			// Enter tween: from the preset's closed vars → the resting state.
-			panel.__aaeTween = gsap().fromTo( panel, from, {
-				...REST,
-				duration,
-				ease,
-				clearProps:  'transform',
-				onComplete:  () => { panel.__aaeTween = null; },
-			} );
+					clearProps:  'transform',
+					onComplete:  () => { panel.__aaeTween = null; },
+				} );
+			} else {
+				// No-GSAP CSS slide (transform:none triggers SLIDE), or instant when
+				// GSAP is present but the animation is "none"/reduced-motion.
+				panel.style.transform = 'none';
+				panel.style.opacity   = '1';
+				panel.style.filter    = 'none';
+			}
+		};
+
+		const lead = overlayRevealMs();
+		if ( lead > 0 ) {
+			// Keep the panel hidden (and parked off-screen for the CSS-slide path) so
+			// it doesn't flash or cover the backdrop reveal during the lead.
+			panel.style.visibility = 'hidden';
+			if ( ! hasGsap ) {
+				panel.style.transition = 'none';
+				panel.style.transform  = closedTransform;
+				requestAnimationFrame( () => { panel.style.transition = SLIDE; } );
+			}
+			panelEnterTimer = window.setTimeout( runPanelEnter, lead );
 		} else {
-			// No-GSAP CSS slide (transform:none triggers SLIDE), or instant when
-			// GSAP is present but the animation is "none"/reduced-motion.
-			panel.style.transform = 'none';
-			panel.style.opacity   = '1';
-			panel.style.filter    = 'none';
+			runPanelEnter();
 		}
 	};
 
@@ -298,18 +909,42 @@ const initOffcanvas = ( root ) => {
 	};
 
 	const close = () => {
+		// Only act on an actually-open drawer, so the scroll-lock count and the
+		// focus-return stay balanced with open().
+		if ( ! root.classList.contains( 'is-open' ) ) {
+			return;
+		}
+		window.clearTimeout( panelEnterTimer );
 		killTween();
+		clearPanelBars(); // drop any cover layer left by a killed reveal
+		resetStagger();   // and clear any half-applied stagger inline styles
 		hideOverlay();
 		root.classList.remove( 'is-open' );
 		trigger.setAttribute( 'aria-expanded', 'false' );
-		document.body.style.overflow = '';
+		unlockScroll();
 		panel.style.pointerEvents = 'none';
+		panel.removeEventListener( 'keydown', trapFocus );
+
+		// Return focus to wherever it was (normally the trigger) so keyboard
+		// users aren't dumped at the top of the page.
+		const returnTo = ( previouslyFocused && typeof previouslyFocused.focus === 'function' )
+			? previouslyFocused
+			: trigger;
+		returnTo.focus();
+		previouslyFocused = null;
 
 		// `reverse` (default) exits with the enter animation's own closed vars.
 		const exitName = exitAnim === 'reverse' ? enterAnim : exitAnim;
 		const to       = animFrom( exitName, position );
 
-		if ( hasGsap && exitName === 'circle' && ! reduce() ) {
+		if ( COVER_REVEALS.includes( exitName ) && ! reduce() ) {
+			// Cover reveal out: sweep the cover back over the panel, then hide it.
+			panel.style.transform = 'none';
+			runCoverReveal( exitName, false, finishClose );
+		} else if ( exitName === 'stagger' && ! reduce() ) {
+			// Children cascade out, then hide the panel.
+			animateStagger( false, finishClose );
+		} else if ( hasGsap && exitName === 'circle' && ! reduce() ) {
 			// Shape reveal out: shrink the clip-path circle back to the corner.
 			const o = CIRCLE_ORIGIN[ position ] || CIRCLE_ORIGIN.left;
 			panel.__aaeTween = gsap().fromTo( panel,
