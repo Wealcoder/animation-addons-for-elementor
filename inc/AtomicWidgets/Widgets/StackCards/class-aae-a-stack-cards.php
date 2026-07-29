@@ -107,7 +107,21 @@ class AAE_A_Stack_Cards extends Atomic_Element_Base {
 	}
 
 	protected function define_atomic_controls(): array {
+		// Preset-picker element control. Presets keyed to `e-aae-a-stack-cards`
+		// (see Widgets/StackCards/presets/) show here and replace the selected
+		// deck on pick. Each widget carries its own copy of this stub class.
+		require_once __DIR__ . '/class-aae-a-preset-picker-control.php';
+
 		return [
+			Section::make()
+				->set_label( __( 'Presets', 'animation-addons-for-elementor' ) )
+				->set_id( 'aae_presets' )
+				->set_items( [
+					AAE_A_Preset_Picker_Control::make()
+						->set_label( __( 'Apply Preset', 'animation-addons-for-elementor' ) )
+						->set_meta( [ 'layout' => 'custom' ] ),
+				] ),
+
 			Section::make()
 				->set_id( 'stack_cards' )
 				->set_label( __( 'Stack Cards', 'animation-addons-for-elementor' ) )
