@@ -129,9 +129,6 @@ function selectEditorElementById( id ) {
 	if ( ! id ) return;
 	try {
 		const editorWindow = window.parent && window.parent !== window ? window.parent : window;
-		if ( editorWindow.document?.querySelector?.( '.MuiPopover-root, .MuiModal-root, [role="presentation"][id*="popover"]' ) ) {
-			return;
-		}
 		const container = editorWindow.elementor?.getContainer?.( id );
 		if ( ! container ) return;
 		editorWindow.$e?.run?.( 'document/elements/select', {
@@ -141,49 +138,6 @@ function selectEditorElementById( id ) {
 	} catch ( error ) {
 		/* Best effort only: editor internals may not be ready during render. */
 	}
-}
-
-function getEditorDropdownChain( item ) {
-	const chain = new Set();
-	let current = item;
-	while ( current ) {
-		chain.add( current );
-		current = current.parentElement?.closest( '.aae-a-nav-item[data-has-dropdown="true"]' );
-	}
-	return chain;
-}
-
-function hideEditorDropdown( item ) {
-	item.classList.remove( 'aae-editor-dropdown-open' );
-	const sub = getSub( item );
-	if ( ! sub ) return;
-	sub.style.removeProperty( 'visibility' );
-	sub.style.removeProperty( 'opacity' );
-	sub.style.removeProperty( 'pointer-events' );
-}
-
-function closeInactiveEditorDropdowns( nav, activeItem = null ) {
-	const activeChain = activeItem ? getEditorDropdownChain( activeItem ) : new Set();
-	nav.querySelectorAll( '.aae-a-nav-item[data-has-dropdown="true"].aae-editor-dropdown-open' ).forEach( item => {
-		if ( ! activeChain.has( item ) ) {
-			hideEditorDropdown( item );
-		}
-	} );
-}
-
-function getDirectDropdownOwner( dropdown ) {
-	if ( ! dropdown?.classList ) return null;
-	const owner = dropdown.parentElement?.closest( '.aae-a-nav-item[data-has-dropdown="true"]' );
-	if ( ! owner || getSub( owner ) !== dropdown ) return null;
-	if (
-		dropdown.classList.contains( 'aae-a-nav-dropdown' ) ||
-		dropdown.classList.contains( 'e-flexbox-base' ) ||
-		dropdown.classList.contains( 'e-con' ) ||
-		dropdown.hasAttribute( 'data-aae-dropdown-for' )
-	) {
-		return owner;
-	}
-	return null;
 }
 
 function initEditorDropdownUX( nav ) {
@@ -289,7 +243,6 @@ function initEditorDropdownUX( nav ) {
 	nav.addEventListener( 'click', e => {
 		const item = e.target.closest( '.aae-a-nav-item[data-has-dropdown="true"]' );
 		if ( ! item || ! nav.contains( item ) ) return;
-		closeInactiveEditorDropdowns( nav, item );
 		openEditorDropdownChain( item );
 		/* Reveal is selection-driven now (sync keeps only the selected chain open),
 		 * so a top-level label click must also SELECT its item — otherwise sync
@@ -305,8 +258,6 @@ function initEditorDropdownUX( nav ) {
 	/* Initial observe happens at the end of the first sync() below; sync also
 	 * re-observes after each reconcile (it disconnects while mutating). */
 	sig.addEventListener( 'abort', () => observer.disconnect(), { once: true } );
-	const interval = window.setInterval( schedule, 1500 );
-	sig.addEventListener( 'abort', () => window.clearInterval( interval ), { once: true } );
 	sync();
 }
 
@@ -695,7 +646,10 @@ function initEditorMobilePreview( companion ) {
 		}
 		const proxy = e.target.closest( '[data-editor-source-id]' );
 		if ( ! proxy ) return;
-		selectEditorElementById( proxy.dataset.editorSourceId );
+		const original = document.querySelector( `[data-id="${ proxy.dataset.editorSourceId }"]` );
+		if ( ! original ) return;
+		original.dispatchEvent( new MouseEvent( 'mousedown', { bubbles: true, cancelable: true, view: window } ) );
+		original.dispatchEvent( new MouseEvent( 'click', { bubbles: true, cancelable: true, view: window } ) );
 	}, { capture: true, signal: sig } );
 	companion.addEventListener( 'click', e => {
 		if ( e.target.closest( '.aae-mobile-nav-back' ) ) {
@@ -1247,18 +1201,12 @@ register( {
 		};
 
 		const closeDrawer = ( restoreFocus = true ) => {
-			const focusTarget = restoreFocus && lastFocus?.isConnected ? lastFocus : toggle;
-			if ( drawer.contains( document.activeElement ) ) {
-				focusTarget?.focus?.();
-			}
 			companion.classList.remove( 'is-open' );
 			toggle.setAttribute( 'aria-expanded', 'false' );
+			drawer.setAttribute( 'aria-hidden', 'true' );
 			resetDrill();
 			if ( companion.dataset.lockScroll === 'true' ) document.body.classList.remove( 'aae-mobile-nav-scroll-lock' );
-			drawer.setAttribute( 'aria-hidden', 'true' );
-			if ( restoreFocus && ! drawer.contains( document.activeElement ) ) {
-				focusTarget?.focus?.();
-			}
+			if ( restoreFocus ) lastFocus?.focus?.();
 		};
 
 		const openDrawer = () => {
