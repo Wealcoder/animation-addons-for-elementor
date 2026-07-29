@@ -58,15 +58,15 @@
 	}
 }
 
-// Resets Content's own tooltip positioning while nested inside the lightbox (flexbox centers it, so absolute/inset/margin would only fight that), and applies the pop-in scale animation — JS-toggled, so it can't move to Content's base style.
-.aae-hotspot-lightbox .aae-hotspot-content {
+// Resets Content's own tooltip positioning while nested inside the lightbox (flexbox centers it, so absolute/inset/margin would only fight that), and applies the pop-in scale animation — JS-toggled, so it can't move to Content's base style. `.elementor` prefix is required, not decorative — without it this ties Content's own base style on specificity (two classes each), and losing that tie leaves `position: absolute` + the stale tooltip `inset-block-start` in effect, pushing Content off-screen below the frame.
+.elementor .aae-hotspot-lightbox .aae-hotspot-content {
 	position: static;
 	transform: scale(0.92);
 	margin: 0;
 	transition: transform 0.25s ease;
 }
 
-.aae-hotspot-lightbox.active .aae-hotspot-content {
+.elementor .aae-hotspot-lightbox.active .aae-hotspot-content {
 	transform: scale(1);
 }
 

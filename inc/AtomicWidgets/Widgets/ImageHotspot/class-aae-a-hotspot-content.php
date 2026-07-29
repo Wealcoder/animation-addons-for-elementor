@@ -90,9 +90,11 @@ use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
-require_once __DIR__ . '/Parts/class-aae-a-hotspot-close.php';
-
-use WCF_ADDONS\AtomicWidgets\Widgets\ImageHotspot\AAE_A_Hotspot_Close;
+// AAE_A_Hotspot_Close is NOT required/used here anymore — Close is no longer
+// seeded as a default child (see define_default_children() below). Its own
+// file (Parts/class-aae-a-hotspot-close.php) is untouched and still
+// registered independently in class-atomic.php, so it stays available if a
+// builder wants to drag one in manually.
 
 // NOT require_once'd — class-aae-a-hotspot-point.php already requires THIS
 // file, so requiring it back would be circular. `::class` below only needs
@@ -281,12 +283,13 @@ class AAE_A_Hotspot_Content extends Atomic_Element_Base {
 		];
 	}
 
+	// Close (AAE_A_Hotspot_Close) is deliberately NOT seeded here for now — per
+	// user request, no cross/close icon by default. The class/file is left
+	// alone (not deleted); a builder can still drag one in manually since
+	// Content's children are unrestricted, and re-adding the generate() call
+	// below restores the old default.
 	protected function define_default_children() {
 		return [
-			AAE_A_Hotspot_Close::generate()
-				->editor_settings( [ 'title' => 'Close' ] )
-				->build(),
-
 			Atomic_Paragraph::generate()
 				->editor_settings( [ 'title' => 'Tooltip Content' ] )
 				->settings( [
