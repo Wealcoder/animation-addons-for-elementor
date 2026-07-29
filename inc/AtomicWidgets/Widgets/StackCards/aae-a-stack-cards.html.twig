@@ -1,0 +1,97 @@
+{#
+  AAE Stack Cards — deck root, faithful to the reference "Scroll Stack" (example 1):
+  a tall SCENE (root) → a sticky, full-viewport, overflow-hidden VIEWPORT that
+  keeps the deck centred → the DECK the cards absolutely stack inside. The cards
+  are real AAE_A_Stack_Card children (children_placeholder). All motion config
+  rides on data-attrs the JS reads.
+
+  The <style> block carries only layout mechanics a base style can't express
+  (sticky/scene/deck sizing) + a cosmetic card border/shadow default at zero
+  specificity + editor-only rules that flatten the whole thing into a plain,
+  selectable vertical list on the canvas (the scroll-stack is a frontend-only
+  JS effect).
+#}
+{% set classes = ['aae-a-stack-cards', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') | trim %}
+{% set dw = settings.deck_width | default(620) %}
+{% set dh = settings.deck_height | default(400) %}
+
+<div class="{{ classes }} {{ editor_classes | default('') }}"
+    data-id="{{ id }}"
+    data-element_type="{{ type }}"
+    data-e-type="{{ type }}"
+    data-interaction-id="{{ interaction_id | default('') }}"
+    data-animation="{{ settings.animation | default('scroll-stack') }}"
+    data-start-offset="{{ settings.start_offset | default(50) }}"
+    data-deck-width="{{ dw }}"
+    data-deck-height="{{ dh }}"
+    data-scroll-length="{{ settings.scroll_length | default(100) }}"
+    data-scrub="{{ settings.scrub | default(0.6) }}"
+    {% if settings._cssid is defined and settings._cssid is not empty %}
+        id="{{ settings._cssid | e('html_attr') }}"
+    {% endif %}
+    {% if settings.attributes is defined and settings.attributes is not empty %}
+        {{ settings.attributes | raw }}
+    {% endif %}
+    {{ editor_attributes | default('') | raw }}>
+
+    <style>
+        /* Scene (root): tall scroll track — its real height is set by the JS from
+           the card count so the sticky viewport has travel. */
+        [data-id="{{ id }}"] { position: relative; display: block; width: 100%; }
+
+        /* Full-viewport stage that keeps the deck centred while the scene scrolls
+           past — the JS ScrollTrigger-PINS this (CSS `position: sticky` is
+           unreliable inside Elementor's transformed container ancestors).
+           overflow:hidden clips the cards to the screen (reference). */
+        [data-id="{{ id }}"] .aae-a-stack-cards-viewport {
+            position: relative; height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden;
+        }
+        /* The box the cards absolutely stack inside. */
+        [data-id="{{ id }}"] .aae-a-stack-cards-deck {
+            position: relative;
+            width: min({{ dw }}px, 90vw);
+            height: {{ dh }}px;
+            margin: 0 auto;
+        }
+
+        /* Cosmetic card border/shadow default — zero specificity so a user's
+           Style-tab choice always wins. */
+        :where([data-id="{{ id }}"] [data-e-type="e-aae-a-stack-card"]) {
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Editor-only. In edit-mode Elementor mounts the real cards as DIRECT
+           children of the root (NOT inside the Twig viewport/deck), so those
+           wrappers render EMPTY — hide them, flatten the root to content height,
+           and let the cards flow as a plain, selectable list. (The JS reconciler
+           re-asserts this inline too, in case an editor body-class doesn't match.)
+           Also cancels the core :has(.elementor-empty-view){min-height:120px}. */
+        .elementor-editor-active [data-id="{{ id }}"],
+        .elementor-edit-mode [data-id="{{ id }}"] { height: auto !important; min-height: 0 !important; }
+        .elementor-editor-active [data-id="{{ id }}"] .aae-a-stack-cards-viewport,
+        .elementor-edit-mode [data-id="{{ id }}"] .aae-a-stack-cards-viewport { display: none !important; }
+        .elementor-editor-active [data-id="{{ id }}"] > [data-e-type="e-aae-a-stack-card"],
+        .elementor-edit-mode [data-id="{{ id }}"] > [data-e-type="e-aae-a-stack-card"] {
+            position: relative !important; inset: auto !important;
+            transform: none !important; opacity: 1 !important; margin-bottom: 16px;
+        }
+        .e-atomic-element:has(> [data-id="{{ id }}"]) { min-height: 0; }
+
+        /* "Edit Cards" switch OFF → the JS adds .aae-stack-collapsed to the root;
+           show only the FIRST card, hide the rest (each card after another card).
+           The general-sibling selector is robust to any non-card node in between. */
+        .elementor-editor-active [data-id="{{ id }}"].aae-stack-collapsed [data-e-type="e-aae-a-stack-card"] ~ [data-e-type="e-aae-a-stack-card"],
+        .elementor-edit-mode [data-id="{{ id }}"].aae-stack-collapsed [data-e-type="e-aae-a-stack-card"] ~ [data-e-type="e-aae-a-stack-card"] {
+            display: none !important;
+        }
+    </style>
+
+    <div class="aae-a-stack-cards-viewport">
+        <div class="aae-a-stack-cards-deck">
+            {{ children_placeholder | raw }}
+        </div>
+    </div>
+</div>
