@@ -1990,14 +1990,14 @@ class WCF_Theme_Builder
 		if (isset($_GET['post_type']) && $_GET['post_type'] == self::CPTTYPE) {
 
 			// CSS
-			wp_enqueue_style('select2', WCF_ADDONS_URL . '/assets/css/select2.min.css');
-			wp_enqueue_style('wcf-theme-builder', WCF_ADDONS_URL . '/assets/css/theme-builder.min.css');
+			wp_enqueue_style('select2', WCF_ADDONS_URL . 'assets/css/select2.min.css');
+			wp_enqueue_style('wcf-theme-builder', WCF_ADDONS_URL . 'assets/css/theme-builder.min.css');
 
 			// JS
-			wp_enqueue_script('select2', WCF_ADDONS_URL . '/assets/js/select2.min.js', array('jquery'), WCF_ADDONS_VERSION, true);
+			wp_enqueue_script('select2', WCF_ADDONS_URL . 'assets/js/select2.min.js', array('jquery'), WCF_ADDONS_VERSION, true);
 			wp_enqueue_script(
 				'wcf-theme-builder',
-				WCF_ADDONS_URL . '/assets/js/theme-builder.js',
+				WCF_ADDONS_URL . 'assets/js/theme-builder.js',
 				array(
 					'jquery',
 					'wp-util',
