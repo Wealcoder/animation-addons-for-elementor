@@ -13,20 +13,30 @@ if ( ! defined( 'ABSPATH' ) ) {
  * the section can't be placed in define_atomic_controls() the way AAE widgets
  * do it (see AdvancedHeading).
  *
- * The section is injected unconditionally for every non-AAE element type —
- * presets can now come from the remote preset server (see Atomic\Presets\Rest
- * + Cache + Remote_Client) as well as bundled local JSON, so a static
- * per-request local-folder glob can no longer decide whether a type "has"
- * presets. The shared React control (element-controls/PresetPickerControl.jsx)
- * fetches per-type on demand from this plugin's own REST proxy and renders
- * nothing when the resolved (remote + local merged) list is empty.
+ * The section is only injected for native types explicitly listed in
+ * ALLOWED_NATIVE_TYPES below. It used to be injected unconditionally for
+ * every non-AAE element type (relying on the remote preset server to decide,
+ * per element type, whether any presets existed) — that surfaced the
+ * "Presets" section on widgets that were never meant to have it (e.g.
+ * e-paragraph, e-image), because the remote catalog had entries for types no
+ * one had actually opted into here. An explicit whitelist is the fix: add a
+ * native type here only when you deliberately want it to offer presets.
  *
- * AAE's own widgets (e-aae-a-*) are skipped here — they place the section
- * themselves in define_atomic_controls().
+ * AAE's own widgets (e-aae-a-*) are always skipped here — they place their
+ * own Presets section themselves in define_atomic_controls() (see
+ * class-aae-a-btn.php, class-aae-a-btn-pro.php, class-aae-a-social-share.php,
+ * etc.), so this whitelist never needs to (and must not) list an e-aae-a-*
+ * type — doing so would add a second, duplicate "aae_presets" section
+ * alongside the one the widget already builds itself.
  */
 final class Controls {
 
 	const TD = 'animation-addons-for-elementor';
+
+	// Native (non-AAE) element types allowed to show the Presets section.
+	// Empty for now — add e.g. 'e-button', 'e-heading' here only when you
+	// want that native widget to offer Apply Preset again.
+	const ALLOWED_NATIVE_TYPES = [];
 
 	public function register(): void {
 		add_filter( 'elementor/atomic-widgets/controls', [ $this, 'inject_controls' ], 10, 2 );
@@ -48,11 +58,10 @@ final class Controls {
 			return $controls;
 		}
 
-		// The section is now always injected (no local-only glob gate): the
-		// React control fetches per-type from the remote-preset proxy route
-		// on demand and renders nothing when the resolved list is empty, so
-		// a type with remote-only presets (no local .json bundled at all)
-		// still gets its "Presets" section instead of silently having none.
+		if ( ! in_array( $type, self::ALLOWED_NATIVE_TYPES, true ) ) {
+			return $controls;
+		}
+
 		array_unshift( $controls, $this->build_presets_section() );
 
 		return $controls;
