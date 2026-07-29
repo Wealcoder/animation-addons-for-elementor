@@ -287,6 +287,7 @@ final class Atomic
 			'aae-a-offcanvas-panel',
 			'aae-a-offcanvas-trigger',
 			'aae-a-offcanvas-close',
+			'aae-a-offcanvas-overlay',
 			'aae-a-timeline-item',
 			'aae-a-timeline-number',
 			'aae-a-timeline-year',
@@ -2000,6 +2001,13 @@ final class Atomic
 				'keywords'        => [ 'offcanvas', 'close', 'icon' ],
 				'hide_from_panel' => true,
 			],
+			'aae-a-offcanvas-overlay' => [
+				'label'           => 'Offcanvas Overlay',
+				'class_name'      => 'WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Overlay',
+				'icon'            => 'eicon-square',
+				'keywords'        => [ 'offcanvas', 'overlay', 'backdrop', 'scrim' ],
+				'hide_from_panel' => true,
+			],
 
 			'aae-a-form' => [
 				'label'        => 'Form',
@@ -3709,6 +3717,11 @@ final class Atomic
 			'aae-a-offcanvas-close' => [
 				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Close',
 				'file'       => 'Widgets/Offcanvas/class-aae-a-offcanvas-close.php',
+				'has_script' => false,
+			],
+			'aae-a-offcanvas-overlay' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Overlay',
+				'file'       => 'Widgets/Offcanvas/class-aae-a-offcanvas-overlay.php',
 				'has_script' => false,
 			],
 
