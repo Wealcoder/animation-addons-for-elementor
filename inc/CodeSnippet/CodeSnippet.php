@@ -273,7 +273,7 @@ class CodeSnippet {
 				),
 			);
 			wp_localize_script( 'codemirror-editor', 'WCFCustomCodeVars', $localize_data );
-			wp_enqueue_script( 'select2', WCF_ADDONS_URL . '/assets/js/select2.min.js', array( 'jquery' ), WCF_ADDONS_VERSION, true );
+			wp_enqueue_script( 'select2', WCF_ADDONS_URL . 'assets/js/select2.min.js', array( 'jquery' ), WCF_ADDONS_VERSION, true );
 		}
 	}
 

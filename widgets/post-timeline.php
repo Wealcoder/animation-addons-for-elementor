@@ -755,15 +755,15 @@ class Post_Timeline extends Widget_Base
 				'options' => [
 					'layout-normal'  => [
 						'title' => esc_html__('Normal', 'animation-addons-for-elementor'),
-						'url'   => WCF_ADDONS_URL . '/assets/image/post-layout-2.jpg',
+						'url'   => WCF_ADDONS_URL . 'assets/image/post-layout-2.jpg',
 					],
 					'layout-aside'   => [
 						'title' => esc_html__('Aside', 'animation-addons-for-elementor'),
-						'url'   => WCF_ADDONS_URL . '/assets/image/post-layout-1.jpg',
+						'url'   => WCF_ADDONS_URL . 'assets/image/post-layout-1.jpg',
 					],
 					'layout-overlay' => [
 						'title' => esc_html__('Overlay', 'animation-addons-for-elementor'),
-						'url'   => WCF_ADDONS_URL . '/assets/image/post-layout-3.jpg',
+						'url'   => WCF_ADDONS_URL . 'assets/image/post-layout-3.jpg',
 					],
 				],
 				'default' => 'layout-normal',

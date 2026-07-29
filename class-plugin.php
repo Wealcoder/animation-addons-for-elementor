@@ -235,7 +235,7 @@ class Plugin
 	{
 		wp_enqueue_script(
 			'aae-nested-sl',
-			WCF_ADDONS_URL . '/assets/build/modules/nested-slider/editor/index.js',
+			WCF_ADDONS_URL . 'assets/build/modules/nested-slider/editor/index.js',
 			array(
 				'nested-elements',
 				'elementor-editor',
