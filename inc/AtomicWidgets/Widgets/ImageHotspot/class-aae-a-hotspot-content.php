@@ -3,9 +3,9 @@
  * AAE Hotspot Content — atomic element (container).
  *
  * The tooltip/lightbox BOX for a Hotspot Point — a real, styleable container
- * (background, color, padding, width, border-radius all live in
- * define_base_styles() below, editable via the Style tab) instead of a plain
- * hardcoded <div> in image-hotspot.scss.
+ * (background, color, padding, width, border-radius, position, z-index all
+ * live in define_base_styles() below, editable via the Style tab) instead of
+ * a plain hardcoded <div> in image-hotspot.scss.
  *
  * Unrestricted children (mirrors AAE_A_Flip_Box) — this is exactly where a
  * builder drops the tooltip/lightbox body, including another
@@ -13,11 +13,18 @@
  *
  * Deliberately has NO prop of its own describing whether it's acting as an
  * inline tooltip or a teleported lightbox — that's the PARENT Hotspot Point's
- * `tooltip_type` prop, which a child element's own twig can't read. All mode-
- * dependent behaviour (position/visibility/portal mechanics) is therefore
- * expressed in image-hotspot.scss/js keyed off the ANCESTOR Point's own
- * `data-aae-hotspot-mode` attribute, e.g.
- * `.aae-hotspot-point[data-aae-hotspot-mode="lightbox"] .aae-hotspot-content`.
+ * `tooltip_type` prop, which a child element's own twig can't read. The base
+ * style below defaults to the TOOLTIP geometry (position: absolute); lightbox
+ * mode overrides position/z-index/etc. via a higher-specificity selector in
+ * image-hotspot.scss keyed off the ANCESTOR Point's own
+ * `data-aae-hotspot-mode="lightbox"` attribute — the override selector
+ * (`.aae-hotspot-point[data-aae-hotspot-mode="lightbox"] .aae-hotspot-content`)
+ * is 0,3,0 vs. the base style's own 0,2,0, so it reliably wins regardless of
+ * stylesheet order. Actual VISIBILITY (opacity/visibility/pointer-events,
+ * toggled by the `.active` class on open/close) can't move here at all —
+ * no Style_Variant/Style_States mechanism expresses "look when a runtime-
+ * toggled custom class is present", same reasoning as ToggleSwitcher's
+ * `.show`/`.active` staying in toggle-switcher.scss.
  *
  * @package AnimationAddonsForElementor
  * @since   4.0.0
@@ -46,6 +53,7 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Color_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Background_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Dimensions_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Number_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
@@ -111,11 +119,9 @@ class AAE_A_Hotspot_Content extends Atomic_Element_Base {
 
 	/**
 	 * The shared, resting DECORATIVE look — used whether this box ends up an
-	 * inline tooltip or a teleported lightbox. Position/visibility/portal
-	 * mechanics (which legitimately DO differ per mode) stay in
-	 * image-hotspot.scss, same dividing line ToggleSwitcher draws between
-	 * "own resting look" (base style) and "look when a runtime state/mode
-	 * class applies" (plain CSS).
+	 * inline tooltip or a teleported lightbox. See the class docblock for the
+	 * exact position/z-index override mechanics and why opacity/visibility
+	 * can't move here at all.
 	 */
 	protected function define_base_styles(): array {
 		$pad = Size_Prop_Type::generate( [ 'size' => 16, 'unit' => 'px' ] );
@@ -124,6 +130,8 @@ class AAE_A_Hotspot_Content extends Atomic_Element_Base {
 			self::BASE_STYLE_KEY => Style_Definition::make()
 				->add_variant(
 					Style_Variant::make()
+						->add_prop( 'position', String_Prop_Type::generate( 'absolute' ) )
+						->add_prop( 'z-index', Number_Prop_Type::generate( 20 ) )
 						->add_prop(
 							'background',
 							Background_Prop_Type::generate( [ 'color' => Color_Prop_Type::generate( '#e8e8e8' ) ] )

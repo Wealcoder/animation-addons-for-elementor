@@ -1,26 +1,22 @@
 // AAE Image Hotspot — structural/behavioral CSS only.
 //
 // The Marker's and Content's own LOOK (background, color, border-radius,
-// padding, width, height, font-size) live on their own real elements' PHP
-// define_base_styles() (AAE_A_Hotspot_Marker / AAE_A_Hotspot_Content) and are
-// editable from Elementor's Style tab — see those classes' docblocks. What's
-// left here is narrowly: (a) keyframe animations and their pseudo-elements
-// (no PropType expresses those), and (b) "look when a runtime-toggled
-// class/mode is present" rules (tooltip/lightbox placement, portal
-// mechanics, tour highlight) — the exact same dividing line ToggleSwitcher's
-// `.show`/`.e--selected`/`.active` rules draw in toggle-switcher.scss.
+// padding, width, height, font-size, and even their resting `position`/
+// `z-index`) live on their own real elements' PHP define_base_styles()
+// (AAE_A_Hotspot_Marker / AAE_A_Hotspot_Content) and are editable from
+// Elementor's Style tab — see those classes' docblocks. What's left here is
+// narrowly: (a) keyframe animations and their pseudo-elements (no PropType
+// expresses those), and (b) "look when a runtime-toggled class/mode is
+// present" rules (tooltip/lightbox visibility + lightbox's OWN geometry
+// override, portal mechanics, tour highlight) — the exact same dividing line
+// ToggleSwitcher's `.show`/`.e--selected`/`.active` rules draw in
+// toggle-switcher.scss. Every animation below uses bare `currentColor`
+// (not a custom property) so the Marker's own Style-tab `color` drives it —
+// no PropType exposes arbitrary CSS custom properties, but `currentColor` is
+// a normal CSS keyword and needs no such prop at all.
 //
-// --anim-speed is set container-wide via inline style (aae-a-image-hotspot.
-// html.twig); --pulse-color defaults to `currentColor` so the Marker's own
-// (Style-tab) `color` drives every animation.
-
-.aae-hotspot-marker {
-	// Anchor for the ::before/::after pseudo-elements every animation below
-	// uses — structural, not a "look" (background/radius/etc. are the
-	// Marker's own base style).
-	position: relative;
-	--pulse-color: currentColor;
-}
+// --anim-speed is set container-wide via inline style
+// (aae-a-image-hotspot.html.twig).
 
 .aae-hotspot-marker-icon,
 .aae-hotspot-marker-text {
@@ -40,14 +36,13 @@
 	line-height: 1;
 }
 
-// ── Inline tooltip placement/visibility (Content's own look is base-style) ─
+// ── Inline tooltip visibility (Content's own look, INCLUDING its resting
+// position/z-index, is base-style — see AAE_A_Hotspot_Content) ───────────
 .aae-hotspot-point[data-aae-hotspot-mode="tooltip"] .aae-hotspot-content {
-	position: absolute;
 	opacity: 0;
 	visibility: hidden;
 	pointer-events: none;
 	transition: opacity 0.25s ease, visibility 0s 0.25s;
-	z-index: 20;
 
 	// Inherits Content's OWN background (Style tab) rather than a hardcoded
 	// hex, so the arrow always matches whatever color the builder picked.
@@ -77,7 +72,10 @@
 }
 
 // 4-direction placement, ported from the legacy V3 widget's
-// .aae--tlp-position-* blocks — pure geometry, no PropType covers it.
+// .aae--tlp-position-* blocks — pure geometry, no PropType covers it (and
+// the position/align settings driving it live on the GRANDPARENT Image
+// Hotspot, two levels above Content, which a child element's twig can't
+// reach at all).
 .aae-image-hotspot[data-aae-hsp-tooltip-pos="top"] .aae-hotspot-point[data-aae-hotspot-mode="tooltip"] .aae-hotspot-content {
 	bottom: calc(100% + 15px);
 	left: 50%;
@@ -154,10 +152,13 @@
 	text-align: right;
 }
 
-// ── Lightbox mechanics (Content's own look is base-style; this is only
-// the fixed/centered/portal geometry, which legitimately differs from the
-// tooltip mode above and can't be a base-style prop since a child element
-// can't read its parent Point's `tooltip_type`) ───────────────────────────
+// ── Lightbox mechanics — OVERRIDES Content's tooltip-shaped base style
+// (position: absolute, z-index: 20) with the fixed/centered/portal geometry.
+// This selector's specificity (0,3,0: one class + one attribute + one class)
+// beats the base-style rule Elementor generates (0,2,0: `.elementor
+// .e-aae-a-hotspot-content-base`), so it wins regardless of stylesheet
+// order — see AAE_A_Hotspot_Content's docblock. Can't move to a base style
+// itself since Content can't read its ancestor Point's `tooltip_type`.
 // Shared portal appended once to <body> by image-hotspot.js (mirrors
 // offcanvas.js's getPortal()) — an `.elementor`-classed host so teleported
 // content keeps matching its `.elementor .e-xxx` scoped atomic base styles.
@@ -241,6 +242,8 @@
 }
 
 // ── Marker animations ────────────────────────────────────────────────────
+// `position: relative` (the anchor every ::before/::after below needs) is
+// the Marker's own base style now, not plain CSS — see AAE_A_Hotspot_Marker.
 .anim-beat {
 	animation: AAEHspBeat var(--anim-speed, 1s) infinite;
 }
@@ -273,7 +276,7 @@
 	content: "";
 	inset: -4px;
 	border-radius: 100px;
-	border: 2px solid var(--pulse-color, currentColor);
+	border: 2px solid currentColor;
 	animation: AAEHspRing var(--anim-speed, 2s) infinite ease-in-out both;
 }
 
@@ -292,14 +295,14 @@
 }
 
 @keyframes AAEHspPulse {
-	0% { box-shadow: 0 0 0 0 var(--pulse-color, currentColor); }
-	70% { box-shadow: 0 0 0 30px var(--pulse-color, currentColor); opacity: 0; }
-	100% { box-shadow: 0 0 0 0 var(--pulse-color, currentColor); opacity: 0; }
+	0% { box-shadow: 0 0 0 0 currentColor; }
+	70% { box-shadow: 0 0 0 30px currentColor; opacity: 0; }
+	100% { box-shadow: 0 0 0 0 currentColor; opacity: 0; }
 }
 
 @keyframes AAEHspRipple {
-	0% { box-shadow: 0 0 0 0 var(--pulse-color, currentColor); opacity: 0.6; }
-	100% { box-shadow: 0 0 0 22px var(--pulse-color, currentColor); opacity: 0; }
+	0% { box-shadow: 0 0 0 0 currentColor; opacity: 0.6; }
+	100% { box-shadow: 0 0 0 22px currentColor; opacity: 0; }
 }
 
 @keyframes AAEHspRing {
@@ -308,8 +311,8 @@
 }
 
 @keyframes AAEHspGlow {
-	0%, 100% { box-shadow: 0 0 4px 0 var(--pulse-color, currentColor); }
-	50% { box-shadow: 0 0 16px 6px var(--pulse-color, currentColor); }
+	0%, 100% { box-shadow: 0 0 4px 0 currentColor; }
+	50% { box-shadow: 0 0 16px 6px currentColor; }
 }
 
 @keyframes AAEHspBounce {

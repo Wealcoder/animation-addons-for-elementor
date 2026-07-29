@@ -171,6 +171,10 @@ class AAE_A_Hotspot_Marker extends Atomic_Widget_Base {
 	 * (`.elementor * { box-sizing: border-box }`) means width/height already
 	 * include padding, so 32px really renders as 32px regardless of the
 	 * padding value below.
+	 *
+	 * `position: relative` also moved here (was plain CSS) — it's the anchor
+	 * every marker animation's ::before/::after pseudo-element in
+	 * image-hotspot.scss attaches to; nothing about it varies by layout.
 	 */
 	protected function define_base_styles(): array {
 		$pad = Size_Prop_Type::generate( [ 'size' => 8, 'unit' => 'px' ] );
@@ -180,6 +184,7 @@ class AAE_A_Hotspot_Marker extends Atomic_Widget_Base {
 			'base' => Style_Definition::make()
 				->add_variant(
 					Style_Variant::make()
+						->add_prop( 'position', String_Prop_Type::generate( 'relative' ) )
 						->add_prop( 'display', String_Prop_Type::generate( 'flex' ) )
 						->add_prop( 'align-items', String_Prop_Type::generate( 'center' ) )
 						->add_prop( 'justify-content', String_Prop_Type::generate( 'center' ) )
