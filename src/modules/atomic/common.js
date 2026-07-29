@@ -367,6 +367,17 @@ function rebind(el, playGroup = "") {
 		if (playGroup && !isKindInPlayGroup(kind.name, playGroup)) {
 			continue;
 		}
+		// Nothing to destroy unless THIS kind actually bound or played on this
+		// element (bind() sets boundFlag, play() sets playedKey — that's the
+		// invariant scan()/rebind() already rely on). Skipping unbound kinds
+		// keeps the removed-config guarantee — a stale binding always carries
+		// its flag — while making loaded-but-unused effect bundles nearly
+		// free: measured on a 281-element page, the destroy loop spent 88% of
+		// its time calling reset/unbind for kinds that never touched the
+		// element.
+		if (!el.classList.contains(kind.boundFlag) && !el[kind.playedKey]) {
+			continue;
+		}
 		if (typeof kind.reset === 'function') {
 			try { kind.reset(el); } catch (_) { /* never let reset throw */ }
 		}
