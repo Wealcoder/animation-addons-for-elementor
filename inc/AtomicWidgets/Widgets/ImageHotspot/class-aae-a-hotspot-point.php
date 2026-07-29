@@ -220,6 +220,38 @@ class AAE_A_Hotspot_Point extends Atomic_Element_Base {
 		return [ 'e-aae-a-hotspot-marker', 'e-aae-a-hotspot-content' ];
 	}
 
+	/**
+	 * Publishes this Point's OWN `tooltip_type` down the Render_Context stack
+	 * so Content — which can't read an ancestor's props in its own Twig —
+	 * can render `data-aae-hotspot-mode` on ITSELF, server-side, at first
+	 * paint. Same mechanism AAE_A_Post_Pagination already uses to hand
+	 * prev/next post data down to its Prev/Next children.
+	 *
+	 * This replaces relying on image-hotspot.js to copy the mode onto
+	 * Content after the fact: that copy only exists once the script has run,
+	 * so on a fresh page load lightbox Content briefly had NO hiding rule
+	 * matching at all (its own `data-aae-hotspot-mode` attribute didn't
+	 * exist yet) and flashed visible in its normal in-flow position for a
+	 * frame before JS caught up. Server-rendering it removes that window
+	 * entirely — Content carries the attribute from the very first byte of
+	 * HTML, same guarantee Point's own (already server-rendered) attribute
+	 * always had.
+	 *
+	 * @see \Elementor\Modules\AtomicWidgets\Elements\Base\Render_Context
+	 */
+	protected function define_render_context(): array {
+		$settings = $this->get_atomic_settings();
+
+		return [
+			[
+				'context_key' => self::class,
+				'context'     => [
+					'tooltip_type' => isset( $settings['tooltip_type'] ) ? $settings['tooltip_type'] : 'tooltip',
+				],
+			],
+		];
+	}
+
 	protected function get_templates(): array {
 		return [
 			'elementor/elements/aae-a-hotspot-point' => __DIR__ . '/aae-a-hotspot-point.html.twig',

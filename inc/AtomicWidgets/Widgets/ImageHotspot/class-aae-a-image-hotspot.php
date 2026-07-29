@@ -105,14 +105,6 @@ class AAE_A_Image_Hotspot extends Atomic_Element_Base {
 				->default( 'pulse' ),
 			'anim_speed' => Number_Prop_Type::make()->default( 3 ),
 
-			'tooltip_position' => String_Prop_Type::make()
-				->enum( [ 'top', 'bottom', 'left', 'right' ] )
-				->default( 'bottom' ),
-			'tooltip_gap'   => Number_Prop_Type::make()->default( 20 ),
-			'tooltip_align' => String_Prop_Type::make()
-				->enum( [ 'left', 'center', 'right' ] )
-				->default( 'center' ),
-
 			'tour_enabled'              => Boolean_Prop_Type::make()->default( false ),
 			'tour_delay'                => Number_Prop_Type::make()->default( 3000 )->set_dependencies( $show_if_tour ),
 			'tour_pause_on_interaction' => Boolean_Prop_Type::make()->default( true )->set_dependencies( $show_if_tour ),
@@ -142,29 +134,6 @@ class AAE_A_Image_Hotspot extends Atomic_Element_Base {
 							[ 'value' => 'hover', 'label' => __( 'Hover', 'animation-addons-for-elementor' ) ],
 							[ 'value' => 'click', 'label' => __( 'Click', 'animation-addons-for-elementor' ) ],
 							[ 'value' => 'none',  'label' => __( 'None', 'animation-addons-for-elementor' ) ],
-						] ),
-				] ),
-
-			Section::make()
-				->set_id( 'tooltip' )
-				->set_label( __( 'Tooltip', 'animation-addons-for-elementor' ) )
-				->set_items( [
-					Select_Control::bind_to( 'tooltip_position' )
-						->set_label( __( 'Position', 'animation-addons-for-elementor' ) )
-						->set_options( [
-							[ 'value' => 'top',    'label' => __( 'Top', 'animation-addons-for-elementor' ) ],
-							[ 'value' => 'bottom', 'label' => __( 'Bottom', 'animation-addons-for-elementor' ) ],
-							[ 'value' => 'left',   'label' => __( 'Left', 'animation-addons-for-elementor' ) ],
-							[ 'value' => 'right',  'label' => __( 'Right', 'animation-addons-for-elementor' ) ],
-						] ),
-					Number_Control::bind_to( 'tooltip_gap' )
-						->set_label( __( 'Gap (px)', 'animation-addons-for-elementor' ) ),
-					Select_Control::bind_to( 'tooltip_align' )
-						->set_label( __( 'Alignment', 'animation-addons-for-elementor' ) )
-						->set_options( [
-							[ 'value' => 'left',   'label' => __( 'Left', 'animation-addons-for-elementor' ) ],
-							[ 'value' => 'center', 'label' => __( 'Center', 'animation-addons-for-elementor' ) ],
-							[ 'value' => 'right',  'label' => __( 'Right', 'animation-addons-for-elementor' ) ],
 						] ),
 				] ),
 

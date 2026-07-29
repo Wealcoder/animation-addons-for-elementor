@@ -72,15 +72,28 @@ const applyMarkerAnim = ( root, containerAnim ) => {
 };
 
 // ── Content ARIA role (dialog for lightbox, tooltip otherwise) ───────────
-// Content can't read its own ancestor Point's `tooltip_type` in Twig (a
-// child element's twig has no access to a parent's props), so this is set
-// here from the Point's own `data-aae-hotspot-mode` instead.
+// role/aria-modal have no PropType/attribute equivalent Content could render
+// itself, so they're still set here from the Point's own
+// `data-aae-hotspot-mode` at init.
+//
+// `data-aae-hotspot-mode` on Content ITSELF (read by image-hotspot.scss's
+// lightbox rule, since initLightboxes() below teleports Content out of Point
+// and a selector requiring Point as an ancestor stops matching once that
+// happens) is now server-rendered instead — see
+// AAE_A_Hotspot_Point::define_render_context() /
+// AAE_A_Hotspot_Content::build_template_context() — specifically so it's
+// present from first paint with no flash-of-unhidden-content while this
+// script loads. Re-copying it here too is a harmless, defensive no-op on the
+// frontend (same value either way) and a real safety net in the editor,
+// where a live settings change may repaint Content without a fresh PHP
+// render picking up the new value.
 const applyContentRoles = ( root ) => {
 	root.querySelectorAll( '.aae-hotspot-point' ).forEach( ( point ) => {
 		const content = point.querySelector( '.aae-hotspot-content' );
 		if ( ! content ) {
 			return;
 		}
+		content.dataset.aaeHotspotMode = point.dataset.aaeHotspotMode || '';
 		if ( point.dataset.aaeHotspotMode === 'lightbox' ) {
 			content.setAttribute( 'role', 'dialog' );
 			content.setAttribute( 'aria-modal', 'true' );

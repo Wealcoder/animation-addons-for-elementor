@@ -15,15 +15,12 @@
 	data-interaction-id="{{ interaction_id | default('') }}"
 	data-aae-hsp-trigger="{{ settings.trigger_type | default('hover') }}"
 	data-aae-hsp-marker-anim="{{ settings.marker_anim | default('pulse') }}"
-	data-aae-hsp-tooltip-pos="{{ settings.tooltip_position | default('bottom') }}"
-	data-aae-hsp-tooltip-gap="{{ settings.tooltip_gap | default(20) }}"
-	data-aae-hsp-tooltip-align="{{ settings.tooltip_align | default('center') }}"
 	data-aae-hsp-tour-enabled="{{ settings.tour_enabled | default(false) }}"
 	data-aae-hsp-tour-delay="{{ settings.tour_delay | default(3000) }}"
 	data-aae-hsp-tour-pause="{{ settings.tour_pause_on_interaction | default(true) }}"
 	data-aae-hsp-tour-loop="{{ settings.tour_loop | default(true) }}"
 	data-aae-hsp-tour-open="{{ settings.tour_open_tooltip | default(true) }}"
-	style="--anim-speed: {{ settings.anim_speed | default(3) }}s; --tlp-gap: {{ settings.tooltip_gap | default(20) }}px;"
+	style="--anim-speed: {{ settings.anim_speed | default(3) }}s;"
 	{% if settings._cssid is defined and settings._cssid is not empty %}
 		id="{{ settings._cssid | e('html_attr') }}"
 	{% endif %}

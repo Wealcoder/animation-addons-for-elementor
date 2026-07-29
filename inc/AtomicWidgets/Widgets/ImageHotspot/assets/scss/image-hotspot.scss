@@ -16,19 +16,16 @@
 	line-height: 1;
 }
 
-// ── Inline tooltip visibility (Content's own look, INCLUDING its resting
-// position/z-index, is base-style — see AAE_A_Hotspot_Content) ───────────
+// ── Inline tooltip visibility (Content's own look, INCLUDING position,
+// offset, centering transform, and margin — is base-style now, see
+// AAE_A_Hotspot_Content::define_base_styles()) ───────────────────────────
 .aae-hotspot-point[data-aae-hotspot-mode="tooltip"] .aae-hotspot-content {
 	opacity: 0;
 	visibility: hidden;
 	pointer-events: none;
 	transition: opacity 0.25s ease, visibility 0s 0.25s;
 
-	// Inherits Content's OWN background (Style tab) rather than a hardcoded
-	// hex, so the arrow always matches whatever color the builder picked.
 	&::after {
-		position: absolute;
-		content: "";
 		background-color: inherit;
 	}
 
@@ -51,88 +48,7 @@
 	pointer-events: auto;
 }
 
-// 4-direction placement, ported from the legacy V3 widget's
-// .aae--tlp-position-* blocks — pure geometry, no PropType covers it (and
-// the position/align settings driving it live on the GRANDPARENT Image
-// Hotspot, two levels above Content, which a child element's twig can't
-// reach at all).
-.aae-image-hotspot[data-aae-hsp-tooltip-pos="top"] .aae-hotspot-point[data-aae-hotspot-mode="tooltip"] .aae-hotspot-content {
-	bottom: calc(100% + 15px);
-	left: 50%;
-	transform: translateX(-50%);
-	margin-bottom: var(--tlp-gap, 20px);
-
-	&::after {
-		width: 20px;
-		height: 15px;
-		clip-path: polygon(100% 0, 0 0, 50% 100%);
-		bottom: -14px;
-		left: 50%;
-		transform: translateX(-50%);
-	}
-}
-
-.aae-image-hotspot[data-aae-hsp-tooltip-pos="bottom"] .aae-hotspot-point[data-aae-hotspot-mode="tooltip"] .aae-hotspot-content {
-	top: calc(100% + 15px);
-	left: 50%;
-	transform: translateX(-50%);
-	margin-top: var(--tlp-gap, 20px);
-
-	&::after {
-		width: 20px;
-		height: 15px;
-		clip-path: polygon(50% 0, 0 100%, 100% 100%);
-		top: -14px;
-		left: 50%;
-		transform: translateX(-50%);
-	}
-}
-
-.aae-image-hotspot[data-aae-hsp-tooltip-pos="left"] .aae-hotspot-point[data-aae-hotspot-mode="tooltip"] .aae-hotspot-content {
-	right: calc(100% + 15px);
-	top: 50%;
-	transform: translateY(-50%);
-	margin-right: var(--tlp-gap, 20px);
-
-	&::after {
-		width: 15px;
-		height: 20px;
-		clip-path: polygon(0 0, 0 100%, 100% 50%);
-		right: -14px;
-		top: 50%;
-		transform: translateY(-50%);
-	}
-}
-
-.aae-image-hotspot[data-aae-hsp-tooltip-pos="right"] .aae-hotspot-point[data-aae-hotspot-mode="tooltip"] .aae-hotspot-content {
-	left: calc(100% + 15px);
-	top: 50%;
-	transform: translateY(-50%);
-	margin-left: var(--tlp-gap, 20px);
-
-	&::after {
-		width: 15px;
-		height: 20px;
-		clip-path: polygon(100% 0, 0 50%, 100% 100%);
-		left: -14px;
-		top: 50%;
-		transform: translateY(-50%);
-	}
-}
-
-.aae-image-hotspot[data-aae-hsp-tooltip-align="left"] .aae-hotspot-content {
-	text-align: left;
-}
-
-.aae-image-hotspot[data-aae-hsp-tooltip-align="center"] .aae-hotspot-content {
-	text-align: center;
-}
-
-.aae-image-hotspot[data-aae-hsp-tooltip-align="right"] .aae-hotspot-content {
-	text-align: right;
-}
-
-// ── Lightbox mechanics — overrides Content's tooltip base style via higher specificity (0,3,0 > 0,2,0); portal appended once to <body> by image-hotspot.js.
+// ── Lightbox mechanics
 .aae-hsp-portal {
 	position: fixed;
 	inset: 0;
@@ -158,7 +74,7 @@
 	}
 }
 
-.aae-hotspot-point[data-aae-hotspot-mode="lightbox"] .aae-hotspot-content {
+.elementor .aae-hotspot-content[data-aae-hotspot-mode="lightbox"] {
 	position: fixed;
 	top: 50%;
 	left: 50%;
@@ -213,8 +129,6 @@
 }
 
 // ── Marker animations ────────────────────────────────────────────────────
-// `position: relative` (the anchor every ::before/::after below needs) is
-// the Marker's own base style now, not plain CSS — see AAE_A_Hotspot_Marker.
 .anim-beat {
 	animation: AAEHspBeat var(--anim-speed, 1s) infinite;
 }

@@ -17,42 +17,34 @@
 	}
 }
 
-// Floating Side Arrows.
+// Floating Side Arrows — Prev/Next grouped below since they share every property except side/slide-direction.
 .aae-a-post-pagination[data-aae-pp-mode="side_arrows"] {
-	body:not(.elementor-editor-active) &.aae-pp-reveal [data-aae-nav="prev"] {
-		position: fixed;
-		left: 16px;
-		top: 50%;
-		transform: translateY(-50%) translateX(-24px);
-		opacity: 0;
-		z-index: 999;
-		transition: opacity 0.3s ease, transform 0.3s ease;
-		background: #fff;
-		box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
-	}
+	body:not(.elementor-editor-active) &.aae-pp-reveal [data-aae-nav="prev"],
 	body:not(.elementor-editor-active) &.aae-pp-reveal [data-aae-nav="next"] {
 		position: fixed;
-		right: 16px;
 		top: 50%;
-		transform: translateY(-50%) translateX(24px);
 		opacity: 0;
 		z-index: 999;
 		transition: opacity 0.3s ease, transform 0.3s ease;
 		background: #fff;
 		box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
 	}
-	body:not(.elementor-editor-active) &.aae-pp-reveal.aae-pp-visible [data-aae-nav="prev"] {
-		opacity: 1;
-		transform: translateY(-50%) translateX(0);
+	body:not(.elementor-editor-active) &.aae-pp-reveal [data-aae-nav="prev"] {
+		left: 16px;
+		transform: translateY(-50%) translateX(-24px);
 	}
+	body:not(.elementor-editor-active) &.aae-pp-reveal [data-aae-nav="next"] {
+		right: 16px;
+		transform: translateY(-50%) translateX(24px);
+	}
+	body:not(.elementor-editor-active) &.aae-pp-reveal.aae-pp-visible [data-aae-nav="prev"],
 	body:not(.elementor-editor-active) &.aae-pp-reveal.aae-pp-visible [data-aae-nav="next"] {
 		opacity: 1;
 		transform: translateY(-50%) translateX(0);
 	}
 }
 
-// Hidden AT REST everywhere (editor included, no exemption) — reveal-on-
-// hover (.aae-pp-preview-visible) only takes visual effect on the FRONTEND.
+// Hidden AT REST everywhere (editor included, no exemption) — reveal-on-hover (.aae-pp-preview-visible) only takes visual effect on the FRONTEND.
 .aae-a-post-pagination-preview {
 	opacity: 0;
 	visibility: hidden;
@@ -77,8 +69,7 @@ body:not(.elementor-editor-active) .aae-a-post-pagination-preview.aae-pp-preview
 	}
 }
 
-// Editor-only: `position: fixed` (define_base_styles() in
-// class-aae-a-post-pagination-preview.php) is what lets post-pagination.js
+// Editor-only: `position: fixed` (define_base_styles() in class-aae-a-post-pagination-preview.php) is what lets post-pagination.js
 body.elementor-editor-active .elementor .aae-a-post-pagination-preview {
 	position: absolute;
 	top: 0;
@@ -88,9 +79,7 @@ body.elementor-editor-active .aae-a-post-pagination-item {
 	position: relative;
 }
 
-// Purely decorative — sits between the Date and Author pieces (their
-// default order, see AAE_A_Post_Pagination_Preview::build_default_inner_children())
-// when both are present. Author no-ops harmlessly if Date was deleted.
+// Purely decorative — sits between the Date and Author pieces 
 .aae-a-post-pagination-preview-author::before {
 	content: '· ';
 	opacity: 0.6;

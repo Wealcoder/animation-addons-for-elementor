@@ -13,18 +13,31 @@
  *
  * Deliberately has NO prop of its own describing whether it's acting as an
  * inline tooltip or a teleported lightbox — that's the PARENT Hotspot Point's
- * `tooltip_type` prop, which a child element's own twig can't read. The base
- * style below defaults to the TOOLTIP geometry (position: absolute); lightbox
- * mode overrides position/z-index/etc. via a higher-specificity selector in
- * image-hotspot.scss keyed off the ANCESTOR Point's own
- * `data-aae-hotspot-mode="lightbox"` attribute — the override selector
+ * `tooltip_type` prop, which a child element's own twig can't read directly.
+ * Instead, Point publishes it via Render_Context (define_render_context() in
+ * class-aae-a-hotspot-point.php, same mechanism AAE_A_Post_Pagination uses
+ * for its Prev/Next), and THIS class's own build_template_context() reads
+ * that context and renders it as Content's OWN `data-aae-hotspot-mode`
+ * attribute in aae-a-hotspot-content.html.twig — server-side, at first
+ * paint, no JS dependency. That matters because image-hotspot.js's
+ * initLightboxes() teleports Content out of Point and into a shared <body>
+ * portal; a CSS selector that instead required Point as an ANCESTOR
  * (`.aae-hotspot-point[data-aae-hotspot-mode="lightbox"] .aae-hotspot-content`)
- * is 0,3,0 vs. the base style's own 0,2,0, so it reliably wins regardless of
- * stylesheet order. Actual VISIBILITY (opacity/visibility/pointer-events,
- * toggled by the `.active` class on open/close) can't move here at all —
- * no Style_Variant/Style_States mechanism expresses "look when a runtime-
- * toggled custom class is present", same reasoning as ToggleSwitcher's
- * `.show`/`.active` staying in toggle-switcher.scss.
+ * stopped matching the instant that happened, and relying on JS to copy the
+ * attribute onto Content after the fact left a window — from first paint
+ * until the script ran — where Content had no hiding rule applied at all and
+ * flashed visible. The base style below defaults to the TOOLTIP geometry
+ * (position: absolute); lightbox mode overrides position/z-index/etc. via a
+ * higher-specificity selector in image-hotspot.scss keyed off Content's OWN
+ * `data-aae-hotspot-mode="lightbox"` attribute now
+ * (`.elementor .aae-hotspot-content[data-aae-hotspot-mode="lightbox"]`,
+ * 0,3,0 vs. the base style's own 0,2,0, so it reliably wins regardless of
+ * stylesheet order — see that selector's own comment in image-hotspot.scss).
+ * Actual VISIBILITY (opacity/visibility/pointer-events, toggled by the
+ * `.active` class on open/close) can't move here at all — no Style_Variant/
+ * Style_States mechanism expresses "look when a runtime-toggled custom class
+ * is present", same reasoning as ToggleSwitcher's `.show`/`.active` staying
+ * in toggle-switcher.scss.
  *
  * @package AnimationAddonsForElementor
  * @since   4.0.0
@@ -42,6 +55,7 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Elem
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
+use Elementor\Modules\AtomicWidgets\Elements\Base\Render_Context;
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
@@ -52,6 +66,9 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Color_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Background_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Dimensions_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Transform\Transform_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Transform\Transform_Functions_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Transform\Functions\Transform_Move_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Number_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
@@ -61,6 +78,12 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 require_once __DIR__ . '/Parts/class-aae-a-hotspot-close.php';
 
 use WCF_ADDONS\AtomicWidgets\Widgets\ImageHotspot\AAE_A_Hotspot_Close;
+
+// NOT require_once'd — class-aae-a-hotspot-point.php already requires THIS
+// file, so requiring it back would be circular. `::class` below only needs
+// the name resolved at compile time, not the class actually loaded, so a
+// plain `use` for the alias is enough.
+use WCF_ADDONS\AtomicWidgets\Widgets\ImageHotspot\AAE_A_Hotspot_Point;
 
 class AAE_A_Hotspot_Content extends Atomic_Element_Base {
 
@@ -122,9 +145,55 @@ class AAE_A_Hotspot_Content extends Atomic_Element_Base {
 	 * inline tooltip or a teleported lightbox. See the class docblock for the
 	 * exact position/z-index override mechanics and why opacity/visibility
 	 * can't move here at all.
+	 *
+	 * Placement is a FIXED default (bottom of the marker, centered,
+	 * pointing-up arrow) rather than a builder-facing enum — there used to be
+	 * `tooltip_position`/`tooltip_gap`/`tooltip_align` props on the PARENT
+	 * Image Hotspot driving 4 direction variants in image-hotspot.scss.
+	 * Removed 2026-07 by design: a builder who wants the tooltip somewhere
+	 * else selects THIS element in the Navigator and edits the SAME fields
+	 * below from Elementor's own native Style tab (Layout section for
+	 * inset/margin, Transform section for the centering) — the whole point
+	 * of putting this in define_base_styles() rather than plain CSS is that
+	 * a base-style value is exactly what the Style tab shows as the current/
+	 * default value AND lets a builder override.
+	 *
+	 * The offset/centering first shipped as `top`/`left`/`margin-top`/a
+	 * string `transform` — all silently ignored, because none of those are
+	 * real keys/shapes in Elementor's atomic style schema (confirmed by
+	 * reading `modules/atomic-widgets/styles/style-schema.php` directly).
+	 * The REAL equivalents used below:
+	 *  - `top` → `inset-block-start` (Size_Prop_Type; the `calc()` string
+	 *    rides the 'custom' unit — same trick this plugin already uses
+	 *    successfully for `max-width` in
+	 *    AAE_A_Post_Pagination_Preview::define_base_styles()).
+	 *  - `left` → `inset-inline-start` (Size_Prop_Type, %).
+	 *  - `margin-top` → the single `margin` prop (Dimensions_Prop_Type, only
+	 *    block-start non-zero) — margin has no per-side key, same as padding
+	 *    right below it.
+	 *  - `transform: translateX(-50%)` → `Transform_Prop_Type`, whose shape
+	 *    is `transform-functions` (an array of Move/Scale/Rotate/Skew
+	 *    shapes) → one `Transform_Move_Prop_Type` entry with only `x` set
+	 *    (y/z default to 0px, matching a plain translateX). Verified against
+	 *    Elementor core's actual prop-type classes
+	 *    (`prop-types/transform/*`), since this codebase had zero existing
+	 *    usage of Transform_Prop_Type to copy from.
 	 */
 	protected function define_base_styles(): array {
 		$pad = Size_Prop_Type::generate( [ 'size' => 16, 'unit' => 'px' ] );
+
+		// Shared by the box and the arrow — both are only ever centered
+		// horizontally (translateX(-50%); y/z stay at Transform_Move's own
+		// 0px default).
+		$center_x = Transform_Prop_Type::generate( [
+			'transform-functions' => Transform_Functions_Prop_Type::generate( [
+				Transform_Move_Prop_Type::generate( [
+					'x' => Size_Prop_Type::generate( [ 'size' => -50, 'unit' => '%' ] ),
+				] ),
+			] ),
+		] );
+
+		$zero = Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] );
 
 		return [
 			self::BASE_STYLE_KEY => Style_Definition::make()
@@ -132,6 +201,19 @@ class AAE_A_Hotspot_Content extends Atomic_Element_Base {
 					Style_Variant::make()
 						->add_prop( 'position', String_Prop_Type::generate( 'absolute' ) )
 						->add_prop( 'z-index', Number_Prop_Type::generate( 20 ) )
+						->add_prop( 'inset-block-start', Size_Prop_Type::generate( [ 'size' => 'calc(100% + 15px)', 'unit' => 'custom' ] ) )
+						->add_prop( 'inset-inline-start', Size_Prop_Type::generate( [ 'size' => 50, 'unit' => '%' ] ) )
+						->add_prop( 'transform', $center_x )
+						->add_prop(
+							'margin',
+							Dimensions_Prop_Type::generate( [
+								'block-start'  => Size_Prop_Type::generate( [ 'size' => 20, 'unit' => 'px' ] ),
+								'block-end'    => $zero,
+								'inline-start' => $zero,
+								'inline-end'   => $zero,
+							] )
+						)
+						->add_prop( 'text-align', String_Prop_Type::generate( 'center' ) )
 						->add_prop(
 							'background',
 							Background_Prop_Type::generate( [ 'color' => Color_Prop_Type::generate( '#e8e8e8' ) ] )
@@ -148,6 +230,19 @@ class AAE_A_Hotspot_Content extends Atomic_Element_Base {
 								'inline-end'   => $pad,
 							] )
 						)
+				),
+
+			'base::after' => Style_Definition::make()
+				->add_variant(
+					Style_Variant::make()
+						->add_prop( 'content', String_Prop_Type::generate( '""' ) )
+						->add_prop( 'position', String_Prop_Type::generate( 'absolute' ) )
+						->add_prop( 'width', Size_Prop_Type::generate( [ 'size' => 20, 'unit' => 'px' ] ) )
+						->add_prop( 'height', Size_Prop_Type::generate( [ 'size' => 15, 'unit' => 'px' ] ) )
+						->add_prop( 'clip-path', String_Prop_Type::generate( 'polygon(50% 0, 0 100%, 100% 100%)' ) )
+						->add_prop( 'inset-block-start', Size_Prop_Type::generate( [ 'size' => -14, 'unit' => 'px' ] ) )
+						->add_prop( 'inset-inline-start', Size_Prop_Type::generate( [ 'size' => 50, 'unit' => '%' ] ) )
+						->add_prop( 'transform', $center_x )
 				),
 		];
 	}
@@ -174,6 +269,22 @@ class AAE_A_Hotspot_Content extends Atomic_Element_Base {
 		return [
 			'elementor/elements/aae-a-hotspot-content' => __DIR__ . '/aae-a-hotspot-content.html.twig',
 		];
+	}
+
+	/**
+	 * Reads the ancestor Point's `tooltip_type` off the Render_Context stack
+	 * (pushed by AAE_A_Hotspot_Point::define_render_context()) and exposes it
+	 * to aae-a-hotspot-content.html.twig as `aae_hotspot_mode`, rendered
+	 * there as this element's OWN `data-aae-hotspot-mode` attribute. See the
+	 * class docblock for why this needs to be server-rendered rather than
+	 * left to image-hotspot.js.
+	 */
+	protected function build_template_context(): array {
+		$ctx = Render_Context::get( AAE_A_Hotspot_Point::class );
+
+		return array_merge( $this->build_base_template_context(), [
+			'aae_hotspot_mode' => isset( $ctx['tooltip_type'] ) ? $ctx['tooltip_type'] : 'tooltip',
+		] );
 	}
 
 	public function get_style_depends(): array {
