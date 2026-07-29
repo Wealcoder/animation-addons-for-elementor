@@ -401,6 +401,7 @@ final class Atomic
 			'aae-a-hotspot-marker',
 			'aae-a-hotspot-content',
 			'aae-a-hotspot-close',
+			'aae-a-hotspot-lightbox',
 		];
 		if (in_array($slug, $internal_widgets)) {
 			return true;
@@ -2581,6 +2582,22 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			'aae-a-hotspot-lightbox' => [
+				'label'        => 'Hotspot Lightbox (Internal)',
+				'description'  => 'Internal dark backdrop + centering frame the AAE Hotspot Point\'s content is moved into for lightbox display.',
+				'icon'         => 'eicon-lightbox-expand',
+				'is_pro'       => true,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'is_internal'  => true,
+				'default'      => true,
+				'keywords'     => [ 'hotspot lightbox', 'internal' ],
+				'category'     => 'general',
+				'order'        => 25,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
 			'aae-a-flip-box-title' => [
 				'label'        => 'Flip Box Title (Internal)',
 				'description'  => 'Internal face title used by the AAE Flip Box front/back faces.',
@@ -3916,6 +3933,12 @@ final class Atomic
 		'aae-a-hotspot-content' => [
 			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ImageHotspot\AAE_A_Hotspot_Content',
 			'file'       => 'Widgets/ImageHotspot/class-aae-a-hotspot-content.php',
+			'has_script' => false,
+		],
+
+		'aae-a-hotspot-lightbox' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ImageHotspot\AAE_A_Hotspot_Lightbox',
+			'file'       => 'Widgets/ImageHotspot/Parts/class-aae-a-hotspot-lightbox.php',
 			'has_script' => false,
 		],
 

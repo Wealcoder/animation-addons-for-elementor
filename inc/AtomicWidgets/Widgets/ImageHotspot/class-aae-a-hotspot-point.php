@@ -70,9 +70,11 @@ use Elementor\Modules\AtomicWidgets\PropDependencies\Manager as Dependency_Manag
 
 require_once __DIR__ . '/Parts/class-aae-a-hotspot-marker.php';
 require_once __DIR__ . '/class-aae-a-hotspot-content.php';
+require_once __DIR__ . '/Parts/class-aae-a-hotspot-lightbox.php';
 
 use WCF_ADDONS\AtomicWidgets\Widgets\ImageHotspot\AAE_A_Hotspot_Marker;
 use WCF_ADDONS\AtomicWidgets\Widgets\ImageHotspot\AAE_A_Hotspot_Content;
+use WCF_ADDONS\AtomicWidgets\Widgets\ImageHotspot\AAE_A_Hotspot_Lightbox;
 
 class AAE_A_Hotspot_Point extends Atomic_Element_Base {
 
@@ -214,11 +216,19 @@ class AAE_A_Hotspot_Point extends Atomic_Element_Base {
 			AAE_A_Hotspot_Content::generate()
 				->editor_settings( [ 'title' => 'Content' ] )
 				->build(),
+
+			// Only relevant in lightbox mode — image-hotspot.js moves Content's
+			// live DOM node inside this element at runtime (Content stays
+			// Point's own direct child in the saved data). See
+			// class-aae-a-hotspot-lightbox.php.
+			AAE_A_Hotspot_Lightbox::generate()
+				->editor_settings( [ 'title' => 'Lightbox' ] )
+				->build(),
 		];
 	}
 
 	protected function define_allowed_child_types() {
-		return [ 'e-aae-a-hotspot-marker', 'e-aae-a-hotspot-content' ];
+		return [ 'e-aae-a-hotspot-marker', 'e-aae-a-hotspot-content', 'e-aae-a-hotspot-lightbox' ];
 	}
 
 	/**

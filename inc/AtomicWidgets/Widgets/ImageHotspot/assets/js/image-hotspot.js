@@ -6,17 +6,19 @@
  * The Hotspot Point is now the real interactive element (a <button> for
  * tooltip/lightbox modes, a real <a> for link mode — see
  * aae-a-hotspot-point.html.twig); its Marker child renders as a plain
- * non-interactive <span> (aae-a-hotspot-marker.html.twig) and its Content
- * child as a real styleable box (aae-a-hotspot-content.html.twig). All
- * click/hover wiring below therefore targets the POINT, not the marker.
+ * non-interactive, empty-by-default container (aae-a-hotspot-marker.html.twig)
+ * and its Content child as a real styleable box (aae-a-hotspot-content.html.twig).
+ * All click/hover wiring below therefore targets the POINT, not the marker.
  *
  * Four independent concerns, each reading its own data-attrs:
- *   - Auto-numbering  : fills `.hotspot-number` badges (inside the Marker)
- *                       from DOM order.
+ *   - Auto-numbering  : fills `.hotspot-number` badges (opt-in, inside any
+ *                       marker child a builder tags with that class) from
+ *                       DOM order.
  *   - Tooltip (inline): CSS handles hover/"none" triggers entirely; this file
  *                       only wires the click-to-toggle case.
- *   - Lightbox        : teleports a point's content + a scrim into a shared
- *                       portal on <body>, mirroring offcanvas.js.
+ *   - Lightbox        : moves a point's content inside the merged backdrop+
+ *                       frame (AAE_A_Hotspot_Lightbox) and teleports that
+ *                       into a shared portal on <body>, mirroring offcanvas.js.
  *   - Guided tour      : setInterval-based auto-cycle, mirroring
  *                       nestedslider.js's startAutoplay/stopAutoplay.
  *
@@ -148,29 +150,30 @@ const initLightboxes = ( root ) => {
 
 		const content = point.querySelector( '.aae-hotspot-content' );
 		const closeBtn = content?.querySelector( '.aae-hotspot-close' );
-		if ( ! content ) {
+		// Real, PHP-seeded child now (AAE_A_Hotspot_Lightbox) instead of a div
+		// created here — its color/opacity/position are Style-tab editable.
+		// Merged backdrop + centering frame in one element (was a separate
+		// Scrim + Lightbox Frame) — flex-centers Content as its own child, so
+		// there's no separate scrim to track/teleport.
+		const frame = point.querySelector( '.aae-hotspot-lightbox' );
+		if ( ! content || ! frame ) {
 			return;
 		}
-
-		const scrim = document.createElement( 'div' );
-		scrim.className = 'aae-hotspot-scrim';
 
 		// Teleport into the shared portal — same reasoning as offcanvas.js:
 		// `position: fixed` must escape any transformed ancestor, and parking
 		// under an `.elementor`-classed host keeps the content's atomic base
 		// styles matching (they're scoped `.elementor .e-xxx`).
-		portal.appendChild( scrim );
-		portal.appendChild( content );
+		frame.appendChild( content );
+		portal.appendChild( frame );
 
 		const open = () => {
-			scrim.classList.add( 'active' );
-			content.classList.add( 'active' );
+			frame.classList.add( 'active' );
 			point.setAttribute( 'aria-expanded', 'true' );
 			document.body.style.overflow = 'hidden';
 		};
 		const close = () => {
-			scrim.classList.remove( 'active' );
-			content.classList.remove( 'active' );
+			frame.classList.remove( 'active' );
 			point.setAttribute( 'aria-expanded', 'false' );
 			document.body.style.overflow = '';
 		};
@@ -179,10 +182,16 @@ const initLightboxes = ( root ) => {
 			ev.preventDefault();
 			open();
 		} );
-		scrim.addEventListener( 'click', close );
+		// Only a click landing directly on the frame (the backdrop area
+		// around Content, not Content or its children) closes it.
+		frame.addEventListener( 'click', ( ev ) => {
+			if ( ev.target === frame ) {
+				close();
+			}
+		} );
 		closeBtn?.addEventListener( 'click', close );
 		document.addEventListener( 'keydown', ( ev ) => {
-			if ( ev.key === 'Escape' && content.classList.contains( 'active' ) ) {
+			if ( ev.key === 'Escape' && frame.classList.contains( 'active' ) ) {
 				close();
 			}
 		} );

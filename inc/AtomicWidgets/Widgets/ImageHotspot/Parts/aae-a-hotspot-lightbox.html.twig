@@ -1,0 +1,25 @@
+{#
+  AAE Hotspot Lightbox — dark backdrop + flex-centering frame, purely
+  presentational (Content itself already carries role="dialog"/aria-modal,
+  set by image-hotspot.js's applyContentRoles() — no ARIA role here too, to
+  avoid a nested dialog). image-hotspot.js moves Content's live DOM node
+  inside this element at runtime (only while teleporting into the shared
+  <body> portal for lightbox display) — see initLightboxes(). Content is
+  never a real Elementor child of this element; it stays Point's own direct
+  child in the saved data (see class docblock).
+#}
+{% set classes = ['aae-hotspot-lightbox', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') | trim %}
+
+<div class="{{ classes }} {{ editor_classes | default('') }}"
+	data-id="{{ id }}"
+	data-element_type="{{ type }}"
+	data-e-type="{{ type }}"
+	data-interaction-id="{{ interaction_id | default(id) }}"
+	{% if settings._cssid is defined and settings._cssid is not empty %}
+		id="{{ settings._cssid | e('html_attr') }}"
+	{% endif %}
+	{% if settings.attributes is defined and settings.attributes is not empty %}
+		{{ settings.attributes | raw }}
+	{% endif %}
+	{{ editor_attributes | default('') | raw }}>
+</div>

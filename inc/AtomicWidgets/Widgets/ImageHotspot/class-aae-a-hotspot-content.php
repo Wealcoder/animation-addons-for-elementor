@@ -19,25 +19,38 @@
  * for its Prev/Next), and THIS class's own build_template_context() reads
  * that context and renders it as Content's OWN `data-aae-hotspot-mode`
  * attribute in aae-a-hotspot-content.html.twig — server-side, at first
- * paint, no JS dependency. That matters because image-hotspot.js's
- * initLightboxes() teleports Content out of Point and into a shared <body>
- * portal; a CSS selector that instead required Point as an ANCESTOR
- * (`.aae-hotspot-point[data-aae-hotspot-mode="lightbox"] .aae-hotspot-content`)
- * stopped matching the instant that happened, and relying on JS to copy the
- * attribute onto Content after the fact left a window — from first paint
- * until the script ran — where Content had no hiding rule applied at all and
- * flashed visible. The base style below defaults to the TOOLTIP geometry
- * (position: absolute); lightbox mode overrides position/z-index/etc. via a
- * higher-specificity selector in image-hotspot.scss keyed off Content's OWN
- * `data-aae-hotspot-mode="lightbox"` attribute now
- * (`.elementor .aae-hotspot-content[data-aae-hotspot-mode="lightbox"]`,
- * 0,3,0 vs. the base style's own 0,2,0, so it reliably wins regardless of
- * stylesheet order — see that selector's own comment in image-hotspot.scss).
+ * paint, no JS dependency (still needed for the TOOLTIP-mode visibility rule
+ * in image-hotspot.scss; see that rule's own comment).
+ *
+ * The base style below is always the TOOLTIP geometry (position: absolute,
+ * its own inset offsets/translateX centering/margin) — Content never gets a
+ * lightbox-specific position of its own anymore. Lightbox display instead
+ * moves Content's live DOM node INSIDE a dedicated `AAE_A_Hotspot_Lightbox`
+ * frame at runtime (image-hotspot.js's initLightboxes()), which owns the
+ * fixed/centered positioning on ITS OWN base style; a small nesting-scoped
+ * CSS reset in image-hotspot.scss (`.aae-hotspot-lightbox .aae-hotspot-content`)
+ * neutralizes Content's tooltip positioning while it's nested there. This
+ * replaced an earlier design where Content read its OWN `data-aae-hotspot-
+ * mode="lightbox"` attribute and got a higher-specificity CSS override —
+ * moved to a separate frame element specifically so lightbox mode's fixed/
+ * centered "chrome" could also become Style-tab editable, without forking
+ * Content into two widget types (which would've stranded a builder's
+ * customized content if they later switched a Point from Tooltip to
+ * Lightbox mode).
+ *
  * Actual VISIBILITY (opacity/visibility/pointer-events, toggled by the
- * `.active` class on open/close) can't move here at all — no Style_Variant/
- * Style_States mechanism expresses "look when a runtime-toggled custom class
- * is present", same reasoning as ToggleSwitcher's `.show`/`.active` staying
- * in toggle-switcher.scss.
+ * `.active` class on open/close) can't move to base style at all — no
+ * Style_Variant/Style_States mechanism expresses "look when a runtime-
+ * toggled custom class is present", same reasoning as ToggleSwitcher's
+ * `.show`/`.active` staying in toggle-switcher.scss.
+ *
+ * The lightbox's decorative "box chrome" (box-shadow, max-width, max-height)
+ * lives here, UNCONDITIONALLY — moved off the mode-gated CSS rule per
+ * explicit user request, so it's Style-tab editable. This means it now also
+ * applies in tooltip mode (a small shadow + size cap that wasn't there
+ * before) — Style_Variant has no way to apply a prop only when an ancestor's
+ * setting has a given value, so "chrome only in lightbox mode" was only
+ * possible as plain CSS.
  *
  * @package AnimationAddonsForElementor
  * @since   4.0.0
@@ -66,6 +79,8 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Color_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Background_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Dimensions_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Box_Shadow_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Shadow_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Transform\Transform_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Transform\Transform_Functions_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Transform\Functions\Transform_Move_Prop_Type;
@@ -230,6 +245,25 @@ class AAE_A_Hotspot_Content extends Atomic_Element_Base {
 								'inline-end'   => $pad,
 							] )
 						)
+						// Lightbox "box chrome" — used to be lightbox-only plain CSS
+						// (image-hotspot.scss). Now unconditional here so it's
+						// Style-tab editable, per explicit user request — the
+						// trade-off (also visible in tooltip mode now) is called
+						// out in this method's docblock. The actual fixed
+						// positioning/centering transform for lightbox mode still
+						// can't move here (see docblock) and stays mode-gated CSS.
+						->add_prop( 'box-shadow', Box_Shadow_Prop_Type::generate( [
+							Shadow_Prop_Type::generate( [
+								'hOffset' => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+								'vOffset' => Size_Prop_Type::generate( [ 'size' => 20, 'unit' => 'px' ] ),
+								'blur'    => Size_Prop_Type::generate( [ 'size' => 60, 'unit' => 'px' ] ),
+								'spread'  => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+								'color'   => Color_Prop_Type::generate( 'rgba(0, 0, 0, 0.35)' ),
+							] ),
+						] ) )
+						->add_prop( 'max-width', Size_Prop_Type::generate( [ 'size' => '90vw', 'unit' => 'custom' ] ) )
+						->add_prop( 'max-height', Size_Prop_Type::generate( [ 'size' => '85vh', 'unit' => 'custom' ] ) )
+						->add_prop( 'overflow', String_Prop_Type::generate( 'auto' ) )
 				),
 
 			'base::after' => Style_Definition::make()

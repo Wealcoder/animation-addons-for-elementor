@@ -1,6 +1,4 @@
-// ── Inline tooltip visibility (Content's own look, INCLUDING position,
-// offset, centering transform, and margin — is base-style now, see
-// AAE_A_Hotspot_Content::define_base_styles()) ───────────────────────────
+// ── Inline tooltip visibility (position/offset/transform/margin are base-style now, see AAE_A_Hotspot_Content::define_base_styles()) ──
 .aae-hotspot-point[data-aae-hotspot-mode="tooltip"] .aae-hotspot-content {
 	opacity: 0;
 	visibility: hidden;
@@ -30,6 +28,13 @@
 	pointer-events: auto;
 }
 
+// Hides Content at first paint while it's still sitting inside a lightbox-mode Point, before image-hotspot.js teleports it into the frame — without this, a lightbox Point's Content briefly flashes visible in its tooltip-shaped resting position on every page load. No transition/`.active` here on purpose: visibility past this point is entirely the frame's own job once Content is moved there (this selector stops matching the instant that happens).
+.aae-hotspot-point[data-aae-hotspot-mode="lightbox"] .aae-hotspot-content {
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+}
+
 // ── Lightbox mechanics
 .aae-hsp-portal {
 	position: fixed;
@@ -38,11 +43,8 @@
 	pointer-events: none;
 }
 
-.aae-hotspot-scrim {
-	position: fixed;
-	inset: 0;
-	z-index: 99998;
-	background: rgba(0, 0, 0, 0.6);
+// Position/inset/z-index/background/flex-centering are AAE_A_Hotspot_Lightbox's own base style now (class-aae-a-hotspot-lightbox.php, merged backdrop+frame) — only the JS-toggled show/hide stays here.
+.aae-hotspot-lightbox {
 	opacity: 0;
 	visibility: hidden;
 	pointer-events: none;
@@ -56,38 +58,19 @@
 	}
 }
 
-.elementor .aae-hotspot-content[data-aae-hotspot-mode="lightbox"] {
-	position: fixed;
-	top: 50%;
-	left: 50%;
-	z-index: 99999;
-	// Content's own base-style `width` still applies; this only caps it so a
-	// wide custom width can't overflow a small viewport.
-	max-width: 90vw;
-	max-height: 85vh;
-	overflow-y: auto;
-	// Elevation is modal-specific chrome, not part of the shared resting
-	// look, so it stays here rather than on Content's base style.
-	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
-	opacity: 0;
-	visibility: hidden;
-	pointer-events: none;
-	transform: translate(-50%, -50%) scale(0.92);
-	transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s 0.25s;
-
-	&.active {
-		opacity: 1;
-		visibility: visible;
-		pointer-events: auto;
-		transform: translate(-50%, -50%) scale(1);
-		transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s;
-	}
+// Resets Content's own tooltip positioning while nested inside the lightbox (flexbox centers it, so absolute/inset/margin would only fight that), and applies the pop-in scale animation — JS-toggled, so it can't move to Content's base style.
+.aae-hotspot-lightbox .aae-hotspot-content {
+	position: static;
+	transform: scale(0.92);
+	margin: 0;
+	transition: transform 0.25s ease;
 }
 
-// The Close button (AAE_A_Hotspot_Close) is seeded unconditionally, but only
-// makes sense in lightbox mode — no PropType expresses "hidden unless an
-// ancestor is in a given mode", same reasoning as ToggleSwitcher's
-// `.aae-ts-pane:not(.show)`.
+.aae-hotspot-lightbox.active .aae-hotspot-content {
+	transform: scale(1);
+}
+
+// Close (seeded unconditionally) only makes sense in lightbox mode — no PropType expresses "hidden unless an ancestor is in a given mode".
 .aae-hotspot-point:not([data-aae-hotspot-mode="lightbox"]) .aae-hotspot-close {
 	display: none;
 }
@@ -103,9 +86,7 @@
 	outline-offset: 2px;
 }
 
-// Drag-to-reposition feedback (editor canvas only — see initDragReposition
-// in image-hotspot.js). `!important` because it must beat the Point's own
-// Style-tab `cursor` override while a drag is actually in progress.
+// Drag-to-reposition feedback (editor only); `!important` beats the Point's own Style-tab `cursor` override during a drag.
 .aae-hotspot-dragging {
 	cursor: grabbing !important;
 }
@@ -187,8 +168,7 @@
 	50% { transform: translateY(-8px); }
 }
 
-// Stop looping marker animations for reduced-motion users; everything else
-// (tooltip fade, lightbox fade/scale) already sits under ~0.25s, left as-is.
+// Stop looping marker animations for reduced-motion users; everything else already sits under ~0.25s, left as-is.
 @media (prefers-reduced-motion: reduce) {
 	.anim-beat,
 	.anim-pulse::before,
