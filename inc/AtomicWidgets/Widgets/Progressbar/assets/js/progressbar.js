@@ -1,5 +1,4 @@
 import { register } from '@elementor/frontend-handlers';
-import '../scss/progressbar.scss';
 
 const DURATION             = 1400;
 const CIRCLE_RADIUS        = 40;

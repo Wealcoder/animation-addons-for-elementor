@@ -49,11 +49,15 @@ class AAE_A_Advanced_Heading extends Atomic_Widget_Base {
 	}
 
 	public function get_title() {
-		return esc_html__( 'AAE Advanced Heading', 'animation-addons-for-elementor' );
+		return esc_html__( 'Advanced Heading', 'animation-addons-for-elementor' );
 	}
 
 	public function get_keywords() {
 		return [ 'atomic', 'heading', 'title', 'highlight', 'html', 'span', 'advanced' ];
+	}
+
+	public function get_categories(): array {
+		return ['aae-atomic-general'];
 	}
 
 	public function get_icon() {

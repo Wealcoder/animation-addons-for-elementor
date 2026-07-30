@@ -55,7 +55,7 @@ class AAE_A_Btn_Pro extends Atomic_Element_Base
 
 	public function get_title()
 	{
-		return esc_html__('AAE Button Pro', 'animation-addons-for-elementor');
+		return esc_html__('Button Pro', 'animation-addons-for-elementor');
 	}
 
 	public function get_icon()
@@ -66,6 +66,11 @@ class AAE_A_Btn_Pro extends Atomic_Element_Base
 	public function get_keywords()
 	{
 		return ['button', 'aae', 'cta', 'call to action', 'atomic', 'link', 'container', 'pro'];
+	}
+
+	public function get_categories(): array
+	{
+		return ['aae-atomic-general'];
 	}
 
 	protected static function define_props_schema(): array

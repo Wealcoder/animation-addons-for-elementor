@@ -2,7 +2,8 @@
  * AAE Btn Pro — pro-tier button interactions.
  *
  * Build target: ../../../../../assets/atomic/js/btn-pro.js
- * Styles live in ../scss/btn-pro.scss (extracted by webpack).
+ * Styles live in ../scss/btn-pro.scss (compiled by gulp's compile:atomic-scss,
+ * not bundled with this JS — see assets/atomic/css/btn-pro.css).
  *
  * Enqueued on-demand: only when an `e-aae-a-btn-pro` element actually
  * renders on the page (see class-atomic.php's has_script/style_handle
@@ -14,8 +15,6 @@
  * inside an AAE Btn Pro wrapper, matching the pro templates in
  * Widgets/BtnPro/presets and z_temp/templates/BtnPro.
  */
-import '../scss/btn-pro.scss';
-
 // 4  — Ripple (GSAP)
 function rippleGsapSetup(container) {
   const span = container.querySelector('.aae-btn-ripple-effect');

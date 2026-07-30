@@ -54,6 +54,10 @@ class AAE_A_Site_Logo extends Atomic_Element_Base {
 		return [ 'site', 'logo', 'branding', 'atomic', 'header' ];
 	}
 
+	public function get_categories(): array {
+		return ['aae-atomic-general'];
+	}
+
 	protected static function define_props_schema(): array {
 		$is_custom_logo = Dependency_Manager::make()
 			->where( [

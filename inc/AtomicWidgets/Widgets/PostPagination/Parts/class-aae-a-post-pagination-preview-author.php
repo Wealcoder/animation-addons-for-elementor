@@ -39,16 +39,15 @@ class AAE_A_Post_Pagination_Preview_Author extends Atomic_Widget_Base {
 	}
 
 	public function get_title() {
-		return esc_html__( 'Post Pagination Preview Author', 'animation-addons-for-elementor' );
+		return esc_html__( 'Author', 'animation-addons-for-elementor' );
 	}
 
 	public function get_icon() {
 		return 'eicon-user-circle-o';
 	}
 
-	/** See the identical note in class-aae-a-post-pagination-preview-image.php. */
-	public function should_show_in_panel() {
-		return true;
+	public function show_in_panel() {
+		return false;
 	}
 
 	protected static function define_props_schema(): array {

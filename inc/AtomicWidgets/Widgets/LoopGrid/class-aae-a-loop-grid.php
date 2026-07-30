@@ -82,7 +82,7 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 	}
 
 	public function get_title() {
-		return esc_html__( 'AAE Loop Grid', 'animation-addons-for-elementor' );
+		return esc_html__( 'Loop Grid', 'animation-addons-for-elementor' );
 	}
 
 	public function get_icon() {
@@ -91,6 +91,10 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 
 	public function get_keywords() {
 		return [ 'loop', 'grid', 'posts', 'query', 'template', 'atomic', 'dynamic' ];
+	}
+
+	public function get_categories(): array {
+		return ['aae-atomic-post'];
 	}
 
 	protected static function define_props_schema(): array {

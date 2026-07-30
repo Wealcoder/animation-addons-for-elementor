@@ -1,5 +1,3 @@
-import '../scss/btn.scss';
-
 // Text-flip (pro-3)
 function textFlipSync(container) {
   const contentEl = container.querySelector('.aae-btn-txtflip-content');

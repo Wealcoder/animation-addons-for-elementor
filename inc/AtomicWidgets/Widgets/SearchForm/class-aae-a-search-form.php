@@ -80,6 +80,10 @@ class AAE_A_Search_Form extends Atomic_Element_Base {
 		return [ 'search', 'form', 'ajax', 'filter', 'atomic', 'composite' ];
 	}
 
+	public function get_categories(): array {
+		return ['aae-atomic-post'];
+	}
+
 	protected static function define_props_schema(): array {
 		return [
 			'classes'      => Classes_Prop_Type::make()->default( [] ),

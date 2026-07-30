@@ -1,5 +1,3 @@
-import '../scss/image-compare.scss';
-
 const { register } = window.elementorV2?.frontendHandlers || window.elementorFrontend?.elementsHandler || {};
 
 /**

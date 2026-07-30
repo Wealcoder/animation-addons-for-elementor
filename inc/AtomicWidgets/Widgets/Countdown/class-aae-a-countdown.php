@@ -69,11 +69,15 @@ class AAE_A_Countdown extends Atomic_Element_Base {
 	}
 
 	public function get_title() {
-		return esc_html__( 'AAE Countdown', 'animation-addons-for-elementor' );
+		return esc_html__( 'Countdown', 'animation-addons-for-elementor' );
 	}
 
 	public function get_keywords() {
 		return [ 'atomic', 'countdown', 'timer', 'composite' ];
+	}
+
+	public function get_categories(): array {
+		return ['aae-atomic-general'];
 	}
 
 	public function get_icon() {

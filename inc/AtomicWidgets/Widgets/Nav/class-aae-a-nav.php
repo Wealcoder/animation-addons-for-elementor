@@ -56,6 +56,10 @@ class AAE_A_Nav extends Atomic_Element_Base {
 		return [ 'nav', 'menu', 'navbar', 'navigation', 'atomic', 'aae' ];
 	}
 
+	public function get_categories(): array {
+		return ['aae-atomic-general'];
+	}
+
 	protected static function define_props_schema(): array {
 		return [
 			'classes'    => Classes_Prop_Type::make()->default( [] ),

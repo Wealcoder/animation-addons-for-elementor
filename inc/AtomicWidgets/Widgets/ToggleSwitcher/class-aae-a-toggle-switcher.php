@@ -82,6 +82,10 @@ class AAE_A_Toggle_Switcher extends Atomic_Element_Base {
 		return [ 'toggle', 'switch', 'tabs', 'atomic', 'switcher', 'open', 'container' ];
 	}
 
+	public function get_categories(): array {
+		return ['aae-atomic-general'];
+	}
+
 	protected static function define_props_schema(): array {
 		return [
 			'classes'    => Classes_Prop_Type::make()->default( [] ),

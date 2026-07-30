@@ -48,18 +48,13 @@ final class Atomic
 	 * Widgets deliberately present in the class registry but withheld from the
 	 * dashboard, so assert_registry_integrity() does not report them as drift.
 	 *
-	 * 'aae-a-menu' is NOT a duplicate of aae-a-nav — the two solve different
-	 * problems. Menu renders an existing WordPress menu (wp_get_nav_menus() picker
-	 * + wp_nav_menu()) styled through flat props; Nav builds its items as separate
-	 * atomic elements (nav-item / nav-sub-item / mobile-nav) that are individually
-	 * styleable. Menu is complete — class, twig and css/js/scss all present — and
-	 * is withheld only because its dashboard metadata is the commented-out block
-	 * at the top of register_widget_definitions(). Uncomment that block to ship
-	 * it; remove this entry at the same time.
+	 * Currently empty: 'aae-a-menu' was the only entry and has now shipped with
+	 * its own dashboard metadata in register_widget_definitions(). Keep the
+	 * constant — it is the documented way to park a widget whose class exists
+	 * before its dashboard card is ready, and assert_registry_integrity() reads
+	 * it unconditionally.
 	 */
-	private const PARKED_WIDGETS = [
-		'aae-a-menu',
-	];
+	private const PARKED_WIDGETS = [];
 
 	/**
 	 * Extensions that shipped before EXTENSIONS_OFFERED_OPTION_NAME existed.
@@ -354,7 +349,6 @@ final class Atomic
 		'aae-a-toggle-switcher-tab'    => 'aae-a-toggle-switcher',
 		'aae-a-toggle-pane-title'      => 'aae-a-toggle-switcher',
 		'aae-a-toggle-pane-desc'       => 'aae-a-toggle-switcher',
-		'aae-a-toggle-pane-main'       => 'aae-a-toggle-switcher-main',
 
 		// Video Mask / Flip Box
 		'aae-a-video-mask-btn'         => 'aae-a-video-mask',
@@ -461,161 +455,6 @@ final class Atomic
 
 	public function is_widget_active(string $slug): bool
 	{
-		// Force internal child widgets to be active always
-		$internal_widgets = [
-			'aae-a-slide',
-			'aae-a-slider-track',
-			'aae-a-slider-nav-prev',
-			'aae-a-slider-nav-next',
-			'aae-a-slider-pagination',
-			'aae-a-slider-dot',
-			'aae-a-slider-indicators',
-			'aae-a-slider-current',
-			'aae-a-slider-total',
-			'aae-a-slider-percentage',
-			'aae-a-slider-progress',
-			'aae-a-slider-counter',
-			'aae-a-slider-divider',
-			'aae-a-slider-progress-fill',
-			'aae-a-counter-number',
-			'aae-a-accordion-item',
-			'aae-a-icon-list-item',	
-			'aae-a-countdown-unit',
-			'aae-a-toggle-pane',
-			'aae-a-toggle-pane-main',
-			'aae-a-toggle-switcher-tabs',
-			'aae-a-toggle-switcher-tab',
-			'aae-a-toggle-pane-title',
-			'aae-a-toggle-pane-desc',
-			'aae-a-video-mask-btn',
-			'aae-a-flip-box-front',
-			'aae-a-flip-box-back',
-			'aae-a-flip-box-title',
-			'aae-a-flip-box-text',
-			'aae-a-post-card',
-			'aae-a-offcanvas-panel',
-			'aae-a-offcanvas-trigger',
-			'aae-a-offcanvas-close',
-			'aae-a-offcanvas-overlay',
-			'aae-a-stack-card',
-			'aae-a-timeline-item',
-			'aae-a-timeline-number',
-			'aae-a-timeline-year',
-			'aae-a-timeline-title',
-			'aae-a-timeline-desc',
-			'aae-a-progressbar-track',
-			'aae-a-progressbar-fill',
-			'aae-a-progressbar-label',
-			'aae-a-social-share-main-item',
-			'aae-a-social-share-item',
-			'aae-a-nav-item',
-			'aae-a-nav-sub-item',
-			'aae-a-mobile-nav',
-			// Loop Grid structural pieces — always-on internal elements. The Loop
-			// Grid seeds them as default children, so they must be registered even
-			// when not toggled in the dashboard (otherwise the editor throws
-			// ElementTypeNotFound on drop and nothing renders).
-			'aae-a-loop-item',
-			'aae-a-loop-layout',
-			'aae-a-loop-pagination',
-			'aae-a-loop-prev',
-			'aae-a-loop-next',
-			'aae-a-loop-numbers',
-			'aae-a-loop-number',
-			'aae-a-loop-loadmore',
-			'aae-a-loop-arrow',
-			'aae-a-loop-nav-wrap',
-			// Loop Grid Slider structural pieces — always-on internal elements,
-			// seeded as default children of the slider root (same reasoning as the
-			// Loop Grid pieces above).
-			'aae-a-loop-slide-track',
-			'aae-a-loop-slide-item',
-			'aae-a-loop-slide-pagination',
-			// Loop Grid current-post building blocks: seeded as default loop-item
-			// children — must always be registered so the featured image / title
-			// resolve per post.
-			'aae-a-post-image',
-			'aae-a-post-title',
-			// AAE Post Pagination structural pieces — seeded as default children of
-			// the root, so they must always be registered (same reasoning as
-			// the Loop Grid pieces above).
-			'aae-a-post-pagination-prev',
-			'aae-a-post-pagination-next',
-			'aae-a-post-pagination-preview',
-			'aae-a-post-pagination-preview-image',
-			'aae-a-post-pagination-preview-category',
-			'aae-a-post-pagination-preview-title',
-			'aae-a-post-pagination-preview-date',
-			'aae-a-post-pagination-preview-author',
-			'aae-a-post-pagination-preview-excerpt',
-			// AAE Post Comments — DISABLED 2026-07-27: the senior dev is
-			// building the comments/reply-form feature himself. Whole family
-			// kept (not deleted), root class renamed to AAE_A_Comments_Ny /
-			// e-aae-a-comments-ny so it can't collide with his own version.
-			// Uncomment to re-enable:
-			// 'aae-a-comment-list',
-			// 'aae-a-comment-item',
-			// 'aae-a-comment-avatar',
-			// 'aae-a-comment-author',
-			// 'aae-a-comment-date',
-			// 'aae-a-comment-content',
-			// 'aae-a-comment-reply-link',
-			// 'aae-a-comment-form',
-			// AAE Form parts — seeded as the form's default children, so they
-			// must always be registered (same reasoning as the Loop pieces).
-			'aae-a-form-label',
-			'aae-a-form-input',
-			'aae-a-form-textarea',
-			'aae-a-form-checkbox',
-			'aae-a-form-radio',
-			'aae-a-form-select',
-			'aae-a-form-submit',
-			'aae-a-form-success-message',
-			'aae-a-form-error-message',
-			// Style source for injected validation errors — forms saved with
-			// one must never hit ElementTypeNotFound.
-			'aae-a-form-field-error',
-			'aae-a-form-file',
-			// Multi-Step preset drops these as default children too — same
-			// always-on reasoning.
-			'aae-a-form-step',
-			'aae-a-form-next',
-			'aae-a-form-prev',
-			// Advanced Field Types (Pro) — not individually toggleable; only
-			// usable once the Form widget itself is enabled/dropped on canvas,
-			// same reasoning as the base field widgets above.
-			'aae-a-form-rating',
-			'aae-a-form-range',
-			'aae-a-form-password',
-			'aae-a-form-calculation',
-			'aae-a-form-country',
-			// Search Form composite sub-elements — seeded as locked default
-			// children of the Search Form root; always-on so the editor never
-			// throws ElementTypeNotFound on drop.
-			'aae-a-search-toggle',
-			'aae-a-search-panel',
-			'aae-a-search-field',
-			'aae-a-search-input',
-			'aae-a-search-filter-date',
-			'aae-a-search-filter-category',
-			'aae-a-search-submit',
-			'aae-a-search-results',
-			// AAE Image Hotspot's repeating marker — inserted only via the
-			// Hotspots element-control, never dragged from the panel directly
-			// (same reasoning as aae-a-slide).
-			'aae-a-hotspot-point',
-			// Seeded as the Hotspot Point's default children so each part
-			// (marker look, content box look, lightbox close button) is its
-			// own Style-tab-editable element — always-on for the same reason
-			// as the Flip Box / Toggle Switcher parts above.
-			'aae-a-hotspot-marker',
-			'aae-a-hotspot-content',
-			'aae-a-hotspot-close',
-			'aae-a-hotspot-lightbox',
-		];
-		if (in_array($slug, $internal_widgets)) {
-			return true;
-		}
 		if (in_array($slug, self::ALWAYS_ACTIVE_WIDGETS, true)) {
 			return true;
 		}
@@ -695,21 +534,112 @@ final class Atomic
 	 *
 	 * @return array
 	 */
+	/**
+	 * Group every internal child under the widget it belongs to.
+	 *
+	 * WIDGET_PARENT_MAP already records the relationship — this inverts it into
+	 * the shape the dashboard renders: parent slug => list of its parts, each
+	 * with the label/icon needed to display it. Children are read-only here;
+	 * they have no toggle of their own and follow the parent's state (see
+	 * is_widget_active()).
+	 *
+	 * Chains are followed to the top so a grandchild is listed under the
+	 * widget the user can actually switch off, not under an intermediate part
+	 * that never appears in the dashboard.
+	 *
+	 * @return array<string, array<int, array{slug:string,label:string,icon:string}>>
+	 */
+	private function get_widget_parts(): array
+	{
+		$parts = [];
+
+		foreach (self::WIDGET_PARENT_MAP as $child => $parent) {
+			// Walk up to the toggleable ancestor. Guarded against a cycle so a
+			// bad map entry can never hang the dashboard request.
+			$seen = [];
+			while (isset(self::WIDGET_PARENT_MAP[$parent]) && ! isset($seen[$parent])) {
+				$seen[$parent] = true;
+				$parent        = self::WIDGET_PARENT_MAP[$parent];
+			}
+
+			$def = $this->widgets_registry[$child] ?? null;
+
+			if (null === $def) {
+				continue;
+			}
+
+			$parent_label = $this->widgets_registry[$parent]['label'] ?? '';
+
+			$parts[$parent][] = [
+				'slug'  => $child,
+				'label' => $this->part_label($def['label'] ?? $child, $parent_label),
+				'icon'  => $def['icon'] ?? '',
+			];
+		}
+
+		foreach ($parts as &$list) {
+			usort($list, static function ($a, $b) {
+				return strcasecmp($a['label'], $b['label']);
+			});
+		}
+		unset($list);
+
+		return $parts;
+	}
+
+	/**
+	 * Tidy an internal widget's label for display inside its parent's group.
+	 *
+	 * These labels were never user-facing before — they exist so developers can
+	 * identify a slug — so they carry bookkeeping the dashboard should not show:
+	 * an "(Internal)" marker, and the parent's own name repeated as a prefix
+	 * ("Flip Box Back", "Countdown — Unit"). The group is already titled with the
+	 * parent, so the prefix is noise. Falls back to the original whenever
+	 * stripping would leave nothing.
+	 *
+	 * @param string $label        Raw registry label.
+	 * @param string $parent_label Label of the widget this part belongs to.
+	 *
+	 * @return string
+	 */
+	private function part_label(string $label, string $parent_label): string
+	{
+		$clean = trim(preg_replace('/\s*\((?:internal)\)\s*$/i', '', $label));
+
+		if ('' !== $parent_label) {
+			// "Countdown — Unit" / "Flip Box Back" -> "Unit" / "Back".
+			$pattern = '/^' . preg_quote($parent_label, '/') . '\s*(?:—|-|–|:)?\s+/i';
+			$trimmed = trim(preg_replace($pattern, '', $clean));
+
+			if ('' !== $trimmed) {
+				$clean = $trimmed;
+			}
+		}
+
+		return '' !== $clean ? $clean : $label;
+	}
+
 	public function get_dashboard_config(): array
 	{
 		$saved   = $this->get_saved_options();
 		$widgets = [];
+		$parts   = $this->get_widget_parts();
 
 		foreach ($this->widgets_registry as $slug => $def) {
 			// Sub-elements of a composite widget (e.g. Flip Box's own
 			// Front/Back/Title/Text) are never individually toggleable —
-			// keep them out of the dashboard list entirely.
+			// keep them out of the dashboard list entirely. They are not
+			// dropped from the payload though: each one is attached to its
+			// parent below as a read-only `parts` entry, so the dashboard can
+			// show what a widget contains without offering a switch for it.
 			if (! empty($def['is_internal'])) {
 				continue;
 			}
 
 			$widgets[$slug] = array_merge($def, [
-				'is_active' => isset($saved[$slug]),
+				'is_active'   => isset($saved[$slug]),
+				'parts'       => $parts[$slug] ?? [],
+				'parts_count' => isset($parts[$slug]) ? count($parts[$slug]) : 0,
 			]);
 		}
 
@@ -738,26 +668,41 @@ final class Atomic
 	{
 		$this->widgets_registry = [
 
-			// 'aae-a-menu' => [
-			// 	'label'        => 'Menu',
-			// 	'description'  => 'A modern standard navigation menu with GSAP interactions.',
-			// 	'icon'         => 'eicon-nav-menu',
-			// 	'is_pro'       => false,
-			// 	'is_extension' => false,
-			// 	'is_upcoming'  => false,
-			// 	'default'      => true,
-			// 	'keywords'     => [
-			// 		'menu',
-			// 		'nav',
-			// 		'navigation',
-			// 		'atomic',
-			// 		'gsap',
-			// 	],
-			// 	'category'     => 'general',
-			// 	'order'        => 0,
-			// 	'demo_url'     => '',
-			// 	'doc_url'      => '',
-			// ],
+			/*
+			 * Menu renders an EXISTING WordPress menu (wp_get_nav_menus() picker +
+			 * wp_nav_menu()) styled through flat props. It is not a duplicate of
+			 * aae-a-nav, which builds its items as separate atomic elements
+			 * (nav-item / nav-sub-item / mobile-nav) that are individually
+			 * styleable — so it gets its own toggle rather than being routed
+			 * through WIDGET_PARENT_MAP under Nav.
+			 *
+			 * Was commented out (and listed in PARKED_WIDGETS) while incomplete;
+			 * class, twig, css and js have all been present for a while, and with
+			 * no metadata here is_widget_active() could never return true, so
+			 * register_widgets() skipped it permanently.
+			 */
+			'aae-a-menu' => [
+				'label'        => 'WP Menu',
+				'description'  => 'Renders an existing WordPress menu, styled natively in Elementor V4.',
+				'icon'         => 'eicon-nav-menu',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'menu',
+					'nav',
+					'navigation',
+					'atomic',
+					'gsap',
+				],
+				// Sits with Nav and Site Logo — it is the second of the two
+				// nav/menu widgets, not a general-purpose element.
+				'category'     => 'header-footer',
+				'order'        => 0,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
 
 			'aae-a-post-title' => [
 				'label'        => 'Post Title',
@@ -1194,7 +1139,7 @@ final class Atomic
 
 			'aae-a-post-pagination-preview-image' => [
 				'is_internal'  => true,
-				'label'        => 'Post Pagination Preview Thumbnail',
+				'label'        => 'Thumbnail',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Image',
 				'icon'         => 'eicon-image',
 				'keywords'     => [ 'post', 'pagination', 'preview', 'thumbnail', 'image' ],
@@ -1203,7 +1148,7 @@ final class Atomic
 
 			'aae-a-post-pagination-preview-category' => [
 				'is_internal'  => true,
-				'label'        => 'Post Pagination Preview Category',
+				'label'        => 'Category',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Category',
 				'icon'         => 'eicon-tags',
 				'keywords'     => [ 'post', 'pagination', 'preview', 'category' ],
@@ -1212,7 +1157,7 @@ final class Atomic
 
 			'aae-a-post-pagination-preview-title' => [
 				'is_internal'  => true,
-				'label'        => 'Post Pagination Preview Title',
+				'label'        => 'Title',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Title',
 				'icon'         => 'eicon-t-letter',
 				'keywords'     => [ 'post', 'pagination', 'preview', 'title' ],
@@ -1221,7 +1166,7 @@ final class Atomic
 
 			'aae-a-post-pagination-preview-date' => [
 				'is_internal'  => true,
-				'label'        => 'Post Pagination Preview Date',
+				'label'        => 'Date',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Date',
 				'icon'         => 'eicon-calendar',
 				'keywords'     => [ 'post', 'pagination', 'preview', 'date' ],
@@ -1230,7 +1175,7 @@ final class Atomic
 
 			'aae-a-post-pagination-preview-author' => [
 				'is_internal'  => true,
-				'label'        => 'Post Pagination Preview Author',
+				'label'        => 'Author',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Author',
 				'icon'         => 'eicon-user-circle-o',
 				'keywords'     => [ 'post', 'pagination', 'preview', 'author' ],
@@ -1239,7 +1184,7 @@ final class Atomic
 
 			'aae-a-post-pagination-preview-excerpt' => [
 				'is_internal'  => true,
-				'label'        => 'Post Pagination Preview Excerpt',
+				'label'        => 'Excerpt',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Excerpt',
 				'icon'         => 'eicon-text-align-left',
 				'keywords'     => [ 'post', 'pagination', 'preview', 'excerpt' ],
@@ -1598,7 +1543,7 @@ final class Atomic
 				'is_extension' => false,
 				'is_upcoming'  => false,
 				'default'      => true,
-				'category'     => 'general',
+				'category'     => 'slider',
 				'order'        => 1,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -2059,31 +2004,6 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
-			// ── Progress Bar Main — PARENT widget #2 (a second, standalone
-			// variant powered by ProgressBar.js; it has no helper widgets of
-			// its own). Exposed in the dashboard widget list.
-			'aae-a-progressbar-main' => [
-				'label'        => 'Progress Bar Main',
-				'description'  => 'Animated line, circle, and dot progress bar powered by ProgressBar.js.',
-				'icon'         => 'eicon-skill-bar',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'progress',
-					'progressbar',
-					'bar',
-					'circle',
-					'skill',
-					'atomic',
-				],
-				'category'     => 'general',
-				'order'        => 13,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
 			// ── Toggle Switcher — PARENT widget #1. The only entry of this
 			// sub-group exposed in the dashboard widget list.
 			'aae-a-toggle-switcher' => [
@@ -2193,54 +2113,6 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
-			// ── Toggle Switcher Main — PARENT widget #2 (a second,
-			// standalone variant of Toggle Switcher, own JS/CSS bundle).
-			// Exposed in the dashboard widget list.
-			'aae-a-toggle-switcher-main' => [
-				'label'        => 'Toggle Switcher Main',
-				'description'  => 'A dual-panel content toggle with two styles — classic switch or label highlight.',
-				'icon'         => 'eicon-t-letter',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'toggle',
-					'switch',
-					'tabs',
-					'atomic',
-					'switcher',
-					'main',
-				],
-				'category'     => 'general',
-				'order'        => 15,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
-			// ── Toggle Switcher Main — HELPER widget. `is_internal =>
-			// true` hides it from the dashboard widget list; only used
-			// internally by "Toggle Switcher Main" above.
-			'aae-a-toggle-pane-main' => [
-				'label'        => 'Toggle Pane Main (Internal)',
-				'description'  => 'Internal child container for Toggle Switcher Main.',
-				'icon'         => 'eicon-inner-section',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'is_internal'  => true,
-				'default'      => true,
-				'keywords'     => [
-					'toggle pane',
-					'internal',
-					'main',
-				],
-				'category'     => 'general',
-				'order'        => 16,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
 			'aae-a-offcanvas' => [
 				'label'        => 'Offcanvas',
 				'description'  => 'Offcanvas drawer with trigger + panel and selectable GSAP open/close animations.',
@@ -2256,7 +2128,7 @@ final class Atomic
 					'panel',
 					'atomic',
 				],
-				'category'     => 'general',
+				'category'     => 'interaction',
 				'order'        => 15,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -2784,7 +2656,7 @@ final class Atomic
 					'preset',
 					'template',
 				],
-				'category'     => 'general',
+				'category'     => 'interaction',
 				'order'        => 14,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -2839,7 +2711,7 @@ final class Atomic
 					'marker',
 					'atomic',
 				],
-				'category'     => 'general',
+				'category'     => 'interaction',
 				'order'        => 20,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -3070,7 +2942,7 @@ final class Atomic
 			'regular-animation' => [
 				'label'        => 'Regular Animation',
 				'description'  => 'Preset-based entrance/exit animations applied to every atomic widget.',
-				'icon'         => 'wcf-icon-starter-animation',
+				'icon'         => 'wcf-icon-Animation',
 				'is_pro'       => false,
 				'is_extension' => true,
 				'is_upcoming'  => false,
@@ -3083,7 +2955,7 @@ final class Atomic
 			'parallax' => [
 				'label'        => 'Parallax',
 				'description'  => 'ScrollSmoother-powered parallax depth effect on scroll.',
-				'icon'         => 'wcf-icon-parallax',
+				'icon'         => 'wcf-icon-Animation-Builder',
 				'is_pro'       => false,
 				'is_extension' => true,
 				'is_upcoming'  => false,
@@ -3096,7 +2968,7 @@ final class Atomic
 			'text-animation' => [
 				'label'        => 'Text Animation',
 				'description'  => 'Character/word/line reveal animations for heading-class widgets.',
-				'icon'         => 'wcf-icon-text-animation',
+				'icon'         => 'wcf-icon-Text-Animation',
 				'is_pro'       => false,
 				'is_extension' => true,
 				'is_upcoming'  => false,
@@ -3109,7 +2981,7 @@ final class Atomic
 			'image-animation' => [
 				'label'        => 'Image Animation',
 				'description'  => 'Reveal/scale/stretch animations for image and SVG widgets.',
-				'icon'         => 'wcf-icon-image-animation',
+				'icon'         => 'wcf-icon-Image-Animation',
 				'is_pro'       => false,
 				'is_extension' => true,
 				'is_upcoming'  => false,
@@ -3122,7 +2994,7 @@ final class Atomic
 			'image-hover' => [
 				'label'        => 'Image Hover',
 				'description'  => 'Cursor-following floating image overlay on any atomic widget.',
-				'icon'         => 'wcf-icon-image-hover',
+				'icon'         => 'wcf-icon-Image-Hover-Effect',
 				'is_pro'       => false,
 				'is_extension' => true,
 				'is_upcoming'  => false,
@@ -3135,7 +3007,7 @@ final class Atomic
 			'sticky' => [
 				'label'        => 'Sticky',
 				'description'  => 'Pin elements to viewport on scroll with configurable offsets.',
-				'icon'         => 'wcf-icon-sticky',
+				'icon'         => 'wcf-icon-Pin-Elements',
 				'is_pro'       => false,
 				'is_extension' => true,
 				'is_upcoming'  => false,
@@ -3148,7 +3020,7 @@ final class Atomic
 			'horizontal-scroll-anim' => [
 				'label'        => 'Horizontal Scroll Animation',
 				'description'  => 'GSAP-powered horizontal scroll-triggered animation.',
-				'icon'         => 'wcf-icon-horizontal-scroll',
+				'icon'         => 'wcf-icon-Horizontal',
 				'is_pro'       => false,
 				'is_extension' => true,
 				'is_upcoming'  => false,
@@ -3161,7 +3033,7 @@ final class Atomic
 			'cursor-hover-effect' => [
 				'label'        => 'Cursor Hover Effect',
 				'description'  => 'Cursor-following floating element effect on any atomic widget.',
-				'icon'         => 'wcf-icon-cursor-hover',
+				'icon'         => 'wcf-icon-Cursor-Hover-Effect',
 				'is_pro'       => false,
 				'is_extension' => true,
 				'is_upcoming'  => false,
@@ -3174,7 +3046,7 @@ final class Atomic
 			'mouse-move-effect' => [
 				'label'        => 'Mouse Move Effect',
 				'description'  => 'Element moves/rotates based on mouse position.',
-				'icon'         => 'wcf-icon-mouse-move',
+				'icon'         => 'wcf-icon-Cursor-Move-Effect',
 				'is_pro'       => false,
 				'is_extension' => true,
 				'is_upcoming'  => false,
@@ -3187,7 +3059,7 @@ final class Atomic
 			'advance-tooltip' => [
 				'label'        => 'Advance Tooltip',
 				'description'  => 'Rich content tooltips on hover for any atomic widget.',
-				'icon'         => 'wcf-icon-tooltip',
+				'icon'         => 'wcf-icon-Advanced-Tooltip',
 				'is_pro'       => false,
 				'is_extension' => true,
 				'is_upcoming'  => false,
@@ -3200,7 +3072,7 @@ final class Atomic
 			'tilt' => [
 				'label'        => 'Tilt',
 				'description'  => '3D tilt perspective effect on hover.',
-				'icon'         => 'wcf-icon-tilt',
+				'icon'         => 'wcf-icon-Tilt-Effect',
 				'is_pro'       => false,
 				'is_extension' => true,
 				'is_upcoming'  => false,
@@ -3213,7 +3085,7 @@ final class Atomic
 			'scroll-to' => [
 				'label'        => 'Scroll To',
 				'description'  => 'Smooth scroll-to-target anchor navigation.',
-				'icon'         => 'wcf-icon-scroll-to',
+				'icon'         => 'wcf-icon-Horizontal',
 				'is_pro'       => false,
 				'is_extension' => true,
 				'is_upcoming'  => false,
@@ -3248,7 +3120,7 @@ final class Atomic
 			'custom-css' => [
 				'label'        => 'Custom CSS',
 				'description'  => 'Add custom CSS rules per-element in the atomic editor.',
-				'icon'         => 'wcf-icon-custom-css',
+				'icon'         => 'wcf-icon-Custom-CSS',
 				'is_pro'       => false,
 				'is_extension' => true,
 				'is_upcoming'  => false,
@@ -3269,15 +3141,20 @@ final class Atomic
 			 * `requires_note` is the ready-to-render tooltip string for the dashboard.
 			 * Both are optional; extensions that apply to any atomic element omit them.
 			 */
+			// Slug stays `flexbox-child-hover` — it is what Pro's AtomicV4
+			// Bootstrap gates on, and a saved option is keyed by slug, so
+			// renaming it would orphan every site's setting. The user-facing
+			// label/keywords take the clearer "Parent Child Hover" wording;
+			// keywords carry both namings so search finds it either way.
 			'flexbox-child-hover' => [
-				'label'        => 'Flexbox Child Hover',
-				'description'  => 'Hover effects driven by the parent flexbox, applied to its child elements.',
-				'icon'         => 'wcf-icon-Hover-Box',
+				'label'        => 'Parent Child Hover',
+				'description'  => 'Hover a container to trigger a "Parent Hover" style state on its child elements.',
+				'icon'         => 'wcf-icon-Grid-Hover-Posts',
 				'is_pro'       => true,
 				'is_extension' => true,
 				'is_upcoming'  => false,
 				'default'      => true,
-				'keywords'     => ['flexbox', 'hover', 'child hover', 'container hover'],
+				'keywords'     => ['parent child hover', 'flexbox child hover', 'parent hover', 'hover source', 'hover target', 'child hover', 'container hover'],
 				'category'     => 'interaction',
 				'order'        => 15,
 				'requires_note' => 'Applies to Elementor\'s Flexbox container and its children.',
@@ -3285,13 +3162,13 @@ final class Atomic
 
 			'form-conditions' => [
 				'label'        => 'Conditional Display',
-				'description'  => 'Show or hide form fields and containers based on other field values.',
-				'icon'         => 'wcf-icon-Form',
+				'description'  => 'Show or hide AAE Form fields/containers based on the value of other fields.',
+				'icon'         => 'wcf-icon-Toggle-Switch',
 				'is_pro'       => true,
 				'is_extension' => true,
 				'is_upcoming'  => false,
 				'default'      => true,
-				'keywords'     => ['conditional', 'conditions', 'show hide', 'form logic'],
+				'keywords'     => ['conditional display', 'conditional logic', 'show hide fields', 'form conditions', 'dynamic fields'],
 				'category'     => 'utility',
 				'order'        => 16,
 				'requires'     => ['aae-a-form'],
@@ -3330,7 +3207,7 @@ final class Atomic
 
 			'popup' => [
 				'label'        => 'Popup',
-				'description'  => 'Site-wide popup system with triggers on any atomic element.',
+				'description'  => 'Site-wide popup system for atomic elements, triggered from AAE Builder templates.',
 				'icon'         => 'wcf-icon-Popup',
 				'is_pro'       => true,
 				'is_extension' => true,
@@ -3340,6 +3217,44 @@ final class Atomic
 				'category'     => 'interaction',
 				'order'        => 19,
 				'requires_note' => 'Popups are built as AAE Builder templates.',
+			],
+
+			/*
+			 * Template Library — the "Add AAE Template" modal in the Elementor
+			 * editor (Library_Source + inc/class-wcf-template-library.php, driven
+			 * by assets/js/wcf-template-library.js).
+			 *
+			 * There is a `template-library` entry in the V3 registry (config.php)
+			 * too, but NOTHING reads that key — it is a display-only card, so the
+			 * feature has never actually been switchable. This entry is the one
+			 * that works: class-plugin.php::include_files() gates the require of
+			 * inc/class-wcf-template-library.php on it, which in turn is what
+			 * defines Library_Source and therefore satisfies the two
+			 * class_exists('\WCF_ADDONS\Library_Source') checks that register the
+			 * editor script and the modal's Underscore templates.
+			 *
+			 * `default` is false on purpose. Unlike the Pro AtomicV4 modules
+			 * above — which this flag exists to rescue, because they USED to load
+			 * unconditionally — this file has never been required from anywhere,
+			 * so no site has ever had the feature on. Defaulting to true would
+			 * make migrate_newly_offered_extensions() silently introduce a new
+			 * editor modal on every existing install rather than restore
+			 * something they already had.
+			 */
+			'template-library' => [
+				'label'        => 'Template Library',
+				'description'  => 'Ready-made AAE layouts, importable from a library modal inside the Elementor editor.',
+				// Capitalised to match the glyph that actually exists in the icon
+				// font (\e957) — see the Dynamic Tags note above for why the
+				// lower-case spellings render as empty circles.
+				'icon'         => 'wcf-icon-Template-library',
+				'is_pro'       => false,
+				'is_extension' => true,
+				'is_upcoming'  => false,
+				'default'      => false,
+				'keywords'     => ['template library', 'templates', 'layout', 'import', 'blocks', 'pages', 'library'],
+				'category'     => 'utility',
+				'order'        => 20,
 			],
 		];
 	}
@@ -3365,6 +3280,11 @@ final class Atomic
 
 		add_action('elementor/widgets/register', [$this, 'register_widgets']);
 		add_action('elementor/elements/elements_registered', [$this, 'register_elements']);
+
+		// Panel grouping: AAE's atomic widgets otherwise inherit Elementor's
+		// generic "Atomic Elements" (v4-elements) category from
+		// Atomic_Widget_Base::get_categories() and all land in one bucket.
+		add_action('elementor/elements/categories_registered', [$this, 'register_atomic_categories']);
 
 		// Register library-document types for our atomic top-level widgets so
 		// "Save as a template" works on them (Elementor only registers types for
@@ -4088,10 +4008,9 @@ final class Atomic
 			'class'        => '\WCF_ADDONS\AtomicWidgets\Widgets\SocialShare\AAE_A_Social_Share',
 			'file'         => 'Widgets/SocialShare/class-aae-a-social-share.php',
 			'has_script'   => false,
-			// No JS behavior yet (see Widgets/SocialShare/assets/js/social-share.js) —
-			// only the on-demand stylesheet is registered.
+			// SCSS-only widget, compiled by gulp's compile:atomic-scss task, not webpack.
 			'style_handle' => 'aae-a-social-share-css',
-			'style_path'   => '/assets/atomic/js/social-share.css',
+			'style_path'   => '/assets/atomic/css/social-share.css',
 		],
 		'aae-a-social-share-item' => [
 			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\SocialShare\AAE_A_Social_Share_Item',
@@ -4117,7 +4036,7 @@ final class Atomic
 			'script_path' => '/assets/atomic/js/image-compare.js',
 			'has_script' => true,
 			'style_handle' => 'aae-a-image-compare-css',
-			'style_path' => '/assets/atomic/js/image-compare.css',
+			'style_path' => '/assets/atomic/css/image-compare.css',
 		],
 		'aae-a-countdown' => [
 			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Countdown\AAE_A_Countdown',
@@ -4172,7 +4091,7 @@ final class Atomic
 				'script_path'   => '/assets/atomic/js/btn.js',
 				'has_script'    => true,
 				'style_handle'  => 'aae-a-btn-css',
-				'style_path'    => '/assets/atomic/js/btn.css',
+				'style_path'    => '/assets/atomic/css/btn.css',
 			],
 
 			'aae-a-btn-pro' => [
@@ -4183,7 +4102,7 @@ final class Atomic
 				'script_deps'   => [ 'gsap' ], // Ripple + polygon magnetic-move effects need GSAP.
 				'has_script'    => true,
 				'style_handle'  => 'aae-a-btn-pro-css',
-				'style_path'    => '/assets/atomic/js/btn-pro.css',
+				'style_path'    => '/assets/atomic/css/btn-pro.css',
 			],
 
 			'aae-a-advanced-heading' => [
@@ -4200,7 +4119,7 @@ final class Atomic
 				'script_path'   => '/assets/atomic/js/progressbar.js',
 				'has_script'    => true,
 				'style_handle'  => 'aae-a-progressbar-css',
-				'style_path'    => '/assets/atomic/js/progressbar.css',
+				'style_path'    => '/assets/atomic/css/progressbar.css',
 			],
 
 			'aae-a-progressbar-track' => [
@@ -4219,16 +4138,6 @@ final class Atomic
 				'has_script' => false,
 			],
 
-			'aae-a-progressbar-main' => [
-				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\ProgressbarMain\AAE_A_Progressbar_Main',
-				'file'          => 'Widgets/ProgressbarMain/class-aae-a-progressbar-main.php',
-				'script_handle' => 'aae-a-progressbar-main-js',
-				'script_path'   => '/assets/atomic/js/progressbar-main.js',
-				'has_script'    => true,
-				'style_handle'  => 'aae-a-progressbar-main-css',
-				'style_path'    => '/assets/atomic/js/progressbar-main.css',
-			],
-
 			'aae-a-toggle-switcher' => [
 				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Switcher',
 				'file'          => 'Widgets/ToggleSwitcher/class-aae-a-toggle-switcher.php',
@@ -4236,7 +4145,7 @@ final class Atomic
 				'script_path'   => '/assets/atomic/js/toggle-switcher.js',
 				'has_script'    => true,
 				'style_handle'  => 'aae-a-toggle-switcher-css',
-				'style_path'    => '/assets/atomic/js/toggle-switcher.css',
+				'style_path'    => '/assets/atomic/css/toggle-switcher.css',
 			],
 
 			'aae-a-toggle-pane' => [
@@ -4263,22 +4172,6 @@ final class Atomic
 			'aae-a-toggle-pane-desc' => [
 				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Pane_Desc',
 				'file'       => 'Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-pane-desc.php',
-				'has_script' => false,
-			],
-
-			'aae-a-toggle-switcher-main' => [
-				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcherMain\AAE_A_Toggle_Switcher_Main',
-				'file'          => 'Widgets/ToggleSwitcherMain/class-aae-a-toggle-switcher-main.php',
-				'script_handle' => 'aae-a-toggle-switcher-main-js',
-				'script_path'   => '/assets/atomic/js/toggle-switcher-main.js',
-				'has_script'    => true,
-				'style_handle'  => 'aae-a-toggle-switcher-main-css',
-				'style_path'    => '/assets/atomic/js/toggle-switcher-main.css',
-			],
-
-			'aae-a-toggle-pane-main' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcherMain\AAE_A_Toggle_Pane_Main',
-				'file'       => 'Widgets/ToggleSwitcherMain/class-aae-a-toggle-pane-main.php',
 				'has_script' => false,
 			],
 
@@ -4476,11 +4369,11 @@ final class Atomic
 		'aae-a-flip-box' => [
 			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\FlipBox\AAE_A_Flip_Box',
 			'file'          => 'Widgets/FlipBox/class-aae-a-flip-box.php',
-			'script_handle' => 'aae-a-flip-box-js',
-			'script_path'   => '/assets/atomic/js/flip-box.js',
-			'has_script'    => true,
+			// SCSS-only widget (the flip animation is entirely CSS-driven) —
+			// compiled by gulp's compile:atomic-scss task, not webpack.
+			'has_script'    => false,
 			'style_handle'  => 'aae-a-flip-box-css',
-			'style_path'    => '/assets/atomic/js/flip-box.css',
+			'style_path'    => '/assets/atomic/css/flip-box.css',
 		],
 
 		'aae-a-image-hotspot' => [
@@ -4562,7 +4455,7 @@ final class Atomic
 			'script_path'   => '/assets/atomic/js/video-mask.js',
 			'has_script'    => true,
 			'style_handle'  => 'aae-a-video-mask-css',
-			'style_path'    => '/assets/atomic/js/video-mask.css',
+			'style_path'    => '/assets/atomic/css/video-mask.css',
 		],
 
 		'aae-a-video-mask-btn' => [
@@ -4978,6 +4871,32 @@ final class Atomic
 				$style->deps[] = 'editor-preview';
 			}
 		}
+	}
+
+	/**
+	 * Register AAE's own panel categories for atomic widgets. Each atomic
+	 * widget class returns one of these slugs from its own get_categories()
+	 * override (added per-widget — Atomic_Widget_Base's default is a plain,
+	 * non-abstract method, not something a central hook can redirect).
+	 *
+	 * @param \Elementor\Elements_Manager $elements_manager
+	 */
+	public function register_atomic_categories($elements_manager): void
+	{
+		$elements_manager->add_category('aae-atomic-general', [
+			'title' => esc_html__('AAE General', 'animation-addons-for-elementor'),
+			'icon'  => 'fa fa-plug',
+		]);
+
+		$elements_manager->add_category('aae-atomic-form', [
+			'title' => esc_html__('AAE Form', 'animation-addons-for-elementor'),
+			'icon'  => 'fa fa-plug',
+		]);
+
+		$elements_manager->add_category('aae-atomic-post', [
+			'title' => esc_html__('AAE Post', 'animation-addons-for-elementor'),
+			'icon'  => 'fa fa-plug',
+		]);
 	}
 
 	/**

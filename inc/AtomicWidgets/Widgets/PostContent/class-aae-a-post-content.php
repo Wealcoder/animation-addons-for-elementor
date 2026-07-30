@@ -58,6 +58,10 @@ class AAE_A_Post_Content extends Atomic_Widget_Base {
 		return [ 'content', 'post', 'atomic', 'dynamic' ];
 	}
 
+	public function get_categories(): array {
+		return ['aae-atomic-post'];
+	}
+
 	/**
 	 * The rendered post content, exposed to the editor's client-side (twig)
 	 * render so the canvas shows real content. The frontend is served by the

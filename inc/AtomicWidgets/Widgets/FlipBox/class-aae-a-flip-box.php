@@ -56,7 +56,7 @@ class AAE_A_Flip_Box extends Atomic_Element_Base {
 	}
 
 	public function get_title(): string {
-		return esc_html__( 'AAE Flip Box', 'animation-addons-for-elementor' );
+		return esc_html__( 'Flip Box', 'animation-addons-for-elementor' );
 	}
 
 	public function get_icon(): string {
@@ -65,6 +65,10 @@ class AAE_A_Flip_Box extends Atomic_Element_Base {
 
 	public function get_keywords(): array {
 		return [ 'flip', 'box', 'card', 'hover', 'atomic', 'animation', 'preset' ];
+	}
+
+	public function get_categories(): array {
+		return ['aae-atomic-general'];
 	}
 
 	protected static function define_props_schema(): array {
@@ -143,10 +147,6 @@ class AAE_A_Flip_Box extends Atomic_Element_Base {
 		return [
 			'elementor/elements/aae-a-flip-box' => __DIR__ . '/aae-a-flip-box.html.twig',
 		];
-	}
-
-	public function get_script_depends(): array {
-		return [ 'aae-a-flip-box-js' ];
 	}
 
 	public function get_style_depends(): array {

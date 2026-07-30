@@ -78,7 +78,7 @@ class AAE_A_Progressbar extends Atomic_Element_Base
 
 	public function get_title()
 	{
-		return esc_html__('AAE Progress Bar', 'animation-addons-for-elementor');
+		return esc_html__('Progress Bar', 'animation-addons-for-elementor');
 	}
 
 	public function get_icon()
@@ -89,6 +89,11 @@ class AAE_A_Progressbar extends Atomic_Element_Base
 	public function get_keywords()
 	{
 		return ['progressbar', 'progress', 'bar', 'basic', 'template', 'container', 'atomic'];
+	}
+
+	public function get_categories(): array
+	{
+		return ['aae-atomic-general'];
 	}
 
 	protected static function define_props_schema(): array

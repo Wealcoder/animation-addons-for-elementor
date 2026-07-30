@@ -12,6 +12,11 @@ const CATEGORY_LABELS = {
   slider: "Slider Widgets",
   video: "Video Widgets",
   animation: "Animation Widgets",
+  // Not used by any widget today — the extensions registry uses these two
+  // categories, and both maps are keyed the same way, so keep them labelled
+  // rather than falling through to the raw slug if a widget ever adopts one.
+  interaction: "Interaction Widgets",
+  utility: "Utility Widgets",
 };
 
 // Tab order in the dashboard. Registry insertion order is arbitrary (widgets
@@ -20,6 +25,7 @@ const CATEGORY_LABELS = {
 // listed here falls to the end, alphabetically.
 const CATEGORY_ORDER = [
   "general",
+  "interaction",
   "form",
   "dynamic",
   "single",
@@ -28,14 +34,20 @@ const CATEGORY_ORDER = [
   "slider",
   "video",
   "animation",
+  "utility",
 ];
 
-// Mirrors the `$internal_widgets` list in
-// class-atomic.php::is_widget_active() — those widgets are always
-// registered/active regardless of the saved dashboard toggle (seeded as
-// locked default children of a parent widget), so showing them as a switch
-// here would be misleading. Kept in sync by hand since the backend doesn't
-// expose this list to the dashboard config.
+// Belt-and-braces hide list. This used to mirror the `$internal_widgets`
+// array in class-atomic.php::is_widget_active(); that array is gone — internal
+// children now inherit their parent's state via WIDGET_PARENT_MAP, and
+// get_dashboard_config() already drops every `is_internal` entry before the
+// config reaches this file. So most slugs below are now filtered server-side
+// too, and the only ones this list still decides are the ALWAYS_ACTIVE_WIDGETS
+// (Post Title / Post Image), which ARE dashboard-visible but are force-active
+// because they double as seeded Loop Grid children — a switch for them would
+// do nothing. Safe to prune, but harmless: hiding an already-hidden slug is a
+// no-op, and flattenAtomicWidgets() preserves the saved state of anything
+// hidden here.
 const INTERNAL_WIDGET_SLUGS = [
   "aae-a-slide",
   "aae-a-slider-track",
@@ -56,7 +68,6 @@ const INTERNAL_WIDGET_SLUGS = [
   "aae-a-icon-list-item",
   "aae-a-countdown-unit",
   "aae-a-toggle-pane",
-  "aae-a-toggle-pane-main",
   "aae-a-video-mask-btn",
   "aae-a-flip-box-main-face",
   "aae-a-post-card",

@@ -93,7 +93,7 @@ class AAE_A_Form extends Atomic_Element_Base {
 	}
 
 	public function get_title() {
-		return esc_html__( 'AAE Form', 'animation-addons-for-elementor' );
+		return esc_html__( 'Form', 'animation-addons-for-elementor' );
 	}
 
 	public function get_icon() {
@@ -102,6 +102,10 @@ class AAE_A_Form extends Atomic_Element_Base {
 
 	public function get_keywords() {
 		return [ 'form', 'contact', 'lead', 'atomic', 'submit' ];
+	}
+
+	public function get_categories(): array {
+		return ['aae-atomic-form'];
 	}
 
 	/**

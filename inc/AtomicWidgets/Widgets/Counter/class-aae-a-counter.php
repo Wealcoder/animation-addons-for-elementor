@@ -48,11 +48,15 @@ class AAE_A_Counter extends Atomic_Element_Base {
 	}
 
 	public function get_title() {
-		return esc_html__( 'AAE Counter', 'animation-addons-for-elementor' );
+		return esc_html__( 'Counter', 'animation-addons-for-elementor' );
 	}
 
 	public function get_keywords() {
 		return [ 'atomic', 'counter', 'number', 'animation', 'gsap' ];
+	}
+
+	public function get_categories(): array {
+		return ['aae-atomic-general'];
 	}
 
 	public function get_icon() {

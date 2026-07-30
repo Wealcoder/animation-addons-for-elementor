@@ -31,7 +31,7 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 	}
 
 	public function get_title() {
-		return esc_html__( 'AAE Menu', self::TD );
+		return esc_html__( 'WP Menu', self::TD );
 	}
 
 	public function get_icon() {
@@ -39,7 +39,7 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 	}
 
 	public function get_keywords() {
-		return [ 'menu', 'nav', 'navigation', 'atomic', 'gsap' ];
+		return [ 'menu', 'wp', 'navigation' ];
 	}
 
 	protected static function define_props_schema(): array {

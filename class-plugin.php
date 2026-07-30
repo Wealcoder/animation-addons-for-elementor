@@ -1152,6 +1152,27 @@ class Plugin
 
 		\WCF_ADDONS\Atomic\Bootstrap::init();
 		\WCF_ADDONS\Forms\Bootstrap::init();
+
+		/*
+		 * Template Library, gated on the V4 (Atomic) dashboard extension toggle.
+		 *
+		 * This is the ONLY require of class-wcf-template-library.php in the
+		 * plugin, and that file is the only require of inc/library-source.php —
+		 * so this line is what decides whether \WCF_ADDONS\Library_Source exists,
+		 * and therefore whether the two class_exists() checks below (the editor
+		 * script enqueue, and the print_templates/preview_styles hooks) fire at
+		 * all. Before this gate existed nothing required the file, so the whole
+		 * feature was unreachable no matter what any setting said.
+		 *
+		 * Safe to call Atomic::instance() this early: Bootstrap::init() directly
+		 * above already loads the class (defensively requiring it, since
+		 * animation-addons-for-elementor.php only requires it AFTER
+		 * class-plugin.php) and calls instance() itself.
+		 */
+		if (\WCF_ADDONS\AtomicWidgets\Atomic::instance()->is_extension_active('template-library')) {
+			require_once WCF_ADDONS_PATH . 'inc/class-wcf-template-library.php';
+		}
+
 		include_once WCF_ADDONS_PATH . 'inc/trait-wcf-post-query.php';
 		include_once WCF_ADDONS_PATH . 'inc/trait-wcf-button.php';
 		include_once WCF_ADDONS_PATH . 'inc/trait-wcf-slider.php';

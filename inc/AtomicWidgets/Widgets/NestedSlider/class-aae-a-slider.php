@@ -51,7 +51,7 @@ class AAE_A_Slider extends Atomic_Element_Base {
 	}
 
 	public function get_title() {
-		return esc_html__( 'AAE Nested Slider', 'animation-addons-for-elementor' );
+		return esc_html__( 'Nested Slider', 'animation-addons-for-elementor' );
 	}
 
 	public function get_icon() {
@@ -60,6 +60,10 @@ class AAE_A_Slider extends Atomic_Element_Base {
 
 	public function get_keywords() {
 		return [ 'slider', 'nested', 'atomic', 'gsap' ];
+	}
+
+	public function get_categories(): array {
+		return ['aae-atomic-general'];
 	}
 
 	protected static function define_props_schema(): array {
