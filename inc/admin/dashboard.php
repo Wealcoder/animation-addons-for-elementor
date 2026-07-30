@@ -346,7 +346,7 @@ class WCF_Admin_Init
 			self::MENU_CAPABILITY,
 			self::MENU_PAGE_SLUG,
 			'',
-			WCF_ADDONS_URL . '/assets/images/wcf.png',
+			WCF_ADDONS_URL . 'assets/images/wcf.png',
 			8
 		);
 

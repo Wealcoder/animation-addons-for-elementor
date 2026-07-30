@@ -145,6 +145,17 @@ final class Assets
 	 * plugin's bundled copies when nobody else has registered them — Pro
 	 * gates its own registration behind a dashboard setting, so on a plain
 	 * install our atomic widgets would otherwise tween-less.
+	 *
+	 * Deliberately NOT here: SplitText and ScrollToPlugin. Those belong to
+	 * single effects, and their bundles already declare them
+	 * (EFFECT_BUNDLES: aae-effect-animation -> SplitText,
+	 * aae-effect-scroll-to -> ScrollToPlugin), so WordPress pulls each one
+	 * in exactly on the pages where Render.php enqueues that effect. Listing
+	 * them on the shared core handle shipped ~70KB of unused JS to every
+	 * page with ANY animation — flagged by Lighthouse as unused JavaScript
+	 * on pages with no text-animation / scroll-to at all. common.js itself
+	 * only reads window.SplitText lazily at play time (getSplitText), so it
+	 * has no load-order dependency on either plugin.
 	 */
 	private function frontend_deps(array $deps): array
 	{
@@ -154,12 +165,6 @@ final class Assets
 		}
 		if (wp_script_is('ScrollTrigger', 'registered')) {
 			$deps[] = 'ScrollTrigger';
-		}
-		if (wp_script_is('SplitText', 'registered')) {
-			$deps[] = 'SplitText';
-		}
-		if (wp_script_is('ScrollToPlugin', 'registered')) {
-			$deps[] = 'ScrollToPlugin';
 		}
 		return $deps;
 	}

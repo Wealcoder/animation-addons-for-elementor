@@ -288,6 +288,7 @@ final class Atomic
 			'aae-a-offcanvas-trigger',
 			'aae-a-offcanvas-close',
 			'aae-a-offcanvas-overlay',
+			'aae-a-stack-card',
 			'aae-a-timeline-item',
 			'aae-a-timeline-number',
 			'aae-a-timeline-year',
@@ -1279,6 +1280,31 @@ final class Atomic
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Pagination',
 				'keywords'     => ['atomic', 'slider', 'pagination', 'dots'],
 				'icon'         => 'eicon-ellipsis-h',
+				'hide_from_panel' => true,
+			],
+
+			'aae-a-stack-cards' => [
+				'label'        => 'Stack Cards',
+				'description'  => 'A scroll-driven card deck: independently-styleable cards that stack and animate with GSAP ScrollTrigger. First release ships the Scroll Stack animation; more arrive as presets.',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\StackCards\AAE_A_Stack_Cards',
+				'keywords'     => ['atomic', 'stack', 'cards', 'scroll', 'gsap'],
+				'icon'         => 'eicon-post-list',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'category'     => 'general',
+				'order'        => 1,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+			'aae-a-stack-card' => [
+				'is_internal'  => true,
+				'label'        => 'Stack Card (Internal)',
+				'description'  => 'Internal card element for Stack Cards.',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\StackCards\AAE_A_Stack_Card',
+				'keywords'     => ['atomic', 'stack', 'card', 'internal'],
+				'icon'         => 'eicon-single-post',
 				'hide_from_panel' => true,
 			],
 
@@ -3323,6 +3349,20 @@ final class Atomic
 				'has_script' => true,
 			],
 
+			'aae-a-stack-cards' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\StackCards\AAE_A_Stack_Cards',
+				'file' => 'Widgets/StackCards/class-aae-a-stack-cards.php',
+				'script_handle' => 'aae-a-stack-cards-js',
+				'script_path' => '/assets/atomic/js/stack-cards.js',
+				'script_deps' => [ 'gsap', 'ScrollTrigger' ],
+				'has_script' => true,
+			],
+			'aae-a-stack-card' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\StackCards\AAE_A_Stack_Card',
+				'file' => 'Widgets/StackCards/class-aae-a-stack-card.php',
+				'has_script' => false,
+			],
+
 			// Loop Grid Slider — reuses the Loop Grid query engine + the shared
 			// nested-slider runtime. Its only own script is the load-more bridge
 			'aae-a-post-pagination' => [
@@ -4476,6 +4516,22 @@ final class Atomic
 			->register_document_type('e-aae-a-slider', \WCF_ADDONS\AtomicWidgets\Library\AAE_A_Slider_Document::class);
 	}
 
+	/**
+	 * Build a plugin asset URL from a registry-relative path.
+	 *
+	 * WCF_ADDONS_URL comes from plugin_dir_url(), which always ends in a slash,
+	 * while every `script_path` / `style_path` in the widget registry is written
+	 * with a leading slash. Concatenating them raw yields
+	 * `.../animation-addons-for-elementor//assets/...` — the browser treats that
+	 * as a different URL from the single-slash form, so a file enqueued both
+	 * ways is fetched (and cached) twice. Normalise here rather than editing all
+	 * 50 registry entries, so new entries can keep either spelling safely.
+	 */
+	private static function asset_url(string $relative_path): string
+	{
+		return WCF_ADDONS_URL . ltrim($relative_path, '/');
+	}
+
 	public function register_atomic_scripts($loader)
 	{
 
@@ -4497,7 +4553,7 @@ final class Atomic
 				}
 				wp_register_script(
 					$widget_data['script_handle'],
-					WCF_ADDONS_URL . $path,
+					self::asset_url($path),
 					$deps,
 					$version,
 					true
@@ -4579,7 +4635,7 @@ final class Atomic
 
 					wp_register_script(
 						$widget_data['script_handle'],
-						WCF_ADDONS_URL . $path,
+						self::asset_url( $path ),
 						[ 'elementor-v2-frontend-handlers' ],
 						$version,
 						true
@@ -4605,7 +4661,7 @@ final class Atomic
 
 					wp_register_style(
 						$widget_data['style_handle'],
-						WCF_ADDONS_URL . $style_path,
+						self::asset_url( $style_path ),
 						[],
 						$style_ver
 					);
@@ -4634,7 +4690,7 @@ final class Atomic
 				$version = file_exists($file_path) ? filemtime($file_path) : WCF_ADDONS_VERSION;
 				wp_register_style(
 					$widget_data['style_handle'],
-					WCF_ADDONS_URL . $path,
+					self::asset_url($path),
 					[],
 					$version
 				);
@@ -4704,7 +4760,7 @@ final class Atomic
 		}
 		$file_path = WCF_ADDONS_PATH . $path;
 		$version   = file_exists( $file_path ) ? filemtime( $file_path ) : WCF_ADDONS_VERSION;
-		wp_register_style( $handle, WCF_ADDONS_URL . $path, [], $version );
+		wp_register_style( $handle, self::asset_url( $path ), [], $version );
 	}
 
 	/**

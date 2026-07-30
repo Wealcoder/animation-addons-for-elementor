@@ -310,7 +310,7 @@ class Grid_Hover_Posts extends Widget_Base
 				'options' => [
 					'layout-normal' => [
 						'title' => esc_html__('Normal', 'animation-addons-for-elementor'),
-						'url'   => WCF_ADDONS_URL . '/assets/image/post-layout-2.jpg',
+						'url'   => WCF_ADDONS_URL . 'assets/image/post-layout-2.jpg',
 					],
 				],
 				'default' => 'layout-normal',
