@@ -328,6 +328,104 @@ the effect should run.
 
 ---
 
+## Registering a new widget or extension — what must stay in sync
+
+Read this **before** adding either. Registration is split across several
+hand-maintained lists, and a widget/extension that is missing from one of them
+does not error — it just becomes silently unreachable. Two real cases:
+`aae-a-menu` shipped with a complete class, twig, CSS and JS but no dashboard
+metadata, so it could never be enabled by anyone; the Template Library's only
+`require` was never called, so its whole feature was dead code regardless of
+any setting.
+
+> Note: `get_available_widgets()`'s docblock points at a "HOW TO ADD A NEW
+> ATOMIC WIDGET" block "above `register_widget_definitions()`". **That block
+> does not exist** — this section is the actual checklist.
+
+### A new atomic widget
+
+All PHP below is `inc/AtomicWidgets/class-atomic.php` unless stated.
+
+| # | Where | Purpose | Skip it and… |
+|---|---|---|---|
+| 1 | `inc/AtomicWidgets/Widgets/<Name>/` | class + twig + `assets/` | nothing to register |
+| 2 | `get_available_widgets()` | `class` / `file` / `*_handle` / `*_path` / `has_script` | **never registers with Elementor** |
+| 3 | `register_widget_definitions()` (`$widgets_registry`) | dashboard card metadata | **`is_widget_active()` can never return true → unreachable** |
+| 4 | `WIDGET_PARENT_MAP` + `is_internal => true` | structural children of a composite widget | child gets its own card, or can never activate |
+| 5 | `webpack.config.js` | JS/SCSS entry | asset 404s |
+
+Lists 2 and 3 must agree. `assert_registry_integrity()` diffs them and
+`error_log()`s drift — but **only under `WP_DEBUG`**, so it is silent in
+production.
+
+Three constants change the default behaviour; use the narrowest one:
+
+- **`ALWAYS_ACTIVE_WIDGETS`** — force-registers regardless of the saved option.
+  Only for slugs with **no** dashboard card (e.g. `aae-a-counter-number`).
+  Putting a *carded* widget here makes its switch inert.
+- **`PARKED_WIDGETS`** — class exists, card deliberately withheld. Keeps
+  `assert_registry_integrity()` quiet. Remove the entry when you ship the card.
+- **`FORMERLY_FORCED_WIDGETS`** — one-time upgrade path only; see
+  `backfill_formerly_forced_widgets()`.
+
+Client side, `src/modules/dashboard/lib/atomicWidgetService.js` filters the
+payload *again* before rendering. A widget PHP happily sends can still be
+invisible via `INTERNAL_WIDGET_SLUGS`, `DEMO_ONLY_SLUGS`, or the `-main`
+regex — check there before concluding the PHP side is broken.
+
+### A new atomic extension
+
+1. Module under `inc/Atomic/<Feature>/` (free) or
+   `animation-addons-for-elementor-pro/inc/AtomicV4/<Feature>/` (Pro).
+2. Gate it: `Atomic::instance()->is_extension_active( '<slug>' )` in the owning
+   `Bootstrap::init()` / `register_modules()`.
+3. Add the `$this->extensions_registry` entry in **the free plugin** —
+   the registry lives there even for Pro-only modules, and Pro reads it back
+   through `is_extension_active()`.
+
+Nothing verifies steps 2 and 3 against each other. Audit both directions with:
+
+```bash
+# slugs the code actually gates on
+grep -rho "is_extension_active( *'[a-z0-9-]*'" \
+  animation-addons-for-elementor{,-pro}/inc animation-addons-for-elementor{,-pro}/class-plugin.php \
+  --include=*.php | sed "s/.*'\(.*\)'/\1/" | sort -u
+# vs. the registry keys in class-atomic.php
+```
+
+### Adding a new dashboard category
+
+Two files, and the JS needs a rebuild:
+
+- widgets → `CATEGORY_LABELS` **and** `CATEGORY_ORDER` in `atomicWidgetService.js`
+- extensions → the same two in `atomicExtensionService.js`
+
+Missing from `CATEGORY_LABELS`, the heading renders as the raw slug; missing
+from `CATEGORY_ORDER`, the group falls to the end regardless of intent.
+
+### Gotchas that have actually bitten
+
+- **`'default' => true` does nothing for a widget.** `aae_atomic_widgets` is
+  only ever written by the dashboard save handler — there is no seeder or
+  first-run migration reading the key, so a new widget arrives **off** on
+  existing sites. For **extensions** it does work:
+  `migrate_newly_offered_extensions()` switches on newly-offered slugs
+  (`LEGACY_OFFERED_EXTENSIONS` is the pre-marker baseline).
+- **The dashboard card can lie.** `get_dashboard_config()` computes
+  `is_active` from the raw saved option, *not* `is_widget_active()`. A
+  force-active widget whose slug was never saved renders a card showing
+  "off" while the widget is in fact registering.
+- **Icon names are case-sensitive and must exist in the font.** The
+  Capitalised `wcf-icon-Dynamic-Tags` / `wcf-icon-Template-library` style is
+  what resolves; lower-case guesses like `wcf-icon-parallax` match nothing and
+  render as empty circles. Verify with
+  `grep -o '\.wcf-icon-<Name>:before{content:"[^"]*"}' assets/css/*.css`.
+- **Changing these JS lists requires `npm run build`.** Pure PHP registry
+  changes are data-driven and need no rebuild; anything touching
+  `atomic*Service.js` does.
+
+---
+
 ## Conventions
 
 ### Data-attribute naming
@@ -470,6 +568,12 @@ JS.** Diagnose this class of failure fast: `head` the served file in
 
 | Symptom | Likely cause |
 |---|---|
+| Widget/extension missing from the dashboard entirely | A registration list is out of sync — see [Registering a new widget or extension](#registering-a-new-widget-or-extension--what-must-stay-in-sync). Most likely no `$widgets_registry` entry (widget unreachable), or the slug is in the JS `INTERNAL_WIDGET_SLUGS` / `DEMO_ONLY_SLUGS` / `-main` hide list. |
+| Dashboard toggle does nothing | Either the slug is in `ALWAYS_ACTIVE_WIDGETS` (force-active, switch inert), or nothing in the codebase actually calls `is_extension_active()` for it — audit both directions with the grep in that section. |
+| Card shows "off" but the widget still works | `get_dashboard_config()` reports `is_active` from the raw saved option, not `is_widget_active()`. A force-active slug that was never saved reads as off. |
+| New widget arrives disabled on an existing site | Expected: `'default' => true` is documentation-only for widgets — there is no seeder. Only extensions get auto-enabled, via `migrate_newly_offered_extensions()`. |
+| Dashboard category heading shows a raw slug, or sorts last | Missing from `CATEGORY_LABELS` / `CATEGORY_ORDER` in `atomicWidgetService.js` or `atomicExtensionService.js` — and remember to `npm run build`. |
+| Extension/widget icon is an empty circle | Icon class not in the font. Names are case-sensitive: `wcf-icon-Dynamic-Tags` resolves, `wcf-icon-parallax` matches nothing. |
 | Effect controls not appearing | `Controls::inject_controls()` not adding the section for that widget type |
 | Settings don't save | Prop not in Schema, or wrong $$type wrapper |
 | `Settings validation failed … invalid_value` on publish (after a programmatic settings write) | Wrote a prop value RAW instead of in its `$$type` envelope. Responsive_JSON props need `{ $$type: 'aae-rj', value: { desktop: N } }`, not `{ desktop: N }`. See [Writing atomic settings from the editor](#writing-atomic-settings-from-the-editor-the-aae-rj-prop-shape). |

@@ -433,9 +433,8 @@ final class Atomic
 		'aae-a-progressbar-fill'       => 'aae-a-progressbar',
 		'aae-a-progressbar-label'      => 'aae-a-progressbar',
 
-		// Social Share (base) / Social Share Main (separate widget family)
+		// Social Share
 		'aae-a-social-share-item'      => 'aae-a-social-share',
-		'aae-a-social-share-main-item' => 'aae-a-social-share-main',
 
 		// Nav
 		'aae-a-nav-item'               => 'aae-a-nav',
@@ -1730,48 +1729,12 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
-			'aae-a-social-share-main' => [
-				'label'        => 'Social Share Main',
-				'description'  => 'Atomic post social share widget with multiple vendors and AJAX share counts.',
-				'icon'         => 'eicon-share',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'social',
-					'share',
-					'post',
-					'atomic',
-					'aae',
-					'main',
-				],
-				'category'     => 'general',
-				'order'        => 12,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
-			'aae-a-social-share-main-item' => [
-				'is_internal'  => true,
-				'label'        => 'Social Share Main Item',
-				'description'  => 'Internal child item for Social Share Main.',
-				'icon'         => 'eicon-share',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'social',
-					'share',
-					'item',
-					'internal',
-				],
-				'category'     => 'general',
-				'order'        => 13,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
+			// 'aae-a-social-share-main' / '-main-item' removed: the whole
+			// Widgets/SocialShareMain/ directory was deleted in 165a85e5, but
+			// these entries were left behind. Class loading is file_exists()
+			// guarded so they failed silently, while the script enqueue was
+			// not — the editor 404'd on assets/atomic/js/social-share-main.js
+			// on every load. Use 'aae-a-social-share' instead.
 
 			'aae-a-image-compare' => [
 				'label'        => 'Image Compare',
@@ -3608,8 +3571,12 @@ final class Atomic
 	 *       'style_path'    => '/assets/atomic/css/<slug>.css',
 	 *   ],
 	 *
-	 * See the full "HOW TO ADD A NEW ATOMIC WIDGET" block above
-	 * register_widget_definitions() for the complete walkthrough.
+	 * This map is only half of it — a widget also needs a
+	 * register_widget_definitions() entry or it can never be switched on. See
+	 * "Registering a new widget or extension — what must stay in sync" in
+	 * CLAUDE.md for the full checklist. (An older comment here pointed at a
+	 * "HOW TO ADD A NEW ATOMIC WIDGET" block above register_widget_definitions();
+	 * no such block exists.)
 	 */
 	protected function get_available_widgets()
 	{
@@ -4097,18 +4064,8 @@ final class Atomic
 			'file'       => 'Widgets/SocialShare/class-aae-a-social-share-item.php',
 			'has_script' => false,
 		],
-		'aae-a-social-share-main' => [
-			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\SocialShareMain\AAE_A_Social_Share_Main',
-			'file'          => 'Widgets/SocialShareMain/class-aae-a-social-share-main.php',
-			'script_handle' => 'aae-a-social-share-main-js',
-			'script_path'   => '/assets/atomic/js/social-share-main.js',
-			'has_script'    => true,
-		],
-		'aae-a-social-share-main-item' => [
-			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\SocialShareMain\AAE_A_Social_Share_Main_Item',
-			'file'       => 'Widgets/SocialShareMain/class-aae-a-social-share-main-item.php',
-			'has_script' => false,
-		],
+		// SocialShareMain entries removed — see the note in
+		// register_widget_definitions(). The directory no longer exists.
 		'aae-a-image-compare' => [
 			'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\ImageCompare\AAE_A_Image_Compare',
 			'file' => 'Widgets/ImageCompare/class-aae-a-image-compare.php',

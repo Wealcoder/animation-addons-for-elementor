@@ -79,7 +79,6 @@ const INTERNAL_WIDGET_SLUGS = [
   "aae-a-offcanvas-panel",
   "aae-a-timeline-item",
   "aae-a-timeline-main-item",
-  "aae-a-social-share-main-item",
   "aae-a-social-share-item",
   "aae-a-nav-item",
   "aae-a-nav-sub-item",
@@ -128,9 +127,11 @@ const INTERNAL_WIDGET_SLUGS = [
 //   button widgets in CLAUDE.md).
 const DEMO_ONLY_SLUGS = ["aae-a-button", "aae-a-button-pro"];
 
-// "-main" suffixed widgets (e.g. `aae-a-image-compare-main`,
-// `aae-a-social-share-main`) are demo-only duplicates of their non-"main"
+// "-main" suffixed widgets (e.g. `aae-a-progressbar-main`,
+// `aae-a-toggle-switcher-main`) are demo-only duplicates of their non-"main"
 // counterpart and are skipped from the dashboard list on purpose.
+// (`aae-a-social-share-main` used to be the example here; its registry
+// entries have since been deleted — the widget directory no longer exists.)
 const isHiddenAtomicWidget = (slug) => {
   if (INTERNAL_WIDGET_SLUGS.includes(slug)) return true;
   if (/(^|-)main(-|$)/.test(slug)) return true;
