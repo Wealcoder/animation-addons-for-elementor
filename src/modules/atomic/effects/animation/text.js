@@ -10,10 +10,21 @@
  * CRITICAL split design (the source of every past "last-only" / invisible-
  * text bug):
  *
- *   - We build ONE class-free SplitText per element ('lines,words,chars'),
- *     cached on el.__aaeTextSplit, and SHARE it across every row. SplitText
- *     is destructive — building it once per row would clobber the previous
+ *   - We build ONE class-free SplitText per element, cached on
+ *     el.__aaeTextSplit, and SHARE it across every row. SplitText is
+ *     destructive — building it once per row would clobber the previous
  *     split, so only the last row would animate.
+ *
+ *   - The split's `type` covers ONLY the units the element's rows actually
+ *     animate (union across rows, stashed at bind time — see unitsFor /
+ *     stashUnits). Splitting everything ('lines,words,chars') tripled the
+ *     DOM nodes for no benefit; chars on a long heading are ~3× the nodes
+ *     of words. Chars always come WITH words ('words,chars') — chars alone
+ *     lose word integrity (a line can break mid-word), and text_reveal's
+ *     overflow clip sits on each char's parent, which must stay the word.
+ *     The union is stashed BEFORE any tween builds so the first row to fire
+ *     creates the complete split — a later rebuild would detach nodes out
+ *     from under an already-running row's tween.
  *
  *   - The shared split carries NO per-effect classes. Effect-specific
  *     classes / styles (invert parentClass, reveal line-overflow, premium
@@ -34,6 +45,9 @@ export const TEXT_MAP = 'AAE_INTERACTIONS_TEXT';
 export const TEXT_PLAYED = '__aaeTextPlayed';
 
 const SPLIT_KEY = '__aaeTextSplit';   // shared class-free SplitText instance
+const SPLIT_TYPES_KEY = '__aaeTextSplitTypes'; // Set — units the cached split was built with
+const SPLIT_UNITS_KEY = '__aaeTextSplitUnits'; // Set — union of units this element's rows need
+const FONT_WAIT_KEY = '__aaeTextFontWait';   // token — a bind deferred on document.fonts.ready
 const INVERT_SPLIT_KEY = '__aaeInvertSplit'; // dedicated lines-only split for invert
 const ROWS_KEY = '__aaeTextRows';     // [{ config, tween, dispose }]
 const PARENT_CLASS = 'wcf-t-animation-text_invert';
@@ -122,19 +136,76 @@ function normalizeRow(row) {
 /* ---------- shared, class-free split ---------- */
 
 /**
- * Build (or reuse) the element's single class-free SplitText covering
- * lines + words + chars. Every row picks the collection it needs from this.
- * No linesClass / parentClass here — those leak hiding CSS across effects.
+ * Which split units a row's effect actually tweens. Chars always come with
+ * words: chars split alone lose word integrity (a line can break mid-word,
+ * since each char is its own inline-block), and text_reveal clips on each
+ * char's parentElement — which must stay the word, exactly as it is under
+ * the old all-units split. text_invert never appears here (dedicated split).
  */
-function getSharedSplit(el) {
-	if (el[SPLIT_KEY]) return el[SPLIT_KEY];
+function unitsFor(config) {
+	const effect = config.effect;
+	if (PREMIUM_EFFECTS_BY_ID[effect] || effect === 'char' || effect === 'text_reveal') {
+		return ['words', 'chars'];
+	}
+	if (effect === 'word') return ['words'];
+	if (effect === 'text_move') return ['lines'];
+	if (effect === 'text_scale') {
+		const unit = config.scaleBreak || 'lines';
+		return unit === 'chars' ? ['words', 'chars'] : [unit];
+	}
+	// Unknown → animates the whole element, needs no pieces.
+	return [];
+}
+
+/**
+ * Stash the union of units every row needs, BEFORE any tween can build.
+ * The first row to fire then creates the complete split in one go — if each
+ * row split only its own units, a later row would force a rebuild and
+ * detach the nodes an already-running row's tween is animating (the exact
+ * class of bug the header warns about). Cheap: a Set, no split is built, so
+ * the editor's resting canvas stays unsplit.
+ */
+function stashUnits(el, rows) {
+	const set = new Set();
+	for (const row of rows) {
+		if (!row || row.effect === 'text_invert') continue;
+		for (const unit of unitsFor(row)) set.add(unit);
+	}
+	el[SPLIT_UNITS_KEY] = set;
+}
+
+/**
+ * Build (or reuse) the element's single class-free SplitText covering the
+ * stashed union of units. Every row picks the collection it needs from
+ * this. No linesClass / parentClass here — those leak hiding CSS across
+ * effects. The rebuild path (cached split missing a needed unit) is only
+ * reachable when no row tween is live — e.g. an editor per-row ▶ preview of
+ * an unsaved effect right after killAllRows.
+ */
+function getSharedSplit(el, config) {
 	const SplitText = getSplitText();
 	if (!SplitText) return null;
+
+	const want = el[SPLIT_UNITS_KEY] instanceof Set ? new Set(el[SPLIT_UNITS_KEY]) : new Set();
+	if (config) for (const unit of unitsFor(config)) want.add(unit);
+	if (!want.size) return null;
+
+	const cached = el[SPLIT_KEY];
+	if (cached) {
+		const have = el[SPLIT_TYPES_KEY];
+		if (have instanceof Set && [...want].every((u) => have.has(u))) return cached;
+		try { cached.revert?.(); } catch (_) {}
+		delete el[SPLIT_KEY];
+	}
+
+	// Canonical order — SplitText nests lines > words > chars.
+	const type = ['lines', 'words', 'chars'].filter((t) => want.has(t)).join(',');
 	try {
-		el[SPLIT_KEY] = new SplitText(el, { type: 'lines,words,chars' });
+		el[SPLIT_KEY] = new SplitText(el, { type });
 	} catch (_) {
 		return null;
 	}
+	el[SPLIT_TYPES_KEY] = want;
 	return el[SPLIT_KEY];
 }
 
@@ -144,6 +215,7 @@ function revertSharedSplit(el) {
 		try { split.revert(); } catch (_) {}
 	}
 	delete el[SPLIT_KEY];
+	delete el[SPLIT_TYPES_KEY];
 
 	// Clear element-level inline state that move / premium effects set
 	// (perspective). Also defensively strip the invert parent class + CSS var in
@@ -276,10 +348,10 @@ function buildInvert(el, config, forcePreview = false) {
 
 /** Which split collection a given effect tweens. null → whole element. */
 function piecesFor(el, config) {
-	const split = getSharedSplit(el);
+	const split = getSharedSplit(el, config);
 	if (!split) {
-		// No SplitText (e.g. premium plugin absent) — fall back to the element
-		// for effects that can run whole-element; otherwise nothing.
+		// No SplitText (e.g. premium plugin absent), or the effect animates
+		// whole-element — fall back to the element itself.
 		return [el];
 	}
 	const effect = config.effect;
@@ -453,6 +525,9 @@ function killAllRows(el) {
 	}
 	el[ROWS_KEY] = [];
 	delete el[TEXT_PLAYED];
+	// Invalidate any bind still waiting on document.fonts.ready — a reset
+	// (effect switched off / rebind) must not resurrect once fonts arrive.
+	delete el[FONT_WAIT_KEY];
 
 	// Revert both splits LAST — after every row's tween/disposer is gone — so the
 	// original text DOM (and any inline styles) is restored cleanly.
@@ -471,6 +546,7 @@ export function resetText(el) {
 export function playText(el, mapConfig) {
 	const rows = mapConfig && mapConfig.rows ? mapConfig.rows : [];
 	killAllRows(el);
+	stashUnits(el, rows);
 
 	const state = [];
 	for (const rowCfg of rows) {
@@ -504,6 +580,9 @@ export function playTextRow(el, mapConfig, rowIndex = 0, explicitRow = null) {
 	if (!rowCfg) return;
 
 	killAllRows(el);
+	// Single-row preview — stash just this row's units so an unsaved effect
+	// (explicitRow from the editor) still gets the split it needs.
+	stashUnits(el, [rowCfg]);
 
 	const mode = modeFor(rowCfg.trigger);
 	if (SCROLL_MODES.includes(mode)) {
@@ -517,19 +596,62 @@ export function playTextRow(el, mapConfig, rowIndex = 0, explicitRow = null) {
 }
 
 /** Bind every row's trigger. Each row owns a paused tween + a disposer.
- *  `forcePreview` = bind even scroll/page-load rows in the editor (per-row ▶). */
+ *  `forcePreview` = bind even scroll/page-load rows in the editor (per-row ▶).
+ *
+ *  Frontend only: the bind waits for webfonts. A SplitText computed against
+ *  fallback-font metrics caches wrong line breaks — the `lines` unit
+ *  especially — and this runtime never re-splits (autoSplit is off the
+ *  table: a font-load re-split would detach nodes from under running
+ *  tweens, and the editor preview ships SplitText 3.11 which lacks it). V3
+ *  does the same (animations.js wraps text_animation in fonts.ready).
+ *
+ *  The double-rAF matters: @font-face loads only START with a paint —
+ *  at scan time fonts.status still reads 'loaded' because the browser has
+ *  not even requested the fonts yet (measured; a forced layout via
+ *  offsetWidth is NOT enough). Two frames guarantee a paint happened, so
+ *  the status check is looking at reality. The editor binds immediately —
+ *  its document has been rendering for a while, fonts long settled. */
 export function bindText(el, mapConfig, forcePreview = false) {
+	const rawEditMode = !!(window.elementorFrontend
+		&& window.elementorFrontend.isEditMode
+		&& window.elementorFrontend.isEditMode());
+
+	if (rawEditMode || typeof document === 'undefined' || !document.fonts
+		|| typeof requestAnimationFrame !== 'function') {
+		bindTextNow(el, mapConfig, forcePreview, rawEditMode);
+		return;
+	}
+
+	const token = {};
+	el[FONT_WAIT_KEY] = token;
+	const proceed = () => {
+		// Stale if a reset (killAllRows deletes the key) or a newer bind
+		// (fresh token) happened while we waited.
+		if (el[FONT_WAIT_KEY] !== token) return;
+		delete el[FONT_WAIT_KEY];
+		bindTextNow(el, mapConfig, forcePreview, rawEditMode);
+	};
+	requestAnimationFrame(() => requestAnimationFrame(() => {
+		if (el[FONT_WAIT_KEY] !== token) return;
+		if (document.fonts.status === 'loaded') {
+			proceed();
+		} else {
+			document.fonts.ready.then(proceed);
+		}
+	}));
+}
+
+function bindTextNow(el, mapConfig, forcePreview, rawEditMode) {
 	const rows = mapConfig && mapConfig.rows ? mapConfig.rows : [];
 	killAllRows(el);
+	stashUnits(el, rows);
 
 	// In the editor, scroll-tied / page-load / scrub rows must NOT auto-fire on
 	// load — doing so splits the text and leaves it broken on the canvas. We
 	// bind only interactive rows (click / hover) there so the user can trigger
 	// them; the others preview via the per-row ▶ play. The published frontend
 	// binds everything. forcePreview overrides for marker preview.
-	const isEditMode = !forcePreview && !!(window.elementorFrontend
-		&& window.elementorFrontend.isEditMode
-		&& window.elementorFrontend.isEditMode());
+	const isEditMode = !forcePreview && rawEditMode;
 
 	const state = [];
 
