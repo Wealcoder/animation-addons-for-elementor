@@ -296,19 +296,40 @@ final class Atomic
 	 * @return bool
 	 */
 	/**
-	 * Sub-widgets that stay independently toggleable in the dashboard (they
-	 * are NOT flagged `is_internal` in widgets_registry) even though they
-	 * also get seeded as a structural default child elsewhere — e.g. Post
-	 * Title/Image are real standalone widgets AND are auto-dropped inside
-	 * Loop Grid items. Their own explicit toggle must keep working
-	 * regardless of that other parent's state, so they are force-active
-	 * here rather than routed through WIDGET_PARENT_MAP below.
+	 * Widgets that must register regardless of the saved option, because
+	 * nothing in the dashboard can ever switch them on.
+	 *
+	 * Only for slugs with NO widgets_registry entry: 'aae-a-counter-number'
+	 * is a structural child of Counter that is not listed as its own card and
+	 * is not routed through WIDGET_PARENT_MAP, so without this it would never
+	 * be active and Counter would render incomplete.
+	 *
+	 * Post Title / Post Image used to sit here too, which contradicted this
+	 * constant's own purpose: they DO have dashboard cards, so force-active
+	 * made their toggle inert, and — because get_dashboard_config() reports
+	 * is_active from the raw saved option rather than is_widget_active() — a
+	 * card could read "off" while the widget was in fact registering. They now
+	 * follow their own toggle like every other carded widget; see
+	 * backfill_formerly_forced_widgets() for the one-time upgrade path.
 	 */
 	private const ALWAYS_ACTIVE_WIDGETS = [
-		'aae-a-post-title',
-		'aae-a-post-image',
 		'aae-a-counter-number',
 	];
+
+	/**
+	 * Widgets that were previously in ALWAYS_ACTIVE_WIDGETS and so registered
+	 * unconditionally. Used once to preserve that state on upgrade.
+	 */
+	private const FORMERLY_FORCED_WIDGETS = [
+		'aae-a-post-title',
+		'aae-a-post-image',
+	];
+
+	/**
+	 * Marker recording that the FORMERLY_FORCED_WIDGETS backfill has run, so a
+	 * later deliberate switch-off is never undone on the next page load.
+	 */
+	const FORCED_BACKFILL_OPTION_NAME = 'aae_atomic_widgets_forced_backfill';
 
 	/**
 	 * Maps every purely-internal child widget (`is_internal => true` in
@@ -3367,6 +3388,7 @@ final class Atomic
 		// option arrays outright. A slug absent from the saved option simply reads
 		// as inactive.
 		$this->migrate_newly_offered_extensions();
+		$this->backfill_formerly_forced_widgets();
 		$this->assert_registry_integrity();
 	}
 
@@ -3482,6 +3504,56 @@ final class Atomic
 	 * Brand new sites are skipped entirely: with no saved option at all the setup
 	 * wizard owns first-run configuration.
 	 */
+	/**
+	 * Keep Post Title / Post Image switched on for sites that already had them.
+	 *
+	 * They used to be in ALWAYS_ACTIVE_WIDGETS, so is_widget_active() returned
+	 * true whether or not the slug was ever written to the saved option — most
+	 * sites therefore have them active but ABSENT from that option. Now that
+	 * they follow their own toggle, doing nothing here would silently
+	 * deactivate them on upgrade, and any page using AAE Post Title/Image (or a
+	 * Loop Grid item, which seeds both as default children) would fail to
+	 * render that element.
+	 *
+	 * Runs once, guarded by its own marker option rather than by "is the slug
+	 * missing?" — otherwise a user who deliberately switches one off would have
+	 * it switched back on by the very next page load.
+	 *
+	 * Brand new sites are skipped: with no saved option at all the setup wizard
+	 * owns first-run configuration, exactly as in
+	 * migrate_newly_offered_extensions().
+	 */
+	private function backfill_formerly_forced_widgets(): void
+	{
+		if (get_option(self::FORCED_BACKFILL_OPTION_NAME)) {
+			return;
+		}
+
+		$saved = get_option(self::OPTION_NAME);
+
+		// No settings yet -> fresh install, the wizard decides. Don't pre-empt
+		// it, and don't burn the marker either: let the wizard write first.
+		if (! is_array($saved)) {
+			return;
+		}
+
+		$changed = false;
+
+		foreach (self::FORMERLY_FORCED_WIDGETS as $slug) {
+			if (! isset($saved[$slug])) {
+				$saved[$slug] = true;
+				$changed      = true;
+			}
+		}
+
+		if ($changed) {
+			update_option(self::OPTION_NAME, $saved);
+			$this->active_widgets = null;
+		}
+
+		update_option(self::FORCED_BACKFILL_OPTION_NAME, true);
+	}
+
 	private function migrate_newly_offered_extensions(): void
 	{
 		$saved = get_option(self::EXTENSIONS_OPTION_NAME);

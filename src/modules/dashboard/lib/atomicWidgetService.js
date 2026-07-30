@@ -45,13 +45,14 @@ const CATEGORY_ORDER = [
 // array in class-atomic.php::is_widget_active(); that array is gone — internal
 // children now inherit their parent's state via WIDGET_PARENT_MAP, and
 // get_dashboard_config() already drops every `is_internal` entry before the
-// config reaches this file. So most slugs below are now filtered server-side
-// too, and the only ones this list still decides are the ALWAYS_ACTIVE_WIDGETS
-// (Post Title / Post Image), which ARE dashboard-visible but are force-active
-// because they double as seeded Loop Grid children — a switch for them would
-// do nothing. Safe to prune, but harmless: hiding an already-hidden slug is a
-// no-op, and flattenAtomicWidgets() preserves the saved state of anything
-// hidden here.
+// config reaches this file. So every slug below is now filtered server-side
+// too and this list decides nothing on its own. Safe to prune, but harmless:
+// hiding an already-hidden slug is a no-op, and flattenAtomicWidgets()
+// preserves the saved state of anything hidden here.
+//
+// It used to also hide Post Title / Post Image, which were force-active in PHP
+// and so had no meaningful switch. They are genuinely toggleable now and have
+// been removed from this list — do not re-add them.
 const INTERNAL_WIDGET_SLUGS = [
   "aae-a-slide",
   "aae-a-slider-track",
@@ -96,8 +97,10 @@ const INTERNAL_WIDGET_SLUGS = [
   "aae-a-loop-slide-track",
   "aae-a-loop-slide-item",
   "aae-a-loop-slide-pagination",
-  "aae-a-post-image",
-  "aae-a-post-title",
+  // NOTE: 'aae-a-post-image' and 'aae-a-post-title' were hidden here because
+  // they were force-active in PHP (ALWAYS_ACTIVE_WIDGETS), which made a switch
+  // for them meaningless. They now follow their own saved toggle like every
+  // other carded widget, so they are listed.
   "aae-a-form-label",
   "aae-a-form-input",
   "aae-a-form-textarea",

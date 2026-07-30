@@ -31,7 +31,7 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 	}
 
 	public function get_title() {
-		return esc_html__( 'WP Menu', self::TD );
+		return esc_html__( 'WP Menu', 'animation-addons-for-elementor' );
 	}
 
 	public function get_icon() {
@@ -90,7 +90,7 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 	}
 
 	private function get_available_menus(): array {
-		$options = [ [ 'value' => '', 'label' => esc_html__( 'Select Menu', self::TD ) ] ];
+		$options = [ [ 'value' => '', 'label' => esc_html__( 'Select Menu', 'animation-addons-for-elementor' ) ] ];
 		foreach ( (array) wp_get_nav_menus() as $menu ) {
 			$options[] = [ 'value' => (string) $menu->slug, 'label' => $menu->name ];
 		}
@@ -100,140 +100,140 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 	protected function define_atomic_controls(): array {
 		return [
 			Section::make()
-				->set_label( __( 'Content', self::TD ) )
+				->set_label( __( 'Content', 'animation-addons-for-elementor' ) )
 				->set_id( 'content' )
 				->set_items( [
 					Select_Control::bind_to( 'menu' )
-						->set_label( __( 'Select Menu', self::TD ) )
+						->set_label( __( 'Select Menu', 'animation-addons-for-elementor' ) )
 						->set_options( $this->get_available_menus() ),
 				] ),
 
 			Section::make()
-				->set_label( __( 'Layout', self::TD ) )
+				->set_label( __( 'Layout', 'animation-addons-for-elementor' ) )
 				->set_id( 'layout' )
 				->set_items( [
 					Select_Control::bind_to( 'layout' )
-						->set_label( __( 'Layout', self::TD ) )
+						->set_label( __( 'Layout', 'animation-addons-for-elementor' ) )
 						->set_options( [
-							[ 'value' => 'horizontal', 'label' => __( 'Horizontal', self::TD ) ],
-							[ 'value' => 'vertical',   'label' => __( 'Vertical',   self::TD ) ],
+							[ 'value' => 'horizontal', 'label' => __( 'Horizontal', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'vertical',   'label' => __( 'Vertical',   'animation-addons-for-elementor' ) ],
 						] ),
 					Select_Control::bind_to( 'align' )
-						->set_label( __( 'Alignment', self::TD ) )
+						->set_label( __( 'Alignment', 'animation-addons-for-elementor' ) )
 						->set_options( [
-							[ 'value' => 'flex-start',    'label' => __( 'Left',    self::TD ) ],
-							[ 'value' => 'center',        'label' => __( 'Center',  self::TD ) ],
-							[ 'value' => 'flex-end',      'label' => __( 'Right',   self::TD ) ],
-							[ 'value' => 'space-between', 'label' => __( 'Justify', self::TD ) ],
+							[ 'value' => 'flex-start',    'label' => __( 'Left',    'animation-addons-for-elementor' ) ],
+							[ 'value' => 'center',        'label' => __( 'Center',  'animation-addons-for-elementor' ) ],
+							[ 'value' => 'flex-end',      'label' => __( 'Right',   'animation-addons-for-elementor' ) ],
+							[ 'value' => 'space-between', 'label' => __( 'Justify', 'animation-addons-for-elementor' ) ],
 						] ),
 				Switch_Control::bind_to( 'hamburger' )
-						->set_label( __( 'Mobile Hamburger', self::TD ) ),
+						->set_label( __( 'Mobile Hamburger', 'animation-addons-for-elementor' ) ),
 					Number_Control::bind_to( 'breakpoint' )
-						->set_label( __( 'Mobile Breakpoint (px)', self::TD ) ),
+						->set_label( __( 'Mobile Breakpoint (px)', 'animation-addons-for-elementor' ) ),
 					Text_Control::bind_to( 'mobile_label' )
-						->set_label( __( 'Mobile Header Label', self::TD ) )
-						->set_placeholder( __( 'Menu', self::TD ) ),
+						->set_label( __( 'Mobile Header Label', 'animation-addons-for-elementor' ) )
+						->set_placeholder( __( 'Menu', 'animation-addons-for-elementor' ) ),
 				] ),
 
 			Section::make()
-				->set_label( __( 'Menu Items Style', self::TD ) )
+				->set_label( __( 'Menu Items Style', 'animation-addons-for-elementor' ) )
 				->set_id( 'items_style' )
 				->set_items( [
 					Text_Control::bind_to( 'text_color' )
-						->set_label( __( 'Text Color', self::TD ) )
+						->set_label( __( 'Text Color', 'animation-addons-for-elementor' ) )
 						->set_placeholder( '#1f2937' ),
 					Text_Control::bind_to( 'hover_color' )
-						->set_label( __( 'Hover Text Color', self::TD ) )
+						->set_label( __( 'Hover Text Color', 'animation-addons-for-elementor' ) )
 						->set_placeholder( '#2563eb' ),
 					Text_Control::bind_to( 'item_hover_bg' )
-						->set_label( __( 'Hover Background', self::TD ) )
+						->set_label( __( 'Hover Background', 'animation-addons-for-elementor' ) )
 						->set_placeholder( 'rgba(0,0,0,0.05)' ),
 					Text_Control::bind_to( 'active_color' )
-						->set_label( __( 'Active Color', self::TD ) )
+						->set_label( __( 'Active Color', 'animation-addons-for-elementor' ) )
 						->set_placeholder( '#2563eb' ),
 					Number_Control::bind_to( 'font_size' )
-						->set_label( __( 'Font Size (px)', self::TD ) ),
+						->set_label( __( 'Font Size (px)', 'animation-addons-for-elementor' ) ),
 					Select_Control::bind_to( 'font_weight' )
-						->set_label( __( 'Font Weight', self::TD ) )
+						->set_label( __( 'Font Weight', 'animation-addons-for-elementor' ) )
 						->set_options( [
-							[ 'value' => '400', 'label' => __( 'Normal',    self::TD ) ],
-							[ 'value' => '500', 'label' => __( 'Medium',    self::TD ) ],
-							[ 'value' => '600', 'label' => __( 'Semi Bold', self::TD ) ],
-							[ 'value' => '700', 'label' => __( 'Bold',      self::TD ) ],
+							[ 'value' => '400', 'label' => __( 'Normal',    'animation-addons-for-elementor' ) ],
+							[ 'value' => '500', 'label' => __( 'Medium',    'animation-addons-for-elementor' ) ],
+							[ 'value' => '600', 'label' => __( 'Semi Bold', 'animation-addons-for-elementor' ) ],
+							[ 'value' => '700', 'label' => __( 'Bold',      'animation-addons-for-elementor' ) ],
 						] ),
 					Number_Control::bind_to( 'padding_x' )
-						->set_label( __( 'Item Padding X (px)', self::TD ) ),
+						->set_label( __( 'Item Padding X (px)', 'animation-addons-for-elementor' ) ),
 					Number_Control::bind_to( 'padding_y' )
-						->set_label( __( 'Item Padding Y (px)', self::TD ) ),
+						->set_label( __( 'Item Padding Y (px)', 'animation-addons-for-elementor' ) ),
 					Number_Control::bind_to( 'item_gap' )
-						->set_label( __( 'Item Gap (px)', self::TD ) ),
+						->set_label( __( 'Item Gap (px)', 'animation-addons-for-elementor' ) ),
 					Number_Control::bind_to( 'link_radius' )
-						->set_label( __( 'Item Radius (px)', self::TD ) ),
+						->set_label( __( 'Item Radius (px)', 'animation-addons-for-elementor' ) ),
 				] ),
 
 			Section::make()
-				->set_label( __( 'Dropdown Style', self::TD ) )
+				->set_label( __( 'Dropdown Style', 'animation-addons-for-elementor' ) )
 				->set_id( 'dropdown_style' )
 				->set_items( [
 					Text_Control::bind_to( 'dropdown_bg' )
-						->set_label( __( 'Background', self::TD ) )
+						->set_label( __( 'Background', 'animation-addons-for-elementor' ) )
 						->set_placeholder( '#ffffff' ),
 					Text_Control::bind_to( 'dropdown_hover_bg' )
-						->set_label( __( 'Item Hover Background', self::TD ) )
+						->set_label( __( 'Item Hover Background', 'animation-addons-for-elementor' ) )
 						->set_placeholder( 'rgba(15,23,42,0.05)' ),
 					Text_Control::bind_to( 'dropdown_hover_text_color' )
-						->set_label( __( 'Item Hover Text Color', self::TD ) )
+						->set_label( __( 'Item Hover Text Color', 'animation-addons-for-elementor' ) )
 						->set_placeholder( '#2563eb' ),
 					Number_Control::bind_to( 'dropdown_min_width' )
-						->set_label( __( 'Min Width (px)', self::TD ) ),
+						->set_label( __( 'Min Width (px)', 'animation-addons-for-elementor' ) ),
 					Number_Control::bind_to( 'dropdown_radius' )
-						->set_label( __( 'Border Radius (px)', self::TD ) ),
+						->set_label( __( 'Border Radius (px)', 'animation-addons-for-elementor' ) ),
 				] ),
 
 			Section::make()
-				->set_label( __( 'Hamburger & Drawer', self::TD ) )
+				->set_label( __( 'Hamburger & Drawer', 'animation-addons-for-elementor' ) )
 				->set_id( 'drawer_style' )
 				->set_items( [
 					Text_Control::bind_to( 'hamburger_color' )
-						->set_label( __( 'Hamburger Color', self::TD ) )
+						->set_label( __( 'Hamburger Color', 'animation-addons-for-elementor' ) )
 						->set_placeholder( '#1f2937' ),
 					Number_Control::bind_to( 'drawer_width' )
-						->set_label( __( 'Drawer Width (px)', self::TD ) ),
+						->set_label( __( 'Drawer Width (px)', 'animation-addons-for-elementor' ) ),
 					Text_Control::bind_to( 'drawer_bg' )
-						->set_label( __( 'Drawer Background', self::TD ) )
+						->set_label( __( 'Drawer Background', 'animation-addons-for-elementor' ) )
 						->set_placeholder( '#ffffff' ),
 					Text_Control::bind_to( 'overlay_color' )
-						->set_label( __( 'Overlay Color', self::TD ) )
+						->set_label( __( 'Overlay Color', 'animation-addons-for-elementor' ) )
 						->set_placeholder( 'rgba(0,0,0,0.5)' ),
 				] ),
 
 			Section::make()
-				->set_label( __( 'Motion', self::TD ) )
+				->set_label( __( 'Motion', 'animation-addons-for-elementor' ) )
 				->set_id( 'motion' )
 				->set_items( [
 					Number_Control::bind_to( 'transition_ms' )
-						->set_label( __( 'Transition Duration (ms)', self::TD ) ),
+						->set_label( __( 'Transition Duration (ms)', 'animation-addons-for-elementor' ) ),
 					Select_Control::bind_to( 'drawer_animation' )
-						->set_label( __( 'Mobile Drawer Effect', self::TD ) )
+						->set_label( __( 'Mobile Drawer Effect', 'animation-addons-for-elementor' ) )
 						->set_options( [
-							[ 'value' => 'slide-left',   'label' => __( 'Slide from Left',   self::TD ) ],
-							[ 'value' => 'slide-right',  'label' => __( 'Slide from Right',  self::TD ) ],
-							[ 'value' => 'slide-top',    'label' => __( 'Slide from Top',    self::TD ) ],
-							[ 'value' => 'slide-bottom', 'label' => __( 'Slide from Bottom', self::TD ) ],
-							[ 'value' => 'fade',         'label' => __( 'Fade',              self::TD ) ],
-							[ 'value' => 'scale',        'label' => __( 'Scale',             self::TD ) ],
-							[ 'value' => 'zoom-in',      'label' => __( 'Zoom In',           self::TD ) ],
-							[ 'value' => 'flip',         'label' => __( 'Flip',              self::TD ) ],
+							[ 'value' => 'slide-left',   'label' => __( 'Slide from Left',   'animation-addons-for-elementor' ) ],
+							[ 'value' => 'slide-right',  'label' => __( 'Slide from Right',  'animation-addons-for-elementor' ) ],
+							[ 'value' => 'slide-top',    'label' => __( 'Slide from Top',    'animation-addons-for-elementor' ) ],
+							[ 'value' => 'slide-bottom', 'label' => __( 'Slide from Bottom', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'fade',         'label' => __( 'Fade',              'animation-addons-for-elementor' ) ],
+							[ 'value' => 'scale',        'label' => __( 'Scale',             'animation-addons-for-elementor' ) ],
+							[ 'value' => 'zoom-in',      'label' => __( 'Zoom In',           'animation-addons-for-elementor' ) ],
+							[ 'value' => 'flip',         'label' => __( 'Flip',              'animation-addons-for-elementor' ) ],
 						] ),
 					Select_Control::bind_to( 'dropdown_animation' )
-						->set_label( __( 'Sub-menu Dropdown Effect', self::TD ) )
+						->set_label( __( 'Sub-menu Dropdown Effect', 'animation-addons-for-elementor' ) )
 						->set_options( [
-							[ 'value' => 'slide',      'label' => __( 'Slide Down',     self::TD ) ],
-							[ 'value' => 'fade',       'label' => __( 'Fade',           self::TD ) ],
-							[ 'value' => 'slide-fade', 'label' => __( 'Slide + Fade',   self::TD ) ],
-							[ 'value' => 'scale',      'label' => __( 'Scale (Origin)', self::TD ) ],
-							[ 'value' => 'zoom',       'label' => __( 'Zoom',           self::TD ) ],
-							[ 'value' => 'flip',       'label' => __( 'Flip',           self::TD ) ],
+							[ 'value' => 'slide',      'label' => __( 'Slide Down',     'animation-addons-for-elementor' ) ],
+							[ 'value' => 'fade',       'label' => __( 'Fade',           'animation-addons-for-elementor' ) ],
+							[ 'value' => 'slide-fade', 'label' => __( 'Slide + Fade',   'animation-addons-for-elementor' ) ],
+							[ 'value' => 'scale',      'label' => __( 'Scale (Origin)', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'zoom',       'label' => __( 'Zoom',           'animation-addons-for-elementor' ) ],
+							[ 'value' => 'flip',       'label' => __( 'Flip',           'animation-addons-for-elementor' ) ],
 						] ),
 				] ),
 		];
@@ -277,7 +277,7 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 				'fallback_cb' => false,
 			] );
 		} else {
-			$settings['rendered_menu'] = '<div class="aae-a-menu-placeholder">' . esc_html__( 'Please select a menu', self::TD ) . '</div>';
+			$settings['rendered_menu'] = '<div class="aae-a-menu-placeholder">' . esc_html__( 'Please select a menu', 'animation-addons-for-elementor' ) . '</div>';
 		}
 
 		return $settings;
