@@ -56,6 +56,10 @@ class AAE_A_Form_Radio extends Atomic_Widget_Base {
 		return 'eicon-circle-o';
 	}
 
+	public function show_in_panel() {
+		return false;
+	}
+
 	public function get_keywords() {
 		return [ 'atomic', 'form', 'radio', 'choice' ];
 	}

@@ -1120,7 +1120,7 @@ final class Atomic
 
 			'aae-a-post-pagination-preview-image' => [
 				'is_internal'  => true,
-				'label'        => 'Post Pagination Preview Thumbnail',
+				'label'        => 'Thumbnail',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Image',
 				'icon'         => 'eicon-image',
 				'keywords'     => [ 'post', 'pagination', 'preview', 'thumbnail', 'image' ],
@@ -1129,7 +1129,7 @@ final class Atomic
 
 			'aae-a-post-pagination-preview-category' => [
 				'is_internal'  => true,
-				'label'        => 'Post Pagination Preview Category',
+				'label'        => 'Category',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Category',
 				'icon'         => 'eicon-tags',
 				'keywords'     => [ 'post', 'pagination', 'preview', 'category' ],
@@ -1138,7 +1138,7 @@ final class Atomic
 
 			'aae-a-post-pagination-preview-title' => [
 				'is_internal'  => true,
-				'label'        => 'Post Pagination Preview Title',
+				'label'        => 'Title',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Title',
 				'icon'         => 'eicon-t-letter',
 				'keywords'     => [ 'post', 'pagination', 'preview', 'title' ],
@@ -1147,7 +1147,7 @@ final class Atomic
 
 			'aae-a-post-pagination-preview-date' => [
 				'is_internal'  => true,
-				'label'        => 'Post Pagination Preview Date',
+				'label'        => 'Date',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Date',
 				'icon'         => 'eicon-calendar',
 				'keywords'     => [ 'post', 'pagination', 'preview', 'date' ],
@@ -1156,7 +1156,7 @@ final class Atomic
 
 			'aae-a-post-pagination-preview-author' => [
 				'is_internal'  => true,
-				'label'        => 'Post Pagination Preview Author',
+				'label'        => 'Author',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Author',
 				'icon'         => 'eicon-user-circle-o',
 				'keywords'     => [ 'post', 'pagination', 'preview', 'author' ],
@@ -1165,7 +1165,7 @@ final class Atomic
 
 			'aae-a-post-pagination-preview-excerpt' => [
 				'is_internal'  => true,
-				'label'        => 'Post Pagination Preview Excerpt',
+				'label'        => 'Excerpt',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Excerpt',
 				'icon'         => 'eicon-text-align-left',
 				'keywords'     => [ 'post', 'pagination', 'preview', 'excerpt' ],

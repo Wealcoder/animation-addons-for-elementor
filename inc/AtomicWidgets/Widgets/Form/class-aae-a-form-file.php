@@ -58,6 +58,10 @@ class AAE_A_Form_File extends Atomic_Widget_Base {
 		return 'eicon-upload';
 	}
 
+	public function show_in_panel() {
+		return false;
+	}
+
 	public function get_keywords() {
 		return [ 'atomic', 'form', 'file', 'upload', 'attachment' ];
 	}
