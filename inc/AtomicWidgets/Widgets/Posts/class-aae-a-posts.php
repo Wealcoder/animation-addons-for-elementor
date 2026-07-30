@@ -40,7 +40,7 @@ class AAE_A_Posts extends Atomic_Element_Base {
 	}
 
 	public function get_title() {
-		return esc_html__( 'AAE Posts', 'animation-addons-for-elementor' );
+		return esc_html__( 'Posts', 'animation-addons-for-elementor' );
 	}
 
 	public function get_icon() {

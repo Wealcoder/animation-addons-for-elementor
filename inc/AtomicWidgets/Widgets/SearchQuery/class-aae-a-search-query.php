@@ -49,7 +49,7 @@ class AAE_A_Search_Query extends Atomic_Widget_Base {
 	}
 
 	public function get_title() {
-		return esc_html__( 'AAE Search Query', self::TD );
+		return esc_html__( 'Search Query', self::TD );
 	}
 
 	public function get_icon() {

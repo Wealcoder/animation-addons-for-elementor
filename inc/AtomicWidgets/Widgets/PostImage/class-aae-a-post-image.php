@@ -41,7 +41,7 @@ class AAE_A_Post_Image extends Atomic_Widget_Base {
 	}
 
 	public function get_title() {
-		return esc_html__( 'AAE Post Image', 'animation-addons-for-elementor' );
+		return esc_html__( 'Post Image', 'animation-addons-for-elementor' );
 	}
 
 	public function get_icon() {

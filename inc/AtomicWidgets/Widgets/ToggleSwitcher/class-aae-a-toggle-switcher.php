@@ -71,7 +71,7 @@ class AAE_A_Toggle_Switcher extends Atomic_Element_Base {
 	}
 
 	public function get_title() {
-		return esc_html__( 'AAE Toggle Switcher', 'animation-addons-for-elementor' );
+		return esc_html__( 'Toggle Switcher', 'animation-addons-for-elementor' );
 	}
 
 	public function get_icon() {

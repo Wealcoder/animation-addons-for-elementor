@@ -45,7 +45,7 @@ class AAE_A_Nav extends Atomic_Element_Base {
 	}
 
 	public function get_title() {
-		return esc_html__( 'AAE Nav', 'animation-addons-for-elementor' );
+		return esc_html__( 'Nav', 'animation-addons-for-elementor' );
 	}
 
 	public function get_icon() {

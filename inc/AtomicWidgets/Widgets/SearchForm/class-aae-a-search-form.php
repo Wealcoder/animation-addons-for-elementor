@@ -69,7 +69,7 @@ class AAE_A_Search_Form extends Atomic_Element_Base {
 	}
 
 	public function get_title() {
-		return esc_html__( 'AAE Search Form', 'animation-addons-for-elementor' );
+		return esc_html__( 'Search Form', 'animation-addons-for-elementor' );
 	}
 
 	public function get_icon() {
