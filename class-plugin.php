@@ -45,6 +45,13 @@ class Plugin
 	const LIBRARY_OPTION_KEY = 'wcf_templates_library';
 
 	/**
+	 * Carrier handle for generated inline CSS (Custom Fonts, category colours).
+	 * Has no stylesheet of its own and is always enqueued, so inline CSS never
+	 * depends on whether the legacy v3 stylesheet happens to be loaded.
+	 */
+	const INLINE_STYLE_HANDLE = 'aae-inline-styles';
+
+	/**
 	 * API templates URL.
 	 *
 	 * Holds the URL of the templates API.
@@ -155,7 +162,7 @@ class Plugin
 		);
 
 		foreach ($scripts as $key => $script) {
-			wp_register_script($script['handler'], plugins_url('/assets/js/' . $script['src'], __FILE__), $script['dep'], $script['version'], $script['arg']);
+			wp_register_script($script['handler'], plugins_url('/assets/js/' . $script['src'], __FILE__), $script['dep'], self::asset_version($script['version']), $script['arg']);
 		}
 
 		$data = apply_filters(
@@ -179,12 +186,17 @@ class Plugin
 
 		wp_localize_script('wcf--addons', 'WCF_ADDONS_JS', $data);
 
-		wp_enqueue_script('wcf--addons');
+		// Only the v3 widgets/extensions consume wcf--addons (and the WCF_ADDONS_JS
+		// data attached to it). Nothing in the v4 atomic layer references either,
+		// so with the legacy layer switched off neither needs to ship.
+		if (self::has_active_legacy_assets()) {
+			wp_enqueue_script('wcf--addons');
+		}
 		// widget scripts
 		$widget_scripts = self::get_widget_scripts();
 		if (is_array($widget_scripts)) {
 			foreach ($widget_scripts as $key => $script) {
-				wp_register_script($script['handler'], plugins_url('/assets/js/' . $script['src'], __FILE__), $script['dep'], $script['version'], $script['arg']);
+				wp_register_script($script['handler'], plugins_url('/assets/js/' . $script['src'], __FILE__), $script['dep'], self::asset_version($script['version']), $script['arg']);
 			}
 		}
 
@@ -214,15 +226,52 @@ class Plugin
 		);
 
 		foreach ($styles as $key => $style) {
-			wp_register_style($style['handler'], plugins_url('/assets/css/' . $style['src'], __FILE__), $style['dep'], $style['version'], $style['media']);
+			wp_register_style($style['handler'], plugins_url('/assets/css/' . $style['src'], __FILE__), $style['dep'], self::asset_version($style['version']), $style['media']);
 		}
 
-		wp_enqueue_style('wcf--addons');
+		// Inline-only carrier handle: no file of its own, always enqueued.
+		// Custom Fonts and the category colour fields attach generated CSS with
+		// wp_add_inline_style(), and WordPress DISCARDS inline CSS whose parent
+		// handle is not enqueued — silently. They used to hang off wcf--addons,
+		// which meant that 6.5 KB legacy stylesheet had to ship on every page
+		// just to carry them. Now they have their own handle and wcf--addons is
+		// free to load only when the legacy layer is actually in use.
+		wp_register_style(self::INLINE_STYLE_HANDLE, false, array(), WCF_ADDONS_VERSION);
+		wp_enqueue_style(self::INLINE_STYLE_HANDLE);
+
+		// The core legacy stylesheet is only needed by v3 widgets/extensions.
+		if (self::has_active_legacy_assets()) {
+			wp_enqueue_style('wcf--addons');
+		}
 
 		// widget style
 		foreach (self::get_widget_style() as $key => $style) {
-			wp_register_style($style['handler'], plugins_url('/assets/css/' . $style['src'], __FILE__), $style['dep'], $style['version'], $style['media']);
+			wp_register_style($style['handler'], plugins_url('/assets/css/' . $style['src'], __FILE__), $style['dep'], self::asset_version($style['version']), $style['media']);
 		}
+	}
+
+	/**
+	 * Resolve an asset version for wp_register_script()/wp_register_style().
+	 *
+	 * Most entries in the script/style tables declare `'version' => false`. Passing
+	 * false to WordPress does NOT mean "no version" — WP substitutes $wp_version,
+	 * so every asset shipped as ?ver=<WordPress version>. Cache busting was then
+	 * tied to WordPress updates rather than to this plugin: ship new CSS/JS and
+	 * browsers and CDNs keep serving the old file until WP itself updates.
+	 *
+	 * Falls back to the plugin version. Truthy values are passed through untouched
+	 * so entries that deliberately use filemtime()/time() keep their behaviour.
+	 *
+	 * @since 1.2.0
+	 * @access public
+	 * @static
+	 *
+	 * @param mixed $version Version declared in the asset table.
+	 * @return string Version string to register with.
+	 */
+	public static function asset_version($version)
+	{
+		return $version ? $version : WCF_ADDONS_VERSION;
 	}
 
 	/**

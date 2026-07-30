@@ -30,3 +30,4 @@
         elementorFrontend.hooks.addAction( 'frontend/element_ready/wcf--counter.default', WcfCounter );
     } );
 } )( jQuery );
+//# sourceMappingURL=counter.js.map

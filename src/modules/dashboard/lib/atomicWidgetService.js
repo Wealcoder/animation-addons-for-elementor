@@ -4,8 +4,31 @@ const isOnlyPro =
 
 const CATEGORY_LABELS = {
   general: "General Widgets",
+  form: "Form Widgets",
+  dynamic: "Dynamic Widgets",
+  single: "Single Post Widgets",
+  archive: "Archive Widgets",
   "header-footer": "Header & Footer Widgets",
+  slider: "Slider Widgets",
+  video: "Video Widgets",
+  animation: "Animation Widgets",
 };
+
+// Tab order in the dashboard. Registry insertion order is arbitrary (widgets
+// are grouped by feature family in class-atomic.php, not by category), so the
+// tabs would otherwise reshuffle whenever a widget is added. Any category not
+// listed here falls to the end, alphabetically.
+const CATEGORY_ORDER = [
+  "general",
+  "form",
+  "dynamic",
+  "single",
+  "archive",
+  "header-footer",
+  "slider",
+  "video",
+  "animation",
+];
 
 // Mirrors the `$internal_widgets` list in
 // class-atomic.php::is_widget_active() — those widgets are always
@@ -131,9 +154,20 @@ export const groupAtomicWidgetsByCategory = (atomicConfig) => {
     );
   });
 
+  const rank = (key) => {
+    const i = CATEGORY_ORDER.indexOf(key);
+    return i === -1 ? CATEGORY_ORDER.length : i;
+  };
+
+  const ordered = Object.fromEntries(
+    Object.entries(categories).sort(
+      ([a], [b]) => rank(a) - rank(b) || a.localeCompare(b)
+    )
+  );
+
   return {
     title: atomicConfig?.title || "Atomic Widgets",
-    elements: categories,
+    elements: ordered,
   };
 };
 

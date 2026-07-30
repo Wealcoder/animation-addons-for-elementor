@@ -87,6 +87,111 @@ class WCF_Theme_Builder
 		add_action('get_footer', array($this, 'override_footer'));
 		add_action('animation_addons_header_builder_content', array($this, 'header_builder_content'));
 		add_action('animation_addons_footer_builder_content', array($this, 'footer_builder_content'));
+
+		// Must run while wp_head() is still open — see the method docblock.
+		add_action('wp_enqueue_scripts', array($this, 'register_builder_template_assets'), 5);
+	}
+
+	/**
+	 * Pull theme-builder documents into Elementor's asset registration pass.
+	 *
+	 * WHY THIS EXISTS:
+	 * A header/footer template is an Elementor document rendered OUTSIDE the main
+	 * loop. templates/header.php calls wp_head() first and only then fires
+	 * `animation_addons_header_builder_content`, so the document renders after the
+	 * stylesheets for the page have already been printed.
+	 *
+	 * Elementor's atomic styles manager only walks the MAIN queried document, so
+	 * `elementor/atomic-widgets/styles/register` never fired for the header. That
+	 * left every atomic style handle it needs (aae-a-nav-css, aae-a-site-logo-css,
+	 * …) unregistered — and wp_enqueue_style() silently does nothing for an unknown
+	 * handle, which is why the header CSS was missing from the page entirely rather
+	 * than merely arriving late.
+	 *
+	 * Firing `elementor/post/render` for each template makes Elementor treat it like
+	 * any other rendered document, registering its styles while wp_head() is still
+	 * open. This mirrors the Tier-1 fix in the Pro plugin's
+	 * AtomicV4\Popup\Registry, which solves the identical problem for popups
+	 * printed at wp_footer.
+	 *
+	 * The single/archive CONTENT templates need exactly the same treatment: our
+	 * templates/single.php and templates/archive.php also call get_header() (hence
+	 * wp_head()) before firing `animation_addons_*_builder_content`, so their
+	 * documents render just as late as the header does. Elementor only auto-renders
+	 * the MAIN queried post — on a single post that is the post itself, never the
+	 * theme-builder template that draws it — so `local-<template-id>-*.css` was
+	 * never generated or enqueued at all.
+	 *
+	 * @return void
+	 */
+	public function register_builder_template_assets()
+	{
+		if (is_admin()) {
+			return;
+		}
+
+		foreach ($this->get_rendered_template_ids() as $template_id) {
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Elementor core hook.
+			do_action('elementor/post/render', (string) $template_id);
+
+			// Registration alone still leaves the widget handles to be enqueued at
+			// render time, i.e. after wp_head() has closed, so the header would
+			// paint unstyled before print_late_styles() catches up at wp_footer.
+			// Enqueue this document's own handles now instead.
+			if (class_exists('\WCF_ADDONS\AtomicWidgets\Atomic')) {
+				\WCF_ADDONS\AtomicWidgets\Atomic::instance()
+					->enqueue_document_widget_assets($template_id);
+			}
+		}
+	}
+
+	/**
+	 * Theme-builder documents that will actually be printed on this request.
+	 *
+	 * The content-template branch deliberately mirrors
+	 * get_template_loader_default_file() (including its `aaeid` bail-out in
+	 * template_loader()) rather than just asking has_template() for every type:
+	 * a 'single' template can satisfy get_current_post_by_condition() on a page
+	 * where our single.php is never loaded, and registering a document that is
+	 * never printed would enqueue dead CSS into <head>.
+	 *
+	 * @return int[] Unique template post IDs, header/footer first.
+	 */
+	private function get_rendered_template_ids()
+	{
+		$template_ids = array();
+
+		foreach (array('header', 'footer') as $template_type) {
+			$template_id = $this->has_template($template_type);
+
+			if ($template_id) {
+				$template_ids[] = $template_id;
+			}
+		}
+
+		// Read-only request check for template routing; no nonce applies.
+		$is_routed = ! is_embed()
+			&& ! (isset($_REQUEST['aaeid']) && ! isset($_REQUEST['preview_id'])); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
+		if ($is_routed) {
+			$content_type = '';
+
+			if (is_singular()) {
+				$content_type = 'single';
+			} elseif (is_archive() || is_home() || is_search() || is_404() || (function_exists('is_shop') && is_shop())) {
+				$content_type = 'archive';
+			}
+
+			if ($content_type) {
+				$template_id = $this->has_template($content_type);
+
+				if ($template_id) {
+					$template_ids[] = $template_id;
+				}
+			}
+		}
+
+		return array_unique(array_map('absint', $template_ids));
 	}
 
 	/**

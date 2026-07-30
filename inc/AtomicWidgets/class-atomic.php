@@ -35,6 +35,56 @@ final class Atomic
 	const EXTENSIONS_OPTION_NAME = 'aae_atomic_extensions';
 
 	/**
+	 * Slugs that have ever been PRESENTED in the Atomic Extensions dashboard.
+	 *
+	 * The settings option only records what is enabled, so on its own it cannot
+	 * distinguish "shipped after this site was set up" from "the user switched it
+	 * off". That ambiguity is why the old default-seeder kept re-enabling things
+	 * people had disabled. Tracking what has been offered separates the two.
+	 */
+	const EXTENSIONS_OFFERED_OPTION_NAME = 'aae_atomic_extensions_offered';
+
+	/**
+	 * Widgets deliberately present in the class registry but withheld from the
+	 * dashboard, so assert_registry_integrity() does not report them as drift.
+	 *
+	 * 'aae-a-menu' is NOT a duplicate of aae-a-nav — the two solve different
+	 * problems. Menu renders an existing WordPress menu (wp_get_nav_menus() picker
+	 * + wp_nav_menu()) styled through flat props; Nav builds its items as separate
+	 * atomic elements (nav-item / nav-sub-item / mobile-nav) that are individually
+	 * styleable. Menu is complete — class, twig and css/js/scss all present — and
+	 * is withheld only because its dashboard metadata is the commented-out block
+	 * at the top of register_widget_definitions(). Uncomment that block to ship
+	 * it; remove this entry at the same time.
+	 */
+	private const PARKED_WIDGETS = [
+		'aae-a-menu',
+	];
+
+	/**
+	 * Extensions that shipped before EXTENSIONS_OFFERED_OPTION_NAME existed.
+	 *
+	 * Used once, on sites that predate the marker: any of these missing from the
+	 * saved option was deliberately turned off and must stay off. Anything NOT in
+	 * this list is genuinely new and gets switched on once.
+	 */
+	const LEGACY_OFFERED_EXTENSIONS = [
+		'regular-animation',
+		'parallax',
+		'text-animation',
+		'image-animation',
+		'image-hover',
+		'sticky',
+		'horizontal-scroll-anim',
+		'cursor-hover-effect',
+		'mouse-move-effect',
+		'advance-tooltip',
+		'tilt',
+		'scroll-to',
+		'custom-css',
+	];
+
+	/**
 	 * Singleton instance.
 	 *
 	 * @var Atomic|null
@@ -333,6 +383,28 @@ final class Atomic
 		'aae-a-offcanvas-panel'        => 'aae-a-offcanvas',
 		'aae-a-offcanvas-trigger'      => 'aae-a-offcanvas',
 		'aae-a-offcanvas-close'        => 'aae-a-offcanvas',
+		'aae-a-offcanvas-overlay'      => 'aae-a-offcanvas',
+
+		// Image Hotspot
+		'aae-a-hotspot-point'          => 'aae-a-image-hotspot',
+		'aae-a-hotspot-marker'         => 'aae-a-image-hotspot',
+		'aae-a-hotspot-content'        => 'aae-a-image-hotspot',
+		'aae-a-hotspot-close'          => 'aae-a-image-hotspot',
+		'aae-a-hotspot-lightbox'       => 'aae-a-image-hotspot',
+
+		// Post Pagination
+		'aae-a-post-pagination-prev'              => 'aae-a-post-pagination',
+		'aae-a-post-pagination-next'              => 'aae-a-post-pagination',
+		'aae-a-post-pagination-preview'           => 'aae-a-post-pagination',
+		'aae-a-post-pagination-preview-image'     => 'aae-a-post-pagination',
+		'aae-a-post-pagination-preview-category'  => 'aae-a-post-pagination',
+		'aae-a-post-pagination-preview-title'     => 'aae-a-post-pagination',
+		'aae-a-post-pagination-preview-date'      => 'aae-a-post-pagination',
+		'aae-a-post-pagination-preview-author'    => 'aae-a-post-pagination',
+		'aae-a-post-pagination-preview-excerpt'   => 'aae-a-post-pagination',
+
+		// Stack Cards
+		'aae-a-stack-card'             => 'aae-a-stack-cards',
 
 		// Timeline
 		'aae-a-timeline-item'          => 'aae-a-timeline',
@@ -702,7 +774,7 @@ final class Atomic
 					'atomic',
 					'dynamic',
 				],
-				'category'     => 'general',
+				'category'     => 'single',
 				'order'        => 0,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -723,7 +795,7 @@ final class Atomic
 					'atomic',
 					'dynamic',
 				],
-				'category'     => 'general',
+				'category'     => 'archive',
 				'order'        => 0,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -743,7 +815,7 @@ final class Atomic
 					'atomic',
 					'dynamic',
 				],
-				'category'     => 'general',
+				'category'     => 'single',
 				'order'        => 0,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -764,7 +836,7 @@ final class Atomic
 					'atomic',
 					'dynamic',
 				],
-				'category'     => 'general',
+				'category'     => 'single',
 				'order'        => 0,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -878,7 +950,7 @@ final class Atomic
 				'is_upcoming'  => false,
 				'default'      => true,
 				'keywords'     => [ 'search', 'form', 'ajax', 'filter', 'atomic', 'composite' ],
-				'category'     => 'general',
+				'category'     => 'form',
 				'order'        => 0,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -958,7 +1030,7 @@ final class Atomic
 				'is_upcoming'  => false,
 				'default'      => true,
 				'keywords'     => [ 'draw', 'svg', 'gsap', 'animation', 'scroll', 'atomic' ],
-				'category'     => 'general',
+				'category'     => 'animation',
 				'order'        => 0,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -979,7 +1051,7 @@ final class Atomic
 					'atomic',
 					'dynamic',
 				],
-				'category'     => 'general',
+				'category'     => 'dynamic',
 				'order'        => 0,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -1017,7 +1089,7 @@ final class Atomic
 					'template',
 					'dynamic',
 				],
-				'category'     => 'general',
+				'category'     => 'dynamic',
 				'order'        => 0,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -1040,7 +1112,7 @@ final class Atomic
 					'query',
 					'dynamic',
 				],
-				'category'     => 'general',
+				'category'     => 'slider',
 				'order'        => 1,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -1087,7 +1159,7 @@ final class Atomic
 					'pagination',
 					'dynamic',
 				],
-				'category'     => 'general',
+				'category'     => 'single',
 				'order'        => 0,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -1200,7 +1272,7 @@ final class Atomic
 					'template',
 					'dynamic',
 				],
-				'category'     => 'general',
+				'category'     => 'single',
 				'order'        => 0,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -1249,7 +1321,7 @@ final class Atomic
 				'is_upcoming'  => false,
 				'default'      => true,
 				'keywords'     => [ 'comment', 'avatar', 'gravatar', 'atomic', 'dynamic' ],
-				'category'     => 'general',
+				'category'     => 'single',
 				'order'        => 0,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -1264,7 +1336,7 @@ final class Atomic
 				'is_upcoming'  => false,
 				'default'      => true,
 				'keywords'     => [ 'comment', 'author', 'name', 'atomic', 'dynamic' ],
-				'category'     => 'general',
+				'category'     => 'single',
 				'order'        => 0,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -1279,7 +1351,7 @@ final class Atomic
 				'is_upcoming'  => false,
 				'default'      => true,
 				'keywords'     => [ 'comment', 'date', 'time', 'atomic', 'dynamic' ],
-				'category'     => 'general',
+				'category'     => 'single',
 				'order'        => 0,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -1294,7 +1366,7 @@ final class Atomic
 				'is_upcoming'  => false,
 				'default'      => true,
 				'keywords'     => [ 'comment', 'content', 'text', 'atomic', 'dynamic' ],
-				'category'     => 'general',
+				'category'     => 'single',
 				'order'        => 0,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -1309,7 +1381,7 @@ final class Atomic
 				'is_upcoming'  => false,
 				'default'      => true,
 				'keywords'     => [ 'comment', 'reply', 'link', 'atomic', 'dynamic' ],
-				'category'     => 'general',
+				'category'     => 'single',
 				'order'        => 0,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -1324,7 +1396,7 @@ final class Atomic
 				'is_upcoming'  => false,
 				'default'      => true,
 				'keywords'     => [ 'comment', 'form', 'reply', 'submit', 'atomic', 'dynamic' ],
-				'category'     => 'general',
+				'category'     => 'single',
 				'order'        => 0,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -1383,7 +1455,7 @@ final class Atomic
 				'is_extension' => false,
 				'is_upcoming'  => false,
 				'default'      => true,
-				'category'     => 'general',
+				'category'     => 'slider',
 				'order'        => 1,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -1427,6 +1499,92 @@ final class Atomic
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Pagination',
 				'keywords'     => ['atomic', 'slider', 'pagination', 'dots'],
 				'icon'         => 'eicon-ellipsis-h',
+				'hide_from_panel' => true,
+			],
+
+			// ── Nested Slider — remaining HELPER widgets. These were registered
+			// as classes and routed through WIDGET_PARENT_MAP, but had no entry
+			// here at all, so nothing could name them. `is_internal => true`
+			// keeps them out of the dashboard list exactly like their siblings
+			// above; the label/icon exist so the parent can list what it owns.
+			'aae-a-slider-dot' => [
+				'is_internal'  => true,
+				'label'        => 'Slider Dot',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Dot',
+				'keywords'     => ['atomic', 'slider', 'dot', 'bullet'],
+				'icon'         => 'eicon-dot-circle-o',
+				'hide_from_panel' => true,
+			],
+
+			'aae-a-slider-indicators' => [
+				'is_internal'  => true,
+				'label'        => 'Slider Indicators',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Indicators',
+				'keywords'     => ['atomic', 'slider', 'indicators'],
+				'icon'         => 'eicon-ellipsis-h',
+				'hide_from_panel' => true,
+			],
+
+			'aae-a-slider-current' => [
+				'is_internal'  => true,
+				'label'        => 'Slider Current Index',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Current',
+				'keywords'     => ['atomic', 'slider', 'current', 'index'],
+				'icon'         => 'eicon-number-field',
+				'hide_from_panel' => true,
+			],
+
+			'aae-a-slider-total' => [
+				'is_internal'  => true,
+				'label'        => 'Slider Total',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Total',
+				'keywords'     => ['atomic', 'slider', 'total', 'count'],
+				'icon'         => 'eicon-number-field',
+				'hide_from_panel' => true,
+			],
+
+			'aae-a-slider-percentage' => [
+				'is_internal'  => true,
+				'label'        => 'Slider Percentage',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Percentage',
+				'keywords'     => ['atomic', 'slider', 'percentage', 'progress'],
+				'icon'         => 'eicon-number-field',
+				'hide_from_panel' => true,
+			],
+
+			'aae-a-slider-progress' => [
+				'is_internal'  => true,
+				'label'        => 'Slider Progress',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Progress',
+				'keywords'     => ['atomic', 'slider', 'progress', 'bar'],
+				'icon'         => 'eicon-skill-bar',
+				'hide_from_panel' => true,
+			],
+
+			'aae-a-slider-progress-fill' => [
+				'is_internal'  => true,
+				'label'        => 'Slider Progress Fill',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Progress_Fill',
+				'keywords'     => ['atomic', 'slider', 'progress', 'fill'],
+				'icon'         => 'eicon-skill-bar',
+				'hide_from_panel' => true,
+			],
+
+			'aae-a-slider-counter' => [
+				'is_internal'  => true,
+				'label'        => 'Slider Counter',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Counter',
+				'keywords'     => ['atomic', 'slider', 'counter'],
+				'icon'         => 'eicon-counter',
+				'hide_from_panel' => true,
+			],
+
+			'aae-a-slider-divider' => [
+				'is_internal'  => true,
+				'label'        => 'Slider Divider',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Divider',
+				'keywords'     => ['atomic', 'slider', 'divider', 'separator'],
+				'icon'         => 'eicon-divider',
 				'hide_from_panel' => true,
 			],
 
@@ -1493,7 +1651,7 @@ final class Atomic
 					'heading',
 					'atomic',
 				],
-				'category'     => 'general',
+				'category'     => 'single',
 				'order'        => 7,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -1672,28 +1830,6 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
-			'aae-a-image-compare-main' => [
-				'label'        => 'Image Compare Main',
-				'description'  => 'A draggable before/after image comparison slider with independently styleable atomic children.',
-				'icon'         => 'eicon-image-before-after',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'image',
-					'compare',
-					'before',
-					'after',
-					'slider',
-					'atomic',
-					'main',
-				],
-				'category'     => 'general',
-				'order'        => 10,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
 
 			'aae-a-countdown' => [
 				'label'        => 'Countdown',
@@ -1844,27 +1980,6 @@ final class Atomic
 				'keywords'     => [ 'timeline', 'description', 'paragraph', 'atomic' ],
 				'category'     => 'general',
 				'order'        => 18,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
-			'aae-a-button' => [
-				'label'        => 'Button',
-				'description'  => 'A fully atomic button widget with advanced styling, hover effects, and icon support.',
-				'icon'         => 'wcf-icon-Button',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'button',
-					'cta',
-					'call to action',
-					'atomic button',
-					'click',
-				],
-				'category'     => 'general',
-				'order'        => 11,
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
@@ -2182,12 +2297,23 @@ final class Atomic
 				'keywords'        => [ 'offcanvas', 'close', 'icon' ],
 				'hide_from_panel' => true,
 			],
+			// ── Offcanvas backdrop — HELPER widget. Seeded as a locked child of
+			// the Offcanvas root, never dragged from the panel on its own, so
+			// `is_internal => true` keeps it out of the dashboard list. This
+			// entry previously carried the class-registry keys (`class_name`,
+			// `hide_from_panel`) instead of dashboard metadata, which rendered
+			// it as a card with no category, toggle state or description.
 			'aae-a-offcanvas-overlay' => [
-				'label'           => 'Offcanvas Overlay',
-				'class_name'      => 'WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Overlay',
-				'icon'            => 'eicon-square',
-				'keywords'        => [ 'offcanvas', 'overlay', 'backdrop', 'scrim' ],
-				'hide_from_panel' => true,
+				'label'        => 'Offcanvas Overlay',
+				'description'  => 'Backdrop layer behind an open Offcanvas panel.',
+				'icon'         => 'eicon-square',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [ 'offcanvas', 'overlay', 'backdrop', 'scrim' ],
+				'category'     => 'general',
+				'is_internal'  => true,
 			],
 
 			'aae-a-form' => [
@@ -2204,7 +2330,7 @@ final class Atomic
 					'lead',
 					'atomic',
 				],
-				'category'     => 'general',
+				'category'     => 'form',
 				'order'        => 17,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -2598,7 +2724,7 @@ final class Atomic
 				'is_upcoming'  => false,
 				'default'      => true,
 				'keywords'     => [ 'nav', 'menu', 'navbar', 'navigation', 'atomic', 'aae' ],
-				'category'     => 'general',
+				'category'     => 'header-footer',
 				'order'        => 17,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -2614,10 +2740,31 @@ final class Atomic
 				'is_upcoming'  => false,
 				'default'      => true,
 				'keywords'     => [ 'nav item', 'internal' ],
-				'category'     => 'general',
+				'category'     => 'header-footer',
 				'order'        => 17,
 				'demo_url'     => '',
 				'doc_url'      => '',
+			],
+
+			// ── Nav — remaining HELPER widgets. Registered as classes and
+			// routed through WIDGET_PARENT_MAP, but with no entry here, so
+			// nothing could name them (same gap as the slider parts above).
+			'aae-a-nav-sub-item' => [
+				'is_internal'  => true,
+				'label'        => 'Nav Sub Item',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\Nav\AAE_A_Nav_Sub_Item',
+				'keywords'     => [ 'nav', 'submenu', 'dropdown', 'internal' ],
+				'icon'         => 'eicon-nav-menu',
+				'hide_from_panel' => true,
+			],
+
+			'aae-a-mobile-nav' => [
+				'is_internal'  => true,
+				'label'        => 'Mobile Nav',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\Nav\AAE_A_Mobile_Nav',
+				'keywords'     => [ 'nav', 'mobile', 'responsive', 'internal' ],
+				'icon'         => 'eicon-menu-bar',
+				'hide_from_panel' => true,
 			],
 
 			'aae-a-flip-box' => [
@@ -2846,7 +2993,7 @@ final class Atomic
 					'atomic',
 					'shape',
 				],
-				'category'     => 'general',
+				'category'     => 'video',
 				'order'        => 18,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -2864,28 +3011,6 @@ final class Atomic
 				'keywords'     => [ 'video mask button', 'internal' ],
 				'category'     => 'general',
 				'order'        => 19,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
-			'aae-a-button-pro' => [
-				'label'        => 'Button Pro',
-				'description'  => 'Advanced button widget with 8 GSAP-powered hover styles: ripple, text flip, border divide, group swap, shadow, outline pill, and slide fill.',
-				'icon'         => 'wcf-icon-Button',
-				'is_pro'       => true,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'button pro',
-					'cta',
-					'gsap',
-					'hover',
-					'ripple',
-					'atomic',
-				],
-				'category'     => 'general',
-				'order'        => 20,
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
@@ -2913,7 +3038,9 @@ final class Atomic
 
 			'aae-a-btn-pro' => [
 				'label'        => 'Button Pro',
-				'description'  => 'A very basic open button container — no style presets, just a link wrapper you can fill with any nested elements.',
+				// Was a copy of aae-a-btn's description; the accurate text lived on
+				// the duplicate 'aae-a-button-pro' entry that has now been removed.
+				'description'  => 'Advanced button widget with 8 GSAP-powered hover styles: ripple, text flip, border divide, group swap, shadow, outline pill, and slide fill.',
 				'icon'         => 'wcf-icon-Button',
 				'is_pro'       => true,
 				'is_extension' => false,
@@ -3096,6 +3223,28 @@ final class Atomic
 				'order'        => 12,
 			],
 
+			// Implemented in the Pro plugin (inc/extensions/wcf-dynamic-tags.php +
+			// inc/core/dynamic-tags/). It used to be reachable ONLY through the v3
+			// extension list, so a site working purely in v4 had no way to switch it
+			// on and dynamic tags silently did nothing on atomic widgets. Pro loads
+			// it from this toggle as well — see WCFAddonsPro\Plugin::register_extensions().
+			'dynamic-tags' => [
+				'label'        => 'Dynamic Tags',
+				'description'  => 'Bind atomic widget content to dynamic sources: post, author, site, archive, comments and ACF fields.',
+				// Capitalised on purpose: this is the glyph name that actually
+				// exists in the icon font. The lower-case names the other atomic
+				// extensions use (wcf-icon-parallax, wcf-icon-custom-css, …) match
+				// nothing, which is why they render as empty circles.
+				'icon'         => 'wcf-icon-Dynamic-Tags',
+				'is_pro'       => true,
+				'is_extension' => true,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => ['dynamic tags', 'dynamic', 'acf', 'custom field', 'post data'],
+				'category'     => 'utility',
+				'order'        => 13,
+			],
+
 			'custom-css' => [
 				'label'        => 'Custom CSS',
 				'description'  => 'Add custom CSS rules per-element in the atomic editor.',
@@ -3107,6 +3256,90 @@ final class Atomic
 				'keywords'     => ['custom css', 'css', 'style', 'custom style'],
 				'category'     => 'utility',
 				'order'        => 14,
+			],
+
+			/*
+			 * Pro AtomicV4 modules (animation-addons-for-elementor-pro/inc/AtomicV4/).
+			 * They used to load unconditionally from AtomicV4\Bootstrap, so they never
+			 * appeared here and could not be switched off. The registry lives in the
+			 * free plugin — same constraint as widgets — so their definitions sit here
+			 * and Pro gates itself on is_extension_active().
+			 *
+			 * `requires` lists the widget slugs an extension is useless without, and
+			 * `requires_note` is the ready-to-render tooltip string for the dashboard.
+			 * Both are optional; extensions that apply to any atomic element omit them.
+			 */
+			'flexbox-child-hover' => [
+				'label'        => 'Flexbox Child Hover',
+				'description'  => 'Hover effects driven by the parent flexbox, applied to its child elements.',
+				'icon'         => 'wcf-icon-Hover-Box',
+				'is_pro'       => true,
+				'is_extension' => true,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => ['flexbox', 'hover', 'child hover', 'container hover'],
+				'category'     => 'interaction',
+				'order'        => 15,
+				'requires_note' => 'Applies to Elementor\'s Flexbox container and its children.',
+			],
+
+			'form-conditions' => [
+				'label'        => 'Conditional Display',
+				'description'  => 'Show or hide form fields and containers based on other field values.',
+				'icon'         => 'wcf-icon-Form',
+				'is_pro'       => true,
+				'is_extension' => true,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => ['conditional', 'conditions', 'show hide', 'form logic'],
+				'category'     => 'utility',
+				'order'        => 16,
+				'requires'     => ['aae-a-form'],
+				'requires_note' => 'Requires the Form widget.',
+			],
+
+			'form-validation' => [
+				'label'        => 'Validation Pro',
+				'description'  => 'Regex validation rules with custom messages on form inputs and textareas.',
+				'icon'         => 'wcf-icon-Form',
+				'is_pro'       => true,
+				'is_extension' => true,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => ['validation', 'regex', 'pattern', 'form validation'],
+				'category'     => 'utility',
+				'order'        => 17,
+				'requires'     => ['aae-a-form'],
+				'requires_note' => 'Requires the Form widget.',
+			],
+
+			'form-user' => [
+				'label'        => 'Create User',
+				'description'  => 'Turn a form submission into a real WordPress account, with role and alias mapping.',
+				'icon'         => 'wcf-icon-Form',
+				'is_pro'       => true,
+				'is_extension' => true,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => ['create user', 'registration', 'signup', 'account'],
+				'category'     => 'utility',
+				'order'        => 18,
+				'requires'     => ['aae-a-form'],
+				'requires_note' => 'Requires the Form widget. Configured per form in the Actions dialog.',
+			],
+
+			'popup' => [
+				'label'        => 'Popup',
+				'description'  => 'Site-wide popup system with triggers on any atomic element.',
+				'icon'         => 'wcf-icon-Popup',
+				'is_pro'       => true,
+				'is_extension' => true,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => ['popup', 'modal', 'lightbox', 'dialog'],
+				'category'     => 'interaction',
+				'order'        => 19,
+				'requires_note' => 'Popups are built as AAE Builder templates.',
 			],
 		];
 	}
@@ -3205,9 +3438,157 @@ final class Atomic
 			}
 		}, 20);
 
-		// Seed defaults on first install (option doesn't exist yet).
-		$this->maybe_seed_widgets_defaults();
-		$this->maybe_seed_extension_defaults();
+		// No defaults are seeded for atomic widgets or atomic extensions: the
+		// Atomic dashboard (and, on a brand new site, the setup wizard) owns both
+		// option arrays outright. A slug absent from the saved option simply reads
+		// as inactive.
+		$this->migrate_newly_offered_extensions();
+		$this->assert_registry_integrity();
+	}
+
+	/**
+	 * Report drift between the two widget registries. WP_DEBUG only.
+	 *
+	 * Widget data is split across two hand-maintained arrays that must agree:
+	 * get_available_widgets() (class / file / asset handles — what registers with
+	 * Elementor) and widgets_registry (dashboard metadata — what can be toggled).
+	 * Nothing enforced that agreement, and three separate defects had accumulated
+	 * silently:
+	 *
+	 *   - 'aae-a-button', 'aae-a-button-pro', 'aae-a-image-compare-main' had
+	 *     metadata but no class, so the dashboard rendered duplicate cards whose
+	 *     toggles controlled nothing.
+	 *   - 'aae-a-menu' had a class but no metadata, so it could never be enabled.
+	 *
+	 * None of that surfaces at runtime — a missing entry just makes a widget
+	 * quietly unreachable — so it can persist for releases. This turns it into an
+	 * immediate, visible failure while developing.
+	 *
+	 * Children routed through WIDGET_PARENT_MAP are expected to have no metadata:
+	 * they are grouped under their parent rather than listed, which is why they
+	 * are excluded here.
+	 */
+	private function assert_registry_integrity(): void
+	{
+		if (! defined('WP_DEBUG') || ! WP_DEBUG) {
+			return;
+		}
+
+		$available = array_keys($this->get_available_widgets());
+		$metadata  = array_keys($this->widgets_registry);
+
+		// Registered, but nothing in the dashboard can ever switch it on.
+		$missing_metadata = array_diff(
+			$available,
+			$metadata,
+			array_keys(self::WIDGET_PARENT_MAP),
+			self::PARKED_WIDGETS
+		);
+
+		// A dashboard toggle for a widget that cannot load.
+		$missing_class = array_diff($metadata, $available);
+
+		// An internal child with no parent. Once the forced-active list is gone
+		// these fall through to the saved-option lookup, which they can never
+		// satisfy (they have no toggle), so they would never register and the
+		// editor would throw ElementTypeNotFound on any page already using one.
+		$internal = [];
+		foreach ($this->widgets_registry as $slug => $def) {
+			if (! empty($def['is_internal'])) {
+				$internal[] = $slug;
+			}
+		}
+
+		$orphan_children = array_diff(
+			$internal,
+			array_keys(self::WIDGET_PARENT_MAP),
+			self::ALWAYS_ACTIVE_WIDGETS
+		);
+
+		// A parent that no longer exists — the children would inherit from a
+		// slug that is never active, silently disabling the whole family.
+		$dangling_parents = array_diff(
+			array_unique(array_values(self::WIDGET_PARENT_MAP)),
+			$metadata
+		);
+
+		if ($missing_metadata) {
+			error_log(
+				'AAE atomic registry: registered widget(s) with no dashboard metadata — unreachable: '
+				. implode(', ', $missing_metadata)
+			);
+		}
+
+		if ($orphan_children) {
+			error_log(
+				'AAE atomic registry: internal widget(s) with no WIDGET_PARENT_MAP parent — cannot inherit: '
+				. implode(', ', $orphan_children)
+			);
+		}
+
+		if ($dangling_parents) {
+			error_log(
+				'AAE atomic registry: WIDGET_PARENT_MAP points at unknown parent(s): '
+				. implode(', ', $dangling_parents)
+			);
+		}
+
+		if ($missing_class) {
+			error_log(
+				'AAE atomic registry: dashboard metadata with no class/file — toggle does nothing: '
+				. implode(', ', $missing_class)
+			);
+		}
+	}
+
+	/**
+	 * Switch on extensions that have never been offered to this site before.
+	 *
+	 * NOT a return of the default-seeder. The seeder could only see "enabled or
+	 * absent" and so re-enabled anything the user had switched off; this compares
+	 * against a separate record of what has been PRESENTED, which distinguishes
+	 * "new in this release" from "deliberately disabled".
+	 *
+	 * Needed because several Pro AtomicV4 modules (Conditional Display, Validation
+	 * Pro, Flexbox Child Hover, Create User, Popup) previously loaded
+	 * unconditionally. Now that they are gated on is_extension_active(), an
+	 * existing site would otherwise lose them silently on update — their slugs
+	 * have never been written to anyone's settings.
+	 *
+	 * Brand new sites are skipped entirely: with no saved option at all the setup
+	 * wizard owns first-run configuration.
+	 */
+	private function migrate_newly_offered_extensions(): void
+	{
+		$saved = get_option(self::EXTENSIONS_OPTION_NAME);
+
+		// No settings yet -> fresh install, the wizard decides. Don't pre-empt it.
+		if (! is_array($saved)) {
+			return;
+		}
+
+		$offered = get_option(self::EXTENSIONS_OFFERED_OPTION_NAME);
+
+		if (! is_array($offered)) {
+			$offered = self::LEGACY_OFFERED_EXTENSIONS;
+		}
+
+		$registry_slugs = array_keys($this->extensions_registry);
+		$newly_offered  = array_diff($registry_slugs, $offered);
+
+		if ($newly_offered) {
+			foreach ($newly_offered as $slug) {
+				if (! empty($this->extensions_registry[$slug]['default'])) {
+					$saved[$slug] = true;
+				}
+			}
+
+			update_option(self::EXTENSIONS_OPTION_NAME, $saved);
+			$this->active_extensions = null;
+		}
+
+		// No-op write when unchanged — WordPress skips identical option values.
+		update_option(self::EXTENSIONS_OFFERED_OPTION_NAME, $registry_slugs);
 	}
 
 	/* =====================================================================
@@ -4747,6 +5128,70 @@ final class Atomic
 	}
 
 	/**
+	 * Enqueue the atomic assets used by ONE specific document, up front.
+	 *
+	 * WHY THIS EXISTS:
+	 * maybe_enqueue_widget_script() enqueues a widget's handles while the element
+	 * renders, which is correct for main-loop content — that render happens inside
+	 * wp_head()'s window. It is NOT correct for a document rendered outside the
+	 * main loop, such as a theme-builder header: templates/header.php calls
+	 * wp_head() first and renders the header afterwards, so anything enqueued at
+	 * render time misses <head> and gets flushed by print_late_styles() at
+	 * wp_footer — the header paints unstyled first.
+	 *
+	 * Reading the document's element types up front lets the caller enqueue just
+	 * that document's handles during wp_enqueue_scripts. Only the widgets the
+	 * document actually contains are touched, unlike the editor-preview path which
+	 * blanket-enqueues everything.
+	 *
+	 * @param int $post_id Elementor document whose assets should be enqueued.
+	 */
+	public function enqueue_document_widget_assets($post_id): void
+	{
+		$post_id = (int) $post_id;
+
+		if (! $post_id) {
+			return;
+		}
+
+		$data = get_post_meta($post_id, '_elementor_data', true);
+
+		if (empty($data) || ! is_string($data)) {
+			return;
+		}
+
+		// Element types are stored as "widgetType":"e-…" (widgets) and
+		// "elType":"e-…" (atomic elements such as e-flexbox).
+		if (! preg_match_all('/"(?:widgetType|elType)":"(e-[^"]+)"/', $data, $matches)) {
+			return;
+		}
+
+		$element_types = array_unique($matches[1]);
+
+		// The handles have to exist before they can be enqueued; on the frontend
+		// nothing else registers them for a non-main-loop document.
+		$this->register_atomic_styles();
+
+		foreach ($this->get_available_widgets() as $slug => $widget_data) {
+			if (! in_array('e-' . $slug, $element_types, true)) {
+				continue;
+			}
+
+			if (! $this->is_widget_active($slug)) {
+				continue;
+			}
+
+			if (! empty($widget_data['style_handle'])) {
+				wp_enqueue_style($widget_data['style_handle']);
+			}
+
+			if (! empty($widget_data['has_script']) && ! empty($widget_data['script_handle'])) {
+				wp_enqueue_script($widget_data['script_handle']);
+			}
+		}
+	}
+
+	/**
 	 * Enqueue every active atomic widget's frontend script into the editor
 	 * preview iframe.
 	 *
@@ -5263,55 +5708,6 @@ final class Atomic
 		return version_compare(ELEMENTOR_VERSION, self::MIN_ELEMENTOR_VERSION, '>=');
 	}
 
-	/**
-	 * On first activation (option does not exist), seed with defaults.
-	 *
-	 * Only runs the seed on a true first install. Deliberately does NOT
-	 * merge in defaults for widgets missing from an already-existing saved
-	 * option — that used to also cover "newly added in a plugin update",
-	 * but couldn't tell that case apart from "user explicitly disabled it",
-	 * so every request silently re-enabled anything the user had turned
-	 * off. Matches maybe_seed_extension_defaults() below and V3's widget
-	 * save (inc/admin/dashboard.php), neither of which re-seeds an existing
-	 * install either.
-	 */
-	private function maybe_seed_widgets_defaults(): void
-	{
-		// Only act on true first install — option doesn't exist yet.
-		if (false !== get_option(self::OPTION_NAME)) {
-			return;
-		}
-
-		$defaults = [];
-
-		foreach ($this->widgets_registry as $slug => $def) {
-			if (! empty($def['default'])) {
-				$defaults[$slug] = true;
-			}
-		}
-
-		add_option(self::OPTION_NAME, $defaults, '', false);
-	}
-
-	/**
-	 * On first activation (option does not exist), seed extension defaults.
-	 */
-	private function maybe_seed_extension_defaults(): void
-	{
-		if (false !== get_option(self::EXTENSIONS_OPTION_NAME)) {
-			return;
-		}
-
-		$defaults = [];
-
-		foreach ($this->extensions_registry as $slug => $def) {
-			if (! empty($def['default'])) {
-				$defaults[$slug] = true;
-			}
-		}
-
-		add_option(self::EXTENSIONS_OPTION_NAME, $defaults, '', false);
-	}
 	/**
 	 * Enqueue global atomic editor scripts into the top-level window.
 	 */
