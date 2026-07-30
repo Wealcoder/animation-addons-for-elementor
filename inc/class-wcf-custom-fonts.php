@@ -236,7 +236,10 @@ Class CustomFonts_Lite{
             return;
         }
        
-       wp_add_inline_style( 'wcf--addons', $custom_css );
+       // Always-enqueued inline carrier — see Plugin::INLINE_STYLE_HANDLE.
+       // Attaching to wcf--addons would drop these @font-face rules whenever
+       // the legacy stylesheet isn't loaded.
+       wp_add_inline_style( \WCF_ADDONS\Plugin::INLINE_STYLE_HANDLE, $custom_css );
     }
 	
 	function font_correct_filetypes( $data, $file, $filename, $mimes, $real_mime ) {

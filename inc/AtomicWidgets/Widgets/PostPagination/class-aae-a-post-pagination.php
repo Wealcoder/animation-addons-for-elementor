@@ -203,17 +203,24 @@ class AAE_A_Post_Pagination extends Atomic_Element_Base {
 	}
 
 	protected function define_atomic_controls(): array {
-		// Best-effort: read this element's OWN saved `constrain_taxonomy` so
-		// the Exclude Terms search box looks in the right taxonomy. Not a
-		// precedented call at this lifecycle point elsewhere in the plugin —
-		// guarded so a failure here degrades to the 'category' fallback
-		// (wrong search scope, not a broken panel) rather than a fatal error.
-		$current_tax = 'none';
-		try {
-			$settings    = $this->get_atomic_settings();
-			$current_tax = isset( $settings['constrain_taxonomy'] ) && is_string( $settings['constrain_taxonomy'] ) ? $settings['constrain_taxonomy'] : 'none';
-		} catch ( \Throwable $e ) { /* fall through to the 'category' default below */ }
-		$chips_taxonomy = ( '' !== $current_tax && 'none' !== $current_tax ) ? $current_tax : 'category';
+		// The terms search box is scoped to 'category'. It deliberately does NOT
+		// read this element's own `constrain_taxonomy`:
+		//
+		// Elementor builds the panel config from element TYPES, not instances —
+		// Document::get_initial_config() maps over
+		// elements_manager->get_element_types(), so this method runs once on a
+		// type object that was constructed with no data, and the result is
+		// shared by every element of this type in the document. There is no
+		// "this element" to read here.
+		//
+		// A previous version called $this->get_atomic_settings() at this point.
+		// On a data-less instance that reaches Controls_Stack::get_data() with a
+		// null $this->data and emits "Trying to access array offset on null" in
+		// controls-stack.php on every editor load. The try/catch around it never
+		// helped: a PHP warning is not a Throwable. It also never changed the
+		// outcome — with no instance data the call can only return the prop
+		// default 'none', which mapped to 'category' anyway.
+		$chips_taxonomy = 'category';
 
 		return [
 			Section::make()

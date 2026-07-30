@@ -4,20 +4,55 @@ const isOnlyPro =
 
 const CATEGORY_LABELS = {
   general: "General Widgets",
-  "header-footer": "Header & Footer Widgets",
+  form: "Form Widgets",
   dynamic: "Dynamic Widgets",
+  // 'single' and 'archive' were separate tabs; they are now one 'blog'
+  // category in class-atomic.php. Both old keys stay labelled so a widget
+  // still carrying one (a stale entry, or a Pro add-on registering against
+  // the old slug) renders under a real heading instead of the raw slug.
+  blog: "Blog Widgets",
+  single: "Single Post Widgets",
+  archive: "Archive Widgets",
+  "header-footer": "Header & Footer Widgets",
   slider: "Slider Widgets",
-  forms: "Form Widgets",
-  interaction: "Interaction Widgets",
+  video: "Video Widgets",
   animation: "Animation Widgets",
+  // Not used by any widget today — the extensions registry uses these two
+  // categories, and both maps are keyed the same way, so keep them labelled
+  // rather than falling through to the raw slug if a widget ever adopts one.
+  interaction: "Interaction Widgets",
+  utility: "Utility Widgets",
 };
 
-// Mirrors the `$internal_widgets` list in
-// class-atomic.php::is_widget_active() — those widgets are always
-// registered/active regardless of the saved dashboard toggle (seeded as
-// locked default children of a parent widget), so showing them as a switch
-// here would be misleading. Kept in sync by hand since the backend doesn't
-// expose this list to the dashboard config.
+// Tab order in the dashboard. Registry insertion order is arbitrary (widgets
+// are grouped by feature family in class-atomic.php, not by category), so the
+// tabs would otherwise reshuffle whenever a widget is added. Any category not
+// listed here falls to the end, alphabetically.
+const CATEGORY_ORDER = [
+  "general",
+  "interaction",
+  "form",
+  "dynamic",
+  "blog",
+  "header-footer",
+  "slider",
+  "video",
+  "animation",
+  "utility",
+];
+
+// Belt-and-braces hide list. This used to mirror the `$internal_widgets`
+// array in class-atomic.php::is_widget_active(); that array is gone — internal
+// children now inherit their parent's state via WIDGET_PARENT_MAP, and
+// get_dashboard_config() already drops every `is_internal` entry before the
+// config reaches this file. So every slug below is now filtered server-side
+// too and this list decides nothing on its own. Safe to prune, but harmless:
+// hiding an already-hidden slug is a no-op, and flattenAtomicWidgets()
+// preserves the saved state of anything hidden here.
+//
+// It used to also hide Post Title / Post Image, which were force-active in PHP
+// and so had no meaningful switch. They are genuinely toggleable now and have
+// been removed from this list — do not re-add them.
 const INTERNAL_WIDGET_SLUGS = [
   "aae-a-slide",
   "aae-a-slider-track",
@@ -62,8 +97,10 @@ const INTERNAL_WIDGET_SLUGS = [
   "aae-a-loop-slide-track",
   "aae-a-loop-slide-item",
   "aae-a-loop-slide-pagination",
-  "aae-a-post-image",
-  "aae-a-post-title",
+  // NOTE: 'aae-a-post-image' and 'aae-a-post-title' were hidden here because
+  // they were force-active in PHP (ALWAYS_ACTIVE_WIDGETS), which made a switch
+  // for them meaningless. They now follow their own saved toggle like every
+  // other carded widget, so they are listed.
   "aae-a-form-label",
   "aae-a-form-input",
   "aae-a-form-textarea",
@@ -135,9 +172,20 @@ export const groupAtomicWidgetsByCategory = (atomicConfig) => {
     );
   });
 
+  const rank = (key) => {
+    const i = CATEGORY_ORDER.indexOf(key);
+    return i === -1 ? CATEGORY_ORDER.length : i;
+  };
+
+  const ordered = Object.fromEntries(
+    Object.entries(categories).sort(
+      ([a], [b]) => rank(a) - rank(b) || a.localeCompare(b)
+    )
+  );
+
   return {
     title: atomicConfig?.title || "Atomic Widgets",
-    elements: categories,
+    elements: ordered,
   };
 };
 

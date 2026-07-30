@@ -35,6 +35,51 @@ final class Atomic
 	const EXTENSIONS_OPTION_NAME = 'aae_atomic_extensions';
 
 	/**
+	 * Slugs that have ever been PRESENTED in the Atomic Extensions dashboard.
+	 *
+	 * The settings option only records what is enabled, so on its own it cannot
+	 * distinguish "shipped after this site was set up" from "the user switched it
+	 * off". That ambiguity is why the old default-seeder kept re-enabling things
+	 * people had disabled. Tracking what has been offered separates the two.
+	 */
+	const EXTENSIONS_OFFERED_OPTION_NAME = 'aae_atomic_extensions_offered';
+
+	/**
+	 * Widgets deliberately present in the class registry but withheld from the
+	 * dashboard, so assert_registry_integrity() does not report them as drift.
+	 *
+	 * Currently empty: 'aae-a-menu' was the only entry and has now shipped with
+	 * its own dashboard metadata in register_widget_definitions(). Keep the
+	 * constant — it is the documented way to park a widget whose class exists
+	 * before its dashboard card is ready, and assert_registry_integrity() reads
+	 * it unconditionally.
+	 */
+	private const PARKED_WIDGETS = [];
+
+	/**
+	 * Extensions that shipped before EXTENSIONS_OFFERED_OPTION_NAME existed.
+	 *
+	 * Used once, on sites that predate the marker: any of these missing from the
+	 * saved option was deliberately turned off and must stay off. Anything NOT in
+	 * this list is genuinely new and gets switched on once.
+	 */
+	const LEGACY_OFFERED_EXTENSIONS = [
+		'regular-animation',
+		'parallax',
+		'text-animation',
+		'image-animation',
+		'image-hover',
+		'sticky',
+		'horizontal-scroll-anim',
+		'cursor-hover-effect',
+		'mouse-move-effect',
+		'advance-tooltip',
+		'tilt',
+		'scroll-to',
+		'custom-css',
+	];
+
+	/**
 	 * Singleton instance.
 	 *
 	 * @var Atomic|null
@@ -251,19 +296,40 @@ final class Atomic
 	 * @return bool
 	 */
 	/**
-	 * Sub-widgets that stay independently toggleable in the dashboard (they
-	 * are NOT flagged `is_internal` in widgets_registry) even though they
-	 * also get seeded as a structural default child elsewhere — e.g. Post
-	 * Title/Image are real standalone widgets AND are auto-dropped inside
-	 * Loop Grid items. Their own explicit toggle must keep working
-	 * regardless of that other parent's state, so they are force-active
-	 * here rather than routed through WIDGET_PARENT_MAP below.
+	 * Widgets that must register regardless of the saved option, because
+	 * nothing in the dashboard can ever switch them on.
+	 *
+	 * Only for slugs with NO widgets_registry entry: 'aae-a-counter-number'
+	 * is a structural child of Counter that is not listed as its own card and
+	 * is not routed through WIDGET_PARENT_MAP, so without this it would never
+	 * be active and Counter would render incomplete.
+	 *
+	 * Post Title / Post Image used to sit here too, which contradicted this
+	 * constant's own purpose: they DO have dashboard cards, so force-active
+	 * made their toggle inert, and — because get_dashboard_config() reports
+	 * is_active from the raw saved option rather than is_widget_active() — a
+	 * card could read "off" while the widget was in fact registering. They now
+	 * follow their own toggle like every other carded widget; see
+	 * backfill_formerly_forced_widgets() for the one-time upgrade path.
 	 */
 	private const ALWAYS_ACTIVE_WIDGETS = [
-		'aae-a-post-title',
-		'aae-a-post-image',
 		'aae-a-counter-number',
 	];
+
+	/**
+	 * Widgets that were previously in ALWAYS_ACTIVE_WIDGETS and so registered
+	 * unconditionally. Used once to preserve that state on upgrade.
+	 */
+	private const FORMERLY_FORCED_WIDGETS = [
+		'aae-a-post-title',
+		'aae-a-post-image',
+	];
+
+	/**
+	 * Marker recording that the FORMERLY_FORCED_WIDGETS backfill has run, so a
+	 * later deliberate switch-off is never undone on the next page load.
+	 */
+	const FORCED_BACKFILL_OPTION_NAME = 'aae_atomic_widgets_forced_backfill';
 
 	/**
 	 * Maps every purely-internal child widget (`is_internal => true` in
@@ -332,6 +398,28 @@ final class Atomic
 		'aae-a-offcanvas-panel'        => 'aae-a-offcanvas',
 		'aae-a-offcanvas-trigger'      => 'aae-a-offcanvas',
 		'aae-a-offcanvas-close'        => 'aae-a-offcanvas',
+		'aae-a-offcanvas-overlay'      => 'aae-a-offcanvas',
+
+		// Image Hotspot
+		'aae-a-hotspot-point'          => 'aae-a-image-hotspot',
+		'aae-a-hotspot-marker'         => 'aae-a-image-hotspot',
+		'aae-a-hotspot-content'        => 'aae-a-image-hotspot',
+		'aae-a-hotspot-close'          => 'aae-a-image-hotspot',
+		'aae-a-hotspot-lightbox'       => 'aae-a-image-hotspot',
+
+		// Post Pagination
+		'aae-a-post-pagination-prev'              => 'aae-a-post-pagination',
+		'aae-a-post-pagination-next'              => 'aae-a-post-pagination',
+		'aae-a-post-pagination-preview'           => 'aae-a-post-pagination',
+		'aae-a-post-pagination-preview-image'     => 'aae-a-post-pagination',
+		'aae-a-post-pagination-preview-category'  => 'aae-a-post-pagination',
+		'aae-a-post-pagination-preview-title'     => 'aae-a-post-pagination',
+		'aae-a-post-pagination-preview-date'      => 'aae-a-post-pagination',
+		'aae-a-post-pagination-preview-author'    => 'aae-a-post-pagination',
+		'aae-a-post-pagination-preview-excerpt'   => 'aae-a-post-pagination',
+
+		// Stack Cards
+		'aae-a-stack-card'             => 'aae-a-stack-cards',
 
 		// Timeline
 		'aae-a-timeline-item'          => 'aae-a-timeline',
@@ -388,160 +476,6 @@ final class Atomic
 
 	public function is_widget_active(string $slug): bool
 	{
-		// Force internal child widgets to be active always
-		$internal_widgets = [
-			'aae-a-slide',
-			'aae-a-slider-track',
-			'aae-a-slider-nav-prev',
-			'aae-a-slider-nav-next',
-			'aae-a-slider-pagination',
-			'aae-a-slider-dot',
-			'aae-a-slider-indicators',
-			'aae-a-slider-current',
-			'aae-a-slider-total',
-			'aae-a-slider-percentage',
-			'aae-a-slider-progress',
-			'aae-a-slider-counter',
-			'aae-a-slider-divider',
-			'aae-a-slider-progress-fill',
-			'aae-a-counter-number',
-			'aae-a-accordion-item',
-			'aae-a-icon-list-item',	
-			'aae-a-countdown-unit',
-			'aae-a-toggle-pane',
-			'aae-a-toggle-switcher-tabs',
-			'aae-a-toggle-switcher-tab',
-			'aae-a-toggle-pane-title',
-			'aae-a-toggle-pane-desc',
-			'aae-a-video-mask-btn',
-			'aae-a-flip-box-front',
-			'aae-a-flip-box-back',
-			'aae-a-flip-box-title',
-			'aae-a-flip-box-text',
-			'aae-a-post-card',
-			'aae-a-offcanvas-panel',
-			'aae-a-offcanvas-trigger',
-			'aae-a-offcanvas-close',
-			'aae-a-offcanvas-overlay',
-			'aae-a-stack-card',
-			'aae-a-timeline-item',
-			'aae-a-timeline-number',
-			'aae-a-timeline-year',
-			'aae-a-timeline-title',
-			'aae-a-timeline-desc',
-			'aae-a-progressbar-track',
-			'aae-a-progressbar-fill',
-			'aae-a-progressbar-label',
-			'aae-a-social-share-main-item',
-			'aae-a-social-share-item',
-			'aae-a-nav-item',
-			'aae-a-nav-sub-item',
-			'aae-a-mobile-nav',
-			// Loop Grid structural pieces — always-on internal elements. The Loop
-			// Grid seeds them as default children, so they must be registered even
-			// when not toggled in the dashboard (otherwise the editor throws
-			// ElementTypeNotFound on drop and nothing renders).
-			'aae-a-loop-item',
-			'aae-a-loop-layout',
-			'aae-a-loop-pagination',
-			'aae-a-loop-prev',
-			'aae-a-loop-next',
-			'aae-a-loop-numbers',
-			'aae-a-loop-number',
-			'aae-a-loop-loadmore',
-			'aae-a-loop-arrow',
-			'aae-a-loop-nav-wrap',
-			// Loop Grid Slider structural pieces — always-on internal elements,
-			// seeded as default children of the slider root (same reasoning as the
-			// Loop Grid pieces above).
-			'aae-a-loop-slide-track',
-			'aae-a-loop-slide-item',
-			'aae-a-loop-slide-pagination',
-			// Loop Grid current-post building blocks: seeded as default loop-item
-			// children — must always be registered so the featured image / title
-			// resolve per post.
-			'aae-a-post-image',
-			'aae-a-post-title',
-			// AAE Post Pagination structural pieces — seeded as default children of
-			// the root, so they must always be registered (same reasoning as
-			// the Loop Grid pieces above).
-			'aae-a-post-pagination-prev',
-			'aae-a-post-pagination-next',
-			'aae-a-post-pagination-preview',
-			'aae-a-post-pagination-preview-image',
-			'aae-a-post-pagination-preview-category',
-			'aae-a-post-pagination-preview-title',
-			'aae-a-post-pagination-preview-date',
-			'aae-a-post-pagination-preview-author',
-			'aae-a-post-pagination-preview-excerpt',
-			// AAE Post Comments — DISABLED 2026-07-27: the senior dev is
-			// building the comments/reply-form feature himself. Whole family
-			// kept (not deleted), root class renamed to AAE_A_Comments_Ny /
-			// e-aae-a-comments-ny so it can't collide with his own version.
-			// Uncomment to re-enable:
-			// 'aae-a-comment-list',
-			// 'aae-a-comment-item',
-			// 'aae-a-comment-avatar',
-			// 'aae-a-comment-author',
-			// 'aae-a-comment-date',
-			// 'aae-a-comment-content',
-			// 'aae-a-comment-reply-link',
-			// 'aae-a-comment-form',
-			// AAE Form parts — seeded as the form's default children, so they
-			// must always be registered (same reasoning as the Loop pieces).
-			'aae-a-form-label',
-			'aae-a-form-input',
-			'aae-a-form-textarea',
-			'aae-a-form-checkbox',
-			'aae-a-form-radio',
-			'aae-a-form-select',
-			'aae-a-form-submit',
-			'aae-a-form-success-message',
-			'aae-a-form-error-message',
-			// Style source for injected validation errors — forms saved with
-			// one must never hit ElementTypeNotFound.
-			'aae-a-form-field-error',
-			'aae-a-form-file',
-			// Multi-Step preset drops these as default children too — same
-			// always-on reasoning.
-			'aae-a-form-step',
-			'aae-a-form-next',
-			'aae-a-form-prev',
-			// Advanced Field Types (Pro) — not individually toggleable; only
-			// usable once the Form widget itself is enabled/dropped on canvas,
-			// same reasoning as the base field widgets above.
-			'aae-a-form-rating',
-			'aae-a-form-range',
-			'aae-a-form-password',
-			'aae-a-form-calculation',
-			'aae-a-form-country',
-			// Search Form composite sub-elements — seeded as locked default
-			// children of the Search Form root; always-on so the editor never
-			// throws ElementTypeNotFound on drop.
-			'aae-a-search-toggle',
-			'aae-a-search-panel',
-			'aae-a-search-field',
-			'aae-a-search-input',
-			'aae-a-search-filter-date',
-			'aae-a-search-filter-category',
-			'aae-a-search-submit',
-			'aae-a-search-results',
-			// AAE Image Hotspot's repeating marker — inserted only via the
-			// Hotspots element-control, never dragged from the panel directly
-			// (same reasoning as aae-a-slide).
-			'aae-a-hotspot-point',
-			// Seeded as the Hotspot Point's default children so each part
-			// (marker look, content box look, lightbox close button) is its
-			// own Style-tab-editable element — always-on for the same reason
-			// as the Flip Box / Toggle Switcher parts above.
-			'aae-a-hotspot-marker',
-			'aae-a-hotspot-content',
-			'aae-a-hotspot-close',
-			'aae-a-hotspot-lightbox',
-		];
-		if (in_array($slug, $internal_widgets)) {
-			return true;
-		}
 		if (in_array($slug, self::ALWAYS_ACTIVE_WIDGETS, true)) {
 			return true;
 		}
@@ -621,21 +555,112 @@ final class Atomic
 	 *
 	 * @return array
 	 */
+	/**
+	 * Group every internal child under the widget it belongs to.
+	 *
+	 * WIDGET_PARENT_MAP already records the relationship — this inverts it into
+	 * the shape the dashboard renders: parent slug => list of its parts, each
+	 * with the label/icon needed to display it. Children are read-only here;
+	 * they have no toggle of their own and follow the parent's state (see
+	 * is_widget_active()).
+	 *
+	 * Chains are followed to the top so a grandchild is listed under the
+	 * widget the user can actually switch off, not under an intermediate part
+	 * that never appears in the dashboard.
+	 *
+	 * @return array<string, array<int, array{slug:string,label:string,icon:string}>>
+	 */
+	private function get_widget_parts(): array
+	{
+		$parts = [];
+
+		foreach (self::WIDGET_PARENT_MAP as $child => $parent) {
+			// Walk up to the toggleable ancestor. Guarded against a cycle so a
+			// bad map entry can never hang the dashboard request.
+			$seen = [];
+			while (isset(self::WIDGET_PARENT_MAP[$parent]) && ! isset($seen[$parent])) {
+				$seen[$parent] = true;
+				$parent        = self::WIDGET_PARENT_MAP[$parent];
+			}
+
+			$def = $this->widgets_registry[$child] ?? null;
+
+			if (null === $def) {
+				continue;
+			}
+
+			$parent_label = $this->widgets_registry[$parent]['label'] ?? '';
+
+			$parts[$parent][] = [
+				'slug'  => $child,
+				'label' => $this->part_label($def['label'] ?? $child, $parent_label),
+				'icon'  => $def['icon'] ?? '',
+			];
+		}
+
+		foreach ($parts as &$list) {
+			usort($list, static function ($a, $b) {
+				return strcasecmp($a['label'], $b['label']);
+			});
+		}
+		unset($list);
+
+		return $parts;
+	}
+
+	/**
+	 * Tidy an internal widget's label for display inside its parent's group.
+	 *
+	 * These labels were never user-facing before — they exist so developers can
+	 * identify a slug — so they carry bookkeeping the dashboard should not show:
+	 * an "(Internal)" marker, and the parent's own name repeated as a prefix
+	 * ("Flip Box Back", "Countdown — Unit"). The group is already titled with the
+	 * parent, so the prefix is noise. Falls back to the original whenever
+	 * stripping would leave nothing.
+	 *
+	 * @param string $label        Raw registry label.
+	 * @param string $parent_label Label of the widget this part belongs to.
+	 *
+	 * @return string
+	 */
+	private function part_label(string $label, string $parent_label): string
+	{
+		$clean = trim(preg_replace('/\s*\((?:internal)\)\s*$/i', '', $label));
+
+		if ('' !== $parent_label) {
+			// "Countdown — Unit" / "Flip Box Back" -> "Unit" / "Back".
+			$pattern = '/^' . preg_quote($parent_label, '/') . '\s*(?:—|-|–|:)?\s+/i';
+			$trimmed = trim(preg_replace($pattern, '', $clean));
+
+			if ('' !== $trimmed) {
+				$clean = $trimmed;
+			}
+		}
+
+		return '' !== $clean ? $clean : $label;
+	}
+
 	public function get_dashboard_config(): array
 	{
 		$saved   = $this->get_saved_options();
 		$widgets = [];
+		$parts   = $this->get_widget_parts();
 
 		foreach ($this->widgets_registry as $slug => $def) {
 			// Sub-elements of a composite widget (e.g. Flip Box's own
 			// Front/Back/Title/Text) are never individually toggleable —
-			// keep them out of the dashboard list entirely.
+			// keep them out of the dashboard list entirely. They are not
+			// dropped from the payload though: each one is attached to its
+			// parent below as a read-only `parts` entry, so the dashboard can
+			// show what a widget contains without offering a switch for it.
 			if (! empty($def['is_internal'])) {
 				continue;
 			}
 
 			$widgets[$slug] = array_merge($def, [
-				'is_active' => isset($saved[$slug]),
+				'is_active'   => isset($saved[$slug]),
+				'parts'       => $parts[$slug] ?? [],
+				'parts_count' => isset($parts[$slug]) ? count($parts[$slug]) : 0,
 			]);
 		}
 
@@ -664,26 +689,41 @@ final class Atomic
 	{
 		$this->widgets_registry = [
 
-			// 'aae-a-menu' => [
-			// 	'label'        => 'Menu',
-			// 	'description'  => 'A modern standard navigation menu with GSAP interactions.',
-			// 	'icon'         => 'eicon-nav-menu',
-			// 	'is_pro'       => false,
-			// 	'is_extension' => false,
-			// 	'is_upcoming'  => false,
-			// 	'default'      => true,
-			// 	'keywords'     => [
-			// 		'menu',
-			// 		'nav',
-			// 		'navigation',
-			// 		'atomic',
-			// 		'gsap',
-			// 	],
-			// 	'category'     => 'general',
-			// 	'order'        => 0,
-			// 	'demo_url'     => '',
-			// 	'doc_url'      => '',
-			// ],
+			/*
+			 * Menu renders an EXISTING WordPress menu (wp_get_nav_menus() picker +
+			 * wp_nav_menu()) styled through flat props. It is not a duplicate of
+			 * aae-a-nav, which builds its items as separate atomic elements
+			 * (nav-item / nav-sub-item / mobile-nav) that are individually
+			 * styleable — so it gets its own toggle rather than being routed
+			 * through WIDGET_PARENT_MAP under Nav.
+			 *
+			 * Was commented out (and listed in PARKED_WIDGETS) while incomplete;
+			 * class, twig, css and js have all been present for a while, and with
+			 * no metadata here is_widget_active() could never return true, so
+			 * register_widgets() skipped it permanently.
+			 */
+			'aae-a-menu' => [
+				'label'        => 'WP Menu',
+				'description'  => 'Renders an existing WordPress menu, styled natively in Elementor V4.',
+				'icon'         => 'eicon-nav-menu',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'menu',
+					'nav',
+					'navigation',
+					'atomic',
+					'gsap',
+				],
+				// Sits with Nav and Site Logo — it is the second of the two
+				// nav/menu widgets, not a general-purpose element.
+				'category'     => 'header-footer',
+				'order'        => 0,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
 
 			'aae-a-post-title' => [
 				'label'        => 'Post Title',
@@ -700,7 +740,7 @@ final class Atomic
 					'atomic',
 					'dynamic',
 				],
-				'category'     => 'dynamic',
+				'category'     => 'blog',
 				'order'        => 0,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -721,7 +761,7 @@ final class Atomic
 					'atomic',
 					'dynamic',
 				],
-				'category'     => 'dynamic',
+				'category'     => 'blog',
 				'order'        => 0,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -741,7 +781,7 @@ final class Atomic
 					'atomic',
 					'dynamic',
 				],
-				'category'     => 'dynamic',
+				'category'     => 'blog',
 				'order'        => 0,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -762,7 +802,7 @@ final class Atomic
 					'atomic',
 					'dynamic',
 				],
-				'category'     => 'dynamic',
+				'category'     => 'blog',
 				'order'        => 0,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -876,7 +916,7 @@ final class Atomic
 				'is_upcoming'  => false,
 				'default'      => true,
 				'keywords'     => [ 'search', 'form', 'ajax', 'filter', 'atomic', 'composite' ],
-				'category'     => 'dynamic',
+				'category'     => 'form',
 				'order'        => 0,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -1085,7 +1125,7 @@ final class Atomic
 					'pagination',
 					'dynamic',
 				],
-				'category'     => 'dynamic',
+				'category'     => 'blog',
 				'order'        => 0,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -1198,7 +1238,7 @@ final class Atomic
 					'template',
 					'dynamic',
 				],
-				'category'     => 'general',
+				'category'     => 'blog',
 				'order'        => 0,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -1247,7 +1287,7 @@ final class Atomic
 				'is_upcoming'  => false,
 				'default'      => true,
 				'keywords'     => [ 'comment', 'avatar', 'gravatar', 'atomic', 'dynamic' ],
-				'category'     => 'general',
+				'category'     => 'blog',
 				'order'        => 0,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -1262,7 +1302,7 @@ final class Atomic
 				'is_upcoming'  => false,
 				'default'      => true,
 				'keywords'     => [ 'comment', 'author', 'name', 'atomic', 'dynamic' ],
-				'category'     => 'general',
+				'category'     => 'blog',
 				'order'        => 0,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -1277,7 +1317,7 @@ final class Atomic
 				'is_upcoming'  => false,
 				'default'      => true,
 				'keywords'     => [ 'comment', 'date', 'time', 'atomic', 'dynamic' ],
-				'category'     => 'general',
+				'category'     => 'blog',
 				'order'        => 0,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -1292,7 +1332,7 @@ final class Atomic
 				'is_upcoming'  => false,
 				'default'      => true,
 				'keywords'     => [ 'comment', 'content', 'text', 'atomic', 'dynamic' ],
-				'category'     => 'general',
+				'category'     => 'blog',
 				'order'        => 0,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -1307,7 +1347,7 @@ final class Atomic
 				'is_upcoming'  => false,
 				'default'      => true,
 				'keywords'     => [ 'comment', 'reply', 'link', 'atomic', 'dynamic' ],
-				'category'     => 'general',
+				'category'     => 'blog',
 				'order'        => 0,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -1322,7 +1362,7 @@ final class Atomic
 				'is_upcoming'  => false,
 				'default'      => true,
 				'keywords'     => [ 'comment', 'form', 'reply', 'submit', 'atomic', 'dynamic' ],
-				'category'     => 'general',
+				'category'     => 'blog',
 				'order'        => 0,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -1428,6 +1468,92 @@ final class Atomic
 				'hide_from_panel' => true,
 			],
 
+			// ── Nested Slider — remaining HELPER widgets. These were registered
+			// as classes and routed through WIDGET_PARENT_MAP, but had no entry
+			// here at all, so nothing could name them. `is_internal => true`
+			// keeps them out of the dashboard list exactly like their siblings
+			// above; the label/icon exist so the parent can list what it owns.
+			'aae-a-slider-dot' => [
+				'is_internal'  => true,
+				'label'        => 'Slider Dot',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Dot',
+				'keywords'     => ['atomic', 'slider', 'dot', 'bullet'],
+				'icon'         => 'eicon-dot-circle-o',
+				'hide_from_panel' => true,
+			],
+
+			'aae-a-slider-indicators' => [
+				'is_internal'  => true,
+				'label'        => 'Slider Indicators',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Indicators',
+				'keywords'     => ['atomic', 'slider', 'indicators'],
+				'icon'         => 'eicon-ellipsis-h',
+				'hide_from_panel' => true,
+			],
+
+			'aae-a-slider-current' => [
+				'is_internal'  => true,
+				'label'        => 'Slider Current Index',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Current',
+				'keywords'     => ['atomic', 'slider', 'current', 'index'],
+				'icon'         => 'eicon-number-field',
+				'hide_from_panel' => true,
+			],
+
+			'aae-a-slider-total' => [
+				'is_internal'  => true,
+				'label'        => 'Slider Total',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Total',
+				'keywords'     => ['atomic', 'slider', 'total', 'count'],
+				'icon'         => 'eicon-number-field',
+				'hide_from_panel' => true,
+			],
+
+			'aae-a-slider-percentage' => [
+				'is_internal'  => true,
+				'label'        => 'Slider Percentage',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Percentage',
+				'keywords'     => ['atomic', 'slider', 'percentage', 'progress'],
+				'icon'         => 'eicon-number-field',
+				'hide_from_panel' => true,
+			],
+
+			'aae-a-slider-progress' => [
+				'is_internal'  => true,
+				'label'        => 'Slider Progress',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Progress',
+				'keywords'     => ['atomic', 'slider', 'progress', 'bar'],
+				'icon'         => 'eicon-skill-bar',
+				'hide_from_panel' => true,
+			],
+
+			'aae-a-slider-progress-fill' => [
+				'is_internal'  => true,
+				'label'        => 'Slider Progress Fill',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Progress_Fill',
+				'keywords'     => ['atomic', 'slider', 'progress', 'fill'],
+				'icon'         => 'eicon-skill-bar',
+				'hide_from_panel' => true,
+			],
+
+			'aae-a-slider-counter' => [
+				'is_internal'  => true,
+				'label'        => 'Slider Counter',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Counter',
+				'keywords'     => ['atomic', 'slider', 'counter'],
+				'icon'         => 'eicon-counter',
+				'hide_from_panel' => true,
+			],
+
+			'aae-a-slider-divider' => [
+				'is_internal'  => true,
+				'label'        => 'Slider Divider',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Divider',
+				'keywords'     => ['atomic', 'slider', 'divider', 'separator'],
+				'icon'         => 'eicon-divider',
+				'hide_from_panel' => true,
+			],
+
 			'aae-a-stack-cards' => [
 				'label'        => 'Stack Cards',
 				'description'  => 'A scroll-driven card deck: independently-styleable cards that stack and animate with GSAP ScrollTrigger. First release ships the Scroll Stack animation; more arrive as presets.',
@@ -1491,7 +1617,7 @@ final class Atomic
 					'heading',
 					'atomic',
 				],
-				'category'     => 'general',
+				'category'     => 'blog',
 				'order'        => 7,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -1670,28 +1796,6 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
-			'aae-a-image-compare-main' => [
-				'label'        => 'Image Compare Main',
-				'description'  => 'A draggable before/after image comparison slider with independently styleable atomic children.',
-				'icon'         => 'eicon-image-before-after',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'image',
-					'compare',
-					'before',
-					'after',
-					'slider',
-					'atomic',
-					'main',
-				],
-				'category'     => 'general',
-				'order'        => 10,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
 
 			'aae-a-countdown' => [
 				'label'        => 'Countdown',
@@ -1842,27 +1946,6 @@ final class Atomic
 				'keywords'     => [ 'timeline', 'description', 'paragraph', 'atomic' ],
 				'category'     => 'general',
 				'order'        => 18,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
-			'aae-a-button' => [
-				'label'        => 'Button',
-				'description'  => 'A fully atomic button widget with advanced styling, hover effects, and icon support.',
-				'icon'         => 'wcf-icon-Button',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'button',
-					'cta',
-					'call to action',
-					'atomic button',
-					'click',
-				],
-				'category'     => 'general',
-				'order'        => 11,
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
@@ -2107,12 +2190,23 @@ final class Atomic
 				'keywords'        => [ 'offcanvas', 'close', 'icon' ],
 				'hide_from_panel' => true,
 			],
+			// ── Offcanvas backdrop — HELPER widget. Seeded as a locked child of
+			// the Offcanvas root, never dragged from the panel on its own, so
+			// `is_internal => true` keeps it out of the dashboard list. This
+			// entry previously carried the class-registry keys (`class_name`,
+			// `hide_from_panel`) instead of dashboard metadata, which rendered
+			// it as a card with no category, toggle state or description.
 			'aae-a-offcanvas-overlay' => [
-				'label'           => 'Offcanvas Overlay',
-				'class_name'      => 'WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Overlay',
-				'icon'            => 'eicon-square',
-				'keywords'        => [ 'offcanvas', 'overlay', 'backdrop', 'scrim' ],
-				'hide_from_panel' => true,
+				'label'        => 'Offcanvas Overlay',
+				'description'  => 'Backdrop layer behind an open Offcanvas panel.',
+				'icon'         => 'eicon-square',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [ 'offcanvas', 'overlay', 'backdrop', 'scrim' ],
+				'category'     => 'general',
+				'is_internal'  => true,
 			],
 
 			'aae-a-form' => [
@@ -2129,7 +2223,7 @@ final class Atomic
 					'lead',
 					'atomic',
 				],
-				'category'     => 'forms',
+				'category'     => 'form',
 				'order'        => 17,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -2539,10 +2633,31 @@ final class Atomic
 				'is_upcoming'  => false,
 				'default'      => true,
 				'keywords'     => [ 'nav item', 'internal' ],
-				'category'     => 'general',
+				'category'     => 'header-footer',
 				'order'        => 17,
 				'demo_url'     => '',
 				'doc_url'      => '',
+			],
+
+			// ── Nav — remaining HELPER widgets. Registered as classes and
+			// routed through WIDGET_PARENT_MAP, but with no entry here, so
+			// nothing could name them (same gap as the slider parts above).
+			'aae-a-nav-sub-item' => [
+				'is_internal'  => true,
+				'label'        => 'Nav Sub Item',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\Nav\AAE_A_Nav_Sub_Item',
+				'keywords'     => [ 'nav', 'submenu', 'dropdown', 'internal' ],
+				'icon'         => 'eicon-nav-menu',
+				'hide_from_panel' => true,
+			],
+
+			'aae-a-mobile-nav' => [
+				'is_internal'  => true,
+				'label'        => 'Mobile Nav',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\Nav\AAE_A_Mobile_Nav',
+				'keywords'     => [ 'nav', 'mobile', 'responsive', 'internal' ],
+				'icon'         => 'eicon-menu-bar',
+				'hide_from_panel' => true,
 			],
 
 			'aae-a-flip-box' => [
@@ -2771,7 +2886,7 @@ final class Atomic
 					'atomic',
 					'shape',
 				],
-				'category'     => 'general',
+				'category'     => 'video',
 				'order'        => 18,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -2789,28 +2904,6 @@ final class Atomic
 				'keywords'     => [ 'video mask button', 'internal' ],
 				'category'     => 'general',
 				'order'        => 19,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
-			'aae-a-button-pro' => [
-				'label'        => 'Button Pro',
-				'description'  => 'Advanced button widget with 8 GSAP-powered hover styles: ripple, text flip, border divide, group swap, shadow, outline pill, and slide fill.',
-				'icon'         => 'wcf-icon-Button',
-				'is_pro'       => true,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'button pro',
-					'cta',
-					'gsap',
-					'hover',
-					'ripple',
-					'atomic',
-				],
-				'category'     => 'general',
-				'order'        => 20,
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
@@ -2838,7 +2931,9 @@ final class Atomic
 
 			'aae-a-btn-pro' => [
 				'label'        => 'Button Pro',
-				'description'  => 'A very basic open button container — no style presets, just a link wrapper you can fill with any nested elements.',
+				// Was a copy of aae-a-btn's description; the accurate text lived on
+				// the duplicate 'aae-a-button-pro' entry that has now been removed.
+				'description'  => 'Advanced button widget with 8 GSAP-powered hover styles: ripple, text flip, border divide, group swap, shadow, outline pill, and slide fill.',
 				'icon'         => 'wcf-icon-Button',
 				'is_pro'       => true,
 				'is_extension' => false,
@@ -3021,6 +3116,28 @@ final class Atomic
 				'order'        => 12,
 			],
 
+			// Implemented in the Pro plugin (inc/extensions/wcf-dynamic-tags.php +
+			// inc/core/dynamic-tags/). It used to be reachable ONLY through the v3
+			// extension list, so a site working purely in v4 had no way to switch it
+			// on and dynamic tags silently did nothing on atomic widgets. Pro loads
+			// it from this toggle as well — see WCFAddonsPro\Plugin::register_extensions().
+			'dynamic-tags' => [
+				'label'        => 'Dynamic Tags',
+				'description'  => 'Bind atomic widget content to dynamic sources: post, author, site, archive, comments and ACF fields.',
+				// Capitalised on purpose: this is the glyph name that actually
+				// exists in the icon font. The lower-case names the other atomic
+				// extensions use (wcf-icon-parallax, wcf-icon-custom-css, …) match
+				// nothing, which is why they render as empty circles.
+				'icon'         => 'wcf-icon-Dynamic-Tags',
+				'is_pro'       => true,
+				'is_extension' => true,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => ['dynamic tags', 'dynamic', 'acf', 'custom field', 'post data'],
+				'category'     => 'utility',
+				'order'        => 13,
+			],
+
 			'custom-css' => [
 				'label'        => 'Custom CSS',
 				'description'  => 'Add custom CSS rules per-element in the atomic editor.',
@@ -3034,7 +3151,23 @@ final class Atomic
 				'order'        => 14,
 			],
 
-			'parent-child-hover' => [
+			/*
+			 * Pro AtomicV4 modules (animation-addons-for-elementor-pro/inc/AtomicV4/).
+			 * They used to load unconditionally from AtomicV4\Bootstrap, so they never
+			 * appeared here and could not be switched off. The registry lives in the
+			 * free plugin — same constraint as widgets — so their definitions sit here
+			 * and Pro gates itself on is_extension_active().
+			 *
+			 * `requires` lists the widget slugs an extension is useless without, and
+			 * `requires_note` is the ready-to-render tooltip string for the dashboard.
+			 * Both are optional; extensions that apply to any atomic element omit them.
+			 */
+			// Slug stays `flexbox-child-hover` — it is what Pro's AtomicV4
+			// Bootstrap gates on, and a saved option is keyed by slug, so
+			// renaming it would orphan every site's setting. The user-facing
+			// label/keywords take the clearer "Parent Child Hover" wording;
+			// keywords carry both namings so search finds it either way.
+			'flexbox-child-hover' => [
 				'label'        => 'Parent Child Hover',
 				'description'  => 'Hover a container to trigger a "Parent Hover" style state on its child elements.',
 				'icon'         => 'wcf-icon-Grid-Hover-Posts',
@@ -3042,12 +3175,13 @@ final class Atomic
 				'is_extension' => true,
 				'is_upcoming'  => false,
 				'default'      => true,
-				'keywords'     => ['parent child hover', 'flexbox child hover', 'parent hover', 'hover source', 'hover target', 'child hover'],
-				'category'     => 'utility',
-				'order'        => 13,
+				'keywords'     => ['parent child hover', 'flexbox child hover', 'parent hover', 'hover source', 'hover target', 'child hover', 'container hover'],
+				'category'     => 'interaction',
+				'order'        => 15,
+				'requires_note' => 'Applies to Elementor\'s Flexbox container and its children.',
 			],
 
-			'conditional-display' => [
+			'form-conditions' => [
 				'label'        => 'Conditional Display',
 				'description'  => 'Show or hide AAE Form fields/containers based on the value of other fields.',
 				'icon'         => 'wcf-icon-Toggle-Switch',
@@ -3056,8 +3190,44 @@ final class Atomic
 				'is_upcoming'  => false,
 				'default'      => true,
 				'keywords'     => ['conditional display', 'conditional logic', 'show hide fields', 'form conditions', 'dynamic fields'],
-				'category'     => 'utility',
-				'order'        => 15,
+				'category'     => 'form',
+				'order'        => 16,
+				'requires'     => ['aae-a-form'],
+				'requires_note' => 'Requires the Form widget.',
+			],
+
+			'form-validation' => [
+				'label'        => 'Validation Pro',
+				'description'  => 'Regex validation rules with custom messages on form inputs and textareas.',
+				// There is no `wcf-icon-Form` in the icon font — it rendered as
+				// an empty circle on the dashboard card.
+				'icon'         => 'wcf-icon-Content-Protection',
+				'is_pro'       => true,
+				'is_extension' => true,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => ['validation', 'regex', 'pattern', 'form validation'],
+				'category'     => 'form',
+				'order'        => 17,
+				'requires'     => ['aae-a-form'],
+				'requires_note' => 'Requires the Form widget.',
+			],
+
+			'form-user' => [
+				'label'        => 'Create User',
+				'description'  => 'Turn a form submission into a real WordPress account, with role and alias mapping.',
+				// See the note on Validation Pro above — `wcf-icon-Form` does
+				// not exist in the icon font.
+				'icon'         => 'wcf-icon-Team',
+				'is_pro'       => true,
+				'is_extension' => true,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => ['create user', 'registration', 'signup', 'account'],
+				'category'     => 'form',
+				'order'        => 18,
+				'requires'     => ['aae-a-form'],
+				'requires_note' => 'Requires the Form widget. Configured per form in the Actions dialog.',
 			],
 
 			'popup' => [
@@ -3068,9 +3238,48 @@ final class Atomic
 				'is_extension' => true,
 				'is_upcoming'  => false,
 				'default'      => true,
-				'keywords'     => ['popup', 'modal', 'lightbox', 'overlay', 'trigger'],
+				'keywords'     => ['popup', 'modal', 'lightbox', 'dialog'],
 				'category'     => 'interaction',
-				'order'        => 16,
+				'order'        => 19,
+				'requires_note' => 'Popups are built as AAE Builder templates.',
+			],
+
+			/*
+			 * Template Library — the "Add AAE Template" modal in the Elementor
+			 * editor (Library_Source + inc/class-wcf-template-library.php, driven
+			 * by assets/js/wcf-template-library.js).
+			 *
+			 * There is a `template-library` entry in the V3 registry (config.php)
+			 * too, but NOTHING reads that key — it is a display-only card, so the
+			 * feature has never actually been switchable. This entry is the one
+			 * that works: class-plugin.php::include_files() gates the require of
+			 * inc/class-wcf-template-library.php on it, which in turn is what
+			 * defines Library_Source and therefore satisfies the two
+			 * class_exists('\WCF_ADDONS\Library_Source') checks that register the
+			 * editor script and the modal's Underscore templates.
+			 *
+			 * `default` is false on purpose. Unlike the Pro AtomicV4 modules
+			 * above — which this flag exists to rescue, because they USED to load
+			 * unconditionally — this file has never been required from anywhere,
+			 * so no site has ever had the feature on. Defaulting to true would
+			 * make migrate_newly_offered_extensions() silently introduce a new
+			 * editor modal on every existing install rather than restore
+			 * something they already had.
+			 */
+			'template-library' => [
+				'label'        => 'Template Library',
+				'description'  => 'Ready-made AAE layouts, importable from a library modal inside the Elementor editor.',
+				// Capitalised to match the glyph that actually exists in the icon
+				// font (\e957) — see the Dynamic Tags note above for why the
+				// lower-case spellings render as empty circles.
+				'icon'         => 'wcf-icon-Template-library',
+				'is_pro'       => false,
+				'is_extension' => true,
+				'is_upcoming'  => false,
+				'default'      => false,
+				'keywords'     => ['template library', 'templates', 'layout', 'import', 'blocks', 'pages', 'library'],
+				'category'     => 'utility',
+				'order'        => 20,
 			],
 		];
 	}
@@ -3177,9 +3386,208 @@ final class Atomic
 			}
 		}, 20);
 
-		// Seed defaults on first install (option doesn't exist yet).
-		$this->maybe_seed_widgets_defaults();
-		$this->maybe_seed_extension_defaults();
+		// No defaults are seeded for atomic widgets or atomic extensions: the
+		// Atomic dashboard (and, on a brand new site, the setup wizard) owns both
+		// option arrays outright. A slug absent from the saved option simply reads
+		// as inactive.
+		$this->migrate_newly_offered_extensions();
+		$this->backfill_formerly_forced_widgets();
+		$this->assert_registry_integrity();
+	}
+
+	/**
+	 * Report drift between the two widget registries. WP_DEBUG only.
+	 *
+	 * Widget data is split across two hand-maintained arrays that must agree:
+	 * get_available_widgets() (class / file / asset handles — what registers with
+	 * Elementor) and widgets_registry (dashboard metadata — what can be toggled).
+	 * Nothing enforced that agreement, and three separate defects had accumulated
+	 * silently:
+	 *
+	 *   - 'aae-a-button', 'aae-a-button-pro', 'aae-a-image-compare-main' had
+	 *     metadata but no class, so the dashboard rendered duplicate cards whose
+	 *     toggles controlled nothing.
+	 *   - 'aae-a-menu' had a class but no metadata, so it could never be enabled.
+	 *
+	 * None of that surfaces at runtime — a missing entry just makes a widget
+	 * quietly unreachable — so it can persist for releases. This turns it into an
+	 * immediate, visible failure while developing.
+	 *
+	 * Children routed through WIDGET_PARENT_MAP are expected to have no metadata:
+	 * they are grouped under their parent rather than listed, which is why they
+	 * are excluded here.
+	 */
+	private function assert_registry_integrity(): void
+	{
+		if (! defined('WP_DEBUG') || ! WP_DEBUG) {
+			return;
+		}
+
+		$available = array_keys($this->get_available_widgets());
+		$metadata  = array_keys($this->widgets_registry);
+
+		// Registered, but nothing in the dashboard can ever switch it on.
+		$missing_metadata = array_diff(
+			$available,
+			$metadata,
+			array_keys(self::WIDGET_PARENT_MAP),
+			self::PARKED_WIDGETS
+		);
+
+		// A dashboard toggle for a widget that cannot load.
+		$missing_class = array_diff($metadata, $available);
+
+		// An internal child with no parent. Once the forced-active list is gone
+		// these fall through to the saved-option lookup, which they can never
+		// satisfy (they have no toggle), so they would never register and the
+		// editor would throw ElementTypeNotFound on any page already using one.
+		$internal = [];
+		foreach ($this->widgets_registry as $slug => $def) {
+			if (! empty($def['is_internal'])) {
+				$internal[] = $slug;
+			}
+		}
+
+		$orphan_children = array_diff(
+			$internal,
+			array_keys(self::WIDGET_PARENT_MAP),
+			self::ALWAYS_ACTIVE_WIDGETS
+		);
+
+		// A parent that no longer exists — the children would inherit from a
+		// slug that is never active, silently disabling the whole family.
+		$dangling_parents = array_diff(
+			array_unique(array_values(self::WIDGET_PARENT_MAP)),
+			$metadata
+		);
+
+		if ($missing_metadata) {
+			error_log(
+				'AAE atomic registry: registered widget(s) with no dashboard metadata — unreachable: '
+				. implode(', ', $missing_metadata)
+			);
+		}
+
+		if ($orphan_children) {
+			error_log(
+				'AAE atomic registry: internal widget(s) with no WIDGET_PARENT_MAP parent — cannot inherit: '
+				. implode(', ', $orphan_children)
+			);
+		}
+
+		if ($dangling_parents) {
+			error_log(
+				'AAE atomic registry: WIDGET_PARENT_MAP points at unknown parent(s): '
+				. implode(', ', $dangling_parents)
+			);
+		}
+
+		if ($missing_class) {
+			error_log(
+				'AAE atomic registry: dashboard metadata with no class/file — toggle does nothing: '
+				. implode(', ', $missing_class)
+			);
+		}
+	}
+
+	/**
+	 * Switch on extensions that have never been offered to this site before.
+	 *
+	 * NOT a return of the default-seeder. The seeder could only see "enabled or
+	 * absent" and so re-enabled anything the user had switched off; this compares
+	 * against a separate record of what has been PRESENTED, which distinguishes
+	 * "new in this release" from "deliberately disabled".
+	 *
+	 * Needed because several Pro AtomicV4 modules (Conditional Display, Validation
+	 * Pro, Flexbox Child Hover, Create User, Popup) previously loaded
+	 * unconditionally. Now that they are gated on is_extension_active(), an
+	 * existing site would otherwise lose them silently on update — their slugs
+	 * have never been written to anyone's settings.
+	 *
+	 * Brand new sites are skipped entirely: with no saved option at all the setup
+	 * wizard owns first-run configuration.
+	 */
+	/**
+	 * Keep Post Title / Post Image switched on for sites that already had them.
+	 *
+	 * They used to be in ALWAYS_ACTIVE_WIDGETS, so is_widget_active() returned
+	 * true whether or not the slug was ever written to the saved option — most
+	 * sites therefore have them active but ABSENT from that option. Now that
+	 * they follow their own toggle, doing nothing here would silently
+	 * deactivate them on upgrade, and any page using AAE Post Title/Image (or a
+	 * Loop Grid item, which seeds both as default children) would fail to
+	 * render that element.
+	 *
+	 * Runs once, guarded by its own marker option rather than by "is the slug
+	 * missing?" — otherwise a user who deliberately switches one off would have
+	 * it switched back on by the very next page load.
+	 *
+	 * Brand new sites are skipped: with no saved option at all the setup wizard
+	 * owns first-run configuration, exactly as in
+	 * migrate_newly_offered_extensions().
+	 */
+	private function backfill_formerly_forced_widgets(): void
+	{
+		if (get_option(self::FORCED_BACKFILL_OPTION_NAME)) {
+			return;
+		}
+
+		$saved = get_option(self::OPTION_NAME);
+
+		// No settings yet -> fresh install, the wizard decides. Don't pre-empt
+		// it, and don't burn the marker either: let the wizard write first.
+		if (! is_array($saved)) {
+			return;
+		}
+
+		$changed = false;
+
+		foreach (self::FORMERLY_FORCED_WIDGETS as $slug) {
+			if (! isset($saved[$slug])) {
+				$saved[$slug] = true;
+				$changed      = true;
+			}
+		}
+
+		if ($changed) {
+			update_option(self::OPTION_NAME, $saved);
+			$this->active_widgets = null;
+		}
+
+		update_option(self::FORCED_BACKFILL_OPTION_NAME, true);
+	}
+
+	private function migrate_newly_offered_extensions(): void
+	{
+		$saved = get_option(self::EXTENSIONS_OPTION_NAME);
+
+		// No settings yet -> fresh install, the wizard decides. Don't pre-empt it.
+		if (! is_array($saved)) {
+			return;
+		}
+
+		$offered = get_option(self::EXTENSIONS_OFFERED_OPTION_NAME);
+
+		if (! is_array($offered)) {
+			$offered = self::LEGACY_OFFERED_EXTENSIONS;
+		}
+
+		$registry_slugs = array_keys($this->extensions_registry);
+		$newly_offered  = array_diff($registry_slugs, $offered);
+
+		if ($newly_offered) {
+			foreach ($newly_offered as $slug) {
+				if (! empty($this->extensions_registry[$slug]['default'])) {
+					$saved[$slug] = true;
+				}
+			}
+
+			update_option(self::EXTENSIONS_OPTION_NAME, $saved);
+			$this->active_extensions = null;
+		}
+
+		// No-op write when unchanged — WordPress skips identical option values.
+		update_option(self::EXTENSIONS_OFFERED_OPTION_NAME, $registry_slugs);
 	}
 
 	/* =====================================================================
@@ -4733,6 +5141,70 @@ final class Atomic
 	}
 
 	/**
+	 * Enqueue the atomic assets used by ONE specific document, up front.
+	 *
+	 * WHY THIS EXISTS:
+	 * maybe_enqueue_widget_script() enqueues a widget's handles while the element
+	 * renders, which is correct for main-loop content — that render happens inside
+	 * wp_head()'s window. It is NOT correct for a document rendered outside the
+	 * main loop, such as a theme-builder header: templates/header.php calls
+	 * wp_head() first and renders the header afterwards, so anything enqueued at
+	 * render time misses <head> and gets flushed by print_late_styles() at
+	 * wp_footer — the header paints unstyled first.
+	 *
+	 * Reading the document's element types up front lets the caller enqueue just
+	 * that document's handles during wp_enqueue_scripts. Only the widgets the
+	 * document actually contains are touched, unlike the editor-preview path which
+	 * blanket-enqueues everything.
+	 *
+	 * @param int $post_id Elementor document whose assets should be enqueued.
+	 */
+	public function enqueue_document_widget_assets($post_id): void
+	{
+		$post_id = (int) $post_id;
+
+		if (! $post_id) {
+			return;
+		}
+
+		$data = get_post_meta($post_id, '_elementor_data', true);
+
+		if (empty($data) || ! is_string($data)) {
+			return;
+		}
+
+		// Element types are stored as "widgetType":"e-…" (widgets) and
+		// "elType":"e-…" (atomic elements such as e-flexbox).
+		if (! preg_match_all('/"(?:widgetType|elType)":"(e-[^"]+)"/', $data, $matches)) {
+			return;
+		}
+
+		$element_types = array_unique($matches[1]);
+
+		// The handles have to exist before they can be enqueued; on the frontend
+		// nothing else registers them for a non-main-loop document.
+		$this->register_atomic_styles();
+
+		foreach ($this->get_available_widgets() as $slug => $widget_data) {
+			if (! in_array('e-' . $slug, $element_types, true)) {
+				continue;
+			}
+
+			if (! $this->is_widget_active($slug)) {
+				continue;
+			}
+
+			if (! empty($widget_data['style_handle'])) {
+				wp_enqueue_style($widget_data['style_handle']);
+			}
+
+			if (! empty($widget_data['has_script']) && ! empty($widget_data['script_handle'])) {
+				wp_enqueue_script($widget_data['script_handle']);
+			}
+		}
+	}
+
+	/**
 	 * Enqueue every active atomic widget's frontend script into the editor
 	 * preview iframe.
 	 *
@@ -5249,55 +5721,6 @@ final class Atomic
 		return version_compare(ELEMENTOR_VERSION, self::MIN_ELEMENTOR_VERSION, '>=');
 	}
 
-	/**
-	 * On first activation (option does not exist), seed with defaults.
-	 *
-	 * Only runs the seed on a true first install. Deliberately does NOT
-	 * merge in defaults for widgets missing from an already-existing saved
-	 * option — that used to also cover "newly added in a plugin update",
-	 * but couldn't tell that case apart from "user explicitly disabled it",
-	 * so every request silently re-enabled anything the user had turned
-	 * off. Matches maybe_seed_extension_defaults() below and V3's widget
-	 * save (inc/admin/dashboard.php), neither of which re-seeds an existing
-	 * install either.
-	 */
-	private function maybe_seed_widgets_defaults(): void
-	{
-		// Only act on true first install — option doesn't exist yet.
-		if (false !== get_option(self::OPTION_NAME)) {
-			return;
-		}
-
-		$defaults = [];
-
-		foreach ($this->widgets_registry as $slug => $def) {
-			if (! empty($def['default'])) {
-				$defaults[$slug] = true;
-			}
-		}
-
-		add_option(self::OPTION_NAME, $defaults, '', false);
-	}
-
-	/**
-	 * On first activation (option does not exist), seed extension defaults.
-	 */
-	private function maybe_seed_extension_defaults(): void
-	{
-		if (false !== get_option(self::EXTENSIONS_OPTION_NAME)) {
-			return;
-		}
-
-		$defaults = [];
-
-		foreach ($this->extensions_registry as $slug => $def) {
-			if (! empty($def['default'])) {
-				$defaults[$slug] = true;
-			}
-		}
-
-		add_option(self::EXTENSIONS_OPTION_NAME, $defaults, '', false);
-	}
 	/**
 	 * Enqueue global atomic editor scripts into the top-level window.
 	 */

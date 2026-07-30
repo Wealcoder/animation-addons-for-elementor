@@ -125,7 +125,11 @@ final class WCF_ADDONS_Plugin {
 		add_action('admin_enqueue_scripts', [$this,'enqueue_elementor_install_script']);
 		add_action('wp_ajax_wcf_install_elementor_plugin', [$this,'install_elementor_plugin_handler']);
 		// Init Plugin
-		add_action( 'plugins_loaded', array( $this, 'init' ) );		
+		add_action( 'plugins_loaded', array( $this, 'init' ) );
+		// Translations must not load before `init` (WP 6.7+ warns via
+		// _load_textdomain_just_in_time). Kept separate from init() above, which
+		// has to stay on plugins_loaded for the Elementor bootstrap ordering.
+		add_action( 'init', array( $this, 'load_textdomain' ), 0 );
 		add_action( 'admin_notices', array( $this, 'admin_notice_missing_main_plugin' ) );		
 		add_action( 'admin_init', [$this, 'redirect_to_dashboard'] );
 	}
@@ -217,14 +221,31 @@ final class WCF_ADDONS_Plugin {
 	 * @since 1.2.0
 	 * @access public
 	 */
-	public function init() {
+	/**
+	 * Load the plugin textdomain.
+	 *
+	 * Hooked to `init` (priority 0), never to `plugins_loaded`. Since WP 6.7 any
+	 * translation triggered before `init` raises "_load_textdomain_just_in_time
+	 * was called incorrectly".
+	 *
+	 * Note this call is optional for a WordPress.org-hosted plugin — core has
+	 * loaded translations from the languages directory automatically since 4.6,
+	 * and the docs now discourage calling it by hand. It is kept because the
+	 * plugin also ships its own /languages folder.
+	 *
+	 * @since 1.2.0
+	 * @access public
+	 */
+	public function load_textdomain() {
 
-		// Load plugin textdomain for translations
 		load_plugin_textdomain(
 			'animation-addons-for-elementor',
 			false,
 			dirname(plugin_basename(WCF_ADDONS_FILE)) . '/languages'
 		);
+	}
+
+	public function init() {
 
 		// Check if Elementor installed and activated
 		if ( ! did_action( 'elementor/loaded' ) ) {			

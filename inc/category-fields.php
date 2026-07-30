@@ -256,7 +256,10 @@ function aae_addon_tax_category_light_styles()
     }
 
     if ($custom_css != '') {
-        wp_add_inline_style('wcf--addons', $custom_css);
+        // Attached to the always-enqueued inline carrier, not the legacy
+        // wcf--addons stylesheet — that one only loads when v3 is in use, and
+        // WordPress drops inline CSS whose parent handle isn't enqueued.
+        wp_add_inline_style(\WCF_ADDONS\Plugin::INLINE_STYLE_HANDLE, $custom_css);
     }
 }
 
