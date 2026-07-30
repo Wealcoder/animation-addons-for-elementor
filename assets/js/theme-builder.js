@@ -505,3 +505,5 @@
 
   WCFThemeBuilder.init();
 })(jQuery);
+
+//# sourceMappingURL=theme-builder.js.map

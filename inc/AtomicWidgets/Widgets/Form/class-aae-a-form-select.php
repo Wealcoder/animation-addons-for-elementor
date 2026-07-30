@@ -59,6 +59,10 @@ class AAE_A_Form_Select extends Atomic_Widget_Base {
 		return 'eicon-select';
 	}
 
+	public function show_in_panel() {
+		return false;
+	}
+
 	public function get_keywords() {
 		return [ 'atomic', 'form', 'select', 'dropdown', 'options' ];
 	}

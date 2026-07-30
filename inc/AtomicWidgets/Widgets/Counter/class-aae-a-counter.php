@@ -55,6 +55,10 @@ class AAE_A_Counter extends Atomic_Element_Base {
 		return [ 'atomic', 'counter', 'number', 'animation', 'gsap' ];
 	}
 
+	public function get_categories(): array {
+		return ['aae-atomic-general'];
+	}
+
 	public function get_icon() {
 		return 'eicon-counter';
 	}

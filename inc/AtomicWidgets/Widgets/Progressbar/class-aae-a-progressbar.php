@@ -91,6 +91,11 @@ class AAE_A_Progressbar extends Atomic_Element_Base
 		return ['progressbar', 'progress', 'bar', 'basic', 'template', 'container', 'atomic'];
 	}
 
+	public function get_categories(): array
+	{
+		return ['aae-atomic-general'];
+	}
+
 	protected static function define_props_schema(): array
 	{
 		return [

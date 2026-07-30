@@ -49,6 +49,10 @@ class AAE_A_Video_Mask extends Atomic_Element_Base {
 		return [ 'video', 'mask', 'play', 'atomic' ];
 	}
 
+	public function get_categories(): array {
+		return ['aae-atomic-general'];
+	}
+
 	protected static function define_props_schema(): array {
 		return [
 			'classes'    => Classes_Prop_Type::make()->default( [] ),

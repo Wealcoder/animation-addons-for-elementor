@@ -49,6 +49,11 @@ class AAE_A_Post_Title extends Atomic_Widget_Base
 		return ['post', 'title', 'heading', 'atomic', 'dynamic'];
 	}
 
+	public function get_categories(): array
+	{
+		return ['aae-atomic-post'];
+	}
+
 	protected static function define_props_schema(): array
 	{
 		// Editor preview: sample a random post WITH a featured image (shared

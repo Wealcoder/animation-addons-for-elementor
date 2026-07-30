@@ -128,27 +128,27 @@ class AAE_A_Post_Pagination_Preview extends Atomic_Element_Base {
 	public static function build_default_inner_children( string $role ): array {
 		return [
 			AAE_A_Post_Pagination_Preview_Image::generate()
-				->editor_settings( [ 'title' => 'Post Pagination Preview Thumbnail' ] )
+				->editor_settings( [ 'title' => 'Thumbnail' ] )
 				->settings( [ 'role' => [ '$$type' => 'string', 'value' => $role ] ] )
 				->build(),
 			AAE_A_Post_Pagination_Preview_Category::generate()
-				->editor_settings( [ 'title' => 'Post Pagination Preview Category' ] )
+				->editor_settings( [ 'title' => 'Category' ] )
 				->settings( [ 'role' => [ '$$type' => 'string', 'value' => $role ] ] )
 				->build(),
 			AAE_A_Post_Pagination_Preview_Title::generate()
-				->editor_settings( [ 'title' => 'Post Pagination Preview Title' ] )
+				->editor_settings( [ 'title' => 'Title' ] )
 				->settings( [ 'role' => [ '$$type' => 'string', 'value' => $role ] ] )
 				->build(),
 			AAE_A_Post_Pagination_Preview_Date::generate()
-				->editor_settings( [ 'title' => 'Post Pagination Preview Date' ] )
+				->editor_settings( [ 'title' => 'Date' ] )
 				->settings( [ 'role' => [ '$$type' => 'string', 'value' => $role ] ] )
 				->build(),
 			AAE_A_Post_Pagination_Preview_Author::generate()
-				->editor_settings( [ 'title' => 'Post Pagination Preview Author' ] )
+				->editor_settings( [ 'title' => 'Author' ] )
 				->settings( [ 'role' => [ '$$type' => 'string', 'value' => $role ] ] )
 				->build(),
 			AAE_A_Post_Pagination_Preview_Excerpt::generate()
-				->editor_settings( [ 'title' => 'Post Pagination Preview Excerpt' ] )
+				->editor_settings( [ 'title' => 'Excerpt' ] )
 				->settings( [ 'role' => [ '$$type' => 'string', 'value' => $role ] ] )
 				->build(),
 		];

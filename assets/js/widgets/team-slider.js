@@ -74,3 +74,5 @@
         elementorFrontend.hooks.addAction('frontend/element_ready/helo--team-slider.default', HeloteamSlider);
     });
 })(jQuery);
+
+//# sourceMappingURL=team-slider.js.map

@@ -86,6 +86,10 @@ class AAE_A_Post_Pagination extends Atomic_Element_Base {
 		return [ 'post', 'nav', 'navigation', 'prev', 'next', 'pagination', 'atomic', 'dynamic' ];
 	}
 
+	public function get_categories(): array {
+		return ['aae-atomic-post'];
+	}
+
 	protected static function define_props_schema(): array {
 		// NOTE on polarity: Elementor's 4.1.x dependency evaluator fires the
 		// `effect` when the where() condition does NOT match — a `hide`

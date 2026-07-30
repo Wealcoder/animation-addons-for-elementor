@@ -104,6 +104,10 @@ class AAE_A_Form extends Atomic_Element_Base {
 		return [ 'form', 'contact', 'lead', 'atomic', 'submit' ];
 	}
 
+	public function get_categories(): array {
+		return ['aae-atomic-form'];
+	}
+
 	/**
 	 * Prop names and defaults follow the SSR spec (see CLAUDE.md → "AAE
 	 * Atomic Form Builder" → "Atomic element requirements"). `form_key` and

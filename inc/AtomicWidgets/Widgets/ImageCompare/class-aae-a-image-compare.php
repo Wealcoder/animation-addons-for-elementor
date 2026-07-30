@@ -73,6 +73,10 @@ class AAE_A_Image_Compare extends Atomic_Element_Base {
 		return [ 'atomic', 'image', 'compare', 'before', 'after', 'slider', 'template' ];
 	}
 
+	public function get_categories(): array {
+		return ['aae-atomic-general'];
+	}
+
 	public function get_icon() {
 		return 'eicon-image-before-after';
 	}

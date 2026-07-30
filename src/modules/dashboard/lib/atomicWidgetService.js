@@ -5,6 +5,11 @@ const isOnlyPro =
 const CATEGORY_LABELS = {
   general: "General Widgets",
   "header-footer": "Header & Footer Widgets",
+  dynamic: "Dynamic Widgets",
+  slider: "Slider Widgets",
+  forms: "Form Widgets",
+  interaction: "Interaction Widgets",
+  animation: "Animation Widgets",
 };
 
 // Mirrors the `$internal_widgets` list in
@@ -33,7 +38,6 @@ const INTERNAL_WIDGET_SLUGS = [
   "aae-a-icon-list-item",
   "aae-a-countdown-unit",
   "aae-a-toggle-pane",
-  "aae-a-toggle-pane-main",
   "aae-a-video-mask-btn",
   "aae-a-flip-box-main-face",
   "aae-a-post-card",

@@ -56,6 +56,10 @@ class AAE_A_Advanced_Heading extends Atomic_Widget_Base {
 		return [ 'atomic', 'heading', 'title', 'highlight', 'html', 'span', 'advanced' ];
 	}
 
+	public function get_categories(): array {
+		return ['aae-atomic-general'];
+	}
+
 	public function get_icon() {
 		return 'eicon-t-letter';
 	}

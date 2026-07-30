@@ -86,6 +86,10 @@ class AAE_A_Form_Step extends Atomic_Element_Base {
 		return 'eicon-single-page';
 	}
 
+	public function should_show_in_panel() {
+		return false;
+	}
+
 	public function get_keywords() {
 		return [ 'form', 'step', 'multi-step', 'page', 'wizard', 'atomic' ];
 	}

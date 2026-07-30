@@ -199,6 +199,10 @@ class AAE_A_Form_Input extends Atomic_Widget_Base {
 		return 'eicon-form-horizontal';
 	}
 
+	public function show_in_panel() {
+		return false;
+	}
+
 	public function get_keywords() {
 		return [ 'atomic', 'form', 'input', 'text', 'email', 'number', 'tel', 'password' ];
 	}

@@ -304,7 +304,6 @@ final class Atomic
 		'aae-a-toggle-switcher-tab'    => 'aae-a-toggle-switcher',
 		'aae-a-toggle-pane-title'      => 'aae-a-toggle-switcher',
 		'aae-a-toggle-pane-desc'       => 'aae-a-toggle-switcher',
-		'aae-a-toggle-pane-main'       => 'aae-a-toggle-switcher-main',
 
 		// Video Mask / Flip Box
 		'aae-a-video-mask-btn'         => 'aae-a-video-mask',
@@ -410,7 +409,6 @@ final class Atomic
 			'aae-a-icon-list-item',	
 			'aae-a-countdown-unit',
 			'aae-a-toggle-pane',
-			'aae-a-toggle-pane-main',
 			'aae-a-toggle-switcher-tabs',
 			'aae-a-toggle-switcher-tab',
 			'aae-a-toggle-pane-title',
@@ -702,7 +700,7 @@ final class Atomic
 					'atomic',
 					'dynamic',
 				],
-				'category'     => 'general',
+				'category'     => 'dynamic',
 				'order'        => 0,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -723,7 +721,7 @@ final class Atomic
 					'atomic',
 					'dynamic',
 				],
-				'category'     => 'general',
+				'category'     => 'dynamic',
 				'order'        => 0,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -743,7 +741,7 @@ final class Atomic
 					'atomic',
 					'dynamic',
 				],
-				'category'     => 'general',
+				'category'     => 'dynamic',
 				'order'        => 0,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -764,7 +762,7 @@ final class Atomic
 					'atomic',
 					'dynamic',
 				],
-				'category'     => 'general',
+				'category'     => 'dynamic',
 				'order'        => 0,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -878,7 +876,7 @@ final class Atomic
 				'is_upcoming'  => false,
 				'default'      => true,
 				'keywords'     => [ 'search', 'form', 'ajax', 'filter', 'atomic', 'composite' ],
-				'category'     => 'general',
+				'category'     => 'dynamic',
 				'order'        => 0,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -958,7 +956,7 @@ final class Atomic
 				'is_upcoming'  => false,
 				'default'      => true,
 				'keywords'     => [ 'draw', 'svg', 'gsap', 'animation', 'scroll', 'atomic' ],
-				'category'     => 'general',
+				'category'     => 'animation',
 				'order'        => 0,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -979,7 +977,7 @@ final class Atomic
 					'atomic',
 					'dynamic',
 				],
-				'category'     => 'general',
+				'category'     => 'dynamic',
 				'order'        => 0,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -1017,7 +1015,7 @@ final class Atomic
 					'template',
 					'dynamic',
 				],
-				'category'     => 'general',
+				'category'     => 'dynamic',
 				'order'        => 0,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -1040,7 +1038,7 @@ final class Atomic
 					'query',
 					'dynamic',
 				],
-				'category'     => 'general',
+				'category'     => 'slider',
 				'order'        => 1,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -1087,7 +1085,7 @@ final class Atomic
 					'pagination',
 					'dynamic',
 				],
-				'category'     => 'general',
+				'category'     => 'dynamic',
 				'order'        => 0,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -1122,7 +1120,7 @@ final class Atomic
 
 			'aae-a-post-pagination-preview-image' => [
 				'is_internal'  => true,
-				'label'        => 'Post Pagination Preview Thumbnail',
+				'label'        => 'Thumbnail',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Image',
 				'icon'         => 'eicon-image',
 				'keywords'     => [ 'post', 'pagination', 'preview', 'thumbnail', 'image' ],
@@ -1131,7 +1129,7 @@ final class Atomic
 
 			'aae-a-post-pagination-preview-category' => [
 				'is_internal'  => true,
-				'label'        => 'Post Pagination Preview Category',
+				'label'        => 'Category',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Category',
 				'icon'         => 'eicon-tags',
 				'keywords'     => [ 'post', 'pagination', 'preview', 'category' ],
@@ -1140,7 +1138,7 @@ final class Atomic
 
 			'aae-a-post-pagination-preview-title' => [
 				'is_internal'  => true,
-				'label'        => 'Post Pagination Preview Title',
+				'label'        => 'Title',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Title',
 				'icon'         => 'eicon-t-letter',
 				'keywords'     => [ 'post', 'pagination', 'preview', 'title' ],
@@ -1149,7 +1147,7 @@ final class Atomic
 
 			'aae-a-post-pagination-preview-date' => [
 				'is_internal'  => true,
-				'label'        => 'Post Pagination Preview Date',
+				'label'        => 'Date',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Date',
 				'icon'         => 'eicon-calendar',
 				'keywords'     => [ 'post', 'pagination', 'preview', 'date' ],
@@ -1158,7 +1156,7 @@ final class Atomic
 
 			'aae-a-post-pagination-preview-author' => [
 				'is_internal'  => true,
-				'label'        => 'Post Pagination Preview Author',
+				'label'        => 'Author',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Author',
 				'icon'         => 'eicon-user-circle-o',
 				'keywords'     => [ 'post', 'pagination', 'preview', 'author' ],
@@ -1167,7 +1165,7 @@ final class Atomic
 
 			'aae-a-post-pagination-preview-excerpt' => [
 				'is_internal'  => true,
-				'label'        => 'Post Pagination Preview Excerpt',
+				'label'        => 'Excerpt',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Excerpt',
 				'icon'         => 'eicon-text-align-left',
 				'keywords'     => [ 'post', 'pagination', 'preview', 'excerpt' ],
@@ -1383,7 +1381,7 @@ final class Atomic
 				'is_extension' => false,
 				'is_upcoming'  => false,
 				'default'      => true,
-				'category'     => 'general',
+				'category'     => 'slider',
 				'order'        => 1,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -1440,7 +1438,7 @@ final class Atomic
 				'is_extension' => false,
 				'is_upcoming'  => false,
 				'default'      => true,
-				'category'     => 'general',
+				'category'     => 'slider',
 				'order'        => 1,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -1944,31 +1942,6 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
-			// ── Progress Bar Main — PARENT widget #2 (a second, standalone
-			// variant powered by ProgressBar.js; it has no helper widgets of
-			// its own). Exposed in the dashboard widget list.
-			'aae-a-progressbar-main' => [
-				'label'        => 'Progress Bar Main',
-				'description'  => 'Animated line, circle, and dot progress bar powered by ProgressBar.js.',
-				'icon'         => 'eicon-skill-bar',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'progress',
-					'progressbar',
-					'bar',
-					'circle',
-					'skill',
-					'atomic',
-				],
-				'category'     => 'general',
-				'order'        => 13,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
 			// ── Toggle Switcher — PARENT widget #1. The only entry of this
 			// sub-group exposed in the dashboard widget list.
 			'aae-a-toggle-switcher' => [
@@ -2078,54 +2051,6 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
-			// ── Toggle Switcher Main — PARENT widget #2 (a second,
-			// standalone variant of Toggle Switcher, own JS/CSS bundle).
-			// Exposed in the dashboard widget list.
-			'aae-a-toggle-switcher-main' => [
-				'label'        => 'Toggle Switcher Main',
-				'description'  => 'A dual-panel content toggle with two styles — classic switch or label highlight.',
-				'icon'         => 'eicon-t-letter',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'toggle',
-					'switch',
-					'tabs',
-					'atomic',
-					'switcher',
-					'main',
-				],
-				'category'     => 'general',
-				'order'        => 15,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
-			// ── Toggle Switcher Main — HELPER widget. `is_internal =>
-			// true` hides it from the dashboard widget list; only used
-			// internally by "Toggle Switcher Main" above.
-			'aae-a-toggle-pane-main' => [
-				'label'        => 'Toggle Pane Main (Internal)',
-				'description'  => 'Internal child container for Toggle Switcher Main.',
-				'icon'         => 'eicon-inner-section',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'is_internal'  => true,
-				'default'      => true,
-				'keywords'     => [
-					'toggle pane',
-					'internal',
-					'main',
-				],
-				'category'     => 'general',
-				'order'        => 16,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
 			'aae-a-offcanvas' => [
 				'label'        => 'Offcanvas',
 				'description'  => 'Offcanvas drawer with trigger + panel and selectable GSAP open/close animations.',
@@ -2141,7 +2066,7 @@ final class Atomic
 					'panel',
 					'atomic',
 				],
-				'category'     => 'general',
+				'category'     => 'interaction',
 				'order'        => 15,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -2204,7 +2129,7 @@ final class Atomic
 					'lead',
 					'atomic',
 				],
-				'category'     => 'general',
+				'category'     => 'forms',
 				'order'        => 17,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -2598,7 +2523,7 @@ final class Atomic
 				'is_upcoming'  => false,
 				'default'      => true,
 				'keywords'     => [ 'nav', 'menu', 'navbar', 'navigation', 'atomic', 'aae' ],
-				'category'     => 'general',
+				'category'     => 'header-footer',
 				'order'        => 17,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -2637,7 +2562,7 @@ final class Atomic
 					'preset',
 					'template',
 				],
-				'category'     => 'general',
+				'category'     => 'interaction',
 				'order'        => 14,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -2692,7 +2617,7 @@ final class Atomic
 					'marker',
 					'atomic',
 				],
-				'category'     => 'general',
+				'category'     => 'interaction',
 				'order'        => 20,
 				'demo_url'     => '',
 				'doc_url'      => '',
@@ -2943,7 +2868,7 @@ final class Atomic
 			'regular-animation' => [
 				'label'        => 'Regular Animation',
 				'description'  => 'Preset-based entrance/exit animations applied to every atomic widget.',
-				'icon'         => 'wcf-icon-starter-animation',
+				'icon'         => 'wcf-icon-Animation',
 				'is_pro'       => false,
 				'is_extension' => true,
 				'is_upcoming'  => false,
@@ -2956,7 +2881,7 @@ final class Atomic
 			'parallax' => [
 				'label'        => 'Parallax',
 				'description'  => 'ScrollSmoother-powered parallax depth effect on scroll.',
-				'icon'         => 'wcf-icon-parallax',
+				'icon'         => 'wcf-icon-Animation-Builder',
 				'is_pro'       => false,
 				'is_extension' => true,
 				'is_upcoming'  => false,
@@ -2969,7 +2894,7 @@ final class Atomic
 			'text-animation' => [
 				'label'        => 'Text Animation',
 				'description'  => 'Character/word/line reveal animations for heading-class widgets.',
-				'icon'         => 'wcf-icon-text-animation',
+				'icon'         => 'wcf-icon-Text-Animation',
 				'is_pro'       => false,
 				'is_extension' => true,
 				'is_upcoming'  => false,
@@ -2982,7 +2907,7 @@ final class Atomic
 			'image-animation' => [
 				'label'        => 'Image Animation',
 				'description'  => 'Reveal/scale/stretch animations for image and SVG widgets.',
-				'icon'         => 'wcf-icon-image-animation',
+				'icon'         => 'wcf-icon-Image-Animation',
 				'is_pro'       => false,
 				'is_extension' => true,
 				'is_upcoming'  => false,
@@ -2995,7 +2920,7 @@ final class Atomic
 			'image-hover' => [
 				'label'        => 'Image Hover',
 				'description'  => 'Cursor-following floating image overlay on any atomic widget.',
-				'icon'         => 'wcf-icon-image-hover',
+				'icon'         => 'wcf-icon-Image-Hover-Effect',
 				'is_pro'       => false,
 				'is_extension' => true,
 				'is_upcoming'  => false,
@@ -3008,7 +2933,7 @@ final class Atomic
 			'sticky' => [
 				'label'        => 'Sticky',
 				'description'  => 'Pin elements to viewport on scroll with configurable offsets.',
-				'icon'         => 'wcf-icon-sticky',
+				'icon'         => 'wcf-icon-Pin-Elements',
 				'is_pro'       => false,
 				'is_extension' => true,
 				'is_upcoming'  => false,
@@ -3021,7 +2946,7 @@ final class Atomic
 			'horizontal-scroll-anim' => [
 				'label'        => 'Horizontal Scroll Animation',
 				'description'  => 'GSAP-powered horizontal scroll-triggered animation.',
-				'icon'         => 'wcf-icon-horizontal-scroll',
+				'icon'         => 'wcf-icon-Horizontal',
 				'is_pro'       => false,
 				'is_extension' => true,
 				'is_upcoming'  => false,
@@ -3034,7 +2959,7 @@ final class Atomic
 			'cursor-hover-effect' => [
 				'label'        => 'Cursor Hover Effect',
 				'description'  => 'Cursor-following floating element effect on any atomic widget.',
-				'icon'         => 'wcf-icon-cursor-hover',
+				'icon'         => 'wcf-icon-Cursor-Hover-Effect',
 				'is_pro'       => false,
 				'is_extension' => true,
 				'is_upcoming'  => false,
@@ -3047,7 +2972,7 @@ final class Atomic
 			'mouse-move-effect' => [
 				'label'        => 'Mouse Move Effect',
 				'description'  => 'Element moves/rotates based on mouse position.',
-				'icon'         => 'wcf-icon-mouse-move',
+				'icon'         => 'wcf-icon-Cursor-Move-Effect',
 				'is_pro'       => false,
 				'is_extension' => true,
 				'is_upcoming'  => false,
@@ -3060,7 +2985,7 @@ final class Atomic
 			'advance-tooltip' => [
 				'label'        => 'Advance Tooltip',
 				'description'  => 'Rich content tooltips on hover for any atomic widget.',
-				'icon'         => 'wcf-icon-tooltip',
+				'icon'         => 'wcf-icon-Advanced-Tooltip',
 				'is_pro'       => false,
 				'is_extension' => true,
 				'is_upcoming'  => false,
@@ -3073,7 +2998,7 @@ final class Atomic
 			'tilt' => [
 				'label'        => 'Tilt',
 				'description'  => '3D tilt perspective effect on hover.',
-				'icon'         => 'wcf-icon-tilt',
+				'icon'         => 'wcf-icon-Tilt-Effect',
 				'is_pro'       => false,
 				'is_extension' => true,
 				'is_upcoming'  => false,
@@ -3086,7 +3011,7 @@ final class Atomic
 			'scroll-to' => [
 				'label'        => 'Scroll To',
 				'description'  => 'Smooth scroll-to-target anchor navigation.',
-				'icon'         => 'wcf-icon-scroll-to',
+				'icon'         => 'wcf-icon-Horizontal',
 				'is_pro'       => false,
 				'is_extension' => true,
 				'is_upcoming'  => false,
@@ -3099,7 +3024,7 @@ final class Atomic
 			'custom-css' => [
 				'label'        => 'Custom CSS',
 				'description'  => 'Add custom CSS rules per-element in the atomic editor.',
-				'icon'         => 'wcf-icon-custom-css',
+				'icon'         => 'wcf-icon-Custom-CSS',
 				'is_pro'       => false,
 				'is_extension' => true,
 				'is_upcoming'  => false,
@@ -3107,6 +3032,45 @@ final class Atomic
 				'keywords'     => ['custom css', 'css', 'style', 'custom style'],
 				'category'     => 'utility',
 				'order'        => 14,
+			],
+
+			'parent-child-hover' => [
+				'label'        => 'Parent Child Hover',
+				'description'  => 'Hover a container to trigger a "Parent Hover" style state on its child elements.',
+				'icon'         => 'wcf-icon-Grid-Hover-Posts',
+				'is_pro'       => true,
+				'is_extension' => true,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => ['parent child hover', 'flexbox child hover', 'parent hover', 'hover source', 'hover target', 'child hover'],
+				'category'     => 'utility',
+				'order'        => 13,
+			],
+
+			'conditional-display' => [
+				'label'        => 'Conditional Display',
+				'description'  => 'Show or hide AAE Form fields/containers based on the value of other fields.',
+				'icon'         => 'wcf-icon-Toggle-Switch',
+				'is_pro'       => true,
+				'is_extension' => true,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => ['conditional display', 'conditional logic', 'show hide fields', 'form conditions', 'dynamic fields'],
+				'category'     => 'utility',
+				'order'        => 15,
+			],
+
+			'popup' => [
+				'label'        => 'Popup',
+				'description'  => 'Site-wide popup system for atomic elements, triggered from AAE Builder templates.',
+				'icon'         => 'wcf-icon-Popup',
+				'is_pro'       => true,
+				'is_extension' => true,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => ['popup', 'modal', 'lightbox', 'overlay', 'trigger'],
+				'category'     => 'interaction',
+				'order'        => 16,
 			],
 		];
 	}
@@ -3132,6 +3096,11 @@ final class Atomic
 
 		add_action('elementor/widgets/register', [$this, 'register_widgets']);
 		add_action('elementor/elements/elements_registered', [$this, 'register_elements']);
+
+		// Panel grouping: AAE's atomic widgets otherwise inherit Elementor's
+		// generic "Atomic Elements" (v4-elements) category from
+		// Atomic_Widget_Base::get_categories() and all land in one bucket.
+		add_action('elementor/elements/categories_registered', [$this, 'register_atomic_categories']);
 
 		// Register library-document types for our atomic top-level widgets so
 		// "Save as a template" works on them (Elementor only registers types for
@@ -3707,10 +3676,9 @@ final class Atomic
 			'class'        => '\WCF_ADDONS\AtomicWidgets\Widgets\SocialShare\AAE_A_Social_Share',
 			'file'         => 'Widgets/SocialShare/class-aae-a-social-share.php',
 			'has_script'   => false,
-			// No JS behavior yet (see Widgets/SocialShare/assets/js/social-share.js) —
-			// only the on-demand stylesheet is registered.
+			// SCSS-only widget, compiled by gulp's compile:atomic-scss task, not webpack.
 			'style_handle' => 'aae-a-social-share-css',
-			'style_path'   => '/assets/atomic/js/social-share.css',
+			'style_path'   => '/assets/atomic/css/social-share.css',
 		],
 		'aae-a-social-share-item' => [
 			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\SocialShare\AAE_A_Social_Share_Item',
@@ -3736,7 +3704,7 @@ final class Atomic
 			'script_path' => '/assets/atomic/js/image-compare.js',
 			'has_script' => true,
 			'style_handle' => 'aae-a-image-compare-css',
-			'style_path' => '/assets/atomic/js/image-compare.css',
+			'style_path' => '/assets/atomic/css/image-compare.css',
 		],
 		'aae-a-countdown' => [
 			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Countdown\AAE_A_Countdown',
@@ -3791,7 +3759,7 @@ final class Atomic
 				'script_path'   => '/assets/atomic/js/btn.js',
 				'has_script'    => true,
 				'style_handle'  => 'aae-a-btn-css',
-				'style_path'    => '/assets/atomic/js/btn.css',
+				'style_path'    => '/assets/atomic/css/btn.css',
 			],
 
 			'aae-a-btn-pro' => [
@@ -3802,7 +3770,7 @@ final class Atomic
 				'script_deps'   => [ 'gsap' ], // Ripple + polygon magnetic-move effects need GSAP.
 				'has_script'    => true,
 				'style_handle'  => 'aae-a-btn-pro-css',
-				'style_path'    => '/assets/atomic/js/btn-pro.css',
+				'style_path'    => '/assets/atomic/css/btn-pro.css',
 			],
 
 			'aae-a-advanced-heading' => [
@@ -3819,7 +3787,7 @@ final class Atomic
 				'script_path'   => '/assets/atomic/js/progressbar.js',
 				'has_script'    => true,
 				'style_handle'  => 'aae-a-progressbar-css',
-				'style_path'    => '/assets/atomic/js/progressbar.css',
+				'style_path'    => '/assets/atomic/css/progressbar.css',
 			],
 
 			'aae-a-progressbar-track' => [
@@ -3838,16 +3806,6 @@ final class Atomic
 				'has_script' => false,
 			],
 
-			'aae-a-progressbar-main' => [
-				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\ProgressbarMain\AAE_A_Progressbar_Main',
-				'file'          => 'Widgets/ProgressbarMain/class-aae-a-progressbar-main.php',
-				'script_handle' => 'aae-a-progressbar-main-js',
-				'script_path'   => '/assets/atomic/js/progressbar-main.js',
-				'has_script'    => true,
-				'style_handle'  => 'aae-a-progressbar-main-css',
-				'style_path'    => '/assets/atomic/js/progressbar-main.css',
-			],
-
 			'aae-a-toggle-switcher' => [
 				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Switcher',
 				'file'          => 'Widgets/ToggleSwitcher/class-aae-a-toggle-switcher.php',
@@ -3855,7 +3813,7 @@ final class Atomic
 				'script_path'   => '/assets/atomic/js/toggle-switcher.js',
 				'has_script'    => true,
 				'style_handle'  => 'aae-a-toggle-switcher-css',
-				'style_path'    => '/assets/atomic/js/toggle-switcher.css',
+				'style_path'    => '/assets/atomic/css/toggle-switcher.css',
 			],
 
 			'aae-a-toggle-pane' => [
@@ -3882,22 +3840,6 @@ final class Atomic
 			'aae-a-toggle-pane-desc' => [
 				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Pane_Desc',
 				'file'       => 'Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-pane-desc.php',
-				'has_script' => false,
-			],
-
-			'aae-a-toggle-switcher-main' => [
-				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcherMain\AAE_A_Toggle_Switcher_Main',
-				'file'          => 'Widgets/ToggleSwitcherMain/class-aae-a-toggle-switcher-main.php',
-				'script_handle' => 'aae-a-toggle-switcher-main-js',
-				'script_path'   => '/assets/atomic/js/toggle-switcher-main.js',
-				'has_script'    => true,
-				'style_handle'  => 'aae-a-toggle-switcher-main-css',
-				'style_path'    => '/assets/atomic/js/toggle-switcher-main.css',
-			],
-
-			'aae-a-toggle-pane-main' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcherMain\AAE_A_Toggle_Pane_Main',
-				'file'       => 'Widgets/ToggleSwitcherMain/class-aae-a-toggle-pane-main.php',
 				'has_script' => false,
 			],
 
@@ -4095,11 +4037,11 @@ final class Atomic
 		'aae-a-flip-box' => [
 			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\FlipBox\AAE_A_Flip_Box',
 			'file'          => 'Widgets/FlipBox/class-aae-a-flip-box.php',
-			'script_handle' => 'aae-a-flip-box-js',
-			'script_path'   => '/assets/atomic/js/flip-box.js',
-			'has_script'    => true,
+			// SCSS-only widget (the flip animation is entirely CSS-driven) —
+			// compiled by gulp's compile:atomic-scss task, not webpack.
+			'has_script'    => false,
 			'style_handle'  => 'aae-a-flip-box-css',
-			'style_path'    => '/assets/atomic/js/flip-box.css',
+			'style_path'    => '/assets/atomic/css/flip-box.css',
 		],
 
 		'aae-a-image-hotspot' => [
@@ -4181,7 +4123,7 @@ final class Atomic
 			'script_path'   => '/assets/atomic/js/video-mask.js',
 			'has_script'    => true,
 			'style_handle'  => 'aae-a-video-mask-css',
-			'style_path'    => '/assets/atomic/js/video-mask.css',
+			'style_path'    => '/assets/atomic/css/video-mask.css',
 		],
 
 		'aae-a-video-mask-btn' => [
@@ -4597,6 +4539,32 @@ final class Atomic
 				$style->deps[] = 'editor-preview';
 			}
 		}
+	}
+
+	/**
+	 * Register AAE's own panel categories for atomic widgets. Each atomic
+	 * widget class returns one of these slugs from its own get_categories()
+	 * override (added per-widget — Atomic_Widget_Base's default is a plain,
+	 * non-abstract method, not something a central hook can redirect).
+	 *
+	 * @param \Elementor\Elements_Manager $elements_manager
+	 */
+	public function register_atomic_categories($elements_manager): void
+	{
+		$elements_manager->add_category('aae-atomic-general', [
+			'title' => esc_html__('AAE General', 'animation-addons-for-elementor'),
+			'icon'  => 'fa fa-plug',
+		]);
+
+		$elements_manager->add_category('aae-atomic-form', [
+			'title' => esc_html__('AAE Form', 'animation-addons-for-elementor'),
+			'icon'  => 'fa fa-plug',
+		]);
+
+		$elements_manager->add_category('aae-atomic-post', [
+			'title' => esc_html__('AAE Post', 'animation-addons-for-elementor'),
+			'icon'  => 'fa fa-plug',
+		]);
 	}
 
 	/**
