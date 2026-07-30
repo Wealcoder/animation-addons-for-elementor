@@ -5,6 +5,11 @@ const isOnlyPro =
 const CATEGORY_LABELS = {
   general: "General Widgets",
   "header-footer": "Header & Footer Widgets",
+  dynamic: "Dynamic Widgets",
+  slider: "Slider Widgets",
+  forms: "Form Widgets",
+  interaction: "Interaction Widgets",
+  animation: "Animation Widgets",
 };
 
 // Mirrors the `$internal_widgets` list in

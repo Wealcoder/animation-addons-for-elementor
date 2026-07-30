@@ -1585,22 +1585,56 @@ class Plugin
 	 * @since 1.2.1
 	 * @access public
 	 */
+	/**
+	 * Whether any legacy (v3) extension or widget is still switched on.
+	 *
+	 * Both options hold key => bool arrays while anything is enabled, and are
+	 * saved as an empty string once the dashboard has everything switched off —
+	 * hence the is_array() guard before array_filter().
+	 *
+	 * Read lazily (at enqueue time, never in the constructor) so that filters on
+	 * option_wcf_save_extensions registered by the Pro plugin have already run.
+	 *
+	 * @since 1.2.1
+	 * @access public
+	 * @static
+	 *
+	 * @return bool True when at least one legacy extension or widget is active.
+	 */
+	public static function has_active_legacy_assets()
+	{
+		foreach (array('wcf_save_extensions', 'wcf_save_widgets') as $option) {
+			$value = get_option($option);
+
+			if (is_array($value) && array_filter($value)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	public function register_starter_animation_style()
 	{
 
+		// Register only — never enqueue here. The Starter Animations control
+		// declares this handle in its `assets => styles` block with a condition
+		// on wcf_starter_animations, so Elementor enqueues it only on pages
+		// holding an element that actually uses an animation. Enqueuing it
+		// unconditionally shipped the file on every page of the site.
 		wp_register_style(
 			'aae-starter-animations',
 			WCF_ADDONS_URL . 'assets/css/starter-animations.css',
 			[],
 			WCF_ADDONS_VERSION
 		);
-
-		wp_enqueue_style('aae-starter-animations');
 	}
 
 	public function register_starter_animation_script()
 	{
 
+		// See register_starter_animation_style() — register only, enqueued
+		// per-element through the control's `assets => scripts` condition.
 		wp_register_script(
 			'aae-starter-animations',
 			WCF_ADDONS_URL . 'assets/js/starter-animations.js',
@@ -1608,8 +1642,6 @@ class Plugin
 			WCF_ADDONS_VERSION,
 			true
 		);
-
-		wp_enqueue_script('aae-starter-animations');
 	}
 
 
@@ -1658,6 +1690,10 @@ class Plugin
 		add_action(
 			'elementor/editor/after_enqueue_scripts',
 			function () {
+				if (!self::has_active_legacy_assets()) {
+					return;
+				}
+
 				wp_enqueue_script('aae-starter-animations');
 			}
 		);
@@ -1665,6 +1701,40 @@ class Plugin
 		add_action(
 			'elementor/editor/after_enqueue_styles',
 			function () {
+				if (!self::has_active_legacy_assets()) {
+					return;
+				}
+
+				wp_enqueue_style('aae-starter-animations');
+			}
+		);
+
+		// Editor PREVIEW iframe: enqueue for the whole document rather than
+		// per-element. The `assets` condition declared on the wcf_starter_animations
+		// control cannot work here — Elementor's asset iteration bails out in
+		// preview mode (Assets::is_action_needed() -> is_preview_mode()), and the
+		// builder has to see the animation the moment they pick one, before any
+		// save. The frontend stays strictly per-element. Still gated on the legacy
+		// feature being active, so a site with everything switched off loads
+		// nothing here either.
+		add_action(
+			'elementor/preview/enqueue_scripts',
+			function () {
+				if (!self::has_active_legacy_assets()) {
+					return;
+				}
+
+				wp_enqueue_script('aae-starter-animations');
+			}
+		);
+
+		add_action(
+			'elementor/preview/enqueue_styles',
+			function () {
+				if (!self::has_active_legacy_assets()) {
+					return;
+				}
+
 				wp_enqueue_style('aae-starter-animations');
 			}
 		);
