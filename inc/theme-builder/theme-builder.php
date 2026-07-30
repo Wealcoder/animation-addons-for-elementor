@@ -103,8 +103,8 @@ class WCF_Theme_Builder
 	 *
 	 * Elementor's atomic styles manager only walks the MAIN queried document, so
 	 * `elementor/atomic-widgets/styles/register` never fired for the header. That
-	 * left every atomic style handle it needs (aae-a-nav-css, aae-a-site-logo-css,
-	 * …) unregistered — and wp_enqueue_style() silently does nothing for an unknown
+	 * left every atomic style handle it needs (aae-a-nav-css, aae-a-toc-css, …)
+	 * unregistered — and wp_enqueue_style() silently does nothing for an unknown
 	 * handle, which is why the header CSS was missing from the page entirely rather
 	 * than merely arriving late.
 	 *

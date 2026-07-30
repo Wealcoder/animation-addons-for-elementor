@@ -4477,12 +4477,15 @@ final class Atomic
 			'has_script' => false,
 		],
 
+		// No style_handle/style_path on purpose: this widget's ~140 bytes of CSS
+		// is emitted inline by its twig (guarded so it prints once per request)
+		// rather than costing a separate HTTP request. There is no
+		// Widgets/SiteLogo/assets/scss for it either — the twig is the source of
+		// truth. Don't "restore" the handle without also deleting the twig block.
 		'aae-a-site-logo' => [
 			'class'        => '\WCF_ADDONS\AtomicWidgets\Widgets\SiteLogo\AAE_A_Site_Logo',
 			'file'         => 'Widgets/SiteLogo/class-aae-a-site-logo.php',
 			'has_script'   => false,
-			'style_handle' => 'aae-a-site-logo-css',
-			'style_path'   => '/assets/atomic/css/site-logo.css',
 		],
 
 		'aae-a-video-mask' => [

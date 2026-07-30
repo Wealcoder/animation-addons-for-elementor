@@ -262,16 +262,43 @@ class AAE_A_Site_Logo extends Atomic_Element_Base {
 				$settings['sl_resolved_href'] = '';
 		}
 
+		$settings['sl_print_css'] = $this->claims_inline_css();
+
 		return $settings;
+	}
+
+	/**
+	 * Element ID that owns the one inline <style> block for this request.
+	 *
+	 * @var string|null
+	 */
+	private static $inline_css_owner = null;
+
+	/**
+	 * Whether THIS instance should emit the widget's inline stylesheet.
+	 *
+	 * The CSS lives in the twig (see the note at the top of it) instead of an
+	 * enqueued file, because ~140 bytes is not worth an HTTP request. Only the
+	 * first Site Logo on the page needs to print it — a header + footer pair
+	 * would otherwise emit the identical block twice.
+	 *
+	 * Deliberately idempotent rather than a simple "first call wins" counter:
+	 * get_atomic_settings() is not guaranteed to be called exactly once per
+	 * element, and a counter would let a speculative call consume the slot and
+	 * leave the real render with no stylesheet at all. Keying on the element ID
+	 * means the owning element answers true however many times it is asked.
+	 */
+	private function claims_inline_css(): bool {
+		if ( null === self::$inline_css_owner ) {
+			self::$inline_css_owner = $this->get_id();
+		}
+
+		return self::$inline_css_owner === $this->get_id();
 	}
 
 	protected function get_templates(): array {
 		return [
 			'elementor/elements/aae-a-site-logo' => __DIR__ . '/aae-a-site-logo.html.twig',
 		];
-	}
-
-	public function get_style_depends(): array {
-		return [ 'aae-a-site-logo-css' ];
 	}
 }
