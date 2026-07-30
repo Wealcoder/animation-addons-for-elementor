@@ -145,10 +145,6 @@ class AAE_A_Flip_Box extends Atomic_Element_Base {
 		];
 	}
 
-	public function get_script_depends(): array {
-		return [ 'aae-a-flip-box-js' ];
-	}
-
 	public function get_style_depends(): array {
 		return [ 'aae-a-flip-box-css' ];
 	}

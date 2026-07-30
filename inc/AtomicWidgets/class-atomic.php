@@ -304,7 +304,6 @@ final class Atomic
 		'aae-a-toggle-switcher-tab'    => 'aae-a-toggle-switcher',
 		'aae-a-toggle-pane-title'      => 'aae-a-toggle-switcher',
 		'aae-a-toggle-pane-desc'       => 'aae-a-toggle-switcher',
-		'aae-a-toggle-pane-main'       => 'aae-a-toggle-switcher-main',
 
 		// Video Mask / Flip Box
 		'aae-a-video-mask-btn'         => 'aae-a-video-mask',
@@ -410,7 +409,6 @@ final class Atomic
 			'aae-a-icon-list-item',	
 			'aae-a-countdown-unit',
 			'aae-a-toggle-pane',
-			'aae-a-toggle-pane-main',
 			'aae-a-toggle-switcher-tabs',
 			'aae-a-toggle-switcher-tab',
 			'aae-a-toggle-pane-title',
@@ -1944,31 +1942,6 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
-			// ── Progress Bar Main — PARENT widget #2 (a second, standalone
-			// variant powered by ProgressBar.js; it has no helper widgets of
-			// its own). Exposed in the dashboard widget list.
-			'aae-a-progressbar-main' => [
-				'label'        => 'Progress Bar Main',
-				'description'  => 'Animated line, circle, and dot progress bar powered by ProgressBar.js.',
-				'icon'         => 'eicon-skill-bar',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'progress',
-					'progressbar',
-					'bar',
-					'circle',
-					'skill',
-					'atomic',
-				],
-				'category'     => 'general',
-				'order'        => 13,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
 			// ── Toggle Switcher — PARENT widget #1. The only entry of this
 			// sub-group exposed in the dashboard widget list.
 			'aae-a-toggle-switcher' => [
@@ -2074,54 +2047,6 @@ final class Atomic
 				'keywords'     => [ 'toggle', 'pane', 'description', 'atomic' ],
 				'category'     => 'general',
 				'order'        => 14,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
-			// ── Toggle Switcher Main — PARENT widget #2 (a second,
-			// standalone variant of Toggle Switcher, own JS/CSS bundle).
-			// Exposed in the dashboard widget list.
-			'aae-a-toggle-switcher-main' => [
-				'label'        => 'Toggle Switcher Main',
-				'description'  => 'A dual-panel content toggle with two styles — classic switch or label highlight.',
-				'icon'         => 'eicon-t-letter',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'toggle',
-					'switch',
-					'tabs',
-					'atomic',
-					'switcher',
-					'main',
-				],
-				'category'     => 'general',
-				'order'        => 15,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
-			// ── Toggle Switcher Main — HELPER widget. `is_internal =>
-			// true` hides it from the dashboard widget list; only used
-			// internally by "Toggle Switcher Main" above.
-			'aae-a-toggle-pane-main' => [
-				'label'        => 'Toggle Pane Main (Internal)',
-				'description'  => 'Internal child container for Toggle Switcher Main.',
-				'icon'         => 'eicon-inner-section',
-				'is_pro'       => false,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'is_internal'  => true,
-				'default'      => true,
-				'keywords'     => [
-					'toggle pane',
-					'internal',
-					'main',
-				],
-				'category'     => 'general',
-				'order'        => 16,
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
@@ -3707,10 +3632,9 @@ final class Atomic
 			'class'        => '\WCF_ADDONS\AtomicWidgets\Widgets\SocialShare\AAE_A_Social_Share',
 			'file'         => 'Widgets/SocialShare/class-aae-a-social-share.php',
 			'has_script'   => false,
-			// No JS behavior yet (see Widgets/SocialShare/assets/js/social-share.js) —
-			// only the on-demand stylesheet is registered.
+			// SCSS-only widget, compiled by gulp's compile:atomic-scss task, not webpack.
 			'style_handle' => 'aae-a-social-share-css',
-			'style_path'   => '/assets/atomic/js/social-share.css',
+			'style_path'   => '/assets/atomic/css/social-share.css',
 		],
 		'aae-a-social-share-item' => [
 			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\SocialShare\AAE_A_Social_Share_Item',
@@ -3736,7 +3660,7 @@ final class Atomic
 			'script_path' => '/assets/atomic/js/image-compare.js',
 			'has_script' => true,
 			'style_handle' => 'aae-a-image-compare-css',
-			'style_path' => '/assets/atomic/js/image-compare.css',
+			'style_path' => '/assets/atomic/css/image-compare.css',
 		],
 		'aae-a-countdown' => [
 			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Countdown\AAE_A_Countdown',
@@ -3791,7 +3715,7 @@ final class Atomic
 				'script_path'   => '/assets/atomic/js/btn.js',
 				'has_script'    => true,
 				'style_handle'  => 'aae-a-btn-css',
-				'style_path'    => '/assets/atomic/js/btn.css',
+				'style_path'    => '/assets/atomic/css/btn.css',
 			],
 
 			'aae-a-btn-pro' => [
@@ -3802,7 +3726,7 @@ final class Atomic
 				'script_deps'   => [ 'gsap' ], // Ripple + polygon magnetic-move effects need GSAP.
 				'has_script'    => true,
 				'style_handle'  => 'aae-a-btn-pro-css',
-				'style_path'    => '/assets/atomic/js/btn-pro.css',
+				'style_path'    => '/assets/atomic/css/btn-pro.css',
 			],
 
 			'aae-a-advanced-heading' => [
@@ -3819,7 +3743,7 @@ final class Atomic
 				'script_path'   => '/assets/atomic/js/progressbar.js',
 				'has_script'    => true,
 				'style_handle'  => 'aae-a-progressbar-css',
-				'style_path'    => '/assets/atomic/js/progressbar.css',
+				'style_path'    => '/assets/atomic/css/progressbar.css',
 			],
 
 			'aae-a-progressbar-track' => [
@@ -3838,16 +3762,6 @@ final class Atomic
 				'has_script' => false,
 			],
 
-			'aae-a-progressbar-main' => [
-				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\ProgressbarMain\AAE_A_Progressbar_Main',
-				'file'          => 'Widgets/ProgressbarMain/class-aae-a-progressbar-main.php',
-				'script_handle' => 'aae-a-progressbar-main-js',
-				'script_path'   => '/assets/atomic/js/progressbar-main.js',
-				'has_script'    => true,
-				'style_handle'  => 'aae-a-progressbar-main-css',
-				'style_path'    => '/assets/atomic/js/progressbar-main.css',
-			],
-
 			'aae-a-toggle-switcher' => [
 				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Switcher',
 				'file'          => 'Widgets/ToggleSwitcher/class-aae-a-toggle-switcher.php',
@@ -3855,7 +3769,7 @@ final class Atomic
 				'script_path'   => '/assets/atomic/js/toggle-switcher.js',
 				'has_script'    => true,
 				'style_handle'  => 'aae-a-toggle-switcher-css',
-				'style_path'    => '/assets/atomic/js/toggle-switcher.css',
+				'style_path'    => '/assets/atomic/css/toggle-switcher.css',
 			],
 
 			'aae-a-toggle-pane' => [
@@ -3882,22 +3796,6 @@ final class Atomic
 			'aae-a-toggle-pane-desc' => [
 				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Pane_Desc',
 				'file'       => 'Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-pane-desc.php',
-				'has_script' => false,
-			],
-
-			'aae-a-toggle-switcher-main' => [
-				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcherMain\AAE_A_Toggle_Switcher_Main',
-				'file'          => 'Widgets/ToggleSwitcherMain/class-aae-a-toggle-switcher-main.php',
-				'script_handle' => 'aae-a-toggle-switcher-main-js',
-				'script_path'   => '/assets/atomic/js/toggle-switcher-main.js',
-				'has_script'    => true,
-				'style_handle'  => 'aae-a-toggle-switcher-main-css',
-				'style_path'    => '/assets/atomic/js/toggle-switcher-main.css',
-			],
-
-			'aae-a-toggle-pane-main' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcherMain\AAE_A_Toggle_Pane_Main',
-				'file'       => 'Widgets/ToggleSwitcherMain/class-aae-a-toggle-pane-main.php',
 				'has_script' => false,
 			],
 
@@ -4095,11 +3993,11 @@ final class Atomic
 		'aae-a-flip-box' => [
 			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\FlipBox\AAE_A_Flip_Box',
 			'file'          => 'Widgets/FlipBox/class-aae-a-flip-box.php',
-			'script_handle' => 'aae-a-flip-box-js',
-			'script_path'   => '/assets/atomic/js/flip-box.js',
-			'has_script'    => true,
+			// SCSS-only widget (the flip animation is entirely CSS-driven) —
+			// compiled by gulp's compile:atomic-scss task, not webpack.
+			'has_script'    => false,
 			'style_handle'  => 'aae-a-flip-box-css',
-			'style_path'    => '/assets/atomic/js/flip-box.css',
+			'style_path'    => '/assets/atomic/css/flip-box.css',
 		],
 
 		'aae-a-image-hotspot' => [
@@ -4181,7 +4079,7 @@ final class Atomic
 			'script_path'   => '/assets/atomic/js/video-mask.js',
 			'has_script'    => true,
 			'style_handle'  => 'aae-a-video-mask-css',
-			'style_path'    => '/assets/atomic/js/video-mask.css',
+			'style_path'    => '/assets/atomic/css/video-mask.css',
 		],
 
 		'aae-a-video-mask-btn' => [

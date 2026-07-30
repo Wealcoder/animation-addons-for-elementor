@@ -33,7 +33,6 @@ const INTERNAL_WIDGET_SLUGS = [
   "aae-a-icon-list-item",
   "aae-a-countdown-unit",
   "aae-a-toggle-pane",
-  "aae-a-toggle-pane-main",
   "aae-a-video-mask-btn",
   "aae-a-flip-box-main-face",
   "aae-a-post-card",
