@@ -61,6 +61,18 @@ class AAE_A_Social_Share extends Atomic_Element_Base {
 		return ['aae-atomic-general'];
 	}
 
+	/**
+	 * Panel category for the Elements panel.
+	 *
+	 * Atomic_Element_Base reads the panel category from HERE — get_categories()
+	 * is Widget_Base's hook and is never called for an element type, so a
+	 * category declared only there silently falls back to Elementor's own
+	 * 'v4-elements' ("Atomic Elements") bucket. Delegate so both stay in sync.
+	 */
+	protected function define_panel_categories(): array {
+		return $this->get_categories();
+	}
+
 	public function get_icon() {
 		return 'eicon-share';
 	}

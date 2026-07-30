@@ -3098,8 +3098,11 @@ final class Atomic
 		add_action('elementor/elements/elements_registered', [$this, 'register_elements']);
 
 		// Panel grouping: AAE's atomic widgets otherwise inherit Elementor's
-		// generic "Atomic Elements" (v4-elements) category from
-		// Atomic_Widget_Base::get_categories() and all land in one bucket.
+		// generic "Atomic Elements" (v4-elements) category and all land in one
+		// bucket. Note the base classes read the category from DIFFERENT hooks:
+		// Atomic_Widget_Base (leaf) uses get_categories(), Atomic_Element_Base
+		// (container) uses define_panel_categories() — see the docblock on
+		// register_atomic_categories().
 		add_action('elementor/elements/categories_registered', [$this, 'register_atomic_categories']);
 
 		// Register library-document types for our atomic top-level widgets so
@@ -4547,9 +4550,20 @@ final class Atomic
 
 	/**
 	 * Register AAE's own panel categories for atomic widgets. Each atomic
-	 * widget class returns one of these slugs from its own get_categories()
-	 * override (added per-widget — Atomic_Widget_Base's default is a plain,
-	 * non-abstract method, not something a central hook can redirect).
+	 * widget class returns one of these slugs from its own override (added
+	 * per-widget — the base defaults are plain, non-abstract methods, not
+	 * something a central hook can redirect).
+	 *
+	 * WHICH METHOD TO OVERRIDE depends on the base class — getting this wrong
+	 * fails SILENTLY, the widget just shows up under Elementor's own "Atomic
+	 * Elements" instead:
+	 *   - Atomic_Widget_Base  (leaf)      → public function get_categories(): array
+	 *   - Atomic_Element_Base (container) → protected function define_panel_categories(): array
+	 * Element_Base has no get_categories() at all; Atomic_Element_Base's
+	 * get_initial_config() sets $config['categories'] from
+	 * define_panel_categories(), so a get_categories() on a container element
+	 * is dead code. Our container classes define both, the latter delegating
+	 * to the former, so the two can't drift.
 	 *
 	 * @param \Elementor\Elements_Manager $elements_manager
 	 */
