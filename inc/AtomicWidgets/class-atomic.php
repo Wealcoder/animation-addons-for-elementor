@@ -1331,7 +1331,7 @@ final class Atomic
 
 			'aae-a-counter' => [
 				'label'        => 'Counter',
-				'description'  => 'An animated number counter using pure GSAP with minimal CSS footprint.',
+				'description'  => 'An animated number counter that counts up on scroll, with a minimal CSS footprint.',
 				'icon'         => 'eicon-counter',
 				'is_pro'       => false,
 				'is_extension' => false,
@@ -3206,6 +3206,10 @@ final class Atomic
 	protected function get_available_widgets()
 	{
 		return [
+			// Counter — deliberately GSAP-free (rAF + IntersectionObserver), so it
+			// needs no `script_deps`. The `gsap` handle only ever exists when the
+			// Pro plugin registers it AND the `wcf_save_extensions` option is set,
+			// which made a GSAP-driven counter fire on some pages and not others.
 			'aae-a-counter' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Counter\AAE_A_Counter',
 				'file' => 'Widgets/Counter/class-aae-a-counter.php',

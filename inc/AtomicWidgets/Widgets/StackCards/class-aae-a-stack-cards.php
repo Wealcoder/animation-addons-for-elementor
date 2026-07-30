@@ -65,7 +65,7 @@ class AAE_A_Stack_Cards extends Atomic_Element_Base {
 	}
 
 	public function get_title() {
-		return esc_html__( 'AAE Stack Cards', 'animation-addons-for-elementor' );
+		return esc_html__( 'Stack Cards', 'animation-addons-for-elementor' );
 	}
 
 	public function get_icon() {

@@ -62,7 +62,7 @@ class AAE_A_Timeline extends Atomic_Element_Base {
 	}
 
 	public function get_title() {
-		return esc_html__( 'AAE Timeline', 'animation-addons-for-elementor' );
+		return esc_html__( 'Timeline', 'animation-addons-for-elementor' );
 	}
 
 	public function get_keywords() {

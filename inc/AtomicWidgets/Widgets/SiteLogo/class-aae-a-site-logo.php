@@ -43,7 +43,7 @@ class AAE_A_Site_Logo extends Atomic_Element_Base {
 	}
 
 	public function get_title(): string {
-		return esc_html__( 'AAE Site Logo', 'animation-addons-for-elementor' );
+		return esc_html__( 'Site Logo', 'animation-addons-for-elementor' );
 	}
 
 	public function get_icon(): string {

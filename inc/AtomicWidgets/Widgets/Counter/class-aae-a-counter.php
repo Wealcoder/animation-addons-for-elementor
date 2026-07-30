@@ -32,7 +32,7 @@ class AAE_A_Counter extends Atomic_Element_Base {
 
 	const BASE_STYLE_KEY = 'base';
 
-	public static $widget_description = 'Display an animated counter using GSAP. Prefix, animated number, and suffix are independently styleable.';
+	public static $widget_description = 'Display an animated number counter that counts up when it scrolls into view. Prefix, animated number, and suffix are independently styleable.';
 
 	public function __construct( $data = [], $args = null ) {
 		parent::__construct( $data, $args );

@@ -63,7 +63,7 @@ class AAE_A_Table_Of_Contents extends Atomic_Widget_Base {
 	}
 
 	public function get_title() {
-		return esc_html__( 'AAE Table of Content', 'animation-addons-for-elementor' );
+		return esc_html__( 'Table of Content', 'animation-addons-for-elementor' );
 	}
 
 	public function get_icon() {

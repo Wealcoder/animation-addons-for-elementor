@@ -38,7 +38,7 @@ class AAE_A_Video_Mask extends Atomic_Element_Base {
 	}
 
 	public function get_title(): string {
-		return esc_html__( 'AAE Video Mask', 'animation-addons-for-elementor' );
+		return esc_html__( 'Video Mask', 'animation-addons-for-elementor' );
 	}
 
 	public function get_icon(): string {

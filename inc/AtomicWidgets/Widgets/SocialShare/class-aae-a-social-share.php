@@ -50,7 +50,7 @@ class AAE_A_Social_Share extends Atomic_Element_Base {
 	}
 
 	public function get_title() {
-		return esc_html__( 'AAE Social Share', 'animation-addons-for-elementor' );
+		return esc_html__( 'Social Share', 'animation-addons-for-elementor' );
 	}
 
 	public function get_keywords() {
