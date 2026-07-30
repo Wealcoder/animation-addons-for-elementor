@@ -82,7 +82,7 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 	}
 
 	public function get_title() {
-		return esc_html__( 'AAE Loop Grid', 'animation-addons-for-elementor' );
+		return esc_html__( 'Loop Grid', 'animation-addons-for-elementor' );
 	}
 
 	public function get_icon() {

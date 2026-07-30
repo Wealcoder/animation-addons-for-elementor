@@ -39,7 +39,7 @@ class AAE_A_Icon_List extends Atomic_Element_Base {
 	}
 
 	public function get_title() {
-		return esc_html__( 'AAE Icon List', 'animation-addons-for-elementor' );
+		return esc_html__( 'Icon List', 'animation-addons-for-elementor' );
 	}
 
 	public function get_icon() {

@@ -71,7 +71,7 @@ class AAE_A_Image_Hotspot extends Atomic_Element_Base {
 	}
 
 	public function get_title() {
-		return esc_html__( 'AAE Image Hotspot', 'animation-addons-for-elementor' );
+		return esc_html__( 'Image Hotspot', 'animation-addons-for-elementor' );
 	}
 
 	public function get_icon() {
