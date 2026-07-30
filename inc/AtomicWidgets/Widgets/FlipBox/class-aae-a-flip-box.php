@@ -56,7 +56,7 @@ class AAE_A_Flip_Box extends Atomic_Element_Base {
 	}
 
 	public function get_title(): string {
-		return esc_html__( 'AAE Flip Box', 'animation-addons-for-elementor' );
+		return esc_html__( 'Flip Box', 'animation-addons-for-elementor' );
 	}
 
 	public function get_icon(): string {
