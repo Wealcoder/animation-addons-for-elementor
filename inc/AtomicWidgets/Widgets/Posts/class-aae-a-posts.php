@@ -51,6 +51,10 @@ class AAE_A_Posts extends Atomic_Element_Base {
 		return [ 'posts', 'grid', 'blog', 'atomic', 'dynamic' ];
 	}
 
+	public function get_categories(): array {
+		return ['aae-atomic-post'];
+	}
+
 	protected static function define_props_schema(): array {
 		return [
 			'classes'        => Classes_Prop_Type::make()->default( [] ),

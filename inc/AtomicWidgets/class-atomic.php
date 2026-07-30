@@ -3097,6 +3097,11 @@ final class Atomic
 		add_action('elementor/widgets/register', [$this, 'register_widgets']);
 		add_action('elementor/elements/elements_registered', [$this, 'register_elements']);
 
+		// Panel grouping: AAE's atomic widgets otherwise inherit Elementor's
+		// generic "Atomic Elements" (v4-elements) category from
+		// Atomic_Widget_Base::get_categories() and all land in one bucket.
+		add_action('elementor/elements/categories_registered', [$this, 'register_atomic_categories']);
+
 		// Register library-document types for our atomic top-level widgets so
 		// "Save as a template" works on them (Elementor only registers types for
 		// e-flexbox / e-div-block / e-form; our roots would otherwise fail with
@@ -4534,6 +4539,32 @@ final class Atomic
 				$style->deps[] = 'editor-preview';
 			}
 		}
+	}
+
+	/**
+	 * Register AAE's own panel categories for atomic widgets. Each atomic
+	 * widget class returns one of these slugs from its own get_categories()
+	 * override (added per-widget — Atomic_Widget_Base's default is a plain,
+	 * non-abstract method, not something a central hook can redirect).
+	 *
+	 * @param \Elementor\Elements_Manager $elements_manager
+	 */
+	public function register_atomic_categories($elements_manager): void
+	{
+		$elements_manager->add_category('aae-atomic-general', [
+			'title' => esc_html__('AAE General', 'animation-addons-for-elementor'),
+			'icon'  => 'fa fa-plug',
+		]);
+
+		$elements_manager->add_category('aae-atomic-form', [
+			'title' => esc_html__('AAE Form', 'animation-addons-for-elementor'),
+			'icon'  => 'fa fa-plug',
+		]);
+
+		$elements_manager->add_category('aae-atomic-post', [
+			'title' => esc_html__('AAE Post', 'animation-addons-for-elementor'),
+			'icon'  => 'fa fa-plug',
+		]);
 	}
 
 	/**

@@ -93,6 +93,10 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 		return [ 'loop', 'grid', 'posts', 'query', 'template', 'atomic', 'dynamic' ];
 	}
 
+	public function get_categories(): array {
+		return ['aae-atomic-post'];
+	}
+
 	protected static function define_props_schema(): array {
 		$schema = [
 			'classes'        => Classes_Prop_Type::make()->default( [] ),

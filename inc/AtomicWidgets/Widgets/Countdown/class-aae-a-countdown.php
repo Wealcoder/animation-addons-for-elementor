@@ -76,6 +76,10 @@ class AAE_A_Countdown extends Atomic_Element_Base {
 		return [ 'atomic', 'countdown', 'timer', 'composite' ];
 	}
 
+	public function get_categories(): array {
+		return ['aae-atomic-general'];
+	}
+
 	public function get_icon() {
 		return 'eicon-countdown';
 	}

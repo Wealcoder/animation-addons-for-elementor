@@ -54,6 +54,10 @@ class AAE_A_Accordion extends Atomic_Element_Base {
 		return [ 'accordion', 'tabs', 'toggle', 'atomic', 'gsap' ];
 	}
 
+	public function get_categories(): array {
+		return ['aae-atomic-general'];
+	}
+
 	protected static function define_props_schema(): array {
 		return [
 			'classes' => Classes_Prop_Type::make()->default( [] ),

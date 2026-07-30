@@ -67,6 +67,10 @@ class AAE_A_Flip_Box extends Atomic_Element_Base {
 		return [ 'flip', 'box', 'card', 'hover', 'atomic', 'animation', 'preset' ];
 	}
 
+	public function get_categories(): array {
+		return ['aae-atomic-general'];
+	}
+
 	protected static function define_props_schema(): array {
 		return [
 			// flip-box-animate-left makes a freshly dropped box actually flip

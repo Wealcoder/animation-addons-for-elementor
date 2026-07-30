@@ -61,6 +61,10 @@ class AAE_A_Draw_Svg extends Atomic_Widget_Base {
 		return [ 'draw', 'svg', 'gsap', 'animation', 'scroll', 'atomic' ];
 	}
 
+	public function get_categories(): array {
+		return ['aae-atomic-general'];
+	}
+
 	public function get_script_depends(): array {
 		return [ 'aae-a-draw-svg-js' ];
 	}

@@ -82,6 +82,10 @@ class AAE_A_Image_Hotspot extends Atomic_Element_Base {
 		return [ 'hotspot', 'image', 'tooltip', 'lightbox', 'tour', 'atomic' ];
 	}
 
+	public function get_categories(): array {
+		return ['aae-atomic-general'];
+	}
+
 	protected static function define_props_schema(): array {
 		$show_if_tour = Dependency_Manager::make()
 			->where( [

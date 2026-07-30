@@ -60,6 +60,10 @@ class AAE_A_Search_Query extends Atomic_Widget_Base {
 		return [ 'search', 'query', 'results', 'search query', 'atomic', 'dynamic' ];
 	}
 
+	public function get_categories(): array {
+		return ['aae-atomic-post'];
+	}
+
 	protected static function define_props_schema(): array {
 		return [
 			'classes'    => Classes_Prop_Type::make()->default( [] ),

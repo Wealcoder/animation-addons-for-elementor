@@ -57,6 +57,10 @@ class AAE_A_Social_Share extends Atomic_Element_Base {
 		return [ 'social', 'share', 'post', 'aae', 'atomic', 'list', 'container', 'open' ];
 	}
 
+	public function get_categories(): array {
+		return ['aae-atomic-general'];
+	}
+
 	public function get_icon() {
 		return 'eicon-share';
 	}

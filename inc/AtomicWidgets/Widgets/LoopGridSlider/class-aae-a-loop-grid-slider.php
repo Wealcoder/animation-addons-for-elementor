@@ -95,6 +95,10 @@ class AAE_A_Loop_Grid_Slider extends AAE_A_Loop_Grid {
 		return [ 'loop', 'grid', 'slider', 'carousel', 'posts', 'query', 'atomic', 'dynamic' ];
 	}
 
+	public function get_categories(): array {
+		return ['aae-atomic-post'];
+	}
+
 	/**
 	 * Query / Query-Filters sections are inherited from the parent unchanged; we
 	 * append the slider-settings anchor. The React ResponsiveSection replaces the

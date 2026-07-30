@@ -52,6 +52,10 @@ class AAE_A_Post_Image extends Atomic_Widget_Base {
 		return [ 'post', 'image', 'featured', 'atomic', 'dynamic' ];
 	}
 
+	public function get_categories(): array {
+		return ['aae-atomic-post'];
+	}
+
 	public function get_initial_config() {
 		$config = parent::get_initial_config();
 

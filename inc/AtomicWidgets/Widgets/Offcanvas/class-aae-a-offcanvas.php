@@ -90,6 +90,10 @@ class AAE_A_Offcanvas extends Atomic_Element_Base {
 		return [ 'offcanvas', 'drawer', 'sidebar', 'panel', 'menu', 'atomic' ];
 	}
 
+	public function get_categories(): array {
+		return ['aae-atomic-general'];
+	}
+
 	public function get_icon() {
 		return 'eicon-sidebar';
 	}
