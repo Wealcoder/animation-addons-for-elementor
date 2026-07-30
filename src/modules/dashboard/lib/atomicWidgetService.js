@@ -6,6 +6,11 @@ const CATEGORY_LABELS = {
   general: "General Widgets",
   form: "Form Widgets",
   dynamic: "Dynamic Widgets",
+  // 'single' and 'archive' were separate tabs; they are now one 'blog'
+  // category in class-atomic.php. Both old keys stay labelled so a widget
+  // still carrying one (a stale entry, or a Pro add-on registering against
+  // the old slug) renders under a real heading instead of the raw slug.
+  blog: "Blog Widgets",
   single: "Single Post Widgets",
   archive: "Archive Widgets",
   "header-footer": "Header & Footer Widgets",
@@ -28,8 +33,7 @@ const CATEGORY_ORDER = [
   "interaction",
   "form",
   "dynamic",
-  "single",
-  "archive",
+  "blog",
   "header-footer",
   "slider",
   "video",

@@ -1,5 +1,12 @@
 import { __, _n, sprintf } from "@wordpress/i18n";
 import { ChevronDown, Dot } from "lucide-react";
+import { RiInformation2Fill } from "react-icons/ri";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Badge } from "../ui/badge";
 import { Switch } from "../ui/switch";
 import { useEffect, useState } from "react";
@@ -118,6 +125,30 @@ const WidgetCard = ({
                       />
                       <Badge variant="pro">{__("PRO", "animation-addons-for-elementor")}</Badge>
                     </>
+                  ) : (
+                    ""
+                  )}
+
+                  {/* What this extension depends on. The registry ships the
+                      note ready to render (`requires_note`), so nothing is
+                      assembled here — extensions that apply to any atomic
+                      element simply omit it. */}
+                  {widget?.requires_note ? (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger
+                          className="bg-transparent border-0 p-0 ml-1 inline-flex items-center cursor-help"
+                          aria-label={widget.requires_note}
+                        >
+                          <RiInformation2Fill color="#CACFD8" size={16} />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="max-w-[220px]">
+                            {widget.requires_note}
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   ) : (
                     ""
                   )}

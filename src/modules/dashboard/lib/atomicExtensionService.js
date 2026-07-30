@@ -5,8 +5,16 @@ const isOnlyPro =
 const CATEGORY_LABELS = {
   animation: "Animation Extensions",
   interaction: "Interaction Extensions",
+  form: "Form Extensions",
   utility: "Utility Extensions",
 };
+
+// Tab order in the dashboard. Group order otherwise follows registry insertion
+// order in class-atomic.php, which is grouped by feature family rather than by
+// category — so 'form' would land after 'utility' purely because the form
+// extensions happen to be declared last. Any category not listed here falls to
+// the end, alphabetically. Mirrors CATEGORY_ORDER in atomicWidgetService.js.
+const CATEGORY_ORDER = ["animation", "interaction", "form", "utility"];
 
 // Reshapes the flat `{ title, elements: { slug: def } }` the PHP Atomic
 // registry sends (class-atomic.php::get_dashboard_config()['atomic_extensions'])
@@ -35,9 +43,20 @@ export const groupAtomicExtensionsByCategory = (atomicConfig) => {
     );
   });
 
+  const rank = (key) => {
+    const i = CATEGORY_ORDER.indexOf(key);
+    return i === -1 ? CATEGORY_ORDER.length : i;
+  };
+
+  const ordered = Object.fromEntries(
+    Object.entries(categories).sort(
+      ([a], [b]) => rank(a) - rank(b) || a.localeCompare(b)
+    )
+  );
+
   return {
     title: atomicConfig?.title || "Atomic Extensions",
-    elements: categories,
+    elements: ordered,
   };
 };
 
