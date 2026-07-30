@@ -1,5 +1,7 @@
 <?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace WCF_ADDONS\Widgets\Loop_Builder;
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -196,7 +198,8 @@ class Query_Manager {
 		// Handle AJAX filter parameters.
 		$this->handle_ajax_filters( $query_args );
 
-		return apply_filters( 'custom_loop_builder_query_args', $query_args, $settings );
+		// Established public hook name (no plugin prefix); kept for backward compatibility.
+		return apply_filters( 'custom_loop_builder_query_args', $query_args, $settings ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 	}
 
 	/**
@@ -261,7 +264,7 @@ class Query_Manager {
 		$query_args = array(
 			'post_type'      => get_post_type( $post_id ),
 			'posts_per_page' => $settings['posts_per_page'] ?? 6,
-			'post__not_in'   => array( $post_id ),
+			'post__not_in'   => array( $post_id ),  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_post__not_in
 			'orderby'        => 'rand',
 		);
 

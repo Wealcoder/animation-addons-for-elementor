@@ -6,14 +6,14 @@
      GLOBAL OBSERVER (Simple & Stable)
   --------------------------------------------- */
 
-  const observer = new IntersectionObserver((entries) => {
+  var observer = new IntersectionObserver(function (entries) {
 
-    entries.forEach((entry) => {
+    entries.forEach(function (entry) {
 
-      const wrapper = entry.target;
+      var wrapper = entry.target;
 
-      const isRepeat   = wrapper.classList.contains("wcf-repeat-yes");
-      const playedOnce = wrapper.classList.contains("wcf-played");
+      var isRepeat = wrapper.classList.contains("wcf-repeat-yes");
+      var playedOnce = wrapper.classList.contains("wcf-played");
 
       /* ---------------- PLAY ---------------- */
 
@@ -47,16 +47,19 @@
 
   }, { threshold: 0.1 });
 
+
   /* --------------------------------------------
      INIT
   --------------------------------------------- */
 
   function initStarterAnimations(scope) {
 
-    const wrapper = scope[0];
+    var wrapper = scope[0];
+
     if (!wrapper) return;
 
     if (!wrapper.className.includes("wcf-starter-animations-")) return;
+
 
     if (!wrapper.dataset.wcfInit) {
 
@@ -68,7 +71,9 @@
     }
 
     observer.observe(wrapper);
+
   }
+
 
   /* --------------------------------------------
      PLAY FUNCTION
@@ -78,39 +83,56 @@
 
     if (!wrapper) return;
 
+
     wrapper.classList.remove("wcf-animate");
 
-    const target =
+
+    var target =
       wrapper.querySelector(".elementor-widget-container > *") ||
       wrapper.firstElementChild;
+
 
     if (wrapper.classList.contains("wcf-starter-animations-text-char-animate")) {
 
       if (target) {
 
-        const originalText = target.textContent;
+        var originalText = target.textContent;
+
         target.innerHTML = originalText;
         target.dataset.charInit = "";
+
         handleChar(wrapper);
 
       }
+
     }
+
 
     if (wrapper.classList.contains("wcf-starter-animations-text-wave")) {
 
       if (target) {
 
         target.removeAttribute("data-text");
-        target.setAttribute("data-text", target.textContent.trim());
+
+        target.setAttribute(
+          "data-text",
+          target.textContent.trim()
+        );
+
         target.dataset.waveInit = "";
 
       }
+
     }
+
 
     void wrapper.offsetWidth;
 
+
     wrapper.classList.add("wcf-animate");
+
   }
+
 
   /* --------------------------------------------
      CHARACTER SPLIT
@@ -120,52 +142,83 @@
 
     if (!wrapper.className.includes("text-char")) return;
 
-    const target =
+
+    var target =
       wrapper.querySelector(".elementor-widget-container > *") ||
       wrapper.firstElementChild;
 
+
     if (!target || target.dataset.charInit) return;
 
-    const text = target.textContent;
+
+    var text = target.textContent;
+
+
     if (!text) return;
+
 
     target.innerHTML = "";
 
-    let globalIndex = 0;
+
+    var globalIndex = 0;
+
 
     // Split by space but preserve spacing
-    const words = text.split(" ");
+    var words = text.split(" ");
 
-    words.forEach((word, wordIndex) => {
 
-      const wordSpan = document.createElement("span");
+    words.forEach(function (word, wordIndex) {
+
+
+      var wordSpan = document.createElement("span");
+
       wordSpan.classList.add("wcf-word");
+
       wordSpan.style.display = "inline-block";
 
-      [...word].forEach((char) => {
 
-        const charSpan = document.createElement("span");
+      Array.from(word).forEach(function (char) {
+
+
+        var charSpan = document.createElement("span");
+
+
         charSpan.textContent = char;
+
         charSpan.style.display = "inline-block";
+
         charSpan.style.setProperty("--i", globalIndex);
+
 
         wordSpan.appendChild(charSpan);
 
+
         globalIndex++;
+
+
       });
+
 
       target.appendChild(wordSpan);
 
+
       // Add real space between words
       if (wordIndex < words.length - 1) {
-        const space = document.createTextNode(" ");
+
+        var space = document.createTextNode(" ");
+
         target.appendChild(space);
+
       }
+
 
     });
 
+
     target.dataset.charInit = "1";
+
   }
+
 
   /* --------------------------------------------
      WAVE SUPPORT
@@ -173,37 +226,57 @@
 
   function handleWave(wrapper) {
 
-    if (!wrapper.classList.contains("wcf-starter-animations-text-wave")) return;
 
-    const target =
+    if (!wrapper.classList.contains("wcf-starter-animations-text-wave")) {
+      return;
+    }
+
+
+    var target =
       wrapper.querySelector(".elementor-widget-container > *") ||
       wrapper.firstElementChild;
 
+
     if (!target) return;
 
-    target.setAttribute("data-text", target.textContent.trim());
+
+    target.setAttribute(
+      "data-text",
+      target.textContent.trim()
+    );
+
+
     target.dataset.waveInit = "1";
+
   }
+
 
   /* --------------------------------------------
      MANUAL REPLAY
   --------------------------------------------- */
 
   window.wcfReplayAnimation = function (wrapper) {
+
     playAnimation(wrapper);
+
   };
+
 
   /* --------------------------------------------
      ELEMENTOR HOOK
   --------------------------------------------- */
 
-  window.addEventListener("elementor/frontend/init", function () {
+  window.addEventListener(
+    "elementor/frontend/init",
+    function () {
 
-    elementorFrontend.hooks.addAction(
-      "frontend/element_ready/global",
-      initStarterAnimations
-    );
+      elementorFrontend.hooks.addAction(
+        "frontend/element_ready/global",
+        initStarterAnimations
+      );
 
-  });
+    }
+  );
+
 
 })();

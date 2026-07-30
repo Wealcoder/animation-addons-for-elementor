@@ -1,6 +1,8 @@
 <?php
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace WCF_ADDONS\CodeSnippet;
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit();
@@ -95,10 +97,11 @@ class CodeSnippetAjax {
 			return;
 		}
 
-		$search_term = isset( $_POST['search'] ) ? sanitize_text_field( wp_unslash( $_POST['search'] ) ) : '';
-		$code_type   = isset( $_POST['code_type'] ) ? sanitize_text_field( wp_unslash( $_POST['code_type'] ) ) : 'all';
-		$page        = isset( $_POST['page'] ) ? absint( $_POST['page'] ) : 1;
-		$per_page    = isset( $_POST['per_page'] ) ? absint( $_POST['per_page'] ) : 20;
+		// Nonce is verified in verify_ajax_security() above.
+		$search_term = isset( $_POST['search'] ) ? sanitize_text_field( wp_unslash( $_POST['search'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$code_type   = isset( $_POST['code_type'] ) ? sanitize_text_field( wp_unslash( $_POST['code_type'] ) ) : 'all'; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$page        = isset( $_POST['page'] ) ? absint( $_POST['page'] ) : 1; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$per_page    = isset( $_POST['per_page'] ) ? absint( $_POST['per_page'] ) : 20; // phpcs:ignore WordPress.Security.NonceVerification.Missing
 
 		// Build query arguments.
 		$args = array(
@@ -206,7 +209,8 @@ class CodeSnippetAjax {
 			return;
 		}
 
-		$snippet_id = isset( $_POST['snippet_id'] ) ? absint( $_POST['snippet_id'] ) : 0;
+		// Nonce is verified in verify_ajax_security() above.
+		$snippet_id = isset( $_POST['snippet_id'] ) ? absint( $_POST['snippet_id'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Missing
 
 		if ( ! $snippet_id ) {
 			wp_send_json_error( array( 'message' => __( 'Invalid snippet ID.', 'animation-addons-for-elementor' ) ) );
@@ -244,8 +248,9 @@ class CodeSnippetAjax {
 			return;
 		}
 
-		$action = isset( $_POST['bulk_action'] ) ? sanitize_text_field( wp_unslash( $_POST['bulk_action'] ) ) : '';
-		$ids    = isset( $_POST['snippet_ids'] ) ? array_map( 'absint', $_POST['snippet_ids'] ) : array();
+		// Nonce is verified in verify_ajax_security() above.
+		$action = isset( $_POST['bulk_action'] ) ? sanitize_text_field( wp_unslash( $_POST['bulk_action'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$ids    = isset( $_POST['snippet_ids'] ) ? array_map( 'absint', (array) wp_unslash( $_POST['snippet_ids'] ) ) : array(); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 
 		if ( empty( $action ) || empty( $ids ) ) {
 			wp_send_json_error( array( 'message' => __( 'Invalid action or no snippets selected.', 'animation-addons-for-elementor' ) ) );
@@ -331,8 +336,9 @@ class CodeSnippetAjax {
 			return;
 		}
 
-		$snippet_id = isset( $_POST['snippet_id'] ) ? intval( $_POST['snippet_id'] ) : '';
-		$status     = isset( $_POST['status'] ) ? sanitize_text_field( wp_unslash( $_POST['status'] ) ) : '';
+		// Nonce is verified in verify_ajax_security() above.
+		$snippet_id = isset( $_POST['snippet_id'] ) ? intval( $_POST['snippet_id'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$status     = isset( $_POST['status'] ) ? sanitize_text_field( wp_unslash( $_POST['status'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing
 
 		// Validate snippet exists and is of correct post-type.
 		$snippet = get_post( $snippet_id );

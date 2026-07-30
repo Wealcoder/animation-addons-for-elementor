@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * @phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
+ */
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 } // Exit if accessed directly
@@ -523,8 +525,9 @@ function filter_search_by_date_and_category( $query ) {
 	if ( $query->is_search() && $query->is_main_query() && ! is_admin() ) {
 
 		// ==== Date range filter ====
-		$from_date = isset( $_GET['from_date'] ) ? sanitize_text_field( wp_unslash( $_GET['from_date'] ) ) : '';
-		$to_date   = isset( $_GET['to_date'] ) ? sanitize_text_field( wp_unslash( $_GET['to_date'] ) ) : '';
+		// Read-only public search query parameters; no nonce applies to a GET search form.
+		$from_date = isset( $_GET['from_date'] ) ? sanitize_text_field( wp_unslash( $_GET['from_date'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$to_date   = isset( $_GET['to_date'] ) ? sanitize_text_field( wp_unslash( $_GET['to_date'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 		if ( $from_date || $to_date ) {
 			$date_query = array( 'inclusive' => true );
@@ -538,8 +541,9 @@ function filter_search_by_date_and_category( $query ) {
 		}
 
 		// ==== Category filter ====
-		if ( isset( $_GET['category'] ) && is_array( $_GET['category'] ) ) {
-			$categories = array_filter( array_map( 'intval', $_GET['category'] ) );
+		// Read-only public search query parameters; no nonce applies to a GET search form.
+		if ( isset( $_GET['category'] ) && is_array( $_GET['category'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$categories = array_filter( array_map( 'intval', wp_unslash( $_GET['category'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 			if ( ! empty( $categories ) ) {
 				$query->set( 'category__in', $categories );

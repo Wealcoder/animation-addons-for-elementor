@@ -1,6 +1,8 @@
 <?php
 namespace WCF_ADDONS\Atomic;
 
+use WCF_ADDONS\AtomicWidgets\Atomic;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -21,79 +23,111 @@ final class Bootstrap {
 		if ( version_compare( ELEMENTOR_VERSION, self::MIN_ELEMENTOR_VERSION, '<' ) ) {
 			return;
 		}
-		
+
+		// This can run before animation-addons-for-elementor.php's own
+		// require_once for it (class-plugin.php's require, further up the
+		// call stack, executes Bootstrap::init() synchronously), so load it
+		// defensively here. require_once is a no-op on the later, normal load.
+		if ( ! class_exists( Atomic::class ) ) {
+			require_once WCF_ADDONS_PATH . 'inc/AtomicWidgets/class-atomic.php';
+		}
+
+		$extensions = Atomic::instance();
+
 		// Regular (preset-based) animation — applied to every atomic widget.
 		// Frontend reads window.AAE_INTERACTIONS_ANIM[<id>].
-		( new \WCF_ADDONS\Atomic\RegularAnimation\Schema() )->register();
-		( new \WCF_ADDONS\Atomic\RegularAnimation\Controls() )->register();
-		( new \WCF_ADDONS\Atomic\RegularAnimation\Render() )->register();
+		if ( $extensions->is_extension_active( 'regular-animation' ) ) {
+			( new \WCF_ADDONS\Atomic\RegularAnimation\Schema() )->register();
+			( new \WCF_ADDONS\Atomic\RegularAnimation\Controls() )->register();
+			( new \WCF_ADDONS\Atomic\RegularAnimation\Render() )->register();
+		}
 
 		// Parallax (ScrollSmoother) — applied to every atomic widget.
 		// Frontend reads window.AAE_INTERACTIONS_PLX[<id>].
-		( new \WCF_ADDONS\Atomic\Parallax\Schema() )->register();
-		( new \WCF_ADDONS\Atomic\Parallax\Controls() )->register();
-		( new \WCF_ADDONS\Atomic\Parallax\Render() )->register();
+		if ( $extensions->is_extension_active( 'parallax' ) ) {
+			( new \WCF_ADDONS\Atomic\Parallax\Schema() )->register();
+			( new \WCF_ADDONS\Atomic\Parallax\Controls() )->register();
+			( new \WCF_ADDONS\Atomic\Parallax\Render() )->register();
+		}
 
 		// Text animation — char/word/reveal/etc. for heading-class widgets.
-		( new \WCF_ADDONS\Atomic\TextAnimation\Schema() )->register();
-		( new \WCF_ADDONS\Atomic\TextAnimation\Controls() )->register();
-		( new \WCF_ADDONS\Atomic\TextAnimation\Render() )->register();
+		if ( $extensions->is_extension_active( 'text-animation' ) ) {
+			( new \WCF_ADDONS\Atomic\TextAnimation\Schema() )->register();
+			( new \WCF_ADDONS\Atomic\TextAnimation\Controls() )->register();
+			( new \WCF_ADDONS\Atomic\TextAnimation\Render() )->register();
+		}
 
 		// Image animation — reveal/scale/stretch for e-image / e-svg.
 		// Frontend reads window.AAE_INTERACTIONS_IMG[<id>].
-		( new \WCF_ADDONS\Atomic\ImageAnimation\Schema() )->register();
-		( new \WCF_ADDONS\Atomic\ImageAnimation\Controls() )->register();
-		( new \WCF_ADDONS\Atomic\ImageAnimation\Render() )->register();
+		if ( $extensions->is_extension_active( 'image-animation' ) ) {
+			( new \WCF_ADDONS\Atomic\ImageAnimation\Schema() )->register();
+			( new \WCF_ADDONS\Atomic\ImageAnimation\Controls() )->register();
+			( new \WCF_ADDONS\Atomic\ImageAnimation\Render() )->register();
+		}
 
 		// Image hover — cursor-following floating image overlay on any
 		// atomic widget. Frontend reads window.AAE_INTERACTIONS_IH[<id>].
-		( new \WCF_ADDONS\Atomic\ImageHover\Schema() )->register();
-		( new \WCF_ADDONS\Atomic\ImageHover\Controls() )->register();
-		( new \WCF_ADDONS\Atomic\ImageHover\Render() )->register();
-
+		if ( $extensions->is_extension_active( 'image-hover' ) ) {
+			( new \WCF_ADDONS\Atomic\ImageHover\Schema() )->register();
+			( new \WCF_ADDONS\Atomic\ImageHover\Controls() )->register();
+			( new \WCF_ADDONS\Atomic\ImageHover\Render() )->register();
+		}
 
 		// Sticky — pin elements
-		( new \WCF_ADDONS\Atomic\Sticky\Schema() )->register();
-		( new \WCF_ADDONS\Atomic\Sticky\Controls() )->register();
-		( new \WCF_ADDONS\Atomic\Sticky\Render() )->register();
+		if ( $extensions->is_extension_active( 'sticky' ) ) {
+			( new \WCF_ADDONS\Atomic\Sticky\Schema() )->register();
+			( new \WCF_ADDONS\Atomic\Sticky\Controls() )->register();
+			( new \WCF_ADDONS\Atomic\Sticky\Render() )->register();
+		}
 
 		// horizontal scroll animation
-		( new \WCF_ADDONS\Atomic\HorizontalScrollAnim\Schema() )->register();
-		( new \WCF_ADDONS\Atomic\HorizontalScrollAnim\Controls() )->register();
-		( new \WCF_ADDONS\Atomic\HorizontalScrollAnim\Render() )->register();
+		if ( $extensions->is_extension_active( 'horizontal-scroll-anim' ) ) {
+			( new \WCF_ADDONS\Atomic\HorizontalScrollAnim\Schema() )->register();
+			( new \WCF_ADDONS\Atomic\HorizontalScrollAnim\Controls() )->register();
+			( new \WCF_ADDONS\Atomic\HorizontalScrollAnim\Render() )->register();
+		}
 
 		// Cursor hover effect — cursor-following floating element on any
-		( new \WCF_ADDONS\Atomic\CursorHoverEffect\Schema() )->register();
-		( new \WCF_ADDONS\Atomic\CursorHoverEffect\Controls() )->register();
-		( new \WCF_ADDONS\Atomic\CursorHoverEffect\Render() )->register();
-
+		if ( $extensions->is_extension_active( 'cursor-hover-effect' ) ) {
+			( new \WCF_ADDONS\Atomic\CursorHoverEffect\Schema() )->register();
+			( new \WCF_ADDONS\Atomic\CursorHoverEffect\Controls() )->register();
+			( new \WCF_ADDONS\Atomic\CursorHoverEffect\Render() )->register();
+		}
 
 		// Mouse move effect — element moves based on mouse position.
-		( new \WCF_ADDONS\Atomic\MouseMoveEffect\Schema() )->register();
-		( new \WCF_ADDONS\Atomic\MouseMoveEffect\Controls() )->register();
-		( new \WCF_ADDONS\Atomic\MouseMoveEffect\Render() )->register();
-
+		if ( $extensions->is_extension_active( 'mouse-move-effect' ) ) {
+			( new \WCF_ADDONS\Atomic\MouseMoveEffect\Schema() )->register();
+			( new \WCF_ADDONS\Atomic\MouseMoveEffect\Controls() )->register();
+			( new \WCF_ADDONS\Atomic\MouseMoveEffect\Render() )->register();
+		}
 
 		// Advance Tooltip
-		( new \WCF_ADDONS\Atomic\AdvanceTooltip\Schema() )->register();
-		( new \WCF_ADDONS\Atomic\AdvanceTooltip\Controls() )->register();
-		( new \WCF_ADDONS\Atomic\AdvanceTooltip\Render() )->register();
-
+		if ( $extensions->is_extension_active( 'advance-tooltip' ) ) {
+			( new \WCF_ADDONS\Atomic\AdvanceTooltip\Schema() )->register();
+			( new \WCF_ADDONS\Atomic\AdvanceTooltip\Controls() )->register();
+			( new \WCF_ADDONS\Atomic\AdvanceTooltip\Render() )->register();
+		}
 
 		// Tilt
-		( new \WCF_ADDONS\Atomic\Tilt\Schema() )->register();
-		( new \WCF_ADDONS\Atomic\Tilt\Controls() )->register();
-		( new \WCF_ADDONS\Atomic\Tilt\Render() )->register();
+		if ( $extensions->is_extension_active( 'tilt' ) ) {
+			( new \WCF_ADDONS\Atomic\Tilt\Schema() )->register();
+			( new \WCF_ADDONS\Atomic\Tilt\Controls() )->register();
+			( new \WCF_ADDONS\Atomic\Tilt\Render() )->register();
+		}
 
-		// scrollto 
-		( new \WCF_ADDONS\Atomic\ScrollTo\Schema() )->register();
-		( new \WCF_ADDONS\Atomic\ScrollTo\Controls() )->register();
-		( new \WCF_ADDONS\Atomic\ScrollTo\Render() )->register();
+		// scrollto
+		if ( $extensions->is_extension_active( 'scroll-to' ) ) {
+			( new \WCF_ADDONS\Atomic\ScrollTo\Schema() )->register();
+			( new \WCF_ADDONS\Atomic\ScrollTo\Controls() )->register();
+			( new \WCF_ADDONS\Atomic\ScrollTo\Render() )->register();
+		}
 
 		// Custom CSS
-		( new \WCF_ADDONS\Atomic\CustomCss\Schema() )->register();
-		( new \WCF_ADDONS\Atomic\CustomCss\Controls() )->register();
-		( new \WCF_ADDONS\Atomic\CustomCss\Render() )->register();
+		if ( $extensions->is_extension_active( 'custom-css' ) ) {
+			( new \WCF_ADDONS\Atomic\CustomCss\Schema() )->register();
+			( new \WCF_ADDONS\Atomic\CustomCss\Controls() )->register();
+			( new \WCF_ADDONS\Atomic\CustomCss\Render() )->register();
+		}
 
 		// Presets — "Apply Preset" picker section for NATIVE atomic widgets
 		// (e-heading, e-button, …). Preset JSONs live one folder per element

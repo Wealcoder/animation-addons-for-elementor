@@ -1,6 +1,8 @@
 <?php
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace WCF_ADDONS\Admin;
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 use WP_Error;
 
@@ -38,7 +40,7 @@ class AAEAddon_Row_Actions {
     function _enqueue_admin_scripts($hook) {        
         if ($hook === 'plugins.php') {
             wp_enqueue_script('aaeaddon-plugin-deactivate', WCF_ADDONS_URL . 'assets/build/modules/dashboard/opt-out.js', [], time(), true);
-            wp_enqueue_script('wcf-admin', WCF_ADDONS_URL . 'assets/js/wcf-admin.js', ['jquery'], null, true);
+            wp_enqueue_script('wcf-admin', WCF_ADDONS_URL . 'assets/js/wcf-admin.js', ['jquery'], WCF_ADDONS_VERSION, true);
             wp_localize_script('aaeaddon-plugin-deactivate', 'aae_ajax', array(
                 'ajax_url' => admin_url('admin-ajax.php'),
                 'nonce' => wp_create_nonce('aae_deactivate_feedback_nonce'),

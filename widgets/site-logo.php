@@ -1,6 +1,8 @@
 <?php
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace WCF_ADDONS\Widgets;
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 use Elementor\Controls_Manager;
 use Elementor\Core\Kits\Documents\Tabs\Global_Colors;
@@ -470,7 +472,7 @@ class Site_Logo extends Widget_Base
 			Group_Control_Box_Shadow::get_type(),
 			[
 				'name'     => 'image_box_shadow',
-				'exclude'  => [
+				'exclude'  => [  // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 					'box_shadow_position',
 				],
 				'selector' => '{{WRAPPER}} img',

@@ -1,6 +1,8 @@
 <?php
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace WCF_ADDONS\Widgets;
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 use Elementor\Controls_Manager;
 use Elementor\Group_Control_Background;
@@ -2442,7 +2444,7 @@ class Post_Meta_Info extends Widget_Base {
 			$ratings = get_posts( [
 				'post_type'   => 'aaeaddon_post_rating',
 				'post_status' => 'publish',
-				'meta_query'  => [
+				'meta_query'  => [  // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 					[
 						'key'   => 'post_id',
 						'value' => $post_id,

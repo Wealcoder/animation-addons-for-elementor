@@ -1,6 +1,8 @@
 <?php
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace WCF_ADDONS\Admin\Base;
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 use WP_Error;
 use XMLReader;
@@ -345,7 +347,7 @@ class WXRImporter extends \WP_Importer
 		 * This can be removed after Elementor skips the functionality in above method if our plugin is in use.
 		 */
 		if (method_exists('\Elementor\Compatibility', 'on_wxr_importer_pre_process_post_meta')) {
-			remove_action('wxr_importer.pre_process.post_meta', array('Elementor\Compatibility', 'on_wxr_importer_pre_process_post_meta'));
+			remove_action('wxr_importer.pre_process.post_meta', array('Elementor\Compatibility', 'on_wxr_importer_pre_process_post_meta'));  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 		}
 
 		$result = $this->import_start($file);
@@ -606,7 +608,7 @@ class WXRImporter extends \WP_Importer
 		 * Fires before the import process has begun. If you need to suspend
 		 * caching or heavy processing on hooks, do so here.
 		 */
-		do_action('import_start');
+		do_action('import_start');  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 	}
 
 	/**
@@ -634,7 +636,7 @@ class WXRImporter extends \WP_Importer
 		 * Fires after the import process has finished. If you need to update
 		 * your cache or re-enable processing, do so here.
 		 */
-		do_action('import_end');
+		do_action('import_end');  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 	}
 
 	/**
@@ -823,7 +825,7 @@ class WXRImporter extends \WP_Importer
 		 * @param array $comments Comments on the post.
 		 * @param array $terms Terms on the post.
 		 */
-		$data = apply_filters('wxr_importer.pre_process.post', $data, $meta, $comments, $terms);
+		$data = apply_filters('wxr_importer.pre_process.post', $data, $meta, $comments, $terms);  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 		if (empty($data)) {
 			return false;
 		}
@@ -914,7 +916,7 @@ class WXRImporter extends \WP_Importer
 			$postdata[$key] = $data[$key];
 		}
 
-		$postdata = apply_filters('wp_import_post_data_processed', wp_slash($postdata), $data);
+		$postdata = apply_filters('wp_import_post_data_processed', wp_slash($postdata), $data);  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 
 		if ('attachment' === $postdata['post_type']) {
 			$remote_url = ! empty($data['attachment_url']) ? $data['attachment_url'] : $data['guid'];
@@ -927,7 +929,7 @@ class WXRImporter extends \WP_Importer
 			$post_id = $this->process_attachment($postdata, $meta, $remote_url);
 		} else {
 			$post_id = wp_insert_post($postdata, true);
-			do_action('wp_import_insert_post', $post_id, $original_id, $postdata, $data);
+			do_action('wp_import_insert_post', $post_id, $original_id, $postdata, $data);  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 			
 		}
 
@@ -943,7 +945,7 @@ class WXRImporter extends \WP_Importer
 			 * @param array $comments Raw comment data, already processed by {@see process_comments}.
 			 * @param array $terms Raw term data, already processed.
 			 */
-			do_action('wxr_importer.process_failed.post', $post_id, $data, $meta, $comments, $terms);
+			do_action('wxr_importer.process_failed.post', $post_id, $data, $meta, $comments, $terms);  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 			return false;
 		}
 
@@ -960,7 +962,7 @@ class WXRImporter extends \WP_Importer
 		$this->mark_post_exists($data, $post_id);
 
 		// Handle the terms too
-		$terms = apply_filters('wp_import_post_terms', $terms, $post_id, $data);
+		$terms = apply_filters('wp_import_post_terms', $terms, $post_id, $data);  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 
 		if (! empty($terms)) {
 			$term_ids = array();
@@ -1010,7 +1012,7 @@ class WXRImporter extends \WP_Importer
 
 			foreach ($term_ids as $tax => $ids) {
 				$tt_ids = wp_set_post_terms($post_id, $ids, $tax);
-				do_action('wp_import_set_post_terms', $tt_ids, $ids, $tax, $post_id, $data);
+				do_action('wp_import_set_post_terms', $tt_ids, $ids, $tax, $post_id, $data);  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 			}
 		}
 
@@ -1030,7 +1032,7 @@ class WXRImporter extends \WP_Importer
 		 * @param array $comments Raw comment data, already processed by {@see process_comments}.
 		 * @param array $terms Raw term data, already processed.
 		 */
-		do_action('wxr_importer.processed.post', $post_id, $data, $meta, $comments, $terms);
+		do_action('wxr_importer.processed.post', $post_id, $data, $meta, $comments, $terms);  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 	}
 
 	/**
@@ -1225,12 +1227,12 @@ class WXRImporter extends \WP_Importer
 			 * @param array $meta_item Meta data. (Return empty to skip.)
 			 * @param int $post_id Post the meta is attached to.
 			 */
-			$meta_item = apply_filters('wxr_importer.pre_process.post_meta', $meta_item, $post_id);
+			$meta_item = apply_filters('wxr_importer.pre_process.post_meta', $meta_item, $post_id); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 			if (empty($meta_item)) {
 				return false;
 			}
 
-			$key = apply_filters('aae_import_post_meta_key', $meta_item['key'], $post_id, $post);
+			$key = apply_filters('aae_import_post_meta_key', $meta_item['key'], $post_id, $post);  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 			$value = false;
 
 			if ('_edit_last' === $key) {
@@ -1250,7 +1252,7 @@ class WXRImporter extends \WP_Importer
 				}
 
 				add_post_meta($post_id, wp_slash($key), wp_slash($value));
-				do_action('aae_import_post_meta', $post_id, $key, $value);
+				do_action('aae_import_post_meta', $post_id, $key, $value);  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 
 				// if the post has a featured image, take note of this in case of remap
 				if ('_thumbnail_id' === $key) {
@@ -1353,7 +1355,7 @@ class WXRImporter extends \WP_Importer
 	protected function process_comments($comments, $post_id, $post, $post_exists = false)
 	{
 
-		$comments = apply_filters('wp_import_post_comments', $comments, $post_id, $post);
+		$comments = apply_filters('wp_import_post_comments', $comments, $post_id, $post);  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 		if (empty($comments)) {
 			return 0;
 		}
@@ -1370,7 +1372,7 @@ class WXRImporter extends \WP_Importer
 			 * @param array $comment Comment data. (Return empty to skip.)
 			 * @param int $post_id Post the comment is attached to.
 			 */
-			$comment = apply_filters('wxr_importer.pre_process.comment', $comment, $post_id);
+			$comment = apply_filters('wxr_importer.pre_process.comment', $comment, $post_id);  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 			if (empty($comment)) {
 				return false;
 			}
@@ -1442,7 +1444,7 @@ class WXRImporter extends \WP_Importer
 			 * @param int $post_id Post parent of the comment
 			 * @param array $post Post data
 			 */
-			do_action('wp_import_insert_comment', $comment_id, $comment, $post_id, $post);
+			do_action('wp_import_insert_comment', $comment_id, $comment, $post_id, $post);  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 
 			// Process the meta items
 			foreach ($meta as $meta_item) {
@@ -1458,7 +1460,7 @@ class WXRImporter extends \WP_Importer
 			 * @param array $meta Raw meta data, already processed by {@see process_post_meta}.
 			 * @param array $post_id Parent post ID.
 			 */
-			do_action('wxr_importer.processed.comment', $comment_id, $comment, $meta, $post_id);
+			do_action('wxr_importer.processed.comment', $comment_id, $comment, $meta, $post_id);  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 
 			$num_comments++;
 		}
@@ -1577,7 +1579,7 @@ class WXRImporter extends \WP_Importer
 		 * @param array $data User data. (Return empty to skip.)
 		 * @param array $meta Meta data.
 		 */
-		$data = apply_filters('wxr_importer.pre_process.user', $data, $meta);
+		$data = apply_filters('wxr_importer.pre_process.user', $data, $meta);  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 		if (empty($data)) {
 			return false;
 		}
@@ -1641,7 +1643,7 @@ class WXRImporter extends \WP_Importer
 			 * @param WP_Error $user_id Error object.
 			 * @param array $userdata Raw data imported for the user.
 			 */
-			do_action('wxr_importer.process_failed.user', $user_id, $userdata);
+			do_action('wxr_importer.process_failed.user', $user_id, $userdata);  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 			return false;
 		}
 
@@ -1657,7 +1659,7 @@ class WXRImporter extends \WP_Importer
 		 * @param int $user_id New user ID.
 		 * @param array $userdata Raw data imported for the user.
 		 */
-		do_action('wxr_importer.processed.user', $user_id, $userdata);
+		do_action('wxr_importer.processed.user', $user_id, $userdata);  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 	}
 
 
@@ -1750,7 +1752,7 @@ class WXRImporter extends \WP_Importer
 		 * @param array $data Term data. (Return empty to skip.)
 		 * @param array $meta Meta data.
 		 */
-		$data = apply_filters('wxr_importer.pre_process.term', $data, $meta);
+		$data = apply_filters('wxr_importer.pre_process.term', $data, $meta);  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 		if (empty($data)) {
 			return false;
 		}
@@ -1812,7 +1814,7 @@ class WXRImporter extends \WP_Importer
 		$result = wp_insert_term($data['name'], $data['taxonomy'], $termdata);
 		if (is_wp_error($result)) {
 			$this->logger->debug($result->get_error_message());
-			do_action('wp_import_insert_term_failed', $result, $data);
+			do_action('wp_import_insert_term_failed', $result, $data);  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 
 			/**
 			 * Term processing failed.
@@ -1821,7 +1823,7 @@ class WXRImporter extends \WP_Importer
 			 * @param array $data Raw data imported for the term.
 			 * @param array $meta Meta data supplied for the term.
 			 */
-			do_action('wxr_importer.process_failed.term', $result, $data, $meta);
+			do_action('wxr_importer.process_failed.term', $result, $data, $meta);  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 			return false;
 		}
 
@@ -1848,7 +1850,7 @@ class WXRImporter extends \WP_Importer
 		// Actuall process of the term meta data.
 		$this->process_term_meta($meta, $term_id, $data);
 
-		do_action('wp_import_insert_term', $term_id, $data);
+		do_action('wp_import_insert_term', $term_id, $data);  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 
 		/**
 		 * Term processing completed.
@@ -1856,7 +1858,7 @@ class WXRImporter extends \WP_Importer
 		 * @param int $term_id New term ID.
 		 * @param array $data Raw data imported for the term.
 		 */
-		do_action('wxr_importer.processed.term', $term_id, $data);
+		do_action('wxr_importer.processed.term', $term_id, $data);  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 	}
 
 	/**
@@ -1881,13 +1883,13 @@ class WXRImporter extends \WP_Importer
 			 * @param array $meta_item Meta data. (Return empty to skip.)
 			 * @param int $term_id Term the meta is attached to.
 			 */
-			$meta_item = apply_filters('wxr_importer.pre_process.term_meta', $meta_item, $term_id);
+			$meta_item = apply_filters('wxr_importer.pre_process.term_meta', $meta_item, $term_id);  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 
 			if (empty($meta_item)) {
 				continue;
 			}
 
-			$key = apply_filters('import_term_meta_key', $meta_item['key'], $term_id, $term);
+			$key = apply_filters('import_term_meta_key', $meta_item['key'], $term_id, $term);  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 			$value = false;
 
 			if ($key) {
@@ -1900,11 +1902,11 @@ class WXRImporter extends \WP_Importer
 				$log_value = is_string($value) ? $value : wp_json_encode($value, JSON_UNESCAPED_UNICODE);
 
 				if (is_wp_error($result)) {
-					do_action('wxr_importer.process_failed.termmeta', $result, $meta_item, $term_id, $term);
+					do_action('wxr_importer.process_failed.termmeta', $result, $meta_item, $term_id, $term);  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 				} else {
 				}
 
-				do_action('import_term_meta', $term_id, $key, $value);
+				do_action('import_term_meta', $term_id, $key, $value);  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 			}
 		}
 
@@ -2273,7 +2275,8 @@ class WXRImporter extends \WP_Importer
 
 		foreach ($this->url_remap as $from_url => $to_url) {
 			// Remap URLs in post_content
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.NotPrepared
+			// Bulk one-time import write; object caching does not apply to a direct UPDATE.
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 			$result_content = $wpdb->query(
 				$wpdb->prepare(
 					"UPDATE {$wpdb->posts} SET post_content = REPLACE(post_content, %s, %s) WHERE post_content LIKE %s",
@@ -2285,7 +2288,8 @@ class WXRImporter extends \WP_Importer
 
 
 			// Remap enclosure URLs in postmeta
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.NotPrepared
+			// Bulk one-time import write; object caching does not apply to a direct UPDATE.
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 			$result_meta = $wpdb->query(
 				$wpdb->prepare(
 					"UPDATE {$wpdb->postmeta} SET meta_value = REPLACE(meta_value, %s, %s) WHERE meta_key = %s AND meta_value LIKE %s",
@@ -2350,7 +2354,7 @@ class WXRImporter extends \WP_Importer
 	 */
 	protected function max_attachment_size()
 	{
-		return apply_filters('import_attachment_size_limit', 0);
+		return apply_filters('import_attachment_size_limit', 0);  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 	}
 
 	/**
@@ -2390,7 +2394,8 @@ class WXRImporter extends \WP_Importer
 		// Using prepare() with a fixed query to prevent PHPCS warnings.
 		$query = $wpdb->prepare("SELECT ID, guid FROM {$wpdb->posts} WHERE post_type != %s", ''); // Empty condition just for compliance.
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.NotPrepared
+		// One-time import dedup prefill; results held in memory, object caching does not apply.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 		$posts = $wpdb->get_results($query);
 
 		foreach ($posts as $item) {
@@ -2448,7 +2453,8 @@ class WXRImporter extends \WP_Importer
 	{
 		global $wpdb;
 		update_option('aaeaddon_template_import_state', esc_html__('Comment checking', 'animation-addons-for-elementor'));
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.NotPrepared
+		// One-time import dedup prefill; results held in memory, object caching does not apply.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 		$posts = $wpdb->get_results("SELECT comment_ID, comment_author, comment_date FROM {$wpdb->comments}");
 
 		foreach ($posts as $item) {
@@ -2510,8 +2516,8 @@ class WXRImporter extends \WP_Importer
 				  FROM {$wpdb->terms} AS t 
 				  JOIN {$wpdb->term_taxonomy} AS tt ON t.term_id = tt.term_id";
 
-		// Ignore PHPCS false-positive warning
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		// One-time import dedup prefill; results held in memory, object caching does not apply.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 		$terms = $wpdb->get_results($query);
 		foreach ($terms as $item) {
 			$exists_key = sha1($item->taxonomy . ':' . $item->slug);

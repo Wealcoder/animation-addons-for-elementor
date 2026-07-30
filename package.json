@@ -105,6 +105,8 @@
     "build-win": "gulp build --production",
     "watch-win": "gulp watch --development",
     "build": "wp-scripts build && gulp minify:atomic-js && gulp compile:atomic-scss && gulp minify:atomic-css",
+    "production": "gulp zip",
+    "release": "npm run build-win && npm run production",
     "start": "wp-scripts start",
     "i18n": "wp i18n make-pot ."
   },

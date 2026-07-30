@@ -4,7 +4,9 @@
  * Testimonial integration for WPML
  */
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace WCF_ADDONS\INC\WPML\WIDGET;
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 defined('ABSPATH') || die();
 

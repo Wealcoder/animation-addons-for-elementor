@@ -1,6 +1,8 @@
 <?php
-
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace WCF_ADDONS\Admin\Base;
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 use WP_Error;
 
@@ -169,7 +171,8 @@ class OneClickImport
 			'posts_per_page' => $per_page,
 			'orderby'        => 'date',        // or 'ID'
 			'order'          => 'DESC',
-			'meta_query'     => $meta_query,
+			// Filtering imported pages by the aae_imported marker meta; lookup by meta is required here.
+			'meta_query'     => $meta_query, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 			'no_found_rows'  => true,
 			'fields'         => 'ids',
 		]);

@@ -1,16 +1,17 @@
 <?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 /**
  * Admin View: List Code Snippets
  *
  * @package WCF_ADDONS\CodeSnippet
  * @since 1.0.0
- */
+*/
 
 use WCF_ADDONS\CodeSnippet\Helpers;
 
 defined( 'ABSPATH' ) || exit;
 
-$list_table = Helpers::aae_get_list_table( 'wcf-code-snippet' );
+$list_table = Helpers::aae_get_list_table( 'wcf-code-snippet' );  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility with existing wcf hooks.
 $action     = $list_table->current_action();
 if ( $action ) {
 	$list_table->process_bulk_action( $action );
@@ -18,7 +19,7 @@ if ( $action ) {
 $list_table->prepare_items();
 
 // Handle messages.
-$message = '';
+$message = '';  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility with existing wcf hooks.
 if ( isset( $_GET['message'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	$message_code = sanitize_key( wp_unslash( $_GET['message'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	$messages     = array(
@@ -29,8 +30,8 @@ if ( isset( $_GET['message'] ) ) { // phpcs:ignore WordPress.Security.NonceVerif
 	);
 
 	if ( isset( $messages[ $message_code ] ) ) {
-		$message      = $messages[ $message_code ];
-		$message_type = 'error' === $message_code ? 'error' : 'success';
+		$message      = $messages[ $message_code ];     // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility with existing wcf hooks.
+		$message_type = 'error' === $message_code ? 'error' : 'success';  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility with existing wcf hooks.
 	}
 }
 ?>

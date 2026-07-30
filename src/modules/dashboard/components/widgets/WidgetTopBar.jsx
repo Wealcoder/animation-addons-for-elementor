@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "../ui/input";
-import { useActiveItem, useWidgets } from "@/hooks/app.hooks";
+import { useActiveItem, useAtomicWidgets, useWidgets } from "@/hooks/app.hooks";
 
 const WidgetTopBar = ({
   filterKey,
@@ -21,12 +21,22 @@ const WidgetTopBar = ({
   searchKey,
   setSearchKey,
   widgetCount,
+  system = "v3",
 }) => {
   const { allWidgets } = useWidgets();
-  const { updateActiveFullWidget } = useActiveItem();
+  const { allAtomicWidgets } = useAtomicWidgets();
+  const { updateActiveFullWidget, updateActiveAtomicFullWidget } =
+    useActiveItem();
+
+  const isAtomic = system === "atomic";
+  const activeWidgets = isAtomic ? allAtomicWidgets : allWidgets;
 
   const setCheck = (data) => {
-    updateActiveFullWidget(data);
+    if (isAtomic) {
+      updateActiveAtomicFullWidget(data);
+    } else {
+      updateActiveFullWidget(data);
+    }
   };
   return (
     <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 xl:gap-11 justify-between items-center">
@@ -36,7 +46,11 @@ const WidgetTopBar = ({
         </div>
         <div className="flex flex-col gap-1">
           <div className="flex items-center">
-            <h2 className="text-[18px] font-medium ">{__("Widgets", "animation-addons-for-elementor")}</h2>
+            <h2 className="text-[18px] font-medium ">
+              {isAtomic
+                ? __("Atomic Widgets", "animation-addons-for-elementor")
+                : __("Widgets", "animation-addons-for-elementor")}
+            </h2>
           </div>
           <div className="flex items-center">
             <p className="text-sm text-label ">
@@ -53,7 +67,7 @@ const WidgetTopBar = ({
         <div className="flex items-center gap-x-2">
           <Switch
             id="global-enable-all"
-            checked={allWidgets.is_active}
+            checked={activeWidgets?.is_active}
             onCheckedChange={(value) => setCheck({ value })}
             reverse
           />

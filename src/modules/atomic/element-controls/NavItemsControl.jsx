@@ -50,6 +50,7 @@ import {
 const NAV_ITEM_TYPE = 'e-aae-a-nav-item';
 const MOBILE_NAV_TYPE = 'e-aae-a-mobile-nav';
 const DROPDOWN_CLASS = 'aae-a-nav-dropdown';
+const dropdownSelectTimers = new Set();
 
 /* Compact action-icon button for the menu-item rows. The default IconButton
  * padding makes four icons + the level badge overflow to a second line once
@@ -564,6 +565,23 @@ function findFirstChildOfType( container, type ) {
 
 function getElementId( container ) {
 	return container?.id || container?.model?.get?.( 'id' ) || container?.model?.id || null;
+}
+
+function findOwnerNavId( itemId ) {
+	let current = getContainer( itemId );
+	while ( current ) {
+		const type = current.model?.get?.( 'widgetType' ) || current.model?.get?.( 'elType' );
+		if ( type === 'e-aae-a-nav' ) {
+			return getElementId( current );
+		}
+		current = current.parent || null;
+	}
+	return null;
+}
+
+function isTopLevelNavItem( itemId ) {
+	const item = getContainer( itemId );
+	return ( item?.parent?.model?.get?.( 'widgetType' ) || item?.parent?.model?.get?.( 'elType' ) ) === 'e-aae-a-nav';
 }
 
 function findDropdownContainer( itemId ) {

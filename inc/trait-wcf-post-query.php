@@ -1,6 +1,10 @@
 <?php
-
+/**
+ * @phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
+ */
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace WCF_ADDONS;
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 use Elementor\Controls_Manager;
 use WP_Query;
@@ -70,6 +74,7 @@ trait WCF_Post_Query_Trait {
 				'label'   => esc_html__( 'Query Type', 'animation-addons-for-elementor' ),
 				'type'    => Controls_Manager::SELECT,
 				'default' => 'custom',
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility hook.
 				'options' => apply_filters( 'aae_widget_wp_query_type', [
 					'custom'  => esc_html__( 'Custom', 'animation-addons-for-elementor' ),
 					'archive' => esc_html__( 'Archive', 'animation-addons-for-elementor' ),
@@ -199,8 +204,9 @@ trait WCF_Post_Query_Trait {
 				'ai'          => [
 					'active' => false,
 				],
+				// 'exclude' here is an Elementor control name in a display condition, not a WP_Query exclusion.
 				'condition'   => [
-					'exclude'    => 'terms',
+					'exclude'    => 'terms', // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 					'query_type' => 'custom',
 				],
 			]
@@ -216,8 +222,9 @@ trait WCF_Post_Query_Trait {
 				'ai'          => [
 					'active' => false,
 				],
+				// 'exclude' here is an Elementor control name in a display condition, not a WP_Query exclusion.
 				'condition'   => [
-					'exclude'    => 'authors',
+					'exclude'    => 'authors', // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 					'query_type' => 'custom',
 				],
 			]
@@ -353,9 +360,14 @@ trait WCF_Post_Query_Trait {
 		return max( 1, get_query_var( 'paged' ), get_query_var( 'page' ) );
 	}
 
+	// This method builds WP_Query args from user-configurable widget settings. meta_key /
+	// meta_query / tax_query are intentional and required for the query-type sort/filter modes
+	// (most popular, trending, most views, taxonomy filtering, etc.), so the SlowDBQuery advisory
+	// is disabled for the duration of the builder rather than annotated on every assignment.
+	// phpcs:disable WordPress.DB.SlowDBQuery.slow_db_query_meta_key, WordPress.DB.SlowDBQuery.slow_db_query_meta_value, WordPress.DB.SlowDBQuery.slow_db_query_meta_query, WordPress.DB.SlowDBQuery.slow_db_query_tax_query
 	protected function query_arg() {
 		$query_args = [];
-		
+
 		//related post
 		if ( 'related' === $this->get_settings( 'query_type' ) && is_singular() ) {
 			$post_id         = get_queried_object_id();
@@ -388,7 +400,8 @@ trait WCF_Post_Query_Trait {
 
 			$query_args['post_type']      = get_post_type( $related_post_id );
 			$query_args['posts_per_page'] = $this->get_settings( 'posts_per_page' );
-			$query_args['post__not_in']   = [ $related_post_id ];
+			// Exclude the current post from its own related-posts list; the exclusion set is a single ID.
+			$query_args['post__not_in']   = [ $related_post_id ]; // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_post__not_in
 			$query_args['orderby']        = 'rand';
 
 			if ( ! empty( $tax_query_arg ) ) { //backward compatibility if post has no taxonomies
@@ -732,36 +745,26 @@ trait WCF_Post_Query_Trait {
 			];
 		}
 
-		if(isset($_GET['aae-ajax-filter']))
-		{
-			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			if(isset($_GET['tax']) && isset($_GET['term']) && $_GET['term'] != 'all'){
+		// Read-only access to public AJAX-filter query vars. No state change, DB write,
+		// or sensitive action, so no nonce applies; values are unslashed and sanitized.
+		if ( isset( $_GET['aae-ajax-filter'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$filter_tax  = isset( $_GET['tax'] ) ? sanitize_text_field( wp_unslash( $_GET['tax'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$filter_term = isset( $_GET['term'] ) ? sanitize_text_field( wp_unslash( $_GET['term'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
+			if ( '' !== $filter_tax && '' !== $filter_term && 'all' !== $filter_term ) {
 				$query_args['tax_query'][] = [
-					'taxonomy' => sanitize_text_field( wp_slash( $_GET['tax'] ) ),
+					'taxonomy' => $filter_tax,
 					'field'    => 'term_id',
-					'terms'    => sanitize_text_field( wp_slash( $_GET['term'] ) ),
+					'terms'    => $filter_term,
 				];
-			}		
-		}
 
-		if(isset($_GET['aae-ajax-filter']))
-		{
-			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			if(isset($_GET['tax']) && isset($_GET['term']) && $_GET['term'] != 'all'){
-				$query_args['tax_query'][] = [
-					'taxonomy' => sanitize_text_field( wp_slash( $_GET['tax'] ) ),
-					'field'    => 'term_id',
-					'terms'    => sanitize_text_field( wp_slash( $_GET['term'] ) ),
-				];				
+				if ( isset( $_GET['cpaged'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+					$query_args['paged'] = absint( wp_unslash( $_GET['cpaged'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				}
 			}
-			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only access to a public pagination var. No state change, DB write, or sensitive action.
-			// Also fully sanitized to prevent injection.
-			if(isset($_GET['tax']) && isset($_GET['term']) && isset($_GET['cpaged'])){
-				$query_args['paged'] = absint( sanitize_text_field( wp_slash( $_GET['cpaged'] ) ) );
-			}		
 		}
 
-		$query_args = apply_filters('aaeaddons/lite/query/before', $query_args);
+		$query_args = apply_filters('aaeaddons/lite/query/before', $query_args); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Established plugin hook (slash-namespaced); kept for backward compatibility.
 
 		return $query_args;
 	}
@@ -817,6 +820,7 @@ trait WCF_Post_Query_Trait {
 			return $this->query = new \WP_Query( $this->query_arg() );
 		}
 	}
+	// phpcs:enable WordPress.DB.SlowDBQuery.slow_db_query_meta_key, WordPress.DB.SlowDBQuery.slow_db_query_meta_value, WordPress.DB.SlowDBQuery.slow_db_query_meta_query, WordPress.DB.SlowDBQuery.slow_db_query_tax_query
 
 	protected function next_page_link( $next_page ) {
 		return get_pagenum_link( $next_page );

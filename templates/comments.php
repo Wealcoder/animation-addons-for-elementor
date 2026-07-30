@@ -1,4 +1,7 @@
 <?php
+/**
+ * @phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
+ */
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -149,26 +152,33 @@ endif;
 				$post_id = get_the_ID();
 			else
 				$id		 = $post_id;
-
+            /// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 			$commenter		 = wp_get_current_commenter();
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 			$user			 = wp_get_current_user();
 			$user_identity	 = $user->exists() ? $user->display_name : '';
-	
+	        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 			$req		 = get_option( 'require_name_email' );
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 			$aria_req	 = ( $req ? " aria-required='true'" : '' );
-
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 			$fields = array(
 				'author' => '<div class="grid-row"><div class="col-lg-6"><div class="elc-inbd-comment__field mb-30"><label for="author">' . esc_html__( 'Name*' ,'animation-addons-for-elementor' ) . '</label> <input placeholder="'.  esc_attr__('Enter Name', 'animation-addons-for-elementor').'" id="author" class="form-input" name="author" type="text" value="' . esc_attr( $commenter[ 'comment_author' ] ) . '" size="30"' . $aria_req . ' /></div></div>',
 				'email'	 => '<div class="col-lg-6"><div class="elc-inbd-comment__field mb-30"><label for="email">' . esc_html__( 'Email*' ,'animation-addons-for-elementor' ) . '</label><input placeholder="'.  esc_attr__('Enter Email', 'animation-addons-for-elementor').'" id="email" name="email" class="form-input" type="email" value="' . esc_attr( $commenter[ 'comment_author_email' ] ) . '" size="30"' . $aria_req . ' /></div></div> </div>',
 			);
 
 			if ( is_user_logged_in() ) {
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 				$cl = 'loginformuser';
 			} else {
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 				$cl = '';
 			}
-			
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 			$button_style = 'btn-hover-divide';
+			// 'the_permalink' below is a WordPress core filter (reused intentionally), not a plugin hook.
+			// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 			$defaults = [
 				'fields'			 => $fields,
 				'comment_field'		 => '
@@ -206,6 +216,7 @@ endif;
 				'submit_button' => '<button name="%1$s" type="submit" id="%2$s" class="%3$s" > %4$s <i class="icon-wcf-checvron-right"></i></button>',
 				'format'			 => 'xhtml',
 			];
+			// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 
 			comment_form( $defaults );
 		?>

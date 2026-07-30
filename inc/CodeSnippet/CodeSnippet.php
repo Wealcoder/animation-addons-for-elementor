@@ -1,5 +1,7 @@
 <?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 namespace WCF_ADDONS\CodeSnippet;
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit();
@@ -336,7 +338,8 @@ class CodeSnippet {
 		 *
 		 * @since 2.3.10
 		 */
-		do_action( 'after_update_code_snippet_post_data', $snippet_id );
+		// Established public hook name (no plugin prefix); kept for backward compatibility.
+		do_action( 'after_update_code_snippet_post_data', $snippet_id ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 
 		$redirect_to = admin_url( 'admin.php?page=wcf-code-snippet&edit=' . $snippet_id );
 		if ( isset( $_POST['snippet_id'] ) && ! empty( $_POST['snippet_id'] ) ) {
