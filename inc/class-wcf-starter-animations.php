@@ -55,6 +55,18 @@ class WCF_Starter_Animations {
      */
     public static function register_controls( Element_Base $element ) {
 
+        // Starter Animations is a legacy (v3) feature: when the whole legacy
+        // layer is switched off, don't offer the control at all. Gating only the
+        // assets would leave a live dropdown that previews nothing and silently
+        // does nothing — worse than hiding the feature outright.
+        //
+        // Checked here rather than in init() so the option is read long after
+        // every plugin has loaded: the Pro plugin filters
+        // option_wcf_save_extensions, and init() runs too early to see it.
+        if ( ! \WCF_ADDONS\Plugin::has_active_legacy_assets() ) {
+            return;
+        }
+
         $widget_name = $element->get_name();
 
 
@@ -82,6 +94,54 @@ class WCF_Starter_Animations {
                 'options' => self::get_animation_options_by_widget( $widget_name ),
                 'default' => 'none',
                 'prefix_class' => 'wcf-starter-animations-',
+
+                // Load the Starter Animations assets ONLY for elements that
+                // actually pick an animation, instead of shipping them on every
+                // page. Same mechanism the Pro Sticky/Pin extension uses for
+                // 'adv-sticky-pin-container'. Both "off" values have to be
+                // excluded: '' (never set) and 'none' (the default).
+                'assets' => [
+                    'scripts' => [
+                        [
+                            'name'       => 'aae-starter-animations',
+                            'conditions' => [
+                                'relation' => 'and',
+                                'terms'    => [
+                                    [
+                                        'name'     => 'wcf_starter_animations',
+                                        'operator' => '!==',
+                                        'value'    => '',
+                                    ],
+                                    [
+                                        'name'     => 'wcf_starter_animations',
+                                        'operator' => '!==',
+                                        'value'    => 'none',
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                    'styles'  => [
+                        [
+                            'name'       => 'aae-starter-animations',
+                            'conditions' => [
+                                'relation' => 'and',
+                                'terms'    => [
+                                    [
+                                        'name'     => 'wcf_starter_animations',
+                                        'operator' => '!==',
+                                        'value'    => '',
+                                    ],
+                                    [
+                                        'name'     => 'wcf_starter_animations',
+                                        'operator' => '!==',
+                                        'value'    => 'none',
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
             ]
         );
 
@@ -663,6 +723,11 @@ class WCF_Starter_Animations {
 
     public static function register_controls_container( Element_Base $element ) {
 
+        // See register_controls() — same legacy gate, same reasoning.
+        if ( ! \WCF_ADDONS\Plugin::has_active_legacy_assets() ) {
+            return;
+        }
+
         $widget_name = $element->get_name();
 
 
@@ -863,6 +928,13 @@ class WCF_Starter_Animations {
      * clicks on the replay button control.
      */
     public static function editor_play_button_js() {
+
+        // Legacy (v3) feature — don't inject the replay handler into the editor
+        // once every legacy extension and widget is switched off. Matches the
+        // gate on the aae-starter-animations script/style in Plugin.
+        if ( ! \WCF_ADDONS\Plugin::has_active_legacy_assets() ) {
+            return;
+        }
         ?>
         <script>
         document.addEventListener('click', function(e){
