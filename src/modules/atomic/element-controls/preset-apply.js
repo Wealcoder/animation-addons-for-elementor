@@ -35,12 +35,24 @@ export const PRESET_TYPE_ALIASES = {
   'e-aae-a-loop-slide-item': 'e-aae-a-loop-item',
 };
 
-// Per-type in-memory cache, populated by ensurePresetsLoaded(). Both
+// Per-type in-memory cache, populated by loadPresetsForType(). Both
 // PresetPickerControl (on mount) and auto-preset.js (on drop) read through
 // this same cache so a type fetched once this session is available to both
 // call sites without duplicate network requests.
+//
+// ONLY successful reads land here. A failed one must never be memoised: the
+// cache is checked before any fetch, so a cached [] from a blip would both
+// hide the preset control (an empty list is how the control decides it has
+// nothing to show) and guarantee nothing ever re-fetched it — the control
+// stayed gone for the rest of the editor session, recoverable only by
+// reloading the editor.
 const _fetchedPresetsByType = {};
 const _pendingFetchesByType = {};
+
+/** Cache key for a type, honouring the alias table. */
+function presetCacheKey(type) {
+  return _fetchedPresetsByType[type] !== undefined ? type : PRESET_TYPE_ALIASES[type] || type;
+}
 
 /**
  * Synchronous read of whatever presets have already been fetched THIS
@@ -48,30 +60,44 @@ const _pendingFetchesByType = {};
  * that hasn't been fetched yet — callers that can tolerate an empty result
  * on a cold type (e.g. auto-preset's drag-drop default, which awaits
  * ensurePresetsLoaded() first) can use this directly; UI code that must
- * show a real list should await ensurePresetsLoaded() instead.
+ * show a real list should await loadPresetsForType() instead.
  */
 export function getCachedPresetsForType(type) {
-  const key = _fetchedPresetsByType[type] ? type : PRESET_TYPE_ALIASES[type] || type;
-  const list = _fetchedPresetsByType[key];
+  const list = _fetchedPresetsByType[presetCacheKey(type)];
   return Array.isArray(list) ? list : [];
 }
 
 /**
- * Fetches (and caches) presets for one element type from this plugin's own
- * REST proxy (aae/v1/presets — see inc/Atomic/Presets/Rest.php), which
- * merges remote (themecrowdy.com) + local bundled presets server-side.
- * Resolves to [] on any network/parse failure — never rejects, so callers
- * never need a .catch().
+ * Drop a type's cached presets so the next load re-fetches it. Used by the
+ * picker's "Try again" action after a failed read.
+ */
+export function invalidatePresetsForType(type) {
+  const key = presetCacheKey(type);
+  delete _fetchedPresetsByType[key];
+  delete _pendingFetchesByType[key];
+}
+
+/**
+ * Fetches presets for one element type from this plugin's own REST proxy
+ * (aae/v1/presets — see inc/Atomic/Presets/Rest.php), which merges remote
+ * (themecrowdy.com) + local bundled presets server-side.
+ *
+ * Resolves to `{ presets, failed }` and never rejects. `failed` is true when
+ * the list could not be read in full — either the request itself failed, or
+ * the route answered 200 while reporting `remote_failed` (it always answers
+ * 200, even during a remote outage, so the flag is the only way to tell an
+ * outage from a type that genuinely has no presets). `presets` still carries
+ * whatever WAS readable in that case, i.e. the locally bundled ones.
  *
  * Safe to call repeatedly for the same type: a fetch already in flight is
  * shared (not duplicated), and a type already resolved this session is
  * served straight from the in-memory cache.
  */
-export function ensurePresetsLoaded(type) {
-  const key = _fetchedPresetsByType[type] !== undefined ? type : PRESET_TYPE_ALIASES[type] || type;
+export function loadPresetsForType(type) {
+  const key = presetCacheKey(type);
 
   if (_fetchedPresetsByType[key] !== undefined) {
-    return Promise.resolve(_fetchedPresetsByType[key]);
+    return Promise.resolve({ presets: _fetchedPresetsByType[key], failed: false });
   }
 
   if (_pendingFetchesByType[key]) {
@@ -80,8 +106,10 @@ export function ensurePresetsLoaded(type) {
 
   const config = window.AAE_PRESET_CONFIG;
   if (!config || !config.restUrl) {
+    // Missing config is a permanent condition for this editor session, not a
+    // transient failure — caching it is correct, and retrying would be futile.
     _fetchedPresetsByType[key] = [];
-    return Promise.resolve([]);
+    return Promise.resolve({ presets: [], failed: false });
   }
 
   // config.restUrl is rest_url('aae/v1/presets') — on a PLAIN-permalink
@@ -98,17 +126,39 @@ export function ensurePresetsLoaded(type) {
   const promise = fetch(url, {
     headers: config.nonce ? { 'X-WP-Nonce': config.nonce } : undefined,
   })
-    .then((res) => (res.ok ? res.json() : { presets: [] }))
-    .then((data) => (Array.isArray(data?.presets) ? data.presets : []))
-    .catch(() => [])
-    .then((presets) => {
-      _fetchedPresetsByType[key] = presets;
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error(`aae/v1/presets responded ${res.status}`);
+      }
+      return res.json();
+    })
+    .then((data) => {
+      const presets = Array.isArray(data?.presets) ? data.presets : [];
+      const failed = !!data?.remote_failed;
+
       delete _pendingFetchesByType[key];
-      return presets;
+      if (!failed) {
+        _fetchedPresetsByType[key] = presets;
+      }
+
+      return { presets, failed };
+    })
+    .catch(() => {
+      delete _pendingFetchesByType[key];
+      return { presets: [], failed: true };
     });
 
   _pendingFetchesByType[key] = promise;
   return promise;
+}
+
+/**
+ * List-only wrapper around loadPresetsForType() for callers that have no
+ * meaningful response to a failed read (auto-preset's drag-drop default just
+ * skips seeding a preset). Resolves to [] on failure — never rejects.
+ */
+export function ensurePresetsLoaded(type) {
+  return loadPresetsForType(type).then(({ presets }) => presets);
 }
 
 export function isContainerModel(model) {

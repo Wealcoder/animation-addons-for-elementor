@@ -50,7 +50,13 @@ final class Cache {
 	 * type or a total remote outage still returns whatever local has (which
 	 * may itself be []).
 	 *
-	 * @return array<int, array>
+	 * `remote_failed` is true when the remote half could not be read at all
+	 * (request failed AND no cached copy existed) — i.e. the returned list is
+	 * INCOMPLETE, not authoritative. Consumers must not treat that case as
+	 * "this type has no presets": doing so is what hid the editor's preset
+	 * control for a whole session on one blip.
+	 *
+	 * @return array{presets: array<int, array>, remote_failed: bool}
 	 */
 	public function get_presets_for_type( string $type, string $category, bool $is_dev ): array {
 		$local = $this->local->get_presets_for_type( $type );
@@ -59,7 +65,10 @@ final class Cache {
 			? $this->fetch_remote_fresh( $type, $category )
 			: $this->get_remote_cached_or_fetch( $type, $category );
 
-		return array_merge( $this->tag_remote( $this->resolve_asset_urls( $remote ) ), $local );
+		return [
+			'presets'       => array_merge( $this->tag_remote( $this->resolve_asset_urls( $remote['entries'] ) ), $local ),
+			'remote_failed' => $remote['failed'],
+		];
 	}
 
 	/**
@@ -111,6 +120,9 @@ final class Cache {
 		);
 	}
 
+	/**
+	 * @return array{entries: array<int, array>, failed: bool}
+	 */
 	private function get_remote_cached_or_fetch( string $type, string $category ): array {
 		$transient_key = self::TYPE_TRANSIENT_PREFIX . $type;
 		$cached        = get_transient( $transient_key );
@@ -118,7 +130,15 @@ final class Cache {
 		if ( false !== $cached && is_array( $cached ) ) {
 			$this->maybe_refresh_via_manifest( $type, $category, $cached, $transient_key );
 
-			return get_transient( $transient_key ) ?: $cached;
+			// A cached copy always counts as a successful read, even if the
+			// manifest refresh above hit the network and failed — the list we
+			// return is still a complete answer for this type.
+			$fresh = get_transient( $transient_key );
+
+			return [
+				'entries' => ( false !== $fresh && is_array( $fresh ) ) ? $fresh : $cached,
+				'failed'  => false,
+			];
 		}
 
 		return $this->fetch_remote_fresh( $type, $category, $transient_key );
@@ -127,18 +147,33 @@ final class Cache {
 	/**
 	 * Fetches the full bulk list and caches it (even if empty, so a type
 	 * with legitimately nothing on the server doesn't get re-requested on
-	 * every single page load). On dev/local environments, still returns the
-	 * fresh result but never touches the transient.
+	 * every single page load) — but ONLY when the server actually answered.
+	 * A FAILED request is never cached: writing [] into a 12-hour transient
+	 * over one network blip would blank that type's presets until the TTL
+	 * expired. On dev/local environments, still returns the fresh result but
+	 * never touches the transient.
+	 *
+	 * @return array{entries: array<int, array>, failed: bool}
 	 */
 	private function fetch_remote_fresh( string $type, string $category, ?string $cache_key = null ): array {
 		$entries = $this->remote->fetch_presets_for_type( $type, $category );
+
+		if ( null === $entries ) {
+			return [
+				'entries' => [],
+				'failed'  => true,
+			];
+		}
 
 		if ( null !== $cache_key ) {
 			set_transient( $cache_key, $entries, self::ttl() );
 			$this->update_manifest_option( $type, $entries );
 		}
 
-		return $entries;
+		return [
+			'entries' => $entries,
+			'failed'  => false,
+		];
 	}
 
 	/**
