@@ -151,7 +151,11 @@ class AAE_A_Progressbar extends Atomic_Element_Base
 				->add_variant(
 					Style_Variant::make()
 						->add_prop('display', String_Prop_Type::generate('block'))
-						->add_prop('width', String_Prop_Type::generate('100%'))
+						// `width` is a Size_Prop_Type in Elementor's style schema — a
+						// String_Prop_Type('100%') here was silently dropped from the
+						// generated rule (every sibling prop still emitted, so it
+						// looked like it worked).
+						->add_prop('width', Size_Prop_Type::generate(['size' => 100, 'unit' => '%']))
 						->add_prop('max-width', Size_Prop_Type::generate(['size' => 480, 'unit' => 'px']))
 						->add_prop('position', String_Prop_Type::generate('relative'))
 						->add_prop('margin', Dimensions_Prop_Type::generate([
@@ -190,7 +194,10 @@ class AAE_A_Progressbar extends Atomic_Element_Base
 			AAE_A_Progressbar_Label::generate()
 				->editor_settings(['title' => 'Percentage'])
 				->settings([
-					'classes' => Classes_Prop_Type::generate(['aae-pb-pct']),
+					// No `classes` here on purpose: the JS hook `aae-pb-pct` is
+					// rendered by the label's twig instead. Seeding a hook class
+					// into `classes` makes Elementor's panel report "Some classes
+					// are missing", whose dismiss button then unapplies it.
 					'text' => Html_V3_Prop_Type::generate([
 						'content'  => String_Prop_Type::generate('0%'),
 						'children' => [],

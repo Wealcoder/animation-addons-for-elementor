@@ -432,6 +432,7 @@ final class Atomic
 		'aae-a-progressbar-track'      => 'aae-a-progressbar',
 		'aae-a-progressbar-fill'       => 'aae-a-progressbar',
 		'aae-a-progressbar-label'      => 'aae-a-progressbar',
+		'aae-a-progressbar-dot'        => 'aae-a-progressbar',
 
 		// Social Share
 		'aae-a-social-share-item'      => 'aae-a-social-share',
@@ -1917,7 +1918,7 @@ final class Atomic
 			// this sub-group exposed in the dashboard widget list.
 			'aae-a-progressbar' => [
 				'label'        => 'Progress Bar',
-				'description'  => 'A very basic open progress-bar container — no style presets, just track/fill or ring children you can fill or restyle natively.',
+				'description'  => 'An open progress-bar container — drops as a plain Line bar built from real track/fill/label children you can restyle natively, with Circle and Dot presets one click away.',
 				'icon'         => 'eicon-skill-bar',
 				'is_pro'       => false,
 				'is_extension' => false,
@@ -1982,6 +1983,22 @@ final class Atomic
 				'is_internal'  => true,
 				'default'      => true,
 				'keywords'     => [ 'progress', 'progressbar', 'label', 'atomic' ],
+				'category'     => 'general',
+				'order'        => 12,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-progressbar-dot' => [
+				'label'        => 'Progress Bar — Dot',
+				'description'  => 'Internal step-dot sub-element used by the Progress Bar Template\'s Dot preset.',
+				'icon'         => 'eicon-dot-circle-o',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'is_internal'  => true,
+				'default'      => true,
+				'keywords'     => [ 'progress', 'progressbar', 'dot', 'atomic' ],
 				'category'     => 'general',
 				'order'        => 12,
 				'demo_url'     => '',
@@ -4172,6 +4189,11 @@ final class Atomic
 			'aae-a-progressbar-label' => [
 				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Progressbar\AAE_A_Progressbar_Label',
 				'file'       => 'Widgets/Progressbar/Parts/class-aae-a-progressbar-label.php',
+				'has_script' => false,
+			],
+			'aae-a-progressbar-dot' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Progressbar\AAE_A_Progressbar_Dot',
+				'file'       => 'Widgets/Progressbar/Parts/class-aae-a-progressbar-dot.php',
 				'has_script' => false,
 			],
 

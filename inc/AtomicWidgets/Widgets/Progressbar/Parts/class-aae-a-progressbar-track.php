@@ -124,9 +124,9 @@ class AAE_A_Progressbar_Track extends Atomic_Element_Base {
 		return [
 			AAE_A_Progressbar_Fill::generate()
 				->editor_settings( [ 'title' => 'Fill' ] )
-				->settings( [
-					'classes' => Classes_Prop_Type::generate( [ 'aae-progressbar-fill' ] ),
-				] )
+				// No `classes`: the JS hook `aae-progressbar-fill` comes from the
+				// fill's own twig. A hook class in `classes` is reported by the
+				// panel as a missing class and can be dismissed away.
 				->build(),
 		];
 	}
@@ -136,7 +136,7 @@ class AAE_A_Progressbar_Track extends Atomic_Element_Base {
 	}
 
 	protected function define_allowed_child_types() {
-		return [ 'widget', 'e-aae-a-progressbar-fill', 'e-flexbox', 'e-div-block' ];
+		return [ 'widget', 'e-aae-a-progressbar-fill', 'e-aae-a-progressbar-dot', 'e-flexbox', 'e-div-block' ];
 	}
 
 	protected function define_default_html_tag() {
