@@ -461,6 +461,27 @@ class WCF_Admin_Init
 				: 'no',
 
 			'hero_offer' => WCF_ADDONS_URL . 'assets/video/cyber-sale.mp4',
+
+			// Animation Settings screen. Shipped in the initial payload rather
+			// than fetched, so the panel paints filled in on first open.
+			'animation_settings' => array(
+				'settings'      => \WCF_ADDONS\AnimationSettings\Animation_Settings::get(),
+				'schema'        => \WCF_ADDONS\AnimationSettings\Animation_Settings::schema_for_ui(),
+				'global_colors' => \WCF_ADDONS\AnimationSettings\Animation_Settings::global_colors(),
+				'has_pro'       => \WCF_ADDONS\AnimationSettings\Animation_Settings::has_pro(),
+			),
+
+			/*
+			 * Performance screen. The SCREEN ships in free; the settings store
+			 * and the delivery pipeline behind it are Pro
+			 * (pro/inc/Performance/), so the payload arrives through a filter
+			 * Pro answers rather than a direct class reference.
+			 *
+			 * An empty array is the correct free-only value, not a missing one:
+			 * the React page reads it as "Pro is not here" and renders the
+			 * locked upsell state.
+			 */
+			'performance' => apply_filters('aae/performance/dashboard_payload', array()),
 		);
 
 		wp_localize_script('wcf-admin', 'WCF_ADDONS_ADMIN', $localize_data);
