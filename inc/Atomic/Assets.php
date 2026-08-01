@@ -18,11 +18,33 @@ final class Assets
 	const BUILD_DIR   = 'assets/build/modules/atomic/';
 
 	/**
-	 * Catalogue of per-effect JS bundles. Each entry maps a stable handle to
-	 * the build-time entry path (relative to BUILD_DIR). Render.php calls
-	 * wp_enqueue_script( $handle ) for the effects a widget actually uses.
+	 * Catalogue of per-effect JS bundles that belong to THIS plugin. Each entry
+	 * maps a stable handle to the build-time entry path (relative to BUILD_DIR).
+	 * Render.php calls wp_enqueue_script( $handle ) for the effects a widget
+	 * actually uses.
+	 *
+	 * Custom CSS is here because it never moved to Pro (two bundled free presets
+	 * depend on it); nested-slider is here because it is a WIDGET runtime, not an
+	 * extension effect — the Nested Slider and Loop Grid Slider both enqueue it.
 	 */
 	const EFFECT_BUNDLES = [
+		'aae-effect-custom-css'    => 'effects/custom-css.js',
+		'aae-effect-nested-slider' => 'effects/nested-slider.js',
+	];
+
+	/**
+	 * Bundles that moved to the Pro plugin along with their Render classes.
+	 *
+	 * TRANSITIONAL, and deleted in the same release as Bootstrap's
+	 * $render_fallback blocks. Registering the Render without the bundle would
+	 * be worse than useless: wp_enqueue_script() on an unregistered handle is a
+	 * silent no-op, so the fallback would look wired and animate nothing. The
+	 * two must appear and disappear together.
+	 *
+	 * Handle names are identical on both sides — Pro's lazy-loading pipeline
+	 * (inc/Performance/class-lazy-scripts.php) keys off them.
+	 */
+	const MOVED_EFFECT_BUNDLES = [
 		'aae-effect-animation'       => ['file' => 'effects/animation.js', 'deps' => ['SplitText']],
 		'aae-effect-image-animation' => 'effects/image-animation.js',
 		'aae-effect-image-hover'     => 'effects/image-hover.js',
@@ -34,9 +56,21 @@ final class Assets
 		'aae-effect-advance-tooltip' => 'effects/advance-tooltip.js',
 		'aae-effect-scroll-to'       => ['file' => 'effects/scroll-to.js', 'deps' => ['ScrollToPlugin']],
 		'aae-effect-parallax'        => 'effects/parallax.js',
-		'aae-effect-custom-css'      => 'effects/custom-css.js',
-		'aae-effect-nested-slider'   => 'effects/nested-slider.js',
 	];
+
+	/**
+	 * The bundles this plugin should register on the current request: always its
+	 * own, plus the moved ones only while the transitional Render fallback is
+	 * active (Pro installed but older than the release that took ownership).
+	 */
+	private function bundles_to_register(): array
+	{
+		if (Bootstrap::render_fallback_active()) {
+			return array_merge(self::EFFECT_BUNDLES, self::MOVED_EFFECT_BUNDLES);
+		}
+
+		return self::EFFECT_BUNDLES;
+	}
 
 	public function register(): void
 	{
@@ -106,7 +140,7 @@ final class Assets
 
 		// Register every effect bundle with the core runtime as a dep, so
 		// enqueueing an effect automatically pulls in the runtime.
-		foreach (self::EFFECT_BUNDLES as $handle => $config) {
+		foreach ($this->bundles_to_register() as $handle => $config) {
 			$relative = is_array($config) ? $config['file'] : $config;
 			$manual_deps = is_array($config) && isset($config['deps']) ? $config['deps'] : [];
 
@@ -135,7 +169,7 @@ final class Assets
 		$this->register_common();
 
 		wp_enqueue_script(self::HANDLE);
-		foreach (array_keys(self::EFFECT_BUNDLES) as $handle) {
+		foreach (array_keys($this->bundles_to_register()) as $handle) {
 			wp_enqueue_script($handle);
 		}
 	}

@@ -11,8 +11,49 @@ final class Bootstrap {
 
 	const MIN_ELEMENTOR_VERSION = '4.0.0';
 
+	/**
+	 * The Pro release that takes ownership of the atomic extension frontends.
+	 *
+	 * From this version on, Pro registers the Render classes (and the effect
+	 * bundles) itself and the copies below stand down. See
+	 * animation-addons-for-elementor-pro/docs/atomic-v4/extension-frontend-migration.md.
+	 */
+	const PRO_OWNS_RENDERERS_FROM = '4.1.0';
+
 	public static function get_label( $text ) {
 		return $text;
+	}
+
+	/**
+	 * Should THIS plugin still register the extension Render classes?
+	 *
+	 * TRANSITIONAL. The extension frontends moved to Pro, but free auto-updates
+	 * from wp.org while Pro is updated by hand — so a site can sit on new free +
+	 * old Pro, where neither side would render and every animation would stop
+	 * with no error. These copies cover exactly that window and come out in the
+	 * follow-up release.
+	 *
+	 * Two things this deliberately does NOT do:
+	 *
+	 * - It does not fall back when Pro is ABSENT. The extension frontends are a
+	 *   Pro feature now; rendering them on a Pro-less site would defeat the whole
+	 *   move.
+	 * - It does not test `class_exists()` on Pro's Render. That asks "did Pro
+	 *   switch this on", not "who owns this" — with an invalid licence Pro's
+	 *   modules never load, the class is absent, and we would happily run a paid
+	 *   feature for free. The version number is the ownership signal.
+	 *
+	 * Safe to read here: Bootstrap::init() runs from class-plugin.php's
+	 * include_files() on `plugins_loaded`, by which point every plugin file has
+	 * been included and Pro has defined its version constant at file scope
+	 * (before its own licence gate).
+	 */
+	public static function render_fallback_active(): bool {
+		if ( ! defined( 'WCF_ADDONS_PRO_VERSION' ) ) {
+			return false;
+		}
+
+		return version_compare( WCF_ADDONS_PRO_VERSION, self::PRO_OWNS_RENDERERS_FROM, '<' );
 	}
 
 	public static function init(): void {
@@ -34,12 +75,20 @@ final class Bootstrap {
 
 		$extensions = Atomic::instance();
 
+		// Schema + Controls always register — the editor UI stays in the free
+		// plugin. Only the Render classes are gated, and only transitionally:
+		// every `if ( $render_fallback )` block below is deleted wholesale in the
+		// follow-up release. Grep for the variable to find them all.
+		$render_fallback = self::render_fallback_active();
+
 		// Regular (preset-based) animation — applied to every atomic widget.
 		// Frontend reads window.AAE_INTERACTIONS_ANIM[<id>].
 		if ( $extensions->is_extension_active( 'regular-animation' ) ) {
 			( new \WCF_ADDONS\Atomic\RegularAnimation\Schema() )->register();
 			( new \WCF_ADDONS\Atomic\RegularAnimation\Controls() )->register();
-			( new \WCF_ADDONS\Atomic\RegularAnimation\Render() )->register();
+			if ( $render_fallback ) {
+				( new \WCF_ADDONS\Atomic\RegularAnimation\Render() )->register();
+			}
 		}
 
 		// Parallax (ScrollSmoother) — applied to every atomic widget.
@@ -47,14 +96,18 @@ final class Bootstrap {
 		if ( $extensions->is_extension_active( 'parallax' ) ) {
 			( new \WCF_ADDONS\Atomic\Parallax\Schema() )->register();
 			( new \WCF_ADDONS\Atomic\Parallax\Controls() )->register();
-			( new \WCF_ADDONS\Atomic\Parallax\Render() )->register();
+			if ( $render_fallback ) {
+				( new \WCF_ADDONS\Atomic\Parallax\Render() )->register();
+			}
 		}
 
 		// Text animation — char/word/reveal/etc. for heading-class widgets.
 		if ( $extensions->is_extension_active( 'text-animation' ) ) {
 			( new \WCF_ADDONS\Atomic\TextAnimation\Schema() )->register();
 			( new \WCF_ADDONS\Atomic\TextAnimation\Controls() )->register();
-			( new \WCF_ADDONS\Atomic\TextAnimation\Render() )->register();
+			if ( $render_fallback ) {
+				( new \WCF_ADDONS\Atomic\TextAnimation\Render() )->register();
+			}
 		}
 
 		// Image animation — reveal/scale/stretch for e-image / e-svg.
@@ -62,7 +115,9 @@ final class Bootstrap {
 		if ( $extensions->is_extension_active( 'image-animation' ) ) {
 			( new \WCF_ADDONS\Atomic\ImageAnimation\Schema() )->register();
 			( new \WCF_ADDONS\Atomic\ImageAnimation\Controls() )->register();
-			( new \WCF_ADDONS\Atomic\ImageAnimation\Render() )->register();
+			if ( $render_fallback ) {
+				( new \WCF_ADDONS\Atomic\ImageAnimation\Render() )->register();
+			}
 		}
 
 		// Image hover — cursor-following floating image overlay on any
@@ -70,59 +125,79 @@ final class Bootstrap {
 		if ( $extensions->is_extension_active( 'image-hover' ) ) {
 			( new \WCF_ADDONS\Atomic\ImageHover\Schema() )->register();
 			( new \WCF_ADDONS\Atomic\ImageHover\Controls() )->register();
-			( new \WCF_ADDONS\Atomic\ImageHover\Render() )->register();
+			if ( $render_fallback ) {
+				( new \WCF_ADDONS\Atomic\ImageHover\Render() )->register();
+			}
 		}
 
 		// Sticky — pin elements
 		if ( $extensions->is_extension_active( 'sticky' ) ) {
 			( new \WCF_ADDONS\Atomic\Sticky\Schema() )->register();
 			( new \WCF_ADDONS\Atomic\Sticky\Controls() )->register();
-			( new \WCF_ADDONS\Atomic\Sticky\Render() )->register();
+			if ( $render_fallback ) {
+				( new \WCF_ADDONS\Atomic\Sticky\Render() )->register();
+			}
 		}
 
 		// horizontal scroll animation
 		if ( $extensions->is_extension_active( 'horizontal-scroll-anim' ) ) {
 			( new \WCF_ADDONS\Atomic\HorizontalScrollAnim\Schema() )->register();
 			( new \WCF_ADDONS\Atomic\HorizontalScrollAnim\Controls() )->register();
-			( new \WCF_ADDONS\Atomic\HorizontalScrollAnim\Render() )->register();
+			if ( $render_fallback ) {
+				( new \WCF_ADDONS\Atomic\HorizontalScrollAnim\Render() )->register();
+			}
 		}
 
 		// Cursor hover effect — cursor-following floating element on any
 		if ( $extensions->is_extension_active( 'cursor-hover-effect' ) ) {
 			( new \WCF_ADDONS\Atomic\CursorHoverEffect\Schema() )->register();
 			( new \WCF_ADDONS\Atomic\CursorHoverEffect\Controls() )->register();
-			( new \WCF_ADDONS\Atomic\CursorHoverEffect\Render() )->register();
+			if ( $render_fallback ) {
+				( new \WCF_ADDONS\Atomic\CursorHoverEffect\Render() )->register();
+			}
 		}
 
 		// Mouse move effect — element moves based on mouse position.
 		if ( $extensions->is_extension_active( 'mouse-move-effect' ) ) {
 			( new \WCF_ADDONS\Atomic\MouseMoveEffect\Schema() )->register();
 			( new \WCF_ADDONS\Atomic\MouseMoveEffect\Controls() )->register();
-			( new \WCF_ADDONS\Atomic\MouseMoveEffect\Render() )->register();
+			if ( $render_fallback ) {
+				( new \WCF_ADDONS\Atomic\MouseMoveEffect\Render() )->register();
+			}
 		}
 
 		// Advance Tooltip
 		if ( $extensions->is_extension_active( 'advance-tooltip' ) ) {
 			( new \WCF_ADDONS\Atomic\AdvanceTooltip\Schema() )->register();
 			( new \WCF_ADDONS\Atomic\AdvanceTooltip\Controls() )->register();
-			( new \WCF_ADDONS\Atomic\AdvanceTooltip\Render() )->register();
+			if ( $render_fallback ) {
+				( new \WCF_ADDONS\Atomic\AdvanceTooltip\Render() )->register();
+			}
 		}
 
 		// Tilt
 		if ( $extensions->is_extension_active( 'tilt' ) ) {
 			( new \WCF_ADDONS\Atomic\Tilt\Schema() )->register();
 			( new \WCF_ADDONS\Atomic\Tilt\Controls() )->register();
-			( new \WCF_ADDONS\Atomic\Tilt\Render() )->register();
+			if ( $render_fallback ) {
+				( new \WCF_ADDONS\Atomic\Tilt\Render() )->register();
+			}
 		}
 
 		// scrollto
 		if ( $extensions->is_extension_active( 'scroll-to' ) ) {
 			( new \WCF_ADDONS\Atomic\ScrollTo\Schema() )->register();
 			( new \WCF_ADDONS\Atomic\ScrollTo\Controls() )->register();
-			( new \WCF_ADDONS\Atomic\ScrollTo\Render() )->register();
+			if ( $render_fallback ) {
+				( new \WCF_ADDONS\Atomic\ScrollTo\Render() )->register();
+			}
 		}
 
-		// Custom CSS
+		// Custom CSS — NOT part of the move to Pro, and its Render is therefore
+		// NOT behind $render_fallback. Two bundled free presets
+		// (Presets/e-button/shine-pulse.json, Presets/e-flexbox/pill-button.json)
+		// carry their animation in this extension's props, so taking it away
+		// would leave them rendering as static elements with no error.
 		if ( $extensions->is_extension_active( 'custom-css' ) ) {
 			( new \WCF_ADDONS\Atomic\CustomCss\Schema() )->register();
 			( new \WCF_ADDONS\Atomic\CustomCss\Controls() )->register();
