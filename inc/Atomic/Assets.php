@@ -32,46 +32,6 @@ final class Assets
 		'aae-effect-nested-slider' => 'effects/nested-slider.js',
 	];
 
-	/**
-	 * Bundles that moved to the Pro plugin along with their Render classes.
-	 *
-	 * TRANSITIONAL, and deleted in the same release as Bootstrap's
-	 * $render_fallback blocks. Registering the Render without the bundle would
-	 * be worse than useless: wp_enqueue_script() on an unregistered handle is a
-	 * silent no-op, so the fallback would look wired and animate nothing. The
-	 * two must appear and disappear together.
-	 *
-	 * Handle names are identical on both sides — Pro's lazy-loading pipeline
-	 * (inc/Performance/class-lazy-scripts.php) keys off them.
-	 */
-	const MOVED_EFFECT_BUNDLES = [
-		'aae-effect-animation'       => ['file' => 'effects/animation.js', 'deps' => ['SplitText']],
-		'aae-effect-image-animation' => 'effects/image-animation.js',
-		'aae-effect-image-hover'     => 'effects/image-hover.js',
-		'aae-effect-tilt'            => 'effects/tilt.js',
-		'aae-effect-sticky'          => 'effects/sticky.js',
-		'aae-effect-horizontal'      => 'effects/horizontal.js',
-		'aae-effect-mouse-move'      => 'effects/mouse-move-effect.js',
-		'aae-effect-cursor-hover'    => 'effects/cursor-hover-effect.js',
-		'aae-effect-advance-tooltip' => 'effects/advance-tooltip.js',
-		'aae-effect-scroll-to'       => ['file' => 'effects/scroll-to.js', 'deps' => ['ScrollToPlugin']],
-		'aae-effect-parallax'        => 'effects/parallax.js',
-	];
-
-	/**
-	 * The bundles this plugin should register on the current request: always its
-	 * own, plus the moved ones only while the transitional Render fallback is
-	 * active (Pro installed but older than the release that took ownership).
-	 */
-	private function bundles_to_register(): array
-	{
-		if (Bootstrap::render_fallback_active()) {
-			return array_merge(self::EFFECT_BUNDLES, self::MOVED_EFFECT_BUNDLES);
-		}
-
-		return self::EFFECT_BUNDLES;
-	}
-
 	public function register(): void
 	{
 		// Public frontend: register only. Render.php triggers wp_enqueue_script()
@@ -140,7 +100,7 @@ final class Assets
 
 		// Register every effect bundle with the core runtime as a dep, so
 		// enqueueing an effect automatically pulls in the runtime.
-		foreach ($this->bundles_to_register() as $handle => $config) {
+		foreach (self::EFFECT_BUNDLES as $handle => $config) {
 			$relative = is_array($config) ? $config['file'] : $config;
 			$manual_deps = is_array($config) && isset($config['deps']) ? $config['deps'] : [];
 
@@ -169,7 +129,7 @@ final class Assets
 		$this->register_common();
 
 		wp_enqueue_script(self::HANDLE);
-		foreach (array_keys($this->bundles_to_register()) as $handle) {
+		foreach (array_keys(self::EFFECT_BUNDLES) as $handle) {
 			wp_enqueue_script($handle);
 		}
 	}
@@ -181,11 +141,14 @@ final class Assets
 	 * install our atomic widgets would otherwise tween-less.
 	 *
 	 * Deliberately NOT here: SplitText and ScrollToPlugin. Those belong to
-	 * single effects, and their bundles already declare them
-	 * (EFFECT_BUNDLES: aae-effect-animation -> SplitText,
-	 * aae-effect-scroll-to -> ScrollToPlugin), so WordPress pulls each one
-	 * in exactly on the pages where Render.php enqueues that effect. Listing
-	 * them on the shared core handle shipped ~70KB of unused JS to every
+	 * single effects, and the bundles that need them declare them — those
+	 * bundles now live in Pro (inc/AtomicV4/Extensions/Assets.php:
+	 * aae-effect-animation -> SplitText, aae-effect-scroll-to ->
+	 * ScrollToPlugin), which is why ensure_gsap_registered() below still
+	 * REGISTERS both handles even though nothing here depends on them: Pro
+	 * declares the dependency, this plugin owns the file. WordPress then pulls
+	 * each one in exactly on the pages where Pro's Render enqueues that effect.
+	 * Listing them on the shared core handle shipped ~70KB of unused JS to every
 	 * page with ANY animation — flagged by Lighthouse as unused JavaScript
 	 * on pages with no text-animation / scroll-to at all. common.js itself
 	 * only reads window.SplitText lazily at play time (getSplitText), so it
