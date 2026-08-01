@@ -725,6 +725,23 @@ class Animation_Settings {
 						'label'   => __( 'Smoothness per device', 'animation-addons-for-elementor' ),
 						'help'    => __( 'Seconds the scroll takes to catch up. Higher is smoother and laggier. Touch devices are off by default — smoothing fights native momentum scrolling.', 'animation-addons-for-elementor' ),
 					],
+					// NOT per-device, deliberately. `normalizeScroll` only means
+					// anything on a coarse pointer, so spreading it across the
+					// four buckets would produce three cells that can never do
+					// anything. It is also the one smooth-scroll option with a
+					// genuine trade-off, which is why it is a switch at all: it
+					// works around several Android scroll quirks, and on iOS it
+					// takes the scroll away from Safari — the address bar stops
+					// collapsing and momentum fights the smoother. Off is the
+					// right default; a site hitting the Android quirks can pay
+					// the iOS cost knowingly.
+					'normalize_touch' => [
+						'type'    => 'bool',
+						'default' => false,
+						'label'   => __( 'Normalize touch scrolling', 'animation-addons-for-elementor' ),
+						'help'    => __( 'Let the smoother take over scrolling on touch devices. Fixes some Android inconsistencies, but on iOS it stops the address bar collapsing and can feel laggy. Leave off unless you have a problem it solves.', 'animation-addons-for-elementor' ),
+					],
+
 					// Declared here rather than left to the injection in schema()
 					// only so it can carry wording specific to this feature —
 					// the shape and the semantics are identical.
@@ -1139,6 +1156,7 @@ class Animation_Settings {
 		}
 
 		$payload['disableInEditor'] = ! empty( $config['disable_in_editor'] );
+		$payload['normalizeTouch'] = ! empty( $config['normalize_touch'] );
 
 		return $payload;
 	}
