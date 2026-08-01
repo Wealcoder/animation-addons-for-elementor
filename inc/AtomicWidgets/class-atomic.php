@@ -3857,7 +3857,13 @@ final class Atomic
 				'file' => 'Widgets/DrawSvg/class-aae-a-draw-svg.php',
 				'script_handle' => 'aae-a-draw-svg-js',
 				'script_path' => '/assets/atomic/js/draw-svg.js',
-				'script_deps' => [ 'gsap', 'ScrollTrigger', 'DrawSVGPlugin', 'MotionPathPlugin' ],
+				// Only when Pro is present — see aae-a-offcanvas below. Free ships
+				// no GSAP of its own and Atomic\Assets::ensure_gsap_registered()
+				// sources these from Pro's assets/lib, so without Pro the handles
+				// never exist. draw-svg.js guards on `typeof gsap` and no-ops.
+				'script_deps' => defined( 'WCF_ADDONS_PRO_VERSION' )
+					? [ 'gsap', 'ScrollTrigger', 'DrawSVGPlugin', 'MotionPathPlugin' ]
+					: [],
 				'has_script' => true,
 			],
 
@@ -3866,7 +3872,9 @@ final class Atomic
 				'file' => 'Widgets/StackCards/class-aae-a-stack-cards.php',
 				'script_handle' => 'aae-a-stack-cards-js',
 				'script_path' => '/assets/atomic/js/stack-cards.js',
-				'script_deps' => [ 'gsap', 'ScrollTrigger' ],
+				// Pro-only handles; stack-cards.js already returns early when
+				// window.gsap / window.ScrollTrigger are absent.
+				'script_deps' => defined( 'WCF_ADDONS_PRO_VERSION' ) ? [ 'gsap', 'ScrollTrigger' ] : [],
 				'has_script' => true,
 			],
 			'aae-a-stack-card' => [
@@ -4153,7 +4161,10 @@ final class Atomic
 				'file'          => 'Widgets/BtnPro/class-aae-a-btn-pro.php',
 				'script_handle' => 'aae-a-btn-pro-js',
 				'script_path'   => '/assets/atomic/js/btn-pro.js',
-				'script_deps'   => [ 'gsap' ], // Ripple + polygon magnetic-move effects need GSAP.
+				// Ripple + polygon magnetic-move effects need GSAP, but the handle
+				// is Pro-only. btn-pro.js guards each GSAP-driven effect on
+				// `typeof gsap`, so the button's other behaviour still works.
+				'script_deps'   => defined( 'WCF_ADDONS_PRO_VERSION' ) ? [ 'gsap' ] : [],
 				'has_script'    => true,
 				'style_handle'  => 'aae-a-btn-pro-css',
 				'style_path'    => '/assets/atomic/css/btn-pro.css',
