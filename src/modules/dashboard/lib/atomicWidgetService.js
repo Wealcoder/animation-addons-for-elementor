@@ -244,7 +244,7 @@ export const activeAtomicGroupWidgetFn = (mainContent, data, dispatch) => {
               } else {
                 return [key2, value2];
               }
-            } else if (value2.is_pro && !isValid) {
+            } else if (value2.is_pro && !value2.badge_only && !isValid) {
               return [key2, value2];
             } else {
               value2.is_active = data.value;
@@ -294,7 +294,7 @@ export const activeAtomicFullWidgetFn = (mainContent, data, dispatch) => {
             } else {
               return [key2, value2];
             }
-          } else if (value2.is_pro && !isValid) {
+          } else if (value2.is_pro && !value2.badge_only && !isValid) {
             return [key2, value2];
           } else {
             value2.is_active = data.value;
