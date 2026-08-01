@@ -1029,7 +1029,7 @@ final class Atomic
 				'description'  => 'Draw an SVG\'s paths with GSAP DrawSVGPlugin — per-path, optional ScrollTrigger, from/to/method/ease/duration/yoyo/scrub and an optional wrapper link.',
 				'icon'         => 'eicon-animation',
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\DrawSvg\AAE_A_Draw_Svg',
-				'is_pro'       => false,
+				'is_pro'       => true,
 				'is_extension' => false,
 				'is_upcoming'  => false,
 				'default'      => true,
@@ -1411,7 +1411,7 @@ final class Atomic
 				'label'        => 'Counter',
 				'description'  => 'An animated number counter that counts up on scroll, with a minimal CSS footprint.',
 				'icon'         => 'eicon-counter',
-				'is_pro'       => false,
+				'is_pro'       => true,
 				'is_extension' => false,
 				'is_upcoming'  => false,
 				'default'      => true,
@@ -1598,7 +1598,7 @@ final class Atomic
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\StackCards\AAE_A_Stack_Cards',
 				'keywords'     => ['atomic', 'stack', 'cards', 'scroll', 'gsap'],
 				'icon'         => 'eicon-post-list',
-				'is_pro'       => false,
+				'is_pro'       => true,
 				'is_extension' => false,
 				'is_upcoming'  => false,
 				'default'      => true,
@@ -1642,7 +1642,7 @@ final class Atomic
 				'label'        => 'Table of Content',
 				'description'  => 'Auto-generated Table of Contents from the page headings — nested hierarchy, active-heading highlighting, smooth scroll, collapsible + responsive minimize box.',
 				'icon'         => 'eicon-table-of-contents',
-				'is_pro'       => false,
+				'is_pro'       => true,
 				'is_extension' => false,
 				'is_upcoming'  => false,
 				'default'      => true,
@@ -2156,7 +2156,7 @@ final class Atomic
 				'label'        => 'Offcanvas',
 				'description'  => 'Offcanvas drawer with trigger + panel and selectable GSAP open/close animations.',
 				'icon'         => 'eicon-sidebar',
-				'is_pro'       => false,
+				'is_pro'       => true,
 				'is_extension' => false,
 				'is_upcoming'  => false,
 				'default'      => true,
@@ -2178,7 +2178,7 @@ final class Atomic
 				'label'        => 'Offcanvas Panel (Internal)',
 				'description'  => 'Internal locked panel container for Offcanvas.',
 				'icon'         => 'eicon-inner-section',
-				'is_pro'       => false,
+				'is_pro'       => true,
 				'is_extension' => false,
 				'is_upcoming'  => false,
 				'default'      => true,
@@ -2218,7 +2218,7 @@ final class Atomic
 				'label'        => 'Offcanvas Overlay',
 				'description'  => 'Backdrop layer behind an open Offcanvas panel.',
 				'icon'         => 'eicon-square',
-				'is_pro'       => false,
+				'is_pro'       => true,
 				'is_extension' => false,
 				'is_upcoming'  => false,
 				'default'      => true,
@@ -2630,7 +2630,7 @@ final class Atomic
 				'label'        => 'Nav',
 				'description'  => 'Atomic navbar with fully styleable items and dropdown support.',
 				'icon'         => 'eicon-nav-menu',
-				'is_pro'       => false,
+				'is_pro'       => true,
 				'is_extension' => false,
 				'is_upcoming'  => false,
 				'default'      => true,
@@ -2646,7 +2646,7 @@ final class Atomic
 				'label'        => 'Nav Item (Internal)',
 				'description'  => 'Internal child item for Nav.',
 				'icon'         => 'eicon-nav-menu',
-				'is_pro'       => false,
+				'is_pro'       => true,
 				'is_extension' => false,
 				'is_upcoming'  => false,
 				'default'      => true,
@@ -5184,15 +5184,35 @@ final class Atomic
 	 * True once the installed Pro is new enough to register the moved widgets
 	 * itself.
 	 *
-	 * Guarded on Pro's VERSION, never on `class_exists` of a Pro widget class:
-	 * an UNLICENSED Pro never loads its classes, so a class check would read
-	 * false and free would keep shipping a paid widget. A version answers who
-	 * owns it; a class only answers whether Pro switched it on.
+	 * Two conditions, and the LICENCE half is the one that matters.
+	 *
+	 * The atomic EXTENSIONS deliberately guard on Pro's version alone: an
+	 * unlicensed Pro must not make free resume rendering a paid effect. Widgets
+	 * cannot use that rule. WCF_ADDONS_PRO_VERSION is defined at Pro's file
+	 * scope, BEFORE its licence gate, while Pro only registers these widgets
+	 * when the licence is valid — so version-only would leave an expired site
+	 * with NOBODY registering them, and an unregistered atomic element type is
+	 * deleted from `_elementor_data` on the next save of any page using it
+	 * (get_elements_raw_data(), elementor/core/base/document.php:1111).
+	 *
+	 * A lapsed customer keeping these widgets alive is a revenue leak. A lapsed
+	 * customer's pages silently losing their content is not recoverable. So free
+	 * stands down only when Pro will actually take over.
+	 *
+	 * Still not `class_exists` on a Pro widget: Pro loads its classes on
+	 * `elementor/init`, long after this runs, so that check would read false
+	 * even on a perfectly licensed site.
 	 */
 	public static function pro_owns_widgets(): bool
 	{
-		return defined('WCF_ADDONS_PRO_VERSION')
-			&& version_compare(WCF_ADDONS_PRO_VERSION, self::PRO_OWNS_WIDGETS_FROM, '>=');
+		if (! defined('WCF_ADDONS_PRO_VERSION')
+			|| version_compare(WCF_ADDONS_PRO_VERSION, self::PRO_OWNS_WIDGETS_FROM, '<')) {
+			return false;
+		}
+
+		// Same gate Pro puts on its own include_files(); absent means a Pro too
+		// old to have the function, which the version check already excluded.
+		return function_exists('wcf__addons__pro__status') && (bool) wcf__addons__pro__status();
 	}
 
 	/**
