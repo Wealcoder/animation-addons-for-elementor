@@ -58,7 +58,21 @@ final class Local_Fallback {
 				continue;
 			}
 
-			$widget_dir = wp_normalize_path( dirname( WCF_ADDONS_PATH . 'inc/AtomicWidgets/' . $widget_data['file'] ) );
+			// `file` is normally relative to inc/AtomicWidgets/ in THIS plugin, but a
+			// widget owned by another plugin (the families that moved to Pro) gives
+			// an absolute path instead. Concatenating that onto WCF_ADDONS_PATH
+			// produces a directory that cannot exist, so the widget's presets/
+			// folder is never found — and an unreachable preset is invisible rather
+			// than broken: the picker simply shows nothing for that widget.
+			//
+			// Ask path_is_absolute() BEFORE normalising. On Windows it recognises a
+			// drive-letter path only with BACKslashes (`#^[a-zA-Z]:\\#`), and
+			// wp_normalize_path() turns those into forward slashes — so a normalised
+			// absolute Windows path reads as relative and the bug survives the fix.
+			$raw_file   = $widget_data['file'];
+			$widget_dir = path_is_absolute( $raw_file )
+				? wp_normalize_path( dirname( $raw_file ) )
+				: wp_normalize_path( dirname( WCF_ADDONS_PATH . 'inc/AtomicWidgets/' . $raw_file ) );
 			$preset_dir = $widget_dir . '/presets';
 
 			if ( ! is_dir( $preset_dir ) ) {
