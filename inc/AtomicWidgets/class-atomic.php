@@ -165,7 +165,19 @@ final class Atomic
 	 */
 	public function get_widgets_registry(): array
 	{
-		return $this->widgets_registry;
+		/**
+		 * Dashboard metadata (card, category, PRO badge, keywords) for every
+		 * atomic widget — including Pro-owned ones, which have no registry of
+		 * their own to live in.
+		 *
+		 * Filtered on READ, not where the array is built: the array is built in
+		 * this class's constructor, which runs on `plugins_loaded` when free
+		 * includes its files, and Pro registers its modules on `elementor/init`.
+		 * Filtering at build time would mean Pro's cards silently never appeared.
+		 *
+		 * @param array<string,array> $registry
+		 */
+		return (array) apply_filters('aae/atomic/widgets_registry', $this->widgets_registry);
 	}
 
 	/**
@@ -474,17 +486,41 @@ final class Atomic
 		'aae-a-form-country'           => 'aae-a-form',
 	];
 
+	/**
+	 * The two membership lists above, as filtered values.
+	 *
+	 * Atomic element TYPES can only be registered from this plugin — Elementor
+	 * has no registry a second plugin can add to — so a Pro-owned atomic widget
+	 * still has to travel through these lists to be gated, activated and
+	 * inherited correctly. These accessors are the seam it comes in through;
+	 * read them instead of the constants, or a Pro widget's internal children
+	 * silently stop inheriting their parent's active state.
+	 *
+	 * @return string[]
+	 */
+	private function always_active_widgets(): array
+	{
+		return (array) apply_filters('aae/atomic/always_active_widgets', self::ALWAYS_ACTIVE_WIDGETS);
+	}
+
+	/** @return array<string,string> child slug => parent slug */
+	private function widget_parent_map(): array
+	{
+		return (array) apply_filters('aae/atomic/widget_parent_map', self::WIDGET_PARENT_MAP);
+	}
+
 	public function is_widget_active(string $slug): bool
 	{
-		if (in_array($slug, self::ALWAYS_ACTIVE_WIDGETS, true)) {
+		if (in_array($slug, $this->always_active_widgets(), true)) {
 			return true;
 		}
 
 		// Internal child widgets inherit their parent's active state, so
 		// disabling the parent also disables (and hides from the editor)
 		// every one of its children.
-		if (isset(self::WIDGET_PARENT_MAP[$slug])) {
-			return $this->is_widget_active(self::WIDGET_PARENT_MAP[$slug]);
+		$parents = $this->widget_parent_map();
+		if (isset($parents[$slug])) {
+			return $this->is_widget_active($parents[$slug]);
 		}
 
 		$saved = $this->get_saved_options();
@@ -574,22 +610,24 @@ final class Atomic
 	{
 		$parts = [];
 
-		foreach (self::WIDGET_PARENT_MAP as $child => $parent) {
+		$parent_map = $this->widget_parent_map();
+
+		foreach ($parent_map as $child => $parent) {
 			// Walk up to the toggleable ancestor. Guarded against a cycle so a
 			// bad map entry can never hang the dashboard request.
 			$seen = [];
-			while (isset(self::WIDGET_PARENT_MAP[$parent]) && ! isset($seen[$parent])) {
+			while (isset($parent_map[$parent]) && ! isset($seen[$parent])) {
 				$seen[$parent] = true;
-				$parent        = self::WIDGET_PARENT_MAP[$parent];
+				$parent        = $parent_map[$parent];
 			}
 
-			$def = $this->widgets_registry[$child] ?? null;
+			$def = $this->get_widgets_registry()[$child] ?? null;
 
 			if (null === $def) {
 				continue;
 			}
 
-			$parent_label = $this->widgets_registry[$parent]['label'] ?? '';
+			$parent_label = $this->get_widgets_registry()[$parent]['label'] ?? '';
 
 			$parts[$parent][] = [
 				'slug'  => $child,
@@ -646,7 +684,7 @@ final class Atomic
 		$widgets = [];
 		$parts   = $this->get_widget_parts();
 
-		foreach ($this->widgets_registry as $slug => $def) {
+		foreach ($this->get_widgets_registry() as $slug => $def) {
 			// Sub-elements of a composite widget (e.g. Flip Box's own
 			// Front/Back/Title/Text) are never individually toggleable —
 			// keep them out of the dashboard list entirely. They are not
@@ -3369,7 +3407,18 @@ final class Atomic
 		// as inactive.
 		$this->migrate_newly_offered_extensions();
 		$this->backfill_formerly_forced_widgets();
-		$this->assert_registry_integrity();
+
+		// Deferred, not run inline: this method builds its registries in the
+		// constructor on `plugins_loaded`, and the Pro plugin adds its widgets
+		// through the `aae/atomic/*` filters when ITS plugin class is constructed
+		// — after ours, because WordPress loads the two alphabetically. Asserting
+		// here compared a complete card list against an incomplete class list and
+		// reported every Pro-owned widget as drift on every request.
+		//
+		// `elementor/init` is late enough for both sides and still earlier than
+		// any widget registration, so real drift is still caught before it can
+		// matter.
+		add_action('elementor/init', [$this, 'assert_registry_integrity'], 5);
 	}
 
 	/**
@@ -3394,20 +3443,20 @@ final class Atomic
 	 * they are grouped under their parent rather than listed, which is why they
 	 * are excluded here.
 	 */
-	private function assert_registry_integrity(): void
+	public function assert_registry_integrity(): void
 	{
 		if (! defined('WP_DEBUG') || ! WP_DEBUG) {
 			return;
 		}
 
 		$available = array_keys($this->get_available_widgets());
-		$metadata  = array_keys($this->widgets_registry);
+		$metadata  = array_keys($this->get_widgets_registry());
 
 		// Registered, but nothing in the dashboard can ever switch it on.
 		$missing_metadata = array_diff(
 			$available,
 			$metadata,
-			array_keys(self::WIDGET_PARENT_MAP),
+			array_keys($this->widget_parent_map()),
 			self::PARKED_WIDGETS
 		);
 
@@ -3419,7 +3468,7 @@ final class Atomic
 		// satisfy (they have no toggle), so they would never register and the
 		// editor would throw ElementTypeNotFound on any page already using one.
 		$internal = [];
-		foreach ($this->widgets_registry as $slug => $def) {
+		foreach ($this->get_widgets_registry() as $slug => $def) {
 			if (! empty($def['is_internal'])) {
 				$internal[] = $slug;
 			}
@@ -3427,14 +3476,14 @@ final class Atomic
 
 		$orphan_children = array_diff(
 			$internal,
-			array_keys(self::WIDGET_PARENT_MAP),
-			self::ALWAYS_ACTIVE_WIDGETS
+			array_keys($this->widget_parent_map()),
+			$this->always_active_widgets()
 		);
 
 		// A parent that no longer exists — the children would inherit from a
 		// slug that is never active, silently disabling the whole family.
 		$dangling_parents = array_diff(
-			array_unique(array_values(self::WIDGET_PARENT_MAP)),
+			array_unique(array_values($this->widget_parent_map())),
 			$metadata
 		);
 
@@ -3597,7 +3646,7 @@ final class Atomic
 	 */
 	protected function get_available_widgets()
 	{
-		return [
+		$widgets = [
 			// Counter — deliberately GSAP-free (rAF + IntersectionObserver), so it
 			// needs no `script_deps`. The `gsap` handle only ever exists when the
 			// Pro plugin registers it AND the `wcf_save_extensions` option is set,
@@ -4539,6 +4588,26 @@ final class Atomic
 
 		// Add new atomic widgets below...
 		];
+
+		$widgets = self::drop_widgets_owned_by_pro($widgets);
+
+		/**
+		 * The class/asset registry for every atomic widget.
+		 *
+		 * Elementor exposes no registry a second plugin can add an atomic element
+		 * TYPE to, so a Pro-owned atomic widget has to arrive through here. An
+		 * entry may carry its own `base_path` / `base_url` (absolute filesystem
+		 * path and URL, both ending in a slash) when its files live outside this
+		 * plugin; `asset_url()` and the script/style registrars fall back to
+		 * WCF_ADDONS_PATH / WCF_ADDONS_URL when they are absent, so every existing
+		 * entry keeps working untouched.
+		 *
+		 * A slug added here still needs its dashboard card via
+		 * `aae/atomic/widgets_registry`, or nothing can switch it on.
+		 *
+		 * @param array<string,array> $widgets
+		 */
+		return (array) apply_filters('aae/atomic/available_widgets', $widgets);
 	}
 
 	/**
@@ -4983,7 +5052,7 @@ final class Atomic
 		foreach ($this->get_available_widgets() as $widget_id => $widget_data) {
 			if ($this->is_widget_active($widget_id)) {
 			
-				$file_path = wp_normalize_path(__DIR__ . '/' . $widget_data['file']);
+				$file_path = self::widget_class_file($widget_data);
 				if (! file_exists($file_path)) {
 					continue; // Skip missing widget files gracefully.
 				}
@@ -5004,7 +5073,7 @@ final class Atomic
 	{
 		foreach ($this->get_available_widgets() as $widget_id => $widget_data) {
 			if ($this->is_widget_active($widget_id)) {
-				$file_path = wp_normalize_path(__DIR__ . '/' . $widget_data['file']);
+				$file_path = self::widget_class_file($widget_data);
 				if (! file_exists($file_path)) {
 					continue; // Skip missing widget files gracefully.
 				}
@@ -5047,9 +5116,115 @@ final class Atomic
 	 * ways is fetched (and cached) twice. Normalise here rather than editing all
 	 * 50 registry entries, so new entries can keep either spelling safely.
 	 */
-	private static function asset_url(string $relative_path): string
+	private static function asset_url(string $relative_path, ?string $base_url = null): string
 	{
-		return WCF_ADDONS_URL . ltrim($relative_path, '/');
+		return ($base_url ?? WCF_ADDONS_URL) . ltrim($relative_path, '/');
+	}
+
+	/**
+	 * Where a registry entry's files live.
+	 *
+	 * Entries added through `aae/atomic/available_widgets` may sit in another
+	 * plugin, so they carry their own `base_path` / `base_url` (both ending in a
+	 * slash). Everything shipped by this plugin omits them and keeps the
+	 * original constants — so no existing entry had to be touched.
+	 *
+	 * @param array $widget_data One `get_available_widgets()` entry.
+	 */
+	private static function widget_base_path(array $widget_data): string
+	{
+		return ! empty($widget_data['base_path']) ? $widget_data['base_path'] : WCF_ADDONS_PATH;
+	}
+
+	private static function widget_base_url(array $widget_data): string
+	{
+		return ! empty($widget_data['base_url']) ? $widget_data['base_url'] : WCF_ADDONS_URL;
+	}
+
+	/**
+	 * Absolute path to a registry entry's class file.
+	 *
+	 * `file` is normally relative to this directory. An entry from another
+	 * plugin gives an absolute path instead, which is passed through untouched.
+	 * Both callers already skip a path that does not exist, so a Pro entry left
+	 * behind by a partial deploy costs that widget, not the request.
+	 */
+	/**
+	 * Atomic widgets that moved to the Pro plugin, and the Pro release that took
+	 * them. Free keeps its own copies for ONE release as a transitional
+	 * fallback: an atomic element type that nothing registers is not merely
+	 * invisible, Elementor DROPS it from `_elementor_data` on the next save
+	 * (get_elements_raw_data(), elementor/core/base/document.php:1111), so a
+	 * version-skew window with no registrar would destroy customers' pages.
+	 *
+	 * Delete these entries, this method and the widget folders in the follow-up
+	 * release, once Pro 4.2.0 is the floor.
+	 */
+	const PRO_OWNS_WIDGETS_FROM = '4.2.0';
+
+	const WIDGETS_MOVED_TO_PRO = [
+		'aae-a-counter',
+		'aae-a-draw-svg',
+		'aae-a-stack-cards',
+		'aae-a-stack-card',
+		'aae-a-btn-pro',
+		'aae-a-offcanvas',
+		'aae-a-offcanvas-panel',
+		'aae-a-offcanvas-trigger',
+		'aae-a-offcanvas-close',
+		'aae-a-offcanvas-overlay',
+		'aae-a-nav',
+		'aae-a-nav-item',
+		'aae-a-nav-sub-item',
+		'aae-a-mobile-nav',
+		'aae-a-toc',
+	];
+
+	/**
+	 * True once the installed Pro is new enough to register the moved widgets
+	 * itself.
+	 *
+	 * Guarded on Pro's VERSION, never on `class_exists` of a Pro widget class:
+	 * an UNLICENSED Pro never loads its classes, so a class check would read
+	 * false and free would keep shipping a paid widget. A version answers who
+	 * owns it; a class only answers whether Pro switched it on.
+	 */
+	public static function pro_owns_widgets(): bool
+	{
+		return defined('WCF_ADDONS_PRO_VERSION')
+			&& version_compare(WCF_ADDONS_PRO_VERSION, self::PRO_OWNS_WIDGETS_FROM, '>=');
+	}
+
+	/**
+	 * @param array<string,array> $widgets
+	 * @return array<string,array>
+	 */
+	private static function drop_widgets_owned_by_pro(array $widgets): array
+	{
+		if (! self::pro_owns_widgets()) {
+			return $widgets;
+		}
+
+		foreach (self::WIDGETS_MOVED_TO_PRO as $slug) {
+			unset($widgets[$slug]);
+		}
+
+		return $widgets;
+	}
+
+	private static function widget_class_file(array $widget_data): string
+	{
+		$file = $widget_data['file'] ?? '';
+
+		if ('' === $file) {
+			return '';
+		}
+
+		if (path_is_absolute($file)) {
+			return wp_normalize_path($file);
+		}
+
+		return wp_normalize_path(__DIR__ . '/' . $file);
 	}
 
 	public function register_atomic_scripts($loader)
@@ -5057,14 +5232,15 @@ final class Atomic
 
 		foreach ($this->get_available_widgets() as $widget_id => $widget_data) {
 			if ($this->is_widget_active($widget_id) && !empty($widget_data['has_script'])) {
+				$base_path = self::widget_base_path($widget_data);
 				$path = $widget_data['script_path'];
 				if (! $this->is_dev_environment()) {
 					$min_path = str_replace('.js', '.min.js', $path);
-					if (file_exists(WCF_ADDONS_PATH . $min_path)) {
+					if (file_exists($base_path . $min_path)) {
 						$path = $min_path;
 					}
 				}
-				$file_path = WCF_ADDONS_PATH . $path;
+				$file_path = $base_path . $path;
 				$version = file_exists($file_path) ? filemtime($file_path) : WCF_ADDONS_VERSION;
 
 				$deps = [ 'elementor-v2-frontend-handlers' ]; // Required for @elementor/frontend-handlers register API
@@ -5073,7 +5249,7 @@ final class Atomic
 				}
 				wp_register_script(
 					$widget_data['script_handle'],
-					self::asset_url($path),
+					self::asset_url($path, self::widget_base_url($widget_data)),
 					$deps,
 					$version,
 					true
@@ -5263,18 +5439,19 @@ final class Atomic
 	{
 		foreach ($this->get_available_widgets() as $widget_id => $widget_data) {
 			if ($this->is_widget_active($widget_id) && !empty($widget_data['style_handle'])) {
+				$base_path = self::widget_base_path($widget_data);
 				$path = $widget_data['style_path'];
 				if (! $this->is_dev_environment()) {
 					$min_path = str_replace('.css', '.min.css', $path);
-					if (file_exists(WCF_ADDONS_PATH . $min_path)) {
+					if (file_exists($base_path . $min_path)) {
 						$path = $min_path;
 					}
 				}
-				$file_path = WCF_ADDONS_PATH . $path;
+				$file_path = $base_path . $path;
 				$version = file_exists($file_path) ? filemtime($file_path) : WCF_ADDONS_VERSION;
 				wp_register_style(
 					$widget_data['style_handle'],
-					self::asset_url($path),
+					self::asset_url($path, self::widget_base_url($widget_data)),
 					[],
 					$version
 				);
@@ -5501,7 +5678,7 @@ final class Atomic
 		foreach ($settings as $slug => $state) {
 			$slug = sanitize_key($slug);
 
-			if (isset($this->widgets_registry[$slug]) && ! empty($state)) {
+			if (isset($this->get_widgets_registry()[$slug]) && ! empty($state)) {
 				$clean[$slug] = true;
 			}
 		}
