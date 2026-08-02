@@ -43,11 +43,17 @@ use WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Switcher_Tabs;
  * see class-aae-a-toggle-switcher-tab.php for why plain
  * e-paragraph/e-heading/Div_Block reuse can't express that (base styles are
  * owned by the widget TYPE, not a per-instance override). Tab's "active tab"
- * look is the one exception living in toggle-switcher.scss instead, keyed
- * off the same `e--selected` class toggle-switcher.js toggles — Tab is a
- * genuine leaf widget (not a container-family element), specifically so it
- * never gets Elementor's empty-container "+" add overlay in the editor
- * canvas, which also means it can't expose a native Style-panel state.
+ * look is a native Style-panel state (Style_States::SELECTED, `.e--selected`
+ * — the same class toggle-switcher.js toggles), deliberately with NO default
+ * color baked into Tab's own define_base_styles() (a `.e--selected` rule
+ * there would tie in specificity with a per-instance `:active` override and
+ * the winner would depend on stylesheet load order — see
+ * class-aae-a-toggle-switcher-tab.php) — entirely the builder's choice from
+ * the panel. Tab is a genuine leaf widget (not a container-family element),
+ * specifically so it never gets Elementor's empty-container "+" add overlay
+ * in the editor canvas; the state is threaded in via a get_initial_config()
+ * override since
+ * leaf widgets don't call define_atomic_style_states() on their own.
  */
 class AAE_A_Toggle_Switcher extends Atomic_Element_Base {
 
