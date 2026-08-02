@@ -334,6 +334,7 @@ function isKindInPlayGroup(kindName, playGroup) {
 		'aae_text_': 'text',
 		'aae_anim_': 'regular',
 		'aae_img_': 'image-animation',
+		'aae_imgadv_': 'image-advanced-animation',
 		'aae_ih_': 'image-hover',
 		'aae_cursor_hover_': 'cursor-hover-effect',
 		'aae_sticky_': 'sticky',

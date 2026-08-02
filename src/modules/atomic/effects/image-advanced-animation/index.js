@@ -105,6 +105,41 @@ function overlayEl(className) {
 	return node;
 }
 
+const FRAME_CLASS = 'aae-imgadv-frame';
+const MEDIA_CLASS = 'aae-imgadv-media';
+
+/**
+ * Re-find a wrapper structure that survived, from a FRESH `el` that no
+ * longer carries it. The Elementor editor re-renders an atomic widget's
+ * markup straight from its twig template on ANY settings change — even one
+ * completely unrelated to this extension — which regenerates the `<img>`/
+ * `<svg>` tag as a brand-new DOM node in place. A property cached on the
+ * OLD node (HOST_KEY) can never be seen on that new node, so relying on it
+ * alone re-wraps on every repaint, nesting a fresh frame/media pair INSIDE
+ * the previous one forever. The surrounding wrapper we built usually
+ * survives that repaint (Elementor only regenerates the leaf tag it owns),
+ * so detect it by marker class on the current parent instead of by node
+ * identity, and reuse it rather than wrapping again.
+ */
+function findSurvivingHost(el) {
+	const media = el.parentNode;
+	if (!media || !media.classList || !media.classList.contains(MEDIA_CLASS)) {
+		return null;
+	}
+	const frame = (media.parentNode && media.parentNode.classList && media.parentNode.classList.contains(FRAME_CLASS))
+		? media.parentNode
+		: media.parentNode;
+	if (!frame) return null;
+
+	const tiles = frame.querySelector('.aae-imgadv-tiles');
+	const slices = frame.querySelector('.aae-imgadv-slices');
+	const sweep = frame.querySelector('.aae-imgadv-sweep');
+	const shade = frame.querySelector('.aae-imgadv-shade');
+	if (!tiles || !slices || !sweep || !shade) return null;
+
+	return { frame, media, image: el, tiles, slices, sweep, shade };
+}
+
 /**
  * The prototype is THREE independent layers, not two:
  *   .image-widget (frame: perspective/rotate/scale/border-radius/translate)
@@ -140,12 +175,19 @@ function overlayEl(className) {
 function ensureHost(el) {
 	if (el[HOST_KEY]) return el[HOST_KEY];
 
+	const survived = findSurvivingHost(el);
+	if (survived) {
+		el[HOST_KEY] = survived;
+		return survived;
+	}
+
 	let frame = el;
 	const image = findMedia(el);
 
 	if (image === el && el.parentNode) {
 		const rect = el.getBoundingClientRect();
 		const wrapper = document.createElement('span');
+		wrapper.className = FRAME_CLASS;
 		wrapper.style.display = 'block';
 		if (rect.width > 0) wrapper.style.width = rect.width + 'px';
 		if (rect.height > 0) wrapper.style.height = rect.height + 'px';
@@ -159,6 +201,7 @@ function ensureHost(el) {
 	// frame's own transform and image's own pan/zoom. Wraps `image` in place,
 	// filling frame at 100%/100% — same box as `image` occupied before.
 	const media = document.createElement('span');
+	media.className = MEDIA_CLASS;
 	Object.assign(media.style, { display: 'block', width: '100%', height: '100%', overflow: 'hidden' });
 	image.parentNode.insertBefore(media, image);
 	media.appendChild(image);
