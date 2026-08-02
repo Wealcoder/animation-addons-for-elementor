@@ -82,8 +82,19 @@ final class InteractionsMap {
 			$script_id  = 'aae-interactions-' . preg_replace( '/[^a-z0-9_-]/i', '', $namespace );
 
 			// Merge so we never clobber earlier entries.
+			//
+			// `data-no-optimize` / `data-no-defer` are the cache-plugin fence.
+			// JS Delay covers INLINE scripts, and LiteSpeed's Guest
+			// Optimization forces delay on for every logged-out visitor — a
+			// delayed map means the runtime reads `window.AAE_INTERACTIONS_*`
+			// as empty and every element on the page renders unanimated. The
+			// attributes are LiteSpeed's own convention (`gui.cls.php:1167`)
+			// and Rocket honours them too. This lives in FREE deliberately:
+			// free ships the runtime and these maps, so the protection cannot
+			// depend on Pro being present. See Pro's Cache_Compat for the
+			// file-path half of the same fence, and CLAUDE.md → cache compat.
 			printf(
-				'<script id="%s">window.%s=Object.assign(window.%s||{},%s);</script>',
+				'<script id="%s" data-no-optimize="1" data-no-defer="1">window.%s=Object.assign(window.%s||{},%s);</script>',
 				esc_attr( $script_id ),
 				esc_js( $window_key ),
 				esc_js( $window_key ),

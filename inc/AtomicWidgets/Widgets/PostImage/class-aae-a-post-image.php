@@ -213,12 +213,28 @@ class AAE_A_Post_Image extends Atomic_Widget_Base {
 		];
 	}
 
+	/**
+	 * Intrinsic width/height of a post's thumbnail at $size, or [0, 0].
+	 * Rendered as the <img>'s width/height attributes AND the wrapper's
+	 * aspect-ratio fallback, so the browser reserves the box before the
+	 * bytes arrive — see CLAUDE.md → cache compat, step 2.
+	 */
+	private static function thumb_dimensions( $post, string $size ): array {
+		$thumb_id = get_post_thumbnail_id( $post );
+		if ( ! $thumb_id ) {
+			return [ 0, 0 ];
+		}
+		$src = wp_get_attachment_image_src( $thumb_id, $size );
+		return $src ? [ (int) $src[1], (int) $src[2] ] : [ 0, 0 ];
+	}
+
 	public function get_atomic_settings(): array {
 		$settings = parent::get_atomic_settings();
 		$size = ! empty( $settings['image_size'] ) ? $settings['image_size'] : 'large';
 
 		$settings['image_url'] = get_the_post_thumbnail_url( null, $size );
 		$settings['image_alt'] = get_post_meta( get_post_thumbnail_id(), '_wp_attachment_image_alt', true );
+		list( $settings['image_width'], $settings['image_height'] ) = self::thumb_dimensions( null, $size );
 
 		// Fallback for editor or empty images: preview the shared sample post
 		// (random, has a featured image) before resorting to the placeholder.
@@ -227,10 +243,13 @@ class AAE_A_Post_Image extends Atomic_Widget_Base {
 			if ( $sample ) {
 				$settings['image_url'] = get_the_post_thumbnail_url( $sample, $size );
 				$settings['image_alt'] = get_post_meta( get_post_thumbnail_id( $sample ), '_wp_attachment_image_alt', true );
+				list( $settings['image_width'], $settings['image_height'] ) = self::thumb_dimensions( $sample, $size );
 			}
 			if ( empty( $settings['image_url'] ) ) {
 				$settings['image_url'] = \Elementor\Utils::get_placeholder_image_src();
 				$settings['image_alt'] = 'Placeholder Image';
+				$settings['image_width']  = 0;
+				$settings['image_height'] = 0;
 			}
 		}
 
