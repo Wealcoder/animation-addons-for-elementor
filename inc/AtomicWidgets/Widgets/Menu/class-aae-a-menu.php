@@ -42,6 +42,19 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 		return [ 'menu', 'wp', 'navigation' ];
 	}
 
+	/**
+	 * Panel categories.
+	 *
+	 * This is a leaf (Atomic_Widget_Base), so get_categories() IS the hook
+	 * Elementor reads — no define_panel_categories() override needed. Sits with
+	 * Nav and Site Logo under "AAE Header & Footer" (`wcf-hf-addon`, registered
+	 * in class-plugin.php::widget_categories()), matching the 'header-footer'
+	 * category its dashboard card already declares.
+	 */
+	public function get_categories(): array {
+		return [ 'aae-atomic-general', 'wcf-hf-addon' ];
+	}
+
 	protected static function define_props_schema(): array {
 		return [
 			'classes'    => Classes_Prop_Type::make()->default( [] ),

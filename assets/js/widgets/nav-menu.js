@@ -191,5 +191,3 @@ window.addEventListener("elementor/frontend/init", () => {
     elementorFrontend.elementsHandler.addHandler(WcfNavMenu, { $element: $scope });
   });
 });
-
-//# sourceMappingURL=nav-menu.js.map

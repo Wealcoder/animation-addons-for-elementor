@@ -10,5 +10,3 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-
-//# sourceMappingURL=admin-post-rating.js.map

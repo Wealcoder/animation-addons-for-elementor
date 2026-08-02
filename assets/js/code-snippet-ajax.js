@@ -597,5 +597,3 @@
     window.CodeSnippetAjax = CodeSnippetAjax;
 
 })(jQuery);
-
-//# sourceMappingURL=code-snippet-ajax.js.map
