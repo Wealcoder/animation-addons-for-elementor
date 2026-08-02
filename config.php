@@ -3260,7 +3260,15 @@ return array(
 									'pluginId' => 'flip',
 								),
 								'is_pro'       => true,
-								'is_active'    => true,
+								// OFF like every other entry in this file. `is_active`
+								// here is the SEED the wizard and the dashboard render
+								// pre-checked, and save_settings() persists whatever
+								// comes back — so a `true` here is how a brand-new site
+								// ends up with an extension nobody asked for. Nothing
+								// registers from this flag directly (get_extensions()
+								// only matches slugs already in wcf_save_extensions),
+								// which is why it was easy to miss.
+								'is_active'    => false,
 								'is_extension' => true,
 								'is_upcoming'  => false,
 								'icon'         => 'wcf-icon-Portfolio-Filter',
@@ -3275,7 +3283,8 @@ return array(
 									'pluginId' => 'flip',
 								),
 								'is_pro'       => true,
-								'is_active'    => true,
+								// See the note on portfolio-filter above.
+								'is_active'    => false,
 								'is_extension' => true,
 								'is_upcoming'  => false,
 								'icon'         => 'wcf-icon-Gallery-Filter',
