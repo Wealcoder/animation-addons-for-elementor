@@ -479,6 +479,28 @@ function buildRegularConfig(settings) {
 
 /* ---------- Image: REPEATER. Mirrors ImageAnimation/Render.php ---------- */
 
+// Cinematic-preset field keys merged in from the sibling
+// ImageAdvancedAnimation extension (Render.php's FIELD_MAP). This is a
+// deliberate, independent copy — kept separate from IMGADV_FIELD_KEYS below
+// so ImageAdvancedAnimation's own code path stays untouched.
+const IMG_CINEMATIC_FIELD_KEYS = [
+	'direction', 'move_direction', 'orbit_direction', 'parallax_direction',
+	'slice_axis', 'slice_direction', 'origin', 'tile_order',
+	'start_scale', 'end_scale', 'image_shift', 'travel', 'tilt', 'rotation',
+	'rotation_x', 'rotation_y', 'rotation_z', 'blur', 'brightness', 'saturation',
+	'radius', 'shade_opacity', 'sweep', 'fade', 'slice_count', 'slice_skew',
+	'depth', 'stagger', 'tile_columns', 'tile_rows', 'tile_scatter',
+	'tile_start_scale', 'tile_rotation', 'wave_size', 'circle_start', 'circle_end',
+	'frame_distance', 'image_distance',
+];
+// snake_case bind → camelCase runtime key (same rule as Render.php's row_to_config).
+const IMG_CINEMATIC_FIELD_CAMEL = Object.fromEntries(IMG_CINEMATIC_FIELD_KEYS.map((k) =>
+	[k, k.replace(/_([a-z])/g, (_, c) => c.toUpperCase())]));
+const IMG_CINEMATIC_STRING_KEYS = [
+	'direction', 'move_direction', 'orbit_direction', 'parallax_direction',
+	'slice_axis', 'slice_direction', 'origin', 'tile_order',
+];
+
 function imgCustomPairs(rows) {
 	if (!Array.isArray(rows)) return [];
 	const pairs = [];
@@ -528,6 +550,20 @@ export function imgRowToRuntime(row) {
 		customProps: imgCustomPairs(row.custom_props),
 		customPropsTo: imgCustomPairs(row.custom_props_to),
 	};
+
+	for (const bind of IMG_CINEMATIC_FIELD_KEYS) {
+		const raw = row[bind];
+		if (raw === undefined || raw === null || raw === '') continue;
+		const outKey = IMG_CINEMATIC_FIELD_CAMEL[bind];
+		if (bind === 'sweep' || bind === 'fade') {
+			cfg[outKey] = !!raw;
+		} else if (IMG_CINEMATIC_STRING_KEYS.includes(bind)) {
+			cfg[outKey] = String(raw);
+		} else {
+			cfg[outKey] = num(bind, undefined);
+		}
+	}
+
 	if (row.markers) cfg.markers = true;
 	return cfg;
 }

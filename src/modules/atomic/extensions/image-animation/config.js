@@ -2,6 +2,7 @@
 
 import { CUSTOM_PROPERTY_OPTIONS } from '../regular-animation/config';
 import { PRESETS, presetRowPatch } from '../regular-animation/presets';
+import { CINEMATIC_PRESET_DEFAULTS, cinematicPresetRowPatch } from './cinematic-presets';
 
 /**
  * Image Animation section — REPEATER architecture.
@@ -9,6 +10,10 @@ import { PRESETS, presetRowPatch } from '../regular-animation/presets';
  * Each row is a full independent image interaction (effect + trigger +
  * config). Effects:
  *   - reveal / scale / stretch : built-in presets (bespoke runtime logic)
+ *   - 8 cinematic presets      : cinematicMask / scaleAnimation / … — merged
+ *     in from the sibling ImageAdvancedAnimation extension (each with its
+ *     own named fields, no custom-props repeater; see cinematic-presets.js).
+ *     ImageAdvancedAnimation itself is untouched — this is an independent copy.
  *   - premium presets          : fadeUp / blurReveal / … (from the shared
  *     regular-animation PRESETS table; selecting one fills the custom-props
  *     rows + sets method=fromTo, and the props are removable like regular)
@@ -24,12 +29,27 @@ const PRESET_EFFECT_OPTIONS = Object.keys(PRESETS)
 	.filter((k) => k !== 'custom')
 	.map((k) => ({ value: k, label: k.replace(/([A-Z])/g, ' $1').replace(/^./, (c) => c.toUpperCase()).trim() }));
 
+// The 8 cinematic presets merged in from ImageAdvancedAnimation. "pro - "
+// prefix distinguishes them in the unified dropdown from the free built-ins.
+const CINEMATIC_EFFECT_OPTIONS = [
+	{ value: 'cinematicMask', label: 'pro - 1. Cinematic Mask' },
+	{ value: 'scaleAnimation', label: 'pro - 2. Scale Animation' },
+	{ value: 'sliceShutter', label: 'pro - 3. Slice Shutter' },
+	{ value: 'mosaicDepth', label: 'pro - 4. Mosaic Depth' },
+	{ value: 'liquidClip', label: 'pro - 5. Liquid Clip' },
+	{ value: 'orbitTilt', label: 'pro - 6. 3D Orbit Tilt' },
+	{ value: 'zoomTunnel', label: 'pro - 7. Zoom Tunnel' },
+	{ value: 'scrollParallax', label: 'pro - 8. Scroll Parallax' },
+];
+const CINEMATIC_EFFECTS = Object.keys(CINEMATIC_PRESET_DEFAULTS);
+
 const EFFECT_OPTIONS = [
 	{ value: 'none', label: 'None' },
 	{ value: 'custom', label: 'Custom Animation' },
 	{ value: 'reveal', label: 'Reveal' },
 	{ value: 'scale', label: 'Scale' },
 	{ value: 'stretch', label: 'Stretch' },
+	...CINEMATIC_EFFECT_OPTIONS,
 	...PRESET_EFFECT_OPTIONS,
 ];
 
@@ -65,13 +85,86 @@ const methodOptionsFor = (r) =>
 
 const EASE_OPTIONS = [
 	{ value: 'power2.out', label: 'Power2.out' },
+	{ value: 'power3.out', label: 'Power3.out' },
+	{ value: 'power4.out', label: 'Power4.out' },
 	{ value: 'bounce', label: 'Bounce' },
 	{ value: 'back', label: 'Back' },
+	{ value: 'back.out(1.35)', label: 'Back Out' },
 	{ value: 'elastic', label: 'Elastic' },
 	{ value: 'slowmo', label: 'Slowmo' },
 	{ value: 'sine', label: 'Sine' },
+	{ value: 'sine.inOut', label: 'Sine In Out' },
 	{ value: 'expo', label: 'Expo' },
+	{ value: 'expo.out', label: 'Expo Out' },
+	{ value: 'expo.inOut', label: 'Expo In Out' },
 	{ value: 'none', label: 'None' },
+];
+
+/* ---------- cinematic-preset-only option tables ---------- */
+
+const DIRECTION_OPTIONS = [
+	{ value: 'bottomToTop', label: 'Bottom to top' },
+	{ value: 'topToBottom', label: 'Top to bottom' },
+	{ value: 'leftToRight', label: 'Left to right' },
+	{ value: 'rightToLeft', label: 'Right to left' },
+	{ value: 'centerOut', label: 'Center out' },
+];
+
+const MOVE_DIRECTION_OPTIONS = [
+	{ value: 'none', label: 'No movement' },
+	{ value: 'bottomToTop', label: 'Bottom to top' },
+	{ value: 'topToBottom', label: 'Top to bottom' },
+	{ value: 'leftToRight', label: 'Left to right' },
+	{ value: 'rightToLeft', label: 'Right to left' },
+];
+
+const ORBIT_DIRECTION_OPTIONS = [
+	{ value: 'left', label: 'From left' },
+	{ value: 'right', label: 'From right' },
+	{ value: 'top', label: 'From top' },
+	{ value: 'bottom', label: 'From bottom' },
+];
+
+const PARALLAX_DIRECTION_OPTIONS = [
+	{ value: 'up', label: 'Up' },
+	{ value: 'down', label: 'Down' },
+	{ value: 'left', label: 'Left' },
+	{ value: 'right', label: 'Right' },
+	{ value: 'diagonalUp', label: 'Diagonal up' },
+	{ value: 'diagonalDown', label: 'Diagonal down' },
+];
+
+const SLICE_AXIS_OPTIONS = [
+	{ value: 'vertical', label: 'Vertical strips' },
+	{ value: 'horizontal', label: 'Horizontal bands' },
+];
+
+const SLICE_DIRECTION_OPTIONS = [
+	{ value: 'alternate', label: 'Alternate' },
+	{ value: 'bottomToTop', label: 'Bottom to top' },
+	{ value: 'topToBottom', label: 'Top to bottom' },
+	{ value: 'leftToRight', label: 'Left to right' },
+	{ value: 'rightToLeft', label: 'Right to left' },
+];
+
+const ORIGIN_OPTIONS = [
+	{ value: 'center', label: 'Center' },
+	{ value: 'top', label: 'Top' },
+	{ value: 'bottom', label: 'Bottom' },
+	{ value: 'left', label: 'Left' },
+	{ value: 'right', label: 'Right' },
+	{ value: 'topLeft', label: 'Top left' },
+	{ value: 'topRight', label: 'Top right' },
+	{ value: 'bottomLeft', label: 'Bottom left' },
+	{ value: 'bottomRight', label: 'Bottom right' },
+];
+
+const TILE_ORDER_OPTIONS = [
+	{ value: 'random', label: 'Random' },
+	{ value: 'center', label: 'Center' },
+	{ value: 'edges', label: 'Edges' },
+	{ value: 'start', label: 'Start' },
+	{ value: 'end', label: 'End' },
 ];
 
 const SCROLL_POSITION_OPTIONS = [
@@ -100,10 +193,31 @@ const WRAPPER_OPTIONS = [
 
 const rowIsReveal = (r) => rowEffect(r) === 'reveal';
 const rowIsScale = (r) => rowEffect(r) === 'scale';
-// "Props" effects = anything NOT a built-in (custom + every premium preset).
-// These expose the method + custom-props repeaters; selecting a preset
-// auto-fills those props.
-const rowUsesProps = (r) => rowIsAnimated(r) && !BUILTIN_EFFECTS.includes(rowEffect(r));
+// "Props" effects = anything NOT a built-in and NOT a cinematic preset
+// (custom + every premium preset). These expose the method + custom-props
+// repeaters; selecting a preset auto-fills those props. Cinematic presets
+// have their own named fields instead (see isOneOf/usesX below).
+const rowUsesProps = (r) =>
+	rowIsAnimated(r) && !BUILTIN_EFFECTS.includes(rowEffect(r)) && !CINEMATIC_EFFECTS.includes(rowEffect(r));
+
+/* ---------- cinematic-preset-only field predicates ---------- */
+
+const isOneOf = (...effects) => (r) => effects.includes(rowEffect(r));
+
+const usesDirection = isOneOf('cinematicMask', 'liquidClip');
+const usesStartEndScale = isOneOf('cinematicMask', 'scaleAnimation', 'liquidClip', 'orbitTilt', 'zoomTunnel', 'scrollParallax');
+const usesImageShift = isOneOf('cinematicMask', 'scaleAnimation', 'liquidClip');
+const usesTravel = isOneOf('cinematicMask', 'orbitTilt');
+const usesTilt = isOneOf('cinematicMask', 'zoomTunnel');
+const usesBlur = isOneOf('scaleAnimation', 'liquidClip');
+const usesBrightness = isOneOf('sliceShutter', 'mosaicDepth', 'orbitTilt', 'zoomTunnel');
+const usesSaturation = isOneOf('sliceShutter', 'mosaicDepth', 'liquidClip', 'orbitTilt');
+const usesDepth = isOneOf('sliceShutter', 'mosaicDepth', 'orbitTilt', 'zoomTunnel');
+const usesStagger = isOneOf('sliceShutter', 'mosaicDepth');
+const usesSweep = isOneOf('cinematicMask', 'liquidClip', 'orbitTilt');
+const usesShadeOpacity = isOneOf('cinematicMask', 'scrollParallax');
+const usesOrigin = isOneOf('scaleAnimation', 'zoomTunnel');
+const usesRotationX = isOneOf('orbitTilt', 'scrollParallax');
 
 const CUSTOM_PROPS_CELLS = [
 	{
@@ -118,9 +232,14 @@ const CUSTOM_PROPS_CELLS = [
 const ROW_FIELDS = [
 	{
 		bind: 'effect', label: 'Animation', control: 'select', options: EFFECT_OPTIONS, defaultValue: 'reveal',
-		// Selecting a premium preset fills custom_props / custom_props_to +
-		// sets method=fromTo. reveal/scale/stretch/custom return null (no fill).
-		onSet: (_row, val) => (BUILTIN_EFFECTS.includes(val) || val === 'custom' ? null : presetRowPatch(val)),
+		// Selecting a cinematic preset fills its own named fields. Selecting a
+		// premium preset fills custom_props / custom_props_to + sets
+		// method=fromTo. reveal/scale/stretch/custom return null (no fill).
+		onSet: (_row, val) => {
+			if (CINEMATIC_EFFECTS.includes(val)) return cinematicPresetRowPatch(val);
+			if (BUILTIN_EFFECTS.includes(val) || val === 'custom') return null;
+			return presetRowPatch(val);
+		},
 	},
 	{ bind: 'trigger', label: 'Trigger', control: 'select', options: TRIGGER_OPTIONS, defaultValue: 'on_scroll', when: rowIsAnimated },
 
@@ -157,6 +276,52 @@ const ROW_FIELDS = [
 	// Scale-only
 	{ bind: 'scale_start', label: 'Start Scale', control: 'number', defaultValue: 0.5, when: rowIsScale },
 	{ bind: 'scale_end', label: 'End Scale', control: 'number', defaultValue: 1, when: rowIsScale },
+
+	// Cinematic-preset-only fields (merged in from ImageAdvancedAnimation).
+	{ bind: 'direction', label: 'Direction', control: 'select', options: DIRECTION_OPTIONS, defaultValue: 'bottomToTop', when: usesDirection },
+	{ bind: 'move_direction', label: 'Move Direction', control: 'select', options: MOVE_DIRECTION_OPTIONS, defaultValue: 'none', when: isOneOf('scaleAnimation') },
+	{ bind: 'orbit_direction', label: 'Orbit Direction', control: 'select', options: ORBIT_DIRECTION_OPTIONS, defaultValue: 'left', when: isOneOf('orbitTilt') },
+	{ bind: 'parallax_direction', label: 'Parallax Direction', control: 'select', options: PARALLAX_DIRECTION_OPTIONS, defaultValue: 'up', when: isOneOf('scrollParallax') },
+	{ bind: 'slice_axis', label: 'Slice Axis', control: 'select', options: SLICE_AXIS_OPTIONS, defaultValue: 'vertical', when: isOneOf('sliceShutter') },
+	{ bind: 'slice_direction', label: 'Slice Direction', control: 'select', options: SLICE_DIRECTION_OPTIONS, defaultValue: 'alternate', when: isOneOf('sliceShutter') },
+	{ bind: 'origin', label: 'Transform Origin', control: 'select', options: ORIGIN_OPTIONS, defaultValue: 'center', when: usesOrigin },
+	{ bind: 'tile_order', label: 'Tile Order', control: 'select', options: TILE_ORDER_OPTIONS, defaultValue: 'random', when: isOneOf('mosaicDepth') },
+
+	{ bind: 'start_scale', label: 'Start Scale', control: 'slider', min: 0.2, max: 2.5, step: 0.01, defaultValue: 1, when: usesStartEndScale },
+	{ bind: 'end_scale', label: 'End Scale', control: 'slider', min: 0.5, max: 1.8, step: 0.01, defaultValue: 1, when: usesStartEndScale },
+	{ bind: 'image_shift', label: 'Image Shift (%)', control: 'slider', min: 0, max: 40, step: 1, defaultValue: 0, when: usesImageShift },
+	{ bind: 'travel', label: 'Travel Distance (px)', control: 'slider', min: 0, max: 220, step: 1, defaultValue: 0, when: usesTravel },
+	{ bind: 'tilt', label: 'Tilt (deg)', control: 'slider', min: 0, max: 35, step: 1, defaultValue: 0, when: usesTilt },
+	{ bind: 'rotation', label: 'Rotation (deg)', control: 'slider', min: -90, max: 90, step: 1, defaultValue: 0, when: isOneOf('scaleAnimation') },
+	{ bind: 'rotation_x', label: 'Rotate X (deg)', control: 'slider', min: -90, max: 90, step: 1, defaultValue: 0, when: usesRotationX },
+	{ bind: 'rotation_y', label: 'Rotate Y (deg)', control: 'slider', min: -90, max: 90, step: 1, defaultValue: 0, when: isOneOf('orbitTilt') },
+	{ bind: 'rotation_z', label: 'Rotate Z (deg)', control: 'slider', min: -45, max: 45, step: 1, defaultValue: 0, when: isOneOf('orbitTilt') },
+	{ bind: 'blur', label: 'Blur (px)', control: 'slider', min: 0, max: 30, step: 1, defaultValue: 0, when: usesBlur },
+	{ bind: 'brightness', label: 'Brightness', control: 'slider', min: 0.5, max: 2, step: 0.05, defaultValue: 1, when: usesBrightness },
+	{ bind: 'saturation', label: 'Saturation', control: 'slider', min: 0, max: 2.5, step: 0.05, defaultValue: 1, when: usesSaturation },
+	{ bind: 'radius', label: 'Radius (px)', control: 'slider', min: 0, max: 80, step: 1, defaultValue: 0, when: isOneOf('cinematicMask') },
+	{ bind: 'shade_opacity', label: 'Shade Opacity', control: 'slider', min: 0, max: 1, step: 0.01, defaultValue: 0, when: usesShadeOpacity },
+	{ bind: 'sweep', label: 'Light Sweep', control: 'switch', defaultValue: false, when: usesSweep },
+	{ bind: 'fade', label: 'Fade', control: 'switch', defaultValue: false, when: isOneOf('scaleAnimation') },
+
+	{ bind: 'slice_count', label: 'Slice Count', control: 'slider', min: 3, max: 28, step: 1, defaultValue: 12, when: isOneOf('sliceShutter') },
+	{ bind: 'slice_skew', label: 'Slice Skew (deg)', control: 'slider', min: 0, max: 24, step: 1, defaultValue: 0, when: isOneOf('sliceShutter') },
+	{ bind: 'depth', label: '3D Depth', control: 'slider', min: 0, max: 520, step: 5, defaultValue: 0, when: usesDepth },
+	{ bind: 'stagger', label: 'Stagger (s)', control: 'slider', min: 0, max: 1.8, step: 0.01, defaultValue: 0, when: usesStagger },
+
+	{ bind: 'tile_columns', label: 'Tile Columns', control: 'slider', min: 2, max: 10, step: 1, defaultValue: 6, when: isOneOf('mosaicDepth') },
+	{ bind: 'tile_rows', label: 'Tile Rows', control: 'slider', min: 2, max: 8, step: 1, defaultValue: 5, when: isOneOf('mosaicDepth') },
+	{ bind: 'tile_scatter', label: 'Tile Scatter (px)', control: 'slider', min: 0, max: 220, step: 1, defaultValue: 0, when: isOneOf('mosaicDepth') },
+	{ bind: 'tile_start_scale', label: 'Tile Start Scale', control: 'slider', min: 0.1, max: 1.4, step: 0.01, defaultValue: 1, when: isOneOf('mosaicDepth') },
+	{ bind: 'tile_rotation', label: 'Tile Rotation (deg)', control: 'slider', min: 0, max: 120, step: 1, defaultValue: 0, when: isOneOf('mosaicDepth') },
+
+	{ bind: 'wave_size', label: 'Wave Size (%)', control: 'slider', min: 4, max: 34, step: 1, defaultValue: 12, when: isOneOf('liquidClip') },
+
+	{ bind: 'circle_start', label: 'Circle Start (%)', control: 'slider', min: 0, max: 50, step: 1, defaultValue: 0, when: isOneOf('zoomTunnel') },
+	{ bind: 'circle_end', label: 'Circle End (%)', control: 'slider', min: 50, max: 125, step: 1, defaultValue: 100, when: isOneOf('zoomTunnel') },
+
+	{ bind: 'frame_distance', label: 'Frame Distance (px)', control: 'slider', min: 0, max: 240, step: 1, defaultValue: 0, when: isOneOf('scrollParallax') },
+	{ bind: 'image_distance', label: 'Image Distance (%)', control: 'slider', min: 0, max: 40, step: 1, defaultValue: 0, when: isOneOf('scrollParallax') },
 
 	// Custom + preset effects: method + removable props repeaters. Preset
 	// effects fill these on select; the user can still tweak / remove rows.
@@ -213,7 +378,7 @@ const config = {
 			addLabel: 'Add Interaction',
 			rowFields: ROW_FIELDS,
 			rowDefaults: ROW_DEFAULTS,
-			help: 'Each interaction is an independent image animation: trigger + effect + config. Page-load and scroll triggers allow one each; click and hover are unlimited.',
+			help: 'Each interaction is an independent image animation: trigger + effect + config, including 8 built-in cinematic presets. Page-load and scroll triggers allow one each; click and hover are unlimited.',
 		},
 		// No global "Enable On Editor" / "Play" — each interaction row has its
 		// own ▶ play button for isolated preview.

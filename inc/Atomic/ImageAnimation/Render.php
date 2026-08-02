@@ -19,9 +19,64 @@ if ( ! defined( 'ABSPATH' ) ) {
  *   - reveal  → scroll-tied (fires once on enter)
  *   - scale   → scrub (progress follows scroll position)
  *   - stretch → pinned scrub (top top → bottom bottom+=100)
+ *
+ * Also carries the 8 cinematic presets merged in from the sibling
+ * ImageAdvancedAnimation extension (cinematicMask, scaleAnimation,
+ * sliceShutter, mosaicDepth, liquidClip, orbitTilt, zoomTunnel,
+ * scrollParallax) — FIELD_MAP below is an independent copy of that
+ * extension's field map; ImageAdvancedAnimation itself is untouched.
  */
 final class Render {
 	use \WCF_ADDONS\Atomic\Traits\Responsive_Config;
+
+	/**
+	 * Field map for the cinematic-preset-specific portion of a row: snake_case
+	 * bind key => [ camelCase runtime key, cast ('num'|'str'|'bool'), default ].
+	 * Every preset only uses a subset of these — unused keys are simply
+	 * absent from a row, the frontend reader falls back to its own default.
+	 */
+	private const FIELD_MAP = [
+		'direction'          => [ 'direction', 'str', 'bottomToTop' ],
+		'move_direction'     => [ 'moveDirection', 'str', 'none' ],
+		'orbit_direction'    => [ 'orbitDirection', 'str', 'left' ],
+		'parallax_direction' => [ 'parallaxDirection', 'str', 'up' ],
+		'slice_axis'         => [ 'sliceAxis', 'str', 'vertical' ],
+		'slice_direction'    => [ 'sliceDirection', 'str', 'alternate' ],
+		'origin'             => [ 'origin', 'str', 'center' ],
+		'tile_order'         => [ 'tileOrder', 'str', 'random' ],
+
+		'start_scale'        => [ 'startScale', 'num', 1 ],
+		'end_scale'          => [ 'endScale', 'num', 1 ],
+		'image_shift'        => [ 'imageShift', 'num', 0 ],
+		'travel'             => [ 'travel', 'num', 0 ],
+		'tilt'               => [ 'tilt', 'num', 0 ],
+		'rotation'           => [ 'rotation', 'num', 0 ],
+		'rotation_x'         => [ 'rotationX', 'num', 0 ],
+		'rotation_y'         => [ 'rotationY', 'num', 0 ],
+		'rotation_z'         => [ 'rotationZ', 'num', 0 ],
+		'blur'               => [ 'blur', 'num', 0 ],
+		'brightness'         => [ 'brightness', 'num', 1 ],
+		'saturation'         => [ 'saturation', 'num', 1 ],
+		'radius'             => [ 'radius', 'num', 0 ],
+		'shade_opacity'      => [ 'shadeOpacity', 'num', 0 ],
+		'slice_count'        => [ 'sliceCount', 'num', 12 ],
+		'slice_skew'         => [ 'sliceSkew', 'num', 0 ],
+		'depth'              => [ 'depth', 'num', 0 ],
+		'stagger'            => [ 'stagger', 'num', 0 ],
+		'tile_columns'       => [ 'tileColumns', 'num', 6 ],
+		'tile_rows'          => [ 'tileRows', 'num', 5 ],
+		'tile_scatter'       => [ 'tileScatter', 'num', 0 ],
+		'tile_start_scale'   => [ 'tileStartScale', 'num', 1 ],
+		'tile_rotation'      => [ 'tileRotation', 'num', 0 ],
+		'wave_size'          => [ 'waveSize', 'num', 12 ],
+		'circle_start'       => [ 'circleStart', 'num', 0 ],
+		'circle_end'         => [ 'circleEnd', 'num', 100 ],
+		'frame_distance'     => [ 'frameDistance', 'num', 0 ],
+		'image_distance'     => [ 'imageDistance', 'num', 0 ],
+
+		'sweep'              => [ 'sweep', 'bool', false ],
+		'fade'               => [ 'fade', 'bool', false ],
+	];
 
 	public function register(): void {
 		add_action( 'elementor/frontend/before_render', [ $this, 'maybe_register' ] );
@@ -173,6 +228,29 @@ final class Render {
 			'customProps'     => $this->custom_rows_to_pairs( $row['custom_props'] ?? [] ),
 			'customPropsTo'   => $this->custom_rows_to_pairs( $row['custom_props_to'] ?? [] ),
 		];
+
+		// Cinematic-preset fields (8 built-in presets merged in from
+		// ImageAdvancedAnimation) — copied through generically via FIELD_MAP;
+		// unused-by-this-effect keys are simply absent from $row.
+		foreach ( self::FIELD_MAP as $bind => list( $out_key, $cast, $default ) ) {
+			if ( ! array_key_exists( $bind, $row ) ) {
+				continue;
+			}
+			$raw = $row[ $bind ];
+			if ( null === $raw || '' === $raw ) {
+				continue;
+			}
+			switch ( $cast ) {
+				case 'num':
+					$cfg[ $out_key ] = is_numeric( $raw ) ? $this->cast_value( $raw ) : $default;
+					break;
+				case 'bool':
+					$cfg[ $out_key ] = filter_var( $raw, FILTER_VALIDATE_BOOLEAN );
+					break;
+				default:
+					$cfg[ $out_key ] = is_scalar( $raw ) ? (string) $raw : $default;
+			}
+		}
 
 		if ( ! empty( $row['markers'] ) ) {
 			$cfg['markers'] = true;
