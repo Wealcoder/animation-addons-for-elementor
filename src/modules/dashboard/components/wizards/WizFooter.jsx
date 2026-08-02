@@ -1,15 +1,33 @@
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
-import { useExtensions, useSkip, useWidgets } from "@/hooks/app.hooks";
+import {
+  useAtomicExtensions,
+  useAtomicWidgets,
+  useExtensions,
+  useSkip,
+  useWidgets,
+} from "@/hooks/app.hooks";
 import { WizNavList } from "@/config/nav/wiz-nav";
 import { cn } from "@/lib/utils";
+import { flattenAtomicWidgets } from "@/lib/atomicWidgetService";
+import { flattenAtomicExtensions } from "@/lib/atomicExtensionService";
 
 const WizFooter = ({ NavigateComponent }) => {
   const [currentPath, setCurrentPath] = useState("");
 
   const { allExtensions } = useExtensions();
   const { allWidgets } = useWidgets();
+  const { allAtomicWidgets } = useAtomicWidgets();
+  const { allAtomicExtensions } = useAtomicExtensions();
   const { setIsSkipTerms } = useSkip();
+
+  // Which registry the widget/extension steps actually rendered. Must match
+  // WizWidget/WizExtension's own test, or the wizard shows one list and saves
+  // the other.
+  const hasAtomicWidgets =
+    Object.keys(allAtomicWidgets?.elements || {}).length > 0;
+  const hasAtomicExtensions =
+    Object.keys(allAtomicExtensions?.elements || {}).length > 0;
 
   const urlParams = new URLSearchParams(window.location.search);
 
@@ -29,46 +47,62 @@ const WizFooter = ({ NavigateComponent }) => {
     return result ? result.serial : 1;
   };
 
-  const saveWidget = async () => {
-    await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
+  const post = async (body) =>
+    fetch(WCF_ADDONS_ADMIN.ajaxurl, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
         Accept: "application/json",
       },
+      body: new URLSearchParams(body),
+    }).then((response) => response.json());
 
-      body: new URLSearchParams({
-        action: "save_settings_with_ajax",
-        fields: JSON.stringify(allWidgets),
+  /*
+   * The v4 path deliberately does NOT write wcf_save_widgets /
+   * wcf_save_extensions — not even as an empty array.
+   *
+   * maybe_enable_used_v3_widgets() (class-animation-settings.php, admin_init
+   * prio 12) only rescues a site whose v3 option has NEVER been written; an
+   * empty array reads as "the user turned everything off on purpose" and is
+   * left alone. Writing one here would disarm that rescue, and an imported
+   * starter template built on v3 widgets would then render COMPLETELY BLANK —
+   * an unregistered widget emits no markup at all, not even a wrapper.
+   *
+   * Leaving the key absent gives the same user-visible result (nothing v3 is
+   * active) while keeping the safety net.
+   */
+  const saveWidget = async () => {
+    if (hasAtomicWidgets) {
+      return post({
+        action: "aae_save_atomic_widgets",
+        fields: JSON.stringify(flattenAtomicWidgets(allAtomicWidgets)),
         nonce: WCF_ADDONS_ADMIN.nonce,
-        settings: "wcf_save_widgets",
-      }),
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((return_content) => {});
+      });
+    }
+
+    return post({
+      action: "save_settings_with_ajax",
+      fields: JSON.stringify(allWidgets),
+      nonce: WCF_ADDONS_ADMIN.nonce,
+      settings: "wcf_save_widgets",
+    });
   };
 
   const saveExtension = async () => {
-    await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        Accept: "application/json",
-      },
-
-      body: new URLSearchParams({
-        action: "save_settings_with_ajax",
-        fields: JSON.stringify(allExtensions),
+    if (hasAtomicExtensions) {
+      return post({
+        action: "aae_save_atomic_extensions",
+        fields: JSON.stringify(flattenAtomicExtensions(allAtomicExtensions)),
         nonce: WCF_ADDONS_ADMIN.nonce,
-        settings: "wcf_save_extensions",
-      }),
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((return_content) => {});
+      });
+    }
+
+    return post({
+      action: "save_settings_with_ajax",
+      fields: JSON.stringify(allExtensions),
+      nonce: WCF_ADDONS_ADMIN.nonce,
+      settings: "wcf_save_extensions",
+    });
   };
 
   const goToContinue = (currentPath) => {
@@ -82,6 +116,15 @@ const WizFooter = ({ NavigateComponent }) => {
       try {
         saveWidget();
         saveExtension();
+
+        // save_settings_with_ajax used to flip wcf_addons_setup_wizard as a
+        // side effect, so the v3 path got this for free. The atomic handlers
+        // don't, and an unflipped flag means class-plugin.php redirects the
+        // user straight back into the wizard on every admin page load.
+        post({
+          action: "aae_complete_setup_wizard",
+          nonce: WCF_ADDONS_ADMIN.nonce,
+        });
       } catch (error) {
         console.log(error);
       }

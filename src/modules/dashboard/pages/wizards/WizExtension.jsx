@@ -1,7 +1,16 @@
 import ExtensionTopBg from "../../../../../public/images/wizard/extension-top-bg.png";
 import ShowWizExtensions from "@/components/wizards/ShowWizExtension";
+import ShowWizAtomicExtensions from "@/components/wizards/ShowWizAtomicExtensions";
+import { useAtomicExtensions } from "@/hooks/app.hooks";
 
 const WizExtension = () => {
+  const { allAtomicExtensions } = useAtomicExtensions();
+
+  // See the note in WizWidget: V4 only, with the v3 list kept as the fallback
+  // for an Elementor that has no atomic widgets.
+  const hasAtomic =
+    Object.keys(allAtomicExtensions?.elements || {}).length > 0;
+
   return (
     <div className="rounded-lg overflow-hidden mx-2.5">
       <div className="bg-[linear-gradient(0deg,rgba(245,246,248,0.50)_0%,rgba(245,246,248,0.50)_100%)] rounded-lg">
@@ -19,7 +28,7 @@ const WizExtension = () => {
             </p>
           </div>
           <div className="mt-[56px] max-w-[1184px] mx-auto border-[10px] border-white rounded-lg">
-            <ShowWizExtensions />
+            {hasAtomic ? <ShowWizAtomicExtensions /> : <ShowWizExtensions />}
           </div>
         </div>
       </div>

@@ -53,6 +53,31 @@ final class InteractionsMap {
 		self::ensure_print_hook();
 	}
 
+	/**
+	 * Has any effect registered against this element id?
+	 *
+	 * Cheap "is this element animated" for code that runs DURING render and
+	 * must not care which effect it is. Every extension registers from
+	 * `elementor/frontend/before_render` at priority 10-25, so a caller hooked
+	 * later than that on the same element gets a settled answer.
+	 *
+	 * Note this empties with `$entries` once `print_maps()` has run — it is a
+	 * render-time question and has no meaningful answer in the footer.
+	 */
+	public static function has( string $id ): bool {
+		if ( '' === $id ) {
+			return false;
+		}
+
+		foreach ( self::$entries as $map ) {
+			if ( isset( $map[ $id ] ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	/** Hooks the footer print on first registration. Idempotent. */
 	private static function ensure_print_hook(): void {
 		if ( self::$hooked ) {

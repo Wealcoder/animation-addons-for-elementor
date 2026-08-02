@@ -6007,6 +6007,21 @@ final class Atomic
 
 		$updated = update_option(self::EXTENSIONS_OPTION_NAME, $clean);
 
+		// Record what the user was just shown. Without this the setup wizard's
+		// choice is silently overruled a moment later: migrate_newly_offered_extensions()
+		// bails only while the settings option is ABSENT ("fresh install, the
+		// wizard decides"), and the wizard's own save is what ends that. On the
+		// next admin_init the offered list is still missing, so it falls back to
+		// LEGACY_OFFERED_EXTENSIONS and every extension added since that
+		// baseline counts as newly-offered — switching six Pro extensions back
+		// on right after someone picked the Basic setup.
+		//
+		// Writing it here makes "offered" mean what it says: the set the user
+		// has actually been presented with. The migration then correctly does
+		// nothing until a future plugin update adds an extension neither this
+		// save nor the wizard ever displayed.
+		update_option(self::EXTENSIONS_OFFERED_OPTION_NAME, array_keys($this->extensions_registry));
+
 		// Reset cache.
 		$this->active_extensions = null;
 

@@ -82,8 +82,15 @@ export const useSetup = () => {
   const {
     mainState: { setupType },
     setSetupType,
+    applyAtomicWidgetSetup,
+    applyAtomicExtensionSetup,
   } = useContext(AppContext);
-  return { setupType, setSetupType };
+  return {
+    setupType,
+    setSetupType,
+    applyAtomicWidgetSetup,
+    applyAtomicExtensionSetup,
+  };
 };
 
 export const useNotification = () => {

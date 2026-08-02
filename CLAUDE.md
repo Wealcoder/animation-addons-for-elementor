@@ -445,6 +445,104 @@ from `CATEGORY_ORDER`, the group falls to the end regardless of intent.
 
 ---
 
+## The setup wizard — what a new install starts with (2026-08-02)
+
+A fresh install activates **nothing**. `config.php` carries no
+`is_active => true`, `aae_atomic_widgets` / `aae_atomic_extensions` are absent,
+and the wizard is the only thing that writes them. The v3 step is gone from the
+wizard entirely: new users are offered the atomic registry only
+(`WizWidget.jsx` / `WizExtension.jsx` branch on `hasAtomic`, keeping the v3
+list as a fallback for a site whose Elementor is too old for atomic — without
+it that user reaches an empty step and finishes with nothing offered at all).
+
+### The two presets
+
+Step 1's radio (`WizardStart.jsx`, values `basic` / `advance`) seeds the widget
+and extension steps through `lib/setupPresets.js` — **one module for both**, so
+the rule cannot drift between them.
+
+| | pre-selects | today |
+|---|---|---|
+| **Basic** (recommended) | free, non-`animation` | 25 / 33 widgets, 2 / 20 extensions |
+| **Custom** (`advance`) | everything the licence can register | 33 / 33, 20 / 20 |
+
+Three decisions behind that, each of which could reasonably have gone the other
+way:
+
+- **A `badge_only` item stays OFF in Basic.** Those are Pro-BADGED but ship
+  free code, so pre-enabling them would work — and would make the badge read as
+  a lie while quietly giving away the upsell. The badge is the promise; honour
+  it. (`isCustomItem` still enables them, because Custom means "everything that
+  can run".)
+- **Custom never enables what the licence cannot register.** Its three branches
+  mirror `activeAtomicFullWidgetFn` / `activeAtomicFullExtensionFn` exactly.
+  `get_dashboard_config()` computes a card's `is_active` from the raw saved
+  option rather than from `is_widget_active()`, so enabling a widget whose class
+  does not exist paints an "on" card for something that can never render.
+- **The `animation` category is excluded from Basic** even though it changes
+  nothing today — every animation widget and extension in the registry is
+  already Pro. It is there so a FREE animation item added later does not
+  silently join the recommended set.
+
+Seeding runs in the STEP components (`ShowWizAtomicWidgets` /
+`ShowWizAtomicExtensions`), on a `useEffect` keyed to `setupType` — not inside
+`setSetupType`, which carries an empty dependency array and so reads a
+`mainState` frozen at first render. That is harmless for the v3 branches it
+drives (they re-read the untouched `WCF_ADDONS_ADMIN` config) and would seed
+the atomic steps from a stale snapshot.
+
+### DANGER — a migration used to overrule the wizard seconds later
+
+`migrate_newly_offered_extensions()` bails only while `aae_atomic_extensions`
+is **absent** — "fresh install, the wizard decides". The wizard's own save is
+what ends that. On the very next `admin_init` the option existed, the OFFERED
+list did not, so it fell back to `LEGACY_OFFERED_EXTENSIONS` (a 13-slug
+baseline) and treated every extension added since as newly-offered: **six Pro
+extensions switched themselves back on immediately after the user picked
+Basic** — 2 became 8, with no error and nothing in the UI to explain it.
+
+`ajax_save_extension_settings()` now writes `aae_atomic_extensions_offered`
+alongside the settings, which makes the key mean what its name says: the set
+the user has actually been shown. The migration then correctly does nothing
+until a future plugin update adds an extension neither the wizard nor a
+dashboard save ever displayed.
+
+**This class of bug is invisible from the wizard.** Assert the option AFTER a
+second `admin_init`, never straight after the save.
+
+### Testing it
+
+`E:\Local Testing\verify-wizard-setup-presets.mjs` (16 checks) drives both
+modes and audits every card against the registry's own
+`is_pro`/`badge_only`/`category` read out of `WCF_ADDONS_ADMIN.addons_config` —
+**never a hand-written slug list**, which would go stale the moment a widget is
+added and then pass by not knowing about it.
+
+Two things that will bite:
+
+- **The site must be in a fresh-install state** or the step opens with the
+  saved option instead of the preset. `scratchpad/fresh-install-state.php`
+  does `snapshot` / `clean` / `restore`, and REFUSES to clean without a
+  readable snapshot on disk — see the `set-v3-state.php` incident in the cache
+  section for why that guard exists.
+- **Walking the wizard to the end completes it** (`wcf_addons_setup_wizard`
+  becomes `complete`) and the page then redirects, so the next run finds no
+  wizard. Re-clean between runs. The footer button is **"Continue"**, not
+  "Next", and `hasText: /^Continue$/` does not match it — the button's text
+  node carries whitespace. Use `getByRole('button', { name: /^continue$/i })`.
+- Per-widget switches carry **no id**; `WidgetCard` puts the slug on its ROOT
+  `div` (`id={slug}`) with the switch inside. The category "Enable All"
+  switches are the ones with an id, and they cannot collide.
+
+### What a fresh install does NOT control
+
+`maybe_enable_used_v3_widgets()` still runs, and on a site that already has v3
+content it enables exactly the slugs that content references — the dev site
+lands on 36. That is the documented data-loss guard, not the wizard leaking:
+a genuinely new install has no v3 content, so it enables nothing.
+
+---
+
 ## Animation Settings (v4 dashboard) vs. the v3 legacy surface
 
 AAE's five site-wide chrome features — **Preloader, Cursor, Scroll to Top,
@@ -1035,9 +1133,13 @@ instead — see `verify-performance-ui.mjs`.
 ## Cache / optimization plugin compatibility
 
 **Slice 1 SHIPPED 2026-08-01** (the image gate + box reservation).
-**Slice 2 SHIPPED 2026-08-02** (the LiteSpeed/Rocket filter fencing). Slice 3
-— the per-page admin-bar modal and the `skip-lazy` opt-out setting — is still
-planned; everything below the "SHIPPED" blocks is the design for it.
+**Slice 2 SHIPPED 2026-08-02** (the LiteSpeed/Rocket filter fencing).
+**Slice 3 SHIPPED 2026-08-02** (the skip-lazy opt-out marker + the per-page
+admin-bar modal). All three slices are done; everything below the "SHIPPED"
+blocks is the original design, kept for the research and the source citations
+— check it against the SHIPPED blocks before trusting a detail, since two of
+its instructions turned out to be wrong (the `data-no-optimize`-only fence and
+the static `API::purge_post()` call).
 
 ### SHIPPED — the image gate (Slice 1)
 
@@ -1117,13 +1219,20 @@ leaving every scroll-driven animation unplayed, with the runtime itself loading
 perfectly. Hence `Cache_Compat::INLINE_MARKERS`, and the rule behind it: **the
 fence follows the dependency graph, not the scope boundary.**
 
-**GOTCHA — enabling Guest Mode DEACTIVATES LiteSpeed on this machine.** It is
-the obvious way to reach the guest code path and it costs you the plugin: after
-`guest`/`guest_optm` are set, `\LiteSpeed\Base` stops existing on the front end
-entirely and lazyload silently stops too. Recovery is
-`wp plugin activate litespeed-cache` after `node _run-ls.mjs guest-off`. Use
-`js-delay` instead — mode 2 is the same delay behaviour Guest Optimization
-forces, without the guest branch.
+**GOTCHA — LiteSpeed intermittently ends up DEACTIVATED mid-session.** Happened
+twice on 2026-08-02. `\LiteSpeed\Base` stops existing on the front end, lazyload
+silently stops, and the fixture page comes back clean — which reads exactly like
+"the fence worked". `active_plugins` in the DB genuinely loses the row; there is
+no `deactivate_plugins` call anywhere in LiteSpeed's source and nothing in
+`debug.log`. **Cause NOT identified** — it was first blamed on `guest-on`, but it
+recurred without Guest Mode, and a deliberate replay (activate → write
+`litespeed.conf.*` → frontend request → `clearElementorCache` → `set-v3-state`)
+would not reproduce it. Recovery: `wp plugin activate litespeed-cache`. This is
+why `verify-cache-jsopt.mjs` asserts `parked > 0` FIRST — never trust a green
+cache run that did not prove the optimizer ran.
+
+Guest Mode is still not worth using here: `js-delay` gives the same defer mode 2
+behaviour Guest Optimization forces, without the guest branch.
 
 **GOTCHA — the optimizer never runs here by default, and it looks like a pass.**
 `Optimize::_finalize()` bails on `!Control::is_cacheable()`, which needs
@@ -1149,6 +1258,68 @@ else collapses — excluding is what MOVES our CSS against Elementor's (0,2,0)
 atomic base styles. The order-neutral `litespeed_optm_css_comb_ext_inl` => false
 is used instead. See the cascade DANGER below before adding one.
 
+**Verified in the v4-only state too** — every v3 widget and extension off, so
+`has_active_legacy_assets()` is false and `get_library_scripts()` returns []:
+11/11, image animation played. In that state neither `wcf--addons-ex` nor
+`WCF_ADDONS_JS` is emitted at all, so the `WCF_ADDONS_JS` inline marker goes
+inert (a substring matching nothing) and the remaining v4 runtime — `gsap`,
+`ScrollTrigger`, `SplitText`, `aae-atomic-common`, the effect bundles — is
+covered entirely by the path fragments. **The fence does not depend on v3.**
+
+**DANGER — `set-v3-state.php` destroyed a real site's v3 enablement.** On
+2026-08-02 its snapshot read `wcf_save_extensions` / `wcf_save_widgets` as `''`
+in one WP-CLI process moments after a `status` run in another reported 31 and 93
+active, so `restore` wrote empties back over the originals. Root cause never
+found. The script now ABORTS rather than proceeding when the snapshot is not a
+populated array. Note `Animation_Settings::maybe_enable_used_v3_widgets()` will
+NOT heal this: it bails unless the option is `false` (absent), and an empty
+string is not absent — `delete_option()` first, and even then it only restores
+the slugs the content references (36 here, not 93).
+
+**Gated on a cache plugin actually being present** (changed 2026-08-02, revising
+the "hook unconditionally" decision). `Cache_Compat::litespeed_active()` reads
+`LSCWP_V` / `\LiteSpeed\Core`, `rocket_active()` reads `WP_ROCKET_VERSION`, and
+only that plugin's filters are hooked. Timing is safe because WordPress includes
+every active plugin's main file BEFORE `plugins_loaded`, where we construct.
+The original argument still holds for the PATHS — they are self-scoping, since
+they only ever match our own asset URLs, so on a page with no atomic content
+they match nothing. It does NOT hold for `INLINE_MARKERS`: `WCF_ADDONS_JS` is a
+v3 global, so an ungated entry reaches pages this feature has no business
+touching. Never use `is_plugin_active()` here — it only exists in admin.
+
+**Hardening pass (2026-08-02), all three found by reading, all now covered by
+`pro/tests/atomic-v4/image-gate.test.js` (12 tests, `npm run test:atomic-v4`):**
+
+- **Leak — the per-image promise could never settle.** Neither `load` NOR
+  `error` is guaranteed: a hung request, or a lazyloader re-assigning `src`
+  before ours lands, leaves both silent. The listeners then stay attached for
+  the life of the document and every later play awaits a promise that will
+  never resolve — burning the gate timeout on every play, forever, which is the
+  exact failure the detection rules exist to prevent, re-entered from behind.
+  Fixed with `PROMOTE_TIMEOUT` (10s, deliberately far longer than the gate's own
+  1s so a slow connection does not trip it). **Verified by disabling the fix and
+  watching the test fail** — and note the test races the promise against a
+  resolved sentinel rather than awaiting it, because a bare `await` turns this
+  defect into a hung suite with no output instead of a named failure.
+- **`push(...nodeList)` in `unsettledImagesIn`.** A loop-grid/archive subtree
+  with thousands of images passes every node as a separate argument and throws
+  RangeError past the engine's limit — works on every page you test, dies on the
+  one page with a big archive. Now `Array.from`.
+- **`page_has_animations()` memoised a NEGATIVE.** Enqueues land during render,
+  so an early caller legitimately sees false; caching that answered for the
+  whole request from the one moment it could not know, and failed in the
+  safe-looking direction (page silently combined, no error). Only a positive is
+  memoised now; `wp_script_is()` is an array lookup, so re-asking is free.
+- `add_js_exclusions()` also now drops non-strings before `array_unique`, which
+  compares by string cast — one nested array in a third party's list would
+  otherwise raise "Array to string conversion" on every request, in a filter we
+  do not own, on a page that was working.
+
+Checked and found sound: the promotion→`ScrollTrigger.refresh()`→`onEnter`→play
+path cannot recurse (each image promotes once, the refresh is debounced, and the
+shared promise short-circuits re-entry); `InteractionsMap::print_maps()` clears
+`$entries` after printing; `protected_paths()` memoisation runs the filter once.
+
 **Tests** (`E:\Local Testing\`): `verify-cache-jsopt.mjs` (11 checks),
 `check-cache-compat-filters.php` (are the filters registered, do they emit the
 right paths, does a string setting survive), `set-litespeed.php` +
@@ -1159,6 +1330,114 @@ right paths, does a string setting survive), `set-litespeed.php` +
 delay on still loses its animations. Free carries the inline-tag attributes
 (which is why those live in `InteractionsMap`), but nothing registers the file
 paths. Revisit with slice 3's Pro-only trap discussion.
+
+### SHIPPED — the skip-lazy opt-out marker (Slice 3, step 5)
+
+Performance > **Cache Compatibility**, default OFF. When on, every `<img>`
+inside an animated element gets `class="skip-lazy" data-no-lazy="1"` and the
+cache plugin leaves it eager. Measured on the fixture with LiteSpeed lazyload
+on: 6 images inside animated elements marked and served with real URLs, the 1
+image outside any animated element still lazy-loaded — so it is scoped, not a
+site-wide "turn lazy loading off". Setting off → 0 marked, lazy loading fully
+restored.
+
+| File | What |
+|---|---|
+| `pro/inc/Performance/class-skip-lazy.php` | the whole feature |
+| `pro/inc/Performance/class-performance.php` | `cache_compat` schema group |
+| `free/inc/Atomic/InteractionsMap.php` · `pro/…/Support/TriggerMap.php` | `has( $id )` — "is this element animated" |
+
+**The field is named `enable` for a reason.** `Performance::is_active()` reads
+that exact key and then applies the shared display-conditions control, so the
+naming is what gives the marker per-page targeting without building anything —
+which is most of what step 7's modal was for.
+
+**Why output buffering, when that is not the obvious choice.** The marker must
+land on the `<img>` ITSELF (Rocket has no parent-class mechanism, so a class on
+the wrapper passes a LiteSpeed test and does nothing on the commoner plugin).
+But we do not render those images: `data-interaction-id` comes from Elementor
+and the tag is built in Elementor's own Twig
+(`modules/atomic-widgets/elements/atomic-image/atomic-image.html.twig`), so
+there is no attribute filter to hook, and `wp_get_attachment_image_attributes`
+never runs. The images are also usually DESCENDANTS of the animated element, so
+a per-widget filter would miss them anyway. Buffering between
+`elementor/frontend/before_render` (`element-base.php:500`) and `after_render`
+(`:583`) is what is left.
+
+Three rules make that safe, and each is load-bearing:
+
+1. **Nothing hooks unless it will do work** — no cache plugin, setting off,
+   admin, or editor preview → `ob_start()` is never called. An always-on buffer
+   around every element would be a real cost paid by every site for a feature
+   almost none enable.
+2. **Only the OUTERMOST animated element is buffered** (`$open_id` doubles as
+   the "already inside" flag). Animated elements nest — fixture case C is fadeUp
+   inside fadeUp — and nested buffers would rewrite the same `<img>` repeatedly.
+3. **The close is keyed by element id, never a counter.** If another plugin's
+   `after_render` bails early or an element renders nothing, a counter pairs the
+   close with the wrong element and swallows its output.
+
+**Hook priority is not arbitrary:** `open` runs at `before_render` **100**
+because every extension registers its interactions on that same hook at
+10-25, so only by 100 can the maps answer for this element. `close` runs at
+`after_render` **0** so we rewrite exactly what the element rendered.
+
+`mark_images()` uses regex, not DOMDocument — a fragment parse/serialise
+normalises markup, mangles HTML5 void elements and drops what it thinks is
+invalid, which is a destructive amount of change for adding one class. It also
+returns the ORIGINAL html when `preg_replace_callback` returns null (PCRE limits
+on a huge element): an unmarked image is a missed optimisation, an empty one is
+a broken page. 17 cases in `E:\Local Testing\verify-skip-lazy-marker.php` —
+quoting styles, self-closing, uppercase, idempotence, foreign `data-no-lazy`,
+empty input, and a 4000-node subtree.
+
+Toggle it with `wp eval-file set-cache-compat.php on|off|status`.
+
+### SHIPPED — the per-page override modal (Slice 3, step 7)
+
+Front-end admin-bar node **AAE Cache** → modal for the page you are looking at.
+Three states (`inherit` / force on / force off) stored as `_aae_cache_compat`
+post meta, saved over AJAX with the established contract (nonce
+`wcf_admin_nonce`, `manage_options`).
+
+| File | What |
+|---|---|
+| `pro/inc/Performance/class-cache-compat-page.php` | meta, precedence, admin-bar node, AJAX, purge, the live report |
+| `pro/src/modules/atomic-v4/cache-compat-page.js` | the modal |
+| `pro/assets/css/cache-compat-page.css` | its styling |
+| `pro/inc/Performance/class-skip-lazy.php` | `Cache_Compat_Page::resolve()` wins over the global answer |
+
+**Standalone modal, NOT `popup-settings-core.js`** (decided 2026-08-02).
+`buildSettingsModal()` hardcodes its own title and iterates module-level
+`PSET_TABS`/`PSET_FIELDS`, so reuse meant parameterising a shipped, working
+module for a second caller with a different field set — regression surface for
+no gain. The `aae-v4-pset-*` CLASS NAMES are reused so it reads as the same UI;
+the container ids are its own, because the popup CSS is id-scoped and only
+enqueued where that UI loads.
+
+**`inherit` deletes the row, it does not store the string.** Keeps "never
+touched" and "explicitly back to default" identical, and stops the meta table
+filling with rows that mean "do nothing".
+
+**The report reads LIVE values, not just our settings** — including whether
+Guest Optimization is forcing lazyload on. A panel that mirrors only our own
+option confidently shows the wrong answer on the commonest visitor path.
+
+`current_post_id()` uses `get_queried_object_id()`, not `get_the_ID()`: inside a
+loop the latter answers for whichever post is rendering, which on an archive is
+not the page you are on. Singular only — an archive has no post to hang meta
+from, and writing onto its first post would be worse than offering nothing.
+
+**Tests:** `verify-cache-compat-page.php` (15 — precedence, garbage meta,
+report shape, purge does not fatal) and `verify-cache-compat-page.mjs` (16 —
+admin-bar node, modal, three radios, Escape writes nothing, save round-trip,
+force-on marks images with the global setting OFF, inherit deletes the row,
+logged-out visitors get no UI and no config).
+
+**GOTCHA — `wp eval-file` runs the file inside a function.** The script body is
+NOT global scope, so a top-level `$pass = 0` and a `global $pass` in a helper
+are different variables and the summary prints "0 passed, 0 failed" whatever
+happened — a test that cannot fail. Use `$GLOBALS[...]` in these scripts.
 
 ### Design for the remaining slices (PLANNED — researched 2026-08-01)
 
@@ -1463,10 +1742,18 @@ node on the FRONT END opening a modal for the page currently being viewed.
 - **DANGER — the save MUST purge that URL's cache.** The setting changes the
   rendered HTML, so with page cache on, saving does nothing visible until the
   page is purged. That arrives as "the setting doesn't work" (see the page-cache
-  section). Call `LiteSpeed\API::purge_post( $post_id )` (`api.cls.php:240`) and
-  `LiteSpeed\Purge::purge_ucss( $post_id )` when present, and
-  `rocket_clean_post( $post_id )` for Rocket — each behind `class_exists` /
-  `function_exists`, never assumed.
+  section). **CORRECTED 2026-08-02 — the call this section used to prescribe is
+  a fatal.** `LiteSpeed\API::purge_post()` (`api.cls.php:240`) is `public
+  function`, NOT static, and `method_exists()` returns true for non-static
+  methods, so the obvious guard does not protect the obvious call: PHP 8 throws
+  "Non-static method cannot be called statically" and takes the save with it.
+  Use the **action** — `do_action( 'litespeed_purge_post', $post_id )` —
+  which LiteSpeed binds its own instance to at `api.cls.php:111` and which is a
+  silent no-op when the plugin is absent. `LiteSpeed\Purge::purge_ucss()`
+  (`purge.cls.php:326`) genuinely IS static; verify with `is_callable`, not
+  `method_exists`. `rocket_clean_post()` behind `function_exists`. And purge
+  `_elementor_element_cache` too, or the render cache replays the old HTML with
+  no page cache involved at all.
 - **The modal must show what is actually in effect, not just our own settings.**
   Guest Optimization overrides the plugin's own config (see the DANGER box
   below), so a panel that only reflects our meta will confidently show the wrong

@@ -96,6 +96,8 @@ class WCF_Admin_Init
 		add_action('wp_ajax_aae_save_dynamic_settings', array($this, 'save_dynamic_settings'));
 		add_action('wp_ajax_aae_get_dynamic_settings', array($this, 'get_dynamic_settings'));
 		add_action('wp_ajax_save_settings_with_ajax', array($this, 'save_settings'));
+		add_action('wp_ajax_aae_complete_setup_wizard', array($this, 'complete_setup_wizard'));
+		add_action('wp_ajax_aae_wizard_subscribe', array($this, 'wizard_subscribe'));
 		add_action('wp_ajax_wcf_dashboard_notice_store', array($this, 'notice_store'));
 		add_action('wp_ajax_wcf_get_changelog_data', array($this, 'get_changelog'));
 		add_action('wp_ajax_wcf_get_notice_data', array($this, 'get_notice'));
@@ -712,6 +714,161 @@ class WCF_Admin_Init
 		}
 
 		wp_send_json(esc_html__('Option name not found!', 'animation-addons-for-elementor'));
+	}
+
+	/**
+	 * Mark the setup wizard finished.
+	 *
+	 * save_settings() used to be the only thing that wrote this flag, as a side
+	 * effect of persisting wcf_save_widgets. The V4 wizard saves through
+	 * class-atomic.php's own aae_save_atomic_* handlers instead and never calls
+	 * save_settings(), so without this endpoint the flag is never written and
+	 * class-plugin.php's admin_init redirect sends the user back into the wizard
+	 * on every page load — forever.
+	 *
+	 * Kept separate rather than folded into the atomic save handlers: "the
+	 * wizard is done" is a different fact from "these widgets are on", and the
+	 * dashboard's own Save button must never mark a wizard complete.
+	 */
+	public function complete_setup_wizard()
+	{
+		check_ajax_referer('wcf_admin_nonce', 'nonce');
+
+		if (! current_user_can('manage_options')) {
+			wp_send_json_error(esc_html__('Permission denied.', 'animation-addons-for-elementor'));
+		}
+
+		update_option('wcf_addons_setup_wizard', 'complete');
+
+		wp_send_json_success(array('status' => 'complete'));
+	}
+
+	/**
+	 * Lead-capture relay. Holds the Brevo API key and list id server-side, so
+	 * neither ever ships with the plugin.
+	 *
+	 * Its schema (GET https://animation-addons.com/wp-json/leads/v1) accepts
+	 * `email` (required) plus optional firstName / lastName / company / phone /
+	 * source / site — which is exactly what wizard_subscribe() sends. Anything
+	 * added here has to exist there too, or the relay drops it silently.
+	 */
+	const LEADS_ENDPOINT = 'https://animation-addons.com/wp-json/leads/v1/subscribe';
+
+	/**
+	 * Register the site administrator as a product lead.
+	 *
+	 * NO CREDENTIAL LIVES IN THIS PLUGIN, and that is the whole point. The
+	 * relay above owns the Brevo API key and the target list id, and maps these
+	 * neutral fields onto Brevo's attributes itself — so there is nothing here
+	 * to leak, whether from the JS bundle, the PHP source, or the shipped zip.
+	 *
+	 * That matters because of what this replaced: the call used to run in the
+	 * BROWSER, from WizWidget.jsx, POSTing to FluentCRM with an HTTP Basic Auth
+	 * username and password written into the component. webpack published them
+	 * to assets/build/9479.js — fetchable by anyone from any site running the
+	 * plugin — so the key was public and could be used to write to the CRM
+	 * directly. Moving that call to PHP would NOT have fixed it: a distributed
+	 * plugin ships its source too. Only removing the credential fixes it.
+	 * (That FluentCRM key is in git history and in released builds; it has to
+	 * be rotated regardless of this change.)
+	 *
+	 * Server-side rather than from the browser, unlike the brevo-configaration
+	 * branch's version: the request then survives ad/tracker blockers, the
+	 * once-per-site flag is an option instead of per-browser localStorage, and
+	 * the fields come from WordPress rather than from a payload the wizard
+	 * would have to localise (WCF_ADDONS_ADMIN.user carries no last name,
+	 * company or phone, so those keys silently went out empty).
+	 *
+	 * The client sends NOTHING but a nonce — the address is read from the
+	 * current user here, so this cannot be used to push arbitrary addresses.
+	 */
+	public function wizard_subscribe()
+	{
+		check_ajax_referer('wcf_admin_nonce', 'nonce');
+
+		if (! current_user_can('manage_options')) {
+			wp_send_json_error(esc_html__('Permission denied.', 'animation-addons-for-elementor'));
+		}
+
+		// Once per SITE. The old guard was localStorage, so the same site
+		// re-subscribed from every new browser, and clearing site data re-ran it.
+		if ('yes' === get_option('wcf_addons_wizard_subscribed')) {
+			wp_send_json_success(array('status' => 'already'));
+		}
+
+		$user  = wp_get_current_user();
+		$email = sanitize_email($user->user_email);
+
+		if (! is_email($email)) {
+			wp_send_json_error(esc_html__('No valid administrator email.', 'animation-addons-for-elementor'));
+		}
+
+		$first_name = trim((string) $user->first_name);
+
+		if ('' === $first_name) {
+			// Same derivation the JS did: local part, dots to spaces, capitalised.
+			$local      = strstr($email, '@', true);
+			$first_name = implode(' ', array_map('ucfirst', explode('.', (string) $local)));
+		}
+
+		$lead = array(
+			'email'     => $email,
+			'firstName' => $first_name,
+			'lastName'  => trim((string) $user->last_name),
+			'source'    => 'animation-addon',
+			'site'      => home_url(),
+		);
+
+		// Send only what has a value — the relay treats an empty attribute as a
+		// write and would blank a field the contact already has.
+		$lead = array_filter(
+			$lead,
+			static function ($value) {
+				return '' !== $value && null !== $value;
+			}
+		);
+
+		/** Swap the relay (e.g. to api.animationaddons.com) without a release. */
+		$endpoint = apply_filters(
+			'aae/wizard/lead_endpoint',  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+			self::LEADS_ENDPOINT
+		);
+
+		/** Return [] to opt a site out of lead capture entirely. */
+		$lead = apply_filters('aae/wizard/lead_payload', $lead);  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+
+		if (empty($endpoint) || empty($lead)) {
+			update_option('wcf_addons_wizard_subscribed', 'yes');
+			wp_send_json_success(array('status' => 'skipped'));
+		}
+
+		$response = wp_remote_post(
+			esc_url_raw($endpoint),
+			array(
+				'timeout' => 15,
+				'headers' => array(
+					'Content-Type' => 'application/json',
+					'Accept'       => 'application/json',
+				),
+				'body'    => wp_json_encode($lead),
+			)
+		);
+
+		// Marked done either way, matching the old behaviour: the JS wrote its
+		// flag in both the success and the catch branch, so a relay outage never
+		// re-queued the request on every wizard visit.
+		update_option('wcf_addons_wizard_subscribed', 'yes');
+
+		if (is_wp_error($response)) {
+			wp_send_json_success(array('status' => 'failed'));
+		}
+
+		wp_send_json_success(
+			array(
+				'status' => 'sent',
+				'code'   => wp_remote_retrieve_response_code($response),
+			)
+		);
 	}
 
 	public function get_dynamic_settings()
