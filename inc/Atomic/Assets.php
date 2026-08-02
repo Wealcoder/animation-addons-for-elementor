@@ -25,6 +25,7 @@ final class Assets
 	const EFFECT_BUNDLES = [
 		'aae-effect-animation'       => ['file' => 'effects/animation.js', 'deps' => ['SplitText']],
 		'aae-effect-image-animation' => 'effects/image-animation.js',
+		'aae-effect-image-advanced-animation' => 'effects/image-advanced-animation.js',
 		'aae-effect-image-hover'     => 'effects/image-hover.js',
 		'aae-effect-tilt'            => 'effects/tilt.js',
 		'aae-effect-sticky'          => 'effects/sticky.js',
