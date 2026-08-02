@@ -1,16 +1,29 @@
 import ShowWizWidgets from "@/components/wizards/ShowWizWidgets";
+import ShowWizAtomicWidgets from "@/components/wizards/ShowWizAtomicWidgets";
 import WidgetTopBg from "../../../../../public/images/wizard/widget-top-bg.png";
+import { useAtomicWidgets } from "@/hooks/app.hooks";
 
 const WizWidget = () => {
+  const { allAtomicWidgets } = useAtomicWidgets();
+
+  // V4 only — a new install should never be offered the v3 widgets. The v3
+  // list stays as a FALLBACK rather than being deleted, because the atomic
+  // payload only exists when Atomic::meets_requirements() passes (Elementor
+  // 4.x with the atomic experiment on). Without this branch, a user on an
+  // older Elementor would reach an empty step and finish the wizard with
+  // nothing offered at all.
+  const hasAtomic = Object.keys(allAtomicWidgets?.elements || {}).length > 0;
+
   /*
-   * Lead capture used to run here, POSTing to a FluentCRM instance with an
-   * HTTP Basic Auth username and password written into this component — which
+   * Lead capture used to live here, POSTing straight to FluentCRM with an HTTP
+   * Basic Auth username and password written into this component — which
    * webpack published to assets/build/9479.js, fetchable by anyone from any
    * site running the plugin. Never put a credential in a component.
    *
    * It now belongs to the consent checkbox on the Terms step
-   * (WizardTerms.jsx) and runs server-side through aae_wizard_subscribe, so no
-   * key ships at all. Nothing to do on this step.
+   * (WizardTerms.jsx), which is where the user actually agrees to share their
+   * data, and runs through aae_wizard_subscribe server-side so no key ships at
+   * all. Nothing to do on this step.
    */
   return (
     <div className="rounded-lg overflow-hidden mx-2.5">
@@ -29,7 +42,7 @@ const WizWidget = () => {
             </p>
           </div>
           <div className="mt-[56px] max-w-[1184px] mx-auto border-[10px] border-white rounded-lg">
-            <ShowWizWidgets />
+            {hasAtomic ? <ShowWizAtomicWidgets /> : <ShowWizWidgets />}
           </div>
         </div>
       </div>

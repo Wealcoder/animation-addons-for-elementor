@@ -12,6 +12,44 @@ import { useSkip } from "@/hooks/app.hooks";
 const WizardTerms = () => {
   const { isSkipTerms, setIsSkipTerms } = useSkip();
 
+  /*
+   * The consent checkbox IS the trigger. Ticking it is the moment the user
+   * agrees to share their data, so that is when the name and email go to our
+   * relay — not a step later, and never on unticking.
+   *
+   * Nothing is sent from the browser: this calls aae_wizard_subscribe
+   * (inc/admin/dashboard.php), which reads the administrator's name and email
+   * from WordPress and forwards them to
+   * https://animation-addons.com/wp-json/leads/v1/subscribe. The relay owns
+   * the Brevo API key and list id, so neither exists in this plugin — free or
+   * pro. Its own once-per-site option keeps a re-tick from sending twice.
+   */
+  const handleConsent = () => {
+    const accepting = isSkipTerms; // checked = accepted = isSkipTerms false
+
+    setIsSkipTerms(!isSkipTerms);
+
+    if (!accepting) {
+      return;
+    }
+
+    try {
+      fetch(WCF_ADDONS_ADMIN.ajaxurl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Accept: "application/json",
+        },
+        body: new URLSearchParams({
+          action: "aae_wizard_subscribe",
+          nonce: WCF_ADDONS_ADMIN.nonce,
+        }),
+      });
+    } catch (error) {
+      // Deliberately silent: consent must never block or nag during setup.
+    }
+  };
+
   return (
     <div className="rounded-lg overflow-hidden mx-2.5">
       <div className="bg-[linear-gradient(0deg,rgba(245,246,248,0.50)_0%,rgba(245,246,248,0.50)_100%)] rounded-lg relative">
@@ -85,7 +123,7 @@ const WizardTerms = () => {
                 <Checkbox
                   id="aae-plugin-continuing-terms"
                   checked={!isSkipTerms}
-                  onCheckedChange={() => setIsSkipTerms(!isSkipTerms)}
+                  onCheckedChange={handleConsent}
                 />
                 <label
                   htmlFor="aae-plugin-continuing-terms"

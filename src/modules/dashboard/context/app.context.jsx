@@ -29,6 +29,7 @@ import {
   activeAtomicExtensionFn,
   groupAtomicExtensionsByCategory,
 } from "@/lib/atomicExtensionService";
+import { applyWizardSetup } from "@/lib/setupPresets";
 import { createContext, useCallback, useReducer } from "react";
 
 // Guarantees `.elements` is always an object, even when a category (e.g.
@@ -209,6 +210,32 @@ const useMainContext = (state) => {
     [mainState.allWidgets]
   );
 
+  // Seeds the wizard's atomic widget / extension steps from the setup type
+  // picked on step 1. Kept OUT of setSetupType above: that callback carries an
+  // empty dependency array and so reads a `mainState` frozen at first render —
+  // harmless for the V3 branches it drives (they re-read the untouched
+  // WCF_ADDONS_ADMIN config), but it would seed the atomic steps from a stale
+  // snapshot. The steps call these on mount instead, where the state is fresh.
+  const applyAtomicWidgetSetup = useCallback(
+    (setupType) => {
+      dispatch({
+        type: "setAllAtomicWidgets",
+        value: applyWizardSetup(mainState.allAtomicWidgets, setupType),
+      });
+    },
+    [mainState.allAtomicWidgets]
+  );
+
+  const applyAtomicExtensionSetup = useCallback(
+    (setupType) => {
+      dispatch({
+        type: "setAllAtomicExtensions",
+        value: applyWizardSetup(mainState.allAtomicExtensions, setupType),
+      });
+    },
+    [mainState.allAtomicExtensions]
+  );
+
   const updateActiveAtomicWidget = useCallback(
     (data) => {
       activeAtomicWidgetFn(mainState.allAtomicWidgets, data, dispatch);
@@ -357,6 +384,8 @@ const useMainContext = (state) => {
     setTabKey,
     setIsSkipTerms,
     setSetupType,
+    applyAtomicWidgetSetup,
+    applyAtomicExtensionSetup,
     updateActiveWidget,
     updateActiveGroupWidget,
     updateActiveFullWidget,

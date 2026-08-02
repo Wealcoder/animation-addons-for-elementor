@@ -118,11 +118,35 @@ class Animation_Settings {
 	 * the switch by hand is never overridden by a re-detection.
 	 */
 	public static function maybe_bootstrap(): void {
-		if ( false !== get_option( self::OPTION_NAME, false ) ) {
+		/*
+		 * Test the same thing get() tests — `is_array`, not `false !==`.
+		 *
+		 * The two used to disagree, and the gap was expensive: for a stored ''
+		 * / null / 0 / stray scalar (a half-failed write, a migration, another
+		 * plugin resetting the key) this guard saw "something is there" and
+		 * returned, while get() saw "not an array" and fell into its live
+		 * detection branch. Nothing ever wrote the option, so EVERY request —
+		 * front end included — rebuilt the Elementor Kit and re-counted posts,
+		 * forever. Measured at ~5.4 ms against 0.28 ms for the cached path.
+		 *
+		 * Treating a non-array as "not bootstrapped" also repairs the corrupt
+		 * value instead of leaving the site wedged, and can never destroy real
+		 * settings: this class only ever writes an array.
+		 */
+		if ( is_array( get_option( self::OPTION_NAME, false ) ) ) {
 			return;
 		}
 
 		$settings = self::defaults();
+
+		// Same re-entrancy guard as get(), and needed for the same reason:
+		// detect_legacy_usage() AND import_from_kit() both construct the
+		// Elementor Kit, whose register_tabs action calls back into
+		// legacy_v3_enabled() → get(). This runs only while the option is
+		// absent, which is precisely when get() would take its uncached branch
+		// and recurse. See the long comment in get().
+		self::$cache = $settings;
+
 		$settings['legacy_v3'] = self::detect_legacy_usage();
 
 		// Carry an existing v3 configuration across so the new panel opens
@@ -1342,8 +1366,41 @@ JS;
 			// Answer from live detection without writing — maybe_bootstrap()
 			// persists the same decision on the next admin request.
 			$settings = self::defaults();
+
+			/*
+			 * Publish the defaults BEFORE detecting, or this recurses until the
+			 * memory limit ends the request.
+			 *
+			 * detect_legacy_usage() reads the Elementor Kit, and CONSTRUCTING
+			 * that Kit fires `elementor/kit/register_tabs`, which Pro answers by
+			 * asking legacy_v3_enabled() — i.e. this very method. With the cache
+			 * still null, that re-entrant read starts a second get(), which
+			 * detects again, which builds the Kit again, and so on.
+			 *
+			 * Only reachable while the option is absent, so it is invisible on
+			 * any site that has loaded wp-admin once and fatal on every fresh
+			 * install. It also reports as `Allowed memory size exhausted` inside
+			 * defaults() — the deepest small-allocation site, and nowhere near
+			 * the actual defect — so fix it HERE, not there.
+			 *
+			 * The re-entrant caller consequently reads legacy_v3 = true, the
+			 * defaults() placeholder. That is the safe answer and not a
+			 * compromise: the flag is a one-way ratchet whose automatic
+			 * direction is only ever ON, and showing the legacy tabs disables
+			 * nothing. The outer call overwrites it with the real detection a
+			 * moment later.
+			 */
+			// Both assignments go through sanitize() so this branch returns the
+			// SAME SHAPE as the stored branch below. Raw defaults() omits
+			// `legacy_v3_user_set`, so callers got a 6-key array here and a
+			// 7-key one everywhere else — a difference that only shows up on a
+			// site whose option has never been written, i.e. never in testing.
+			// sanitize() preserves an explicit legacy_v3 and touches no Kit, so
+			// it is safe inside this window.
+			self::$cache = self::sanitize( $settings );
+
 			$settings['legacy_v3'] = self::detect_legacy_usage();
-			self::$cache = $settings;
+			self::$cache = self::sanitize( $settings );
 
 			return self::$cache;
 		}

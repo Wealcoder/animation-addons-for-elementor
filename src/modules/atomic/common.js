@@ -634,6 +634,28 @@ const Registry = {
 
 		if (!kind || typeof kind.read !== 'function' || !kind.mapName) return kind;
 		if (KINDS.some((k) => k.name === kind.name)) return kind; // dedupe by name
+
+		// Image-gate seam (Pro engine, free seam — same pattern as the form
+		// hooks). When Pro's image-gate module is present it exposes
+		// window.AAEImageGate; kind.play then waits for the element's images
+		// before revealing them, which keeps the editor replay path ("Play
+		// Now", initial replay) honest on lazyloaded markup. Without Pro the
+		// wrap short-circuits to today's exact behaviour — and the FRONTEND
+		// play path never goes through kind.play at all (it is a closure
+		// inside each effect's bind), so this is a belt, not the fix; the
+		// fix lives in Pro's wireTrigger. See CLAUDE.md → cache compat.
+		if (typeof kind.play === 'function') {
+			const rawPlay = kind.play;
+			kind.play = (el, config) => {
+				const gate = window.AAEImageGate;
+				if (gate && typeof gate.whenImagesSettled === 'function') {
+					gate.whenImagesSettled(el, () => rawPlay(el, config));
+				} else {
+					rawPlay(el, config);
+				}
+			};
+		}
+
 		KINDS.push(kind);
 		// Re-scan once the registration settles in the microtask queue, so
 		// effect files that register at module top-level still see the DOM.
