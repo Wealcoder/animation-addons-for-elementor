@@ -3246,14 +3246,7 @@ return array(
 								'youtube_url'  => '',
 							),
 						),
-					),
-					'draw-svg'            => array(
-						'title'     => 'DrawSVG',
-						'doc_url'   => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/wcf-custom-css/',
-						'is_pro'    => true,
-						'is_active' => false,
-						'elements'  => array(),
-					),
+					),				
 					'flip'                => array(
 						'title'     => 'Flips',
 						'doc_url'   => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/wcf-custom-css/',
@@ -3292,31 +3285,7 @@ return array(
 							),
 
 						),
-					),
-					'gsap-builder'        => array(
-						'title'     => 'Builders',
-						'doc_url'   => 'https://support.crowdytheme.com/docs/advanced-settings/advanced-settings/wcf-custom-css/',
-						'is_pro'    => true,
-						'is_active' => false,
-						'elements'  => array(
-							'animation-builder' => array(
-								'label'        => 'Animation Builder',
-								'location'     => array(
-									'cTab'     => 'gsap',
-									'pluginId' => 'gsap-builder',
-								),
-								'is_pro'       => true,
-								'pro_only'     => true,
-								'is_active'    => false,
-								'is_extension' => false,
-								'is_upcoming'  => false,
-								'icon'         => 'wcf-icon-Animation-Builder',
-								'demo_url'     => '',
-								'doc_url'      => '',
-								'youtube_url'  => '',
-							),
-						),
-					),
+					)				
 				),
 			),
 		),

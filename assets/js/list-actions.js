@@ -18,5 +18,3 @@ jQuery(document).ready(function($) {
         });
     });
 });
-
-//# sourceMappingURL=list-actions.js.map

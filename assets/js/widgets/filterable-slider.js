@@ -53,5 +53,3 @@
         elementorFrontend.hooks.addAction('frontend/element_ready/wcf--filterable-slider.default', AdvanceSlider);
     });
 })(jQuery);
-
-//# sourceMappingURL=filterable-slider.js.map
