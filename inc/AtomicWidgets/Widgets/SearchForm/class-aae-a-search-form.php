@@ -81,7 +81,7 @@ class AAE_A_Search_Form extends Atomic_Element_Base {
 	}
 
 	public function get_categories(): array {
-		return ['aae-atomic-post'];
+		return ['aae-atomic-post','wcf-hf-addon'];
 	}
 
 	/**

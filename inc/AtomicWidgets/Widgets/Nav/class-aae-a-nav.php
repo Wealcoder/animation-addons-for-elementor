@@ -57,7 +57,7 @@ class AAE_A_Nav extends Atomic_Element_Base {
 	}
 
 	public function get_categories(): array {
-		return ['aae-atomic-general'];
+		return ['aae-atomic-general','wcf-hf-addon'];
 	}
 
 	/**

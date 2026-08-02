@@ -3354,6 +3354,11 @@ final class Atomic
 		// register_atomic_categories().
 		add_action('elementor/elements/categories_registered', [$this, 'register_atomic_categories']);
 
+		// …and then move them to the TOP of the panel. Registration can only
+		// append (see PANEL_CATEGORY_ORDER), so the order is re-imposed on the
+		// editor config instead. See promote_panel_categories().
+		add_filter('elementor/editor/localize_settings', [$this, 'promote_panel_categories']);
+
 		// Register library-document types for our atomic top-level widgets so
 		// "Save as a template" works on them (Elementor only registers types for
 		// e-flexbox / e-div-block / e-form; our roots would otherwise fail with
@@ -5041,6 +5046,38 @@ final class Atomic
 	}
 
 	/**
+	 * AAE's panel categories, in the order they should appear at the TOP of the
+	 * Elements panel.
+	 *
+	 * Elementor gives no way to control this from the registration side:
+	 * `init_categories()` builds its own list first and only then fires
+	 * `elementor/elements/categories_registered`, and `add_category()` can only
+	 * APPEND (`$categories` is private, there is no setter, `get_categories()`
+	 * has no filter, and Elementor's own `promote_category_after()` is private).
+	 * So every third-party category lands dead last.
+	 *
+	 * The order is therefore re-imposed on the editor CONFIG instead — see
+	 * promote_panel_categories() for the PHP half and
+	 * enqueue_atomic_editor_scripts() for the JS half. This constant is the
+	 * single source of truth for both.
+	 *
+	 * Membership here is by SLUG only — a category does not have to be one of
+	 * ours from register_atomic_categories() to be listed. `wcf-hf-addon` is
+	 * registered on the v3 side (class-plugin.php::widget_categories()) and
+	 * holds both v3 widgets (Nav Menu) and atomic ones (Nav, WP Menu, Offcanvas,
+	 * Search Form), so it belongs in the promoted block with the rest of the AAE
+	 * groups rather than stranded below Layout/Basic where v3's own append order
+	 * leaves it. Slugs that are not present in a given editor's map are simply
+	 * skipped by both halves, so listing one costs nothing when it is empty.
+	 */
+	private const PANEL_CATEGORY_ORDER = [
+		'aae-atomic-general',
+		'aae-atomic-form',
+		'aae-atomic-post',
+		'wcf-hf-addon',
+	];
+
+	/**
 	 * Register AAE's own panel categories for atomic widgets. Each atomic
 	 * widget class returns one of these slugs from its own override (added
 	 * per-widget — the base defaults are plain, non-abstract methods, not
@@ -5075,6 +5112,87 @@ final class Atomic
 			'title' => esc_html__('AAE Post', 'animation-addons-for-elementor'),
 			'icon'  => 'fa fa-plug',
 		]);
+	}
+
+	/**
+	 * Move the AAE categories to the front of a panel-categories map.
+	 *
+	 * Panel order is NOTHING BUT the key order of this array — Elementor's
+	 * editor iterates it with `_.each` in initCategoriesCollection() and adds
+	 * each key to the collection in encounter order, with no sort afterwards.
+	 * So re-keying the array in the right order IS the feature.
+	 *
+	 * `favorites` is deliberately kept pinned above ours when present: it is a
+	 * user-pinning surface, not a vendor category.
+	 *
+	 * Uses array_merge rather than `+` — array_merge preserves insertion order
+	 * for string keys and does not renumber them, whereas `+` would keep the
+	 * left operand's value on a key collision.
+	 *
+	 * @param array $categories slug => category config.
+	 *
+	 * @return array
+	 */
+	private static function reorder_panel_categories(array $categories): array
+	{
+		$ours = [];
+
+		foreach (self::PANEL_CATEGORY_ORDER as $slug) {
+			if (isset($categories[$slug])) {
+				$ours[$slug] = $categories[$slug];
+				unset($categories[$slug]);
+			}
+		}
+
+		// Every AAE widget disabled (categories are hideIfEmpty, so Elementor
+		// never registered ours) — leave core's order exactly as it was.
+		if (empty($ours)) {
+			return $categories;
+		}
+
+		$head = [];
+
+		if (isset($categories['favorites'])) {
+			$head['favorites'] = $categories['favorites'];
+			unset($categories['favorites']);
+		}
+
+		return array_merge($head, $ours, $categories);
+	}
+
+	/**
+	 * Promote the AAE categories to the top of the Elements panel.
+	 *
+	 * `elementor/editor/localize_settings` is the ONLY server-side seam that can
+	 * do this. The obvious-looking `elementor/document/config` cannot: its return
+	 * value is applied with array_replace_recursive(), which preserves the
+	 * ORIGINAL array's key order for keys present in both — so handing it a
+	 * reordered map silently changes nothing.
+	 *
+	 * This covers the initial editor load only. Two client-side paths replace
+	 * the whole map afterwards and are re-ordered by the inline script in
+	 * enqueue_atomic_editor_scripts(): Elementor's `refreshWidgets()` (which
+	 * assigns straight from the unfiltered `refresh_widgets_config` AJAX) and
+	 * switching documents (which loads a fresh Document::get_config()).
+	 *
+	 * @param array $settings Editor client env.
+	 *
+	 * @return array
+	 */
+	public function promote_panel_categories($settings)
+	{
+		if (! is_array($settings)) {
+			return $settings;
+		}
+
+		if (isset($settings['initial_document']['panel']['elements_categories'])
+			&& is_array($settings['initial_document']['panel']['elements_categories'])
+		) {
+			$settings['initial_document']['panel']['elements_categories'] =
+				self::reorder_panel_categories($settings['initial_document']['panel']['elements_categories']);
+		}
+
+		return $settings;
 	}
 
 	/**
@@ -5984,6 +6102,71 @@ final class Atomic
 				'ajaxUrl' => admin_url('admin-ajax.php'),
 				'nonce'   => wp_create_nonce('aae_loop_grid'),
 			]
+		);
+
+		// Keep the AAE categories at the top of the Elements panel.
+		//
+		// promote_panel_categories() orders the config Elementor PRINTS, which
+		// covers the initial load. Two client-side paths then replace that map
+		// wholesale with PHP's own (appended-last) order and would undo it:
+		//
+		//   1. elementor.refreshWidgets() assigns
+		//      `config.document.panel.elements_categories = data.categories`
+		//      straight from the `refresh_widgets_config` AJAX, which has no
+		//      filter, then fires `elementor/widgets/refreshed`.
+		//   2. Switching documents (Site Settings, a popup/template) assigns
+		//      `config.document = config` from a fresh Document::get_config().
+		//
+		// Re-applying on those two signals is the whole fix. It runs before the
+		// panel can read the map: the Elements page builds its categories
+		// collection in initialize() → initCategoriesCollection(), which only
+		// happens once the panel routes to `panel/elements/categories` — after
+		// both `elementor:init` and `document:loaded`.
+		//
+		// Inline rather than a module under src/, deliberately: no build step,
+		// and it stays next to the PHP half it mirrors.
+		wp_add_inline_script(
+			'aae-atomic-editor',
+			sprintf(
+				'jQuery( window ).on( "elementor:init", function () {
+	var order = %s;
+
+	function promote() {
+		var panel = window.elementor && elementor.config && elementor.config.document && elementor.config.document.panel;
+		var cats = panel && panel.elements_categories;
+
+		if ( ! cats ) {
+			return;
+		}
+
+		var out = {};
+
+		// Favorites is a user-pinning surface — it stays above ours.
+		if ( cats.favorites ) {
+			out.favorites = cats.favorites;
+		}
+
+		order.forEach( function ( slug ) {
+			if ( cats[ slug ] ) {
+				out[ slug ] = cats[ slug ];
+			}
+		} );
+
+		Object.keys( cats ).forEach( function ( slug ) {
+			if ( ! out.hasOwnProperty( slug ) ) {
+				out[ slug ] = cats[ slug ];
+			}
+		} );
+
+		panel.elements_categories = out;
+	}
+
+	promote();
+	elementor.on( "document:loaded", promote );
+	elementor.hooks.addAction( "elementor/widgets/refreshed", promote );
+} );',
+				wp_json_encode(self::PANEL_CATEGORY_ORDER)
+			)
 		);
 	}
 

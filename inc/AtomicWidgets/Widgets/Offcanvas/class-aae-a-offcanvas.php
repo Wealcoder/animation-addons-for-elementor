@@ -91,7 +91,7 @@ class AAE_A_Offcanvas extends Atomic_Element_Base {
 	}
 
 	public function get_categories(): array {
-		return ['aae-atomic-general'];
+		return ['aae-atomic-general','wcf-hf-addon'];
 	}
 
 	/**
