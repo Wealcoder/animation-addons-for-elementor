@@ -10,16 +10,26 @@ if ( ! defined( 'ABSPATH' ) ) {
  * owns its own NAMESPACE so multiple effects can coexist on a single
  * widget without overwriting each other.
  *
- * Pattern mirrors Elementor's atomic Interactions but split per-feature:
- *   - data-aae-text-id  + window.AAE_INTERACTIONS_TEXT
- *   - data-aae-anim-id  + window.AAE_INTERACTIONS_ANIM
- *   - data-aae-tilt-id  + window.AAE_INTERACTIONS_TILT  (future)
+ * Pattern mirrors Elementor's atomic Interactions but split per-feature —
+ * one global per namespace, each keyed by ELEMENT ID:
+ *   - window.AAE_INTERACTIONS_TEXT
+ *   - window.AAE_INTERACTIONS_ANIM
+ *
+ * NO per-namespace marker attribute is emitted. The element is found via
+ * Elementor's own `data-interaction-id`, which every atomic widget already
+ * renders, and that id is the map key. (An earlier version of this comment
+ * described `data-aae-text-id` / `data-aae-anim-id` attributes; they have
+ * never been rendered. Anything looking for animated elements in the DOM must
+ * read these globals and query `[data-interaction-id="<key>"]` — the
+ * Performance module's lazy loader does exactly that, and silently loaded
+ * everything up-front for as long as it trusted the old comment.)
  *
  * Why namespace? An element may carry BOTH text + regular animation
  * settings (e-heading). Sharing one map keyed by element id would have
  * the second registration clobber the first.
  *
- * Each namespace renders as its own inline <script> in the footer.
+ * Each namespace renders as its own inline <script> in the footer at
+ * `wp_footer` priority 5 — before anything that needs to read them.
  */
 final class InteractionsMap {
 

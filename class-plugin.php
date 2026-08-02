@@ -1150,6 +1150,12 @@ class Plugin
 		require_once WCF_ADDONS_PATH . 'inc/class-blacklist.php';
 		require_once WCF_ADDONS_PATH . 'inc/ajax-handler.php';
 
+		// Loaded unconditionally, not just in admin: the front end and the Pro
+		// plugin both read Animation_Settings to decide which renderer owns a
+		// feature, so the class has to exist on every request.
+		require_once WCF_ADDONS_PATH . 'inc/AnimationSettings/class-animation-settings.php';
+		\WCF_ADDONS\AnimationSettings\Animation_Settings::instance();
+
 		\WCF_ADDONS\Atomic\Bootstrap::init();
 		\WCF_ADDONS\Forms\Bootstrap::init();
 

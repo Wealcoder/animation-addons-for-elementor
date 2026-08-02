@@ -253,6 +253,46 @@ class AAE_A_Post_Image extends Atomic_Widget_Base {
 		];
 	}
 
+	/**
+	 * Build each child from its OWN type, the way container elements do.
+	 *
+	 * This widget extends Atomic_Widget_Base — the LEAF base — but declares
+	 * default children, and the leaf base assumes it has none:
+	 * Widget_Base::_get_default_child_type() ignores the child's data entirely
+	 * and returns the V1 `section` element type for anything.
+	 *
+	 * The caption paragraph was therefore instantiated as Element_Section rather
+	 * than Atomic_Paragraph. That class is an Element_Base, not a Widget_Base, so
+	 * its get_raw_data() emits `isInner` and — the part that actually breaks —
+	 * NO `widgetType`. The editor config handed to the browser carried a model
+	 * with `elType: widget` and no widgetType; Elementor's V1 element model sets
+	 * remoteRender = true for any elType `widget`, so the view immediately asked
+	 * the server to render it, and Elements_Manager::get_element('widget', null)
+	 * returns the whole widget-type ARRAY instead of one type — fatal on
+	 * ->get_default_args(), one 500 per editor boot on every page using this
+	 * widget. Saved data was always correct; only the instantiation was wrong.
+	 *
+	 * Mirrors Atomic_Element_Base::_get_default_child_type().
+	 *
+	 * @param array $element_data
+	 * @return \Elementor\Element_Base|null
+	 */
+	protected function _get_default_child_type( array $element_data ) {
+		$el_types = array_keys( \Elementor\Plugin::$instance->elements_manager->get_element_types() );
+
+		if ( in_array( $element_data['elType'], $el_types, true ) ) {
+			return \Elementor\Plugin::$instance->elements_manager->get_element_types( $element_data['elType'] );
+		}
+
+		// Never fall through to a null widget type: get_widget_types( null )
+		// returns every registered type, and the caller has no array guard.
+		if ( ! isset( $element_data['widgetType'] ) ) {
+			return null;
+		}
+
+		return \Elementor\Plugin::$instance->widgets_manager->get_widget_types( $element_data['widgetType'] );
+	}
+
 	protected function define_allowed_child_types() {
 		return [ 'widget', 'e-paragraph', 'e-heading' ];
 	}

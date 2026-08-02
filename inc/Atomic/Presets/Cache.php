@@ -15,8 +15,14 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * IDs never collide between the two sets: local presets keep their
  * existing string-slug id scheme (sanitize_key(basename($file,'.json'))),
- * remote presets get 'remote-' . $numeric_id — so plain concatenation is
- * safe with no dedup step needed.
+ * remote presets get 'remote-' . $numeric_id.
+ *
+ * Because ids can't collide, they also can't detect a DUPLICATE — and some
+ * local files are deliberate copies of a preset the remote also serves
+ * (Progress Bar's Circle/Dot/Line), which would then be listed twice on a
+ * healthy site. drop_shadowed_remote() removes that overlap by slug of the
+ * name, and resolves it in the LOCAL file's favour; see its docblock for why
+ * that inverts the usual remote-first rule.
  *
  * Once every local .json file is eventually deleted (planned), Local_Fallback
  * naturally returns [] for every type and this class's merge degrades to
@@ -50,7 +56,13 @@ final class Cache {
 	 * type or a total remote outage still returns whatever local has (which
 	 * may itself be []).
 	 *
-	 * @return array<int, array>
+	 * `remote_failed` is true when the remote half could not be read at all
+	 * (request failed AND no cached copy existed) — i.e. the returned list is
+	 * INCOMPLETE, not authoritative. Consumers must not treat that case as
+	 * "this type has no presets": doing so is what hid the editor's preset
+	 * control for a whole session on one blip.
+	 *
+	 * @return array{presets: array<int, array>, remote_failed: bool}
 	 */
 	public function get_presets_for_type( string $type, string $category, bool $is_dev ): array {
 		$local = $this->local->get_presets_for_type( $type );
@@ -59,7 +71,89 @@ final class Cache {
 			? $this->fetch_remote_fresh( $type, $category )
 			: $this->get_remote_cached_or_fetch( $type, $category );
 
-		return array_merge( $this->tag_remote( $this->resolve_asset_urls( $remote ) ), $local );
+		$remote_entries = $this->tag_remote( $this->resolve_asset_urls( $remote['entries'] ) );
+
+		return [
+			'presets'       => array_merge( $this->drop_shadowed_remote( $remote_entries, $local ), $local ),
+			'remote_failed' => $remote['failed'],
+		];
+	}
+
+	/**
+	 * Drop remote presets that a bundled local file already covers.
+	 *
+	 * Some local files are deliberate copies of presets that also live on the
+	 * remote server (Progress Bar's Circle/Dot/Line). Without a dedup step a
+	 * healthy site would list each of those designs twice.
+	 *
+	 * THE LOCAL COPY WINS, not the remote one — the opposite of the usual
+	 * remote-first rule, and deliberate. A bundled file ships with the plugin
+	 * and is version-matched to it: the Progress Bar presets reference
+	 * `e-aae-a-progressbar-dot`/`-fill`/`-label`, part widgets whose twigs
+	 * render progressbar.js's hook classes, so the preset carries no hook class
+	 * in a `classes` prop and the panel has nothing to report as missing. The
+	 * remote copies are still built from native div-blocks with those hooks in
+	 * `classes`, where Elementor flags them AND offers a dismiss button that
+	 * unapplies them. Preferring remote would mean the applied preset is the
+	 * broken one on every online site — i.e. always.
+	 *
+	 * The cost: a genuinely improved remote preset is masked while a local file
+	 * of the same name exists. That is the intended lifecycle — delete the
+	 * local file (the stated end state for all of them) and the remote takes
+	 * over with no code change.
+	 *
+	 * Identity is the slug of the NAME, the only field both halves share (the
+	 * id schemes are disjoint by construction — see the class docblock — so ids
+	 * can't detect a duplicate). A local entry is matched on its id too, since
+	 * that id is its filename slug and a copy is normally named after the
+	 * preset it mirrors.
+	 *
+	 * @param array<int, array> $remote
+	 * @param array<int, array> $local
+	 * @return array<int, array>
+	 */
+	private function drop_shadowed_remote( array $remote, array $local ): array {
+		if ( empty( $remote ) || empty( $local ) ) {
+			return $remote;
+		}
+
+		$taken = [];
+		foreach ( $local as $entry ) {
+			foreach ( [ $entry['id'] ?? '', $entry['name'] ?? '' ] as $candidate ) {
+				$slug = self::slug( (string) $candidate );
+				if ( '' !== $slug ) {
+					$taken[ $slug ] = true;
+				}
+			}
+		}
+
+		if ( empty( $taken ) ) {
+			return $remote;
+		}
+
+		return array_values(
+			array_filter(
+				$remote,
+				static function ( array $entry ) use ( $taken ): bool {
+					$slug = self::slug( (string) ( $entry['name'] ?? '' ) );
+
+					return '' === $slug || ! isset( $taken[ $slug ] );
+				}
+			)
+		);
+	}
+
+	/**
+	 * Lowercase, every run of non-alphanumerics collapsed to one hyphen.
+	 *
+	 * Deliberately NOT sanitize_key(), which strips spaces rather than
+	 * converting them — "Bold Overlay Zoom" would become "boldoverlayzoom" and
+	 * never match a local `bold-overlay-zoom.json`.
+	 */
+	private static function slug( string $value ): string {
+		$value = strtolower( trim( $value ) );
+
+		return trim( (string) preg_replace( '/[^a-z0-9]+/', '-', $value ), '-' );
 	}
 
 	/**
@@ -111,6 +205,9 @@ final class Cache {
 		);
 	}
 
+	/**
+	 * @return array{entries: array<int, array>, failed: bool}
+	 */
 	private function get_remote_cached_or_fetch( string $type, string $category ): array {
 		$transient_key = self::TYPE_TRANSIENT_PREFIX . $type;
 		$cached        = get_transient( $transient_key );
@@ -118,7 +215,15 @@ final class Cache {
 		if ( false !== $cached && is_array( $cached ) ) {
 			$this->maybe_refresh_via_manifest( $type, $category, $cached, $transient_key );
 
-			return get_transient( $transient_key ) ?: $cached;
+			// A cached copy always counts as a successful read, even if the
+			// manifest refresh above hit the network and failed — the list we
+			// return is still a complete answer for this type.
+			$fresh = get_transient( $transient_key );
+
+			return [
+				'entries' => ( false !== $fresh && is_array( $fresh ) ) ? $fresh : $cached,
+				'failed'  => false,
+			];
 		}
 
 		return $this->fetch_remote_fresh( $type, $category, $transient_key );
@@ -127,18 +232,33 @@ final class Cache {
 	/**
 	 * Fetches the full bulk list and caches it (even if empty, so a type
 	 * with legitimately nothing on the server doesn't get re-requested on
-	 * every single page load). On dev/local environments, still returns the
-	 * fresh result but never touches the transient.
+	 * every single page load) — but ONLY when the server actually answered.
+	 * A FAILED request is never cached: writing [] into a 12-hour transient
+	 * over one network blip would blank that type's presets until the TTL
+	 * expired. On dev/local environments, still returns the fresh result but
+	 * never touches the transient.
+	 *
+	 * @return array{entries: array<int, array>, failed: bool}
 	 */
 	private function fetch_remote_fresh( string $type, string $category, ?string $cache_key = null ): array {
 		$entries = $this->remote->fetch_presets_for_type( $type, $category );
+
+		if ( null === $entries ) {
+			return [
+				'entries' => [],
+				'failed'  => true,
+			];
+		}
 
 		if ( null !== $cache_key ) {
 			set_transient( $cache_key, $entries, self::ttl() );
 			$this->update_manifest_option( $type, $entries );
 		}
 
-		return $entries;
+		return [
+			'entries' => $entries,
+			'failed'  => false,
+		];
 	}
 
 	/**

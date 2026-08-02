@@ -46,7 +46,11 @@ import {
   Stack,
   Typography,
 } from "@elementor/ui";
-import { applyPresetModel, ensurePresetsLoaded } from "./preset-apply";
+import {
+  applyPresetModel,
+  invalidatePresetsForType,
+  loadPresetsForType,
+} from "./preset-apply";
 
 const UPGRADE_URL = "https://animation-addons.com/";
 const BRAND = "#ff7a00";
@@ -194,6 +198,11 @@ export function PresetPickerControl({ label }) {
 
   const [open, setOpen] = React.useState(false);
   const [presets, setPresets] = React.useState(null); // null = loading
+  // The list could not be read in full — a request failure, or a 200 whose
+  // `remote_failed` flag says the remote half was unreachable. Kept separate
+  // from an empty list because the two must render differently (see below).
+  const [failed, setFailed] = React.useState(false);
+  const [reloadToken, setReloadToken] = React.useState(0);
   const config = window.AAE_PRESET_CONFIG || {};
   const proActive = !!config.proActive;
   const placeholderSrc = config.placeholderThumb || "";
@@ -202,9 +211,11 @@ export function PresetPickerControl({ label }) {
     let cancelled = false;
 
     setPresets(null);
-    ensurePresetsLoaded(type).then((list) => {
+    setFailed(false);
+    loadPresetsForType(type).then((result) => {
       if (!cancelled) {
-        setPresets(Array.isArray(list) ? list : []);
+        setPresets(Array.isArray(result?.presets) ? result.presets : []);
+        setFailed(!!result?.failed);
       }
     });
 
@@ -212,7 +223,12 @@ export function PresetPickerControl({ label }) {
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [type]);
+  }, [type, reloadToken]);
+
+  const retry = () => {
+    invalidatePresetsForType(type);
+    setReloadToken((n) => n + 1);
+  };
 
   const applyPreset = (preset) => {
     if (!preset?.model) {
@@ -245,7 +261,13 @@ export function PresetPickerControl({ label }) {
   // behaviour. This is also the correct end-state once every bundled local
   // .json is eventually removed and a type has no remote presets configured
   // yet either.
-  if (presets !== null && !presets.length) {
+  //
+  // A FAILED read is deliberately excluded: it is not evidence that the type
+  // has no presets, and hiding on it was the reported "preset sometimes
+  // disappears" bug — one blip removed the control and, since the failure was
+  // also cached, nothing re-fetched it for the rest of the session. Now the
+  // trigger stays put and the dialog offers a retry.
+  if (presets !== null && !presets.length && !failed) {
     return null;
   }
 
@@ -348,6 +370,13 @@ export function PresetPickerControl({ label }) {
 
                 const total = presets.length;
                 const designWord = total === 1 ? "design" : "designs";
+
+                if (failed) {
+                  return total
+                    ? `${total} ${designWord} — some could not be loaded`
+                    : "Designs could not be loaded";
+                }
+
                 return proCount > 0
                   ? `${total} ${designWord} — ${proCount} premium`
                   : `${total} ${designWord} available`;
@@ -408,44 +437,88 @@ export function PresetPickerControl({ label }) {
               </Grid>
             </>
           ) : (
-            grouped.map(({ category, items }) => (
-              <Box key={category || "__uncategorized"} sx={{ mb: 3 }}>
-                {category ? (
-                  <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.25 }}>
-                    <Box
-                      sx={{
-                        width: 4,
-                        height: 14,
-                        borderRadius: "2px",
-                        background: `linear-gradient(180deg, ${BRAND}, ${BRAND_DARK})`,
-                      }}
-                    />
-                    <Typography
-                      variant="subtitle2"
-                      sx={{ fontWeight: 700, letterSpacing: "0.01em" }}
-                    >
-                      {category}
-                    </Typography>
-                  </Stack>
-                ) : null}
-                <Grid container spacing={{ xs: 1.5, sm: 2 }}>
-                  {items.map((p) => {
-                    const locked = !!p.pro && !proActive;
+            <>
+              {/*
+                * The read failed, so this list is incomplete (it may still hold
+                * the locally bundled presets). Say so and offer a retry rather
+                * than silently presenting a short list as the whole library —
+                * and never render nothing at all, which is what made the
+                * control look broken.
+                */}
+              {failed ? (
+                <Stack
+                  direction="row"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  gap={1.5}
+                  sx={{
+                    mb: 2.5,
+                    px: 1.5,
+                    py: 1.25,
+                    borderRadius: 1.5,
+                    border: "1px solid",
+                    borderColor: "warning.light",
+                    bgcolor: "warning.light",
+                  }}
+                >
+                  <Typography variant="caption" sx={{ fontWeight: 600 }}>
+                    {presets.length
+                      ? "Some designs couldn’t be loaded. Check your connection and try again."
+                      : "Couldn’t load designs. Check your connection and try again."}
+                  </Typography>
+                  <Button
+                    size="small"
+                    onClick={retry}
+                    sx={{
+                      flexShrink: 0,
+                      textTransform: "none",
+                      fontWeight: 700,
+                      color: BRAND_DARK,
+                    }}
+                  >
+                    {"Try again"}
+                  </Button>
+                </Stack>
+              ) : null}
+              {grouped.map(({ category, items }) => (
+                <Box key={category || "__uncategorized"} sx={{ mb: 3 }}>
+                  {category ? (
+                    <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.25 }}>
+                      <Box
+                        sx={{
+                          width: 4,
+                          height: 14,
+                          borderRadius: "2px",
+                          background: `linear-gradient(180deg, ${BRAND}, ${BRAND_DARK})`,
+                        }}
+                      />
+                      <Typography
+                        variant="subtitle2"
+                        sx={{ fontWeight: 700, letterSpacing: "0.01em" }}
+                      >
+                        {category}
+                      </Typography>
+                    </Stack>
+                  ) : null}
+                  <Grid container spacing={{ xs: 1.5, sm: 2 }}>
+                    {items.map((p) => {
+                      const locked = !!p.pro && !proActive;
 
-                    return (
-                      <Grid item xs={6} sm={4} md={3} key={p.id}>
-                        <PresetCard
-                          preset={p}
-                          placeholderSrc={placeholderSrc}
-                          locked={locked}
-                          onSelect={handleSelect}
-                        />
-                      </Grid>
-                    );
-                  })}
-                </Grid>
-              </Box>
-            ))
+                      return (
+                        <Grid item xs={6} sm={4} md={3} key={p.id}>
+                          <PresetCard
+                            preset={p}
+                            placeholderSrc={placeholderSrc}
+                            locked={locked}
+                            onSelect={handleSelect}
+                          />
+                        </Grid>
+                      );
+                    })}
+                  </Grid>
+                </Box>
+              ))}
+            </>
           )}
         </DialogContent>
       </Dialog>

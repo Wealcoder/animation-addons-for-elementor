@@ -69,17 +69,6 @@ module.exports = {
     // Per-effect bundles. Each is loaded conditionally by Render.php only
     // when a widget on the page actually uses that effect.
     "modules/atomic/effects/nested-slider": "./src/modules/atomic/effects/nested-slider/index.js",
-    "modules/atomic/effects/animation": "./src/modules/atomic/effects/animation/index.js",
-    "modules/atomic/effects/image-animation": "./src/modules/atomic/effects/image-animation/index.js",
-    "modules/atomic/effects/image-hover": "./src/modules/atomic/effects/image-hover/index.js",
-    "modules/atomic/effects/horizontal": "./src/modules/atomic/effects/horizontal-scroll-anim/index.js",
-    "modules/atomic/effects/sticky": "./src/modules/atomic/effects/sticky/index.js",
-    "modules/atomic/effects/mouse-move-effect": "./src/modules/atomic/effects/mouse-move-effect/index.js",
-    "modules/atomic/effects/cursor-hover-effect": "./src/modules/atomic/effects/cursor-hover-effect/index.js",
-    "modules/atomic/effects/advance-tooltip": "./src/modules/atomic/effects/advance-tooltip/index.js",
-    "modules/atomic/effects/tilt": "./src/modules/atomic/effects/tilt/index.js",
-    "modules/atomic/effects/scroll-to": "./src/modules/atomic/effects/scroll-to/index.js",
-    "modules/atomic/effects/parallax": "./src/modules/atomic/effects/parallax/index.js",
     "modules/atomic/effects/custom-css": "./src/modules/atomic/effects/custom-css/index.js",
   },
   output: {
