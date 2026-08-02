@@ -1,12 +1,3 @@
-// Everything about the look (colors, sizing, position, resting transform/
-// opacity) lives as real, native Elementor styles on the elements inside
-// each ready-made template. Only the rules below stay here, because each one
-// depends on a JS-toggled .active/.show class that Elementor's Style panel
-// has no way to target directly. The Tab's "selected" look is NOT here —
-// AAE_A_Toggle_Switcher_Tab exposes Style_States::SELECTED (`.e--selected`)
-// as a real Style-panel state (see class-aae-a-toggle-switcher-tab.php),
-// with a default look in its own define_base_styles(), fully overridable
-// per-instance from the panel.
 .aae-a-toggle-switcher {
 	.aae-ts-pane:not(.show) {
 		display: none;
