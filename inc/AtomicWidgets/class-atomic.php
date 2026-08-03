@@ -45,6 +45,28 @@ final class Atomic
 	const EXTENSIONS_OFFERED_OPTION_NAME = 'aae_atomic_extensions_offered';
 
 	/**
+	 * Marker for the one-time copy of the v3 admin-feature toggles into the
+	 * atomic extension option. See backfill_v3_admin_extensions().
+	 */
+	const V3_ADMIN_BACKFILL_OPTION_NAME = 'aae_atomic_v3_admin_backfill';
+
+	/**
+	 * Admin-feature extensions that exist in BOTH dashboards.
+	 *
+	 * Slugs are identical on the two sides (config.php's `general-extensions`
+	 * keys and this class's extensions_registry), which is what makes the
+	 * backfill a straight lookup. Every entry must also be present in
+	 * register_extension_definitions() or its card can never be shown, and in
+	 * class-plugin.php's loading gates or the toggle does nothing.
+	 */
+	const V3_ADMIN_EXTENSIONS = [
+		'custom-fonts',
+		'custom-cpt',
+		'custom-icon',
+		'code-snippet',
+	];
+
+	/**
 	 * Widgets deliberately present in the class registry but withheld from the
 	 * dashboard, so assert_registry_integrity() does not report them as drift.
 	 *
@@ -3321,6 +3343,97 @@ final class Atomic
 				'category'     => 'utility',
 				'order'        => 20,
 			],
+
+			/*
+			 * Site-wide admin features that predate the atomic dashboard.
+			 *
+			 * These four are not element extensions — they add wp-admin screens
+			 * (a font manager, a post-type builder, an icon-set uploader, a
+			 * snippet editor) and their output is consumed by v3 and v4 alike:
+			 * a font uploaded here shows up in the atomic Typography control,
+			 * a post type built here is what an atomic Loop Grid queries.
+			 *
+			 * They used to be reachable ONLY from the v3 extension list, so a
+			 * site working purely in v4 had no way to switch them on at all —
+			 * the same defect Dynamic Tags had (see its entry above). Their
+			 * slugs deliberately MATCH the v3 config.php keys so the two option
+			 * arrays stay legible side by side.
+			 *
+			 * Loading is an OR of the two toggles — see
+			 * class-plugin.php::register_extensions() and include_files(). Turning
+			 * one off here does NOT stop it if the v3 switch is still on; that is
+			 * the same contract Dynamic Tags and Template Library already have,
+			 * and it is what keeps an existing v3 site working untouched.
+			 *
+			 * `default` is false on purpose: these have shipped for a long time
+			 * and every site already has a deliberate answer for them stored in
+			 * `wcf_save_extensions`. Defaulting to true would make
+			 * migrate_newly_offered_extensions() switch four features on for
+			 * everybody, including the people who turned them off. The real
+			 * answer is copied across once by backfill_v3_admin_extensions().
+			 */
+			'custom-fonts' => [
+				'label'        => 'Custom Fonts',
+				'description'  => 'Upload and manage your own font families, selectable from the Elementor typography controls.',
+				'icon'         => 'wcf-icon-Custom-Fonts',
+				'is_pro'       => false,
+				'is_extension' => true,
+				'is_upcoming'  => false,
+				'default'      => false,
+				'keywords'     => ['custom fonts', 'fonts', 'typography', 'webfont', 'woff', 'font upload'],
+				'category'     => 'utility',
+				'order'        => 21,
+				'demo_url'     => 'https://animation-addons.com/docs/general-extensions/custom-fonts/',
+				'doc_url'      => 'https://animation-addons.com/docs/general-extensions/custom-fonts/',
+			],
+
+			'custom-cpt' => [
+				'label'        => 'Post Type Builder',
+				'description'  => 'Create custom post types and taxonomies without code, ready to query from a Loop Grid.',
+				'icon'         => 'wcf-icon-Custom-Post-Type',
+				'is_pro'       => false,
+				'is_extension' => true,
+				'is_upcoming'  => false,
+				'default'      => false,
+				'keywords'     => ['post type builder', 'custom post type', 'cpt', 'taxonomy', 'content type'],
+				'category'     => 'utility',
+				'order'        => 22,
+				'demo_url'     => 'https://animation-addons.com/docs/general-extensions/post-type-builder/',
+				'doc_url'      => 'https://animation-addons.com/docs/general-extensions/post-type-builder/',
+			],
+
+			'custom-icon' => [
+				'label'        => 'Custom Icon',
+				'description'  => 'Upload icon-font sets (IcoMoon/Fontello zips) and use them anywhere Elementor offers an icon picker.',
+				'icon'         => 'wcf-icon-Custom-Icons',
+				'is_pro'       => false,
+				'is_extension' => true,
+				'is_upcoming'  => false,
+				'default'      => false,
+				'keywords'     => ['custom icon', 'icons', 'icon font', 'icomoon', 'fontello', 'svg icons'],
+				'category'     => 'utility',
+				'order'        => 23,
+				'demo_url'     => 'https://animation-addons.com/docs/general-extensions/custom-icon/',
+				'doc_url'      => 'https://animation-addons.com/docs/general-extensions/custom-icon/',
+			],
+
+			'code-snippet' => [
+				'label'        => 'Code Snippet',
+				'description'  => 'Add PHP, CSS, JS or HTML snippets from wp-admin, with per-snippet placement and activation.',
+				// There is no `wcf-icon-Code-Snippet` glyph in the icon font —
+				// this is the same one the v3 card uses. See the Dynamic Tags
+				// note above for why a guessed name renders as an empty circle.
+				'icon'         => 'wcf-icon-Content-Protection',
+				'is_pro'       => false,
+				'is_extension' => true,
+				'is_upcoming'  => false,
+				'default'      => false,
+				'keywords'     => ['code snippet', 'snippets', 'php', 'custom code', 'functions'],
+				'category'     => 'utility',
+				'order'        => 24,
+				'demo_url'     => 'https://animation-addons.com/docs/general-extensions/code-snippet/',
+				'doc_url'      => 'https://animation-addons.com/docs/general-extensions/code-snippet/',
+			],
 		];
 	}
 
@@ -3436,6 +3549,9 @@ final class Atomic
 		// option arrays outright. A slug absent from the saved option simply reads
 		// as inactive.
 		$this->migrate_newly_offered_extensions();
+		// Must run AFTER the migration: that one writes the offered list, which
+		// is what stops these four being treated as brand new on the next load.
+		$this->backfill_v3_admin_extensions();
 		$this->backfill_formerly_forced_widgets();
 
 		// Deferred, not run inline: this method builds its registries in the
@@ -3611,6 +3727,63 @@ final class Atomic
 		}
 
 		update_option(self::FORCED_BACKFILL_OPTION_NAME, true);
+	}
+
+	/**
+	 * Copy the v3 answer for the four shared admin features into the v4 option.
+	 *
+	 * Custom Fonts / Post Type Builder / Custom Icon / Code Snippet now have a
+	 * card on the Atomic Extensions screen as well as the v3 one. Loading is an
+	 * OR of the two toggles, so nothing about an existing site's behaviour
+	 * changes when this ships — but WITHOUT this copy the new card would open
+	 * reading "off" on a site that has been using custom fonts for a year, which
+	 * is the "the dashboard card can lie" failure documented in CLAUDE.md. The
+	 * user's only recourse would be to flip a switch that was already on.
+	 *
+	 * Runs once, guarded by its own marker option rather than by "is the slug
+	 * missing?" — otherwise someone who deliberately turns a card off here would
+	 * have it switched back on by the very next admin page load, because the v3
+	 * option still says yes.
+	 *
+	 * Brand new sites are skipped, exactly as in
+	 * migrate_newly_offered_extensions(): with no atomic option at all the setup
+	 * wizard owns first-run configuration, and there is no v3 history to copy.
+	 * The marker is deliberately NOT burned in that case, so the copy still
+	 * happens for a site that installs v4 first and imports v3 content later.
+	 */
+	private function backfill_v3_admin_extensions(): void
+	{
+		if (get_option(self::V3_ADMIN_BACKFILL_OPTION_NAME)) {
+			return;
+		}
+
+		$saved = get_option(self::EXTENSIONS_OPTION_NAME);
+
+		// No settings yet -> fresh install, the wizard decides.
+		if (! is_array($saved)) {
+			return;
+		}
+
+		$legacy  = get_option('wcf_save_extensions');
+		$legacy  = is_array($legacy) ? $legacy : [];
+		$changed = false;
+
+		foreach (self::V3_ADMIN_EXTENSIONS as $slug) {
+			// Only ever switches ON, and only what v3 already had on. An
+			// extension the user has since turned off here keeps its own state
+			// because the marker below stops this from running twice.
+			if (! isset($saved[$slug]) && ! empty($legacy[$slug])) {
+				$saved[$slug] = true;
+				$changed      = true;
+			}
+		}
+
+		if ($changed) {
+			update_option(self::EXTENSIONS_OPTION_NAME, $saved);
+			$this->active_extensions = null;
+		}
+
+		update_option(self::V3_ADMIN_BACKFILL_OPTION_NAME, true);
 	}
 
 	private function migrate_newly_offered_extensions(): void

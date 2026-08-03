@@ -95,7 +95,7 @@ class AAE_A_Offcanvas_Panel extends Atomic_Element_Base {
 	 * containers let them build multi-column layouts inside the drawer.
 	 */
 	protected function define_allowed_child_types(): array {
-		return [ 'widget', 'e-con', 'e-flexbox', 'e-div-block', 'e-grid', 'e-heading', 'e-paragraph', 'e-svg', 'e-button', 'e-image', 'e-divider' ];
+		return [ 'widget', 'e-con', 'e-flexbox', 'e-div-block', 'e-grid', 'e-heading', 'e-paragraph', 'e-svg', 'e-button', 'e-image', 'e-divider','e-aae-a-nav' ];
 	}
 	protected function define_base_styles(): array {
 		return [

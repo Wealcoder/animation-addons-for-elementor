@@ -1039,7 +1039,7 @@ class Plugin
 	 */
 	public function register_extensions()
 	{
-		
+
 		foreach (self::get_extensions() as $slug => $data) {
 
 			// If upcoming don't register.
@@ -1048,6 +1048,39 @@ class Plugin
 			}
 
 			if (! $data['is_pro'] && ! $data['is_extension']) {
+				if (file_exists(WCF_ADDONS_PATH . 'inc/class-wcf-' . $slug . '.php')) {
+					include_once WCF_ADDONS_PATH . 'inc/class-wcf-' . $slug . '.php';
+				}
+			}
+		}
+
+		/*
+		 * Custom Fonts / Post Type Builder / Custom Icon also have a card on the
+		 * V4 (Atomic) Extensions screen, so honour that toggle as well.
+		 *
+		 * They are not v3-only features: a font uploaded here is offered by the
+		 * atomic Typography control, a post type built here is what an atomic
+		 * Loop Grid queries. Loading exclusively from the v3 list above meant a
+		 * site running purely on v4 — every legacy extension switched off — had
+		 * no way to reach any of them. Same shape as the Dynamic Tags gate in
+		 * the Pro plugin's register_extensions().
+		 *
+		 * This is an OR, not a replacement: an existing v3 site is unaffected,
+		 * and `include_once` plus each file's own class_exists() guard make a
+		 * double hit from both lists a no-op.
+		 *
+		 * Safe to call Atomic::instance() here — include_files() has already run
+		 * \WCF_ADDONS\Atomic\Bootstrap::init(), which loads the class, before it
+		 * calls this method.
+		 */
+		if (class_exists('\WCF_ADDONS\AtomicWidgets\Atomic')) {
+			$atomic = \WCF_ADDONS\AtomicWidgets\Atomic::instance();
+
+			foreach (['custom-fonts', 'custom-cpt', 'custom-icon'] as $slug) {
+				if (! $atomic->is_extension_active($slug)) {
+					continue;
+				}
+
 				if (file_exists(WCF_ADDONS_PATH . 'inc/class-wcf-' . $slug . '.php')) {
 					include_once WCF_ADDONS_PATH . 'inc/class-wcf-' . $slug . '.php';
 				}
@@ -1126,19 +1159,9 @@ class Plugin
 				require_once WCF_ADDONS_PATH . 'inc/admin/setup-wizard.php';
 			}
 			require_once WCF_ADDONS_PATH . 'inc/admin/dashboard.php';
-			if (wcf_addons_get_settings('wcf_save_extensions', 'code-snippet')) {
-				// Include CodeSnippet Admin functionality.
-				include_once WCF_ADDONS_PATH . 'inc/CodeSnippet/CodeSnippet.php';
-			}
 
 			include_once WCF_ADDONS_PATH . 'inc/admin/Notices/Notices.php';
 			include_once WCF_ADDONS_PATH . 'inc/admin/Notices/ShowNotices.php';
-		}
-
-		// Include CodeSnippet frontend functionality.
-		if (wcf_addons_get_settings('wcf_save_extensions', 'code-snippet')) {
-			include_once WCF_ADDONS_PATH . 'inc/CodeSnippet/CodeSnippetFrontend.php';
-			include_once WCF_ADDONS_PATH . 'inc/CodeSnippet/CodeSnippetCompatibility.php';
 		}
 
 		// Only load theme builder when needed. added this condition at v-2.6.0
@@ -1177,6 +1200,34 @@ class Plugin
 		 */
 		if (\WCF_ADDONS\AtomicWidgets\Atomic::instance()->is_extension_active('template-library')) {
 			require_once WCF_ADDONS_PATH . 'inc/class-wcf-template-library.php';
+		}
+
+		/*
+		 * Code Snippet — switchable from EITHER dashboard.
+		 *
+		 * Snippets are site-wide PHP/CSS/JS, nothing to do with which widget era
+		 * a page is built in, so gating them on the v3 extension list alone left
+		 * a v4-only site with no way to reach the feature. The v3 check is kept
+		 * first and unchanged, so an existing site is unaffected.
+		 *
+		 * These three includes moved down here from the is_admin() block above
+		 * purely because Atomic::instance() is only safe to call after
+		 * \WCF_ADDONS\Atomic\Bootstrap::init() has loaded the class. Nothing in
+		 * CodeSnippet.php runs at file scope beyond its own singleton, which
+		 * registers admin_menu/ajax hooks that fire long after plugins_loaded.
+		 */
+		$code_snippet_active = wcf_addons_get_settings('wcf_save_extensions', 'code-snippet')
+			|| \WCF_ADDONS\AtomicWidgets\Atomic::instance()->is_extension_active('code-snippet');
+
+		if ($code_snippet_active) {
+			if (is_admin()) {
+				// Include CodeSnippet Admin functionality.
+				include_once WCF_ADDONS_PATH . 'inc/CodeSnippet/CodeSnippet.php';
+			}
+
+			// Include CodeSnippet frontend functionality.
+			include_once WCF_ADDONS_PATH . 'inc/CodeSnippet/CodeSnippetFrontend.php';
+			include_once WCF_ADDONS_PATH . 'inc/CodeSnippet/CodeSnippetCompatibility.php';
 		}
 
 		include_once WCF_ADDONS_PATH . 'inc/trait-wcf-post-query.php';
