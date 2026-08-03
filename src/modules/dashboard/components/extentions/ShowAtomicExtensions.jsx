@@ -13,8 +13,18 @@ import {
 import { useActiveItem, useAtomicExtensions } from "@/hooks/app.hooks";
 import { toast } from "sonner";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
+import { ExtensionSettingConfig } from "@/config/extensionSettingConfig";
 
 const ShowAtomicExtensions = ({ filterKey, setExtensionCount }) => {
+  // Same registry the v3 list uses (ShowExtensions.jsx). Keyed by extension
+  // slug, and the slugs of the shared admin features (custom-fonts, …) are
+  // identical on both sides on purpose — so Custom Fonts gets the same gear
+  // here that it has on the v3 screen, from one source of truth. An extension
+  // with no entry simply renders no gear.
+  const exSettings = ExtensionSettingConfig;
+  const settingsFor = (slug) =>
+    exSettings?.find((item) => item.key === slug)?.component;
+
   const { allAtomicExtensions } = useAtomicExtensions();
   const { updateActiveAtomicExtension, updateActiveAtomicGroupExtension } =
     useActiveItem();
@@ -131,6 +141,7 @@ const ShowAtomicExtensions = ({ filterKey, setExtensionCount }) => {
                       slug={content}
                       updateActiveItem={updateActiveAtomicExtension}
                       className="rounded p-5"
+                      exSettings={settingsFor(content)}
                     />
                   </React.Fragment>
                 ))}
@@ -179,6 +190,7 @@ const ShowAtomicExtensions = ({ filterKey, setExtensionCount }) => {
                     slug={content}
                     updateActiveItem={updateActiveAtomicExtension}
                     className="rounded p-5"
+                    exSettings={settingsFor(content)}
                   />
                 </React.Fragment>
               ))}

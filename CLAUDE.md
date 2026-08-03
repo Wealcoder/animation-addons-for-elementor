@@ -393,6 +393,56 @@ grep -rho "is_extension_active( *'[a-z0-9-]*'" \
 # vs. the registry keys in class-atomic.php
 ```
 
+### The four shared admin extensions (2026-08-03)
+
+**Custom Fonts, Post Type Builder, Custom Icon, Code Snippet** now have a card
+on **both** dashboards. They are not element extensions — they add wp-admin
+screens whose OUTPUT both eras consume (a font uploaded there is offered by the
+atomic Typography control; a post type built there is what an atomic Loop Grid
+queries) — so gating them on the v3 list alone left a v4-only site with no way
+to reach any of them. Same defect Dynamic Tags and Template Library had.
+
+The slugs are IDENTICAL on both sides (`custom-fonts`, `custom-cpt`,
+`custom-icon`, `code-snippet`) and listed once in
+`Atomic::V3_ADMIN_EXTENSIONS`. Three places must agree:
+
+| Where | What |
+|---|---|
+| `class-atomic.php::register_extension_definitions()` | the card |
+| `class-plugin.php::register_extensions()` | the atomic OR-pass for fonts/cpt/icon |
+| `class-plugin.php::include_files()` | the `$code_snippet_active` OR |
+
+**Loading is an OR of the two toggles, deliberately.** Switching a card off in
+v4 does not stop the feature if the v3 switch is still on. That is what keeps an
+existing v3 site byte-identical, and it is the contract Dynamic Tags already
+had — do not "fix" it into a single owner without deciding which dashboard wins.
+
+**`default` is false, and the real answer is copied once.**
+`backfill_v3_admin_extensions()` (marker `aae_atomic_v3_admin_backfill`, runs
+straight after `migrate_newly_offered_extensions()`) writes v3's saved state
+into the v4 option. Without it, the new card opens reading "off" on a site that
+has been using custom fonts for a year — the "dashboard card can lie" failure
+above — and the user's only recourse is to flip a switch that was already on.
+Defaulting to `true` instead would have been worse: the migration would switch
+four features on for everybody, including the people who turned them off.
+Only ever switches ON, only what v3 already had on, and only once.
+
+Two things to know before testing this:
+
+- **Write the option in a DIFFERENT boot from the one that reports.**
+  `include_files()` runs at `plugins_loaded`, so a write later in the same
+  `wp eval-file` is invisible to it and the probe reads the PREVIOUS state.
+  A combined write+assert reported "loaded with both toggles off" for a gate
+  that was in fact correct, and cost a full false-alarm cycle.
+- **Code Snippet's CPT is admin-only.** `CodeSnippet.php` (which registers
+  `wcf-code-snippet`) is included under `is_admin()`; WP-CLI is not admin, so
+  `post_type_exists()` is the wrong assertion there. Assert `class_exists()` on
+  `CodeSnippetFrontend`/`CodeSnippetCompatibility` instead.
+
+Note the wizard's **Basic** preset now pre-selects all four on a fresh install
+(free + non-`animation` — see `lib/setupPresets.js`), which matches how
+Template Library and Custom CSS already behave.
+
 ### Adding a new dashboard category
 
 Two files, and the JS needs a rebuild:
@@ -2725,6 +2775,39 @@ somewhere" is not a test of them.
 Its `restore()` reads the state back and compares it against the snapshot. One
 run silently no-opped its restore and the next run then snapshotted the mess as
 its baseline; a restore that cannot prove itself is worse than none.
+
+### The preview token must be bound to its post — and the site-wide switch needs a session
+
+Found by asking "how far does one token actually reach". Measured, with a token
+minted for `/test-ac/`:
+
+```
+cross-page write to /about/   accepted   mark -> off, ls -> {lazy:off, js_optm:off}
+write to an unrelated post    accepted
+site-wide "selective" flip    accepted   is_selective no -> yes, exclude -> ["/"]
+```
+
+Two problems in one. The token authorised writes to **every post on the site**,
+and it could flip the one setting that is not per-page at all — which excludes
+every page from cache and therefore from minify/combine/defer/lazyload, and
+fires `litespeed_purge_all`. This is a link the UI tells you to copy into other
+browsers, so it travels.
+
+Fixed by signing the post id into the token
+(`aae-speed|<post>|<expiry>`, token shape `<expiry>.<post>.<sig>`) and having
+`guard()` compare it against the post being written; and by requiring
+`current_user_can( 'manage_options' )` for the site-wide field specifically.
+That second check costs nothing in practice — admin-ajax is `is_admin()`, so
+`Speed_Preview::mode()` returns `''` there and the login cookie is honoured, so
+a "simulated visitor" still passes. Only a genuine private window is refused,
+and the panel disables the checkbox there rather than letting the save fail
+silently.
+
+Old two-part tokens are rejected, not grandfathered — they live an hour at most.
+
+The generalisable rule: **a credential scoped to one object must say which
+object, inside the signature.** A token that only proves "someone was allowed to
+mint this" proves nothing about what it may touch.
 
 ### User-facing documentation
 
