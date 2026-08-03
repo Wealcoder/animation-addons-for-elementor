@@ -56,6 +56,18 @@ const BRAND = "#ff7a00";
 const BRAND_DARK = "#e35f00";
 
 /**
+ * The trigger button's loading (disabled) skin.
+ *
+ * Same hue as the live button so the control stays recognisable, but flat and
+ * quiet so an inert button never looks clickable. Both values are translucent
+ * because this button lives in the editor panel, which follows the editor's
+ * Dark/Light preference — an opaque pale orange would only read correctly on
+ * one of the two.
+ */
+const BRAND_TINT_BG = "rgba(255, 122, 0, 0.16)";
+const BRAND_TINT_INK = "rgba(255, 138, 26, 0.85)";
+
+/**
  * The dialog paints on its OWN light surface rather than the editor theme's
  * `background.paper` / `text.*` tokens. Those tokens follow the editor's
  * Dark/Light preference, so on a dark editor the panel came out near-black
@@ -298,6 +310,11 @@ export function PresetPickerControl({ label }) {
 
   const grouped = presets ? groupByCategory(presets) : [];
 
+  // `null` is "the fetch has not settled yet" — distinct from `[]` (settled,
+  // nothing for this type) and from `failed`, both of which are actionable and
+  // must leave the button live so the dialog can explain / offer a retry.
+  const loading = presets === null;
+
   return (
     <Stack gap={1}>
       <Typography
@@ -309,23 +326,49 @@ export function PresetPickerControl({ label }) {
       <Button
         size="small"
         onClick={() => setOpen(true)}
-        disabled={presets === null}
-        endIcon={presets === null ? null : <span aria-hidden="true">{"+"}</span>}
+        disabled={loading}
+        // The end adornment is never empty — a spinner stands in for the "+"
+        // while the fetch is open. It says what the button is doing, and it
+        // keeps the icon slot occupied so the two states measure the same
+        // (see minHeight below).
+        endIcon={
+          loading ? (
+            <CircularProgress size={11} thickness={5} color="inherit" />
+          ) : (
+            <span aria-hidden="true">{"+"}</span>
+          )
+        }
         sx={{
           alignSelf: "flex-end",
           justifyContent: "center",
+          alignItems: "center",
           minWidth: 0,
-          minHeight: 0,
+          // FIXED, not content-derived — and `height`, not `minHeight`, which
+          // is only a floor. Both the label and the end adornment change when
+          // the fetch settles, and the button used to be sized by whatever
+          // happened to be inside it: measured 26px while loading and 33px
+          // once the "+" glyph arrived, so it visibly grew right where the
+          // user is looking. `minHeight` is repeated because MUI's own
+          // `size="small"` rule sets one and would otherwise win.
+          height: 32,
+          minHeight: 32,
           px: 1.25,
-          py: 0.375,
+          // No vertical padding: with the height pinned, the flex centering
+          // below does the work, and padding could only fight it.
+          py: 0,
           borderRadius: 1,
           textTransform: "none",
           fontSize: "11px",
           fontWeight: 600,
           lineHeight: 1.5,
           // The default endIcon gutter is sized for a full-height button and
-          // reads as a gap at this scale.
-          "& .MuiButton-endIcon": { ml: 0.5, fontSize: "12px" },
+          // reads as a gap at this scale. `lineHeight: 1` keeps the glyph's
+          // line box from being the thing that decides the button's height.
+          "& .MuiButton-endIcon": {
+            ml: 0.5,
+            fontSize: "12px",
+            lineHeight: 1,
+          },
           color: "#fff",
           background: `linear-gradient(135deg, ${BRAND}, ${BRAND_DARK})`,
           boxShadow: "0 1px 3px rgba(227, 95, 0, 0.35)",
@@ -334,13 +377,25 @@ export function PresetPickerControl({ label }) {
             opacity: 0.92,
             boxShadow: "0 2px 6px rgba(227, 95, 0, 0.45)",
           },
+          // Loading is an INERT state, so it must not wear the full brand
+          // gradient — an un-clickable button painted exactly like a live one
+          // is what read wrong here (it also invites a click that does
+          // nothing). A soft tint of the same hue keeps the control
+          // recognisable while making "not ready yet" obvious.
+          //
+          // Expressed as a translucent tint rather than a fixed colour on
+          // purpose: this button sits in the editor panel, which follows the
+          // editor's Dark/Light preference, so a hardcoded pale orange would
+          // only work on one of them. (The DIALOG is the opposite case and
+          // fixes its colours deliberately — see the SHEET comment above.)
           "&.Mui-disabled": {
-            color: "#fff !important",
-            background: `linear-gradient(135deg, ${BRAND}, ${BRAND_DARK}) !important`,
+            color: `${BRAND_TINT_INK} !important`,
+            background: `${BRAND_TINT_BG} !important`,
+            boxShadow: "none",
           },
         }}
       >
-        {presets === null ? "Loading presets…" : "Apply a preset…"}
+        {loading ? "Loading presets…" : "Apply a preset…"}
       </Button>
 
       <Dialog

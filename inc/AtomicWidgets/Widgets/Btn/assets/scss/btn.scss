@@ -73,8 +73,12 @@
 }
 .aae-btn-mask-effect {
   box-sizing: border-box;
-  -webkit-mask: url("../images/mask-btn.png");
-  mask: url("../images/mask-btn.png");
+  // Real URL is set by btn.js as a CSS var (webpack-resolved import, so it
+  // works under both `npm start` and `npm run build`). The literal path is
+  // only a fallback for the gulp-compiled copy of this stylesheet, in case
+  // JS never runs — see gulpfile.js's copy:atomic-images task.
+  -webkit-mask: var(--aae-btn-mask-img, url("../images/mask-btn.png"));
+  mask: var(--aae-btn-mask-img, url("../images/mask-btn.png"));
   -webkit-mask-size: 2300% 100%;
   mask-size: 2300% 100%;
   animation: aae_mask_animation_2 0.7s steps(22) forwards;

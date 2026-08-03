@@ -22,25 +22,32 @@ map and conventions. The Advanced Heading widget
 (`inc/AtomicWidgets/Widgets/AdvancedHeading/`) is the reference
 implementation — copy its shape.
 
-> **NATIVE atomic widgets (e-heading, e-button, e-image, …) are already
-> wired — zero code.** We don't own their classes, so the per-widget steps
-> below don't apply. Instead:
-> - Drop JSONs (same two formats) into
->   `inc/AtomicWidgets/Presets/<element-type>/*.json` — the **folder name
->   is the key** (e.g. `Presets/e-heading/`). Reload the editor; no build.
-> - `Atomic\Presets\Controls` (`inc/Atomic/Presets/`) injects the
->   "Presets" section via the `elementor/atomic-widgets/controls` filter
->   for any native type with ≥1 JSON bundled; the scanner keys those
->   presets by folder name (native types aren't `e-aae-a-*`, so
->   `detect_primary_widget_type()` can't detect them).
+> **NATIVE atomic widgets (e-heading, e-button, e-image, …) are OFF, and
+> dropping JSONs alone will NOT turn them on.** We don't own their classes,
+> so the per-widget steps below don't apply. What is true instead:
+> - `Atomic\Presets\Controls::ALLOWED_NATIVE_TYPES` (`inc/Atomic/Presets/`)
+>   is **empty**, so the `elementor/atomic-widgets/controls` filter injects
+>   the "Presets" section for **no** native type. Add the type there to turn
+>   it on — it is a PHP `const` in the free plugin, not filterable.
+>   (An older rule injected wherever ≥1 preset existed; it surfaced
+>   "Presets" on widgets nobody had opted in, hence the whitelist.)
+> - Only THEN do presets matter: a remote entry for that `element_type`, or
+>   JSONs at `inc/AtomicWidgets/Presets/<element-type>/*.json` — **folder
+>   name is the key** (native types aren't `e-aae-a-*`, so
+>   `detect_primary_widget_type()` can't detect them; it would file them all
+>   under `e-flexbox`). Reload the editor; no build.
+>   That folder does not currently exist — its five sample presets were
+>   unreachable and were deleted 2026-08-03.
 > - It deliberately skips `e-aae-a-*` types — AAE widgets use the
 >   per-widget steps below.
 > - **Model shape:** keep native widgets in the export shape
 >   `{ "elType": "widget", "widgetType": "e-heading", … }`. Hand-converting
 >   to `"elType": "e-heading"` crashes the apply — atomic containers'
 >   `getChildType()` whitelists `'widget'`, not native atomic type names.
-> - Regression test: `E:\Local Testing\tests-wp-local\native-widget-presets.spec.js`
->   (run with `npx playwright test --config=playwright.wp-local.config.js`).
+> - No regression test covers this path any more: the four
+>   `tests-wp-local/native-*preset*.spec.js` suites drove the picker through
+>   those deleted presets and were removed with them. Re-enabling a native
+>   type needs a new one.
 >
 > The rest of this skill is the **AAE-widget** path.
 
