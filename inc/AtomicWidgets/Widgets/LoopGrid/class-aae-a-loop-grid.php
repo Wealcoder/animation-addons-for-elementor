@@ -466,8 +466,12 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 
 		// Resolve total pages once so the Pagination child can render the right
 		// number of page links without re-querying.
+		// Only pay for the count when something will actually display it. The
+		// count is a second SQL_CALC_FOUND_ROWS scan of the same result set,
+		// and a grid with no pagination child has nothing to do with the
+		// answer — it was previously run on every frontend render regardless.
 		$max_pages = 1;
-		if ( ! \Elementor\Plugin::$instance->editor->is_edit_mode() ) {
+		if ( ! \Elementor\Plugin::$instance->editor->is_edit_mode() && $this->has_pagination_child() ) {
 			$max_pages = self::compute_max_pages( (array) $this->get_data( 'settings' ), $query_args );
 		}
 
@@ -536,6 +540,17 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 			'order'               => self::sanitize_order( $s ),
 			'paged'               => max( 1, $paged ),
 			'ignore_sticky_posts' => true,
+
+			// The render query's found_posts is NEVER read — the page count
+			// comes from compute_max_pages(), which runs its own query and
+			// re-enables this. Without it MySQL runs SQL_CALC_FOUND_ROWS,
+			// scanning every matching row to produce a number nothing uses:
+			// measured on the fixture as `SELECT SQL_CALC_FOUND_ROWS … LIMIT
+			// 0, 6` returning found_posts=36 that was then discarded. On a real
+			// content set that scan is the most expensive thing this widget
+			// does. compute_max_pages() overrides it back to false, so
+			// pagination is unaffected.
+			'no_found_rows'       => true,
 		];
 
 		// Taxonomy term filters — only taxonomies actually registered for the
@@ -674,11 +689,61 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 	}
 
 	/**
+	 * Does this grid render anything that needs a page count?
+	 *
+	 * Walks the saved element tree rather than instantiating children: this is
+	 * asked during render, before the subtree exists as objects, and the answer
+	 * only depends on what was saved.
+	 *
+	 * Matches by SUFFIX, not an exact type. AAE_A_Loop_Grid_Slider extends this
+	 * class and inherits define_render_context(), but its pagination child is
+	 * `e-aae-a-loop-slide-pagination` — an exact match on
+	 * `e-aae-a-loop-pagination` answered "no pagination" for every slider and
+	 * pinned its page count to 1. Caught on the fixture: the grid reported
+	 * total 9 while the slider beside it reported total 1.
+	 */
+	private function has_pagination_child(): bool {
+		$scan = static function ( $elements ) use ( &$scan ) {
+			foreach ( (array) $elements as $element ) {
+				if ( ! is_array( $element ) ) {
+					continue;
+				}
+
+				$type = (string) ( $element['widgetType'] ?? ( $element['elType'] ?? '' ) );
+
+				if ( 'pagination' === substr( $type, -10 ) && 0 === strpos( $type, 'e-aae-a-loop' ) ) {
+					return true;
+				}
+
+				if ( ! empty( $element['elements'] ) && $scan( $element['elements'] ) ) {
+					return true;
+				}
+			}
+
+			return false;
+		};
+
+		return $scan( $this->get_data( 'elements' ) );
+	}
+
+	/**
 	 * Total pages for a built query — the ONE place the count is computed.
 	 *
 	 * Needed because WP_Query's own max_num_pages is wrong once `offset` is in
 	 * play: found_posts ignores LIMIT, so it never subtracts the user's skip.
 	 * Count WITHOUT the offset, subtract it, divide by per_page.
+	 *
+	 * DO NOT add a cache layer here. One was written and removed on 2026-08-02:
+	 * WP_Query ALREADY caches its results including `found_posts`
+	 * (`class-wp-query.php:3271`, group `post-queries`, salted with
+	 * `wp_cache_get_last_changed( 'posts' )`), so with a persistent object
+	 * cache this is free across requests and without one it is free within a
+	 * request — and core's invalidation is correct, which a hand-rolled one is
+	 * unlikely to be. The version-bump invalidation that layer needed hooked
+	 * `updated_post_meta` / `added_post_meta`, which fire many times per post
+	 * save, so it turned every save and every bulk import into a storm of
+	 * `update_option()` writes to avoid a query core was already caching. It
+	 * cost more than it saved.
 	 */
 	public static function compute_max_pages( array $raw_settings, array $query_args ): int {
 		$s        = self::unwrap_settings( $raw_settings );
@@ -734,6 +799,7 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 			'order'               => self::sanitize_order( $s ),
 			'paged'               => max( 1, $paged ),
 			'ignore_sticky_posts' => true,
+			'no_found_rows'       => true, // See the note in build_query_args().
 		];
 
 		if ( ! $current ) {
@@ -796,6 +862,7 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 			'posts_per_page'      => self::sanitize_per_page( $s ),
 			'paged'               => max( 1, $paged ),
 			'ignore_sticky_posts' => true,
+			'no_found_rows'       => true, // See the note in build_query_args().
 		];
 
 		$vars = ( isset( $s['_qv'] ) && is_array( $s['_qv'] ) )

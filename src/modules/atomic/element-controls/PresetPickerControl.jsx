@@ -40,7 +40,6 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
-  Grid,
   IconButton,
   Skeleton,
   Stack,
@@ -55,6 +54,32 @@ import {
 const UPGRADE_URL = "https://animation-addons.com/";
 const BRAND = "#ff7a00";
 const BRAND_DARK = "#e35f00";
+
+/**
+ * The dialog paints on its OWN light surface rather than the editor theme's
+ * `background.paper` / `text.*` tokens. Those tokens follow the editor's
+ * Dark/Light preference, so on a dark editor the panel came out near-black
+ * while the reference design is a white sheet — the popup is a full-bleed
+ * gallery of light-background thumbnails, and it has to read the same either
+ * way. Every colour the dialog uses is therefore fixed here.
+ */
+const SHEET = "#ffffff";
+const SHEET_BORDER = "#e6e8eb";
+const INK = "#17181a";
+const INK_MUTED = "#6b7280";
+const THUMB_BG = "#f1f2f4";
+
+/**
+ * The card grid. `auto-fill` rather than a fixed column count so the same
+ * definition gives the ~5 columns of the reference design at the dialog's
+ * full width and degrades to 2 on a narrow panel — the Grid xs/sm/md props
+ * it replaces could not express a 5-up row (12 columns don't divide by 5).
+ */
+const CARD_GRID = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fill, minmax(170px, 1fr))",
+  gap: { xs: 2, sm: 3 },
+};
 
 /** Group + sort presets by category for the grouped card grid render. */
 function groupByCategory(presets) {
@@ -89,28 +114,26 @@ function PresetCard({ preset, placeholderSrc, locked, onSelect }) {
       tabIndex={0}
       sx={{
         cursor: "pointer",
-        borderRadius: 1.5,
-        overflow: "hidden",
-        bgcolor: "background.paper",
-        border: "1px solid",
-        borderColor: "divider",
-        boxShadow: "0 1px 2px rgba(16, 24, 40, 0.04)",
-        transition: "transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease",
-        "&:hover": {
-          borderColor: locked ? "divider" : BRAND,
-          boxShadow: locked
-            ? "0 1px 2px rgba(16, 24, 40, 0.04)"
-            : `0 8px 20px rgba(255, 122, 0, 0.18)`,
+        // Borderless — the thumbnail's own tinted panel is the card, so the
+        // grid reads as artwork rather than a table of boxed rows.
+        "& .aae-preset-thumb": {
+          transition: "box-shadow 0.16s ease, transform 0.16s ease",
+        },
+        "&:hover .aae-preset-thumb": {
+          boxShadow: locked ? "none" : "0 6px 18px rgba(16, 24, 40, 0.12)",
           transform: locked ? "none" : "translateY(-2px)",
         },
       }}
     >
       <Box
+        className="aae-preset-thumb"
         sx={{
           position: "relative",
           width: "100%",
-          pt: "62.5%" /* ~8:5, matches the 300x200 server thumb */,
-          bgcolor: "action.hover",
+          pt: "82%" /* the reference card's thumbnail proportion */,
+          borderRadius: 1.5,
+          overflow: "hidden",
+          bgcolor: THUMB_BG,
         }}
       >
         <Box
@@ -172,15 +195,17 @@ function PresetCard({ preset, placeholderSrc, locked, onSelect }) {
           />
         ) : null}
       </Box>
-      <Box sx={{ px: 1.25, py: 1 }}>
+      <Box sx={{ pt: 1.25 }}>
         <Typography
-          variant="caption"
           sx={{
             display: "block",
             overflow: "hidden",
             textOverflow: "ellipsis",
             whiteSpace: "nowrap",
-            fontWeight: 600,
+            fontSize: "13px",
+            fontWeight: 500,
+            lineHeight: 1.4,
+            color: INK,
           }}
         >
           {preset.name}
@@ -272,7 +297,6 @@ export function PresetPickerControl({ label }) {
   }
 
   const grouped = presets ? groupByCategory(presets) : [];
-  const proCount = presets ? presets.filter((p) => p.pro).length : 0;
 
   return (
     <Stack gap={1}>
@@ -290,10 +314,18 @@ export function PresetPickerControl({ label }) {
         sx={{
           alignSelf: "flex-end",
           justifyContent: "center",
-          px: 1.75,
-          py: 0.75,
+          minWidth: 0,
+          minHeight: 0,
+          px: 1.25,
+          py: 0.375,
+          borderRadius: 1,
           textTransform: "none",
+          fontSize: "11px",
           fontWeight: 600,
+          lineHeight: 1.5,
+          // The default endIcon gutter is sized for a full-height button and
+          // reads as a gap at this scale.
+          "& .MuiButton-endIcon": { ml: 0.5, fontSize: "12px" },
           color: "#fff",
           background: `linear-gradient(135deg, ${BRAND}, ${BRAND_DARK})`,
           boxShadow: "0 1px 3px rgba(227, 95, 0, 0.35)",
@@ -315,7 +347,7 @@ export function PresetPickerControl({ label }) {
         open={open}
         onClose={() => setOpen(false)}
         fullWidth
-        maxWidth="md"
+        maxWidth="lg"
         // Full-screen below the "sm" breakpoint (roughly narrow/mobile
         // viewports) so the card grid gets real width to work with instead
         // of being squeezed into a small centered box — CSS-only via sx,
@@ -333,54 +365,47 @@ export function PresetPickerControl({ label }) {
             },
           },
         }}
-        PaperProps={{ sx: { borderRadius: 2, overflow: "hidden" } }}
+        PaperProps={{
+          sx: { borderRadius: 1.5, overflow: "hidden", bgcolor: SHEET, color: INK },
+        }}
       >
         <DialogTitle
           sx={{
             display: "flex",
-            alignItems: "center",
+            alignItems: "flex-start",
             justifyContent: "space-between",
-            background: `linear-gradient(135deg, ${BRAND} 0%, ${BRAND_DARK} 100%)`,
-            color: "#fff",
-            py: { xs: 1.25, sm: 1.75 },
+            gap: 2,
+            bgcolor: SHEET,
+            py: { xs: 2, sm: 3 },
             px: { xs: 2, sm: 3 },
           }}
         >
-          <Stack sx={{ minWidth: 0 }}>
+          <Stack sx={{ minWidth: 0, gap: 0.75 }}>
             <Typography
               sx={{
                 fontWeight: 700,
-                fontSize: { xs: "15px", sm: "17px" },
-                lineHeight: 1.3,
+                fontSize: { xs: "18px", sm: "22px" },
+                lineHeight: 1.2,
+                color: INK,
               }}
             >
-              {"Apply Preset"}
+              {"Preset"}
             </Typography>
+            {/*
+              * A fixed one-line explanation of what a preset does, per the
+              * reference design. The former counts ("12 designs — 3 premium")
+              * moved out of the header: they described the fetch, not the
+              * feature, and the loading/failure states below already say so
+              * where it matters.
+              */}
             <Typography
               sx={{
-                fontSize: "12px",
-                opacity: 0.85,
-                display: { xs: "none", sm: "block" },
+                fontSize: "14px",
+                lineHeight: 1.4,
+                color: INK_MUTED,
               }}
             >
-              {(() => {
-                if (presets === null) {
-                  return "Loading designs…";
-                }
-
-                const total = presets.length;
-                const designWord = total === 1 ? "design" : "designs";
-
-                if (failed) {
-                  return total
-                    ? `${total} ${designWord} — some could not be loaded`
-                    : "Designs could not be loaded";
-                }
-
-                return proCount > 0
-                  ? `${total} ${designWord} — ${proCount} premium`
-                  : `${total} ${designWord} available`;
-              })()}
+              {"Apply a style instantly with one simple click."}
             </Typography>
           </Stack>
           <IconButton
@@ -396,15 +421,14 @@ export function PresetPickerControl({ label }) {
               alignItems: "center",
               justifyContent: "center",
               lineHeight: 1,
-              color: "#fff",
-              bgcolor: "rgba(255,255,255,0.15)",
-              "&:hover": { bgcolor: "rgba(255,255,255,0.28)" },
+              color: INK_MUTED,
+              "&:hover": { color: INK, bgcolor: THUMB_BG },
             }}
           >
             <Box
               component="span"
               aria-hidden="true"
-              sx={{ fontSize: "14px", lineHeight: 1, transform: "translateY(-0.5px)" }}
+              sx={{ fontSize: "15px", lineHeight: 1, transform: "translateY(-0.5px)" }}
             >
               {"✕"}
             </Box>
@@ -412,7 +436,15 @@ export function PresetPickerControl({ label }) {
         </DialogTitle>
         <DialogContent
           dividers
-          sx={{ bgcolor: "background.default", py: 2.5, px: { xs: 1.5, sm: 3 } }}
+          sx={{
+            bgcolor: SHEET,
+            // `dividers` draws its rule from the theme's divider token, which
+            // is a light hairline on a dark editor — invisible on this sheet.
+            borderColor: SHEET_BORDER,
+            borderBottom: "none",
+            py: 3,
+            px: { xs: 2, sm: 3 },
+          }}
         >
           {presets === null ? (
             <>
@@ -420,21 +452,21 @@ export function PresetPickerControl({ label }) {
                 direction="row"
                 alignItems="center"
                 gap={1}
-                sx={{ mb: 2, color: "text.secondary" }}
+                sx={{ mb: 2, color: INK_MUTED }}
               >
                 <CircularProgress size={14} thickness={5} sx={{ color: BRAND }} />
                 <Typography variant="caption" sx={{ fontWeight: 600 }}>
                   {"Fetching presets…"}
                 </Typography>
               </Stack>
-              <Grid container spacing={{ xs: 1.5, sm: 2 }}>
-                {[0, 1, 2, 3].map((i) => (
-                  <Grid item xs={6} sm={4} md={3} key={i}>
-                    <Skeleton variant="rounded" height={100} />
-                    <Skeleton variant="text" width="70%" />
-                  </Grid>
+              <Box sx={CARD_GRID}>
+                {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => (
+                  <Box key={i}>
+                    <Skeleton variant="rounded" sx={{ pt: "82%", bgcolor: THUMB_BG }} />
+                    <Skeleton variant="text" width="70%" sx={{ mt: 0.5, bgcolor: THUMB_BG }} />
+                  </Box>
                 ))}
-              </Grid>
+              </Box>
             </>
           ) : (
             <>
@@ -456,12 +488,11 @@ export function PresetPickerControl({ label }) {
                     px: 1.5,
                     py: 1.25,
                     borderRadius: 1.5,
-                    border: "1px solid",
-                    borderColor: "warning.light",
-                    bgcolor: "warning.light",
+                    border: "1px solid #f5d9a8",
+                    bgcolor: "#fdf4e3",
                   }}
                 >
-                  <Typography variant="caption" sx={{ fontWeight: 600 }}>
+                  <Typography variant="caption" sx={{ fontWeight: 600, color: INK }}>
                     {presets.length
                       ? "Some designs couldn’t be loaded. Check your connection and try again."
                       : "Couldn’t load designs. Check your connection and try again."}
@@ -494,28 +525,27 @@ export function PresetPickerControl({ label }) {
                       />
                       <Typography
                         variant="subtitle2"
-                        sx={{ fontWeight: 700, letterSpacing: "0.01em" }}
+                        sx={{ fontWeight: 700, letterSpacing: "0.01em", color: INK }}
                       >
                         {category}
                       </Typography>
                     </Stack>
                   ) : null}
-                  <Grid container spacing={{ xs: 1.5, sm: 2 }}>
+                  <Box sx={CARD_GRID}>
                     {items.map((p) => {
                       const locked = !!p.pro && !proActive;
 
                       return (
-                        <Grid item xs={6} sm={4} md={3} key={p.id}>
-                          <PresetCard
-                            preset={p}
-                            placeholderSrc={placeholderSrc}
-                            locked={locked}
-                            onSelect={handleSelect}
-                          />
-                        </Grid>
+                        <PresetCard
+                          key={p.id}
+                          preset={p}
+                          placeholderSrc={placeholderSrc}
+                          locked={locked}
+                          onSelect={handleSelect}
+                        />
                       );
                     })}
-                  </Grid>
+                  </Box>
                 </Box>
               ))}
             </>

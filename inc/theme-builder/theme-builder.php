@@ -26,6 +26,26 @@ class WCF_Theme_Builder
 	public static $_instance = null;
 
 	/**
+	 * Theme-builder documents pulled into this request's asset pass.
+	 *
+	 * Filled by register_builder_template_assets(); read by
+	 * defer_builder_template_styles().
+	 *
+	 * @var int[]
+	 */
+	private $builder_template_ids = array();
+
+	/**
+	 * Theme-builder stylesheets pulled out of <head> for the editor canvas.
+	 *
+	 * Filled by defer_builder_template_styles(); printed by
+	 * print_builder_template_styles().
+	 *
+	 * @var array<int, array{handle: string, src: string, media: string}>
+	 */
+	private $deferred_template_styles = array();
+
+	/**
 	 * [instance] Initializes a singleton instance
 	 *
 	 */
@@ -90,6 +110,10 @@ class WCF_Theme_Builder
 
 		// Must run while wp_head() is still open — see the method docblock.
 		add_action('wp_enqueue_scripts', array($this, 'register_builder_template_assets'), 5);
+
+		// …and must survive the editor canvas — see the method docblocks.
+		add_action('wp_head', array($this, 'defer_builder_template_styles'), 7);
+		add_action('wp_footer', array($this, 'print_builder_template_styles'), 1);
 	}
 
 	/**
@@ -130,7 +154,9 @@ class WCF_Theme_Builder
 			return;
 		}
 
-		foreach ($this->get_rendered_template_ids() as $template_id) {
+		$this->builder_template_ids = $this->get_rendered_template_ids();
+
+		foreach ($this->builder_template_ids as $template_id) {
 			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Elementor core hook.
 			do_action('elementor/post/render', (string) $template_id);
 
@@ -143,6 +169,121 @@ class WCF_Theme_Builder
 					->enqueue_document_widget_assets($template_id);
 			}
 		}
+	}
+
+	/**
+	 * Take the theme-builder documents' atomic CSS out of <head> in the editor.
+	 *
+	 * WHY THIS EXISTS — two separate things go wrong in the canvas, and printing
+	 * the same stylesheets from wp_footer instead is what fixes both:
+	 *
+	 * 1. THE LINK IS DELETED. register_builder_template_assets() gets the header /
+	 *    footer enqueued in the preview exactly as it does on the front end — the
+	 *    browser really does fetch `local-<template-id>-preview-*.css` — and the
+	 *    editor then removes the <link> again. `document-elements-styles-provider`
+	 *    treats any stylesheet whose id matches
+	 *    `/^local-\d+-(preview|frontend)-[a-zA-Z_-]+-css$/` as a "pregenerated
+	 *    link", and `removeProviderPregeneratedLinks()` drops every one of them
+	 *    from the canvas HEAD once that provider has rendered its own styles. For
+	 *    the document being edited that is correct — the editor re-renders those
+	 *    styles live, so the file is a stale duplicate. But the pattern keys on
+	 *    nothing except the shape of the id, so it matches every post id, including
+	 *    theme-builder documents that the editor never re-renders because they are
+	 *    not in its element tree.
+	 *
+	 * 2. EVEN A SURVIVING LINK LOSES THE CASCADE. The editor re-renders the atomic
+	 *    BASE styles client-side into <style> elements appended to the canvas head,
+	 *    i.e. after everything WordPress printed. `.elementor .e-div-block-base`
+	 *    (padding:10px, display:block) and a local style's
+	 *    `.elementor .e-<id>-<hash>` are both (0,2,0), so the tie is decided purely
+	 *    by document order and the base styles win — the header keeps its markup
+	 *    and silently falls back to default padding/display. Moving our links into
+	 *    the BODY puts them after every head sheet no matter when the editor
+	 *    inserts one, which restores the front end's order.
+	 *
+	 * Elementor still owns the files and their cache invalidation; only where the
+	 * tag is printed changes, and only inside the editor preview.
+	 *
+	 * The document currently being edited is deliberately left alone — there the
+	 * removal is right, and keeping the file would fight the user's live edits with
+	 * stale CSS.
+	 *
+	 * Runs at wp_head:7, i.e. after wp_enqueue_scripts (wp_head:1, where the atomic
+	 * styles manager enqueues) and before wp_print_styles (wp_head:8).
+	 *
+	 * @return void
+	 */
+	public function defer_builder_template_styles()
+	{
+		if (empty($this->builder_template_ids) || ! class_exists('\Elementor\Plugin')) {
+			return;
+		}
+
+		if (! ElementorPlugin::$instance->preview->is_preview_mode()) {
+			return;
+		}
+
+		$edited_id = (int) ElementorPlugin::$instance->preview->get_post_id();
+		$styles    = wp_styles();
+
+		foreach ($this->builder_template_ids as $template_id) {
+			if ($template_id === $edited_id) {
+				continue;
+			}
+
+			foreach ($styles->queue as $handle) {
+				if (! preg_match('/^local-(\d+)-preview-[a-zA-Z_-]+$/', $handle, $matches)) {
+					continue;
+				}
+
+				if ((int) $matches[1] !== $template_id || ! isset($styles->registered[$handle])) {
+					continue;
+				}
+
+				$style = $styles->registered[$handle];
+
+				if (empty($style->src)) {
+					continue;
+				}
+
+				$src = $style->src;
+
+				if (! empty($style->ver)) {
+					$src = add_query_arg('ver', $style->ver, $src);
+				}
+
+				$this->deferred_template_styles[] = array(
+					'handle' => $handle,
+					'src'    => $src,
+					'media'  => is_string($style->args) && '' !== $style->args ? $style->args : 'all',
+				);
+
+				wp_dequeue_style($handle);
+			}
+		}
+	}
+
+	/**
+	 * Print the stylesheets defer_builder_template_styles() removed from <head>.
+	 *
+	 * The `aae-tb-` id prefix is not cosmetic: it keeps these tags out of the
+	 * pregenerated-link pattern described above, so they survive even if a future
+	 * Elementor version widens that sweep from `head` to the whole document.
+	 *
+	 * @return void
+	 */
+	public function print_builder_template_styles()
+	{
+		foreach ($this->deferred_template_styles as $style) {
+			printf(
+				"<link rel='stylesheet' id='aae-tb-%s-css' href='%s' media='%s' />\n",
+				esc_attr($style['handle']),
+				esc_url($style['src']),
+				esc_attr($style['media'])
+			);
+		}
+
+		$this->deferred_template_styles = array();
 	}
 
 	/**
