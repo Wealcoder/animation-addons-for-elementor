@@ -281,6 +281,14 @@ function ensureHost(el) {
 		wrapper.appendChild(el);
 		Object.assign(el.style, { display: 'block', width: '100%', height: '100%' });
 		frame = wrapper;
+
+		// The frame's own transform (rotateX/translate/scale, per preset) moves
+		// its rendered box beyond its resting position — clip that at the real
+		// widget container (the frame's parent, e.g. the e-flexbox/e-div-block
+		// wrapping this image) so the tilt/pan doesn't bleed outside its edges.
+		if (wrapper.parentNode && wrapper.parentNode.style) {
+			wrapper.parentNode.style.overflow = 'hidden';
+		}
 	}
 
 	const media = document.createElement('span');
