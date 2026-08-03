@@ -247,13 +247,16 @@ final class Assets
 	 * externals mapping to resolve at runtime.
 	 */
 	const EDITOR_BRIDGE_ELEMENTOR_DEPS = [
+		'elementor-v2-editor-canvas',
 		'elementor-v2-editor-controls',
 		'elementor-v2-editor-editing-panel',
 		'elementor-v2-editor-elements',
 		'elementor-v2-editor-props',
 		'elementor-v2-editor-responsive',
+		'elementor-v2-editor-styles',
 		'elementor-v2-editor-ui',
 		'elementor-v2-editor-v1-adapters',
+		'elementor-v2-schema',
 		'elementor-v2-ui',
 	];
 
@@ -283,6 +286,15 @@ final class Assets
 			'aaeAtomicBridge',
 			[
 				'is_pro' => defined( 'WCF_ADDONS_PRO_FILE' ),
+
+				// Mask shape catalogue for the Style-tab section's picker.
+				// Sent from PHP rather than rebuilt in JS so the panel and the
+				// renderer can never disagree about which shapes exist or where
+				// their SVGs live — Shapes::all() is the single source of truth,
+				// filter included.
+				'mask_shapes' => class_exists( '\WCF_ADDONS\Atomic\Mask\Shapes' )
+					? \WCF_ADDONS\Atomic\Mask\Shapes::all()
+					: [],
 			]
 		);
 

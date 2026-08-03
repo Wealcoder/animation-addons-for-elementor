@@ -4,6 +4,7 @@ import { disposeAll } from './editor-bridge/disposables';
 import { FEATURES } from './editor-bridge/features';
 import { registerResponsiveSection } from './responsive-section';
 import { registerAaeElementControls } from './element-controls';
+import { registerMaskStyleSection } from './style-sections/mask';
 import { startCardBranding } from './widget-panel/card-branding';
 import regularAnimationSection from './extensions/regular-animation/config';
 import textAnimationSection from './extensions/text-animation/config';
@@ -97,6 +98,10 @@ registerResponsiveSection( nestedSliderSection );
 // register into Elementor's shared controlsRegistry, separate from the
 // ResponsiveSection mechanism above.
 registerAaeElementControls();
+
+// AAE Mask — a Style-tab section backed by real atomic style props
+// (inc/Atomic/Mask/). Registers its canvas transformer at the same time.
+registerMaskStyleSection();
 /**
  * Animation Addons — Atomic Editor Bridge (entry)
  *

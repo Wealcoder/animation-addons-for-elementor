@@ -122,6 +122,17 @@ final class Bootstrap {
 			( new \WCF_ADDONS\Atomic\ScrollTo\Controls() )->register();
 		}
 
+		// Mask — clips an element to a shape. Registered as real atomic STYLE
+		// props (`mask-image` & friends on the styles schema), NOT settings
+		// props, so responsive values, :hover variants and global classes come
+		// from Elementor's own styles engine and the CSS compiles into the
+		// element's stylesheet — no runtime JS. v3's mask is widget-only, so
+		// containers gain something they never had.
+		if ( $extensions->is_extension_active( 'mask' ) ) {
+			( new \WCF_ADDONS\Atomic\Mask\Schema() )->register();
+			( new \WCF_ADDONS\Atomic\Mask\Transformers() )->register();
+		}
+
 		// Background Video — a video layer behind e-flexbox / e-div-block /
 		// e-grid. Wholly free (Schema + Controls + Render + runtime): it adds
 		// what v4's atomic Background control is missing rather than an

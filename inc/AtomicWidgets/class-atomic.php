@@ -3200,6 +3200,19 @@ final class Atomic
 				'order'        => 13,
 			],
 
+			'mask' => [
+				'label'        => 'Mask',
+				'description'  => 'Clip a Flexbox, Div Block or Grid to a shape — 20 built-in shapes or your own SVG, with responsive and hover variants.',
+				'icon'         => 'wcf-icon-Custom-CSS',
+				'is_pro'       => false,
+				'is_extension' => true,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => ['mask', 'shape', 'clip', 'svg', 'container'],
+				'category'     => 'utility',
+				'order'        => 16,
+			],
+
 			'background-video' => [
 				'label'        => 'Background Video',
 				'description'  => 'Play a looping video behind a Flexbox, Div Block or Grid — the option the atomic Background control is missing.',
