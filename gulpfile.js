@@ -127,9 +127,27 @@ gulp.task('minify:atomic-css', function () {
         .pipe(gulp.dest('assets/atomic/css'));
 });
 
+// compile:atomic-scss flattens every widget's *.scss into assets/atomic/css/
+// with dirname stripped, so a relative url("../images/foo.png") in a widget's
+// scss resolves to assets/atomic/images/foo.png. Nothing copied that image
+// there until now — it worked only incidentally, for widgets whose JS also
+// `import`ed the same scss through webpack (which resolves/copies url()
+// assets itself). Once that redundant JS import was removed project-wide
+// (see CLAUDE.md's SCSS-via-JS cleanup), any widget relying on a local image
+// in its CSS (e.g. Btn's mask effect, assets/images/mask-btn.png) lost its
+// only working asset path. This mirrors compile:atomic-scss's own
+// dirname-flatten so the two line up.
+gulp.task('copy:atomic-images', () => {
+    return gulp.src([
+        'inc/AtomicWidgets/Widgets/**/assets/images/**/*',
+    ])
+        .pipe(rename({dirname: ''}))
+        .pipe(gulp.dest('assets/atomic/images'));
+});
+
 // Combined tasks.
 gulp.task('buildJs', gulp.series('compile:js', 'minify:js', 'minify:atomic-js'));
-gulp.task('buildCss', gulp.series('compile:scss', 'minify:css', 'compile:atomic-scss', 'minify:atomic-css'));
+gulp.task('buildCss', gulp.series('compile:scss', 'minify:css', 'compile:atomic-scss', 'copy:atomic-images', 'minify:atomic-css'));
 
 gulp.task('build', gulp.series('buildCss', 'buildJs'));
 
@@ -138,6 +156,7 @@ gulp.task('watch', () => new Promise((resolve, reject) => {
         gulp.watch('assets/src/js/**/*.js', {ignoreInitial: true}, gulp.series('buildJs'));
         gulp.watch('assets/src/scss/**/*.scss', {ignoreInitial: true}, gulp.series('buildCss'));
         gulp.watch('inc/AtomicWidgets/Widgets/**/*.scss', {ignoreInitial: true}, gulp.series('compile:atomic-scss', 'minify:atomic-css'));
+        gulp.watch('inc/AtomicWidgets/Widgets/**/assets/images/**/*', {ignoreInitial: true}, gulp.series('copy:atomic-images'));
         resolve();
     } catch (e) {
         reject(e);
