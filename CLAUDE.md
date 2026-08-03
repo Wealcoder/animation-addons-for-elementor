@@ -4654,10 +4654,24 @@ Consequences worth knowing before adding a JSON:
   preset is the older one on every online site, i.e. always. Cost: a genuinely
   improved remote preset stays masked until the local file is deleted — which is
   the intended lifecycle, and needs no code change.
-- Only five widgets bundle local presets: Accordion, FlipBox, ImageCompare,
-  LoopGrid, StackCards — plus Progress Bar's three
+- Four widgets bundle local presets: **Accordion** (3), **FlipBox** (11),
+  **ImageCompare** (2) and **StackCards** (1, and that one lives in the PRO
+  plugin — see the native-preset section for why widget-owned presets resolve
+  cross-plugin) — plus Progress Bar's three
   (`progressbar-{circle,dot,line}.json`), which are local copies of remote
-  presets rather than local-only designs.
+  presets rather than local-only designs. **LoopGrid's `presets/` folder is
+  deliberately EMPTY**: its designs have already completed the move to remote,
+  which is the intended end state for all of them.
+- **An empty `presets/` folder does NOT make its `presets/css/` orphaned.**
+  LoopGrid still ships five stylesheets there, mapped by marker class in
+  `Atomic\StyleManager\Preset_Styles::map()`, and they are live — the five
+  REMOTE `e-aae-a-loop-item` presets carry `aae-{hover,split,glass,slideup,bold}-card`,
+  verified against the running server. Deleting that CSS because the JSONs
+  next to it are gone would silently strip the hover interactions from every
+  loop card. A preset's CSS and its model can live in different places.
+  (Querying `e-aae-a-loop-slide-item` directly returns 0 — that is expected,
+  not a gap: `PRESET_TYPE_ALIASES` in `preset-apply.js` maps it to
+  `e-aae-a-loop-item`, so only a raw REST call misses them.)
 - `is_dev_environment()` (any `.local` host) bypasses the transient entirely, so
   a dev site hits the network on every panel open — see the "Presets control
   vanishes" row in [Common breakage points](#common-breakage-points).
