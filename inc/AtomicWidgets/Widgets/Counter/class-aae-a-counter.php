@@ -32,7 +32,7 @@ class AAE_A_Counter extends Atomic_Element_Base {
 
 	const BASE_STYLE_KEY = 'base';
 
-	public static $widget_description = 'Display an animated counter using GSAP. Prefix, animated number, and suffix are independently styleable.';
+	public static $widget_description = 'Display an animated number counter that counts up when it scrolls into view. Prefix, animated number, and suffix are independently styleable.';
 
 	public function __construct( $data = [], $args = null ) {
 		parent::__construct( $data, $args );
@@ -48,11 +48,27 @@ class AAE_A_Counter extends Atomic_Element_Base {
 	}
 
 	public function get_title() {
-		return esc_html__( 'AAE Counter', 'animation-addons-for-elementor' );
+		return esc_html__( 'Counter', 'animation-addons-for-elementor' );
 	}
 
 	public function get_keywords() {
 		return [ 'atomic', 'counter', 'number', 'animation', 'gsap' ];
+	}
+
+	public function get_categories(): array {
+		return ['aae-atomic-general'];
+	}
+
+	/**
+	 * Panel category for the Elements panel.
+	 *
+	 * Atomic_Element_Base reads the panel category from HERE — get_categories()
+	 * is Widget_Base's hook and is never called for an element type, so a
+	 * category declared only there silently falls back to Elementor's own
+	 * 'v4-elements' ("Atomic Elements") bucket. Delegate so both stay in sync.
+	 */
+	protected function define_panel_categories(): array {
+		return $this->get_categories();
 	}
 
 	public function get_icon() {

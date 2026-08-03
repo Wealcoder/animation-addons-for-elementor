@@ -10,14 +10,20 @@
          {% endif %}
          {{ editor_attributes | default('') | raw }}>
 
-    {{- /*
+    {#
         children_placeholder renders:
-          [0] Atomic_Svg  → thumbnail placeholder (wrapped in .aae-post-thumb-wrap by JS)
-          [1] Atomic_Heading → post title
-          [2] Atomic_Paragraph → post excerpt
-          [3] Atomic_Paragraph → read-more link
+          [0] Atomic_Svg  -> thumbnail placeholder (wrapped in .aae-post-thumb-wrap by JS)
+          [1] Atomic_Heading -> post title
+          [2] Atomic_Paragraph -> post excerpt
+          [3] Atomic_Paragraph -> read-more link
         JS targets them by slot index and injects real post data.
-    */ -}}
+
+        This block used an OUTPUT tag as a comment, so everything inside was
+        parsed as an expression. The editor compiles these templates with Twing
+        (JS), which threw `Unexpected character` on the arrow glyphs above and
+        failed the whole template, leaving the widget with no client-side
+        render. Comments go in a comment tag; keep the arrows ASCII.
+    #}
     {{ children_placeholder | raw }}
 
 </article>

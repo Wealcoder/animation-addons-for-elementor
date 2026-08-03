@@ -43,7 +43,7 @@ class AAE_A_Accordion extends Atomic_Element_Base {
 	}
 
 	public function get_title() {
-		return esc_html__( 'AAE Accordion', 'animation-addons-for-elementor' );
+		return esc_html__( 'Accordion', 'animation-addons-for-elementor' );
 	}
 
 	public function get_icon() {
@@ -52,6 +52,22 @@ class AAE_A_Accordion extends Atomic_Element_Base {
 
 	public function get_keywords() {
 		return [ 'accordion', 'tabs', 'toggle', 'atomic', 'gsap' ];
+	}
+
+	public function get_categories(): array {
+		return ['aae-atomic-general'];
+	}
+
+	/**
+	 * Panel category for the Elements panel.
+	 *
+	 * Atomic_Element_Base reads the panel category from HERE — get_categories()
+	 * is Widget_Base's hook and is never called for an element type, so a
+	 * category declared only there silently falls back to Elementor's own
+	 * 'v4-elements' ("Atomic Elements") bucket. Delegate so both stay in sync.
+	 */
+	protected function define_panel_categories(): array {
+		return $this->get_categories();
 	}
 
 	protected static function define_props_schema(): array {
@@ -66,7 +82,18 @@ class AAE_A_Accordion extends Atomic_Element_Base {
 	}
 
 	protected function define_atomic_controls(): array {
+		require_once __DIR__ . '/class-aae-a-preset-picker-control.php';
+
 		return [
+			Section::make()
+				->set_id( 'aae_presets' )
+				->set_label( __( 'Presets', 'animation-addons-for-elementor' ) )
+				->set_items( [
+					AAE_A_Preset_Picker_Control::make()
+						->set_label( __( 'Apply Preset', 'animation-addons-for-elementor' ) )
+						->set_meta( [ 'layout' => 'custom' ] ),
+				] ),
+
 			// "Items": a live projection of the accordion's real
 			// <e-aae-a-accordion-item> children — one repeater row each, with
 			// drag-reorder, duplicate, remove and rename. Mirrors the Nested

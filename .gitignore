@@ -1,21 +1,46 @@
+# ─── Editors / OS / local scratch ────────────────────────────────────
 .idea/
-node_modules/
-/dist
-.sass-cache/
-build/
-assets/atomic/*
-assets/css/*
-assets/js/*
-assets/atomic/css/*
-assets/atomic/js/*
-log/
-composer.lock
-.DS_Store
 .project
+.sass-cache/
+.DS_Store
 Thumbs.db
-templates.json
-
+log/
+z_temp/
+/dist
 *.log
+
+# ─── Dependencies ────────────────────────────────────────────────────
+node_modules/
+# NOTE: composer.lock is deliberately NOT ignored — it pins the exact PHP
+# dependency versions, so every machine resolves the same tree.
+
+# ─── Source maps (dev-only, rewritten by every `gulp watch`) ─────────
 *.map
 
-z_temp/
+# ─── Build output ────────────────────────────────────────────────────
+# RULE: ignore a build directory ONLY if `npm run build` regenerates it
+# completely from a tracked source. Anything else stays committed — a
+# blanket ignore over a mixed directory silently drops newly-added files,
+# and they then go missing on every other machine.
+#
+#   /assets/build/   ← webpack (wp-scripts) from src/**
+#   /assets/atomic/  ← webpack + gulp from inc/AtomicWidgets/**
+#
+# `build/` used to be written bare, which matches a directory named
+# `build` at ANY depth; anchored so it can only ever mean this one.
+/assets/build/
+/assets/atomic/
+
+# assets/css/ and assets/js/ are NOT ignored, on purpose:
+#   1. They are produced by `gulp buildCss` / `gulp buildJs`, which
+#      `npm run build` does NOT run (it only runs wp-scripts + the three
+#      atomic gulp tasks) — so a fresh clone never regenerates them.
+#   2. They also hold vendored third-party libraries with no source at
+#      all (select2, typed.js, chroma, progressbar.js, the CodeMirror
+#      modes under cs-js/, …). Those can never be rebuilt.
+# The old `assets/css/*` / `assets/js/*` lines ignored both kinds
+# indiscriminately while 258 of the 273 files there were tracked anyway,
+# so all the rule actually did was hide the newest 15.
+
+# ─── Local data ──────────────────────────────────────────────────────
+templates.json

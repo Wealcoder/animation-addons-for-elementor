@@ -40,10 +40,22 @@ final class Remote_Client {
 	/**
 	 * GET /presets — full list with resolved `model` bodies.
 	 *
-	 * @return array<int, array> Preset entries, or [] on failure.
+	 * Unlike fetch_manifest(), this one DOES distinguish "the server answered
+	 * with nothing" from "the request failed": null means the request itself
+	 * failed (network error, non-200, malformed JSON), an array means the
+	 * server answered and may legitimately be empty. Callers must keep the two
+	 * apart — caching or displaying a failure as "this type has no presets" is
+	 * what made the editor's preset control vanish for an entire session on a
+	 * single network blip.
+	 *
+	 * @return array<int, array>|null Preset entries, or null on failure.
 	 */
-	public function fetch_presets_for_type( string $element_type, string $category = '' ): array {
+	public function fetch_presets_for_type( string $element_type, string $category = '' ): ?array {
 		$data = $this->request( '/presets', $element_type, $category );
+
+		if ( null === $data ) {
+			return null;
+		}
 
 		return $data['presets'] ?? [];
 	}

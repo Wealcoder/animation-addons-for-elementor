@@ -68,6 +68,10 @@ class AAE_A_Form_Rating extends Atomic_Widget_Base {
 		return 'eicon-star-o';
 	}
 
+	public function show_in_panel() {
+		return false;
+	}
+
 	public function get_keywords() {
 		return [ 'atomic', 'form', 'rating', 'star', 'review', 'feedback' ];
 	}

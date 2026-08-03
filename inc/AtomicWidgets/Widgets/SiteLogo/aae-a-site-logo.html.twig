@@ -28,6 +28,29 @@
    {% endif %}
    {{ editor_attributes | default('') | raw }}>
 
+    {#
+      Stylesheet lives here rather than in an enqueued file: it is ~140 bytes,
+      so a separate HTTP request costs more than the bytes it saves. This
+      template is the single source of truth — there is deliberately no
+      site-logo.scss, and no `style_handle` in class-atomic.php's registry
+      entry for this widget.
+
+      It MUST sit inside the <a>, not before it. The editor renders this same
+      twig client-side (Has_Template::get_initial_config() ships the file to
+      the browser) and treats the template's first element as the element root
+      — a leading <style> makes the editor adopt that instead of the anchor and
+      the widget disappears from the preview entirely. Verified, not theorised.
+
+      `sl_print_css` is set by get_atomic_settings() and is true for only the
+      FIRST Site Logo rendered per request, so a header + footer pair emits one
+      <style>, not two. It is UNDEFINED in the editor, which never sees
+      PHP-injected settings — hence `is not defined or`, without which the
+      widget would render unstyled in the preview.
+    #}
+    {% if settings.sl_print_css is not defined or settings.sl_print_css %}
+        <style>.aae-a-site-logo:focus{outline:none}.aae-a-site-logo img{display:block;max-width:100%;height:auto}</style>
+    {% endif %}
+
     {% if settings.sl_logo_to == 'custom' %}
         {# Custom mode: render the native e-image child — user controls the image via its own panel. #}
         {{ children_placeholder | raw }}

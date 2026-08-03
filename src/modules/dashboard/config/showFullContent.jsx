@@ -1,4 +1,5 @@
 import MainLayout from "@/layouts/MainLayout";
+import AnimationSettings from "@/pages/AnimationSettings";
 import CompleteImport from "@/pages/CompleteImport";
 import Dashboard from "@/pages/Dashboard";
 import DemoImporting from "@/pages/DemoImporting";
@@ -6,6 +7,7 @@ import Extensions from "@/pages/Extensions";
 import FailImport from "@/pages/FailImport";
 import FreePro from "@/pages/FreePro";
 import Integrations from "@/pages/Integrations";
+import Performance from "@/pages/Performance";
 import RequiredFeatures from "@/pages/RequiredFeatures";
 import StaterTemplate from "@/pages/StaterTemplate";
 import Submissions from "@/pages/Submissions";
@@ -29,6 +31,21 @@ export const ShowContent = (item) => {
       return (
         <MainLayout.FirstLayout>
           <Extensions />
+        </MainLayout.FirstLayout>
+      );
+    case "animation-settings":
+      return (
+        <MainLayout.FirstLayout>
+          <AnimationSettings />
+        </MainLayout.FirstLayout>
+      );
+    // `performance` is deliberately still routable even though the sidebar no
+    // longer lists it — the screen moved into Animation Settings as a tab, and
+    // people have the old URL bookmarked.
+    case "performance":
+      return (
+        <MainLayout.FirstLayout>
+          <Performance />
         </MainLayout.FirstLayout>
       );
     case "free-pro":

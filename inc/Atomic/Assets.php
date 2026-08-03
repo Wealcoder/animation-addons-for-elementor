@@ -18,24 +18,18 @@ final class Assets
 	const BUILD_DIR   = 'assets/build/modules/atomic/';
 
 	/**
-	 * Catalogue of per-effect JS bundles. Each entry maps a stable handle to
-	 * the build-time entry path (relative to BUILD_DIR). Render.php calls
-	 * wp_enqueue_script( $handle ) for the effects a widget actually uses.
+	 * Catalogue of per-effect JS bundles that belong to THIS plugin. Each entry
+	 * maps a stable handle to the build-time entry path (relative to BUILD_DIR).
+	 * Render.php calls wp_enqueue_script( $handle ) for the effects a widget
+	 * actually uses.
+	 *
+	 * Custom CSS is here because it never moved to Pro (two bundled free presets
+	 * depend on it); nested-slider is here because it is a WIDGET runtime, not an
+	 * extension effect — the Nested Slider and Loop Grid Slider both enqueue it.
 	 */
 	const EFFECT_BUNDLES = [
-		'aae-effect-animation'       => ['file' => 'effects/animation.js', 'deps' => ['SplitText']],
-		'aae-effect-image-animation' => 'effects/image-animation.js',
-		'aae-effect-image-hover'     => 'effects/image-hover.js',
-		'aae-effect-tilt'            => 'effects/tilt.js',
-		'aae-effect-sticky'          => 'effects/sticky.js',
-		'aae-effect-horizontal'      => 'effects/horizontal.js',
-		'aae-effect-mouse-move'      => 'effects/mouse-move-effect.js',
-		'aae-effect-cursor-hover'    => 'effects/cursor-hover-effect.js',
-		'aae-effect-advance-tooltip' => 'effects/advance-tooltip.js',
-		'aae-effect-scroll-to'       => ['file' => 'effects/scroll-to.js', 'deps' => ['ScrollToPlugin']],
-		'aae-effect-parallax'        => 'effects/parallax.js',
-		'aae-effect-custom-css'      => 'effects/custom-css.js',
-		'aae-effect-nested-slider'   => 'effects/nested-slider.js',
+		'aae-effect-custom-css'    => 'effects/custom-css.js',
+		'aae-effect-nested-slider' => 'effects/nested-slider.js',
 	];
 
 	public function register(): void
@@ -147,11 +141,14 @@ final class Assets
 	 * install our atomic widgets would otherwise tween-less.
 	 *
 	 * Deliberately NOT here: SplitText and ScrollToPlugin. Those belong to
-	 * single effects, and their bundles already declare them
-	 * (EFFECT_BUNDLES: aae-effect-animation -> SplitText,
-	 * aae-effect-scroll-to -> ScrollToPlugin), so WordPress pulls each one
-	 * in exactly on the pages where Render.php enqueues that effect. Listing
-	 * them on the shared core handle shipped ~70KB of unused JS to every
+	 * single effects, and the bundles that need them declare them — those
+	 * bundles now live in Pro (inc/AtomicV4/Extensions/Assets.php:
+	 * aae-effect-animation -> SplitText, aae-effect-scroll-to ->
+	 * ScrollToPlugin), which is why ensure_gsap_registered() below still
+	 * REGISTERS both handles even though nothing here depends on them: Pro
+	 * declares the dependency, this plugin owns the file. WordPress then pulls
+	 * each one in exactly on the pages where Pro's Render enqueues that effect.
+	 * Listing them on the shared core handle shipped ~70KB of unused JS to every
 	 * page with ANY animation — flagged by Lighthouse as unused JavaScript
 	 * on pages with no text-animation / scroll-to at all. common.js itself
 	 * only reads window.SplitText lazily at play time (getSplitText), so it

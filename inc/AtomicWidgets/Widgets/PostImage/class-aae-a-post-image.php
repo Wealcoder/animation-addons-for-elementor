@@ -41,7 +41,7 @@ class AAE_A_Post_Image extends Atomic_Widget_Base {
 	}
 
 	public function get_title() {
-		return esc_html__( 'AAE Post Image', 'animation-addons-for-elementor' );
+		return esc_html__( 'Post Image', 'animation-addons-for-elementor' );
 	}
 
 	public function get_icon() {
@@ -50,6 +50,10 @@ class AAE_A_Post_Image extends Atomic_Widget_Base {
 
 	public function get_keywords() {
 		return [ 'post', 'image', 'featured', 'atomic', 'dynamic' ];
+	}
+
+	public function get_categories(): array {
+		return ['aae-atomic-post'];
 	}
 
 	public function get_initial_config() {
@@ -209,12 +213,28 @@ class AAE_A_Post_Image extends Atomic_Widget_Base {
 		];
 	}
 
+	/**
+	 * Intrinsic width/height of a post's thumbnail at $size, or [0, 0].
+	 * Rendered as the <img>'s width/height attributes AND the wrapper's
+	 * aspect-ratio fallback, so the browser reserves the box before the
+	 * bytes arrive — see CLAUDE.md → cache compat, step 2.
+	 */
+	private static function thumb_dimensions( $post, string $size ): array {
+		$thumb_id = get_post_thumbnail_id( $post );
+		if ( ! $thumb_id ) {
+			return [ 0, 0 ];
+		}
+		$src = wp_get_attachment_image_src( $thumb_id, $size );
+		return $src ? [ (int) $src[1], (int) $src[2] ] : [ 0, 0 ];
+	}
+
 	public function get_atomic_settings(): array {
 		$settings = parent::get_atomic_settings();
 		$size = ! empty( $settings['image_size'] ) ? $settings['image_size'] : 'large';
 
 		$settings['image_url'] = get_the_post_thumbnail_url( null, $size );
 		$settings['image_alt'] = get_post_meta( get_post_thumbnail_id(), '_wp_attachment_image_alt', true );
+		list( $settings['image_width'], $settings['image_height'] ) = self::thumb_dimensions( null, $size );
 
 		// Fallback for editor or empty images: preview the shared sample post
 		// (random, has a featured image) before resorting to the placeholder.
@@ -223,10 +243,13 @@ class AAE_A_Post_Image extends Atomic_Widget_Base {
 			if ( $sample ) {
 				$settings['image_url'] = get_the_post_thumbnail_url( $sample, $size );
 				$settings['image_alt'] = get_post_meta( get_post_thumbnail_id( $sample ), '_wp_attachment_image_alt', true );
+				list( $settings['image_width'], $settings['image_height'] ) = self::thumb_dimensions( $sample, $size );
 			}
 			if ( empty( $settings['image_url'] ) ) {
 				$settings['image_url'] = \Elementor\Utils::get_placeholder_image_src();
 				$settings['image_alt'] = 'Placeholder Image';
+				$settings['image_width']  = 0;
+				$settings['image_height'] = 0;
 			}
 		}
 
@@ -247,6 +270,46 @@ class AAE_A_Post_Image extends Atomic_Widget_Base {
 				] )
 				->build(),
 		];
+	}
+
+	/**
+	 * Build each child from its OWN type, the way container elements do.
+	 *
+	 * This widget extends Atomic_Widget_Base — the LEAF base — but declares
+	 * default children, and the leaf base assumes it has none:
+	 * Widget_Base::_get_default_child_type() ignores the child's data entirely
+	 * and returns the V1 `section` element type for anything.
+	 *
+	 * The caption paragraph was therefore instantiated as Element_Section rather
+	 * than Atomic_Paragraph. That class is an Element_Base, not a Widget_Base, so
+	 * its get_raw_data() emits `isInner` and — the part that actually breaks —
+	 * NO `widgetType`. The editor config handed to the browser carried a model
+	 * with `elType: widget` and no widgetType; Elementor's V1 element model sets
+	 * remoteRender = true for any elType `widget`, so the view immediately asked
+	 * the server to render it, and Elements_Manager::get_element('widget', null)
+	 * returns the whole widget-type ARRAY instead of one type — fatal on
+	 * ->get_default_args(), one 500 per editor boot on every page using this
+	 * widget. Saved data was always correct; only the instantiation was wrong.
+	 *
+	 * Mirrors Atomic_Element_Base::_get_default_child_type().
+	 *
+	 * @param array $element_data
+	 * @return \Elementor\Element_Base|null
+	 */
+	protected function _get_default_child_type( array $element_data ) {
+		$el_types = array_keys( \Elementor\Plugin::$instance->elements_manager->get_element_types() );
+
+		if ( in_array( $element_data['elType'], $el_types, true ) ) {
+			return \Elementor\Plugin::$instance->elements_manager->get_element_types( $element_data['elType'] );
+		}
+
+		// Never fall through to a null widget type: get_widget_types( null )
+		// returns every registered type, and the caller has no array guard.
+		if ( ! isset( $element_data['widgetType'] ) ) {
+			return null;
+		}
+
+		return \Elementor\Plugin::$instance->widgets_manager->get_widget_types( $element_data['widgetType'] );
 	}
 
 	protected function define_allowed_child_types() {

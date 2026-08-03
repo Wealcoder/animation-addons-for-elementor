@@ -66,6 +66,10 @@ class AAE_A_Form_Calculation extends Atomic_Widget_Base {
 		return 'eicon-number-field';
 	}
 
+	public function show_in_panel() {
+		return false;
+	}
+
 	public function get_keywords() {
 		return [ 'atomic', 'form', 'calculation', 'calculator', 'total', 'price', 'quote', 'sum' ];
 	}

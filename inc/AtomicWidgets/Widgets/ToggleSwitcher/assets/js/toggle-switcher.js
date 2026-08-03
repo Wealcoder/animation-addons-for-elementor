@@ -1,5 +1,3 @@
-import '../scss/toggle-switcher.scss';
-
 // Persists active state across editor re-initializations, keyed by
 // switcher data-id — mirrors ToggleSwitcherMain's toggleState map.
 const tsState = new Map();

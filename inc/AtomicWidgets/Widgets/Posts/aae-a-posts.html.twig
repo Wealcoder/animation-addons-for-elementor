@@ -22,7 +22,14 @@
             {% for post in settings.posts_list %}
             <article class="aae-a-post-card">
                 <a href="{{ post.url | e('full_url') }}" class="aae-a-post-thumb-link" tabindex="-1" aria-hidden="true">
-                    <img src="{{ post.image | e('full_url') }}" alt="{{ post.title }}" class="aae-a-post-thumb" loading="lazy" />
+                    {# width/height let the browser reserve the box BEFORE the
+                       lazy bytes arrive — without them this img renders 0px
+                       tall and everything below shifts mid-scroll. #}
+                    <img src="{{ post.image | e('full_url') }}"
+                        alt="{{ post.title }}"
+                        class="aae-a-post-thumb"
+                        {% if post.image_w is defined and post.image_w > 0 and post.image_h > 0 %}width="{{ post.image_w }}" height="{{ post.image_h }}"{% endif %}
+                        loading="lazy" />
                 </a>
                 <div class="aae-a-post-content">
                     {% if settings.show_date and post.date %}

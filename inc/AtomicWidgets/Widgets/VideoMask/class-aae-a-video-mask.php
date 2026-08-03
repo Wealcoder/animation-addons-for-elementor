@@ -38,7 +38,7 @@ class AAE_A_Video_Mask extends Atomic_Element_Base {
 	}
 
 	public function get_title(): string {
-		return esc_html__( 'AAE Video Mask', 'animation-addons-for-elementor' );
+		return esc_html__( 'Video Mask', 'animation-addons-for-elementor' );
 	}
 
 	public function get_icon(): string {
@@ -47,6 +47,22 @@ class AAE_A_Video_Mask extends Atomic_Element_Base {
 
 	public function get_keywords(): array {
 		return [ 'video', 'mask', 'play', 'atomic' ];
+	}
+
+	public function get_categories(): array {
+		return ['aae-atomic-general'];
+	}
+
+	/**
+	 * Panel category for the Elements panel.
+	 *
+	 * Atomic_Element_Base reads the panel category from HERE — get_categories()
+	 * is Widget_Base's hook and is never called for an element type, so a
+	 * category declared only there silently falls back to Elementor's own
+	 * 'v4-elements' ("Atomic Elements") bucket. Delegate so both stay in sync.
+	 */
+	protected function define_panel_categories(): array {
+		return $this->get_categories();
 	}
 
 	protected static function define_props_schema(): array {

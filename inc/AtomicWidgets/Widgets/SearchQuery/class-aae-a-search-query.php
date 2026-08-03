@@ -49,7 +49,7 @@ class AAE_A_Search_Query extends Atomic_Widget_Base {
 	}
 
 	public function get_title() {
-		return esc_html__( 'AAE Search Query', self::TD );
+		return esc_html__( 'Search Query', self::TD );
 	}
 
 	public function get_icon() {
@@ -58,6 +58,10 @@ class AAE_A_Search_Query extends Atomic_Widget_Base {
 
 	public function get_keywords() {
 		return [ 'search', 'query', 'results', 'search query', 'atomic', 'dynamic' ];
+	}
+
+	public function get_categories(): array {
+		return ['aae-atomic-post'];
 	}
 
 	protected static function define_props_schema(): array {

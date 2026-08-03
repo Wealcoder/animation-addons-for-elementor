@@ -74,7 +74,7 @@ class AAE_A_Comments_Ny extends Atomic_Element_Base {
 	}
 
 	public function get_title() {
-		return esc_html__( 'AAE Post Comments', 'animation-addons-for-elementor' );
+		return esc_html__( 'Post Comments', 'animation-addons-for-elementor' );
 	}
 
 	public function get_icon() {

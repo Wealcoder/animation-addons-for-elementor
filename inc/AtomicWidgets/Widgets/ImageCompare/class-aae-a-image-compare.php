@@ -38,11 +38,17 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Image_Src_Prop_Type;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
 /**
- * AAE Image Compare — the "wrapper" counterpart of Image Compare Main,
- * matching the Btn/SocialShare pattern: same schema/behavior as the Main
- * widget, but fronted by a "Presets" picker so a ready-made horizontal or
- * vertical design can be dropped in with one click instead of hand-building
- * the before/after/divider/handle/label tree from scratch.
+ * AAE Image Compare — a draggable before/after slider whose before image,
+ * after image, divider, handle and labels are independent atomic children,
+ * each styleable from its own Style panel.
+ *
+ * Preset-driven by design: this class owns only the root's base style, and a
+ * "Presets" picker supplies the whole layout (see define_base_styles() and
+ * define_default_children() below for what that costs and how it's handled).
+ *
+ * It once had a sibling, Image Compare Main, that carried per-child compound
+ * selectors; that widget is gone (only a historical note in class-atomic.php
+ * remains). Don't reintroduce references to it.
  */
 class AAE_A_Image_Compare extends Atomic_Element_Base {
 
@@ -66,11 +72,27 @@ class AAE_A_Image_Compare extends Atomic_Element_Base {
 	}
 
 	public function get_title() {
-		return esc_html__( 'AAE Image Compare', 'animation-addons-for-elementor' );
+		return esc_html__( 'Image Compare', 'animation-addons-for-elementor' );
 	}
 
 	public function get_keywords() {
 		return [ 'atomic', 'image', 'compare', 'before', 'after', 'slider', 'template' ];
+	}
+
+	public function get_categories(): array {
+		return ['aae-atomic-general'];
+	}
+
+	/**
+	 * Panel category for the Elements panel.
+	 *
+	 * Atomic_Element_Base reads the panel category from HERE — get_categories()
+	 * is Widget_Base's hook and is never called for an element type, so a
+	 * category declared only there silently falls back to Elementor's own
+	 * 'v4-elements' ("Atomic Elements") bucket. Delegate so both stay in sync.
+	 */
+	protected function define_panel_categories(): array {
+		return $this->get_categories();
 	}
 
 	public function get_icon() {
@@ -168,18 +190,20 @@ class AAE_A_Image_Compare extends Atomic_Element_Base {
 	}
 
 	/**
-	 * Same default composition as Image Compare Main — presets replace this
-	 * whole tree via the picker, but a fresh drop of the plain element still
-	 * has to work sensibly before any preset is applied.
+	 * The seed tree a preset replaces. It is NOT a usable fallback on its own:
+	 * these are plain e-image/e-divider/e-paragraph children with no layout of
+	 * their own (define_base_styles() above styles only the root), so rendered
+	 * bare they stack vertically. The design lives entirely in presets/*.json,
+	 * and the editor auto-applies one on drop — see AUTO_PRESETS in
+	 * src/modules/atomic/editor-bridge/auto-preset.js.
 	 *
-	 * Every child also carries the `aae-ic-default` marker class. The preset
-	 * JSONs seed the exact same 6 widget types (image/image/divider/div-block/
-	 * paragraph/paragraph), so the editor's auto-preset watcher (see
-	 * src/modules/atomic/editor-bridge/auto-preset.js) can't tell "untouched
-	 * default" from "just got the preset applied" by shape alone — it needs
-	 * this marker (same technique as AAE_A_Progressbar's `aae-pb-default`).
-	 * Without it the watcher re-applies the preset to its own output forever,
-	 * since the newly-created element gets a new id and is never in `handled`.
+	 * Every child carries the `aae-ic-default` marker class, which that
+	 * watcher reads as its `defaultMarker`. The preset JSONs seed the exact
+	 * same 6 widget types (image/image/divider/div-block/paragraph/paragraph),
+	 * so the watcher cannot tell "untouched default" from "just got the preset
+	 * applied" by shape alone. Without the marker it would re-apply the preset
+	 * to its own output forever, since the newly-created element gets a new id
+	 * and is never in `handled`.
 	 */
 	protected function define_default_children() {
 		return [

@@ -328,6 +328,1893 @@ the effect should run.
 
 ---
 
+## Registering a new widget or extension — what must stay in sync
+
+Read this **before** adding either. Registration is split across several
+hand-maintained lists, and a widget/extension that is missing from one of them
+does not error — it just becomes silently unreachable. Two real cases:
+`aae-a-menu` shipped with a complete class, twig, CSS and JS but no dashboard
+metadata, so it could never be enabled by anyone; the Template Library's only
+`require` was never called, so its whole feature was dead code regardless of
+any setting.
+
+> Note: `get_available_widgets()`'s docblock points at a "HOW TO ADD A NEW
+> ATOMIC WIDGET" block "above `register_widget_definitions()`". **That block
+> does not exist** — this section is the actual checklist.
+
+### A new atomic widget
+
+All PHP below is `inc/AtomicWidgets/class-atomic.php` unless stated.
+
+| # | Where | Purpose | Skip it and… |
+|---|---|---|---|
+| 1 | `inc/AtomicWidgets/Widgets/<Name>/` | class + twig + `assets/` | nothing to register |
+| 2 | `get_available_widgets()` | `class` / `file` / `*_handle` / `*_path` / `has_script` | **never registers with Elementor** |
+| 3 | `register_widget_definitions()` (`$widgets_registry`) | dashboard card metadata | **`is_widget_active()` can never return true → unreachable** |
+| 4 | `WIDGET_PARENT_MAP` + `is_internal => true` | structural children of a composite widget | child gets its own card, or can never activate |
+| 5 | `webpack.config.js` | JS/SCSS entry | asset 404s |
+
+Lists 2 and 3 must agree. `assert_registry_integrity()` diffs them and
+`error_log()`s drift — but **only under `WP_DEBUG`**, so it is silent in
+production.
+
+Three constants change the default behaviour; use the narrowest one:
+
+- **`ALWAYS_ACTIVE_WIDGETS`** — force-registers regardless of the saved option.
+  Only for slugs with **no** dashboard card (e.g. `aae-a-counter-number`).
+  Putting a *carded* widget here makes its switch inert.
+- **`PARKED_WIDGETS`** — class exists, card deliberately withheld. Keeps
+  `assert_registry_integrity()` quiet. Remove the entry when you ship the card.
+- **`FORMERLY_FORCED_WIDGETS`** — one-time upgrade path only; see
+  `backfill_formerly_forced_widgets()`.
+
+Client side, `src/modules/dashboard/lib/atomicWidgetService.js` filters the
+payload *again* before rendering. A widget PHP happily sends can still be
+invisible via `INTERNAL_WIDGET_SLUGS`, `DEMO_ONLY_SLUGS`, or the `-main`
+regex — check there before concluding the PHP side is broken.
+
+### A new atomic extension
+
+1. Module under `inc/Atomic/<Feature>/` (free) or
+   `animation-addons-for-elementor-pro/inc/AtomicV4/<Feature>/` (Pro).
+2. Gate it: `Atomic::instance()->is_extension_active( '<slug>' )` in the owning
+   `Bootstrap::init()` / `register_modules()`.
+3. Add the `$this->extensions_registry` entry in **the free plugin** —
+   the registry lives there even for Pro-only modules, and Pro reads it back
+   through `is_extension_active()`.
+
+Nothing verifies steps 2 and 3 against each other. Audit both directions with:
+
+```bash
+# slugs the code actually gates on
+grep -rho "is_extension_active( *'[a-z0-9-]*'" \
+  animation-addons-for-elementor{,-pro}/inc animation-addons-for-elementor{,-pro}/class-plugin.php \
+  --include=*.php | sed "s/.*'\(.*\)'/\1/" | sort -u
+# vs. the registry keys in class-atomic.php
+```
+
+### Adding a new dashboard category
+
+Two files, and the JS needs a rebuild:
+
+- widgets → `CATEGORY_LABELS` **and** `CATEGORY_ORDER` in `atomicWidgetService.js`
+- extensions → the same two in `atomicExtensionService.js`
+
+Missing from `CATEGORY_LABELS`, the heading renders as the raw slug; missing
+from `CATEGORY_ORDER`, the group falls to the end regardless of intent.
+
+### Gotchas that have actually bitten
+
+- **`'default' => true` does nothing for a widget.** `aae_atomic_widgets` is
+  only ever written by the dashboard save handler — there is no seeder or
+  first-run migration reading the key, so a new widget arrives **off** on
+  existing sites. For **extensions** it does work:
+  `migrate_newly_offered_extensions()` switches on newly-offered slugs
+  (`LEGACY_OFFERED_EXTENSIONS` is the pre-marker baseline).
+- **The dashboard card can lie.** `get_dashboard_config()` computes
+  `is_active` from the raw saved option, *not* `is_widget_active()`. A
+  force-active widget whose slug was never saved renders a card showing
+  "off" while the widget is in fact registering.
+- **Icon names are case-sensitive and must exist in the font.** The
+  Capitalised `wcf-icon-Dynamic-Tags` / `wcf-icon-Template-library` style is
+  what resolves; lower-case guesses like `wcf-icon-parallax` match nothing and
+  render as empty circles. Verify with
+  `grep -o '\.wcf-icon-<Name>:before{content:"[^"]*"}' assets/css/*.css`.
+- **Changing these JS lists requires `npm run build`.** Pure PHP registry
+  changes are data-driven and need no rebuild; anything touching
+  `atomic*Service.js` does.
+- **An effect that injects a floating element must mount it in a body-level
+  `position: fixed` layer, never inside the widget's parent.** Image Hover
+  shipped mounting its overlay in `el.parentElement`, absolutely positioned in
+  that parent's frame, and it produced the classic "works in the editor,
+  invisible on the front end" report (fixed 2026-08-02). Three separate
+  failures, all from the same choice: an ancestor `overflow: hidden` clips an
+  element that is *designed* to spill outside its widget (measured on fixture
+  9852: overlay bottom 3541px vs container top 3549px — 100% hidden); a
+  positioned ancestor is a stacking context, so the user's z-index can never
+  lift the image above content outside that container; and offsets resolved
+  against the parent's box land somewhere else in the editor, where Elementor
+  adds its own wrappers. The pattern that works is
+  `effects/image-hover/index.js` → `mountLayer()`: one `body > .aae-ih-layer`,
+  sized 0×0, carrying **no** z-index/transform/filter/opacity (any of them
+  would re-create the stacking context AND become a containing block for
+  `position: fixed`), with every injected node positioned from
+  `e.clientX/clientY` and tagged `data-aae-ih-owner="<interactionId>"` so an
+  editor re-render's orphans can be swept. Covered by
+  `E:\Local Testing\verify-image-hover{,-editor}.mjs`.
+
+---
+
+## The setup wizard — what a new install starts with (2026-08-02)
+
+A fresh install activates **nothing**. `config.php` carries no
+`is_active => true`, `aae_atomic_widgets` / `aae_atomic_extensions` are absent,
+and the wizard is the only thing that writes them. The v3 step is gone from the
+wizard entirely: new users are offered the atomic registry only
+(`WizWidget.jsx` / `WizExtension.jsx` branch on `hasAtomic`, keeping the v3
+list as a fallback for a site whose Elementor is too old for atomic — without
+it that user reaches an empty step and finishes with nothing offered at all).
+
+### The two presets
+
+Step 1's radio (`WizardStart.jsx`, values `basic` / `advance`) seeds the widget
+and extension steps through `lib/setupPresets.js` — **one module for both**, so
+the rule cannot drift between them.
+
+| | pre-selects | today |
+|---|---|---|
+| **Basic** (recommended) | free, non-`animation` | 25 / 33 widgets, 2 / 20 extensions |
+| **Custom** (`advance`) | everything the licence can register | 33 / 33, 20 / 20 |
+
+Three decisions behind that, each of which could reasonably have gone the other
+way:
+
+- **A `badge_only` item stays OFF in Basic.** Those are Pro-BADGED but ship
+  free code, so pre-enabling them would work — and would make the badge read as
+  a lie while quietly giving away the upsell. The badge is the promise; honour
+  it. (`isCustomItem` still enables them, because Custom means "everything that
+  can run".)
+- **Custom never enables what the licence cannot register.** Its three branches
+  mirror `activeAtomicFullWidgetFn` / `activeAtomicFullExtensionFn` exactly.
+  `get_dashboard_config()` computes a card's `is_active` from the raw saved
+  option rather than from `is_widget_active()`, so enabling a widget whose class
+  does not exist paints an "on" card for something that can never render.
+- **The `animation` category is excluded from Basic** even though it changes
+  nothing today — every animation widget and extension in the registry is
+  already Pro. It is there so a FREE animation item added later does not
+  silently join the recommended set.
+
+Seeding runs in the STEP components (`ShowWizAtomicWidgets` /
+`ShowWizAtomicExtensions`), on a `useEffect` keyed to `setupType` — not inside
+`setSetupType`, which carries an empty dependency array and so reads a
+`mainState` frozen at first render. That is harmless for the v3 branches it
+drives (they re-read the untouched `WCF_ADDONS_ADMIN` config) and would seed
+the atomic steps from a stale snapshot.
+
+### DANGER — a migration used to overrule the wizard seconds later
+
+`migrate_newly_offered_extensions()` bails only while `aae_atomic_extensions`
+is **absent** — "fresh install, the wizard decides". The wizard's own save is
+what ends that. On the very next `admin_init` the option existed, the OFFERED
+list did not, so it fell back to `LEGACY_OFFERED_EXTENSIONS` (a 13-slug
+baseline) and treated every extension added since as newly-offered: **six Pro
+extensions switched themselves back on immediately after the user picked
+Basic** — 2 became 8, with no error and nothing in the UI to explain it.
+
+`ajax_save_extension_settings()` now writes `aae_atomic_extensions_offered`
+alongside the settings, which makes the key mean what its name says: the set
+the user has actually been shown. The migration then correctly does nothing
+until a future plugin update adds an extension neither the wizard nor a
+dashboard save ever displayed.
+
+**This class of bug is invisible from the wizard.** Assert the option AFTER a
+second `admin_init`, never straight after the save.
+
+### Testing it
+
+`E:\Local Testing\verify-wizard-setup-presets.mjs` (16 checks) drives both
+modes and audits every card against the registry's own
+`is_pro`/`badge_only`/`category` read out of `WCF_ADDONS_ADMIN.addons_config` —
+**never a hand-written slug list**, which would go stale the moment a widget is
+added and then pass by not knowing about it.
+
+Two things that will bite:
+
+- **The site must be in a fresh-install state** or the step opens with the
+  saved option instead of the preset. `scratchpad/fresh-install-state.php`
+  does `snapshot` / `clean` / `restore`, and REFUSES to clean without a
+  readable snapshot on disk — see the `set-v3-state.php` incident in the cache
+  section for why that guard exists.
+- **Walking the wizard to the end completes it** (`wcf_addons_setup_wizard`
+  becomes `complete`) and the page then redirects, so the next run finds no
+  wizard. Re-clean between runs. The footer button is **"Continue"**, not
+  "Next", and `hasText: /^Continue$/` does not match it — the button's text
+  node carries whitespace. Use `getByRole('button', { name: /^continue$/i })`.
+- Per-widget switches carry **no id**; `WidgetCard` puts the slug on its ROOT
+  `div` (`id={slug}`) with the switch inside. The category "Enable All"
+  switches are the ones with an id, and they cannot collide.
+
+### What a fresh install does NOT control
+
+`maybe_enable_used_v3_widgets()` still runs, and on a site that already has v3
+content it enables exactly the slugs that content references — the dev site
+lands on 36. That is the documented data-loss guard, not the wizard leaking:
+a genuinely new install has no v3 content, so it enables nothing.
+
+---
+
+## Animation Settings (v4 dashboard) vs. the v3 legacy surface
+
+AAE's five site-wide chrome features — **Preloader, Cursor, Scroll to Top,
+Scroll Indicator, Popup** — exist twice, and the rules for keeping the two
+copies from fighting are the whole point of this section. Get one of them wrong
+and you either paint two preloaders on a live site or silently strip a paying
+customer's popup off their pages.
+
+| | v3 (legacy) | v4 (current) |
+|---|---|---|
+| UI | Elementor **Site Settings** tabs | Dashboard → **Animation Settings** |
+| Code | `pro/inc/settings/wcf-*.php` (5 `Tab_Base` classes, `elementor/kit/register_tabs`) | `inc/AnimationSettings/class-animation-settings.php` + `src/modules/dashboard/pages/AnimationSettings.jsx` |
+| Storage | the Elementor **Kit** (`_elementor_page_settings`), keys `wcf_enable_preloader`, `wcf_preloader_layout`, … | the **`aae_animation_settings` option** |
+| Renderer | `pro/inc/global-elements.php` (`wp_body_open` -1, `wp_footer` 11) | Pro, reading the option |
+| Plugin | Pro only | UI in **free** (PRO badge, locked without Pro); renderer in Pro |
+
+**The v4 side never reads or writes the Kit.** They are separate systems on
+purpose — a shared store would make "which one wins" unanswerable.
+
+### Rule 1 — there is ONE renderer, fed through one filter
+
+Do **not** write a v4 renderer. `global-elements.php::get_site_settings()` ends
+in `apply_filters('aae/global_elements/site_settings', $settings)`, and Pro's
+`AtomicV4\AnimationSettings\Bridge` answers that filter by overwriting the Kit
+keys for each feature the v4 side has claimed (`wcf_enable_preloader`,
+`wcf_preloader_layout`, the three colours). The existing v3 markup then paints
+the v4 settings.
+
+This is worth insisting on:
+
+- **One markup source.** All 18 preloader layouts worked the day the bridge
+  landed; a layout fixed for v3 is fixed for v4.
+- **Double-paint is structurally impossible.** There is one settings array, so
+  there can only ever be one preloader. Not "we remember to turn the other one
+  off" — there is no other one.
+- **Hand-over is per feature.** A feature v4 hasn't claimed passes through
+  untouched, which is exactly what keeps an existing v3 popup or cursor working
+  when the v4 preloader is switched on. Never gate the whole v3 renderer on a
+  single "v4 mode" flag.
+- **The Kit is only ever read.** Turning the legacy switch back on restores the
+  v3 path byte for byte.
+
+`Bridge::resolve_color()` flattens a "Global Color" pick to the Kit colour's
+current hex, so the renderer never learns that globals exist.
+
+### Rule 2 — hiding a settings screen must not disable anything
+
+`legacy_v3` controls **UI visibility only**. Off = the five Site Settings tabs
+aren't registered, so the editor stops offering them. It does **not** stop
+already-saved v3 settings from rendering: a live site's popup keeps working
+after the screen that configured it disappears. Anything that conflates "hide
+the settings" with "turn the feature off" is a bug.
+
+### Rule 3 — the legacy default is detected once, then stored
+
+`detect_legacy_usage()`, run once by `maybe_bootstrap()` on `admin_init` and
+persisted. Never re-detected — otherwise a site crossing a content threshold
+would silently flip behaviour, and a user's manual choice would be overwritten.
+
+Two signals, in order:
+
+1. **Kit holds v3 chrome** (`kit_has_legacy_chrome()`, RAW `_elementor_page_settings`
+   — `get_settings_for_display()` merges control defaults and reports every
+   fresh install as legacy) → **keep**.
+2. Otherwise **is this a fresh / under-construction site?** (`is_fresh_site()`:
+   ≤1 page, <3 posts, <4 attachments, excluding trash/auto-draft) → fresh means
+   a genuinely new user → **hide**. An established site → **keep**.
+
+Signal 2 exists because signal 1 has a blind spot: **v3 popups are
+template-driven** and the Popup tab only styles them, so a site can be deep into
+using v3 popups with an empty Kit. Established-but-empty therefore defaults to
+keeping the tabs; the dashboard switch is how you turn them off deliberately.
+
+### Rule 4 — detection is not enough; IMPORT the old config
+
+The gap detection leaves: hide an existing user's Site Settings tab and their
+preloader still *renders* (rule 2), but they can no longer *edit* it, and the
+new panel shows them defaults that look nothing like their site. That reads as
+"my settings are gone" even though nothing was deleted.
+
+`import_from_kit()` closes it — once, at bootstrap, non-destructively. A v3
+preloader configuration is copied into the v4 option, so the new screen opens
+**already filled in with their exact settings** and no action is required of them.
+Because v4 then reports the feature as enabled, rule 1's bridge hands the
+preloader to v4: same look, one owner.
+
+Any future feature moved from v3 to v4 needs its own importer. Detection
+without import is how you make a long-time user feel robbed.
+
+### Rule 5 — the flag is a ONE-WAY RATCHET back on
+
+A one-time decision can't see what the user does next. A correctly-detected
+fresh install gets the v4-only experience, and then they import a starter
+template built on v3 widgets, or decide after a tutorial that they want the old
+features. Both leave them staring at a panel that no longer offers what they
+came for.
+
+So: **evidence of v3 can always switch the flag back on; nothing ever switches
+it off automatically.** Off is only ever a default for a site with no v3
+evidence at all. `maybe_reactivate_legacy()` (admin_init, prio 11) checks
+`has_v3_usage()` and flips it, importing the Kit config at the same time.
+
+`has_v3_usage()` is the honest signal, not the post-count heuristic: v3 widgets
+save as `"widgetType":"wcf--<slug>"` inside `_elementor_data`, so one `LIKE`
+finds them anywhere. An imported demo looks fresh by post count and lights this
+up instantly. Cached in the `aae_v3_usage` transient for an hour.
+
+The one exception is a deliberate human choice. Once the user has moved the
+switch themselves, `legacy_v3_user_set` sticks and the ratchet stops — an import
+must never overrule someone who explicitly turned the old surface off. That flag
+is set only when the posted value actually DIFFERS from the stored one; every
+panel save posts the whole object, so equality-based detection would mark it
+claimed the first time anyone saved a preloader colour.
+
+### Rule 6 — always ship the manual escape hatch
+
+There are many existing v3 users and no heuristic gets them all right. The
+dashboard carries a always-visible **"Legacy settings in Elementor Site
+Settings"** switch (`legacy_v3`) that restores them. It saves immediately on
+flip rather than waiting for the panel's Save button — a switch this
+consequential shouldn't sit in an uncommitted form.
+
+### DANGER — do not gate `register_widgets()` on a heuristic
+
+`class-plugin.php::register_widgets()` / `register_extensions()` are the only
+registration points for the ~69 v3 widgets. **An unregistered widget renders
+NOTHING on pages that already use it** — this is not "hidden from the panel",
+it is data loss on the front end. Post-count freshness is a proxy, not proof
+(an imported demo or a migrated database looks fresh).
+
+Before ever hiding v3 widgets, prove they are unused with `has_v3_usage()`
+(`_elementor_data LIKE '%"widgetType":"wcf--%'`, already implemented) and force
+legacy ON if any hit comes back. Then hide them from the PANEL only, keeping
+them registered — that is unobservable to existing pages.
+
+**SHIPPED — `Animation_Settings::hide_legacy_widgets_in_panel()`. The route is
+CLIENT-SIDE. Researched 2026-07-31 against installed 4.2.1 — do not redo it, and
+do not reach for PHP.**
+
+Panel visibility is decided entirely in the editor JS
+(`assets/dev/js/editor/regions/panel/pages/elements/elements.js`):
+
+```js
+shouldAddWidget( widget ) { return widget.show_in_panel && …; }   // :222
+```
+
+…and Elementor's OWN code hides deprecated widgets exactly this way:
+
+```js
+elementor.widgetsCache[ widgetName ].show_in_panel = false;       // :82
+```
+
+So the supported move is to flip `show_in_panel` on `elementor.widgetsCache`
+for every `wcf--*` entry. Registration is untouched, so existing pages render
+identically; only the panel listing changes. Both symbols are present in the
+shipped `elementor/assets/js/editor.js`, so this works on the runtime, not just
+the dev clone.
+
+**Timing matters.** `initialize()` calls `initElementsCollection()` FIRST, then
+`initCategoriesCollection()`, then `initRegionViews()` — so the
+`panel/elements/regionViews` filter is already too late to affect the list.
+Mutate before the panel page initializes (AAE already hooks
+`elementor/editor/after_enqueue_scripts`, class-plugin.php:1750) and re-apply on
+the `elementor/widgets/refreshed` action, since `refreshWidgets()` rebuilds the
+cache from scratch.
+
+**Why PHP is a dead end** (all four checked, so nobody re-checks):
+`show_in_panel()` is read once in `Widget_Base::get_initial_config()`
+(widget-base.php:381) with no filter; widget configs travel by AJAX
+(`get_widgets_config` / `refresh_widgets_config`, widgets.php:391/415) built
+straight from `$widget->get_config()`, and the Ajax module contains no
+`apply_filters` at all; `elementor/widgets/black_list` (widgets.php:188) only
+iterates `$wp_widget_factory->widgets`, i.e. WordPress widgets;
+`elementor/widgets/is_widget_enabled` (widgets.php:274) gates REGISTRATION —
+the data-loss path this box warns about. All 70 v3 widgets extend `Widget_Base`
+directly, and PHP cannot subclass a runtime class-name string, so a wrapper at
+registration is impossible too.
+
+> **General lesson, worth applying beyond this feature:** "no PHP hook exists"
+> is not the same as "it can't be done". Elementor's editor owns a great deal of
+> behaviour client-side. When the PHP side comes up empty, grep the editor JS —
+> `plugins/elementor/assets/js/` for what actually ships and
+> `plugins/elementor-src-repo/` for readable sources — before proposing an
+> expensive workaround. Here that difference was ~20 lines versus a 70-file
+> codemod. Always confirm the finding exists in the INSTALLED bundle too; the
+> clone runs ahead of the runtime.
+
+### Where things are
+
+- Option + schema + sanitizer + AJAX: `inc/AnimationSettings/class-animation-settings.php`
+- Public API for Pro: `is_feature_enabled($f)`, `legacy_v3_enabled()`,
+  `feature($f)`, `resolve_color($c)`, `global_colors()`, `has_pro()`.
+  Pro must guard every call with `class_exists()` — an older free plugin won't
+  have the class.
+- Boot: `class-plugin.php`, loaded unconditionally (front end and Pro both read it)
+- Dashboard payload: `WCF_ADDONS_ADMIN.animation_settings` in `inc/admin/dashboard.php`
+  (shipped with the page, not fetched, so the panel paints filled in)
+- AJAX: `aae_get_animation_settings` / `aae_save_animation_settings`, nonce
+  `wcf_admin_nonce`, `manage_options` — same contract as the widgets/extensions screens
+- Colours are `{ mode: 'custom'|'global', custom: '#hex', global: '<kit color id>' }`.
+  Both halves are stored side by side so switching modes doesn't lose the other.
+- The 18 preloader layouts are **duplicated** in the free class rather than
+  imported from Pro — the free dashboard has to render the list with no Pro installed.
+
+### Status (2026-07-31)
+
+**Working end to end for Preloader.** Verified on the front end: with the v4
+preloader on, `.wcf-preloader` paints at first paint carrying the chosen layout
+(`orbit-loading`), `background-color: #0b1220`, `--color: #4a5fd9`,
+`--color2: #e94ec3`; the JS removes it and clears `wcf-preloader-active` after
+load; switching v4 off leaves the page with no preloader at all. Zero JS errors.
+The Kit on that site holds **no** v3 chrome keys, so the output could only have
+come from the v4 option through the bridge.
+
+Also built and probe-verified: option + sanitizer (rejects unknown layouts and
+non-hex colours), legacy detection, Kit import, AJAX, cache invalidation on any
+writer (`update_option_*`, not just the AJAX handler), the dashboard screen, and
+the Site Settings tab gate.
+
+**v3 widget panel hiding works**, verified across the full matrix by
+`E:\Local Testing\verify-legacy-matrix.mjs` — v3 widgets all/none × extensions
+all/none × `legacy_v3` on/off, six corners, all green:
+
+| widgets | legacy | registered | listed in panel |
+|---|---|---|---|
+| all | on | 60 | 59 (+1 self-hidden) |
+| all | off | **60** | **0** |
+| none | either | 0 | 0 |
+
+Registration tracks the widgets dashboard option and **never** the legacy flag —
+that is the property that keeps existing pages rendering. Extensions follow
+their own option and are untouched by the flag (7/7 or 0/7 as set). Atomic
+widgets show 33 in every corner. Zero JS errors throughout.
+
+**The import scenario is verified end to end**
+(`verify-v3-import-ratchet.mjs` + `make-v3-import-page.php`): from the
+auto-hidden "new user" state, a page carrying `wcf--image-box` /
+`wcf--counter` flips `legacy_v3` back ON at the next admin page load, the panel
+lists v3 again, and the imported page renders both widgets on the front end.
+
+Two traps when writing tests here:
+
+- **This dev site ships with no v3 widgets enabled** (`wcf_save_widgets` empty →
+  `get_widgets()` returns 0 → nothing `wcf--*` registers), so assertions have
+  nothing to bite on until you enable some. The option keys are bare slugs
+  (`image-box`); Elementor registers them as `wcf--image-box`. Config shape:
+  `wcf_get_config()['widgets']['elements'][<category>]['elements'][<slug>]`.
+- **`wcf--theme-post-content` hides itself** from the panel (theme-builder only),
+  so "all listed" is 59/60, not 60/60. Assert "nothing hidden except the known
+  self-hiders", never a bare count match.
+
+**Not built:** the other four features (Cursor, Scroll to Top, Scroll Indicator,
+Popup) — listed in the UI as "Soon" — and the v3 *extension* gate (extensions
+add control sections to widgets rather than panel entries, so hiding them is a
+different problem and skipping their registration would stop saved effects from
+running).
+
+---
+
+## Display conditions — every global setting (2026-08-01)
+
+Every feature in Animation Settings AND both Performance groups carry the same
+include/exclude rules, in the shape Elementor's theme builder uses. Stored under
+the field key **`conditions`** — NOT `display`, because the scroll indicator
+already has a v3 field by that name (its own "Entire Website / Specific Pages /
+Specific Post Types" enum). The injection in `schema()` skips a feature that
+already owns the key, so the collision silently left the scroll indicator as the
+one feature with no conditions at all.
+
+**Injected, never repeated.** `Animation_Settings::schema()` appends
+`display_field()` to every feature; Pro's `Performance::schema()` does the same
+to its groups. Writing it per feature is N chances for one to drift.
+
+### The distinction that makes it work
+
+| | Scope | Asks |
+|---|---|---|
+| `is_feature_enabled()` | site | "has v4 taken ownership?" |
+| `is_feature_active()` | request | "should it run *here*?" |
+
+**`is_feature_enabled()` must stay TRUE on an excluded page.** It is what tells
+Pro's v3 renderer to stand down. Return false there and the excluded page falls
+straight back to the Kit's v3 values — you exclude the preloader from the 404
+page and a v3 preloader appears on it. `Bridge` therefore does not *skip* an
+excluded feature; it **blanks the enable key**, switching both systems off for
+that request. `Performance::is_enabled()` / `is_active()` are the same pair.
+
+Anything that renders or enqueues asks `is_feature_active()`. Conditions cost
+nothing to evaluate — every location resolves to a WordPress conditional tag,
+no queries — except `specific`, which compares `get_queried_object_id()` against
+a stored id list.
+
+### Rules
+
+- Exclude beats Include, always.
+- Exclude-only ⇒ "everywhere except these". Treating a missing Include as
+  "nowhere" would make a single Exclude row disable the feature site-wide.
+- Empty rule set ⇒ everywhere (fail open).
+- An unknown location matches **nothing**, so a rule pointing at a deleted CPT
+  cannot start including the whole site.
+- A `specific` row with no ids is **dropped by the sanitiser**, not stored —
+  a half-built exclusion must not take the site down while someone is picking.
+
+`Specific pages` is backed by `wp_ajax_aae_search_content`, which does double
+duty: search by title, and resolve stored ids back to titles so a saved rule
+reloads as page names instead of bare numbers.
+
+## Performance — lazy animation & reduced motion (shipped 2026-07-31)
+
+Dashboard → **Performance**. Governs how the animation runtime is DELIVERED,
+not what it does. Two switches, **both off by default**.
+
+| | |
+|---|---|
+| UI | `src/modules/dashboard/pages/Performance.jsx` — **FREE** |
+| Store + pipeline | `pro/inc/Performance/class-performance.php` + `class-lazy-scripts.php` — **PRO** |
+| Option | `aae_performance_settings` |
+| Payload seam | `apply_filters('aae/performance/dashboard_payload', array())` in free's `inc/admin/dashboard.php`; Pro answers it |
+
+The split is deliberate and is the pattern to copy: free ships the SCREEN, Pro
+ships everything behind it. With Pro absent the payload is `[]`, which is how
+`Performance.jsx` knows to render `LockedNotice` (two PRO-badged cards
+describing the features) instead of an empty frame. Panels are drawn by the
+same generic `FeaturePanel` Animation Settings uses — a group with
+`'pro' => false` in its schema gets no PRO badge and is never locked.
+
+### What the numbers are
+
+`aae-atomic-common` declares gsap + ScrollTrigger as hard deps
+(`inc/Atomic/Assets.php`), so one AAE effect on a page costs **71 KB of GSAP +
+43 KB of ScrollTrigger** before the 5.8 KB runtime and its 1–19 KB effect
+bundle. The libraries are essentially the whole payload — that is the thing
+worth deferring.
+
+### The mechanism — one pipeline, two features
+
+Both switches answer the same question ("should this script run now?"), so
+there is one mechanism. `script_loader_tag` (priority `PHP_INT_MAX - 10`, i.e.
+last, so a defer/async plugin's rewrite is replaced rather than wrapped)
+turns our tags into inert placeholders:
+
+```html
+<script type="text/aae-lazy" data-aae-handle="gsap" data-aae-src="…"></script>
+```
+
+A ~2 KB inline loader at `wp_footer:21` then decides: reduced-motion visitor →
+never load; lazy on → load on approach; otherwise → load immediately. **Both
+off = nothing is rewritten at all** and the page is byte-identical to before.
+
+### Three properties that make it safe — do not break any of them
+
+1. **Nothing is pre-hidden in CSS.** Every hidden start state (`opacity: 0`,
+   offsets) is set by GSAP at play time, so an element whose script never
+   arrives renders normally. Worst case is an animation that doesn't play,
+   never content stuck invisible. **An effect that pre-hides in CSS must not be
+   added to the deferred set** — it would go blank instead.
+2. **GSAP is deferred conditionally.** The GSAP family is shared with the ~70 v3
+   widgets, which are NOT deferred. `gsap_deferrable()` walks the enqueued
+   dependency graph and only defers the libraries when nothing outside the
+   deferred set names them. A page mixing v3 and v4 loads GSAP eagerly
+   (correct) and still defers the v4 bundles.
+
+   **`LIBRARY_HANDLES` must list every GSAP PLUGIN, not just the core library.**
+   A plugin (`flip`, `Physics2DPlugin`, `Draggable`, `ScrollSmoother`…) declares
+   `gsap` as its dependency, so one left off the list does not merely stay eager
+   — it registers as an eager consumer of `gsap` and blocks the *entire family*
+   from deferring. That is how it fails: silently, as "the feature does nothing
+   on this page". Anything added to `Plugin::get_library_scripts()` belongs
+   here too.
+3. **Atomic WIDGET scripts are excluded** (sliders, forms, menu…). They are
+   interactive controls, not decoration — a carousel that initialises only once
+   you scroll to it is broken, not fast.
+
+The editor preview is excluded permanently: it blanket-enqueues every bundle
+precisely so a builder can toggle effects without a round-trip.
+
+### Two lanes — the viewport is not the only trigger (2026-07-31)
+
+Site chrome — the cursor, ScrollSmoother, the read-later buttons, all inside
+`wcf--addons-ex` — belongs to the PAGE, not to any element, so the viewport
+observer has nothing to hang it on. It gets its own lane:
+
+| Lane | Carries | Trigger |
+|---|---|---|
+| Effects | `aae-atomic-common` + the effect bundles | IntersectionObserver on animated elements |
+| Chrome | `wcf--addons-ex` + the whole GSAP family | `load` → `requestIdleCallback` (2 s timeout) |
+
+`load` *then* idle, deliberately: `load` alone still competes with images and
+fonts finishing. Measured on a chrome page: **234 KB of JS off the critical
+path**, and the cursor is live well before a visitor notices it is not.
+
+**Keep the lanes separate.** GSAP is ~90 % of the payload, so it is tempting to
+give up and pull the whole chain once the chrome lane fires anyway. Don't — that
+makes viewport laziness decorative on every site that has a cursor, which is
+most of them. `run(only)` filters by handle and claims each node, so the lanes
+cannot double-fetch or interleave.
+
+Three constraints this lane created, each of which broke something first:
+
+1. **Document order is NOT dependency order.** `wcf--addons-ex` uses
+   ScrollTrigger without declaring it, so WP is free to print ScrollTrigger
+   *after* it — and does. Harmless while the bundle waited for
+   `DOMContentLoaded` (everything had run by then), fatal once it executes on
+   injection. Symptom: `Cannot read properties of undefined (reading
+   'getScrollFunc')`. The loader now hoists all library handles to the front of
+   the chain — safe as a blanket rule because a GSAP plugin's only dependency
+   is GSAP.
+2. **`wcf-addons-ex.js` had a bare `DOMContentLoaded` listener**, which is
+   silently fatal when the file is injected after that event: the listener is
+   registered on something that already happened, so the cursor, the smoother
+   and the read-later buttons never initialise, with no error to show for it.
+   It now checks `document.readyState` first. **Any bundle added to a deferred
+   set needs this check.**
+3. **The preloader must never be deferred.** `body.wcf-preloader-active` sets
+   `overflow: hidden !important`, so deferring its removal behind a scroll
+   trigger deadlocks: the page waits for a scroll it is itself preventing. It
+   is safe today only by accident of structure — its removal script is INLINE
+   (`pro/inc/global-elements.php`), and inline scripts have no `src`, so
+   `rewrite_tag()` never sees them. If that ever moves into a file, it must be
+   excluded explicitly.
+
+Reduced motion exempts the chrome lane: that bundle is not the animation
+runtime and also carries plain interactive controls, so dropping it would turn
+an accessibility preference into a broken page. Open question, not yet acted
+on: ScrollSmoother arguably *should* honour `prefers-reduced-motion`, but that
+guard belongs inside the bundle, not in the loader.
+
+### GOTCHA — the animated element is `data-interaction-id`, NOT `data-aae-*`
+
+`InteractionsMap`'s own docblock says elements are tagged `data-aae-text-id` /
+`data-aae-anim-id`. **They are not.** The shipped markup carries Elementor's
+`data-interaction-id`, and `window.AAE_INTERACTIONS_TEXT` (printed at
+`wp_footer:5`) is keyed by that. The first version of the loader scanned for
+`data-aae*` dataset keys, found nothing, and silently fell back to loading
+everything immediately — laziness that looked wired and did nothing.
+
+The loader now reads the `AAE_INTERACTIONS_*` globals themselves and builds
+`[data-interaction-id="…"]` selectors from their keys — the same source of
+truth the runtime reads, so it cannot drift. The `data-aae*` dataset scan is
+kept as a second source for effects that tag elements directly. **If no target
+is found at all it loads rather than withholds** — never withhold assets you
+cannot reason about.
+
+### Tests
+
+- `E:\Local Testing\probe-performance.php` — 25 checks: schema/defaults/
+  sanitise (clamping both ends), the payload filter, `gsap_deferrable()` in
+  three shapes (ours only / a direct v3 consumer / a transitive one), and tag
+  rewriting incl. leaving foreign handles alone.
+- `verify-performance-lazy.mjs` — 24 checks on a real page. Asserts on
+  **network requests**, not DOM state: a page can look identical while still
+  having downloaded 114 KB. Covers off / lazy / reduced-motion, and that a
+  reduced-motion setting does not affect an ordinary visitor.
+- `verify-chrome-defer.mjs` — 21 checks on the chrome lane. Splits requests by
+  BEFORE vs AFTER the load event, because "deferred" is a claim about timing
+  that a did-it-load list can neither prove nor disprove. Every case ends by
+  driving the feature (moving the mouse and measuring the cursor), since a
+  timing-only test passes just as happily with a broken cursor.
+- `verify-performance-ui.mjs` — the dashboard, both with and without Pro.
+- `measure-critical-path.mjs` — bytes before `load`, lazy off vs on.
+- Fixtures: `make-perf-page.php` (250vh spacer, THEN a char-animated heading —
+  the heading must start below the fold or deferred and non-deferred look
+  identical), `set-performance.php`.
+
+### Bugs a full-site test found (2026-07-31) — all fixed, all regression-tested
+
+Five real defects, none of which raised an error. Worth reading as a set: every
+one of them was invisible without an assertion aimed straight at it.
+
+1. **v4 chrome rendered unstyled on a v4-only site.** `wcf--addons-ex` (which
+   holds `.wcf-cursor { position: fixed }`, the indicator's bar height, …) was
+   enqueued only when a v3 WIDGET was active. But the v4 side has no renderer —
+   it reuses the v3 markup — so a site with v4 chrome and no v3 widgets got the
+   markup with none of its CSS: cursor and indicator sat `position: static` at
+   the bottom of the document. Fix: `has_active_legacy_assets()` now also
+   returns true when any v4 chrome feature is on.
+2. **`gsap is not defined` on the v4 cursor.** That cursor is entirely
+   GSAP-driven, but `wcf--addons-ex` never declared `gsap` as a dependency — on
+   v3 sites some extension always happened to pull it in. A v4-only site has
+   `wcf_save_extensions` empty, which makes `get_library_scripts()` return `[]`,
+   so GSAP was never even REGISTERED and every enqueue was a no-op. Fix:
+   `ensure_v4_chrome_runtime()` in Pro's `class-plugin.php`, gated on the cursor
+   specifically.
+3. **`z-index: Array` on the scroll indicator.** `wcf_scroll_indicator_z_index`
+   is a v3 NUMBER control while its scroll-to-top twin is a SLIDER; the schema
+   typed both as `size` and sent `{size, unit}`. Fix: a real `number` field type
+   through defaults/sanitise/bridge/panel. **Check the v3 control's actual type
+   before adding a field** — the two are not interchangeable.
+4. **The v4 scroll-to-top button had no icon.** `global-elements.php` reads the
+   Kit via `$kit->get_settings()` — RAW, so Elementor's control defaults are
+   never merged. A v4 user never opens the v3 tab, so `scroll_to_icon` is
+   guaranteed absent. Fix: `kit_defaults` in the schema, written by the Bridge
+   only when the Kit has nothing. Same root cause as the popup's `close_icon`,
+   fixed defensively in place.
+5. **An imported starter template rendered COMPLETELY BLANK.** The big one —
+   see below.
+
+### DANGER — `legacy_v3` does not register anything
+
+`maybe_reactivate_legacy()` correctly detects imported v3 content and flips
+`legacy_v3` back on. That flag controls **UI visibility only**. Registration
+follows `wcf_save_widgets`, and a starter-template import never writes it — so
+a real import left 34 pages built from `wcf--title` / `wcf--image` /
+`wcf--counter` rendering **nothing at all**: no error, no notice, no log line,
+because an unregistered widget emits not even a wrapper. The home page went
+from 478 KB to 199 KB of markup with zero `<h1>`–`<h6>`.
+
+`maybe_enable_used_v3_widgets()` (admin_init, prio 12) closes it — enabling
+exactly the slugs the content references, and only when `wcf_save_widgets` has
+**never** been written (an empty array is a deliberate choice and is left
+alone). Enabling is the safe direction; the DANGER box above is about the
+opposite move.
+
+**The slug is NOT the widget name minus `wcf--`.** `wcf--title` lives in
+`animated-title.php` under the dashboard key `animated-title`; deriving the
+slug by trimming the prefix silently missed 9 of 24 widgets, `title` and `text`
+among them, so the page still rendered half-empty and looked like a different
+bug. There is no declared map — `Plugin::$widget_element_keys` is built while
+widgets register, which is useless when you are deciding what to register — so
+`widget_name_to_slug_map()` reads `get_name()` out of the same
+`widgets/<slug>.php` files the registrar loads.
+
+Tests: `verify-v3-widget-autoenable.mjs` (auto-enable, used-only, front-end
+renders, and that an explicit all-off choice survives),
+`verify-starter-import.mjs` (a real import end to end),
+`verify-post-import.mjs` (the imported demo with v4 chrome + lazy animation on).
+
+Two traps when driving the Starter Template screen: the Import button lives in a
+`hidden group-hover:flex` overlay so all 40 exist and none is visible — hover
+the card root `div.group`, not the title; and the catalogue ships a PRO **and** a
+FREE variant under the SAME title, so matching on title alone lands on the Pro
+one and stops at the license dialog.
+
+### A hyphen in a control name silently breaks its asset condition (fixed)
+
+`Undefined array key "wcf"` — ~228 lines per Elementor CSS regeneration on a
+v3-heavy site. Traced to
+`Elements_Iteration_Actions\Assets::get_assets()`, which evaluates a control's
+`assets → scripts → conditions` with `Conditions::check()`. That parses a term
+name with `/(\w+)(?:\[(\w+)])?/`, and the control was named
+**`wcf-image-animation`** — hyphens are not `\w`, so the term collapsed to
+`wcf`, a setting that has never existed.
+
+**The log noise was the small half.** The comparison became `null !== 'none'`,
+which is ALWAYS TRUE, so `aae--animations--modules` was enqueued on every
+element carrying the control. The on-demand loading that block existed for had
+never once happened. Measured after the fix: the runtime now loads on 1 of 3
+pages instead of 3 of 3.
+
+The control name can't be renamed — saved pages reference it — so the enqueue
+moved to `WCF_Image_Animation_Effects::maybe_enqueue_runtime()` on
+`elementor/frontend/before_render`, which reads the setting directly. As a
+bonus it prefix-matches the responsive variants (`…_tablet`, `…_mobile`) that
+the single-term condition never looked at.
+
+**Rule: an Elementor control whose name contains a hyphen can never be the
+target of an asset condition.** Use underscores in new control names, and for
+existing hyphenated ones do the enqueue in PHP.
+
+**Diagnosing this class of bug:** the warning only fires while Elementor
+REGENERATES assets, so a normal page load shows nothing and it looks
+intermittent. Reproduce with `files_manager->clear_cache()` immediately before
+the request. A declarative grep for the bad name finds nothing — the culprit is
+reachable only through `get_controls()` on a live stack with the v3 layer
+active. What worked: an `mu-plugins/` error handler that captures a
+`debug_backtrace()` for the specific message, which named the exact evaluator in
+one request.
+
+### DANGER — never `wp plugin deactivate` the Pro plugin to test the free path
+
+It deletes `wcf_addon_sl_license_status`, and `wcf__addons__pro__status()`
+gates Pro's ENTIRE `include_files()` on that option being exactly `valid` — so
+reactivating leaves every Pro module silently dead (no Bridge, no Performance,
+no AtomicV4 anything) while `wp plugin list` cheerfully reports it active. It
+also resets `wcf_addons_setup_wizard`, and an incomplete wizard redirects every
+AAE settings screen to the setup page before React boots. Recovery:
+
+```bash
+wp option update wcf_addon_sl_license_status valid
+wp option update wcf_addons_setup_wizard complete
+```
+
+Test a Pro-absent UI branch by emptying the payload in `page.addInitScript()`
+instead — see `verify-performance-ui.mjs`.
+
+---
+
+## Cache / optimization plugin compatibility
+
+**Slice 1 SHIPPED 2026-08-01** (the image gate + box reservation).
+**Slice 2 SHIPPED 2026-08-02** (the LiteSpeed/Rocket filter fencing).
+**Slice 3 SHIPPED 2026-08-02** (the skip-lazy opt-out marker + the per-page
+admin-bar modal). All three slices are done; everything below the "SHIPPED"
+blocks is the original design, kept for the research and the source citations
+— check it against the SHIPPED blocks before trusting a detail, since two of
+its instructions turned out to be wrong (the `data-no-optimize`-only fence and
+the static `API::purge_post()` call).
+
+### SHIPPED — the image gate (Slice 1)
+
+Measured on the real plugin (LiteSpeed 7.8.1, image lazyload on, logged out):
+**5/5 atomic reveal animations ran on a placeholder → 0/5**, on both the cold
+and the warm view, with no added latency (median enter→first-style-write 2-3ms).
+
+| File | What |
+|---|---|
+| `pro/src/modules/atomic-v4/effects/image-gate.js` | the whole gate — detection, promotion, per-image shared promise, debounced `ScrollTrigger.refresh()` backstop, and the `window.AAEImageGate` seam |
+| `pro/…/effects/animation/triggers.js` | `wireTrigger` wraps its `play` via `gatePlay()`; prebuilt-`animation` and `scrub` modes promote at bind instead (they cannot be deferred) |
+| `pro/…/effects/{parallax,tilt,sticky,image-hover,cursor-hover-effect,mouse-move-effect,horizontal-scroll-anim}/index.js` | `promoteLazyImagesIn(el)` at bind — these measure or move a box and never call `wireTrigger` |
+| `free/src/modules/atomic/common.js` | `Registry.register()` wraps `kind.play` through the seam — belt for the EDITOR replay path only |
+| `free/…/Widgets/PostImage/{class,twig}` | `image_width`/`image_height` props → `<img width height>` + an aspect-ratio fallback when the ratio prop is `auto` |
+| `free/…/Widgets/Posts/{class,twig}` | same for `aae-a-post-thumb`, which was the only lazy + unsized + **0px-tall** image in the atomic line |
+
+Verified on the frontend: the thumb now ships `width="768" height="512"` and
+LiteSpeed generates a correctly-sized placeholder from it instead of collapsing
+to zero.
+
+**Tests / fixtures** (`E:\Local Testing\`): `verify-cache-compat.mjs` (5
+checks), `make-cache-compat-page.php` (fixture 9852 — five cases incl. nested
+animated ancestors and the same attachment animated twice), `set-litespeed.php`
++ `_run-ls.mjs` (toggle LiteSpeed settings; **`wp litespeed-option` fatals on
+this machine**, so write the `litespeed.conf.*` options directly),
+`clear-elementor-cache.php`.
+
+**GOTCHA — `currentSrc` alone cannot prove promotion happened.** After the swap
+the browser picks a **srcset candidate**, so `currentSrc` is a different sized
+file than `data-src` forever. Compare the `src` ATTRIBUTE too, or a correct
+promotion reads as "still lazy" — this produced a full false-alarm cycle in the
+probe. The gate does compare both.
+
+**GOTCHA — a finished Regular Animation is invisible to sampling.** fadeUp ends
+at opacity 1 / transform none and `clearProps` wipes the inline style, so the
+computed values equal an element that never ran. `verify-extension-effects.mjs`
+sampled for distinct states and started FAILING when LiteSpeed made the page
+render faster (tween ran at 404ms, cleared at 1462ms — before the first
+sample). It now latches style mutations from `document_start` and passes on
+either signal. **Any assertion of the form "did this animate" needs the latch,
+not a sample.**
+
+### SHIPPED — the JS/CSS fence (Slice 2)
+
+Plan steps 3, 4 and 6 below. Measured on the real plugin (LiteSpeed 7.8.1, JS
+Combine + Minify + **Defer mode 2 "Delayed"**, logged out, fixture
+`aae-cache-compat`), driving the page with **scroll only** — never a pointer or
+key, because LiteSpeed promotes every delayed script on the first
+`mouseover/click/keydown/wheel/touchmove/touchstart` (`assets/js/js_delay.js:1`)
+and a test that touches the page measures nothing. `scroll` is deliberately not
+in that list, which is what makes the test possible.
+
+| | without the fence | with it |
+|---|---|---|
+| AAE runtime files present as tags | **0 of 11** (all swallowed into the parked combined file) | 11 |
+| `window.gsap` / `ScrollTrigger` / `AAEADDON` | **all undefined** | all defined |
+| image animation played | **no**, 0 style writes | yes |
+| inline `<style>` blocks left in place | **0 of 11** | 11 |
+
+| File | What |
+|---|---|
+| `pro/inc/Performance/class-cache-compat.php` | the whole fence — path fragments + inline markers on 6 LiteSpeed/Rocket filters, and the per-page `comb_ext_inl` opt-out |
+| `pro/class-plugin.php` | `Cache_Compat::instance()` in `include_files()` — must stay on `plugins_loaded` |
+| `pro/…/class-lazy-scripts.php` | `data-no-optimize`/`data-no-defer` on the performance loader |
+| `free/inc/Atomic/InteractionsMap.php` | same attributes on the interaction maps — **in FREE**, since free ships the runtime that reads them |
+| `pro/…/{TriggerMap,LazyAssets,FormConditions\Renderer,Popup\Registry}.php` | same, for the v4 trigger map, the popup lazy loader, the form-condition map and the popup critical CSS |
+
+**GOTCHA — inline scripts are matched by CONTENT, not by URL.** `_js_inline_defer()`
+(`optimize.cls.php:983`) runs `str_hit_array($con, $cfg_js_defer_exc)` against
+the script BODY, so a path fragment can never protect an inline block. This
+produced a real, silent break: `wcf-addons-ex.js` is on the protected path list
+and stayed live, but it reads `WCF_ADDONS_JS`, which is localized onto the FREE
+v3 core handle (`free/class-plugin.php:187`) and prints as that handle's
+`-js-extra` block. v3 is out of scope, so the block was delayed and the live
+file threw `WCF_ADDONS_JS is not defined` — taking ScrollSmoother down and
+leaving every scroll-driven animation unplayed, with the runtime itself loading
+perfectly. Hence `Cache_Compat::INLINE_MARKERS`, and the rule behind it: **the
+fence follows the dependency graph, not the scope boundary.**
+
+**GOTCHA — LiteSpeed intermittently ends up DEACTIVATED mid-session.** Happened
+twice on 2026-08-02. `\LiteSpeed\Base` stops existing on the front end, lazyload
+silently stops, and the fixture page comes back clean — which reads exactly like
+"the fence worked". `active_plugins` in the DB genuinely loses the row; there is
+no `deactivate_plugins` call anywhere in LiteSpeed's source and nothing in
+`debug.log`. **Cause NOT identified** — it was first blamed on `guest-on`, but it
+recurred without Guest Mode, and a deliberate replay (activate → write
+`litespeed.conf.*` → frontend request → `clearElementorCache` → `set-v3-state`)
+would not reproduce it. Recovery: `wp plugin activate litespeed-cache`. This is
+why `verify-cache-jsopt.mjs` asserts `parked > 0` FIRST — never trust a green
+cache run that did not prove the optimizer ran.
+
+Guest Mode is still not worth using here: `js-delay` gives the same defer mode 2
+behaviour Guest Optimization forces, without the guest branch.
+
+**GOTCHA — the optimizer never runs here by default, and it looks like a pass.**
+`Optimize::_finalize()` bails on `!Control::is_cacheable()`, which needs
+`LITESPEED_ON`, which `conf.cls.php:459` only defines when `LITESPEED_ALLOWED`
+is set — i.e. on a real LiteSpeed server. Before the plugin was re-activated the
+fixture page came back with zero combined files and zero parked scripts, which
+reads exactly like "the fence worked". Always assert that the optimizer DID
+something (`verify-cache-jsopt.mjs` checks `parked > 0` first) before believing
+a green run.
+
+**GOTCHA — never assert "did it animate" against one effect's signature.** The
+first version of the probe checked for a `clip-path` write, which is only true
+while fixture case B is configured as `reveal`. The fixture was re-saved with
+`elasticPop` (transform/opacity) mid-session and a perfectly animating page
+reported as broken. Assert the effect's own played marker (`__aaeImgPlayed`)
+and print which effect ran. Same family of trap as the finished-Regular-Animation
+row above.
+
+**Deliberately NOT registered: `litespeed_optimize_css_excludes` /
+`rocket_exclude_css`.** Combining deletes the member `<link>`s and re-emits one
+file at head-top, so an EXCLUDED sheet keeps its old position while everything
+else collapses — excluding is what MOVES our CSS against Elementor's (0,2,0)
+atomic base styles. The order-neutral `litespeed_optm_css_comb_ext_inl` => false
+is used instead. See the cascade DANGER below before adding one.
+
+**Verified in the v4-only state too** — every v3 widget and extension off, so
+`has_active_legacy_assets()` is false and `get_library_scripts()` returns []:
+11/11, image animation played. In that state neither `wcf--addons-ex` nor
+`WCF_ADDONS_JS` is emitted at all, so the `WCF_ADDONS_JS` inline marker goes
+inert (a substring matching nothing) and the remaining v4 runtime — `gsap`,
+`ScrollTrigger`, `SplitText`, `aae-atomic-common`, the effect bundles — is
+covered entirely by the path fragments. **The fence does not depend on v3.**
+
+**DANGER — `set-v3-state.php` destroyed a real site's v3 enablement.** On
+2026-08-02 its snapshot read `wcf_save_extensions` / `wcf_save_widgets` as `''`
+in one WP-CLI process moments after a `status` run in another reported 31 and 93
+active, so `restore` wrote empties back over the originals. Root cause never
+found. The script now ABORTS rather than proceeding when the snapshot is not a
+populated array. Note `Animation_Settings::maybe_enable_used_v3_widgets()` will
+NOT heal this: it bails unless the option is `false` (absent), and an empty
+string is not absent — `delete_option()` first, and even then it only restores
+the slugs the content references (36 here, not 93).
+
+**Gated on a cache plugin actually being present** (changed 2026-08-02, revising
+the "hook unconditionally" decision). `Cache_Compat::litespeed_active()` reads
+`LSCWP_V` / `\LiteSpeed\Core`, `rocket_active()` reads `WP_ROCKET_VERSION`, and
+only that plugin's filters are hooked. Timing is safe because WordPress includes
+every active plugin's main file BEFORE `plugins_loaded`, where we construct.
+The original argument still holds for the PATHS — they are self-scoping, since
+they only ever match our own asset URLs, so on a page with no atomic content
+they match nothing. It does NOT hold for `INLINE_MARKERS`: `WCF_ADDONS_JS` is a
+v3 global, so an ungated entry reaches pages this feature has no business
+touching. Never use `is_plugin_active()` here — it only exists in admin.
+
+**Hardening pass (2026-08-02), all three found by reading, all now covered by
+`pro/tests/atomic-v4/image-gate.test.js` (12 tests, `npm run test:atomic-v4`):**
+
+- **Leak — the per-image promise could never settle.** Neither `load` NOR
+  `error` is guaranteed: a hung request, or a lazyloader re-assigning `src`
+  before ours lands, leaves both silent. The listeners then stay attached for
+  the life of the document and every later play awaits a promise that will
+  never resolve — burning the gate timeout on every play, forever, which is the
+  exact failure the detection rules exist to prevent, re-entered from behind.
+  Fixed with `PROMOTE_TIMEOUT` (10s, deliberately far longer than the gate's own
+  1s so a slow connection does not trip it). **Verified by disabling the fix and
+  watching the test fail** — and note the test races the promise against a
+  resolved sentinel rather than awaiting it, because a bare `await` turns this
+  defect into a hung suite with no output instead of a named failure.
+- **`push(...nodeList)` in `unsettledImagesIn`.** A loop-grid/archive subtree
+  with thousands of images passes every node as a separate argument and throws
+  RangeError past the engine's limit — works on every page you test, dies on the
+  one page with a big archive. Now `Array.from`.
+- **`page_has_animations()` memoised a NEGATIVE.** Enqueues land during render,
+  so an early caller legitimately sees false; caching that answered for the
+  whole request from the one moment it could not know, and failed in the
+  safe-looking direction (page silently combined, no error). Only a positive is
+  memoised now; `wp_script_is()` is an array lookup, so re-asking is free.
+- `add_js_exclusions()` also now drops non-strings before `array_unique`, which
+  compares by string cast — one nested array in a third party's list would
+  otherwise raise "Array to string conversion" on every request, in a filter we
+  do not own, on a page that was working.
+
+Checked and found sound: the promotion→`ScrollTrigger.refresh()`→`onEnter`→play
+path cannot recurse (each image promotes once, the refresh is debounced, and the
+shared promise short-circuits re-entry); `InteractionsMap::print_maps()` clears
+`$entries` after printing; `protected_paths()` memoisation runs the filter once.
+
+**Tests** (`E:\Local Testing\`): `verify-cache-jsopt.mjs` (11 checks),
+`check-cache-compat-filters.php` (are the filters registered, do they emit the
+right paths, does a string setting survive), `set-litespeed.php` +
+`_run-ls.mjs` gained `js-defer` / `js-delay` / `inline-comb` / `js-off` /
+`guest-on` / `guest-off` modes.
+
+**Known gap, accepted:** the fence is Pro-only, so a free-only site with JS
+delay on still loses its animations. Free carries the inline-tag attributes
+(which is why those live in `InteractionsMap`), but nothing registers the file
+paths. Revisit with slice 3's Pro-only trap discussion.
+
+### SHIPPED — the skip-lazy opt-out marker (Slice 3, step 5)
+
+Performance > **Cache Compatibility**, default OFF. When on, every `<img>`
+inside an animated element gets `class="skip-lazy" data-no-lazy="1"` and the
+cache plugin leaves it eager. Measured on the fixture with LiteSpeed lazyload
+on: 6 images inside animated elements marked and served with real URLs, the 1
+image outside any animated element still lazy-loaded — so it is scoped, not a
+site-wide "turn lazy loading off". Setting off → 0 marked, lazy loading fully
+restored.
+
+| File | What |
+|---|---|
+| `pro/inc/Performance/class-skip-lazy.php` | the whole feature |
+| `pro/inc/Performance/class-performance.php` | `cache_compat` schema group |
+| `free/inc/Atomic/InteractionsMap.php` · `pro/…/Support/TriggerMap.php` | `has( $id )` — "is this element animated" |
+
+**The field is named `enable` for a reason.** `Performance::is_active()` reads
+that exact key and then applies the shared display-conditions control, so the
+naming is what gives the marker per-page targeting without building anything —
+which is most of what step 7's modal was for.
+
+**Why output buffering, when that is not the obvious choice.** The marker must
+land on the `<img>` ITSELF (Rocket has no parent-class mechanism, so a class on
+the wrapper passes a LiteSpeed test and does nothing on the commoner plugin).
+But we do not render those images: `data-interaction-id` comes from Elementor
+and the tag is built in Elementor's own Twig
+(`modules/atomic-widgets/elements/atomic-image/atomic-image.html.twig`), so
+there is no attribute filter to hook, and `wp_get_attachment_image_attributes`
+never runs. The images are also usually DESCENDANTS of the animated element, so
+a per-widget filter would miss them anyway. Buffering between
+`elementor/frontend/before_render` (`element-base.php:500`) and `after_render`
+(`:583`) is what is left.
+
+Three rules make that safe, and each is load-bearing:
+
+1. **Nothing hooks unless it will do work** — no cache plugin, setting off,
+   admin, or editor preview → `ob_start()` is never called. An always-on buffer
+   around every element would be a real cost paid by every site for a feature
+   almost none enable.
+2. **Only the OUTERMOST animated element is buffered** (`$open_id` doubles as
+   the "already inside" flag). Animated elements nest — fixture case C is fadeUp
+   inside fadeUp — and nested buffers would rewrite the same `<img>` repeatedly.
+3. **The close is keyed by element id, never a counter.** If another plugin's
+   `after_render` bails early or an element renders nothing, a counter pairs the
+   close with the wrong element and swallows its output.
+
+**Hook priority is not arbitrary:** `open` runs at `before_render` **100**
+because every extension registers its interactions on that same hook at
+10-25, so only by 100 can the maps answer for this element. `close` runs at
+`after_render` **0** so we rewrite exactly what the element rendered.
+
+`mark_images()` uses regex, not DOMDocument — a fragment parse/serialise
+normalises markup, mangles HTML5 void elements and drops what it thinks is
+invalid, which is a destructive amount of change for adding one class. It also
+returns the ORIGINAL html when `preg_replace_callback` returns null (PCRE limits
+on a huge element): an unmarked image is a missed optimisation, an empty one is
+a broken page. 17 cases in `E:\Local Testing\verify-skip-lazy-marker.php` —
+quoting styles, self-closing, uppercase, idempotence, foreign `data-no-lazy`,
+empty input, and a 4000-node subtree.
+
+Toggle it with `wp eval-file set-cache-compat.php on|off|status`.
+
+### SHIPPED — the per-page override modal (Slice 3, step 7)
+
+Front-end admin-bar node **AAE Cache** → modal for the page you are looking at.
+Three states (`inherit` / force on / force off) stored as `_aae_cache_compat`
+post meta, saved over AJAX with the established contract (nonce
+`wcf_admin_nonce`, `manage_options`).
+
+| File | What |
+|---|---|
+| `pro/inc/Performance/class-cache-compat-page.php` | meta, precedence, admin-bar node, AJAX, purge, the live report |
+| `pro/src/modules/atomic-v4/cache-compat-page.js` | the modal |
+| `pro/assets/css/cache-compat-page.css` | its styling |
+| `pro/inc/Performance/class-skip-lazy.php` | `Cache_Compat_Page::resolve()` wins over the global answer |
+
+**Standalone modal, NOT `popup-settings-core.js`** (decided 2026-08-02).
+`buildSettingsModal()` hardcodes its own title and iterates module-level
+`PSET_TABS`/`PSET_FIELDS`, so reuse meant parameterising a shipped, working
+module for a second caller with a different field set — regression surface for
+no gain. The `aae-v4-pset-*` CLASS NAMES are reused so it reads as the same UI;
+the container ids are its own, because the popup CSS is id-scoped and only
+enqueued where that UI loads.
+
+**`inherit` deletes the row, it does not store the string.** Keeps "never
+touched" and "explicitly back to default" identical, and stops the meta table
+filling with rows that mean "do nothing".
+
+**The report reads LIVE values, not just our settings** — including whether
+Guest Optimization is forcing lazyload on. A panel that mirrors only our own
+option confidently shows the wrong answer on the commonest visitor path.
+
+`current_post_id()` uses `get_queried_object_id()`, not `get_the_ID()`: inside a
+loop the latter answers for whichever post is rendering, which on an archive is
+not the page you are on. Singular only — an archive has no post to hang meta
+from, and writing onto its first post would be worse than offering nothing.
+
+**Tests:** `verify-cache-compat-page.php` (15 — precedence, garbage meta,
+report shape, purge does not fatal) and `verify-cache-compat-page.mjs` (16 —
+admin-bar node, modal, three radios, Escape writes nothing, save round-trip,
+force-on marks images with the global setting OFF, inherit deletes the row,
+logged-out visitors get no UI and no config).
+
+**GOTCHA — `wp eval-file` runs the file inside a function.** The script body is
+NOT global scope, so a top-level `$pass = 0` and a `global $pass` in a helper
+are different variables and the summary prints "0 passed, 0 failed" whatever
+happened — a test that cannot fail. Use `$GLOBALS[...]` in these scripts.
+
+### Design for the remaining slices (PLANNED — researched 2026-08-01)
+
+Users install WP Rocket / LiteSpeed / Perfmatters to make pages fast, and those
+plugins are currently free to reach in and break every animation on the page.
+There is **no compat code at all** today: grepping both plugins' `inc/` for
+`rocket|litespeed|skip-lazy|no-lazy|lazyload` returns nothing but a v3
+changelog line.
+
+**Decisions taken — do not re-litigate:**
+
+- **LiteSpeed Cache first, one plugin at a time.** Free, installs from wp.org
+  (7.8.1 is already installed on the dev site, deactivated), and it does all
+  three risky things — image lazyload, JS defer/delay, CSS combine/UCSS. The
+  compat layer is plugin-neutral by design, so the second plugin is mostly
+  extra TESTING, not extra code.
+- **The opt-out marker is a Performance-panel setting, default OFF.** Marking
+  our images `skip-lazy` silently cancels the lazy loading the user installed a
+  plugin to get. Fix 1 keeps both, so most sites should never need the marker.
+
+### The evidence — measured, not assumed (`home-2`, top to bottom)
+
+A 3rd-party lazyloader was simulated exactly as they all work (`src` →
+`data-src`, then an IntersectionObserver with `rootMargin: 200px` swaps it
+back):
+
+| | CLS | shifts | ST refresh | height grew | **animations that fired on a not-yet-loaded image** |
+|---|---|---|---|---|---|
+| native `loading="lazy"` | 0.087 | 19 | 20 | +1293px | **0 / 24** |
+| 3rd-party JS lazyload | **0.657** | 31 | 5 | +1813px | **23 / 23** |
+
+**23/23 is the headline, not the CLS.** The plugin assigns `src` ~200px before
+the viewport; ScrollTrigger fires at `top 85%`, before the bytes land. Every
+reveal animation plays on an empty box and the image then pops in unanimated —
+the animation is not "slightly off", it is destroyed. CLS 0.657 is a distant
+second (Google's "poor" starts at 0.25). Note the refresh count went DOWN (5 vs
+20) while the height grew MORE: stale trigger positions also stay stale longer.
+
+For comparison, native lazy on a page whose images reserve their box (`home`)
+moved 3 of 83 triggers by ≤19px and grew 0px. **The root cause is unreserved
+space, not laziness** — laziness only decides whether the reflow lands at load
+or mid-scroll.
+
+### Four independent failure axes
+
+| # | Plugin feature | What it breaks | Owner |
+|---|---|---|---|
+| 1 | Image/iframe/video lazyload | the animation itself (23/23 above) + CLS | ours to fix |
+| 2 | JS defer / delay / combine | GSAP + ScrollTrigger never initialise in time | ours to exclude |
+| 3 | CSS combine / minify / UCSS | **Elementor V4 atomic styles** — a known, widespread 2026 issue | Elementor's, but we inherit it |
+| 4 | **HTML Minify** | whitespace inside headings → **SplitText** | ours, and it has no per-tag opt-out |
+
+Axis 3 is not ours but lands on us anyway: V4 splits styles across many more
+files, and combine can drop or reorder them; UCSS ("Remove Unused CSS") is the
+single most-reported Atomic-CSS culprit since atomic became the default for new
+sites in April 2026. Our `define_base_styles()` output rides that same pipeline.
+**Unverified and must be tested, not assumed:** whether UCSS also strips the
+Custom CSS extension's generated `[data-interaction-id="…"]` rules and its
+top-level `@keyframes` — those selectors do appear in the DOM, so they may well
+survive; `@keyframes` is the more likely casualty.
+
+### The exclusion mechanisms — read out of LiteSpeed 7.8.1's own source
+
+Do not take these from the docs. The docs describe the SETTINGS screens and are
+silent or misleading on the developer-facing half; every name below was read
+from `wp-content/plugins/litespeed-cache/src/`, which ships as plain PHP (no
+build step — the installed copy IS the source, unlike Elementor).
+
+| Need | LiteSpeed 7.8.1 | WP Rocket |
+|---|---|---|
+| skip image lazyload — attribute | `data-no-lazy`, `data-skip-lazy`, `data-lazyloaded`, `data-src`, `data-srcset` (`media.cls.php:1053`) | `data-no-lazy`, `data-skip-lazy`, `skip-lazy`, `loading="eager"`, … |
+| skip image lazyload — by class | `litespeed_media_lazy_img_cls_excludes` | class on the `<img>` |
+| skip image lazyload — by parent class | `litespeed_media_lazy_img_parent_cls_excludes` | **none** |
+| skip image lazyload — by src | `litespeed_media_lazy_img_excludes` | `rocket_lazyload_excluded_src` |
+| skip JS defer | `data-no-defer` attr (`optimize.cls.php:977`); `litespeed_optm_js_defer_exc` | `rocket_exclude_defer_js` |
+| skip JS delay | `litespeed_optm_js_delay_inc` — an **include** list, see below; `litespeed_optm_gm_js_exc` (Guest Mode) | `rocket_delay_js_exclusions` |
+| skip JS/CSS optimize (incl. inline) | `data-no-optimize` attr (`optimize.cls.php:889/1135/1169`) | — |
+| skip JS combine | `litespeed_optimize_js_excludes` | `rocket_exclude_js` |
+| skip CSS combine | `litespeed_optimize_css_excludes` | `rocket_exclude_css` |
+| skip UCSS | `litespeed_optimize_ucss_file_exc_inline`, `litespeed_optm_css_to_be_removed` | — |
+
+Three things the documentation got wrong or left out, each of which would have
+produced a broken implementation:
+
+1. **The `skip-lazy` class works on BOTH plugins** — LiteSpeed hardcodes it
+   into the class excludes at `media.cls.php:1002` (WP core ticket 44427)
+   before the settings list is even consulted. *(An earlier revision of this
+   section claimed the class does nothing on LiteSpeed — refuted by review;
+   `:1064` is where the merged list is checked, `:1002` is where `skip-lazy`
+   enters it.)* So the portable marker is `class="skip-lazy"` +
+   `data-no-lazy="1"` belt-and-braces; no custom-class filter registration is
+   needed for parity.
+2. **JS Delay: the include list only matters in defer=1 mode.** Under defer=2
+   ("Delayed") — which **Guest Optimization forces** (`optimize.cls.php:85-87`)
+   — EVERY parsed script is delayed regardless of `litespeed_optm_js_delay_inc`
+   (`:1263`, `:1002` for inline). What protects a file there is the **exclude**
+   lists, checked first (`:1258`, fed by `litespeed_optm_js_defer_exc` /
+   `litespeed_optm_gm_js_exc`) or `data-no-defer`. Absence from the include
+   list is NOT safety.
+3. **LiteSpeed's own lazyload threshold is 300px** (`litespeed_lazyload_threshold`,
+   `media.cls.php:892`), not the 200 the simulation used — slightly more
+   generous, and the 23/23 race still happens well inside it.
+
+**DANGER — the marker must go on the `<img>` itself, never only the wrapper.**
+WP Rocket has no parent-class mechanism at all; a class on a parent `<div>`
+does nothing there. LiteSpeed does have one, so a wrapper-only implementation
+would pass a LiteSpeed test and fail silently on the more widely-installed
+plugin. Our animated element IS the wrapper, so the marker has to be written
+onto its descendant images.
+
+**`data-no-optimize="1"` is LiteSpeed's own convention for exactly our case** —
+it stamps it on every inline script it injects itself (`gui.cls.php:1167,1184`,
+`media.cls.php:892,897`). Step 4 below is not a workaround, it is the intended
+API.
+
+### The plan, in order
+
+**1. Wait for the image before playing (Pro, runtime, no setting).**
+
+**DANGER — the dispatcher is NOT the choke point.** An earlier revision said
+"`common.js` funnels every kind through one dispatcher, so wrap `kind.play` in
+`Registry.register()`". Review refuted it: what `scan()` funnels is **`bind`**
+(`common.js:325`); the frontend play is a **private closure built inside each
+effect's bind** and handed to `wireTrigger` (`regular.js:361-381` →
+`triggers.js:102`). `kind.play` on the registry object is called only by the
+editor replay paths (`common.js:610-612`, `:552-554`). A register-time wrap
+ships a gate that no visitor ever runs — it passes when the admin tests and
+does nothing in production.
+
+The real wiring is three call-site classes, all in Pro
+(`src/modules/atomic-v4/effects/`, shared module `image-gate.js`):
+
+1. **`wireTrigger`'s play callback** (`triggers.js:102`) — covers regular, text
+   (`text.js:729`) and image-animation (`index.js:348`): wrap the callback in
+   `whenImagesSettled(el, play)` with a **~1s timeout** so a broken image can
+   never block an animation forever. The deferral must stay invisible to
+   `chainCompletionDrain`/`stillRunning` (`common.js:268-283`, `:580`) or
+   children drain before their gated parent; skip completion hooks on
+   `repeat:-1` tweens entirely (onComplete never fires).
+2. **Scrub mode** (`triggers.js:241-262`) has no play callback — ScrollTrigger
+   drives a prebuilt tween. Promote the images at bind time instead; a scrub
+   cannot be deferred.
+3. **Geometry effects** (parallax/tilt/sticky/image-hover/cursor-hover/
+   mouse-move/horizontal) never call `wireTrigger` — promote at bind time so
+   they measure real geometry, not a placeholder's.
+
+Free's `Registry.register()` still gets the `kind.play` wrap as a cheap belt
+for the editor replay path — harmless (LiteSpeed never rewrites the editor) but
+correct if a cache-rewritten page is ever replayed. Defer only the PLAY, never
+the ScrollTrigger creation — the one-shot `once: true` retirement in
+`triggers.js` is decided from the trigger's own config, and moving the trigger
+would change which instances qualify. After a promoted image loads with no
+reserved box, schedule one debounced `ScrollTrigger.refresh()` — otherwise this
+fix recreates the "settles after load, nothing refreshes" bug it exists to
+solve.
+
+**DANGER — `complete` and `naturalWidth` both LIE on a real lazyloader.** The
+markup LiteSpeed actually emits is (`placeholder.cls.php:275-289`):
+
+```html
+<img data-lazyloaded="1" src="<PLACEHOLDER>" data-src="<REAL>" data-srcset="…" width=… height=…>
+```
+
+`src` holds a *real* placeholder — an SVG data-URI of exactly the declared
+width×height, or an LQIP base64 — so `img.complete` is **true** and
+`naturalWidth` is **non-zero**, and with the responsive placeholder it is even
+the correct size. Both obvious "has it loaded" tests return a false positive and
+the animation plays on the placeholder. (The measurement above did not hit this
+only because the simulation stripped `src` entirely; real-world detection is
+harder than the simulation, even though its CLS is better.)
+
+**Detect by marker + URL comparison, never by pixels — and never by marker
+presence alone.** LiteSpeed's client lib keeps `data-lazyloaded`/`data-src` on
+the element **forever after loading** and signals completion via class
+`litespeed-loaded` / `data-ll-status="loaded"` (`lazyload.lib.js:51,121,493`).
+"Marker present ⇒ not final" therefore burns the full gate timeout on every
+play of every already-loaded image, forever — a gate that silently adds 1s to
+everything. The correct test: not-final only when the **resolved** known source
+attribute (`data-src`, `data-lazy-src`, `data-litespeed-src`, `data-lazyload`,
+`data-orig-src`; compare via `new URL(v, baseURI).href`) differs from
+`currentSrc`, or the image is genuinely incomplete; done =
+`complete || litespeed-loaded || ll-status="loaded"`. Treat
+`img.closest('picture')` as final — `<source>` elements stay live, so
+`currentSrc` never equals `data-src` there and the comparison would false-flag
+every picture-wrapped image.
+
+Then **promote it ourselves**: copy `data-src`→`src`, `data-srcset`→`srcset`
+**and `data-sizes`→`sizes`** (LiteSpeed renames all three,
+`placeholder.cls.php:276-281`; missing `sizes` makes srcset pick the 100vw
+candidate) and await `load`/`error`, sharing **one in-flight promise per
+`<img>`** as an expando — the same image under two animated ancestors must not
+re-derive state from markers mid-flight, or the second ancestor plays on bytes
+still in transit. This is exactly what the plugin was about to do a moment
+later; we only move it earlier, and only for elements we are about to animate.
+Awaiting `load` without promoting is not enough — a placeholder never fires
+another `load`, so the timeout would just replay today's bug. **Iframes are out
+of scope**: LiteSpeed's delay lib re-assigns their `src` on first interaction
+(`media.cls.php:876-898`), so promoting one early means it reloads mid-view.
+
+**2. Reserve the box (free plugin, markup).** Half the CLS in both modes, and it
+is what makes a stripped `src` harmless. `aae-a-post-image` already gets this
+right — its wrapper carries `aspect-ratio` — and it is the only atomic image
+shape that survives. Measured on `aae-v4-widgets`:
+
+| image | `loading` | space reserved |
+|---|---|---|
+| `aae-a-post-image` | eager | **yes** (`aspect-ratio: 16/9` wrapper) |
+| `e-image-base`, `aae-site-logo-img`, image-compare before/after | eager | no |
+| **`aae-a-post-thumb`** | **lazy** | **no — and renders 0px tall** |
+
+Emit `width`/`height` where the attachment size is known, and give
+`aae-a-post-thumb` the same wrapper treatment. Note `aae-a-post-image`'s twig
+only emits `aspect-ratio` when the prop is set and not `'auto'` — `auto` needs a
+fallback or it joins the unsized list.
+
+**3. Register JS/CSS exclusions automatically (Pro, `inc/Performance/`).** No
+user configuration — one small `Cache_Compat` class that answers the filters in
+the table above. Match on **file path, not handle**: the GSAP handles are
+literally `gsap` / `ScrollTrigger` / `SplitText` and would collide with any
+other plugin shipping GSAP. The paths are
+`assets/lib/{gsap,ScrollTrigger,ScrollSmoother,SplitText,DrawSVGPlugin,MotionPathPlugin,TextPlugin}.min.js`
+(all `WCF_ADDONS_PRO_URL`) plus `assets/build/modules/atomic*` and
+`assets/js/wcf-addons-ex.js`.
+
+Register against every filter, not the one that seems sufficient — combine,
+defer and Guest Mode are separate code paths and a file excluded from one is
+still processed by the others:
+`litespeed_optimize_js_excludes`, `litespeed_optm_js_defer_exc`,
+`litespeed_optm_gm_js_exc`, `litespeed_optimize_css_excludes`,
+`litespeed_optimize_ucss_file_exc_inline`; and Rocket's `rocket_exclude_js`,
+`rocket_exclude_defer_js`, `rocket_delay_js_exclusions`, `rocket_exclude_css`.
+Hook them unconditionally — an unused filter on a site without the plugin costs
+nothing, and a `class_exists`/`defined` guard would only add a way to get the
+detection wrong.
+
+**4. `data-no-optimize="1"` on the inline performance loader.** `print_loader()`
+emits `<script id="aae-performance-loader">` with no guard
+([class-lazy-scripts.php:650](animation-addons-for-elementor-pro/inc/Performance/class-lazy-scripts.php)).
+JS *Delay* covers inline scripts, so under LiteSpeed/Rocket delay-JS the loader
+waits for the first user interaction and **nothing on the page animates until
+the visitor touches it**. One attribute fixes it.
+
+**5. The opt-out marker setting (Performance panel, default OFF).** Last,
+because steps 1–2 should make it unnecessary; it exists for the site that still
+has a problem. What it writes onto every `<img>` descendant of an animated
+element:
+
+```html
+<img data-no-lazy="1" class="… skip-lazy" …>
+```
+
+Both halves work on both plugins (see correction #1 above: LiteSpeed hardcodes
+the `skip-lazy` class at `media.cls.php:1002` and bypasses on `data-no-lazy`
+at `:1054`; Rocket honours both). No filter registration needed.
+
+**6. Per-page inline-combine opt-out (Pro, same class as step 3).** Answer
+`litespeed_optm_css_comb_ext_inl` / `…_js_comb_ext_inl` with `false` on pages
+that actually carry AAE animations, reusing the signal the Performance module
+already computes for on-demand asset loading. This is what protects Elementor's
+inline atomic styles and our Custom CSS extension without touching any other
+page — see the per-page section below for why this filter and NOT
+`litespeed_optm_uri_exc`.
+
+**7. Front-end admin-bar modal — per-page overrides, saved over AJAX (DECIDED).**
+Step 6 picks a sensible default automatically; this is how a site owner
+overrides it for one page. It belongs where the problem is visible: an admin-bar
+node on the FRONT END opening a modal for the page currently being viewed.
+
+- **Reuse the existing modal, do not write a second one.** The Popup module
+  already ships one shared tabbed settings modal driven from three entry points
+  (`src/modules/atomic-v4/popup-settings-core.js` — see the Popup section). Same
+  shape here. It currently lives in Pro; if this UI ships free, the core module
+  has to move or be duplicated deliberately — decide that before building, not
+  during.
+- **AJAX contract is already established** — mirror
+  `aae_get_animation_settings` / `aae_save_animation_settings`: nonce
+  `wcf_admin_nonce`, `manage_options`, whole-object save. Do not invent a new
+  one.
+- **Storage is post meta, not an option** (DECIDED). Key `_aae_cache_compat`:
+  `aae_` matches the modern option naming, the leading underscore keeps it out
+  of the Custom Fields UI. It is read at render time by the step-3/6 filters. An
+  option keyed by post id would work and is worse — it does not travel with an
+  export or a duplicate.
+- **Three states, never a boolean:** `inherit` (default) / `force on` /
+  `force off`. `get_post_meta()` returns `''` for a page nobody has touched, and
+  a boolean cannot tell that apart from a deliberate "off" — so a boolean makes
+  the global default unreachable the moment anyone opens the modal.
+- **The Pro-only trap that DOES apply.** If the whole layer is Pro, a lapsed
+  licence means Pro's modules never load, the filters never register, and the
+  page silently goes back to being combined and lazy-loaded — animations break
+  while the saved meta sits there doing nothing. That is why **steps 1–2 belong
+  in FREE** (the runtime image gate and the reserved box, which are what
+  actually save the animation) and only the integration, filters, settings and
+  UI are Pro. Keep that line.
+- **The trap that does NOT apply, though it looks like it should.** The
+  migration plan's hard rule — *"`Schema.php` must stay free or saved data is
+  destroyed"* — is about atomic widget PROPS: `Props_Parser::validate()`
+  iterates the schema, so a prop the schema does not declare is erased from
+  `_elementor_data` on the next save. Post meta never goes through that parser.
+  A Pro-owned `_aae_cache_compat` meta survives a licence lapse untouched. Do
+  not "solve" a problem this storage choice does not have.
+- **DANGER — the save MUST purge that URL's cache.** The setting changes the
+  rendered HTML, so with page cache on, saving does nothing visible until the
+  page is purged. That arrives as "the setting doesn't work" (see the page-cache
+  section). **CORRECTED 2026-08-02 — the call this section used to prescribe is
+  a fatal.** `LiteSpeed\API::purge_post()` (`api.cls.php:240`) is `public
+  function`, NOT static, and `method_exists()` returns true for non-static
+  methods, so the obvious guard does not protect the obvious call: PHP 8 throws
+  "Non-static method cannot be called statically" and takes the save with it.
+  Use the **action** — `do_action( 'litespeed_purge_post', $post_id )` —
+  which LiteSpeed binds its own instance to at `api.cls.php:111` and which is a
+  silent no-op when the plugin is absent. `LiteSpeed\Purge::purge_ucss()`
+  (`purge.cls.php:326`) genuinely IS static; verify with `is_callable`, not
+  `method_exists`. `rocket_clean_post()` behind `function_exists`. And purge
+  `_elementor_element_cache` too, or the render cache replays the old HTML with
+  no page cache involved at all.
+- **The modal must show what is actually in effect, not just our own settings.**
+  Guest Optimization overrides the plugin's own config (see the DANGER box
+  below), so a panel that only reflects our meta will confidently show the wrong
+  answer. Read LiteSpeed's live conf where we can and label the row accordingly.
+
+#### What the modal can control — combine, order, priority, defer
+
+Asked for: which assets combine, what loads after what, priority, defer. Most of
+it is real; one part is not, and building a control for it would ship a switch
+that does nothing.
+
+| Ask | Possible? | Mechanism |
+|---|---|---|
+| which of OUR files are combined | yes, per file | `litespeed_optimize_{css,js}_excludes`. All-or-nothing per file — LiteSpeed emits **one** combined file per type, there is no API for combine *groups* |
+| order among our own assets | yes | our own `$deps` + enqueue order. Combine preserves document order (`$src_list[]` is filled in match order), so our order survives into the combined file |
+| order **inside** LiteSpeed's combined file | **no** | no API, and nothing to hook. If a specific order matters, that file must be excluded, not reordered |
+| order relative to other plugins' assets | only by excluding ours | and see the cascade DANGER below — excluding is what MOVES it |
+| defer / async per handle | yes, ours already | `script_loader_tag` at `PHP_INT_MAX - 10` (`class-lazy-scripts.php:125`) already rewrites our tags last. Add `data-no-defer` so LiteSpeed does not re-defer what we just decided |
+| enqueue priority | yes | ordinary WP hook priority |
+| network priority | yes | `<link rel=preload fetchpriority="high">` for the GSAP core, which is 71 KB and gates everything |
+
+**Design rule: the modal drives OUR pipeline and tells LiteSpeed "hands off".**
+Do not build a UI that negotiates with the cache plugin — its behaviour differs
+between versions, and Guest Optimization overrides even its own saved config, so
+a control that reads "combine: off" would be lying on the most common visitor
+path. We already own `script_loader_tag` last and already reorder the chain (the
+lazy loader hoists every library handle to the front — see the two-lane section
+in Performance). Extend that mechanism; use LiteSpeed's filters purely as a
+fence.
+
+**DANGER — never expose free-form "load after X".** The dependency graph is not
+a preference, and this exact failure already happened here: `wcf--addons-ex` used
+ScrollTrigger without declaring it, WordPress printed ScrollTrigger *after* it,
+and the result was `Cannot read properties of undefined (reading
+'getScrollFunc')` — see the numbered constraint in the Performance two-lane
+section. A UI that lets someone put `ScrollTrigger` before `gsap` reintroduces
+that class of bug with no error at save time. Order rows must be constrained by
+the declared `$deps`: reorder only among handles that are independent of each
+other, and refuse anything that violates the graph.
+
+### How CSS/JS minify + combine is actually kept working
+
+There are two layers, and the attribute layer is the one to build on — it is
+per-tag, needs no settings, and LiteSpeed checks it before anything else.
+
+**What LiteSpeed's parser skips, read from `optimize.cls.php`:**
+
+| Tag | Skipped when |
+|---|---|
+| `<script>` | **`type` is anything but `text/javascript`** (`:895`) · `data-no-optimize` · `data-optimized` · `data-cfasync="false"` |
+| `<link rel=stylesheet>` | `data-no-optimize` · `data-optimized` (`:1132`) · external host, unless "combine external and inline" is on |
+| inline `<style>` | `data-no-optimize` (`:1169`) · always, unless "combine external and inline" is on |
+| inline JS defer | `data-no-defer` (`:977`) |
+
+Four consequences worth internalising:
+
+1. **Inline `<style>` and inline `<script>` ARE combined**, not just files —
+   whenever "combine external and inline" is on. That is the setting that
+   reaches Elementor's atomic styles and our Custom CSS extension's generated
+   `[data-interaction-id="…"]` blocks. Any inline CSS/JS we print and care about
+   needs `data-no-optimize="1"` on the tag.
+2. **Combine RELOCATES the combined block.** *(An earlier revision said "order
+   is preserved… combine alone should not reorder atomic styles" — refuted by
+   review.)* Order is preserved only WITHIN the combined block; the block
+   itself is deleted from its positions and re-emitted — CSS **prepended to
+   head-top** ("Move all css to top", `optimize.cls.php:348-352`), JS appended
+   to the footer (`:394-397`). Everything NOT combined (excluded files,
+   external-host sheets, `data-no-optimize` tags) keeps its position, so
+   combine changes the relative order between combined and uncombined assets
+   even when nothing is dropped. That alone can flip the (0,2,0) specificity
+   ties against Elementor atomic base styles — see the cascade DANGER below.
+3. **`litespeed_optimize_ucss_file_exc_inline` does not "exclude" — it INLINES.**
+   `:1103-1107` replaces the matching `<link>` with a `<style>` holding the file
+   verbatim, which is *how* it escapes UCSS. The name reads like an exclude
+   list; the behaviour is a substitution. Do not expect the `<link>` to survive.
+4. **UCSS runs on QUIC.cloud** (`ucss.cls.php:372`, `Cloud::post(SVC_UCSS…)`).
+   With no QUIC.cloud connection it never executes at all. **A local "UCSS test"
+   on a disconnected dev site proves nothing** — it will pass because the
+   feature never ran. Either connect QUIC.cloud for that one axis or test it on
+   a staging site, and never report axis 3 as green from a local run alone.
+
+**DANGER — excluding our CSS from combine can itself cause the bug.** Combining
+removes the member `<link>`s and emits one file in their place, so an excluded
+stylesheet keeps its own position while everything else collapses to a single
+point. That MOVES our CSS relative to Elementor's atomic styles. This codebase
+already documents the failure that follows: atomic base styles compile as
+`.elementor .e-<widget>-base` — specificity (0,2,0) — and our overrides tie at
+(0,2,0), so **the winner is decided purely by document order** (see the
+"reveal class doesn't override a base style" row in
+[Common breakage points](#common-breakage-points)). Flip the order and rules
+silently swap winners, with no error and no missing file.
+
+So prefer the **order-neutral** lever: `litespeed_optm_css_comb_ext_inl` =>
+`false` leaves inline blocks exactly where they are and moves nothing. Reach for
+`litespeed_optimize_css_excludes` only for a file that genuinely must not be
+merged, and when you do, verify with the styleSheet-walk diagnostic from that
+same Common-breakage row rather than by eye — a cascade flip looks like a
+styling opinion, not a bug.
+
+### HTML Minify — the one axis with no per-tag escape hatch
+
+Read from `lib/html-min.cls.php` (LiteSpeed's vendored Minify_HTML) and
+`optimizer.cls.php::html_min()`. Runs on the final output buffer, so it sees
+everything we rendered.
+
+**Safe, confirmed:** `<script>`, `<style>`, `<pre>` and `<textarea>` bodies are
+swapped for placeholder hashes *before* any whitespace pass and restored after
+(`:107-139`), so inline JS/CSS is untouched. Tag attributes are never rewritten,
+so every `data-aae-*` / `data-interaction-id` survives.
+
+**The risk is text whitespace, and it lands on Text Animation.** After the
+placeholders go in, it trims every line (`:143`) and strips whitespace around
+~50 **block** elements (`:146-154`). Inline elements — `span`, `a`, `strong`,
+`em` — are deliberately NOT in that list, which is what protects most inline
+markup. But SplitText splits a heading's text into chars/words/lines, so any
+change to the whitespace inside it changes the split: words can join, or an
+empty char can appear. **Measure it, do not reason about the regex** — compare
+the rendered char/word counts with HTML Minify on and off. Text Animation is
+our most-used effect, so this is the axis-4 test that matters.
+
+**HTML comments are removed** (`:121`) except IE conditionals and any listed in
+the "HTML Skip Comments" setting. Nothing of ours depends on a comment marker
+today; keep it that way.
+
+**DANGER — there is no `data-no-optimize` for HTML minify.** The only lever is
+`apply_filters('litespeed_html_min', true)` (`optimizer.cls.php:35`), a global
+boolean for the whole page. If minify does break SplitText, we cannot exempt
+one heading — the fix has to be on our side (normalise the text before
+splitting), because switching the filter off would silently disable a feature
+the site owner turned on. Do not reach for that filter as the fix.
+
+Note LiteSpeed always appends `<!-- Page optimized by LiteSpeed Cache @… -->`,
+so the HTML differs on every run even when nothing else changed — never diff
+raw HTML to decide whether minify altered something.
+
+### Scope — ATOMIC ONLY (decided)
+
+Everything here targets the V4 atomic line: the atomic effect bundles, the
+atomic widgets' markup, `aae-atomic-common` and the GSAP family they pull in.
+The ~70 v3 widgets are **out of scope** — they are in maintenance, they have
+their own asset pipeline, and widening this would double the test matrix for
+code we are not extending. One v3 note is kept because it will surface during
+testing and must not be mistaken for a new bug:
+`src/js/aae-scroll-to-ele.js:1` is a bare `DOMContentLoaded` listener and dies
+under any delay-JS plugin. Known, out of scope, do not "fix" it as part of this.
+
+### Two levers found in the source that beat everything above
+
+**1. `do_action( 'litespeed_conf_force', $key, $value )`** (`conf.cls.php:63`
+→ `force_option()` at `:401`) — overrides **any** LiteSpeed setting for the
+current request, for any key `has_conf()` recognises. One action instead of a
+per-feature filter hunt: force `optm-css_comb_ext_inl`, `media-lazy`,
+`optm-html_min` off on the pages that need it. This is the "intelligent"
+mechanism — we read what is on, decide, and force only what actually conflicts.
+
+Two conditions on it: fire it **before** the feature reads its conf (they read
+during `init`/buffer setup, so hook early), and know its blind spot — under
+Guest Optimization the `cfg_*` flags are set from
+`defined('LITESPEED_GUEST_OPTM') || $this->conf(…)`, which short-circuits
+**before** `conf()` is consulted. `conf_force` cannot reach those.
+
+**The levers that DO close the guest blind spot are two per-request
+constants** *(an earlier revision said no such lever exists — refuted by
+review)*, both checked before any guest branch:
+
+- `LITESPEED_NO_PAGEOPTM` (`optimize.cls.php:235-238`) — skips the ENTIRE
+  optimization pass, Guest Optimization included.
+- `LITESPEED_NO_LAZY` (`media.cls.php:778-781`) — kills image+iframe lazyload
+  unconditionally, and unlike the `litespeed_no_image_lazy` meta below it also
+  works on archive/taxonomy URLs (the metabox resolves a post ID only on
+  singular / page_for_posts, `metabox.cls.php:133-150`).
+
+Blunt — whole request — but for a per-page "force off" they are the correct,
+guest-proof enforcement. Define them early (`plugins_loaded`) from our own
+per-page decision.
+
+**2. `litespeed_no_image_lazy` — LiteSpeed's OWN per-page post meta**
+(`metabox.cls.php:40`). Three native per-page switches exist: `litespeed_no_cache`,
+`litespeed_no_image_lazy`, `litespeed_no_vpi`.
+
+The lazy one is the important one, and it is better than anything we could
+build, because of exactly where the check sits (`media.cls.php:832`):
+
+```php
+$cfg_lazy = ( defined('LITESPEED_GUEST_OPTM') || $this->conf(O_MEDIA_LAZY) )
+            && ! $this->cls('Metabox')->setting('litespeed_no_image_lazy');
+```
+
+The metabox test is **outside** the guest short-circuit, so **it is honoured in
+every mode, Guest Optimization included** — unlike `litespeed_optm_uri_exc`,
+which is not. So where a page genuinely must not lazy-load, write LiteSpeed's
+own meta rather than fencing with filters: it is their supported per-page API,
+it survives their config changes, and it cannot be overridden by Guest mode.
+
+**Prefer their native lever over ours wherever one exists.** Our `_aae_cache_compat`
+meta stays the source of truth for the user's intent; on save it *projects* that
+intent onto `litespeed_no_image_lazy` (and forces conf where no native switch
+exists). One UI, native enforcement.
+
+### Per-page control from our own settings — yes, and which hook to use
+
+Every filter below is evaluated DURING the request, so the callback can read
+`is_page()`, the queried object, or our own per-page setting and answer
+differently per URL. Page cache is keyed per URL too, so a per-PAGE decision
+caches correctly; only per-VISITOR variation is unsafe (see the page-cache note
+above).
+
+| Lever | Scope | Survives Guest Optimization? |
+|---|---|---|
+| `litespeed_optm_css_comb_ext_inl` / `…_js_comb_ext_inl` | boolean — stop **inline** CSS/JS being combined, keep file combining | **yes** (`:1050`, `:872`) |
+| `litespeed_optimize_css_excludes` / `…_js_excludes` | our own files | **yes** — unconditional in `_parse_css/_parse_js` (`:1043`, `:869`) |
+| `litespeed_html_min` | boolean, whole page | **yes** (`optimizer.cls.php:35`) |
+| `litespeed_media_lazy_img_*` | images | yes |
+| `litespeed_optm_js_defer_exc` | defer list | **NO** — replaced by `litespeed_optm_gm_js_exc` |
+| `litespeed_optm_uri_exc` | nuclear: skips the WHOLE optimization pass for that URI | **NO** |
+
+**DANGER — Guest Optimization ignores the settings AND the URI excludes.** When
+`LITESPEED_GUEST_OPTM` is defined:
+
+- the URI-exclude check at `optimize.cls.php:245` is inside `if (! defined(…))`
+  and is skipped entirely. A per-page opt-out built on `litespeed_optm_uri_exc`
+  therefore does nothing for guests — i.e. for nearly every real visitor —
+  while an admin testing it logged in watches it work perfectly. This is the
+  worst possible failure shape; do not build on that filter.
+- `:287-291` forces every `cfg_*` TRUE regardless of the saved setting —
+  minify, combine, `css_async`, all of it. "I turned CSS Combine off" is not
+  true under Guest Optimization.
+- defer exclusions come from `litespeed_optm_gm_js_exc`, not
+  `litespeed_optm_js_defer_exc` (`:114-128`). Always register both.
+
+**The shape to build:** we already know which pages carry AAE animations — the
+Performance module computes exactly that for on-demand asset loading. Feed that
+same signal into `litespeed_optm_{css,js}_comb_ext_inl` and return `false` on
+those pages only. Inline atomic styles and inline scripts stay untouched where
+it matters, every other page keeps full optimization, it works in all modes, and
+the user configures nothing.
+
+### Feature review — where each LiteSpeed feature lands for us
+
+Read out of the setting registry (`base.cls.php`, ~200 keys / 15 groups), not
+the settings screens, which hide anything the current server or licence does not
+support.
+
+**Helps us — worth recommending ON:**
+
+| Setting | Why |
+|---|---|
+| `media-add_missing_sizes` | adds `width`/`height` to images that lack them — that IS step 2 of our plan, done for us |
+| `media-placeholder_resp` | reserves a correctly-shaped placeholder box, **but only when width/height exist** — pairs with the above, useless alone |
+| `media-vpi` | QUIC.cloud marks above-fold images and excludes them from lazyload |
+
+**Breaks animations — and it is all ONE bug: the layout settles after
+ScrollTrigger measured.**
+
+| Setting | Effect |
+|---|---|
+| `media-lazy`, `media-iframe_lazy` | measured: 23/23 animations fire on an empty box |
+| `optm-css_async` (+ CCSS) | page paints on critical CSS, the real stylesheet lands later, everything below reflows |
+| `optm-ggfonts_async`, `optm-ggfonts_rm`, `optm-css_font_display` | font swap changes text metrics — SplitText's line splitting and every trigger below the heading move |
+| **`optm-html_lazy`** | injects `content-visibility:auto; contain-intrinsic-size:1px 1000px` for any selector listed (`css.cls.php:62`). Point it at an animated container and the browser skips rendering it — ScrollTrigger then measures 1000px of nothing. Nobody will connect this setting to broken animations. |
+
+**The distinction that decides how bad each one is:** fonts and async CSS
+normally settle around the `load` event, and ScrollTrigger auto-refreshes on
+`load`, so those mostly self-correct. **Lazy images settle AFTER `load`** —
+nothing refreshes for them. That is why laziness alone is unrecoverable without
+our own fix, and why the others are second-order.
+
+**Breaks our JS:** `optm-js_defer`, JS delay (`optm-js_delay_inc`),
+`optm-js_comb` + `optm-js_comb_ext_inl`. Plus `optm-qs_rm` (Remove Query
+Strings) — it strips `?ver=`, so visitors keep stale JS after a plugin update,
+and it removes the `filemtime` stamp CLAUDE.md relies on to date a bad build.
+
+**Breaks Elementor atomic CSS:** `optm-css_comb` + `optm-css_comb_ext_inl`,
+`optm-ucss` (+ `ucss_inline`).
+
+**Editor and diagnostic traps — not animation bugs, but they generate the
+tickets:**
+
+| Setting | Trap |
+|---|---|
+| `misc-heartbeat_editor` | Elementor's autosave and post lock ride the heartbeat; throttling it degrades the editor |
+| `guest`, `guest_optm`, `optm-guest_only`, `optm-exc_roles` | a logged-in admin is served a DIFFERENT page from a visitor. The single biggest source of "works for me" |
+| `crawler` | pre-warms the cache from a BOT request, so any PHP-side per-request decision is frozen from the bot's view, not a browser's |
+| `debug-disable_all` | the support kill switch — name it first in any troubleshooting doc we write |
+
+**Irrelevant to us:** everything under `cache-*`, `purge-*`, `esi-*`, `cdn-*`,
+`object-*`, `db_optm-*`, `discuss-*`, `img_optm-*`. One exception worth
+remembering: `img_optm-webp_attr` lists which attributes get their URL swapped
+for the WebP/AVIF one — if we ever put an image URL in a custom `data-` attribute,
+it must be added there or that copy stays the original format.
+
+### Already checked — do not re-investigate
+
+- **`<script type="text/aae-lazy">` is structurally invisible to LiteSpeed's JS
+  optimizer** — `optimize.cls.php:895` skips any script whose `type` is not
+  `text/javascript`, before it looks at anything else. Not luck: this is the
+  same trick LiteSpeed's own JS-delay placeholders use. Keep the custom `type`,
+  and never give the placeholder a real `src`.
+- **The atomic core survives late injection.** `common.js` checks
+  `document.body` before falling back to a `DOMContentLoaded` listener, so a
+  delay-JS plugin injecting it post-DCL still boots it.
+- **v3's `aae-scroll-to-ele.js` does NOT** — line 1 is a bare
+  `document.addEventListener("DOMContentLoaded", …)`, the same silently-fatal
+  shape `wcf-addons-ex.js` was fixed for. Under delay-JS it never runs.
+
+### Page cache is a separate thing, and it freezes our PHP decisions
+
+LSCache's **page cache** — the only part that reduces server time — runs only on
+LiteSpeed Web Server / OpenLiteSpeed, or through QUIC.cloud. On Apache or nginx
+it is inert: the settings render, nothing caches. The dev site is
+`nginx/1.26.1`, so **page cache never runs here**. That does not weaken the test
+plan: everything in the three axes above is an *optimization* feature
+(lazyload, CSS/JS combine/defer/delay, UCSS), all of which run on any server.
+
+It does add one constraint for real sites, and it is a support-ticket shape:
+
+- **Everything decided in PHP gets baked into the cached HTML.** The step-3
+  filters and the step-5 markers run once on a cache MISS; that HTML is then
+  served to everyone. A settings change therefore does nothing until the cache
+  is purged — which arrives as "the setting doesn't work". Purge on save, or
+  say so in the panel description.
+- **Anything that varies per VISITOR must not be decided in PHP.** Reduced
+  motion is already safe — the inline loader decides it client-side. **Unverified:**
+  whether `gsap_deferrable()`'s per-request walk of the enqueued dependency
+  graph is deterministic per URL. If it can differ between two requests for the
+  same URL, page cache will serve one visitor's answer to everyone. Check this
+  before shipping, and prefer a client-side decision wherever a per-visitor
+  signal is involved.
+
+### Verification
+
+Install LiteSpeed, then sweep its three feature groups independently — one at a
+time, because a page broken by CSS combine and a page broken by JS delay look
+identical:
+
+| state | assert |
+|---|---|
+| lazyload ON | animations fire on LOADED images (the 23/23 metric goes to 0/N), CLS back near the native-lazy figure |
+| JS defer ON | GSAP + ScrollTrigger present, trigger count unchanged |
+| JS delay ON | animations run **without any user interaction** |
+| CSS combine + UCSS ON | atomic base styles intact; Custom CSS `@keyframes` presets still animate. UCSS needs QUIC.cloud — see above, a local pass is meaningless |
+| HTML Minify ON | **SplitText char/word counts unchanged** vs minify off, on a heading with multi-line source markup |
+| all OFF (control) | byte-identical to today |
+
+Reuse the probe shape from the measurement above — instrument
+`ScrollTrigger.create`'s `onEnter` and count how many fired while a descendant
+`<img>` was still `!complete`. A "does it animate" assertion cannot see this
+bug: the animation *does* run, just on nothing.
+
+---
+
+## Auto-preset — giving a widget a default preset on drop
+
+Some widgets are unusable bare. A Loop Grid Slider drops as a plain Post Image
++ Post Title card. An Image Compare drops as **six children stacked
+vertically**, because its `define_base_styles()` styles only the root and every
+bit of the actual layout — the before image's `position:absolute` +
+`clip-path`, divider/thumb placement, caption positioning, the z-index stack —
+lives in its preset JSONs.
+
+`src/modules/atomic/editor-bridge/auto-preset.js` (booted from
+`editor-bridge.js`) applies a chosen preset the first time such a widget is
+created. It is **not a second apply implementation**: it calls the same
+`applyPresetModel()` the "Apply Preset" dropdown runs, so the outcome is
+identical to picking that preset by hand.
+
+### Adding a rule for another widget
+
+One entry in `AUTO_PRESETS`, keyed by element type, then `npm run build`.
+
+```js
+// Self-target: the preset root IS this widget type, so the dropped widget is
+// replaced by the styled one.
+'e-aae-a-image-compare': {
+  presetId: 'image-compare-horizontal',
+  defaultMarker: 'aae-ic-default',
+},
+
+// Descendant target: the preset lands on a child, the dropped widget stays.
+'e-aae-a-loop-grid-slider': {
+  targetType: 'e-aae-a-loop-slide-item',
+  presetId: 'bold-overlay-zoom',
+  defaultChildren: ['e-aae-a-post-image', 'e-aae-a-post-title'],
+  settings: { aae_ns_slides_per_view: 1, aae_ns_peek: 0, aae_ns_gap: 16 },
+},
+```
+
+| Field | Required | Meaning |
+|---|---|---|
+| `presetId` | yes | The preset's sanitized json basename. **Falls back to `presets[0]` when it doesn't match** — a typo degrades silently to "some preset", it never errors. |
+| `targetType` | no | The DESCENDANT type that receives the preset. Omit → the dropped widget receives it on **itself** and is replaced in place. |
+| `defaultChildren` | no | Freshness test by shape: untouched only while the target holds exactly these widget types, nothing else. |
+| `defaultMarker` | no | Freshness test by class: untouched only while **every** child carries this class. |
+| `settings` | no | Props seeded *before* the apply, in the `aae-rj` envelope. Ignored for a self-target rule — see gotchas. |
+
+### Which freshness test — this is the part that bites
+
+**Does your preset seed a DIFFERENT set of child widget types than
+`define_default_children()`?**
+
+- **Yes** → `defaultChildren`. Shape alone tells "fresh" from "already styled".
+- **No** → `defaultMarker`, **and** add that marker class to every child in the
+  widget's `define_default_children()`. Image Compare's preset seeds the exact
+  same six types (image/image/divider/div-block/paragraph/paragraph) as its
+  defaults, so only `aae-ic-default` separates them.
+
+Get this wrong and **the watcher re-applies to its own output forever**: the
+`handled` Set is keyed by element id, every apply mints a NEW id, so `handled`
+can never catch the replacement. The marker works precisely because preset
+children don't carry it.
+
+### Why it polls instead of hooking the drop
+
+Atomic-widget creation in this Elementor version emits **no catchable command**
+— verified: `run:after` never fires for an atomic drop, and the parent's model
+collection emits no `add`. So it's baseline + heartbeat:
+
+1. `establishBaseline()` waits until the document model is non-empty, then marks
+   every already-present eligible widget `handled`. **Baselining against an
+   empty tree would make existing widgets look new and clobber the user's own
+   work** — that's why it waits rather than running at bootstrap.
+2. `setInterval(tick, 1000)` scans the model tree; eligible + not in `handled`
+   = a fresh drop.
+
+Four guards stack, because one bad apply destroys user work: the `handled` Set
+(once per element), the baseline (never touch what was already there),
+`isUntouched()` (belt-and-braces if the baseline lost a model-ready race), and a
+re-check after the async preset fetch resolves.
+
+Because the interval is registered through `track()`, a document switch tears it
+down and `startAutoPreset()` re-baselines against the new document.
+
+### Gotchas
+
+- **`settings` is skipped for a self-target rule.** `applyPresetModel` replaces
+  that very element, so anything written there dies with it. Put root settings
+  in the preset JSON instead — Image Compare's presets carry their own
+  `direction` / `default_position` / `enable_click_move`, which is what makes
+  the vertical preset actually render vertically.
+- **`settings` values need the `aae-rj` envelope** —
+  `{ $$type: 'aae-rj', value: { desktop: N } }`. A bare `{ desktop: N }` is
+  rejected as `invalid_value` and corrupts the settings so publish throws. See
+  [Writing atomic settings from the editor](#writing-atomic-settings-from-the-editor-the-aae-rj-prop-shape).
+- **A marker class that nothing reads is dead weight.** Image Compare shipped
+  `aae-ic-default` on every child, with a docblock pointing at this watcher,
+  for its whole life before the rule existed — the class was rendered on every
+  page and read by nobody. It also cited an `AAE_A_Progressbar` `aae-pb-default`
+  precedent that has never existed. Grep the JS before trusting a comment that
+  says a marker is wired.
+- Presets are fetched on demand over REST (`ensurePresetsLoaded`); the fetch
+  starts in parallel with the descendant poll, so it's normally settled by the
+  time the target appears.
+- Regression tests (`E:\Local Testing\`):
+  `verify-image-compare-autopreset.mjs` (self-target, re-apply-loop guard,
+  baseline protection of an existing widget) and
+  `verify-loopgrid-autopreset.mjs` (descendant target + `aae-rj` settings
+  seeding). Run both after touching this file — the two paths fail
+  independently.
+
+---
+
 ## Conventions
 
 ### Data-attribute naming
@@ -470,6 +2357,16 @@ JS.** Diagnose this class of failure fast: `head` the served file in
 
 | Symptom | Likely cause |
 |---|---|
+| Widget/extension missing from the dashboard entirely | A registration list is out of sync — see [Registering a new widget or extension](#registering-a-new-widget-or-extension--what-must-stay-in-sync). Most likely no `$widgets_registry` entry (widget unreachable), or the slug is in the JS `INTERNAL_WIDGET_SLUGS` / `DEMO_ONLY_SLUGS` / `-main` hide list. |
+| Dashboard toggle does nothing | Either the slug is in `ALWAYS_ACTIVE_WIDGETS` (force-active, switch inert), or nothing in the codebase actually calls `is_extension_active()` for it — audit both directions with the grep in that section. |
+| Card shows "off" but the widget still works | `get_dashboard_config()` reports `is_active` from the raw saved option, not `is_widget_active()`. A force-active slug that was never saved reads as off. |
+| New widget arrives disabled on an existing site | Expected: `'default' => true` is documentation-only for widgets — there is no seeder. Only extensions get auto-enabled, via `migrate_newly_offered_extensions()`. |
+| Dashboard category heading shows a raw slug, or sorts last | Missing from `CATEGORY_LABELS` / `CATEGORY_ORDER` in `atomicWidgetService.js` or `atomicExtensionService.js` — and remember to `npm run build`. |
+| Extension/widget icon is an empty circle | Icon class not in the font. Names are case-sensitive: `wcf-icon-Dynamic-Tags` resolves, `wcf-icon-parallax` matches nothing. |
+| The "Presets" control vanishes from a widget's panel, and only a full editor reload brings it back | A preset read FAILED and was mistaken for "this type has no presets". `aae/v1/presets` always answers **200**, so an outage and a genuinely-empty type look identical from the list alone — `remote_failed` in the response is the only thing that separates them (`Rest.php` ← `Cache::get_presets_for_type()` ← `Remote_Client::fetch_presets_for_type()` returning **null** on a failed request, `[]` on an empty answer). Client-side, `loadPresetsForType()` in `preset-apply.js` must never memoise a failed read into `_fetchedPresetsByType` — that cache is checked *before* any fetch, so one blip both hid the control (an empty list is how it decides it has nothing to show) and guaranteed nothing ever retried. Note `is_dev_environment()` (any `.local` host) bypasses the transient entirely, so a dev site hits the network on *every* panel open and sees this far more often than production. |
+| A widget drops into the canvas looking broken/unstyled, but picking a preset by hand fixes it | It has no layout of its own — all of it lives in the presets — and no [auto-preset](#auto-preset--giving-a-widget-a-default-preset-on-drop) rule. Add an `AUTO_PRESETS` entry. Don't be misled by a `*-default` marker class on the children or a docblock claiming the watcher is wired: grep the JS, the marker may be read by nobody (Image Compare shipped exactly that way). |
+| Panel shows "Some classes are missing" on a widget's own parts | A functional hook class is sitting in the `classes` prop. Render it from the element's twig instead — and never tell the user to dismiss the alert, its ✕ unapplies the class. See [Never put a functional hook class in the `classes` prop](#never-put-a-functional-hook-class-in-the-classes-prop). |
+| A freshly-dropped widget keeps getting re-presetted, spawning copies forever | The auto-preset rule's freshness test can't tell "untouched" from "just applied" — the preset seeds the same child widget types as `define_default_children()`, so `defaultChildren` (shape) always reads as fresh. Use `defaultMarker` instead and put that class on every default child. `handled` can't save you: each apply mints a new element id. |
 | Effect controls not appearing | `Controls::inject_controls()` not adding the section for that widget type |
 | Settings don't save | Prop not in Schema, or wrong $$type wrapper |
 | `Settings validation failed … invalid_value` on publish (after a programmatic settings write) | Wrote a prop value RAW instead of in its `$$type` envelope. Responsive_JSON props need `{ $$type: 'aae-rj', value: { desktop: N } }`, not `{ desktop: N }`. See [Writing atomic settings from the editor](#writing-atomic-settings-from-the-editor-the-aae-rj-prop-shape). |
@@ -1983,6 +3880,17 @@ e:\Local Sites\app\public\wp-content\plugins\elementor-src-repo\
 - **Caveat:** the RUNTIME is the installed `elementor/` plugin, which is
   older than this repo. Before using an API found here, confirm it exists
   in the installed version too.
+- **Search the editor JS, not just the PHP.** A surprising amount of Elementor's
+  behaviour has no PHP seam at all and is owned entirely by the editor client —
+  panel visibility, panel layout, canvas state. "No PHP filter exists" is never
+  the end of the search; grep `assets/dev/js/editor/` here (readable sources)
+  and `plugins/elementor/assets/js/editor.js` (what actually ships) before
+  concluding something is impossible or needs an expensive workaround. Real
+  case: hiding widgets from the panel looked like a 70-file codemod from the PHP
+  side and turned out to be ~20 lines of JS using Elementor's own pattern — see
+  the DANGER box under [Animation Settings](#animation-settings-v4-dashboard-vs-the-v3-legacy-surface).
+  Check call ORDER too, not just hook existence: a filter that fires after the
+  thing you want to influence is as useless as no filter.
 
 ---
 
@@ -2009,6 +3917,74 @@ See [AAE Atomic Form Builder (planned — new widget family)](#aae-atomic-form-b
 Follow the **Widgets/** container+children pattern, not the effect recipe —
 implement one milestone at a time from the SSR-doc order listed there. Full
 spec: `C:\Users\UseR\Documents\atomic-form\AAE_Atomic_Form_Builder_Claude_PRD_SSR_Pack\`.
+
+### Local vs. remote presets — bundled files are a fallback, not the source
+Presets come from a **remote server** (`Remote_Client`, `crowdytheme.com` — not
+an animation-addons host, which matters when you simulate an outage) **merged**
+with whatever local `presets/*.json` are bundled. Merge, not fallback-only: a
+local file for a type the remote doesn't know still shows up. The stated
+direction of travel is remote-only, with local files deleted over time.
+
+Consequences worth knowing before adding a JSON:
+
+- **A local copy of a preset the remote ALREADY serves would list the design
+  twice.** Ids can't collide by construction (`remote-<n>` vs a filename slug),
+  so ids can't detect it either. `Cache::drop_shadowed_remote()` removes the
+  overlap by slug of the *name* — the only field both halves share — so a
+  deliberate local copy must be **named after the remote preset it mirrors**, or
+  it is treated as a different design and shown alongside it.
+- **On an overlap the LOCAL file wins**, inverting the usual remote-first rule.
+  A bundled file ships with the plugin and is version-matched to it — the
+  Progress Bar presets reference `e-aae-a-progressbar-{dot,fill,label}`, part
+  widgets the remote copies predate. Preferring remote would mean the *applied*
+  preset is the older one on every online site, i.e. always. Cost: a genuinely
+  improved remote preset stays masked until the local file is deleted — which is
+  the intended lifecycle, and needs no code change.
+- Only five widgets bundle local presets: Accordion, FlipBox, ImageCompare,
+  LoopGrid, StackCards — plus Progress Bar's three
+  (`progressbar-{circle,dot,line}.json`), which are local copies of remote
+  presets rather than local-only designs.
+- `is_dev_environment()` (any `.local` host) bypasses the transient entirely, so
+  a dev site hits the network on every panel open — see the "Presets control
+  vanishes" row in [Common breakage points](#common-breakage-points).
+
+### Never put a functional hook class in the `classes` prop
+Elementor's panel resolves **every** entry in an element's `classes` prop
+against the style repository and reports anything unknown as *"Some classes are
+missing"* (`useMissingClassesIds`, editor-editing-panel/components/css-classes).
+A plain CSS/JS hook class is never a registered style, so it always lands there
+— and **the alert's dismiss (✕) button calls `unapplyClasses()` on exactly those
+ids**, silently stripping the hook. One click can kill a widget's JS.
+
+So a class that CSS or JS selects on must be rendered by the element's own
+twig, never seeded into `classes`:
+
+```twig
+{%- set classes = ['aae-progressbar-dot', base_styles.base] | merge( settings.classes | default([]) ) | join(' ') -%}
+```
+
+That is only possible for AAE-owned element types, which is a real reason to
+give a composite widget's parts their own types instead of reusing native
+`e-div-block`/`e-paragraph`. Progress Bar does this (Track/Fill/Label/Dot, all
+`is_internal`), and its presets were rebuilt onto those parts — a fresh drop and
+every preset now report **zero** missing classes.
+
+**Image Compare is the counter-example and still open**: its parts are native
+`e-image`/`e-divider`/`e-paragraph`, whose twigs Elementor owns, so its 7 hook
+classes (`aae-a-image-compare-before`, `-thumb`, `-caption-*`, …) can't move and
+are all one ✕ away from being unapplied. Fixing it means giving it real part
+widgets too.
+
+Measure any widget with `E:\Local Testing\probe-missing-classes.mjs`, which
+reproduces Elementor's own calculation against the live providers.
+
+### To auto-apply a preset when a widget is dropped
+Add one entry to `AUTO_PRESETS` in
+`src/modules/atomic/editor-bridge/auto-preset.js`, then `npm run build`. Pick
+the freshness test by asking whether the preset seeds the same child widget
+types as `define_default_children()` — same → `defaultMarker`, different →
+`defaultChildren`. Full rules, field table and gotchas:
+[Auto-preset](#auto-preset--giving-a-widget-a-default-preset-on-drop).
 
 ### To add presets to a NATIVE atomic widget (e-heading, e-button, …)
 No code needed — drop JSONs in a folder named after the element type:

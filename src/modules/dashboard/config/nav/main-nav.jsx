@@ -2,6 +2,7 @@ import {
   RiApps2AddLine,
   RiCommandLine,
   RiLayoutGridLine,
+  RiMagicLine,
   RiPuzzle2Line,
   RiShareBoxLine,
   RiVipCrown2Line,
@@ -25,6 +26,12 @@ export const MainNavData = [
     path: "extensions",
     role: ["administrator", "editor"],
     icon: <RiApps2AddLine size={20} />,
+  },
+  {
+    name: "Animation Settings",
+    path: "animation-settings",
+    role: ["administrator"],
+    icon: <RiMagicLine size={20} />,
   },
   {
     name: "Free vs Pro",

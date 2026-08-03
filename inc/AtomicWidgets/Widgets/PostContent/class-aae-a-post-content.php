@@ -47,7 +47,7 @@ class AAE_A_Post_Content extends Atomic_Widget_Base {
 	}
 
 	public function get_title() {
-		return esc_html__( 'AAE Post Content', 'animation-addons-for-elementor' );
+		return esc_html__( 'Post Content', 'animation-addons-for-elementor' );
 	}
 
 	public function get_icon() {
@@ -56,6 +56,10 @@ class AAE_A_Post_Content extends Atomic_Widget_Base {
 
 	public function get_keywords() {
 		return [ 'content', 'post', 'atomic', 'dynamic' ];
+	}
+
+	public function get_categories(): array {
+		return ['aae-atomic-post'];
 	}
 
 	/**
@@ -87,18 +91,26 @@ class AAE_A_Post_Content extends Atomic_Widget_Base {
 	 * @return string
 	 */
 	private function get_preview_content(): string {
+		// Bail BEFORE rendering when this isn't the editor.
+		//
+		// This value is only ever read by the editor's twig render — the
+		// frontend goes through render() below. Running the pipeline here
+		// anyway did more than waste a render: render_post_content()'s
+		// $did_posts recursion guard is one-shot per post id, and render()
+		// reaches this method first (via get_render_classes() ->
+		// get_atomic_settings()). The buffered call consumed the guard and the
+		// real render right after it returned early, so the widget printed an
+		// empty div on every theme-builder single template.
+		if ( ! Plugin::$instance->editor->is_edit_mode() ) {
+			return '';
+		}
+
 		ob_start();
 		$this->render_post_content( false, false );
 		$content = trim( (string) ob_get_clean() );
 
 		if ( '' !== $content ) {
 			return $content;
-		}
-
-		// Not in the editor: nothing to preview, keep the output empty (parity
-		// with the legacy widget, which renders nothing when there's no content).
-		if ( ! Plugin::$instance->editor->is_edit_mode() ) {
-			return '';
 		}
 
 		// Editor with no real content: preview the shared sample post, or the
@@ -340,7 +352,14 @@ class AAE_A_Post_Content extends Atomic_Widget_Base {
 
 				/** This filter is documented in wp-includes/post-template.php */
 				// PHPCS - `get_the_content` is safe.
-				echo apply_filters( 'the_content', get_the_content() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				//
+				// $post must be passed explicitly. Inside an AAE theme-builder
+				// template the GLOBAL post is the `wcf-addons-template` (whose
+				// post_content is empty), and setup_postdata() does not
+				// reassign $GLOBALS['post'] — so the argument-less call read
+				// the template and this widget rendered an empty div on every
+				// single-post template.
+				echo apply_filters( 'the_content', get_the_content( null, false, $post ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 				wp_link_pages( [
 					'before'      => '<div class="page-links elementor-page-links"><span class="page-links-title elementor-page-links-title">' . esc_html__( 'Pages:', 'animation-addons-for-elementor' ) . '</span>',

@@ -5,8 +5,16 @@ const isOnlyPro =
 const CATEGORY_LABELS = {
   animation: "Animation Extensions",
   interaction: "Interaction Extensions",
+  form: "Form Extensions",
   utility: "Utility Extensions",
 };
+
+// Tab order in the dashboard. Group order otherwise follows registry insertion
+// order in class-atomic.php, which is grouped by feature family rather than by
+// category — so 'form' would land after 'utility' purely because the form
+// extensions happen to be declared last. Any category not listed here falls to
+// the end, alphabetically. Mirrors CATEGORY_ORDER in atomicWidgetService.js.
+const CATEGORY_ORDER = ["animation", "interaction", "form", "utility"];
 
 // Reshapes the flat `{ title, elements: { slug: def } }` the PHP Atomic
 // registry sends (class-atomic.php::get_dashboard_config()['atomic_extensions'])
@@ -35,9 +43,20 @@ export const groupAtomicExtensionsByCategory = (atomicConfig) => {
     );
   });
 
+  const rank = (key) => {
+    const i = CATEGORY_ORDER.indexOf(key);
+    return i === -1 ? CATEGORY_ORDER.length : i;
+  };
+
+  const ordered = Object.fromEntries(
+    Object.entries(categories).sort(
+      ([a], [b]) => rank(a) - rank(b) || a.localeCompare(b)
+    )
+  );
+
   return {
     title: atomicConfig?.title || "Atomic Extensions",
-    elements: categories,
+    elements: ordered,
   };
 };
 
@@ -84,6 +103,15 @@ export const activeAtomicExtensionFn = (mainContent, data, dispatch) => {
 
 export const activeAtomicGroupExtensionFn = (mainContent, data, dispatch) => {
   const result = Object.fromEntries(
+    // `badge_only` = show the PRO chip, do NOT lock the switch.
+    //
+    // is_pro alone means "paid AND unusable without a licence", so this file
+    // refuses to write is_active for it. That is right for a feature whose code
+    // is absent without Pro, and wrong for the atomic extensions: their Schema
+    // and Controls ship in THIS plugin, so the Elementor panel section has to
+    // keep working on a free site — locking the switch would strand anyone who
+    // ever turned one off. Same for the moved widgets, which the free plugin
+    // still registers while Pro is unlicensed.
     Object.entries(mainContent.elements).map(([key, value]) => {
       const filteredElements = Object.fromEntries(
         Object.entries(value.elements || {}).filter(([key2, value2]) => {
@@ -95,7 +123,7 @@ export const activeAtomicGroupExtensionFn = (mainContent, data, dispatch) => {
               } else {
                 return [key2, value2];
               }
-            } else if (value2.is_pro && !isValid) {
+            } else if (value2.is_pro && !value2.badge_only && !isValid) {
               return [key2, value2];
             } else {
               value2.is_active = data.value;
@@ -145,7 +173,7 @@ export const activeAtomicFullExtensionFn = (mainContent, data, dispatch) => {
             } else {
               return [key2, value2];
             }
-          } else if (value2.is_pro && !isValid) {
+          } else if (value2.is_pro && !value2.badge_only && !isValid) {
             return [key2, value2];
           } else {
             value2.is_active = data.value;
