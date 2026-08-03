@@ -1,3 +1,13 @@
+// Mask button background — a real asset import (not a bare scss import), so
+// webpack hashes/copies it under both `npm start` and `npm run build` and
+// resolves the URL itself. Exposed as a CSS var (--aae-btn-mask-img) that
+// btn.scss reads, matching that file's existing --aae-btn-hover-color
+// pattern; the gulp-compiled copy of btn.scss keeps the literal
+// url("../images/mask-btn.png") as its own fallback.
+import maskBtnImg from '../images/mask-btn.png';
+
+document.documentElement.style.setProperty('--aae-btn-mask-img', `url(${maskBtnImg})`);
+
 // Text-flip (pro-3)
 function textFlipSync(container) {
   const contentEl = container.querySelector('.aae-btn-txtflip-content');
