@@ -387,9 +387,11 @@ function buildToolbar( doc ) {
 	colorInput.type = 'color';
 	colorInput.value = '#000000';
 	colorInput.setAttribute( 'style', 'position:absolute;width:1px;height:1px;padding:0;border:0;opacity:0;pointer-events:none;' );
-	// Chrome fires `change` LIVE, while the OS colour dialog is still open, so
-	// this cannot apply straight away — see queueColor().
-	colorInput.addEventListener( 'change', () => queueColor( colorInput.value ) );
+	// Both events: `input` paints live as you drag inside the picker, `change`
+	// catches browsers that only report on close. applyColor() recolours the
+	// SAME span while the selection holds, so repeats cannot nest spans.
+	colorInput.addEventListener( 'input', () => applyColor( colorInput.value ) );
+	colorInput.addEventListener( 'change', () => applyColor( colorInput.value ) );
 
 	const colorBar = doc.createElement( 'span' );
 	colorBar.setAttribute( 'style', 'display:block;width:16px;height:3px;border-radius:2px;background:#000;' );
@@ -399,8 +401,10 @@ function buildToolbar( doc ) {
 		// An "A" over a swatch of the current colour — the familiar affordance.
 		html: '<span style="font:700 12px/1 Roboto,sans-serif">A</span>',
 		onClick: () => {
-			// The native picker takes focus, so stash the range before it opens.
+			// The picker takes focus, so stash the range before it opens; and
+			// start a new span rather than recolouring the previous pick.
 			saveRange();
+			colorSpan = null;
 			colorInput.click();
 		},
 	} );
@@ -511,106 +515,110 @@ function applyLink( url ) {
 	toggleLinkRow( false );
 }
 
-function applyColor( value ) {
-	exec( 'foreColor', value );
-
-	if ( toolbar ) {
-		toolbar.colorBar.style.background = value;
-	}
-}
-
-/* ---- Deferred colour apply ------------------------------------------------
+/* ---- Colour --------------------------------------------------------------
  *
- * `<input type="color">` opens an OS-LEVEL dialog, and while it is open the
- * whole document is unfocused — `doc.hasFocus()` is false. `execCommand` only
- * acts on a focused document, and no amount of `el.focus()` fixes that: the
- * page itself has no focus to give. Chrome then fires `change` LIVE from inside
- * the open dialog, so applying there is guaranteed to be a silent no-op. That
- * is the whole "colour only lands if I click A a second time" bug — the second
- * click happened after focus had returned.
+ * Colour is the ONE command that does not go through execCommand, because
+ * execCommand cannot work here: it only acts on the focused editable, and while
+ * the colour picker is open focus belongs to the `<input type="color">`. Chrome
+ * fires `change` live from inside the still-open picker, so at the moment we
+ * are asked to apply, the heading is never the focused element — which is why
+ * the colour only landed on a SECOND press of "A", once focus had drifted back.
  *
- * So the value is parked and applied when focus comes back, which is exactly
- * when the dialog closes. Only the newest colour is kept: Chrome fires `change`
- * repeatedly while you drag inside the picker, and replaying all of them would
- * nest a <span> per event.
+ * Waiting for focus was tried and is not dependable either: Chrome's picker is
+ * an in-page popup, so `document.hasFocus()` stays true the whole time and
+ * there is no "it closed" signal to wait for.
+ *
+ * Wrapping the saved Range by hand needs no focus at all, so it works whatever
+ * the picker does. It also gives exactly the markup we want — a plain
+ * `<span style="color:…">` — instead of execCommand's habit of hanging the
+ * style off whatever inline ancestor it finds (`<b style="color:…">` when the
+ * text happened to be bold).
  * ------------------------------------------------------------------------ */
 
-let pendingColor = null;
-let colorWatch = null;
+/**
+ * The span this picker session is painting. Kept so that Chrome's repeated
+ * `change` events while you drag inside the picker RECOLOUR one span instead of
+ * nesting a new one per event. Cleared whenever the selection moves.
+ */
+let colorSpan = null;
 
-function clearColorWatch() {
-	if ( ! colorWatch ) {
+/** Strip any colour already set inside a fragment, so ours is the only one. */
+function stripColorsIn( root ) {
+	if ( ! root.querySelectorAll ) {
 		return;
 	}
 
-	const { win, onFocus, poll, giveUp } = colorWatch;
+	root.querySelectorAll( '[style*="color"], font[color]' ).forEach( ( node ) => {
+		node.style?.removeProperty( 'color' );
+		node.removeAttribute?.( 'color' );
 
-	win.removeEventListener( 'focus', onFocus );
-	win.clearInterval( poll );
-	win.clearTimeout( giveUp );
-	colorWatch = null;
+		if ( 'SPAN' === node.tagName && ! node.getAttribute( 'style' ) && ! node.attributes.length ) {
+			unwrapNode( node );
+		}
+	} );
 }
 
-function flushColor() {
-	clearColorWatch();
-
-	const value = pendingColor;
-
-	pendingColor = null;
-
-	if ( value && session ) {
-		applyColor( value );
-	}
-}
-
-function queueColor( value ) {
+function applyColor( value ) {
 	if ( ! session ) {
 		return;
 	}
 
-	pendingColor = value;
+	const { doc } = session;
 
-	// Immediate feedback on the toolbar swatch even though the text has not
-	// been recoloured yet — otherwise the button looks unresponsive.
 	if ( toolbar ) {
 		toolbar.colorBar.style.background = value;
 	}
 
-	const { doc } = session;
-
-	// Firefox fires `change` only after the dialog closes, so focus is already
-	// back and there is nothing to wait for.
-	if ( doc.hasFocus() ) {
-		flushColor();
+	// Still painting the span from this picker session — just recolour it.
+	if ( colorSpan && colorSpan.isConnected ) {
+		colorSpan.style.color = value;
 		return;
 	}
 
-	if ( colorWatch ) {
-		return; // Already waiting — the value above is the one that will land.
+	// Refresh from the live selection when there is one; otherwise the range
+	// stashed when "A" was pressed is what we colour.
+	const sel = doc.getSelection();
+
+	if ( sel && sel.rangeCount && session.el.contains( sel.anchorNode ) && ! sel.getRangeAt( 0 ).collapsed ) {
+		savedRange = sel.getRangeAt( 0 ).cloneRange();
 	}
 
-	const win = doc.defaultView;
-	const onFocus = () => win.requestAnimationFrame( flushColor );
+	if ( ! savedRange || savedRange.collapsed ) {
+		return; // Nothing selected — a colour has nothing to attach to.
+	}
 
-	colorWatch = {
-		win,
-		onFocus,
-		// A window `focus` event is the normal signal…
-		poll: win.setInterval( () => {
-			if ( doc.hasFocus() ) {
-				flushColor();
-			}
-		}, 100 ),
-		// …but not every browser fires one when an OS dialog closes, hence the
-		// poll above; and if focus never returns at all, stop watching rather
-		// than leave an interval running for the life of the editor.
-		giveUp: win.setTimeout( () => {
-			pendingColor = null;
-			clearColorWatch();
-		}, 30000 ),
-	};
+	const span = doc.createElement( 'span' );
 
-	win.addEventListener( 'focus', onFocus );
+	span.style.color = value;
+
+	try {
+		// Fast path: the selection is a whole node's worth of content.
+		savedRange.surroundContents( span );
+	} catch ( _e ) {
+		// The selection crosses element boundaries (half of a <b>, say), which
+		// surroundContents refuses. Extracting and re-inserting handles it.
+		const contents = savedRange.extractContents();
+
+		stripColorsIn( contents );
+		span.appendChild( contents );
+		savedRange.insertNode( span );
+	}
+
+	stripColorsIn( span );
+	colorSpan = span;
+
+	// Keep the text selected so the next pick recolours the same run.
+	const next = doc.createRange();
+
+	next.selectNodeContents( span );
+	savedRange = next.cloneRange();
+
+	const selection = doc.getSelection();
+
+	selection.removeAllRanges();
+	selection.addRange( next );
+
+	syncToolbar();
 }
 
 /** Reflect the caret's formatting in the toolbar (pressed states + swatch). */
@@ -836,10 +844,7 @@ function endEdit( commit = true ) {
 
 	session = null;
 	savedRange = null;
-	// A colour parked while the OS picker was open must not land on a heading
-	// the user has already left (or, worse, on the next one they select).
-	pendingColor = null;
-	clearColorWatch();
+	colorSpan = null;
 	removeToolbar();
 
 	el.removeEventListener( 'keydown', onEditableKeyDown );
