@@ -393,6 +393,56 @@ grep -rho "is_extension_active( *'[a-z0-9-]*'" \
 # vs. the registry keys in class-atomic.php
 ```
 
+### The four shared admin extensions (2026-08-03)
+
+**Custom Fonts, Post Type Builder, Custom Icon, Code Snippet** now have a card
+on **both** dashboards. They are not element extensions — they add wp-admin
+screens whose OUTPUT both eras consume (a font uploaded there is offered by the
+atomic Typography control; a post type built there is what an atomic Loop Grid
+queries) — so gating them on the v3 list alone left a v4-only site with no way
+to reach any of them. Same defect Dynamic Tags and Template Library had.
+
+The slugs are IDENTICAL on both sides (`custom-fonts`, `custom-cpt`,
+`custom-icon`, `code-snippet`) and listed once in
+`Atomic::V3_ADMIN_EXTENSIONS`. Three places must agree:
+
+| Where | What |
+|---|---|
+| `class-atomic.php::register_extension_definitions()` | the card |
+| `class-plugin.php::register_extensions()` | the atomic OR-pass for fonts/cpt/icon |
+| `class-plugin.php::include_files()` | the `$code_snippet_active` OR |
+
+**Loading is an OR of the two toggles, deliberately.** Switching a card off in
+v4 does not stop the feature if the v3 switch is still on. That is what keeps an
+existing v3 site byte-identical, and it is the contract Dynamic Tags already
+had — do not "fix" it into a single owner without deciding which dashboard wins.
+
+**`default` is false, and the real answer is copied once.**
+`backfill_v3_admin_extensions()` (marker `aae_atomic_v3_admin_backfill`, runs
+straight after `migrate_newly_offered_extensions()`) writes v3's saved state
+into the v4 option. Without it, the new card opens reading "off" on a site that
+has been using custom fonts for a year — the "dashboard card can lie" failure
+above — and the user's only recourse is to flip a switch that was already on.
+Defaulting to `true` instead would have been worse: the migration would switch
+four features on for everybody, including the people who turned them off.
+Only ever switches ON, only what v3 already had on, and only once.
+
+Two things to know before testing this:
+
+- **Write the option in a DIFFERENT boot from the one that reports.**
+  `include_files()` runs at `plugins_loaded`, so a write later in the same
+  `wp eval-file` is invisible to it and the probe reads the PREVIOUS state.
+  A combined write+assert reported "loaded with both toggles off" for a gate
+  that was in fact correct, and cost a full false-alarm cycle.
+- **Code Snippet's CPT is admin-only.** `CodeSnippet.php` (which registers
+  `wcf-code-snippet`) is included under `is_admin()`; WP-CLI is not admin, so
+  `post_type_exists()` is the wrong assertion there. Assert `class_exists()` on
+  `CodeSnippetFrontend`/`CodeSnippetCompatibility` instead.
+
+Note the wizard's **Basic** preset now pre-selects all four on a fresh install
+(free + non-`animation` — see `lib/setupPresets.js`), which matches how
+Template Library and Custom CSS already behave.
+
 ### Adding a new dashboard category
 
 Two files, and the JS needs a rebuild:
@@ -1130,6 +1180,57 @@ instead — see `verify-performance-ui.mjs`.
 
 ---
 
+## Loop Grid query performance
+
+**Fixed 2026-08-02.** The grid was running **two `SQL_CALC_FOUND_ROWS` scans per
+grid, per page load**, measured on the fixture as
+`SELECT SQL_CALC_FOUND_ROWS … LIMIT 0, 6` (found_posts=36, then discarded) plus
+a second near-identical count query. `SQL_CALC_FOUND_ROWS` scans every matching
+row regardless of LIMIT, so on a real content set it was the most expensive
+thing the widget did.
+
+1. **`no_found_rows => true` on the render query** (all three builders: default,
+   `related`, `current_query`). Its `found_posts` was never read — the page
+   count comes from `compute_max_pages()`, which overrides the flag back to
+   false, so pagination is unaffected.
+2. **`compute_max_pages()` only runs when a pagination child exists.** A grid
+   with no pagination has nothing to do with the answer and was paying for the
+   count on every render.
+
+**DANGER — match the pagination child by SUFFIX, not exact type.**
+`AAE_A_Loop_Grid_Slider extends AAE_A_Loop_Grid` and inherits
+`define_render_context()`, but its child is `e-aae-a-loop-slide-pagination`. An
+exact match on `e-aae-a-loop-pagination` answered "no pagination" for every
+slider and pinned its total to 1 — silently, no error. Caught only by reading
+the rendered page: grid `data-aae-total="9"` next to slider
+`data-aae-total="1"`. `verify-loop-grid-perf.php` now asserts both variants
+render a total > 1.
+
+**DO NOT add a count cache here.** One was written and removed the same day.
+WP_Query already caches its own results **including `found_posts`**
+(`class-wp-query.php:3271`, group `post-queries`, salted by
+`wp_cache_get_last_changed( 'posts' )`) — free across requests with a persistent
+object cache, free within a request without one, and invalidated correctly by
+core. The custom layer needed its own invalidation, which meant hooking
+`updated_post_meta` / `added_post_meta`; those fire many times per post save, so
+every save and every bulk import became a storm of `update_option()` writes to
+avoid a query core was already caching. It cost more than it saved.
+
+**Page-cache compatible?** Yes — the grid renders server-side into the HTML, so
+LiteSpeed/Rocket cache it like any other markup. Two caveats: `orderby => rand`
+is frozen by any page cache (and is unindexable, so it defeats the query cache
+too), and AJAX pagination hits `admin-ajax.php`, which is never page-cached —
+inherent to the feature, not a bug.
+
+**Still unbounded, deliberately untouched:** the `sticky_first` pre-query uses
+`posts_per_page => -1` to resolve the full id list. It already sets
+`fields => ids` and `no_found_rows`, but on a very large collection it still
+loads every matching id. Only runs when Sticky First is on.
+
+**Test:** `E:\Local Testing\verify-loop-grid-perf.php` (15 checks) — asserts on
+the SQL WordPress actually emits, not on the args array, since a flag that never
+reaches the query is worth nothing.
+
 ## Cache / optimization plugin compatibility
 
 **Slice 1 SHIPPED 2026-08-01** (the image gate + box reservation).
@@ -1403,6 +1504,7 @@ post meta, saved over AJAX with the established contract (nonce
 | File | What |
 |---|---|
 | `pro/inc/Performance/class-cache-compat-page.php` | meta, precedence, admin-bar node, AJAX, purge, the live report |
+| `pro/inc/Performance/class-cache-scope.php` | page-wise caching — writes LiteSpeed's own include/exclude lists |
 | `pro/src/modules/atomic-v4/cache-compat-page.js` | the modal |
 | `pro/assets/css/cache-compat-page.css` | its styling |
 | `pro/inc/Performance/class-skip-lazy.php` | `Cache_Compat_Page::resolve()` wins over the global answer |
@@ -1434,10 +1536,485 @@ admin-bar node, modal, three radios, Escape writes nothing, save round-trip,
 force-on marks images with the global setting OFF, inherit deletes the row,
 logged-out visitors get no UI and no config).
 
+#### Per-file asset controls — RESEARCH, measured 2026-08-02
+
+For the modal's Files tab. Everything below was verified on the running site,
+not read off documentation. Three findings decide the design.
+
+**FINDING 1 — combining DESTROYS every per-file attribute.** Measured on the
+same handle, same page:
+
+| | LiteSpeed off | Combine + Delay on |
+|---|---|---|
+| `contact-form-7` tag | `<script data-wp-strategy="defer" defer fetchpriority="high" id="contact-form-7-js" src=…>` in HEAD | **tag ABSENT** — swallowed into the combined file |
+
+So head/footer, defer/async and fetchpriority are **meaningless unless that file
+is also excluded from combine**. A UI offering them independently would let
+someone set defer on a combined file and watch nothing happen, with no error.
+**Selecting any per-file attribute must imply "do not combine" for that file.**
+
+**FINDING 2 — `print_scripts_array` reordering works, and WordPress does NOT
+re-resolve dependencies afterwards.** Reversing the array changed the emitted
+document order as asked — and produced `aae-effect-scroll-to` BEFORE
+`ScrollToPlugin`, which `Assets.php:44` declares as its dependency. That is the
+`Cannot read properties of undefined (reading 'getScrollFunc')` failure mode,
+reproduced on demand. Reordering is only safe between handles that are mutually
+independent, and it can never protect against UNDECLARED deps. **Do not ship
+free-form drag-sort.**
+
+**FINDING 3 — core polices defer/async for us, so those are safe to expose.**
+`filter_eligible_strategies()` (`class-wp-scripts.php:1084`) recurses into every
+dependent and downgrades to blocking unless all of them can also be delayed, and
+refuses any handle with an inline `after` script. Proven: `defer` on jQuery
+emitted `data-wp-strategy="defer"` with **no** `defer` attribute. The user
+cannot break the page with this control. `fetchpriority` likewise propagates via
+`get_highest_fetchpriority_with_dependents()`.
+
+Supporting mechanics, all verified:
+
+- **head ↔ footer both work** via `wp_script_add_data( $h, 'group', 0|1 )`.
+  `wp_register_script()` in WP 7.0.2 calls `add()` WITHOUT `$args`, so every
+  handle has `args = null` and `set_group()`'s legacy `args === 1` branch never
+  fires — the data value always wins. Moving a file to head **drags its whole
+  dependency chain with it** (observed: `swv-js` followed `contact-form-7`).
+- **Styles DO have a footer group** (`WP_Styles::do_footer_items()` →
+  `do_items( false, 1 )`), so CSS can be moved too — but moving CSS to the
+  footer causes FOUC, so it is not worth exposing.
+- **CSS has no defer/async and no fetchpriority** — `WP_Styles` has zero
+  fetchpriority support. The only per-file levers are `style_loader_tag`,
+  `media` and `conditional`, so "async CSS" means the
+  `media="print" onload="this.media='all'"` swap, which is our code.
+- **No core preload API.** Nothing emits `rel=preload` for enqueued assets; we
+  would print it at `wp_head` ourselves. An unused preload logs a console
+  warning, so it only earns its place on the GSAP core, which is 71 KB and gates
+  everything.
+- **Third-party "lazy" is the riskiest item.** Our Performance module already
+  does it for AAE handles; extending it to arbitrary handles bypasses exactly
+  the protection core provides in Finding 3 — inline `-js-extra` / `-js-after`
+  blocks still print immediately and would reference globals the lazy file has
+  not defined yet.
+
+**Recommended scope:** per-file **head/footer**, **defer/async**,
+**fetchpriority** for JS (each implying no-combine), plus the existing
+no-combine / do-not-load. Skip drag-sort and third-party lazy — they are the two
+that break a page silently, and neither has a core safety net.
+
+#### Per-page LiteSpeed controls (added 2026-08-02)
+
+The modal grew two more tabs: **LiteSpeed** (four kill switches) and **Files**
+(live per-file combine exclusion). Stored in their own row,
+`_aae_cache_compat_ls` — NOT folded into `_aae_cache_compat`, which shipped as a
+scalar three-state string and would have needed a migration for every saved
+page, for no gain.
+
+| Switch | Lever | Verified at |
+|---|---|---|
+| Image lazy load | `LITESPEED_NO_LAZY` + mirror LiteSpeed's own `litespeed_no_image_lazy` meta | `media.cls.php:778`, `:832` |
+| CSS/JS optimization | `LITESPEED_NO_PAGEOPTM` | `optimize.cls.php:235` |
+| HTML minify | `litespeed_html_min` filter | `optimizer.cls.php:35` |
+| Combine inline CSS/JS | `litespeed_optm_{css,js}_comb_ext_inl` | `optimize.cls.php:1043`, `:869` |
+| Per-file combine | `litespeed_optimize_{js,css}_excludes` | `optimize.cls.php:869`, `:1043` |
+
+All are checked BEFORE any guest branch, so they hold under Guest Optimization.
+`do_action( 'litespeed_conf_force', … )` is deliberately unused for exactly the
+opposite reason: the guest branches read
+`defined( 'LITESPEED_GUEST_OPTM' ) || $this->conf( … )`, which short-circuits
+before `conf()` is consulted, so a forced value is invisible on the commonest
+logged-out path.
+
+**Writing LiteSpeed's own `litespeed_no_image_lazy` meta is supported, not a
+hack** — `Metabox::setting()` is a bare `get_post_meta()`
+(`metabox.cls.php:144`). Side effect by design: their metabox and our modal
+share one row.
+
+**The file list is discovered LIVE** from `WP_Scripts::$done` / `WP_Styles::$done`
+at `wp_footer` PHP_INT_MAX, printed as `window.AAE_CACHE_COMPAT_ASSETS`. It
+cannot be localized — `wp_localize_script` runs at enqueue time, long before the
+page knows what it printed. Selections are stored as site-relative paths because
+that is what both plugins match on.
+
+**GOTCHA — read that global LAZILY.** The modal bundle is an enqueued footer
+script and the inventory prints AFTER it, so capturing
+`window.AAE_CACHE_COMPAT_ASSETS` at module scope yields an empty list forever.
+Measured: the Files tab rendered 0 checkboxes on a page with 48 scripts and 37
+stylesheets. Read it inside the function that needs it.
+
+**GOTCHA — do not count `litespeed/javascript` as a substring.** LiteSpeed's own
+delay-JS library contains the literal `script[type="litespeed/javascript"]`
+inside a `querySelectorAll`, so a raw substring count never reaches zero and
+reports a working kill switch as broken. Match the `<script …>` TAG. Same class
+of error as the clip-path assumption above: measure the thing, not a proxy.
+
+**Server-side, selections are intersected against the paths the CLIENT reports.**
+The server cannot recompute the inventory in an admin-ajax request — no template
+renders, so `$done` is empty — so the client sends the list it was shown and
+each path must additionally look like a real asset (site-relative, no `..`,
+ends `.js`/`.css`, ≥8 chars). Without that the endpoint is an "add any string to
+LiteSpeed's exclusion list" writer, and a substring of `/` would exclude every
+asset on the site.
+
+**The CSS list carries an in-UI warning, and it is not decoration.** Excluding a
+stylesheet from combine MOVES it (combined output is re-emitted at head-top), and
+our overrides tie Elementor's atomic base styles at (0,2,0), so document order
+decides the winner. A flip looks like a styling opinion, not a bug. Shipped
+because it was explicitly asked for, with the risk stated where the choice is
+made.
+
+**Tests:** `verify-cache-ls-controls.mjs` (15) — asserts against RENDERED HTML,
+not our stored value, since "stored off but LiteSpeed ignored it" is the failure
+being tested for. Includes the scope check that another URL is still optimized.
+
 **GOTCHA — `wp eval-file` runs the file inside a function.** The script body is
 NOT global scope, so a top-level `$pass = 0` and a `global $pass` in a helper
 are different variables and the summary prints "0 passed, 0 failed" whatever
 happened — a test that cannot fail. Use `$GLOBALS[...]` in these scripts.
+
+#### SHIPPED — page-wise caching, the Cache tab (2026-08-02)
+
+The brief: **"cache 2–4 pages, usually just the homepage, and control it all
+from the front-end modal."** Answered with LiteSpeed's own settings — the
+feature adds a UI, not a mechanism. `pro/inc/Performance/class-cache-scope.php`
+plus a fourth tab (first in the row, and the one that opens).
+
+| Control | Writes | LiteSpeed reads it at |
+|---|---|---|
+| "Cache only the pages I pick" | `/` into `litespeed.conf.cache-exc` | `control.cls.php:871` |
+| "Always cache this page" | two lines into `litespeed.conf.cache-force_uri` | `control.cls.php:729` |
+| "Never cache this page" | `litespeed_no_cache` post meta (theirs) | `control.cls.php:706` |
+| Cache lifetime | a TTL appended to both include lines | `Utility::str_hit_array($uri,$list,true)` |
+
+**Precedence, all three of them, measured — not assumed:**
+
+1. **Force Cache URIs BEATS Do Not Cache URIs.** `control.cls.php:869` reads the
+   exclude list only `if ( ! self::is_forced_cacheable() )`. That is the entire
+   reason "exclude everything, then include four pages" is expressible.
+2. **`litespeed_no_cache` post meta beats Force Cache URIs** — the metabox check
+   at `:706` returns before the force-URI check at `:729` runs. So "never" wins
+   over "always", and `Cache_Scope::state_for()` checks it first for that reason.
+3. **`/` in the exclude list matches every URI** — it falls through to the plain
+   `strpos()` branch of `Utility::str_hit_array()`. Anchoring it would defeat it.
+
+**THE COST, and it must stay in the UI.** A page kept out of the cache is also
+kept out of **every optimization**. `Media::finalize()` and
+`Optimize::_finalize()` both bail on `! Control::is_cacheable()`. Measured:
+
+| | parked | combined | lazy |
+|---|---|---|---|
+| `/aae-cache-compat/` (included) | 6 | 2 | 7 |
+| `/aae-v4-widgets/` (excluded) | **0** | **0** | **0** |
+
+**GOTCHA — the ordering that makes that true is counter-intuitive.** I first
+concluded the opposite from reading the source: the optimizer runs inside the ob
+callback (`litespeed_buffer_finalize`, Media at 4, Optimize at 20) while
+`Control::finalize()` is hooked to `shutdown` 0, which *looks* later. It is not.
+**PHP flushes output-buffer handlers only after every shutdown function has
+run**, so `shutdown` 0 really is earlier and the cache decision is already final
+when the optimizer looks. The probe recorded `is_cacheable()` at both moments and
+they agree. Do not "fix" this back.
+
+**Two lines per page, not one.** `^/path/$` is an exact match — and the needle is
+the raw `$_SERVER['REQUEST_URI']`, query string included, so a visitor landing on
+`/?utm_source=fb` would miss the include list and hit the exclude-everything line
+instead: the one page you asked to cache, uncached for exactly the traffic a
+landing page gets. The second line `^/path/?` has no closing `$`, so it is a
+starts-with test on the literal `/path/?` — every query-string variant, and
+nothing else (`/path/team/` does not start with `/path/?`). The TTL goes on
+**both** or the variant silently uses the site default.
+
+**Plain permalinks disable the control.** `path_for()` returns `''` when the
+permalink contains `?`, and the tab says why: `?p=12`, `?page_id=12` and
+`?p=12&utm=x` are all the same page and no single line covers them without also
+covering something else.
+
+**Only our own lines are ever touched.** `set_selective()` adds/removes the `/`
+sentinel and nothing else; `set_included()` filters out lines matching this
+post's patterns and re-adds. A hand-written WooCommerce cart rule survives every
+toggle. `normalise()` accepts the raw textarea STRING shape too — older versions
+and imports have both stored it that way, and a malformed option degrades to "no
+rules" instead of fatalling in `array_search`.
+
+**`set_selective()` purges the WHOLE cache** and is a no-op when already in the
+requested state — every page on the site just changed cacheability, and
+re-sending the same value from an unrelated tab must not throw the cache away.
+
+**GOTCHA — `esc_html__()` is the WRONG escaper for `wp_localize_script` strings.**
+They are JSON-encoded (correct for a JS context) and assigned with `textContent`
+(which cannot execute markup), so `esc_html()` only double-escapes: the panel
+rendered `LiteSpeed&#039;s Force Cache URIs` literally. Use `__()`. Fixed for the
+whole `i18n` array and `report()`; the pre-existing `&quot;` in the Files tab's
+note came from the same cause.
+
+**GOTCHA — Playwright: `waitForLoadState('load')` after clicking Save is a
+no-op.** The page is already loaded, so it resolves immediately and the options
+are read before the POST lands — reported "nothing was written" while the very
+next assertion showed everything saved. Use `page.waitForEvent('load')`, armed
+BEFORE the click.
+
+**Tests:** `verify-ls-force-uri.mjs` (11 — the precedence and the cost, with a
+throwaway probe mu-plugin recording `is_cacheable()` at both moments),
+`verify-cache-scope.php` (36 — asserts matches through LiteSpeed's OWN
+`Utility::str_hit_array()`, not the strings we stored; foreign lines survive;
+garbage options), `verify-cache-scope-modal.mjs` (17 — admin-bar → tab → radio →
+save → options → what the two pages actually serve). `set-ls-uri.php` toggles the
+lists by hand.
+
+#### SHIPPED — the private-mode speed panel (2026-08-02)
+
+**The in-page cache modal is GONE.** Its controls now live in a floating,
+draggable panel that only exists on a tokenized preview URL. Admin bar
+**AAE Cache** is a link into it, opening in a new tab.
+
+The reason is a measurement, not a preference:
+
+| | logged in | logged out |
+|---|---|---|
+| requests | **97** | **30** |
+| JS files | 49 | 14 |
+| CSS files | 40 | 6 |
+
+A logged-in request is never cacheable and `Router::can_optm()` gates the CSS/JS
+pipeline, so **LiteSpeed applies no combine, minify or delay at all while you
+are logged in**. Every control in the old modal was being operated from the one
+view that could not show its effect. (Image lazyload is the exception — it runs
+for logged-in users too, because `Media::finalize()` gates on `is_cacheable()`
+alone. "LiteSpeed does nothing when logged in" is too strong.)
+
+| File | What |
+|---|---|
+| `pro/inc/Performance/class-speed-preview.php` | token, guest forcing, URLs, panel assets + config |
+| `pro/src/modules/atomic-v4/speed-panel.js` | the floating panel (replaces `cache-compat-page.js`) |
+| `pro/assets/css/speed-panel.css` | shell + the carried-over `.aae-cc-*` control styles |
+
+**Two URLs, deliberately.** `?aae_preview=<token>` is guest render + panel;
+`?aae_guest=<token>` is guest render with *nothing* of ours in it. The panel is
+CSS and JS that would land in a Lighthouse report, so it does not try to hide
+itself — **Audit mode** navigates to the second URL and the Back button returns.
+There is NO measurement UI in the panel: the browser ships Lighthouse, and a
+worse instrument competing for trust is worth less than nothing. What the panel
+adds is the two things Lighthouse cannot do — change settings live, and report
+whether LiteSpeed acted on this render at all.
+
+**DANGER — `Speed_Preview` must be constructed at plugin FILE-LOAD time**, which
+is why `animation-addons-for-elementor-pro.php` requires it in the main class
+constructor instead of the `plugins_loaded` block with everything else.
+`Router::is_logged_in()` MEMOISES `is_user_logged_in()` into a static, and
+LiteSpeed calls it from its own `plugins_loaded` callback; this plugin's `init`
+is priority 11. Register the `determine_current_user` filter there and LiteSpeed
+has already cached "logged in", so `Vary::after_user_init()` calls
+`Control::set_nocache( 'logged in user' )`. The symptom is maddening: WordPress
+agrees you are a guest (no admin bar) while LiteSpeed does not (0 delayed, 0
+combined) — and the same URL fetched server-side with no cookie shows 6 and 2.
+Plugin files are all included before any `plugins_loaded` callback, so
+registering there beats every plugin regardless of load order.
+
+**Consequence — `Speed_Preview::secret()` never CREATES the secret.**
+`wp_generate_password()` lives in `pluggable.php`, which does not exist yet at
+file-load time. `secret()` is read-only and returns `''`; only `make_token()`
+(called at `admin_bar_menu`) calls `ensure_secret()`. No secret means no token
+was ever issued, so refusing to verify is the correct answer, not a degradation.
+
+**Auth is the token, not a nonce.** `wp_create_nonce()` is seeded from the user
+id and session token, so for a logged-out visitor it returns the same string for
+everybody and authenticates nothing. `Cache_Compat_Page::guard()` therefore
+accepts EITHER nonce + `manage_options` OR a valid preview token, and the AJAX
+actions are registered on `wp_ajax_nopriv_` as well. The token is
+`<expiry>.<hmac-sha256 truncated to 32 hex>`, compared with `hash_equals`,
+expiry checked first, secret rotatable to kill every outstanding link. For its
+lifetime the link carries this page's cache-settings access — that is the
+feature, and the panel says so.
+
+**Simulated vs true visitor.** With your login cookie still in the browser the
+render is faithful but the session is not; the panel badges this and offers
+**Copy link**, because no page can open a private window for you. A cookieless
+browser is badged "true visitor". Copy uses `execCommand` as the primary path,
+not a legacy fallback — `navigator.clipboard` is unavailable on insecure origins,
+which is exactly where this gets used.
+
+**GOTCHA — `window.AAE_SPEED` DOES NOT EXIST at module-eval time.** The bundle is
+an enqueued footer script (`wp_footer` 20); its config prints at `wp_footer`
+PHP_INT_MAX because the asset inventory inside it needs `wp_scripts()->done` to
+be complete. `var CFG = window.AAE_SPEED` at module scope is *guaranteed*
+undefined — the script loads, the global is in the page, and no panel appears
+with nothing in the console. Read it inside `build()`. Same trap as
+`AAE_CACHE_COMPAT_ASSETS`; it will happen again.
+
+**GOTCHA — do not assert on `link[href*="speed-panel.css"]`.** LiteSpeed combines
+stylesheets, so the panel's own `<link>` is swallowed into
+`/wp-content/litespeed/css/<hash>.css` and the tag is gone while the rules
+apply. Assert `getComputedStyle(panel).position === 'fixed'`.
+
+**Playwright rules for anything that saves through this panel**, all three
+learned from failures that looked like product bugs:
+
+1. Wait on the save **response** (`waitForResponse` on `admin-ajax.php`), never a
+   load event. `waitForLoadState('load')` resolves instantly on an
+   already-loaded page; `waitForEvent('load')` settles when the reload paints,
+   which is not ordered against the server finishing its write. Both reported
+   "nothing was written" for saves that had plainly worked.
+2. Do **not** call `page.reload()` afterwards — the panel reloads itself and you
+   get `net::ERR_ABORTED; maybe frame was detached?`. Wait for
+   `#aae-speed-panel` instead; that IS the reload.
+3. Scope the save button to `.aae-sp-foot`. The header's **Audit mode** button
+   carries the same `.aae-cc-btn.is-primary` and navigates away.
+4. You cannot read the response BODY — the page navigates and Playwright loses
+   it. Assert the written row instead.
+
+**Tests:** `verify-speed-panel.mjs` (30 — forged/expired/absent tokens, guest
+render, audit mode shipping no trace of the panel, all four tabs, drag +
+persistence, a save from a genuinely cookieless browser, and the same save
+refused with no credential). The three older suites were ported to open the
+panel via `openSpeedPanel()` in `lib/aae-harness.mjs` rather than the modal:
+`verify-cache-compat-page.mjs` (16, rewritten), `verify-cache-ls-controls.mjs`
+(15), `verify-cache-scope-modal.mjs` (17).
+
+#### SHIPPED — Files tab: search, sizes, per-file loading (2026-08-02)
+
+Three additions to the panel's Files tab, all measured before shipping.
+
+**Search + "only changed".** The fixture page lists 55 assets. Matches handle
+AND path, because people look for `contact-form-7` and `/plugins/contact-form-7/`
+about equally. Filters by HIDING rows, never by rebuilding the list — every row
+owns live `<select>` state bound to `ls` on change, and re-rendering per
+keystroke is how a filtered-out choice gets silently dropped on save. A group
+whose rows are all hidden gets `.is-empty`.
+
+**Measured sizes, and the honest answer about coverage.**
+
+| | possible in-page? | what the panel shows |
+|---|---|---|
+| **CSS** unused % | yes, as an ESTIMATE | `86 KB · 91% unused (est.)` |
+| **JS** coverage | **NO** | size only, plus a pointer to DevTools > Coverage |
+
+Per-file JS coverage needs V8's counters via `Profiler.startPreciseCoverage`
+over CDP — that is what the DevTools Coverage panel drives. There is no web API.
+`window.Profiler` EXISTS and looks like the answer; it is the JS Self-Profiling
+API, needs a `Document-Policy` header, and samples call stacks, not per-file
+bytes. Measured, not assumed. Do not try again.
+
+The CSS estimate fetches each file BY PATH (so it works even though LiteSpeed
+combined it away), parses it into a `media="not all"` `<style>` — which
+populates `cssRules` without affecting the page — and tests each selector
+against the live DOM. Measured on the fixture: 1821 rules, 91% unused for the
+combined bundle; 58% for `advance-tooltip.css`. Both plausible.
+
+**It always reads HIGH and the UI says so.** Rules that only apply on `:hover`,
+or to classes JavaScript adds later, match nothing in a static document and
+count as unused. It is a hint about where to look, never permission to delete.
+
+**GOTCHA — test `selectorText` BEFORE recursing into `cssRules`.** Chrome
+supports CSS nesting, so a plain `CSSStyleRule` now HAS an (empty) `cssRules`
+list. Checking that first recurses into nothing and `continue`s past every style
+rule — the probe reported "0 rules" on a 228 KB stylesheet, which reads like a
+parse failure rather than a logic bug. Also: a constructed `CSSStyleSheet` +
+`replace()` parsed nothing here; a real `<style>` element does.
+
+**Per-file position and strategy (JS only).** `wp_script_add_data($h,'group',0|1)`
+and `…,'strategy','defer'|'async'`, applied at `wp_enqueue_scripts` PHP_INT_MAX.
+Styles get neither — `WP_Styles` has no strategy and no fetchpriority, and
+moving CSS to the footer causes FOUC.
+
+**The combine-exclusion is DERIVED, not stored.** Combining deletes the
+individual tag and every attribute on it, so "put this in the footer, deferred"
+and "combine this" are contradictory. `paths_needing_exclusion()` computes the
+exclusion from the attributes themselves — one source of truth, and values
+stored before the rule existed still behave. Verified by watching the tag
+reappear when a position is set, and fall back into the bundle when the value is
+rejected.
+
+**Core is the safety net, and it fires.** Verified on the live page: `defer` on
+`jquery-core` emitted `data-wp-strategy="defer"` with **no** `defer` attribute,
+because `filter_eligible_strategies()` refuses a handle whose dependents carry
+inline `after` scripts — while a leaf script got the real attribute. This is why
+defer/async is safe to expose and free-form drag-sort is not.
+
+**GOTCHA for tests — do not hardcode `jquery-core` as "a combined file".**
+LiteSpeed excludes jQuery from combine by default, so it always has its own tag;
+and WordPress correctly REFUSES to move it to the footer because head scripts
+declare it as a dependency and `WP_Scripts::set_group()` clamps a dependency to
+its dependent's group. Two assertions failed on a working feature. Pick the
+victim dynamically: an inventory path that is absent from the rendered HTML.
+
+**Why jQuery loads is a dependency question, not an enqueue one.** On
+`/test-ac/` it is queued by nobody and pulled in by three handles that name it
+in `deps`: `aaeal-essential--global-core` (animation-addons-al-extension) and
+the hello-animation theme's `skip-link-focus-fix` and `hello-animation-script`.
+Dequeuing all three removes jQuery entirely — verified. This is the Files tab's
+whole purpose, and the reason "Do not load" is best-effort by design: WordPress
+still prints anything a still-queued script depends on.
+
+**Tests:** `verify-file-controls.mjs` (22 — search by handle and by path,
+only-changed, sizes measured, CSS reports a percentage and JS does not,
+position/strategy reaching the RENDERED tag, core's refusal to defer jQuery, a
+leaf getting the real attribute, dequeue winning over a strategy, and
+out-of-allow-list values never reaching the page).
+
+#### The Files list must only show what actually loads (2026-08-02)
+
+**The panel listed itself.** `asset_inventory()` reads the page the panel is
+standing on, and that page carries the panel — so `aae-speed-panel` appeared as
+a row offering "Do not combine" and "Defer" for a file that does not exist on a
+visitor's page. `Cache_Compat_Page::SELF_HANDLES` now filters it, matched by
+HANDLE (ours, stable) rather than path (changes with the build directory).
+
+Audited on `/test-ac/` by fetching the logged-out page and checking each listed
+handle three ways — own `<script>` tag, code present inside LiteSpeed's combined
+file, or absent entirely. Result: **10 of 10 remaining handles genuinely load;
+only `aae-speed-panel` did not.** Worth keeping that distinction in mind when
+someone reports "this file isn't on my page": a combined file has NO tag of its
+own, so view-source is not evidence of absence.
+
+**"Do not combine" now tells the truth when combine is off.** `combine_state()`
+reads `litespeed.conf.optm-js_comb` / `optm-css_comb` live, and the panel relabels
+the option to "Do not combine (nothing is combined)" plus a banner naming which
+of JS/CSS is off. An enabled control that cannot do anything is worse than an
+absent one — you set it, nothing changes, and you debug the wrong thing.
+
+#### Custom asset bundles — BUILT, PROVEN, THEN REMOVED (2026-08-02)
+
+**DO NOT REBUILD THIS.** A full custom concatenator shipped and was deleted the
+same day. It worked; that was not the problem.
+
+It let you define N groups, send files to each by searching, and give each group
+a position and a defer/async strategy. `Asset_Groups` handled the four things a
+concatenator must: dependency order via `all_deps()`, dependents kept alive by
+leaving members registered with `src = false` and a dep on the bundle, inline
+`data`/`before` blocks moved onto the bundle (the `WCF_ADDONS_JS is not defined`
+class of bug), and relative `url()` rewriting. Tests: 27 + 21 assertions, all
+green, including a purpose-built fixture of three stylesheets in a deep
+directory pointing up one level, sideways and up two.
+
+**Why CSS bundles were dropped first — MEASURED, and not the failure anyone
+predicts.** The URL rewriting was fine; all three hostile paths survived
+byte-for-byte. What broke was ORDER. A CSS bundle must be excluded from
+LiteSpeed's combine or the combine swallows it — and an excluded stylesheet
+keeps its old position while every other sheet collapses to the top of `<head>`,
+so the cascade changes:
+
+| | before | after |
+|---|---|---|
+| body font | `Manrope` | `"DM Sans"` |
+| body colour | `#111` | `#000` |
+| page height | 9542px | 11317px |
+
+No error, no console warning, no failed request. And there was nothing to win:
+LiteSpeed already merges every stylesheet into one, CSS has no defer or async,
+and footer CSS causes FOUC.
+
+**Why the whole feature went.** With CSS out, a JS bundle's only real gain is
+narrow: pulling a set of scripts out of the blocking combine so they can be
+deferred while still costing ONE request instead of N. That is genuinely useful
+on a page with fifteen plugin scripts. On the pages here — 3 delayed scripts, 1
+combined file — it cannot produce a measurable difference, and it added a whole
+concatenator, a cache directory, a sweeper and a repeater UI to maintain. The
+per-file controls that survive (no-combine / do-not-load / head-footer /
+defer-async) cover the same intent without owning a build step.
+
+**If it is ever wanted again**, the constraints are: JS only; the bundle must be
+excluded from LiteSpeed's combine or its position and strategy are deleted with
+its tag; members must stay registered with `src = false` or anything depending
+on them silently never prints; `data` and `before` inline blocks move to the
+bundle while `after` stays on the member; refuse handles that are external,
+conditional, or (for CSS) contain `@import`.
 
 ### Design for the remaining slices (PLANNED — researched 2026-08-01)
 
@@ -2103,6 +2680,142 @@ Reuse the probe shape from the measurement above — instrument
 `<img>` was still `!complete`. A "does it animate" assertion cannot see this
 bug: the animation *does* run, just on nothing.
 
+### The two suites, and how to measure a LiteSpeed render honestly
+
+`verify-litespeed-server.php` (92 assertions, run through the harness' `wpEval`)
+and `verify-litespeed-e2e.mjs` (69 assertions) in `E:\Local Testing`. The server
+one asserts through **LiteSpeed's own code** wherever LiteSpeed owns the answer
+— `Utility::str_hit_array()` for every URI match, `Base::O_*` for the option
+names, `Metabox::setting()` for the rows we mirror — because a suite that
+re-implements the matcher keeps passing after LiteSpeed changes it. Both
+snapshot and restore every option and meta row they touch, including on a fatal.
+
+Three measurement traps, all of which produced a confidently wrong answer first:
+
+- **Count parked scripts as TAGS.** LiteSpeed's own delay loader contains the
+  literal `document.querySelectorAll('script[type="litespeed/javascript"]')`, so
+  a substring count never reaches zero and "no optimization at all" reads as
+  "one delayed script". Match `<script[^>]*type="litespeed/javascript"` — the
+  character class cannot cross the `>`.
+
+- **CSS/JS optimization and image lazyload are different axes with different
+  gates.** Measured on a logged-in render: 0 optimized files, 0 parked scripts,
+  and **3 lazyloaded images**. Any single boolean called "was this optimized"
+  is therefore nonsense; ask per axis.
+
+- **Never read the logged-in page with `page.content()`.** That serialises the
+  DOM after scripts ran, and LiteSpeed's lazyload library rewrites image
+  attributes at runtime — so a post-JS snapshot credits the server with the
+  client's work and cannot be compared against a raw guest `fetch`. Pull the
+  Playwright cookie jar and `fetch` with a `Cookie` header instead.
+
+And one setup trap: the fixtures are real pages with real saved settings.
+`/test-ac/` had `js_optm: off` stored on it, so a suite that set only the cache
+state measured a page whose optimization an unrelated control had already
+switched off — and blamed the cache state. Clear the page's own overrides first.
+
+The bimodal signal these produce on `/test-ac/`: cacheable → 22 optimized files
+and 4 parked scripts; not cacheable → 0 and 0. Not a threshold, so no tolerance
+is needed.
+
+### `wp_make_link_relative()` strips ANY host, not just yours
+
+```php
+function wp_make_link_relative( $link ) {
+	return preg_replace( '|^(https?:)?//[^/]+(/?.*)|i', '$2', $link );
+}
+```
+
+So `https://fonts.googleapis.com/css?family=Roboto…` comes back as
+`/css?family=Roboto…`, which passes a `0 === strpos( $path, '/' )` test that was
+written as the off-site filter. Found by test: the speed panel's Files tab was
+listing `elementor-gf-roboto` and `elementor-gf-robotoslab` and offering
+per-file controls over two files it cannot affect — and which the save endpoint
+would have rejected anyway, since `known_assets()` requires a path ending in
+`.js`/`.css`. **Test the host before relativising**, with `wp_parse_url( $src,
+PHP_URL_HOST )` against `home_url()`'s host. See `asset_inventory()`.
+
+The generalisable rule this is an instance of: a UI must never offer a control
+the server would refuse. `verify-litespeed-e2e.mjs` asserts exactly that — every
+path the panel lists must satisfy `known_assets()`'s own pattern.
+
+### Head + Defer: core moves the script to the FOOTER
+
+`WP_Scripts::do_item()` (`wp-includes/class-wp-scripts.php:321-338`) moves a
+head-group script to the footer when its **intended** strategy is delayed, the
+**actual** strategy was downgraded because a dependent cannot be delayed, and
+every dependent is in the footer. Measured with `elementor-v2-frontend-handlers`:
+
+| attrs | tag idx | `</head>` | where |
+|---|---|---|---|
+| `{pos: head}` | 16360 | 18081 | head |
+| `{pos: head, strategy: defer}` | 23516 | 17859 | footer, `data-wp-strategy="defer"`, no `defer` |
+
+Core is right — the footer is the next-best non-blocking place — but two
+controls that each work alone and cancel each other together is the "you set it
+and nothing happened" shape. The Files tab now raises a row-level warning the
+moment both are picked (`clashHead`), and the suite asserts the documented
+footer behaviour rather than an expectation the platform will never meet.
+
+### A third suite: every control, driven from the UI
+
+`verify-panel-controls.mjs` (94 assertions) clicks each control, saves, reloads,
+and then asks the server and the render what happened. The other two suites call
+our PHP and write meta directly — which proves the mechanism and says nothing
+about a control wired to the wrong key or a change handler that never fires.
+
+Two of its controls are inert by default, so it turns them on for the run and
+restores them: "Do not combine" does nothing while combine is off, and the HTML
+minify override does nothing while minify is off. Its probe mu-plugin reports
+the **levers** (`LITESPEED_NO_PAGEOPTM`, what `litespeed_html_min` resolves to,
+what the exclusion filters return) because HTML minify and inline-combine leave
+no clean fingerprint in the delivered HTML — "assert something changed
+somewhere" is not a test of them.
+
+Its `restore()` reads the state back and compares it against the snapshot. One
+run silently no-opped its restore and the next run then snapshotted the mess as
+its baseline; a restore that cannot prove itself is worse than none.
+
+### The preview token must be bound to its post — and the site-wide switch needs a session
+
+Found by asking "how far does one token actually reach". Measured, with a token
+minted for `/test-ac/`:
+
+```
+cross-page write to /about/   accepted   mark -> off, ls -> {lazy:off, js_optm:off}
+write to an unrelated post    accepted
+site-wide "selective" flip    accepted   is_selective no -> yes, exclude -> ["/"]
+```
+
+Two problems in one. The token authorised writes to **every post on the site**,
+and it could flip the one setting that is not per-page at all — which excludes
+every page from cache and therefore from minify/combine/defer/lazyload, and
+fires `litespeed_purge_all`. This is a link the UI tells you to copy into other
+browsers, so it travels.
+
+Fixed by signing the post id into the token
+(`aae-speed|<post>|<expiry>`, token shape `<expiry>.<post>.<sig>`) and having
+`guard()` compare it against the post being written; and by requiring
+`current_user_can( 'manage_options' )` for the site-wide field specifically.
+That second check costs nothing in practice — admin-ajax is `is_admin()`, so
+`Speed_Preview::mode()` returns `''` there and the login cookie is honoured, so
+a "simulated visitor" still passes. Only a genuine private window is refused,
+and the panel disables the checkbox there rather than letting the save fail
+silently.
+
+Old two-part tokens are rejected, not grandfathered — they live an hour at most.
+
+The generalisable rule: **a credential scoped to one object must say which
+object, inside the signature.** A token that only proves "someone was allowed to
+mint this" proves nothing about what it may touch.
+
+### User-facing documentation
+
+`animation-addons-for-elementor-pro/docs/performance/`:
+`speed-panel-user-guide.md` (for whoever owns the site — no caching knowledge
+assumed) and `speed-panel-developer.md` (levers, precedence, traps, and what
+this nginx stack cannot show).
+
 ---
 
 ## Auto-preset — giving a widget a default preset on drop
@@ -2372,6 +3085,7 @@ JS.** Diagnose this class of failure fast: `head` the served file in
 | `Settings validation failed … invalid_value` on publish (after a programmatic settings write) | Wrote a prop value RAW instead of in its `$$type` envelope. Responsive_JSON props need `{ $$type: 'aae-rj', value: { desktop: N } }`, not `{ desktop: N }`. See [Writing atomic settings from the editor](#writing-atomic-settings-from-the-editor-the-aae-rj-prop-shape). |
 | A whole `define_base_styles()` silently does nothing | One invalid key/value fails the entire definition. `width`/`height` are `Size_Prop_Type` — a `String_Prop_Type('fit-content')` is invalid. For CSS keywords/functions use the `custom` unit: `Size_Prop_Type::generate([ 'size' => 'fit-content', 'unit' => 'custom' ])` (transformer emits the `size` verbatim). `auto` → `[ 'size' => 'auto', 'unit' => 'auto' ]`. Another killer: `background` must be `Background_Prop_Type::generate([ 'color' => Color_Prop_Type::generate(…) ])` — a bare `Color_Prop_Type` voids the definition (shipped as a colorless Form submit button). **Full verified key/format tables + shape cookbook: `animation-addons-for-elementor-pro/docs/atomic-v4/atomic-style-schema-reference.md` — check it BEFORE writing any base style.** |
 | Base-style change shows in the editor but the frontend is unstyled / wrong | Atomic base styles are generated per-request, but the frontend renders them from a **cached** state; deleting `wp-content/uploads/elementor/` alone leaves it empty until a rebuild. After editing any `define_base_styles()`, **clear Elementor's cache** (wp-admin → Elementor → Tools → "Clear Files & Data", i.e. `#elementor-clear-cache-button`) then reload the frontend. The editor always renders live from PHP, so an editor-only check hides this. (Seen as a nav that's a perfect 44px circle in the editor but a full-width `position:static` block on the frontend.) |
+| A theme-builder header/footer is styled on the frontend but BARE in every other page's editor | Two separate causes, both fixed in `WCF_Theme_Builder::defer_builder_template_styles()` — read its docblock before touching anything here. (1) The editor canvas DELETES any `<link>` whose id matches `/^local-\d+-(preview\|frontend)-[a-zA-Z_-]+-css$/` from its **head** (`removeProviderPregeneratedLinks`, `editor-styles-repository.js`). That is right for the document being edited — the editor re-renders those styles live — but the pattern matches EVERY post id, so it takes theme-builder documents with it. (2) Even a surviving link loses the cascade: the editor re-renders the atomic BASE styles into `<style>` tags appended to the canvas head, so `.elementor .e-div-block-base` beats `.elementor .e-<id>-<hash>` on a (0,2,0) tie by document order — the header keeps its markup and falls back to `padding:10px; display:block`. Both are answered by printing those stylesheets from `wp_footer` (body > any head sheet) in preview mode only. **Never assert this with a network check** — before the fix the files were fetched and then discarded. Test: `E:\Local Testing\verify-theme-builder-editor-css.mjs`. |
 | Slider nav arrow one size in editor, another on frontend (and/or a huge ellipse at slidesPerView=1) | The nav badge USED to be icon-driven (`width/height: fit-content`), so it sized to whatever the SVG happened to be — 20px on a fresh drop (the `aae-a-svg` utility) but 65px on an element saved before that class existed → different footprint per element age, and `auto`/content-driven width could stretch into an ellipse in a single full-width slide. Fix: pin the nav to a **fixed** `width/height: 44px` in `class-aae-a-slider-nav-{prev,next}.php` (constant everywhere, can't stretch) and cap the SVG to fit inside via each slider stylesheet — `.aae-a-navigator-{prev,next} .e-svg-base, svg { max-width/height: 24px }` in BOTH `nestedslider.scss` and `loop-grid-slider.scss` (the two sliders load different CSS; the Loop Grid Slider deliberately does not load the Nested Slider's stylesheet, so the rule is duplicated). |
 | A "reveal" class you toggle at runtime (`aae-form-step-active`, etc.) doesn't override a base style's `display:none`, even though the class IS present in the DOM (`classList` has it, but `getComputedStyle().display` still says `none`) | **CSS specificity tie, not a JS/runtime bug.** Atomic base styles compile as `.elementor .e-<widget>-base { display: none; … }` — specificity (0,2,0). A plain `.your-class.active-class { display: flex }` override is ALSO (0,2,0) — a tie, and the base-styles sheet happens to cascade after your own, so the tie silently goes to `display:none`. Fix: add `.elementor` to your override selector so it matches the base rule's specificity (`.elementor .your-class.active-class { display: flex }`), not `!important`. Diagnose by walking `document.styleSheets` for every rule matching the element and setting `display` (see the `e-aae-a-form-step` Multi-Step Forms fix, 2026-07-19, for the exact Playwright snippet) — don't assume the DOM/model layer is broken just because content "isn't showing"; check computed style + winning rule first. |
 | Data-attrs not on rendered HTML | `Render::inject_into_html()` not handling the widget type, or `$attrs` empty |

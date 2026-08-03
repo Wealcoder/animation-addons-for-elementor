@@ -80,8 +80,13 @@ class AAE_A_Search_Form extends Atomic_Element_Base {
 		return [ 'search', 'form', 'ajax', 'filter', 'atomic', 'composite' ];
 	}
 
+	/**
+	 * Single home: "AAE Form". Matches the 'form' category its dashboard card
+	 * already declares in class-atomic.php's $widgets_registry, so the panel and
+	 * the dashboard now agree instead of filing it under Post.
+	 */
 	public function get_categories(): array {
-		return ['aae-atomic-post','wcf-hf-addon'];
+		return ['aae-atomic-form'];
 	}
 
 	/**
