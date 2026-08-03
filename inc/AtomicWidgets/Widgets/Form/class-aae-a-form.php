@@ -109,6 +109,18 @@ class AAE_A_Form extends Atomic_Element_Base {
 	}
 
 	/**
+	 * Panel category for the Elements panel.
+	 *
+	 * Atomic_Element_Base reads the panel category from HERE — get_categories()
+	 * is Widget_Base's hook and is never called for an element type, so a
+	 * category declared only there silently falls back to Elementor's own
+	 * 'v4-elements' ("Atomic Elements") bucket. Delegate so both stay in sync.
+	 */
+	protected function define_panel_categories(): array {
+		return $this->get_categories();
+	}
+
+	/**
 	 * Prop names and defaults follow the SSR spec (see CLAUDE.md → "AAE
 	 * Atomic Form Builder" → "Atomic element requirements"). `form_key` and
 	 * `actions_json` stay empty/unused until the Identity (Milestone 4) and

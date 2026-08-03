@@ -80,8 +80,25 @@ class AAE_A_Search_Form extends Atomic_Element_Base {
 		return [ 'search', 'form', 'ajax', 'filter', 'atomic', 'composite' ];
 	}
 
+	/**
+	 * Single home: "AAE Form". Matches the 'form' category its dashboard card
+	 * already declares in class-atomic.php's $widgets_registry, so the panel and
+	 * the dashboard now agree instead of filing it under Post.
+	 */
 	public function get_categories(): array {
-		return ['aae-atomic-post'];
+		return ['aae-atomic-form'];
+	}
+
+	/**
+	 * Panel category for the Elements panel.
+	 *
+	 * Atomic_Element_Base reads the panel category from HERE — get_categories()
+	 * is Widget_Base's hook and is never called for an element type, so a
+	 * category declared only there silently falls back to Elementor's own
+	 * 'v4-elements' ("Atomic Elements") bucket. Delegate so both stay in sync.
+	 */
+	protected function define_panel_categories(): array {
+		return $this->get_categories();
 	}
 
 	protected static function define_props_schema(): array {

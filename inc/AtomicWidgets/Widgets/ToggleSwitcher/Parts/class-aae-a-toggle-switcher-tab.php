@@ -29,6 +29,7 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Selection_Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Key_Value_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
+use Elementor\Modules\AtomicWidgets\Styles\Style_States;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
 /**
@@ -39,10 +40,34 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
  * (container-family) instance gets Elementor's empty-container "+" add
  * overlay in the editor canvas regardless of define_allowed_child_types()
  * being empty, which read as a stray add-icon on every tab. A real button
- * widget never gets that overlay. The active-tab look (accent color +
- * underline) now lives in toggle-switcher.scss as a `.e--selected`-scoped
- * rule instead — the same bundled-stylesheet mechanism this widget already
- * uses for its other JS-toggled active states (.aae-ts-switch.active, etc).
+ * widget never gets that overlay.
+ *
+ * The "+" overlay turned out to be driven by the `is_container` meta flag
+ * (set in the container-family constructor), not by exposing style states —
+ * so the "Selected" state can be offered WITHOUT reverting to
+ * Atomic_Element_Base. Atomic_Widget_Base's own get_initial_config() never
+ * calls define_atomic_style_states() (only Atomic_Element_Base does, see
+ * atomic-tab.php upstream), so it's added here via a get_initial_config()
+ * override instead. That's what makes "Selected" a real option in the
+ * Style panel's state dropdown — exactly like Elementor's own e-tab widget.
+ * toggle-switcher.js already toggles the same `e--selected` class this state
+ * compiles to, so no runtime change was needed — only the panel/PHP side was
+ * missing the wiring.
+ *
+ * Deliberately NO default color/border-color baked into a SELECTED variant
+ * in define_base_styles() (there was one briefly — removed the same day it
+ * was added). `.e--selected` (persistent — "this is the current tab") and
+ * `:active` (transient — mouse literally down) both match the SAME element
+ * at once when a visitor presses the currently-selected tab, and both
+ * compile to identical specificity (`.elementor` + 2 classes, or
+ * `.elementor` + 1 class + 1 pseudo-class — same weight either way). A tie
+ * is resolved purely by which stylesheet/rule renders later, which is not
+ * something this widget controls — so a hardcoded SELECTED color in the
+ * shared base stylesheet silently beat a user's own per-instance `:active`
+ * override the one time this was tried. Leaving SELECTED's default empty
+ * means there's nothing in base-desktop.css left to tie against; the
+ * accent color for both "current tab" and "being pressed" is entirely the
+ * builder's choice from the Style panel's Selected/Active states.
  */
 class AAE_A_Toggle_Switcher_Tab extends Atomic_Widget_Base {
 
@@ -69,6 +94,25 @@ class AAE_A_Toggle_Switcher_Tab extends Atomic_Widget_Base {
 	public function show_in_panel() {
 		// Internal sub-element — never draggable from the widget panel.
 		return false;
+	}
+
+	/**
+	 * Exposes "Selected" (Style_States::SELECTED, class `.e--selected`) as a
+	 * real option in this widget's Style-panel state dropdown — the same
+	 * class toggle-switcher.js already toggles on the active tab. Not called
+	 * automatically: Atomic_Widget_Base (leaf widgets) only wires up
+	 * define_atomic_pseudo_states() on its own; get_initial_config() below is
+	 * what actually threads this into the config Elementor's editor reads.
+	 */
+	protected function define_atomic_style_states(): array {
+		return [ Style_States::get_class_states_map()['selected'] ];
+	}
+
+	public function get_initial_config() {
+		$config = parent::get_initial_config();
+		$config['atomic_style_states'] = $this->define_atomic_style_states();
+
+		return $config;
 	}
 
 	protected static function define_props_schema(): array {
