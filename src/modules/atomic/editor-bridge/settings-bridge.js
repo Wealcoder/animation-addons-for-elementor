@@ -1,7 +1,7 @@
 /* eslint-env browser */
 
 import { getPreviewWindow, getSelectedContainer } from './helpers';
-import { featuresFor, regularRowToRuntime, textRowToRuntime, imgRowToRuntime, imgAdvRowToRuntime } from './features';
+import { featuresFor, regularRowToRuntime, textRowToRuntime, imgRowToRuntime } from './features';
 import { syncSliderPreviewForElement } from './slider-editor-preview';
 
 /**
@@ -73,7 +73,6 @@ function isFeatureInPlayGroup(featureName, playGroup) {
 	if (group === 'aae_text_' && featureName === 'text-animation') return true;
 	if (group === 'aae_anim_' && featureName === 'regular-animation') return true;
 	if (group === 'aae_img_' && featureName === 'image-animation') return true;
-	if (group === 'aae_imgadv_' && featureName === 'image-advanced-animation') return true;
 	if (group === 'aae_ih_' && featureName === 'image-hover') return true;
 	if (group === 'aae_cursor_hover_' && featureName === 'cursor-hover-effect') return true;
 	if (group === 'aae_sticky_' && featureName === 'sticky') return true;
@@ -293,7 +292,6 @@ export function triggerAnimationReplayRow(playGroup = "", rowIndex = 0) {
 		aae_anim_: { prop: 'aae_anim_interactions', toRuntime: regularRowToRuntime },
 		aae_text_: { prop: 'aae_text_interactions', toRuntime: textRowToRuntime },
 		aae_img_: { prop: 'aae_img_interactions', toRuntime: imgRowToRuntime },
-		aae_imgadv_: { prop: 'aae_imgadv_interactions', toRuntime: imgAdvRowToRuntime },
 	};
 
 	let rowCfg = null;

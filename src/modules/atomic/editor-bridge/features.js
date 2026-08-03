@@ -479,10 +479,7 @@ function buildRegularConfig(settings) {
 
 /* ---------- Image: REPEATER. Mirrors ImageAnimation/Render.php ---------- */
 
-// Cinematic-preset field keys merged in from the sibling
-// ImageAdvancedAnimation extension (Render.php's FIELD_MAP). This is a
-// deliberate, independent copy — kept separate from IMGADV_FIELD_KEYS below
-// so ImageAdvancedAnimation's own code path stays untouched.
+// Cinematic-preset field keys (mirrors ImageAnimation/Render.php's FIELD_MAP).
 const IMG_CINEMATIC_FIELD_KEYS = [
 	'direction', 'move_direction', 'orbit_direction', 'parallax_direction',
 	'slice_axis', 'slice_direction', 'origin', 'tile_order',
@@ -607,113 +604,6 @@ function buildImgConfig(settings) {
 	// No "Enable On Editor" switch for image animation — editor binding is driven
 	// purely by the rows' triggers (click / hover bind in the editor; scroll /
 	// page-load preview via the per-row ▶ play). See shouldBindInEditor().
-	return cfg;
-}
-
-/* =====================================================================
- * Image Advanced Animation feature — 8 cinematic presets, mirrors
- * ImageAnimation/Render.php's REPEATER shape and dedupe.
- * =================================================================== */
-
-const IMGADV_FIELD_KEYS = [
-	'direction', 'move_direction', 'orbit_direction', 'parallax_direction',
-	'slice_axis', 'slice_direction', 'origin', 'tile_order',
-	'start_scale', 'end_scale', 'image_shift', 'travel', 'tilt', 'rotation',
-	'rotation_x', 'rotation_y', 'rotation_z', 'blur', 'brightness', 'saturation',
-	'radius', 'shade_opacity', 'sweep', 'fade', 'slice_count', 'slice_skew',
-	'depth', 'stagger', 'tile_columns', 'tile_rows', 'tile_scatter',
-	'tile_start_scale', 'tile_rotation', 'wave_size', 'circle_start', 'circle_end',
-	'frame_distance', 'image_distance',
-];
-// snake_case bind → camelCase runtime key (same rule as ImageAnimation's row_to_config).
-const IMGADV_FIELD_CAMEL = Object.fromEntries(IMGADV_FIELD_KEYS.map((k) =>
-	[k, k.replace(/_([a-z])/g, (_, c) => c.toUpperCase())]));
-
-/** One raw editor image-advanced row → one runtime config (no dedupe).
- *  Exported for per-row isolated preview. */
-export function imgAdvRowToRuntime(row) {
-	if (!row || typeof row !== 'object') return null;
-	const effect = row.effect ? String(row.effect) : 'none';
-	if (effect === '' || effect === 'none') return null;
-
-	const trigger = row.trigger ? String(row.trigger) : 'on_scroll';
-	const str = (k, d) => {
-		const v = row[k];
-		return (v !== undefined && v !== null && v !== '') ? v : d;
-	};
-	const num = (k, d) => {
-		const v = row[k];
-		return (v !== undefined && v !== null && v !== '' && Number.isFinite(Number(v))) ? Number(v) : d;
-	};
-
-	const cfg = {
-		effect,
-		trigger,
-		triggerSelector: str('trigger_selector', ''),
-		startPosition: str('start_position', 'top center'),
-		endPosition: str('end_position', 'bottom bottom'),
-		wrapper: str('wrapper', 'default'),
-		startTrigger: str('start_trigger', ''),
-		endTrigger: str('end_trigger', ''),
-		delay: num('delay', 0),
-		duration: num('duration', 1.2),
-		ease: str('ease', 'expo.out'),
-	};
-
-	for (const bind of IMGADV_FIELD_KEYS) {
-		const raw = row[bind];
-		if (raw === undefined || raw === null || raw === '') continue;
-		const outKey = IMGADV_FIELD_CAMEL[bind];
-		if (bind === 'sweep' || bind === 'fade') {
-			cfg[outKey] = !!raw;
-		} else if (['direction', 'move_direction', 'orbit_direction', 'parallax_direction',
-			'slice_axis', 'slice_direction', 'origin', 'tile_order'].includes(bind)) {
-			cfg[outKey] = String(raw);
-		} else {
-			cfg[outKey] = num(bind, undefined);
-		}
-	}
-
-	if (row.markers) cfg.markers = true;
-	return cfg;
-}
-
-function imgAdvRowsToRuntime(rows) {
-	if (!Array.isArray(rows)) return [];
-	const out = [];
-	const usedGroups = new Set();
-
-	for (const row of rows) {
-		const cfg = imgAdvRowToRuntime(row);
-		if (!cfg) continue;
-		acceptWithExclusive(cfg, out, usedGroups);
-	}
-	return out;
-}
-
-function buildImgAdvConfig(settings) {
-	const map = envelopeToMap(settings.aae_imgadv_interactions);
-
-	const desktopRows = imgAdvRowsToRuntime(Array.isArray(map.desktop) ? map.desktop : []);
-
-	let anyRows = desktopRows.length > 0;
-	if (!anyRows) {
-		for (const bp of BPS) {
-			if (Array.isArray(map[bp]) && map[bp].length) { anyRows = true; break; }
-		}
-	}
-	if (!anyRows) return null;
-
-	const cfg = {};
-	if (desktopRows.length) cfg.rows = desktopRows;
-
-	for (const bp of BPS) {
-		if (!(bp in map) || map[bp] === null || map[bp] === undefined) continue;
-		const bpRows = imgAdvRowsToRuntime(Array.isArray(map[bp]) ? map[bp] : []);
-		if (JSON.stringify(bpRows) === JSON.stringify(desktopRows)) continue;
-		cfg['rows_' + bp] = bpRows;
-	}
-
 	return cfg;
 }
 
@@ -1444,15 +1334,6 @@ export const FEATURES = [
 		autoReplaySetting: 'aae_img_enable_editor',
 		mapName: 'AAE_INTERACTIONS_IMG',
 		buildConfig: buildImgConfig,
-		findTarget: findByInteractionId,
-	},
-	{
-		name: 'image-advanced-animation',
-		widgetTypes: ['e-image', 'e-svg', 'e-aae-a-post-image'],
-		enableSetting: 'aae_imgadv_interactions',
-		autoReplaySetting: 'aae_imgadv_enable_editor',
-		mapName: 'AAE_INTERACTIONS_IMGADV',
-		buildConfig: buildImgAdvConfig,
 		findTarget: findByInteractionId,
 	},
 	{

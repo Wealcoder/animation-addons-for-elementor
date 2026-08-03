@@ -3,17 +3,7 @@
 /**
  * Image Animation — REPEATER runtime.
  *
- * Config: { rows: [ <interaction>, ... ], rows_<bp>: [...] }. Each row is one
- * independent image interaction (effect + trigger + config). Effects:
- *   - reveal  : clip-path wipe (preset)
- *   - scale   : scale from→to (preset)
- *   - stretch : width/border-radius grow (preset)
- *   - custom  : user GSAP from/to props (like regular animation)
- *   - glass_broken : shard-shatter reveal (new)
- *
- * Every row drives through the shared trigger dispatcher (wireTrigger), so
- * trigger is now a per-row choice (page-load / scroll / play-scroll / click /
- * hover) instead of being hardcoded per effect.
+
  */
 
 import { wireTrigger, modeFor, resolveTriggerEl } from '../animation/triggers';

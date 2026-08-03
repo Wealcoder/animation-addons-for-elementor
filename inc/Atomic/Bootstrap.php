@@ -65,17 +65,6 @@ final class Bootstrap {
 			( new \WCF_ADDONS\Atomic\ImageAnimation\Render() )->register();
 		}
 
-		// Image advanced animation — 8 cinematic GSAP presets (cinematicMask,
-		// scaleAnimation, sliceShutter, mosaicDepth, liquidClip, orbitTilt,
-		// zoomTunnel, scrollParallax) for e-image / e-svg. Distinct from
-		// image-animation (reveal/scale/stretch). Frontend reads
-		// window.AAE_INTERACTIONS_IMGADV[<id>].
-		if ( $extensions->is_extension_active( 'image-advanced-animation' ) ) {
-			( new \WCF_ADDONS\Atomic\ImageAdvancedAnimation\Schema() )->register();
-			( new \WCF_ADDONS\Atomic\ImageAdvancedAnimation\Controls() )->register();
-			( new \WCF_ADDONS\Atomic\ImageAdvancedAnimation\Render() )->register();
-		}
-
 		// Image hover — cursor-following floating image overlay on any
 		// atomic widget. Frontend reads window.AAE_INTERACTIONS_IH[<id>].
 		if ( $extensions->is_extension_active( 'image-hover' ) ) {

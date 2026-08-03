@@ -2992,19 +2992,6 @@ final class Atomic
 				'order'        => 4,
 			],
 
-			'image-advanced-animation' => [
-				'label'        => 'Image Advanced Animation',
-				'description'  => 'Cinematic GSAP presets (mask reveal, mosaic, liquid clip, 3D orbit, zoom tunnel, parallax) for image and SVG widgets.',
-				'icon'         => 'wcf-icon-image-animation',
-				'is_pro'       => false,
-				'is_extension' => true,
-				'is_upcoming'  => false,
-				'default'      => false,
-				'keywords'     => ['image advanced animation', 'cinematic', 'mosaic', 'liquid clip', 'orbit tilt', 'zoom tunnel', 'parallax'],
-				'category'     => 'animation',
-				'order'        => 13,
-			],
-
 			'image-hover' => [
 				'label'        => 'Image Hover',
 				'description'  => 'Cursor-following floating image overlay on any atomic widget.',
