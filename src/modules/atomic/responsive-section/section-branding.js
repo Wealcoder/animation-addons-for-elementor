@@ -35,6 +35,7 @@ const AAE_SECTION_LABELS = new Set([
 	'Sticky/Pin Element',
 	'Horizontal Scroll',
 	'Custom CSS',
+	'Background Video',
 	'Wrapper Link',
 	'Nested Slider',
 	'Popup',

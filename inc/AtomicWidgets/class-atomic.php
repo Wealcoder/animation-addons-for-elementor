@@ -3200,6 +3200,19 @@ final class Atomic
 				'order'        => 13,
 			],
 
+			'background-video' => [
+				'label'        => 'Background Video',
+				'description'  => 'Play a looping video behind a Flexbox, Div Block or Grid — the option the atomic Background control is missing.',
+				'icon'         => 'wcf-icon-Custom-CSS',
+				'is_pro'       => false,
+				'is_extension' => true,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => ['background video', 'video', 'background', 'container'],
+				'category'     => 'utility',
+				'order'        => 15,
+			],
+
 			'custom-css' => [
 				'label'        => 'Custom CSS',
 				'description'  => 'Add custom CSS rules per-element in the atomic editor.',

@@ -30,6 +30,9 @@ final class Assets
 	const EFFECT_BUNDLES = [
 		'aae-effect-custom-css'    => 'effects/custom-css.js',
 		'aae-effect-nested-slider' => 'effects/nested-slider.js',
+		// No GSAP dependency — a muted looping <video> needs none, so this one
+		// costs only its own ~2KB on pages that use it.
+		'aae-effect-background-video' => 'effects/background-video.js',
 	];
 
 	public function register(): void

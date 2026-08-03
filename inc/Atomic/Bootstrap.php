@@ -122,6 +122,17 @@ final class Bootstrap {
 			( new \WCF_ADDONS\Atomic\ScrollTo\Controls() )->register();
 		}
 
+		// Background Video — a video layer behind e-flexbox / e-div-block /
+		// e-grid. Wholly free (Schema + Controls + Render + runtime): it adds
+		// what v4's atomic Background control is missing rather than an
+		// animation, and it needs no GSAP, so there is nothing here for the Pro
+		// split to own. Frontend reads window.AAE_INTERACTIONS_BGV[<id>].
+		if ( $extensions->is_extension_active( 'background-video' ) ) {
+			( new \WCF_ADDONS\Atomic\BackgroundVideo\Schema() )->register();
+			( new \WCF_ADDONS\Atomic\BackgroundVideo\Controls() )->register();
+			( new \WCF_ADDONS\Atomic\BackgroundVideo\Render() )->register();
+		}
+
 		// Custom CSS — NOT part of the move to Pro, so it keeps its Render here.
 		// Presets are the reason: an "animated" preset (keyframes, ::before
 		// layers, descendant :hover — anything atomic per-element styles cannot

@@ -17,6 +17,7 @@ import mouseMoveEffectSection from './extensions/mouse-move-effect/config';
 import advancetooltipSection from './extensions/advance-tooltip/config';
 import tilt from './extensions/tilt/config';
 import scrollTo from './extensions/scroll-to/config';
+import backgroundVideoSection from './extensions/background-video/config';
 import customCssSection from './extensions/custom-css/config';
 import nestedSliderSection from './extensions/nested-slider/config';
 
@@ -88,6 +89,7 @@ registerResponsiveSection( mouseMoveEffectSection );
 registerResponsiveSection( advancetooltipSection );
 registerResponsiveSection( tilt );
 registerResponsiveSection( scrollTo );
+registerResponsiveSection( backgroundVideoSection );
 registerResponsiveSection( customCssSection );
 registerResponsiveSection( nestedSliderSection );
 
