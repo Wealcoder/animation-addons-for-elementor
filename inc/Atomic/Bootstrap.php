@@ -217,6 +217,7 @@ final class Bootstrap {
 			'e-aae-a-post-image',
 			'e-aae-a-icon-list',
 			'e-aae-a-icon-list-item',
+			'e-aae-a-advanced-heading'
 		];
 	}
 }

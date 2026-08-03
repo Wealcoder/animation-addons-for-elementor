@@ -181,10 +181,20 @@ function setStyleWithCss( doc, on ) {
 }
 
 /**
- * Make sure a usable selection is live before running a command: keep the
- * CURRENT one when the caret is still inside the heading (it is fresher than
- * anything we stashed), and only fall back to the saved range when focus was
- * stolen — by the colour picker dialog or the link input.
+ * Make sure a usable selection is live AND the heading is focused before
+ * running a command.
+ *
+ * Both halves matter. `execCommand` acts on the focused editable and silently
+ * does nothing when focus sits elsewhere — and after the native colour picker
+ * closes, focus is on the `<input type="color">` while the iframe's selection
+ * object still reports the old range inside the heading. Returning early on
+ * "the selection looks fine" therefore skipped the only focus() call in the
+ * path, so the first colour pick applied nothing and the second one worked
+ * (focus had drifted back by then).
+ *
+ * So: refresh the stash from the live selection when there is one, then ALWAYS
+ * go through restoreRange() — re-adding a range that is already current is a
+ * no-op, and its focus() is what makes the command land.
  */
 function ensureSelection() {
 	if ( ! session ) {
@@ -195,7 +205,6 @@ function ensureSelection() {
 
 	if ( sel && sel.rangeCount && session.el.contains( sel.anchorNode ) ) {
 		savedRange = sel.getRangeAt( 0 ).cloneRange();
-		return;
 	}
 
 	restoreRange();
@@ -378,9 +387,9 @@ function buildToolbar( doc ) {
 	colorInput.type = 'color';
 	colorInput.value = '#000000';
 	colorInput.setAttribute( 'style', 'position:absolute;width:1px;height:1px;padding:0;border:0;opacity:0;pointer-events:none;' );
-	// `change` (not `input`): one clean apply when the native picker closes,
-	// instead of a nested <span> per mouse-move inside it.
-	colorInput.addEventListener( 'change', () => applyColor( colorInput.value ) );
+	// Chrome fires `change` LIVE, while the OS colour dialog is still open, so
+	// this cannot apply straight away — see queueColor().
+	colorInput.addEventListener( 'change', () => queueColor( colorInput.value ) );
 
 	const colorBar = doc.createElement( 'span' );
 	colorBar.setAttribute( 'style', 'display:block;width:16px;height:3px;border-radius:2px;background:#000;' );
@@ -510,6 +519,100 @@ function applyColor( value ) {
 	}
 }
 
+/* ---- Deferred colour apply ------------------------------------------------
+ *
+ * `<input type="color">` opens an OS-LEVEL dialog, and while it is open the
+ * whole document is unfocused — `doc.hasFocus()` is false. `execCommand` only
+ * acts on a focused document, and no amount of `el.focus()` fixes that: the
+ * page itself has no focus to give. Chrome then fires `change` LIVE from inside
+ * the open dialog, so applying there is guaranteed to be a silent no-op. That
+ * is the whole "colour only lands if I click A a second time" bug — the second
+ * click happened after focus had returned.
+ *
+ * So the value is parked and applied when focus comes back, which is exactly
+ * when the dialog closes. Only the newest colour is kept: Chrome fires `change`
+ * repeatedly while you drag inside the picker, and replaying all of them would
+ * nest a <span> per event.
+ * ------------------------------------------------------------------------ */
+
+let pendingColor = null;
+let colorWatch = null;
+
+function clearColorWatch() {
+	if ( ! colorWatch ) {
+		return;
+	}
+
+	const { win, onFocus, poll, giveUp } = colorWatch;
+
+	win.removeEventListener( 'focus', onFocus );
+	win.clearInterval( poll );
+	win.clearTimeout( giveUp );
+	colorWatch = null;
+}
+
+function flushColor() {
+	clearColorWatch();
+
+	const value = pendingColor;
+
+	pendingColor = null;
+
+	if ( value && session ) {
+		applyColor( value );
+	}
+}
+
+function queueColor( value ) {
+	if ( ! session ) {
+		return;
+	}
+
+	pendingColor = value;
+
+	// Immediate feedback on the toolbar swatch even though the text has not
+	// been recoloured yet — otherwise the button looks unresponsive.
+	if ( toolbar ) {
+		toolbar.colorBar.style.background = value;
+	}
+
+	const { doc } = session;
+
+	// Firefox fires `change` only after the dialog closes, so focus is already
+	// back and there is nothing to wait for.
+	if ( doc.hasFocus() ) {
+		flushColor();
+		return;
+	}
+
+	if ( colorWatch ) {
+		return; // Already waiting — the value above is the one that will land.
+	}
+
+	const win = doc.defaultView;
+	const onFocus = () => win.requestAnimationFrame( flushColor );
+
+	colorWatch = {
+		win,
+		onFocus,
+		// A window `focus` event is the normal signal…
+		poll: win.setInterval( () => {
+			if ( doc.hasFocus() ) {
+				flushColor();
+			}
+		}, 100 ),
+		// …but not every browser fires one when an OS dialog closes, hence the
+		// poll above; and if focus never returns at all, stop watching rather
+		// than leave an interval running for the life of the editor.
+		giveUp: win.setTimeout( () => {
+			pendingColor = null;
+			clearColorWatch();
+		}, 30000 ),
+	};
+
+	win.addEventListener( 'focus', onFocus );
+}
+
 /** Reflect the caret's formatting in the toolbar (pressed states + swatch). */
 function syncToolbar() {
 	if ( ! toolbar || ! session ) {
@@ -635,6 +738,13 @@ function commitHtml( doc, html ) {
 
 	box.querySelectorAll( '[contenteditable]' ).forEach( ( node ) => node.removeAttribute( 'contenteditable' ) );
 
+	// Chrome stamps `draggable="true"` onto inline elements inside a
+	// contenteditable so they can be dragged around. It is an editing artefact
+	// with no meaning in the saved markup, but it was being written straight
+	// into the `content` prop — so every colour or bold left another
+	// `draggable="true"` in the Content field for the user to read past.
+	box.querySelectorAll( '[draggable]' ).forEach( ( node ) => node.removeAttribute( 'draggable' ) );
+
 	return box.innerHTML.replace( /(<br\s*\/?>)+$/i, '' ).trim();
 }
 
@@ -726,6 +836,10 @@ function endEdit( commit = true ) {
 
 	session = null;
 	savedRange = null;
+	// A colour parked while the OS picker was open must not land on a heading
+	// the user has already left (or, worse, on the next one they select).
+	pendingColor = null;
+	clearColorWatch();
 	removeToolbar();
 
 	el.removeEventListener( 'keydown', onEditableKeyDown );
