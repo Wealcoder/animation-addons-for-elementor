@@ -34,8 +34,15 @@ final class Controls {
 	const TD = 'animation-addons-for-elementor';
 
 	// Native (non-AAE) element types allowed to show the Presets section.
-	// Empty for now — add e.g. 'e-button', 'e-heading' here only when you
-	// want that native widget to offer Apply Preset again.
+	//
+	// Empty — so this class currently injects nothing at all. Re-enabling a
+	// type takes TWO steps, and one without the other is silent:
+	//   1. add the type here, and
+	//   2. give it presets — either a remote entry for that element_type, or
+	//      a folder of JSONs at inc/AtomicWidgets/Presets/<element-type>/.
+	// Whitelisted with no presets = an empty "Presets" section on the widget;
+	// presets with no whitelist entry = files nothing can ever reach, which is
+	// what the five bundled samples had become before they were deleted.
 	const ALLOWED_NATIVE_TYPES = [];
 
 	public function register(): void {

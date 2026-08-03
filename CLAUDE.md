@@ -4701,17 +4701,49 @@ types as `define_default_children()` — same → `defaultMarker`, different →
 [Auto-preset](#auto-preset--giving-a-widget-a-default-preset-on-drop).
 
 ### To add presets to a NATIVE atomic widget (e-heading, e-button, …)
-No code needed — drop JSONs in a folder named after the element type:
-```
-inc/AtomicWidgets/Presets/<element-type>/*.json   ← folder name IS the key
-```
-- `Atomic\Presets\Controls` (inc/Atomic/Presets/) injects the "Presets"
-  section via `elementor/atomic-widgets/controls` for any native type that
-  has ≥1 JSON there; `class-atomic.php::get_widget_presets()` scans the
-  same folders and keys each preset by the folder name (no
-  `detect_primary_widget_type()` detection — native types aren't `e-aae-a-*`).
+
+**OFF by default, and it takes TWO steps — the folder alone does nothing.**
+`Atomic\Presets\Controls::ALLOWED_NATIVE_TYPES` is **empty**, so no native
+widget shows a "Presets" section at all today. Both halves are required:
+
+1. **Whitelist the type** — add it to `ALLOWED_NATIVE_TYPES`
+   (`inc/Atomic/Presets/Controls.php`). This is a PHP `const` in the FREE
+   plugin, so it cannot be extended from Pro or by a filter.
+2. **Give it presets** — a remote entry for that `element_type`, or JSONs at
+   `inc/AtomicWidgets/Presets/<element-type>/*.json` (**folder name IS the
+   type key** — no `detect_primary_widget_type()`, which would file every
+   native preset under `e-flexbox` since that is what their roots are).
+
+Neither half fails loudly. Whitelisted with no presets gives an empty
+section; presets with no whitelist entry are unreachable files. The whitelist
+replaced an older rule — "inject wherever ≥1 preset exists" — which surfaced
+"Presets" on widgets nobody had opted in (`e-paragraph`, `e-image`); older
+comments and the add-widget-presets skill still described that rule, and the
+five bundled sample presets it had been serving (`e-button/glow-lift`,
+`e-button/shine-pulse`, `e-heading/hero-title`, `e-flexbox/pill-button`,
+`e-flexbox/team-card`) sat unreachable until they were **deleted 2026-08-03**,
+along with the four `tests-wp-local/native-*preset*.spec.js` suites that drove
+the picker through them. `inc/AtomicWidgets/Presets/` no longer exists; the
+scan is guarded by `is_dir()` and `Local_Fallback` is contracted to work with
+no local files at all, so its absence is normal.
+
 - JSON format: same two formats as AAE-widget presets (Elementor native
   export with a flex wrapper preferred). Reload the editor — no build.
+- **Which plugin can own them.** Widget-OWNED presets work cross-plugin
+  already: `Local_Fallback` derives each preset directory from that widget's
+  own registry `file`, which is ABSOLUTE for a widget registered by Pro —
+  `pro/inc/AtomicV4/Widgets/StackCards/presets/` resolves today. The NATIVE
+  root does not: it is hardcoded to `WCF_ADDONS_PATH` with no filter (the
+  only filter in the whole preset pipeline is `aae_preset_cache_ttl`), so a
+  native-type preset cannot live in Pro without adding that seam.
+- **A local preset can never be PRO.** `Local_Fallback` hardcodes
+  `'pro' => false` on every entry it builds; only REMOTE entries carry their
+  own `pro` flag, which is what `PresetPickerControl` reads to badge the card
+  and send a click to the upgrade page. So "make this preset Pro-only" means
+  putting it on the remote server, not moving the file into the Pro plugin.
+- `{{AAE_ASSET_URL}}` in a preset JSON expands to the FREE plugin's
+  `inc/AtomicWidgets/` URL (`parse_preset_file()`), so a preset hosted
+  anywhere else must not use it for its own assets.
 - **Model shape:** native atomic widgets inside the JSON must keep the
   export shape `{ "elType": "widget", "widgetType": "e-heading", … }`
   (exports produce this automatically). Do NOT hand-convert to
@@ -4731,5 +4763,11 @@ inc/AtomicWidgets/Presets/<element-type>/*.json   ← folder name IS the key
   `[data-interaction-id="<id>"]`, so `selector:hover .child {…}` and
   top-level `@keyframes` both work. To target a child, give it a plain hook
   class in `classes` (e.g. `aae-team-overlay`) — hook classes survive style
-  id regeneration. NO .css files, no Preset_Styles entry. References:
-  `e-button/shine-pulse.json`, `e-flexbox/team-card.json`.
+  id regeneration. NO .css files, no Preset_Styles entry. (The two bundled
+  examples this used to point at, `e-button/shine-pulse.json` and
+  `e-flexbox/pill-button.json`, were deleted with the rest of the native
+  preset folder — read the props in `inc/Atomic/CustomCss/Schema.php`
+  instead.) Note the dependency this creates: a preset animated this way is
+  a static element wherever the **Custom CSS extension** is switched off,
+  with no error — which is why `Atomic\Bootstrap` keeps that extension in
+  the free plugin.

@@ -298,15 +298,85 @@ class WCF_Theme_Builder
 	 *
 	 * @return int[] Unique template post IDs, header/footer first.
 	 */
+	/**
+	 * Page templates that output neither a header nor a footer.
+	 *
+	 * Elementor's `canvas.php` calls `wp_head()` and `wp_footer()` directly and
+	 * never calls `get_header()` / `get_footer()` — read from
+	 * `elementor/modules/page-templates/templates/canvas.php`, not assumed.
+	 *
+	 * @var string[]
+	 */
+	const HEADLESS_PAGE_TEMPLATES = array('elementor_canvas');
+
+	/**
+	 * Will this request actually output our header/footer templates?
+	 *
+	 * The two answers are reached differently, and only one of them is a guess.
+	 *
+	 * **The header is provable.** `override_header()` is hooked to `get_header`,
+	 * so if `get_header()` is never called our header cannot render — and by the
+	 * time `wp_enqueue_scripts` runs, `get_header` has ALREADY fired in every
+	 * template that calls it: `get_header()` fires the action, loads header.php,
+	 * which calls `wp_head()`, which fires `wp_enqueue_scripts` at priority 1.
+	 * Our own `templates/header.php` follows the same order. So
+	 * `did_action( 'get_header' ) === 0` here is a fact about this request, not
+	 * an inference.
+	 *
+	 * **The footer is not**, because `get_footer()` fires long after enqueueing
+	 * and cannot be observed this early. So when nothing called `get_header()`
+	 * we only skip if the page template is one we KNOW outputs neither — which
+	 * is the case that matters, since a template that skips `get_header()`
+	 * almost always skips `get_footer()` too.
+	 *
+	 * Erring toward keeping the assets is deliberate: a wrong "skip" renders the
+	 * header with no CSS, which is a visibly broken page. A wrong "keep" only
+	 * wastes bytes, which is what happens today anyway.
+	 *
+	 * @return bool
+	 */
+	private function renders_theme_parts()
+	{
+		$renders = true;
+
+		if (0 === did_action('get_header')) {
+			$template = basename((string) get_page_template_slug());
+
+			if (in_array($template, self::HEADLESS_PAGE_TEMPLATES, true)) {
+				$renders = false;
+			}
+		}
+
+		/**
+		 * Override whether header/footer template assets are registered.
+		 *
+		 * For a custom theme whose template also skips get_header()/get_footer()
+		 * — we cannot detect those, so they keep the old behaviour and can opt
+		 * out here.
+		 *
+		 * @param bool $renders Whether the header/footer will be output.
+		 */
+		return (bool) apply_filters('aae_theme_builder_renders_theme_parts', $renders);
+	}
+
 	private function get_rendered_template_ids()
 	{
 		$template_ids = array();
 
-		foreach (array('header', 'footer') as $template_type) {
-			$template_id = $this->has_template($template_type);
+		// Header and footer are only worth registering if this request will
+		// actually OUTPUT them. On an Elementor Canvas page it never does, and
+		// registering them anyway ships the whole header+footer asset set to a
+		// page that renders neither. Measured on /aae-blank/ (canvas): ~20 dead
+		// files — aae-a-menu-js/css, aae-a-nav-js/css, and every
+		// local-<header id>-* / local-<footer id>-* / aae_utility_styles-* file
+		// for both templates.
+		if ($this->renders_theme_parts()) {
+			foreach (array('header', 'footer') as $template_type) {
+				$template_id = $this->has_template($template_type);
 
-			if ($template_id) {
-				$template_ids[] = $template_id;
+				if ($template_id) {
+					$template_ids[] = $template_id;
+				}
 			}
 		}
 
