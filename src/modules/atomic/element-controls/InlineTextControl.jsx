@@ -60,6 +60,20 @@ const TAG_ALIASES = { strike: 's', font: 'span' };
 
 const DEFAULT_COLOR = '#000000';
 
+// The buttons carry TEXT glyphs, not icon components, so MUI's size="tiny" only
+// shrinks the padding — the glyph keeps the inherited font size and holds the
+// box open. Pin both.
+const BTN_SX = {
+	width: 24,
+	height: 24,
+	minWidth: 24,
+	p: 0,
+	fontSize: '13px',
+	lineHeight: 1,
+};
+
+const SWATCH_SIZE = 18;
+
 const FORMAT_BUTTONS = [
 	{ cmd: 'bold', label: 'Bold', glyph: 'B', sx: { fontWeight: 700 } },
 	{ cmd: 'italic', label: 'Italic', glyph: 'I', sx: { fontStyle: 'italic' } },
@@ -180,6 +194,40 @@ function cleanHtml( html ) {
 	return colorsToHex( holder.innerHTML );
 }
 
+/**
+ * Turn tags the user TYPED into real markup.
+ *
+ * Typing `<` into a contenteditable inserts a literal character, so
+ * `<strong>x</strong>` serialises as `&lt;strong&gt;x&lt;/strong&gt;` and renders
+ * as visible angle brackets. This converts those back into actual elements so
+ * hand-written HTML behaves the way it did in the old Textarea.
+ *
+ * Only WHITELISTED tags are decoded, and that is the safety property: something
+ * unsupported like `<div>` stays visible as literal text, which TELLS the user
+ * it was not applied. Decoding everything and letting cleanHtml() unwrap it
+ * would silently delete what they typed.
+ *
+ * Runs on BLUR only, never per keystroke — rewriting innerHTML mid-typing to
+ * show the parsed result would throw the caret to the end on every character.
+ * Whatever survives here still goes through cleanHtml() and then wp_kses.
+ */
+// The attribute group is a TEMPERED match — "any character that does not begin
+// `&gt;`" — rather than a simple negated class. `[^&…]` was the obvious spelling
+// and it is wrong: it also rejects a legitimate `&amp;` inside an attribute, so
+// `<a href="/x?a=1&amp;b=2">` silently failed to decode while every other tag
+// worked.
+const TYPED_TAG_RE = /&lt;(\/?)(span|b|strong|i|em|u|s|del|sub|sup|mark|small|a|br)((?:\s(?:(?!&gt;).)*?)?)(\/?)&gt;/gi;
+
+function decodeTypedTags( html ) {
+	return html.replace( TYPED_TAG_RE, ( _full, slash, tag, attrs, selfClose ) => {
+		// Inside a text node the browser escapes `&` but leaves quotes alone, so
+		// only ampersands need undoing before this becomes real markup.
+		const cleanAttrs = attrs.replace( /&amp;/g, '&' );
+
+		return `<${ slash }${ tag }${ cleanAttrs }${ selfClose }>`;
+	} );
+}
+
 /** Remove any colour already set inside `root`, so re-colouring replaces. */
 function stripColorsWithin( root ) {
 	root.querySelectorAll( '[style*="color"], font[color]' ).forEach( ( el ) => {
@@ -250,24 +298,45 @@ export function InlineTextControl() {
 		} );
 	}, [ setValue ] );
 
-	/** Read the editable, clean it, and schedule a debounced write. */
-	const syncFromDom = useCallback( () => {
+	/**
+	 * Read the editable, clean it, and schedule a debounced write.
+	 *
+	 * @param {Object}  options
+	 * @param {boolean} options.settle Blur-time pass: additionally interpret
+	 *                                 typed tags, paint the parsed result back
+	 *                                 into the box, and commit immediately
+	 *                                 instead of after the debounce.
+	 */
+	const syncFromDom = useCallback( ( { settle = false } = {} ) => {
 		const el = editableRef.current;
 
 		if ( ! el ) {
 			return;
 		}
 
-		const html = cleanHtml( el.innerHTML );
+		const html = cleanHtml( settle ? decodeTypedTags( el.innerHTML ) : el.innerHTML );
 
-		// Record the CLEANED html as what we last saw. The live DOM may still
-		// hold the dirtier original, and that is fine — the two only have to
-		// agree well enough that the sync effect does not rewrite innerHTML and
-		// move the caret. It is reconciled on the next mount.
+		// Record the CLEANED html as what we last saw. Mid-typing the live DOM
+		// may still hold the dirtier original, and that is fine — the two only
+		// have to agree well enough that the sync effect does not rewrite
+		// innerHTML and move the caret.
 		lastHtml.current = html;
 
 		if ( commitTimer.current ) {
 			clearTimeout( commitTimer.current );
+			commitTimer.current = null;
+		}
+
+		if ( settle ) {
+			// Safe to repaint now: focus has left, so there is no caret to lose,
+			// and this is what makes a typed <strong> visibly become bold text
+			// rather than staying as angle brackets.
+			if ( html !== el.innerHTML ) {
+				el.innerHTML = html;
+			}
+
+			commit( html );
+			return;
 		}
 
 		commitTimer.current = setTimeout( () => commit( html ), COMMIT_DEBOUNCE_MS );
@@ -405,19 +474,24 @@ export function InlineTextControl() {
 		<Box>
 			<Stack direction="row" alignItems="center" gap={ 0.25 } sx={ { mb: 0.5, flexWrap: 'wrap' } }>
 				<Tooltip title="Clear formatting" placement="top">
-					<IconButton size="tiny" onMouseDown={ keepFocus } onClick={ clearFormatting }>—</IconButton>
+					<IconButton size="tiny" onMouseDown={ keepFocus } onClick={ clearFormatting } sx={ BTN_SX }>—</IconButton>
 				</Tooltip>
 
 				{ FORMAT_BUTTONS.map( ( { cmd, label, glyph, sx } ) => (
 					<Tooltip key={ cmd } title={ label } placement="top">
-						<IconButton size="tiny" onMouseDown={ keepFocus } onClick={ () => runCommand( cmd ) } sx={ sx }>
+						<IconButton
+							size="tiny"
+							onMouseDown={ keepFocus }
+							onClick={ () => runCommand( cmd ) }
+							sx={ { ...BTN_SX, ...sx } }
+						>
 							{ glyph }
 						</IconButton>
 					</Tooltip>
 				) ) }
 
 				<Tooltip title="Link" placement="top">
-					<IconButton size="tiny" onMouseDown={ keepFocus } onClick={ openLink }>🔗</IconButton>
+					<IconButton size="tiny" onMouseDown={ keepFocus } onClick={ openLink } sx={ BTN_SX }>🔗</IconButton>
 				</Tooltip>
 
 				<Tooltip title="Text colour" placement="top">
@@ -427,10 +501,10 @@ export function InlineTextControl() {
 					<Box
 						component="label"
 						sx={ {
-							width: 22,
-							height: 22,
+							width: SWATCH_SIZE,
+							height: SWATCH_SIZE,
 							ml: 0.25,
-							borderRadius: '4px',
+							borderRadius: '3px',
 							border: '1px solid',
 							borderColor: 'grey.300',
 							backgroundColor: color,
@@ -498,8 +572,10 @@ export function InlineTextControl() {
 				role="textbox"
 				aria-multiline="false"
 				data-placeholder={ placeholder?.content?.value ?? '' }
-				onInput={ syncFromDom }
-				onBlur={ syncFromDom }
+				// Wrapped, not passed by reference: React would hand the event
+				// in as the options object.
+				onInput={ () => syncFromDom() }
+				onBlur={ () => syncFromDom( { settle: true } ) }
 				onKeyUp={ saveSelection }
 				onMouseUp={ saveSelection }
 				onPaste={ ( event ) => {
@@ -507,7 +583,9 @@ export function InlineTextControl() {
 					// fonts, colours and classes from wherever it came from, and
 					// most of that is stripped on save anyway — pasting
 					// something that silently loses half its formatting is worse
-					// than pasting text.
+					// than pasting text. Pasted MARKUP is not lost either: it
+					// lands as literal text and decodeTypedTags() interprets it
+					// on blur, same as if it had been typed.
 					event.preventDefault();
 					const text = event.clipboardData?.getData( 'text/plain' ) ?? '';
 					document.execCommand( 'insertText', false, text );
