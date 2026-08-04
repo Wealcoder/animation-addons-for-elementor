@@ -1454,7 +1454,7 @@ final class Atomic
 
 			'aae-a-advanced-heading' => [
 				'label'        => 'Advanced Heading',
-				'description'  => 'Heading that accepts raw inline HTML (span, mark, b, i, a …) with your own classes — highlight and style any part of the text yourself.',
+				'description'  => 'Heading with rich inline text editing — bold, italic, underline, strikethrough, super/subscript and links, on any tag from h1 to span.',
 				'icon'         => 'eicon-t-letter',
 				'is_pro'       => false,
 				'is_extension' => false,
@@ -3484,6 +3484,14 @@ final class Atomic
 
 		add_action('elementor/widgets/register', [$this, 'register_widgets']);
 		add_action('elementor/elements/elements_registered', [$this, 'register_elements']);
+
+		// Advanced Heading's `content` prop changed shape (string → html-v3) on
+		// 2026-08-04. Registered UNCONDITIONALLY, not behind is_widget_active():
+		// the read path has to keep converting even while the widget is switched
+		// off, or turning it off and on again is enough to erase every heading
+		// on the site the next time a page is saved. See the class docblock.
+		require_once __DIR__ . '/Widgets/AdvancedHeading/class-aae-advanced-heading-migration.php';
+		\WCF_ADDONS\AtomicWidgets\Widgets\AdvancedHeading\AAE_Advanced_Heading_Migration::register();
 
 		// Panel grouping: AAE's atomic widgets otherwise inherit Elementor's
 		// generic "Atomic Elements" (v4-elements) category and all land in one

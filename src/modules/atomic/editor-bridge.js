@@ -133,7 +133,6 @@ import { startSlideSelectNav } from './editor-bridge/slide-select-nav';
 import { startSliderEditorPreview } from './editor-bridge/slider-editor-preview';
 import { startAutoPreset } from './editor-bridge/auto-preset';
 import { startFormGuards } from './editor-bridge/form-guards';
-import { startAdvancedHeadingInline } from './editor-bridge/advanced-heading-inline';
 
 function bootstrap() {
 	// `preview:loaded` fires on EVERY preview (re)load — switching documents,
@@ -161,9 +160,12 @@ function bootstrap() {
 	// (spec hard rules — warn, never block the save).
 	startFormGuards();
 
-	// Advanced Heading: click its text in the canvas to edit inline, with the
-	// same floating format toolbar core gives e-paragraph plus a colour field.
-	startAdvancedHeadingInline();
+	// NOTE — Advanced Heading used to install a hand-rolled contenteditable
+	// toolbar here (startAdvancedHeadingInline, deleted 2026-08-04). Its text is
+	// now an html-v3 prop edited through core's Inline_Editing_Control in the
+	// panel, so there is nothing to boot. Do not reinstate a canvas toolbar
+	// without reading the widget's class docblock first: anything that writes
+	// `class`/`style` into the content is stripped by wp_kses on save.
 }
 
 if (window.elementor && window.elementor.on) {
