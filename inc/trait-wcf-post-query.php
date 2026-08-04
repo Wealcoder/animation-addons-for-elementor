@@ -41,9 +41,41 @@ trait WCF_Post_Query_Trait {
 	}
 
 	/**
-	 * Get taxonomy terms for dropdown
+	 * Is this a context where a control panel is actually built?
+	 *
+	 * The editor page and its control-config ajax both run under is_admin();
+	 * edit mode is a belt-and-braces check for the main editor frame.
+	 *
+	 * @return bool
+	 */
+	protected function aae_is_editor_request() {
+		if ( is_admin() ) {
+			return true;
+		}
+
+		if ( ! class_exists( '\Elementor\Plugin' ) ) {
+			return false;
+		}
+
+		$elementor = \Elementor\Plugin::$instance;
+
+		return isset( $elementor->editor ) && $elementor->editor->is_edit_mode();
+	}
+
+	/**
+	 * Get taxonomy terms for a SELECT2 control's options.
+	 *
+	 * These options only matter where the panel is shown — the editor and its
+	 * control-config ajax. On a front-end visitor render the widget reads the
+	 * SAVED term selections, never this list, so fetching every term (and this
+	 * runs for BOTH category and tag, across seven post widgets, per control
+	 * registration) is pure waste there. Skip it off the editor.
 	 */
 	protected function get_taxonomy_terms( $taxonomy ) {
+		if ( ! $this->aae_is_editor_request() ) {
+			return [];
+		}
+
 		$terms = get_terms( [
 			'taxonomy'   => $taxonomy,
 			'hide_empty' => false,
