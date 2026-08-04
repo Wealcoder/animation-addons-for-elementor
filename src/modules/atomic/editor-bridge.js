@@ -133,6 +133,7 @@ import { startSlideSelectNav } from './editor-bridge/slide-select-nav';
 import { startSliderEditorPreview } from './editor-bridge/slider-editor-preview';
 import { startAutoPreset } from './editor-bridge/auto-preset';
 import { startFormGuards } from './editor-bridge/form-guards';
+import { startNavCompanionLifecycle } from './editor-bridge/nav-companion-lifecycle';
 
 function bootstrap() {
 	// `preview:loaded` fires on EVERY preview (re)load — switching documents,
@@ -159,6 +160,11 @@ function bootstrap() {
 	// Save-time warnings: form without a Submit button / nested forms
 	// (spec hard rules — warn, never block the save).
 	startFormGuards();
+
+	// Delete a Nav → its Mobile Nav companion goes with it. Must live HERE and
+	// not in the Nav's panel control: a panel control unmounts the moment the
+	// Nav is deleted, so its sweep can never run for that Nav.
+	startNavCompanionLifecycle();
 
 	// NOTE — Advanced Heading used to install a hand-rolled contenteditable
 	// toolbar here (startAdvancedHeadingInline, deleted 2026-08-04). Its text is

@@ -3493,6 +3493,14 @@ final class Atomic
 		require_once __DIR__ . '/Widgets/AdvancedHeading/class-aae-advanced-heading-migration.php';
 		\WCF_ADDONS\AtomicWidgets\Widgets\AdvancedHeading\AAE_Advanced_Heading_Migration::register();
 
+		// A Mobile Nav is a SIBLING of its Nav, so Elementor never cascade-deletes
+		// it. The editor sweeps are best-effort JS; this is the save-time belt that
+		// stops an orphan ever being written to the document. Registered
+		// unconditionally for the same reason as the migration above — the guard
+		// must hold even while the widget is switched off.
+		require_once __DIR__ . '/Widgets/Nav/class-aae-a-nav-companion-sweep.php';
+		\WCF_ADDONS\AtomicWidgets\Widgets\Nav\AAE_A_Nav_Companion_Sweep::register();
+
 		// Panel grouping: AAE's atomic widgets otherwise inherit Elementor's
 		// generic "Atomic Elements" (v4-elements) category and all land in one
 		// bucket. Note the base classes read the category from DIFFERENT hooks:
