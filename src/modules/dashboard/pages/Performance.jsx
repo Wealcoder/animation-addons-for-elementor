@@ -1,6 +1,8 @@
 import FeaturePanel from "@/components/animation-settings/FeaturePanel";
+import PerformanceWizard from "@/components/performance/PerformanceWizard";
 import { InfoToggle } from "@/components/shared/InfoToggle";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { __ } from "@wordpress/i18n";
 import { useState } from "react";
@@ -192,6 +194,12 @@ const Performance = ({ embedded = false }) => {
   const [active, setActive] = useState(null);
   const [introOpen, setIntroOpen] = useState(false);
 
+  // The guided setup. Offered only on a v4 site (the payload decides), and
+  // launched from the card below — see the wizard component.
+  const wizard = boot.wizard || {};
+  const [wizardOpen, setWizardOpen] = useState(false);
+  const [wizardDone, setWizardDone] = useState(!!wizard.done);
+
   // The payload is Pro's to supply. No schema means no Pro, and the panels
   // below simply don't render — there is nothing to configure.
   const schema = boot.schema || {};
@@ -247,6 +255,29 @@ const Performance = ({ embedded = false }) => {
     }
   };
 
+  /**
+   * Save a WHOLE settings object (the wizard builds one and hands it over),
+   * adopt the server's sanitised copy, and return it so the wizard can too.
+   */
+  const savePerfFull = async (nextAll) => {
+    if (!WCF_ADDONS_ADMIN?.nonce || !WCF_ADDONS_ADMIN?.ajaxurl) return null;
+    const response = await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded", Accept: "application/json" },
+      credentials: "same-origin",
+      body: new URLSearchParams({
+        action: "aae_save_performance_settings",
+        settings: JSON.stringify(nextAll),
+        nonce: WCF_ADDONS_ADMIN.nonce,
+      }),
+    });
+    const body = await response.json();
+    if (!body?.success) throw new Error(body?.data || "save failed");
+    setSettings(body.data.settings);
+    WCF_ADDONS_ADMIN.performance.settings = body.data.settings;
+    return body.data.settings;
+  };
+
   /*
     The intro is split into its icon and its paragraph rather than handed to
     InfoNote whole, because the two do not sit together: embedded there is no
@@ -297,6 +328,33 @@ const Performance = ({ embedded = false }) => {
     );
   }
 
+  // The wizard is offered only when the payload says the site is on v4. When
+  // open it takes over the screen; the tabs are still there underneath on exit.
+  const showWizardEntry = !!wizard.v4_active;
+
+  if (wizardOpen) {
+    return (
+      <div>
+        {title}
+        <div className="mt-6">
+          <PerformanceWizard
+            wizard={{ ...wizard, cache: boot.cache }}
+            perfSettings={settings}
+            onSavePerf={savePerfFull}
+            onDone={() => {
+              setWizardDone(true);
+              if (WCF_ADDONS_ADMIN?.performance?.wizard) {
+                WCF_ADDONS_ADMIN.performance.wizard.done = true;
+              }
+              setWizardOpen(false);
+            }}
+            onExit={() => setWizardOpen(false)}
+          />
+        </div>
+      </div>
+    );
+  }
+
   const groups = Object.entries(schema);
 
   // Fall back to the first group rather than trusting the stored key: the
@@ -331,6 +389,37 @@ const Performance = ({ embedded = false }) => {
         </div>
 
         {intro}
+
+        {showWizardEntry && (
+          <div
+            className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-[#E1E4EA] bg-[#FAFBFC] p-4 mt-4"
+            data-aae-perf-wizard-entry
+          >
+            <div className="flex-1 min-w-[240px]">
+              <p className="text-[13px] font-medium text-[var(--900,#181B25)]">
+                {wizardDone
+                  ? __("Performance setup", "animation-addons-for-elementor")
+                  : __("Set up performance in a few steps", "animation-addons-for-elementor")}
+              </p>
+              <p className="text-[12px] text-[var(--600,#525866)] mt-1">
+                {__(
+                  "A guided walk-through: turn off the legacy layer, silence the theme's assets, trim WordPress, and set up caching. Every change is reversible.",
+                  "animation-addons-for-elementor",
+                )}
+              </p>
+            </div>
+            <Button
+              className="rounded-[8px]"
+              variant={wizardDone ? "secondary" : "default"}
+              onClick={() => setWizardOpen(true)}
+              data-aae-perf-wizard-launch
+            >
+              {wizardDone
+                ? __("Re-run setup", "animation-addons-for-elementor")
+                : __("Start setup", "animation-addons-for-elementor")}
+            </Button>
+          </div>
+        )}
 
         <CacheAdvice cache={boot.cache} />
 
