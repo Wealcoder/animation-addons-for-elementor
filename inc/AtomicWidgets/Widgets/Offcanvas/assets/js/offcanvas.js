@@ -1058,7 +1058,11 @@ const initOffcanvasEditor = ( container ) => {
 				const pos = POS[ position ] || POS.left;
 				panel.style.removeProperty( 'display' );
 				panel.style.setProperty( 'position', 'fixed', 'important' );
-				panel.style.setProperty( 'z-index', '9999', 'important' );
+				// 10000, not 9999: Elementor's own `.elementor-element-overlay`
+				// (hover/selection layer) sits at 9999, so an equal value ties and
+				// the overlay of an element BEHIND the drawer wins on DOM order —
+				// it then paints through the panel and steals hover/selection.
+				panel.style.setProperty( 'z-index', '10000', 'important' );
 				panel.style.setProperty( 'visibility', 'visible', 'important' );
 				panel.style.setProperty( 'transform', 'none', 'important' );
 				Object.entries( pos ).forEach( ( [ k, v ] ) =>
@@ -1068,6 +1072,23 @@ const initOffcanvasEditor = ( container ) => {
 				EDITOR_PANEL_RESET.forEach( ( p ) => panel.style.removeProperty( p ) );
 				panel.style.removeProperty( 'transform' );
 				panel.style.setProperty( 'display', 'none', 'important' );
+			}
+		}
+
+		// Scrim BETWEEN the page and the drawer, exactly as on the frontend.
+		// Without it the editor shows the drawer floating over a live canvas: the
+		// page behind stays visible AND hoverable, so Elementor's own hover /
+		// selection outlines (z-index 9998-9999) bleed through and steal focus.
+		// z-index 9999 keeps it under the panel (10000) and over those overlays.
+		const scrim = container.querySelector( '[data-e-type="e-aae-a-offcanvas-overlay"]' );
+		if ( scrim ) {
+			if ( open ) {
+				[ [ 'position', 'fixed' ], [ 'inset', '0' ], [ 'z-index', '9999' ],
+				  [ 'opacity', '1' ], [ 'visibility', 'visible' ], [ 'pointer-events', 'auto' ] ]
+					.forEach( ( [ k, v ] ) => scrim.style.setProperty( k, v, 'important' ) );
+			} else {
+				[ 'position', 'inset', 'z-index', 'opacity', 'visibility', 'pointer-events' ]
+					.forEach( ( p ) => scrim.style.removeProperty( p ) );
 			}
 		}
 

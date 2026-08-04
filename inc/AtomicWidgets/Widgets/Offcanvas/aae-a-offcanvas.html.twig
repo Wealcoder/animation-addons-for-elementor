@@ -60,6 +60,31 @@
             visibility: hidden;
             pointer-events: none;
         }
+
+        /* Editor-only drop hint. `:has(> .elementor-element-edit-mode)` is the
+           edit-mode test — that class exists only in the canvas. */
+        [data-id="{{ id }}"] .aae-a-offcanvas-panel:has( > .elementor-element-edit-mode )::after {
+            /* Plain literal, NOT e('html_attr'): a <style> block is not HTML —
+               entities are never decoded there, so escaping would render the
+               text as "Drop&#x20;any&#x20;content&#x20;here". */
+            content: "Drop any content here";
+            display: block;
+            /* auto on the block axis centres it in the panel's free space. */
+            margin: auto 0;
+            padding: 28px 16px;
+            border: 1px dashed rgba(0, 0, 0, .25);
+            border-radius: 6px;
+            font-size: 13px;
+            line-height: 1.5;
+            text-align: center;
+            color: rgba(0, 0, 0, .5);
+            pointer-events: none;
+        }
+
+        /* Two or more children means real content was added — hint has done its job. */
+        [data-id="{{ id }}"] .aae-a-offcanvas-panel:has( > .elementor-element-edit-mode ~ .elementor-element-edit-mode )::after {
+            content: none;
+        }
     </style>
 
     {{ children_placeholder | raw }}
