@@ -29,12 +29,24 @@ class CodeSnippetFrontend {
 	private static $_instance = null;
 
 	/**
-	 * Active snippets cache
+	 * Loadable snippet_data for the location path, computed once per request.
+	 * null = not computed yet, so an empty result still memoises (an
+	 * array() default would re-run the whole walk on every location hook).
 	 *
 	 * @since 2.3.10
-	 * @var array
+	 * @var array|null
 	 */
-	private $active_snippets = array();
+	private $active_snippets = null;
+
+	/**
+	 * All active snippet POSTS, fetched once. Both the PHP path and the
+	 * location path filter from this in memory instead of each running its own
+	 * `posts_per_page => -1` query — the query was firing at least twice per
+	 * front-end request (the PHP path returned before the memo was set).
+	 *
+	 * @var \WP_Post[]|null
+	 */
+	private $all_active_posts = null;
 
 	/**
 	 * Constructor
@@ -69,13 +81,13 @@ class CodeSnippetFrontend {
 		$this->run_php_code_snippets();
 		add_action( 'wp_head', array( $this, 'execute_head_snippets' ), 1 );
 		add_action( 'wp_footer', array( $this, 'execute_footer_snippets' ), 999 );
+		// Registered ONCE. It used to be added to wp_body_open three times (a
+		// stray "fallback" that is not one — re-registering the same callback on
+		// the same hook cannot help a theme that never fires the hook, it only
+		// makes themes that DO fire it echo every body-start snippet 3×).
 		add_action( 'wp_body_open', array( $this, 'execute_body_start_snippets' ), 1 );
 		add_action( 'elementor/frontend/before_get_content', array( $this, 'execute_content_before_snippets' ) );
 		add_action( 'elementor/frontend/after_get_content', array( $this, 'execute_content_after_snippets' ) );
-
-		// Fallback hooks for themes that don't support wp_body_open.
-		add_action( 'wp_body_open', array( $this, 'execute_body_start_snippets' ), 1 );
-		add_action( 'wp_body_open', array( $this, 'execute_body_start_snippets' ), 1 );
 
 		// Content hooks.
 		add_action( 'loop_start', array( $this, 'execute_content_before_snippets' ) );
@@ -107,44 +119,26 @@ class CodeSnippetFrontend {
 	 * @return array
 	 */
 	private function get_active_snippets( $code_type = null ) {
-		if ( ! empty( $this->active_snippets ) ) {
+		// PHP path: the active posts whose code_type is php, filtered in memory
+		// from the shared fetch. Returns post objects, as run_php expects.
+		if ( 'php' === $code_type ) {
+			$php = array();
+			foreach ( $this->get_all_active_posts() as $snippet ) {
+				$data = $this->aae_get_code_snippet_settings( $snippet->ID );
+				if ( isset( $data['code_type'] ) && 'php' === $data['code_type'] ) {
+					$php[] = $snippet;
+				}
+			}
+			return $php;
+		}
+
+		// Location path: loadable snippet_data, memoised (null = not computed).
+		if ( null !== $this->active_snippets ) {
 			return $this->active_snippets;
 		}
 
-		$meta_query = array(
-			array(
-				'key'     => 'is_active',
-				'value'   => 'yes',
-				'compare' => '=',
-			),
-		);
-
-		if ( 'php' === $code_type ) {
-			$meta_query[] =
-				array(
-					'key'     => 'code_type',
-					'value'   => 'php',
-					'compare' => '=',
-				);
-		}
-
-		$args = array(
-			'post_type'      => 'wcf-code-snippet',
-			'post_status'    => 'publish',
-			'posts_per_page' => -1,
-			'meta_query'     => $meta_query, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-			'meta_key'       => 'priority', // phpcs:ignore
-			'order'          => 'DESC',
-		);
-
-		$snippets        = get_posts( $args );
 		$active_snippets = array();
-
-		if ( 'php' === $code_type ) {
-			return $snippets;
-		}
-
-		foreach ( $snippets as $snippet ) {
+		foreach ( $this->get_all_active_posts() as $snippet ) {
 			$snippet_data = $this->aae_get_code_snippet_settings( $snippet->ID );
 			if ( $this->should_load_snippet( $snippet_data ) ) {
 				$active_snippets[] = $snippet_data;
@@ -154,6 +148,37 @@ class CodeSnippetFrontend {
 		$this->active_snippets = $active_snippets;
 
 		return $active_snippets;
+	}
+
+	/**
+	 * Every published, active snippet post — one query per request, memoised.
+	 *
+	 * @since 2.3.10
+	 * @return \WP_Post[]
+	 */
+	private function get_all_active_posts() {
+		if ( null !== $this->all_active_posts ) {
+			return $this->all_active_posts;
+		}
+
+		$this->all_active_posts = get_posts(
+			array(
+				'post_type'      => 'wcf-code-snippet',
+				'post_status'    => 'publish',
+				'posts_per_page' => -1,
+				'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+					array(
+						'key'     => 'is_active',
+						'value'   => 'yes',
+						'compare' => '=',
+					),
+				),
+				'meta_key'       => 'priority', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+				'order'          => 'DESC',
+			)
+		);
+
+		return $this->all_active_posts;
 	}
 
 	/**
