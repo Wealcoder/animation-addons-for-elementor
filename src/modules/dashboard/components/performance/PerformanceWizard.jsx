@@ -84,6 +84,23 @@ const PerformanceWizard = ({ wizard, perfSettings, onSavePerf, onDone, onExit })
   const next = () => setI((n) => Math.min(n + 1, steps.length - 1));
   const back = () => setI((n) => Math.max(n - 1, 0));
 
+  // Why "on" can't stick when there is nothing to turn on: the switch flips
+  // back to off, and without this it looks broken rather than empty.
+  const NOTHING_TO_ENABLE = {
+    widgets: __(
+      "This site uses no v3 widgets, so there is nothing to switch on. If a page ever uses one, it comes back on by itself.",
+      "animation-addons-for-elementor",
+    ),
+    extensions: __(
+      "This site has no v3 extensions saved, so there is nothing to switch on.",
+      "animation-addons-for-elementor",
+    ),
+    global: __(
+      "Your Kit has no v3 chrome (preloader, cursor, …) to restore, so there is nothing to switch on.",
+      "animation-addons-for-elementor",
+    ),
+  };
+
   // The v3 toggles (Pro endpoint). Optimistic, reverts on failure.
   const toggleV3 = async (target, enabled) => {
     const key = { widgets: "widgets", extensions: "extensions", global: "global" }[target];
@@ -92,6 +109,17 @@ const PerformanceWizard = ({ wizard, perfSettings, onSavePerf, onDone, onExit })
     try {
       const data = await ajax("aae_wizard_toggle_v3", { target, enabled: enabled ? "1" : "0" });
       setV3((s) => ({ ...s, [key]: !!data.on }));
+
+      // Asked to turn it on, but the server reports it still off: there was
+      // nothing to enable (empty on this site). Explain, so the switch bouncing
+      // back reads as "nothing here" instead of a bug.
+      if (enabled && !data.on) {
+        toast(__("Nothing to turn on", "animation-addons-for-elementor"), {
+          position: "top-right",
+          duration: 6000,
+          description: NOTHING_TO_ENABLE[target],
+        });
+      }
     } catch (e) {
       setV3((s) => ({ ...s, [key]: !enabled })); // revert
       toast.error(__("Could not change that", "animation-addons-for-elementor"), {
