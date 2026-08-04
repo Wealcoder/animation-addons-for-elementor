@@ -1,9 +1,11 @@
 import FeaturePanel from "@/components/animation-settings/FeaturePanel";
+import InfoNote from "@/components/shared/InfoToggle";
+import ShowIntegrationsLibrary from "@/components/integrations/ShowIntegrationsLibrary";
 import Performance from "@/pages/Performance";
 import { Switch } from "@/components/ui/switch";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { __ } from "@wordpress/i18n";
 import { useState } from "react";
+import { RiSettings3Line } from "react-icons/ri";
 import { toast } from "sonner";
 
 /**
@@ -22,8 +24,8 @@ import { toast } from "sonner";
  *
  * Every panel is rendered by the generic FeaturePanel from the schema the
  * server ships, so there is no per-feature React here — adding a field to
- * Animation_Settings::schema() is enough. Tab order follows the old Site
- * Settings list users already know.
+ * Animation_Settings::schema() is enough. The left menu's order follows the
+ * old Site Settings list users already know.
  *
  * Popup is the odd one out and has no panel here on purpose: it already has a
  * full v4 implementation of its own (the AAE Popup builder — a template type
@@ -38,7 +40,24 @@ const SECTIONS = [
   { id: "scroll-indicator", schemaKey: "scroll_indicator", label: "Scroll Indicator" },
   { id: "popup", schemaKey: null, label: "Popup" },
   { id: "performance", schemaKey: null, label: "Performance" },
+  /*
+   * The GSAP Library screen, moved in from the Integrations page (its old
+   * `?tab=integrations` URL stays routable for bookmarks, same as
+   * Performance's). Pro feeds the whole section through the dashboard config
+   * filter, so with Pro absent there is no data to render and the tab is
+   * filtered out below rather than shown empty.
+   */
+  { id: "library", schemaKey: null, label: "Library" },
 ];
+
+const HAS_LIBRARY = !!(
+  typeof WCF_ADDONS_ADMIN !== "undefined" &&
+  WCF_ADDONS_ADMIN?.addons_config?.integrations?.library
+);
+
+const VISIBLE_SECTIONS = SECTIONS.filter(
+  (item) => item.id !== "library" || HAS_LIBRARY
+);
 
 const PopupNotice = () => (
   <div className="bg-background rounded-lg p-10 max-w-[560px]">
@@ -124,102 +143,129 @@ const AnimationSettings = () => {
 
   const legacyOn = !!settings.legacy_v3;
 
-  return (
-    <div>
-      <Tabs value={section} onValueChange={setSection}>
-        <div className="flex flex-wrap items-center gap-4 justify-between">
-          <h2 className="text-[20px] font-medium text-[var(--900,#181B25)]">
-            {__("General Settings", "animation-addons-for-elementor")}
-          </h2>
+  const active =
+    VISIBLE_SECTIONS.find((item) => item.id === section) || VISIBLE_SECTIONS[0];
 
-          <TabsList className="gap-1 h-11 flex-wrap">
-            {SECTIONS.map((item) => (
-              <TabsTrigger
-                key={item.id}
-                value={item.id}
-                className="data-[state=active]:bg-[#E1E4EA] bg-[#F5F7FA] text-[12px]"
-                sx={{ boxShadow: "none" }}
-              >
-                {__(item.label, "animation-addons-for-elementor")}
-              </TabsTrigger>
-            ))}
-          </TabsList>
+  return (
+    /*
+     * Sidebar layout (2026-08-04, design): the section nav is a LEFT menu in
+     * its own card, the active panel renders beside it. Below `lg` the menu
+     * card stacks on top and its items wrap as a horizontal pill row — a
+     * 240px column would eat most of a phone's width.
+     */
+    <div className="flex flex-col lg:flex-row items-start gap-6">
+      <aside className="bg-background rounded-lg p-3 w-full lg:w-[248px] lg:shrink-0">
+        <div className="flex items-center gap-2 px-3 pt-2 pb-3">
+          <RiSettings3Line size={18} className="text-[var(--900,#181B25)]" />
+          <h2 className="text-[16px] font-medium text-[var(--900,#181B25)]">
+            {__("Settings", "animation-addons-for-elementor")}
+          </h2>
         </div>
 
-        {SECTIONS.map((item) => (
-          <TabsContent key={item.id} value={item.id} className="mt-6">
-            {item.schemaKey && schema[item.schemaKey] ? (
-              <FeaturePanel
-                feature={item.schemaKey}
-                schema={schema[item.schemaKey]}
-                value={settings[item.schemaKey] || {}}
-                globals={globals}
-                hasPro={hasPro}
-                saving={saving}
-                onSave={save}
-              />
-            ) : item.id === "performance" ? (
-              /*
-               * The whole screen, embedded. It keeps its own state, its own
-               * schema (which comes from Pro through a filter, not from
-               * `animation_settings`) and its own save endpoint — sharing this
-               * page's would mean two sources of truth for one option.
-               */
-              <Performance embedded />
-            ) : (
-              <PopupNotice />
-            )}
-          </TabsContent>
-        ))}
-      </Tabs>
+        <nav className="flex flex-row flex-wrap lg:flex-col gap-1">
+          {VISIBLE_SECTIONS.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => setSection(item.id)}
+              aria-current={section === item.id ? "true" : undefined}
+              data-aae-settings-nav={item.id}
+              // bg-transparent is load-bearing on the inactive branch: the
+              // admin page's base styles paint <button> gray, which made every
+              // item look active.
+              className={`text-left rounded-lg border-0 px-3 py-2.5 text-[13px] transition-colors cursor-pointer ${
+                section === item.id
+                  ? "bg-[#F1F3F6] font-medium text-[var(--900,#181B25)]"
+                  : "bg-transparent text-[var(--600,#525866)] hover:bg-[#F5F7FA] hover:text-[var(--900,#181B25)]"
+              }`}
+            >
+              {__(item.label, "animation-addons-for-elementor")}
+            </button>
+          ))}
+        </nav>
+      </aside>
 
-      {/*
-        Legacy escape hatch. Kept outside the tabs because it governs all five
-        features at once, and outside the Preloader form because a switch this
-        consequential should take effect the moment it is flipped rather than
-        waiting on a Save the user may not press.
+      <div className="flex-1 min-w-0 w-full">
+        {active.schemaKey && schema[active.schemaKey] ? (
+          <FeaturePanel
+            feature={active.schemaKey}
+            schema={schema[active.schemaKey]}
+            value={settings[active.schemaKey] || {}}
+            globals={globals}
+            hasPro={hasPro}
+            saving={saving}
+            onSave={save}
+          />
+        ) : active.id === "performance" ? (
+          /*
+           * The whole screen, embedded. It keeps its own state, its own
+           * schema (which comes from Pro through a filter, not from
+           * `animation_settings`) and its own save endpoint — sharing this
+           * page's would mean two sources of truth for one option.
+           */
+          <Performance embedded />
+        ) : active.id === "library" ? (
+          // Same arrangement as Performance: own store slice (allLibrary
+          // through the app context), own save endpoint, own Save button.
+          <ShowIntegrationsLibrary embedded />
+        ) : (
+          <PopupNotice />
+        )}
 
-        Default is decided per site by detect_legacy_usage(): sites with v3
-        chrome already in their Kit keep the tabs, brand-new sites never see
-        them. This switch is how the many existing v3 users get them back if the
-        detection guessed wrong for them.
-      */}
-      <div
-        className="bg-background rounded-lg p-6 mt-6"
-        // Hidden on the Performance tab: that one governs how scripts are
-        // DELIVERED and has nothing to do with the v3 chrome surface, so
-        // leaving this sitting under it reads as if the switch applied there.
-        hidden={section === "performance"}
-      >
-        <div className="flex flex-row items-center justify-between gap-4">
-          <div>
-            <h3 className="text-[14px] font-medium text-[var(--900,#181B25)]">
-              {__(
+        {/*
+          Legacy escape hatch. Lives in the content column, below whichever
+          panel is open, because it governs all five features at once — and
+          outside the Preloader form because a switch this consequential
+          should take effect the moment it is flipped rather than waiting on
+          a Save the user may not press.
+
+          Default is decided per site by detect_legacy_usage(): sites with v3
+          chrome already in their Kit keep the tabs, brand-new sites never see
+          them. This switch is how the many existing v3 users get them back if
+          the detection guessed wrong for them.
+        */}
+        <div
+          className="bg-background rounded-lg p-6 mt-6"
+          // Hidden on the Performance section: that one governs how scripts
+          // are DELIVERED and has nothing to do with the v3 chrome surface, so
+          // leaving this sitting under it reads as if the switch applied there.
+          hidden={section === "performance"}
+        >
+          <div className="flex flex-row items-center justify-between gap-4">
+            <InfoNote
+              // flex-1 so the disclosed paragraphs get the row's width instead
+              // of wrapping into a column as narrow as the heading beside the
+              // switch.
+              className="flex-1 min-w-[260px]"
+              label={__(
                 "Legacy (v3) features",
                 "animation-addons-for-elementor",
               )}
-            </h3>
-            <p className="text-[12px] text-[var(--600,#525866)] mt-2 max-w-[640px]">
-              {__(
-                "Keeps the older AAE widgets in the Elementor widget panel, and the AAE Preloader, Cursor, Scroll to Top, Scroll Indicator and Popup tabs in Elementor → Site Settings.",
-                "animation-addons-for-elementor",
-              )}
-            </p>
-            <p className="text-[12px] text-[var(--600,#525866)] mt-2 max-w-[640px]">
-              {__(
-                "Turning this off only hides them. Pages that already use an older widget keep rendering exactly as before, and anything configured in those tabs keeps working — nothing is deleted or switched off.",
-                "animation-addons-for-elementor",
-              )}
-            </p>
-          </div>
+              labelClassName="text-[14px] font-medium text-[var(--900,#181B25)]"
+              testid="legacy_v3.help"
+            >
+              <p>
+                {__(
+                  "Keeps the older AAE widgets in the Elementor widget panel, and the AAE Preloader, Cursor, Scroll to Top, Scroll Indicator and Popup tabs in Elementor → Site Settings.",
+                  "animation-addons-for-elementor",
+                )}
+              </p>
+              <p>
+                {__(
+                  "Turning this off only hides them. Pages that already use an older widget keep rendering exactly as before, and anything configured in those tabs keeps working — nothing is deleted or switched off.",
+                  "animation-addons-for-elementor",
+                )}
+              </p>
+            </InfoNote>
 
-          <Switch
-            checked={legacyOn}
-            disabled={saving}
-            onCheckedChange={(next) => save({ legacy_v3: next })}
-            sx={{ marginTop: "0" }}
-            data-aae-legacy-toggle
-          />
+            <Switch
+              checked={legacyOn}
+              disabled={saving}
+              onCheckedChange={(next) => save({ legacy_v3: next })}
+              sx={{ marginTop: "0" }}
+              data-aae-legacy-toggle
+            />
+          </div>
         </div>
       </div>
     </div>

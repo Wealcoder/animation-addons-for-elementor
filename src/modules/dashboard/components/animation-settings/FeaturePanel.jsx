@@ -1,5 +1,6 @@
 import ColorField from "@/components/animation-settings/ColorField";
 import ConditionsField from "@/components/animation-settings/ConditionsField";
+import InfoNote, { InfoToggle } from "@/components/shared/InfoToggle";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -37,8 +38,12 @@ const FeaturePanel = ({
   hasPro,
   saving,
   onSave,
+  note = null,
 }) => {
   const [draft, setDraft] = useState(value);
+
+  // What `note` says about this panel, revealed from the ⓘ beside its title.
+  const [noteOpen, setNoteOpen] = useState(false);
 
   // Re-sync when the parent commits (save, or an external reset).
   useEffect(() => setDraft(value), [value]);
@@ -172,12 +177,9 @@ const FeaturePanel = ({
 
       return (
         <div className="mt-6" key={key}>
-          <p className="text-[13px] text-[var(--900,#181B25)]">{field.label}</p>
-          {field.help && (
-            <p className="text-[12px] text-[var(--600,#525866)] mt-1.5">
-              {field.help}
-            </p>
-          )}
+          <InfoNote label={field.label} testid={`${feature}.${key}.help`}>
+            {field.help}
+          </InfoNote>
 
           <div className="mt-3 rounded-md border border-[#E1E4EA] divide-y divide-[#E1E4EA]">
             {devices.map(([device, label]) => {
@@ -291,7 +293,29 @@ const FeaturePanel = ({
             {__("PRO", "animation-addons-for-elementor")}
           </Badge>
         )}
+        {note && (
+          <InfoToggle
+            open={noteOpen}
+            onToggle={setNoteOpen}
+            controls={`aae-note-${feature}`}
+            name={schema?.label || feature}
+            testid={`${feature}.note`}
+          />
+        )}
       </h3>
+
+      {/* w-0 min-w-full — see InfoToggle: the note must wrap to the panel's
+          width, not decide it. */}
+      {note && noteOpen && (
+        <div className="w-0 min-w-full">
+          <p
+            id={`aae-note-${feature}`}
+            className="text-[12px] text-[var(--600,#525866)] mt-2"
+          >
+            {note}
+          </p>
+        </div>
+      )}
 
       {locked && (
         <p className="text-[12px] text-[var(--600,#525866)] mt-2">

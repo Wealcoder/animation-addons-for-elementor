@@ -6,7 +6,7 @@ import {
   gsapExtensionFn,
   gsapGroupExtensionFn,
 } from "@/lib/extensionService";
-import { activeGroupLibraryFn, libraryFn } from "@/lib/libraryService";
+import { activeGroupLibraryFn, libraryConditionsFn, libraryFn } from "@/lib/libraryService";
 import {
   disableAllWidget,
   disableGeneralExtension,
@@ -321,6 +321,13 @@ const useMainContext = (state) => {
     [mainState.allLibrary]
   );
 
+  // Returns the next blob so the caller can save it in the same gesture —
+  // reading state right after the dispatch would return the stale copy.
+  const updateLibraryConditions = useCallback(
+    (data) => libraryConditionsFn(mainState.allLibrary, data, dispatch),
+    [mainState.allLibrary]
+  );
+
   const updateActiveGsapGroupExtension = useCallback(
     (data) => {
       gsapGroupExtensionFn(mainState.allExtensions, data, dispatch);
@@ -400,6 +407,7 @@ const useMainContext = (state) => {
     updateActiveGsapExtension,
     updateLibrary,
     updateActiveGroupLibrary,
+    updateLibraryConditions,
     updateActiveGsapGroupExtension,
     updateActiveGsapAllExtension,
     updateActiveFullExtension,
