@@ -4,6 +4,7 @@ import { disposeAll } from './editor-bridge/disposables';
 import { FEATURES } from './editor-bridge/features';
 import { registerResponsiveSection } from './responsive-section';
 import { registerAaeElementControls } from './element-controls';
+import { startNavMenuAutoSync } from './element-controls/NavItemsControl';
 import { registerMaskStyleSection } from './style-sections/mask';
 import { startCardBranding } from './widget-panel/card-branding';
 import regularAnimationSection from './extensions/regular-animation/config';
@@ -165,6 +166,11 @@ function bootstrap() {
 	// not in the Nav's panel control: a panel control unmounts the moment the
 	// Nav is deleted, so its sweep can never run for that Nav.
 	startNavCompanionLifecycle();
+
+	// Navs imported from a WordPress menu re-sync themselves on document open,
+	// so the "Update from WordPress" button is only needed for a deliberate
+	// reset. Structure only — it never overwrites a label you edited here.
+	startNavMenuAutoSync();
 
 	// NOTE — Advanced Heading used to install a hand-rolled contenteditable
 	// toolbar here (startAdvancedHeadingInline, deleted 2026-08-04). Its text is

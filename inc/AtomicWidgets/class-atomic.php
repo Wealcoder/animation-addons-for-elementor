@@ -3501,6 +3501,11 @@ final class Atomic
 		require_once __DIR__ . '/Widgets/Nav/class-aae-a-nav-companion-sweep.php';
 		\WCF_ADDONS\AtomicWidgets\Widgets\Nav\AAE_A_Nav_Companion_Sweep::register();
 
+		// Rewrites saved pages when a WP menu changes, so an imported Nav updates on
+		// the FRONTEND without anyone opening Elementor.
+		require_once __DIR__ . '/Widgets/Nav/class-aae-a-nav-menu-sync.php';
+		\WCF_ADDONS\AtomicWidgets\Widgets\Nav\AAE_A_Nav_Menu_Sync::register();
+
 		// Panel grouping: AAE's atomic widgets otherwise inherit Elementor's
 		// generic "Atomic Elements" (v4-elements) category and all land in one
 		// bucket. Note the base classes read the category from DIFFERENT hooks:
@@ -6149,7 +6154,7 @@ final class Atomic
 				$out[] = [
 					'id'    => (int) $menu->term_id,
 					'name'  => $menu->name,
-					'items' => $this->build_nav_menu_tree(is_array($items) ? $items : []),
+					'items' => self::build_nav_menu_tree(is_array($items) ? $items : []),
 				];
 			}
 		}
@@ -6165,7 +6170,7 @@ final class Atomic
 	 * @param array $items Output of wp_get_nav_menu_items().
 	 * @return array Nested nodes: [ [ 'title', 'url', 'target', 'children' ], ... ].
 	 */
-	private function build_nav_menu_tree(array $items): array
+	public static function build_nav_menu_tree(array $items): array
 	{
 		$by_parent = [];
 		foreach ($items as $item) {

@@ -590,8 +590,12 @@ body.aae-mobile-nav-scroll-lock {
 	width: 100%;
 	max-width: 100%;
 	position: relative !important;
-	height: 100%;
+	/* CONTENT height. `100%` stretched this to fill the drawer's menu-area, and
+	 * the white drill panel filled it — the empty block under short submenus.
+	 * Scrolling is safe: menu-area is already `overflow-y: auto`. */
+	height: auto;
 	min-height: 0;
+	/* Must clip — this is the box the drill panel slides in from. */
 	overflow-x: hidden !important;
 	overflow-y: hidden !important;
 
@@ -654,13 +658,19 @@ body.aae-mobile-nav-scroll-lock {
 	/* Runtime wrapper owns viewport geometry; the authored Atomic dropdown
 	 * remains an independently styleable child and needs only mount resets. */
 	.aae-mobile-drill-panel {
-		position: absolute !important;
-		inset: 0 !important;
+		/* IN FLOW + content-height so the drawer hugs the submenu (was absolute /
+		 * inset:0 / height:100%, which filled the nav however few items it held).
+		 * Safe because only one panel is un-hidden at a time — enforced by the
+		 * explicit `[hidden]` rule below, not the generic one above. Stays
+		 * relative in both states or the slide jumps mid-transition. */
+		position: relative !important;
+		inset: auto !important;
 		z-index: 5;
 		display: block !important;
 		box-sizing: border-box;
 		width: 100% !important;
-		height: 100% !important;
+		height: auto !important;
+		/* Inert at content height; menu-area owns scrolling for tall submenus. */
 		overflow-y: auto !important;
 		overflow-x: hidden !important;
 		visibility: hidden !important;
@@ -673,6 +683,13 @@ body.aae-mobile-nav-scroll-lock {
 			transform 280ms cubic-bezier(0.4, 0, 0.2, 1),
 			opacity 180ms ease,
 			visibility 0s linear 280ms !important;
+	}
+
+	/* A closed panel must leave the FLOW. Load-bearing since the panel became
+	 * relative: `display: block !important` above out-ranks the generic
+	 * `[hidden]` rule, so a stale panel padded the drawer by its full height. */
+	.aae-mobile-drill-panel[hidden] {
+		display: none !important;
 	}
 
 	.aae-mobile-drill-panel.is-active {
@@ -713,8 +730,13 @@ body.aae-mobile-nav-scroll-lock {
 		box-sizing: border-box !important;
 	}
 
+	/* Inside a submenu the root items leave the FLOW, not just the paint.
+	 * `visibility: hidden` kept their full height reserved, so even with the
+	 * panel shrunk to its content the drawer stayed as tall as the root menu —
+	 * the third contributor to the empty space, alongside the nav's old
+	 * `height: 100%` and the panel's `height: 100%`. */
 	&[data-drill-depth]:not([data-drill-depth="0"]) > .aae-a-nav-item {
-		visibility: hidden;
+		display: none !important;
 		pointer-events: none;
 	}
 

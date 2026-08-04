@@ -46,13 +46,9 @@ function isEditorMobileMode( breakpoint ) {
 	return widthMatches;
 }
 
-/* Find the Nav a companion drives.
- *
- * `source_nav_id` is written by the editor reconciler, so it can be empty on a
- * companion that was saved before the reconciler stamped it (or after a
- * duplicate). Falling back to "the only Nav on the page" recovers the
- * overwhelmingly common single-menu case instead of silently doing nothing;
- * with two or more Navs there is no safe guess, so we make none. */
+/* Find the Nav a companion drives. `source_nav_id` can be empty (saved before
+ * the reconciler stamped it), so fall back to the page's only Nav — with two or
+ * more there is no safe guess, so make none. */
 function navForCompanion( companion ) {
 	const sourceId = companion.dataset.sourceNavId;
 
@@ -66,19 +62,10 @@ function navForCompanion( companion ) {
 	return 1 === all.length ? all[ 0 ] : null;
 }
 
-/* Read one mobile setting, PREFERRING the Nav's own attribute.
- *
- * WHY THE PREFERENCE ORDER MATTERS. The companion's `enabled` / `breakpoint` /
- * `position` / … props are a MIRROR of the Nav's, written by a reconciler in
- * NavItemsControl.jsx that only runs while the Nav is SELECTED. Enable the
- * mobile menu and save within ~200ms and the mirror never converges: the
- * companion renders `data-enabled="false"`, this handler early-returns, and the
- * desktop menu is left visible at mobile width. That is the reported
- * "sometimes works, sometimes not".
- *
- * The Nav's own `data-mobile-*` attributes are rendered from its own props, so
- * they are by definition what the user set and cannot be stale. The companion's
- * copies stay as the fallback for pages saved before the Nav carried them. */
+/* Read one mobile setting, PREFERRING the Nav's own attribute. The companion's
+ * copies are a mirror written only while the Nav is selected, so they can be
+ * stale — that is the "sometimes works, sometimes not" bug. Companion values
+ * remain the fallback for pages saved before the Nav carried these. */
 function mobileCfg( companion, nav, navKey, companionKey, fallback ) {
 	const fromNav = nav?.dataset?.[ navKey ];
 
@@ -1104,10 +1091,8 @@ register( {
 			initEditorMobilePreview( companion );
 			return;
 		}
-		/* Resolve the Nav BEFORE the enabled check — the Nav is where the
-		 * authoritative config lives, so we cannot decide whether the mobile
-		 * menu is on until we have found it. (This ordering is the fix: the old
-		 * code bailed on the companion's possibly-stale mirror first.) */
+		/* Nav first: it holds the authoritative config, so the enabled check
+		 * below cannot run before it. The old code bailed on the stale mirror. */
 		const nav = navForCompanion( companion );
 		if ( ! nav ) return;
 

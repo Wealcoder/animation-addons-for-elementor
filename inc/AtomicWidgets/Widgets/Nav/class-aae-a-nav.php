@@ -80,6 +80,15 @@ class AAE_A_Nav extends Atomic_Element_Base {
 			 * Binds this nav to that WP menu so the panel offers "Update from
 			 * WordPress" (id-based smart sync) instead of a duplicate import. */
 			'imported_menu_id' => String_Prop_Type::make()->default( '' ),
+			/* Re-sync this nav from its linked WP menu on every editor open, so
+			 * "Update from WordPress" is only needed for a deliberate reset.
+			 * Structure only — auto-sync adds and removes items but never
+			 * overwrites a label or link edited here (see syncMenuLevel's
+			 * structureOnly path in NavItemsControl.jsx).
+			 * Defaults to FALSE and is switched on at import time instead: a page
+			 * imported before this existed must not change behaviour by itself
+			 * the next time someone opens it. */
+			'menu_autosync' => Boolean_Prop_Type::make()->default( false ),
 			/* Desktop dropdown indicator icon. nav.js inlines this SVG next to the
 			 * label of every item that has a dropdown (see injectDropdownIcons). */
 			'show_dropdown_icon' => Boolean_Prop_Type::make()->default( true ),
@@ -222,6 +231,8 @@ class AAE_A_Nav extends Atomic_Element_Base {
 				->set_label( __( 'Menu Items', 'animation-addons-for-elementor' ) )
 				->set_id( 'menu_items' )
 				->set_items( [
+					Switch_Control::bind_to( 'menu_autosync' )
+						->set_label( __( 'Auto-sync from WordPress', 'animation-addons-for-elementor' ) ),
 					AAE_A_Nav_Items_Control::make()
 						->set_label( __( 'Items', 'animation-addons-for-elementor' ) )
 						->set_meta( [ 'layout' => 'custom' ] ),

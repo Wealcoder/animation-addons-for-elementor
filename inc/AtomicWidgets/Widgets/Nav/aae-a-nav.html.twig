@@ -11,20 +11,10 @@
     {# Desktop dropdown-indicator icon: nav.js fetches this SVG and inlines it
        next to each has-dropdown item's label (see injectDropdownIcons). #}
     data-show-dropdown-icon="{{ settings.show_dropdown_icon is defined and not settings.show_dropdown_icon ? 'false' : 'true' }}"
-    {# Mobile config, mirrored onto the Nav itself so the runtime never has to
-       trust the companion's copy.
-
-       The companion's own `enabled` / `breakpoint` / … props are written by an
-       editor-side reconciler that only runs WHILE THE NAV IS SELECTED. Toggle
-       "Enable Mobile Menu" and save quickly and that mirror never converges, so
-       the companion renders `data-enabled="false"` and nav.js early-returns —
-       leaving the desktop menu sitting there at mobile width. That is the
-       "sometimes works, sometimes not" report.
-
-       These attributes come straight from the Nav's own props, which are by
-       definition what the user set, so they cannot be stale. nav.js prefers
-       them and falls back to the companion's copies for pages saved before
-       this existed. The companion props are untouched — back-compat. #}
+    {# Mobile config from the Nav's OWN props, so the runtime never depends on
+       the companion's mirror — which a selection-scoped reconciler writes and
+       can leave stale, the "sometimes works, sometimes not" bug. nav.js prefers
+       these and falls back to the companion's copies for older pages. #}
     data-mobile-enabled="{{ settings.mobile_enabled is defined and settings.mobile_enabled ? 'true' : 'false' }}"
     data-mobile-breakpoint="{{ settings.mobile_breakpoint | default('767') | e('html_attr') }}"
     data-mobile-position="{{ settings.mobile_position | default('right') | e('html_attr') }}"
