@@ -298,6 +298,14 @@ final class Assets
 				'mask_shapes' => class_exists( '\WCF_ADDONS\Atomic\Mask\Shapes' )
 					? \WCF_ADDONS\Atomic\Mask\Shapes::all()
 					: [],
+
+				// Read by editor-bridge/auto-preset.js's inline 'e-aae-a-btn' rule —
+				// the Button widget's default icon child can't carry a real local
+				// Style (define_default_children()'s hydration path drops any
+				// 'styles' key), so the watcher re-specifies this same URL when it
+				// gives the icon its default, Style-tab-editable Size right after
+				// drop. Must match Widgets/Btn/class-aae-a-btn.php's own literal.
+				'btn_default_icon_url' => WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/Btn/assets/icons/add-file.svg',
 			]
 		);
 

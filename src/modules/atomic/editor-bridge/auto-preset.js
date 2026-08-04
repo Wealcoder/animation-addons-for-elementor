@@ -42,8 +42,72 @@ import { applyPresetModel, ensurePresetsLoaded, getCachedPresetsForType } from '
  *                   — see applyAutoSettings. (An earlier attempt wrote a bare
  *                   { desktop: <n> }; Elementor rejected it as invalid_value,
  *                   corrupting the settings so publish threw.)
+ *   inlineModel     OPTIONAL alternative to presetId: (target) => model. Use
+ *                   when there's nothing to fetch — the model is built on the
+ *                   spot instead of coming from the remote/local preset
+ *                   registry. This is the only way to give a DEFAULT CHILD a
+ *                   real per-instance local Style: Elementor's own
+ *                   default-children hydration (atomic-widgets-editor.js's
+ *                   buildElement()) keeps only elType/widgetType/settings/
+ *                   elements/isLocked/editor_settings/meta and silently drops
+ *                   any 'styles' key, so a style baked into
+ *                   define_default_children() can never survive the drop.
+ *                   Applying it here instead — same applyPresetModel() engine,
+ *                   just skipping the fetch — makes it a genuine local class
+ *                   the Style tab shows and the user can edit, not a shared
+ *                   utility class that has to out-cascade the target widget's
+ *                   own base style.
  */
 const AUTO_PRESETS = {
+  // The default icon can't get its 30px-vs-65px sizing from
+  // define_default_children() (see inlineModel's doc above), and a shared
+  // utility class loses the cascade tie against Atomic_Svg's own 65px base
+  // style once the editor live-recompiles that base style into the canvas
+  // (same specificity, later in document order — the same class of bug as
+  // the theme-builder editor-CSS gotcha elsewhere in this codebase). A real
+  // per-instance local Style always wins that tie AND shows as an editable
+  // Size value.
+  'e-aae-a-btn': {
+    targetType: 'e-svg',
+    inlineModel: () => {
+      const iconUrl = window.aaeAtomicBridge?.btn_default_icon_url || '';
+      const styleId = `e-btnicon-${Math.random().toString(36).slice(2, 8)}`;
+      return {
+        elType: 'widget',
+        widgetType: 'e-svg',
+        isInner: false,
+        settings: {
+          classes: { $$type: 'classes', value: [styleId] },
+          svg: {
+            $$type: 'svg-src',
+            value: {
+              id: null,
+              url: { $$type: 'url', value: iconUrl },
+            },
+          },
+        },
+        elements: [],
+        styles: {
+          [styleId]: {
+            id: styleId,
+            label: 'local',
+            type: 'class',
+            variants: [
+              {
+                meta: { breakpoint: 'desktop', state: null },
+                props: {
+                  width: { $$type: 'size', value: { size: 25, unit: 'px' } },
+                  height: { $$type: 'size', value: { size: 25, unit: 'px' } },
+                },
+                custom_css: null,
+              },
+            ],
+          },
+        },
+      };
+    },
+  },
+
   'e-aae-a-loop-grid-slider': {
     targetType: 'e-aae-a-loop-slide-item',
     presetId: 'bold-overlay-zoom',
@@ -228,8 +292,10 @@ function maybeAutoApply() {
     // eager global. Kick the fetch off immediately, in parallel with the
     // target poll below, so it's very likely already resolved by the time the
     // target appears; getCachedPresetsForType() is a plain synchronous read
-    // once ensurePresetsLoaded's promise settles.
-    const presetsReady = ensurePresetsLoaded(presetType);
+    // once ensurePresetsLoaded's promise settles. An inlineModel rule has
+    // nothing to fetch (and, for a native type like 'e-svg', nothing TO
+    // fetch — see inlineModel's doc), so skip the request entirely.
+    const presetsReady = rule.inlineModel ? null : ensurePresetsLoaded(presetType);
 
     // A descendant target (track → slide item → post image/title) is seeded
     // asynchronously after create, so poll briefly for it. A self-target is
@@ -256,6 +322,33 @@ function maybeAutoApply() {
         return;
       }
 
+      const finishApply = (model, meta) => {
+        if (!model) {
+          return;
+        }
+        handled.add(container.id);
+
+        // Seed settings (correct aae-rj shape) BEFORE the preset apply below
+        // (which re-selects a new element). Best-effort — never blocks the
+        // preset. Skipped for a self-target: applyPresetModel replaces that
+        // very element, so anything written here is discarded with it — the
+        // preset model carries its own root settings instead.
+        if (rule.settings && rule.targetType) {
+          applyAutoSettings(container, rule.settings);
+        }
+
+        applyPresetModel(model, target.id, presetType, meta);
+      };
+
+      // An inlineModel rule has nothing to wait on — build and apply now.
+      if (rule.inlineModel) {
+        finishApply(rule.inlineModel(target), {
+          title: 'Default style',
+          subtitle: 'Applied default size',
+        });
+        return;
+      }
+
       // Wait for the preset fetch (almost always already settled by now —
       // it started before the poll loop) before deciding whether to apply.
       presetsReady.then(() => {
@@ -271,18 +364,7 @@ function maybeAutoApply() {
           return;
         }
 
-        handled.add(container.id);
-
-        // Seed settings (correct aae-rj shape) BEFORE the preset apply below
-        // (which re-selects a new element). Best-effort — never blocks the
-        // preset. Skipped for a self-target: applyPresetModel replaces that
-        // very element, so anything written here is discarded with it — the
-        // preset model carries its own root settings instead.
-        if (rule.settings && rule.targetType) {
-          applyAutoSettings(container, rule.settings);
-        }
-
-        applyPresetModel(preset.model, target.id, presetType, {
+        finishApply(preset.model, {
           title: 'Default preset',
           subtitle: `Applied "${preset.name}"`,
         });

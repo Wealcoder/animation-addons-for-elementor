@@ -17,6 +17,12 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Transition_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Selection_Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Key_Value_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Background_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Dimensions_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Box_Shadow_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Shadow_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Svg_Src_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Url_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Select_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Switch_Control;
@@ -143,15 +149,25 @@ class AAE_A_Btn extends Atomic_Element_Base
 	protected function define_base_styles(): array
 	{
 		$button_styles = [
-			'width'         => Size_Prop_Type::generate(['size' => null, 'unit' => 'auto']),
-			'padding'       => Size_Prop_Type::generate(['size' => 10, 'unit' => 'px']),
-			'overflow'      => String_Prop_Type::generate('hidden'),
-			'position'      => String_Prop_Type::generate('relative'),
-			'z-index'       => Number_Prop_Type::generate(10),
-			'color'         => Color_Prop_Type::generate('#000000'),
+			'width'    => Size_Prop_Type::generate(['size' => null, 'unit' => 'auto']),
+			'overflow' => String_Prop_Type::generate('hidden'),
+			'position' => String_Prop_Type::generate('relative'),
+			'z-index'  => Number_Prop_Type::generate(10),
 
-			'border-radius' => Size_Prop_Type::generate(['size' => 4, 'unit' => 'px']),
-			'border-width'  => Size_Prop_Type::generate(['size' => 1, 'unit' => 'px']),
+			'background' => Background_Prop_Type::generate([
+				'color' => Color_Prop_Type::generate('#488aec'),
+			]),
+			'color' => Color_Prop_Type::generate('#ffffff'),
+
+			'padding' => Dimensions_Prop_Type::generate([
+				'block-start'  => Size_Prop_Type::generate(['size' => 12, 'unit' => 'px']),
+				'inline-end'   => Size_Prop_Type::generate(['size' => 24, 'unit' => 'px']),
+				'block-end'    => Size_Prop_Type::generate(['size' => 12, 'unit' => 'px']),
+				'inline-start' => Size_Prop_Type::generate(['size' => 24, 'unit' => 'px']),
+			]),
+
+			'border-radius' => Size_Prop_Type::generate(['size' => 8, 'unit' => 'px']),
+			'border-width'  => Size_Prop_Type::generate(['size' => 0, 'unit' => 'px']),
 			'border-color'  => Color_Prop_Type::generate('#000000'),
 			'border-style'  => String_Prop_Type::generate('solid'),
 
@@ -162,7 +178,7 @@ class AAE_A_Btn extends Atomic_Element_Base
 						'value' => String_Prop_Type::generate('all'),
 					]),
 					'size' => Size_Prop_Type::generate([
-						'size' => 700,
+						'size' => 600,
 						'unit' => 'ms',
 					]),
 				]),
@@ -170,25 +186,91 @@ class AAE_A_Btn extends Atomic_Element_Base
 
 			'display'         => String_Prop_Type::generate('inline-flex'),
 			'flex-direction'  => String_Prop_Type::generate('row'),
-			'gap'             => Size_Prop_Type::generate(['size' => 8, 'unit' => 'px']),
+			'gap'             => Size_Prop_Type::generate(['size' => 12, 'unit' => 'px']),
 			'align-items'     => String_Prop_Type::generate('center'),
+
+			'font-size'      => Size_Prop_Type::generate(['size' => 12, 'unit' => 'px']),
+			'line-height'    => Size_Prop_Type::generate(['size' => 16, 'unit' => 'px']),
+			'font-weight'    => String_Prop_Type::generate('700'),
+			'text-align'     => String_Prop_Type::generate('center'),
+			'text-transform' => String_Prop_Type::generate('uppercase'),
+
+			// Soft blue glow — mirrors the reference design's resting box-shadow.
+			'box-shadow' => Box_Shadow_Prop_Type::generate([
+				Shadow_Prop_Type::generate([
+					'hOffset' => Size_Prop_Type::generate(['size' => 0, 'unit' => 'px']),
+					'vOffset' => Size_Prop_Type::generate(['size' => 4, 'unit' => 'px']),
+					'blur'    => Size_Prop_Type::generate(['size' => 6, 'unit' => 'px']),
+					'spread'  => Size_Prop_Type::generate(['size' => -1, 'unit' => 'px']),
+					'color'   => Color_Prop_Type::generate('#488aec31'),
+				]),
+				Shadow_Prop_Type::generate([
+					'hOffset' => Size_Prop_Type::generate(['size' => 0, 'unit' => 'px']),
+					'vOffset' => Size_Prop_Type::generate(['size' => 2, 'unit' => 'px']),
+					'blur'    => Size_Prop_Type::generate(['size' => 4, 'unit' => 'px']),
+					'spread'  => Size_Prop_Type::generate(['size' => -1, 'unit' => 'px']),
+					'color'   => Color_Prop_Type::generate('#488aec17'),
+				]),
+			]),
 		];
 
+		// Hover lifts the glow — same two-layer shadow, larger offset/blur.
 		$button_hover_styles = [
-			'color' => Color_Prop_Type::generate('#ffffff'),
+			'box-shadow' => Box_Shadow_Prop_Type::generate([
+				Shadow_Prop_Type::generate([
+					'hOffset' => Size_Prop_Type::generate(['size' => 0, 'unit' => 'px']),
+					'vOffset' => Size_Prop_Type::generate(['size' => 10, 'unit' => 'px']),
+					'blur'    => Size_Prop_Type::generate(['size' => 15, 'unit' => 'px']),
+					'spread'  => Size_Prop_Type::generate(['size' => -3, 'unit' => 'px']),
+					'color'   => Color_Prop_Type::generate('#488aec4f'),
+				]),
+				Shadow_Prop_Type::generate([
+					'hOffset' => Size_Prop_Type::generate(['size' => 0, 'unit' => 'px']),
+					'vOffset' => Size_Prop_Type::generate(['size' => 4, 'unit' => 'px']),
+					'blur'    => Size_Prop_Type::generate(['size' => 6, 'unit' => 'px']),
+					'spread'  => Size_Prop_Type::generate(['size' => -2, 'unit' => 'px']),
+					'color'   => Color_Prop_Type::generate('#488aec17'),
+				]),
+			]),
+		];
+
+		// Pressed / keyboard-focus — drop the glow, dim slightly.
+		$button_pressed_styles = [
+			'opacity'    => Size_Prop_Type::generate(['size' => 85, 'unit' => '%']),
+			'box-shadow' => Box_Shadow_Prop_Type::generate([]),
 		];
 
 		return [
 			'base' => Style_Definition::make()
 				->add_variant(Style_Variant::make()->add_props($button_styles))
-				// ->add_variant(Style_Variant::make()->set_state(Style_States::HOVER)->add_props($button_hover_styles)),
+				->add_variant(Style_Variant::make()->set_state(Style_States::HOVER)->add_props($button_hover_styles))
+				->add_variant(Style_Variant::make()->set_state(Style_States::ACTIVE)->add_props($button_pressed_styles))
+				->add_variant(Style_Variant::make()->set_state(Style_States::FOCUS)->add_props($button_pressed_styles)),
 		];
 	}
 
 	protected function define_default_children()
 	{
-		// Paragraph first so the label sits before the icon in flex order.
+		// Icon first, then label — matches the reference design's flex order.
 		return [
+			Atomic_Svg::generate()
+				->settings([
+					// Momentary fallback only — editor-bridge/auto-preset.js's
+					// inline 'e-aae-a-btn' rule replaces this element within ~1s
+					// of drop with an identical one carrying a REAL per-instance
+					// local Style (25px, editable from the Style tab), because
+					// Elementor's default-children hydration drops any 'styles'
+					// key this class alone could ever attach. aae-a-svg-25 just
+					// keeps that brief pre-upgrade window (and any path that
+					// creates this element without the editor JS) close to the
+					// final size.
+					'classes' => Classes_Prop_Type::generate(['aae-a-svg-25']),
+					'svg'     => Svg_Src_Prop_Type::generate([
+						'id'  => null,
+						'url' => Url_Prop_Type::generate(WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/Btn/assets/icons/add-file.svg'),
+					]),
+				])
+				->build(),
 			Atomic_Paragraph::generate()
 				->settings([
 					'paragraph' => Html_V3_Prop_Type::generate([
@@ -198,7 +280,6 @@ class AAE_A_Btn extends Atomic_Element_Base
 					'tag' => String_Prop_Type::generate('span'),
 				])
 				->build(),
-			Atomic_Svg::generate()->build(),
 		];
 	}
 
