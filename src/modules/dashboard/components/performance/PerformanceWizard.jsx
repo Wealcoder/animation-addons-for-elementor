@@ -32,8 +32,8 @@ const ajax = async (action, body) => {
 };
 
 /** A labelled toggle row with an optional description. */
-const ToggleRow = ({ label, description, checked, disabled, onChange, danger }) => (
-  <div className="flex items-start justify-between gap-4 py-3">
+const ToggleRow = ({ id, label, description, checked, disabled, onChange, danger }) => (
+  <div className="flex items-start justify-between gap-4 py-3" data-aae-wizard-toggle={id}>
     <div className="flex-1 min-w-0">
       <p className="text-[13px] font-medium text-[var(--900,#181B25)]">{label}</p>
       {description && (
@@ -199,6 +199,7 @@ const PerformanceWizard = ({ wizard, perfSettings, onSavePerf, onDone, onExit })
 
           <div className="mt-3 divide-y divide-[#E1E4EA]">
             <ToggleRow
+              id="widgets"
               label={__("v3 widgets", "animation-addons-for-elementor")}
               description={__(
                 "The ~70 legacy widgets in the Elementor panel. Off = they stop loading; pages that use them show that content only when switched back on.",
@@ -210,6 +211,7 @@ const PerformanceWizard = ({ wizard, perfSettings, onSavePerf, onDone, onExit })
               onChange={(on) => toggleV3("widgets", on)}
             />
             <ToggleRow
+              id="extensions"
               label={__("v3 extensions", "animation-addons-for-elementor")}
               description={__(
                 "Legacy effect extensions. Off stops their assets loading.",
@@ -220,6 +222,7 @@ const PerformanceWizard = ({ wizard, perfSettings, onSavePerf, onDone, onExit })
               onChange={(on) => toggleV3("extensions", on)}
             />
             <ToggleRow
+              id="global"
               label={__("v3 global settings (preloader, cursor, …)", "animation-addons-for-elementor")}
               description={__(
                 "The site-wide v3 chrome stored in your Kit. Off backs it up and stops it rendering; on restores it exactly.",
@@ -231,6 +234,7 @@ const PerformanceWizard = ({ wizard, perfSettings, onSavePerf, onDone, onExit })
               onChange={(on) => toggleV3("global", on)}
             />
             <ToggleRow
+              id="legacy"
               label={__("Show v3 settings in Elementor", "animation-addons-for-elementor")}
               description={__(
                 "Keeps the legacy tabs visible in Elementor → Site Settings. Off only hides the UI; it changes nothing on the front end.",
