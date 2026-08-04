@@ -155,9 +155,9 @@ class AAE_A_Btn extends Atomic_Element_Base
 			'z-index'  => Number_Prop_Type::generate(10),
 
 			'background' => Background_Prop_Type::generate([
-				'color' => Color_Prop_Type::generate('#488aec'),
+				'color' => Color_Prop_Type::generate('#ffffff'),
 			]),
-			'color' => Color_Prop_Type::generate('#ffffff'),
+			'color' => Color_Prop_Type::generate('#000000'),
 
 			'padding' => Dimensions_Prop_Type::generate([
 				'block-start'  => Size_Prop_Type::generate(['size' => 12, 'unit' => 'px']),
@@ -167,7 +167,7 @@ class AAE_A_Btn extends Atomic_Element_Base
 			]),
 
 			'border-radius' => Size_Prop_Type::generate(['size' => 8, 'unit' => 'px']),
-			'border-width'  => Size_Prop_Type::generate(['size' => 0, 'unit' => 'px']),
+			'border-width'  => Size_Prop_Type::generate(['size' => 1, 'unit' => 'px']),
 			'border-color'  => Color_Prop_Type::generate('#000000'),
 			'border-style'  => String_Prop_Type::generate('solid'),
 
@@ -240,31 +240,36 @@ class AAE_A_Btn extends Atomic_Element_Base
 			'box-shadow' => Box_Shadow_Prop_Type::generate([]),
 		];
 
+		$icon_styles = [
+			'width'  => Size_Prop_Type::generate(['size' => 30, 'unit' => 'px']),
+			'height' => Size_Prop_Type::generate(['size' => 30, 'unit' => 'px']),
+		];
+
 		return [
 			'base' => Style_Definition::make()
 				->add_variant(Style_Variant::make()->add_props($button_styles))
 				->add_variant(Style_Variant::make()->set_state(Style_States::HOVER)->add_props($button_hover_styles))
 				->add_variant(Style_Variant::make()->set_state(Style_States::ACTIVE)->add_props($button_pressed_styles))
 				->add_variant(Style_Variant::make()->set_state(Style_States::FOCUS)->add_props($button_pressed_styles)),
+
+			'icon' => Style_Definition::make()
+				->set_label(__('Icon', 'animation-addons-for-elementor'))
+				->add_variant(Style_Variant::make()->add_props($icon_styles)),
 		];
 	}
 
 	protected function define_default_children()
 	{
+		// Matches define_base_styles()'s "{element_type}-{key}" naming for the
+		// 'icon' style key — same convention Accordion Item uses for its own
+		// header_icon class (see that class's define_default_children()).
+		$icon_class = static::get_element_type() . '-icon';
+
 		// Icon first, then label — matches the reference design's flex order.
 		return [
 			Atomic_Svg::generate()
 				->settings([
-					// Momentary fallback only — editor-bridge/auto-preset.js's
-					// inline 'e-aae-a-btn' rule replaces this element within ~1s
-					// of drop with an identical one carrying a REAL per-instance
-					// local Style (25px, editable from the Style tab), because
-					// Elementor's default-children hydration drops any 'styles'
-					// key this class alone could ever attach. aae-a-svg-25 just
-					// keeps that brief pre-upgrade window (and any path that
-					// creates this element without the editor JS) close to the
-					// final size.
-					'classes' => Classes_Prop_Type::generate(['aae-a-svg-25']),
+					'classes' => Classes_Prop_Type::generate([$icon_class]),
 					'svg'     => Svg_Src_Prop_Type::generate([
 						'id'  => null,
 						'url' => Url_Prop_Type::generate(WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/Btn/assets/icons/add-file.svg'),
