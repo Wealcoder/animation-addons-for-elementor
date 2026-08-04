@@ -38,13 +38,16 @@ module.exports = {
     // at runtime. Marking them external keeps our bundle small and ensures we
     // share the same instance Elementor's editor uses (so registry calls like
     // registerControlReplacement land in the registry the panel actually reads).
+    "@elementor/editor-canvas":     ["elementorV2", "editorCanvas"],
     "@elementor/editor-controls":   ["elementorV2", "editorControls"],
     "@elementor/editor-editing-panel": ["elementorV2", "editorEditingPanel"],
     "@elementor/editor-elements":   ["elementorV2", "editorElements"],
     "@elementor/editor-v1-adapters": ["elementorV2", "editorV1Adapters"],
     "@elementor/editor-props":      ["elementorV2", "editorProps"],
     "@elementor/editor-responsive": ["elementorV2", "editorResponsive"],
+    "@elementor/editor-styles":     ["elementorV2", "editorStyles"],
     "@elementor/editor-ui":         ["elementorV2", "editorUi"],
+    "@elementor/schema":            ["elementorV2", "schema"],
     "@elementor/frontend-handlers": ["elementorV2", "frontendHandlers"],
     "@elementor/ui":                ["elementorV2", "ui"],
     react:                          "React",
@@ -71,6 +74,7 @@ module.exports = {
     "modules/atomic/effects/nested-slider": "./src/modules/atomic/effects/nested-slider/index.js",
     "modules/atomic/effects/custom-css": "./src/modules/atomic/effects/custom-css/index.js",
     "modules/atomic/effects/image-animation": "./src/modules/atomic/effects/image-animation/index.js",
+    "modules/atomic/effects/background-video": "./src/modules/atomic/effects/background-video/index.js",
   },
   output: {
     path: path.resolve(__dirname, "assets/build"), // Custom output directory

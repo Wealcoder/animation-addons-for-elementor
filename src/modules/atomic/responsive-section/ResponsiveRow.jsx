@@ -138,6 +138,7 @@ export function ResponsiveRow({
   units,
   defaultUnit,
   datalist,
+  mediaType,
   cells,
   addLabel,
   rowDefaults,
@@ -233,6 +234,7 @@ export function ResponsiveRow({
       units={units}
       defaultUnit={defaultUnit}
       datalist={datalist}
+      mediaType={mediaType}
       defaultValue={defaultValue}
       propValue={propValue}
       activeBp={activeBp}
@@ -257,6 +259,7 @@ export function ResponsiveRow({
         units={units}
         defaultUnit={defaultUnit}
         datalist={datalist}
+        mediaType={mediaType}
         defaultValue={defaultValue}
         propValue={propValue}
         elementId={elementId}
@@ -283,6 +286,7 @@ function ResponsiveCellRow({
   units,
   defaultUnit,
   datalist,
+  mediaType,
   defaultValue,
   propValue,
   activeBp,
@@ -358,6 +362,7 @@ function ResponsiveCellRow({
         units={units}
         defaultUnit={defaultUnit}
         datalist={datalist}
+        mediaType={mediaType}
         play_group={play_group}
         live_change={live_change}
       />
@@ -578,6 +583,7 @@ function PlainRow({
   units,
   defaultUnit,
   datalist,
+  mediaType,
   defaultValue,
   propValue,
   elementId,
@@ -628,6 +634,7 @@ function PlainRow({
         units={units}
         defaultUnit={defaultUnit}
         datalist={datalist}
+        mediaType={mediaType}
         play_group={play_group}
         live_change={live_change}
       />

@@ -60,6 +60,6 @@ final class Schema
 
 	public static function text_animation_widgets(): array
 	{
-		return ['e-heading', 'e-paragraph', 'e-button', 'e-aae-a-post-title'];
+		return ['e-heading', 'e-paragraph', 'e-button', 'e-aae-a-post-title','e-aae-a-advanced-heading'];
 	}
 }

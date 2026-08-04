@@ -1302,7 +1302,7 @@ function buildSliderConfig(settings) {
 export const FEATURES = [
 	{
 		name: 'mouse-move-effect',
-		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid', 'e-aae-a-post-title', 'e-aae-a-post-image', 'e-aae-a-posts', 'e-aae-a-icon-list', 'e-aae-a-icon-list-item'],
+		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid', 'e-aae-a-post-title', 'e-aae-a-post-image', 'e-aae-a-posts', 'e-aae-a-icon-list', 'e-aae-a-icon-list-item','e-aae-a-advanced-heading'],
 		enableSetting: 'aae_mouse_move_effect_enable',
 		autoReplaySetting: 'aae_mouse_move_effect_enable_editor',
 		mapName: 'AAE_INTERACTIONS_MOUSE_MOVE_EFFECT',
@@ -1320,7 +1320,7 @@ export const FEATURES = [
 	},
 	{
 		name: 'regular-animation',
-		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid', 'e-aae-a-post-title', 'e-aae-a-post-image', 'e-aae-a-posts', 'e-aae-a-icon-list', 'e-aae-a-icon-list-item'],
+		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid', 'e-aae-a-post-title', 'e-aae-a-post-image', 'e-aae-a-posts', 'e-aae-a-icon-list', 'e-aae-a-icon-list-item','e-aae-a-advanced-heading'],
 		enableSetting: 'aae_anim_interactions',
 		autoReplaySetting: 'aae_anim_enable_editor',
 		mapName: 'AAE_INTERACTIONS_ANIM',

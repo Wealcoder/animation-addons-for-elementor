@@ -35,6 +35,11 @@ const AAE_SECTION_LABELS = new Set([
 	'Sticky/Pin Element',
 	'Horizontal Scroll',
 	'Custom CSS',
+	'Background Video',
+	// Style-tab section (inc/Atomic/Mask/), not a ResponsiveSection like the
+	// rest of this list — branding matches on the header LABEL, so where the
+	// section comes from makes no difference.
+	'Mask',
 	'Wrapper Link',
 	'Nested Slider',
 	'Popup',

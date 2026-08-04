@@ -181,10 +181,20 @@ function setStyleWithCss( doc, on ) {
 }
 
 /**
- * Make sure a usable selection is live before running a command: keep the
- * CURRENT one when the caret is still inside the heading (it is fresher than
- * anything we stashed), and only fall back to the saved range when focus was
- * stolen — by the colour picker dialog or the link input.
+ * Make sure a usable selection is live AND the heading is focused before
+ * running a command.
+ *
+ * Both halves matter. `execCommand` acts on the focused editable and silently
+ * does nothing when focus sits elsewhere — and after the native colour picker
+ * closes, focus is on the `<input type="color">` while the iframe's selection
+ * object still reports the old range inside the heading. Returning early on
+ * "the selection looks fine" therefore skipped the only focus() call in the
+ * path, so the first colour pick applied nothing and the second one worked
+ * (focus had drifted back by then).
+ *
+ * So: refresh the stash from the live selection when there is one, then ALWAYS
+ * go through restoreRange() — re-adding a range that is already current is a
+ * no-op, and its focus() is what makes the command land.
  */
 function ensureSelection() {
 	if ( ! session ) {
@@ -195,7 +205,6 @@ function ensureSelection() {
 
 	if ( sel && sel.rangeCount && session.el.contains( sel.anchorNode ) ) {
 		savedRange = sel.getRangeAt( 0 ).cloneRange();
-		return;
 	}
 
 	restoreRange();
@@ -378,8 +387,10 @@ function buildToolbar( doc ) {
 	colorInput.type = 'color';
 	colorInput.value = '#000000';
 	colorInput.setAttribute( 'style', 'position:absolute;width:1px;height:1px;padding:0;border:0;opacity:0;pointer-events:none;' );
-	// `change` (not `input`): one clean apply when the native picker closes,
-	// instead of a nested <span> per mouse-move inside it.
+	// Both events: `input` paints live as you drag inside the picker, `change`
+	// catches browsers that only report on close. applyColor() recolours the
+	// SAME span while the selection holds, so repeats cannot nest spans.
+	colorInput.addEventListener( 'input', () => applyColor( colorInput.value ) );
 	colorInput.addEventListener( 'change', () => applyColor( colorInput.value ) );
 
 	const colorBar = doc.createElement( 'span' );
@@ -390,8 +401,10 @@ function buildToolbar( doc ) {
 		// An "A" over a swatch of the current colour — the familiar affordance.
 		html: '<span style="font:700 12px/1 Roboto,sans-serif">A</span>',
 		onClick: () => {
-			// The native picker takes focus, so stash the range before it opens.
+			// The picker takes focus, so stash the range before it opens; and
+			// start a new span rather than recolouring the previous pick.
 			saveRange();
+			colorSpan = null;
 			colorInput.click();
 		},
 	} );
@@ -502,12 +515,110 @@ function applyLink( url ) {
 	toggleLinkRow( false );
 }
 
+/* ---- Colour --------------------------------------------------------------
+ *
+ * Colour is the ONE command that does not go through execCommand, because
+ * execCommand cannot work here: it only acts on the focused editable, and while
+ * the colour picker is open focus belongs to the `<input type="color">`. Chrome
+ * fires `change` live from inside the still-open picker, so at the moment we
+ * are asked to apply, the heading is never the focused element — which is why
+ * the colour only landed on a SECOND press of "A", once focus had drifted back.
+ *
+ * Waiting for focus was tried and is not dependable either: Chrome's picker is
+ * an in-page popup, so `document.hasFocus()` stays true the whole time and
+ * there is no "it closed" signal to wait for.
+ *
+ * Wrapping the saved Range by hand needs no focus at all, so it works whatever
+ * the picker does. It also gives exactly the markup we want — a plain
+ * `<span style="color:…">` — instead of execCommand's habit of hanging the
+ * style off whatever inline ancestor it finds (`<b style="color:…">` when the
+ * text happened to be bold).
+ * ------------------------------------------------------------------------ */
+
+/**
+ * The span this picker session is painting. Kept so that Chrome's repeated
+ * `change` events while you drag inside the picker RECOLOUR one span instead of
+ * nesting a new one per event. Cleared whenever the selection moves.
+ */
+let colorSpan = null;
+
+/** Strip any colour already set inside a fragment, so ours is the only one. */
+function stripColorsIn( root ) {
+	if ( ! root.querySelectorAll ) {
+		return;
+	}
+
+	root.querySelectorAll( '[style*="color"], font[color]' ).forEach( ( node ) => {
+		node.style?.removeProperty( 'color' );
+		node.removeAttribute?.( 'color' );
+
+		if ( 'SPAN' === node.tagName && ! node.getAttribute( 'style' ) && ! node.attributes.length ) {
+			unwrapNode( node );
+		}
+	} );
+}
+
 function applyColor( value ) {
-	exec( 'foreColor', value );
+	if ( ! session ) {
+		return;
+	}
+
+	const { doc } = session;
 
 	if ( toolbar ) {
 		toolbar.colorBar.style.background = value;
 	}
+
+	// Still painting the span from this picker session — just recolour it.
+	if ( colorSpan && colorSpan.isConnected ) {
+		colorSpan.style.color = value;
+		return;
+	}
+
+	// Refresh from the live selection when there is one; otherwise the range
+	// stashed when "A" was pressed is what we colour.
+	const sel = doc.getSelection();
+
+	if ( sel && sel.rangeCount && session.el.contains( sel.anchorNode ) && ! sel.getRangeAt( 0 ).collapsed ) {
+		savedRange = sel.getRangeAt( 0 ).cloneRange();
+	}
+
+	if ( ! savedRange || savedRange.collapsed ) {
+		return; // Nothing selected — a colour has nothing to attach to.
+	}
+
+	const span = doc.createElement( 'span' );
+
+	span.style.color = value;
+
+	try {
+		// Fast path: the selection is a whole node's worth of content.
+		savedRange.surroundContents( span );
+	} catch ( _e ) {
+		// The selection crosses element boundaries (half of a <b>, say), which
+		// surroundContents refuses. Extracting and re-inserting handles it.
+		const contents = savedRange.extractContents();
+
+		stripColorsIn( contents );
+		span.appendChild( contents );
+		savedRange.insertNode( span );
+	}
+
+	stripColorsIn( span );
+	colorSpan = span;
+
+	// Keep the text selected so the next pick recolours the same run.
+	const next = doc.createRange();
+
+	next.selectNodeContents( span );
+	savedRange = next.cloneRange();
+
+	const selection = doc.getSelection();
+
+	selection.removeAllRanges();
+	selection.addRange( next );
+
+	syncToolbar();
 }
 
 /** Reflect the caret's formatting in the toolbar (pressed states + swatch). */
@@ -635,6 +746,13 @@ function commitHtml( doc, html ) {
 
 	box.querySelectorAll( '[contenteditable]' ).forEach( ( node ) => node.removeAttribute( 'contenteditable' ) );
 
+	// Chrome stamps `draggable="true"` onto inline elements inside a
+	// contenteditable so they can be dragged around. It is an editing artefact
+	// with no meaning in the saved markup, but it was being written straight
+	// into the `content` prop — so every colour or bold left another
+	// `draggable="true"` in the Content field for the user to read past.
+	box.querySelectorAll( '[draggable]' ).forEach( ( node ) => node.removeAttribute( 'draggable' ) );
+
 	return box.innerHTML.replace( /(<br\s*\/?>)+$/i, '' ).trim();
 }
 
@@ -726,6 +844,7 @@ function endEdit( commit = true ) {
 
 	session = null;
 	savedRange = null;
+	colorSpan = null;
 	removeToolbar();
 
 	el.removeEventListener( 'keydown', onEditableKeyDown );

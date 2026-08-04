@@ -90,7 +90,7 @@ const Overlay = styled(Box)({
  * Open the WP media library frame and resolve with a base attachment object
  * { id, url, sizes } where sizes = { full, large, medium, thumbnail, … }.
  */
-function openMediaFrame({ title = 'Select Image', tab = 'library' } = {}) {
+function openMediaFrame({ title = 'Select Image', tab = 'library', mediaType = 'image' } = {}) {
 	return new Promise((resolve) => {
 		const wp = /** @type {any} */ (window.wp);
 		if (!wp?.media) {
@@ -103,8 +103,8 @@ function openMediaFrame({ title = 'Select Image', tab = 'library' } = {}) {
 		const frame = wp.media({
 			title,
 			multiple: false,
-			library: { type: 'image' },
-			button: { text: 'Use Image' },
+			library: { type: mediaType },
+			button: { text: 'image' === mediaType ? 'Use Image' : 'Use File' },
 		});
 
 		frame.on('select', () => {
@@ -177,12 +177,19 @@ function buildSizeOptions(sizes = {}) {
  *   sizes — map of all available sizes (from wp.media JSON)
  *
  * Props:
- *   value    — current value object or null
- *   onChange — called with the new value object or null
+ *   value     — current value object or null
+ *   onChange  — called with the new value object or null
  *   disabled
+ *   mediaType — WP library filter: 'image' (default) | 'video' | 'audio' | …
+ *               A non-image type has no thumbnail or size variants, so the
+ *               preview falls back to a filename chip and the Resolution
+ *               selector never appears (sizes comes back empty for it).
  * --------------------------------------------------------------------- */
-export function MediaInput({ value, onChange, disabled }) {
+export function MediaInput({ value, onChange, disabled, mediaType = 'image' }) {
 	const normalised = (value && typeof value === 'object' && value.url) ? value : null;
+
+	const isImage = 'image' === mediaType;
+	const noun    = isImage ? 'image' : 'file';
 
 	const id    = normalised?.id    ?? null;
 	const url   = normalised?.url   ?? null;
@@ -191,14 +198,18 @@ export function MediaInput({ value, onChange, disabled }) {
 
 	const sizeOptions = buildSizeOptions(sizes);
 
-	/* -- pick a new image from WP media library -- */
+	/* -- pick a new file from WP media library -- */
 	const handleOpen = useCallback(async (e, tab = 'library') => {
 		if (e) {
 			e.stopPropagation();
 			e.preventDefault();
 		}
 		if (disabled) return;
-		const picked = await openMediaFrame({ title: 'Select Image', tab });
+		const picked = await openMediaFrame({
+			title: isImage ? 'Select Image' : 'Select File',
+			tab,
+			mediaType,
+		});
 		if (!picked) return;
 		const activeSize = size ?? 'full';
 		const resolvedUrl = resolveUrl(picked.id, activeSize, picked.sizes);
@@ -232,19 +243,33 @@ export function MediaInput({ value, onChange, disabled }) {
 				role="button"
 				tabIndex={disabled ? -1 : 0}
 				onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleOpen(e, 'library'); }}
-				aria-label={url ? 'Change image' : 'Select image'}
+				aria-label={url ? `Change ${noun}` : `Select ${noun}`}
 			>
 				{url ? (
 					<>
-						<Thumbnail src={url} alt="Selected media" draggable={false} />
+						{isImage ? (
+							<Thumbnail src={url} alt="Selected media" draggable={false} />
+						) : (
+							// A non-image URL in an <img> renders as a broken icon,
+							// so show what was actually picked instead.
+							<Placeholder>
+								<Typography
+									variant="caption"
+									color="rgba(255,255,255,0.75)"
+									sx={{ wordBreak: 'break-all', textAlign: 'center', px: 1 }}
+								>
+									{decodeURIComponent(url.split('/').pop() || url)}
+								</Typography>
+							</Placeholder>
+						)}
 						<Overlay className="aae-media-overlay">
 							<IconButton size="small" sx={{ color: '#fff', mr: 0.5 }}
-								onClick={(e) => handleOpen(e, 'library')} aria-label="Replace image">
+								onClick={(e) => handleOpen(e, 'library')} aria-label={`Replace ${noun}`}>
 								<EditIcon size={16} />
 							</IconButton>
 							{!disabled && (
 								<IconButton size="small" sx={{ color: '#ff6b6b' }}
-									onClick={handleClear} aria-label="Remove image">
+									onClick={handleClear} aria-label={`Remove ${noun}`}>
 									<TrashIcon size={16} />
 								</IconButton>
 							)}
@@ -254,12 +279,12 @@ export function MediaInput({ value, onChange, disabled }) {
 					<Placeholder>
 						{disabled ? (
 							<Typography variant="caption" color="rgba(255,255,255,0.4)">
-								No image
+								{isImage ? 'No image' : 'No file'}
 							</Typography>
 						) : (
 							<>
 								<SelectImageButton onClick={(e) => handleOpen(e, 'library')}>
-									Select image
+									{isImage ? 'Select image' : 'Select file'}
 								</SelectImageButton>
 								<UploadButton onClick={(e) => handleOpen(e, 'upload')}>
 									<UploadIcon size={13} strokeWidth={2.5} />

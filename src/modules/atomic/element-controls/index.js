@@ -13,7 +13,7 @@
  */
 
 import { controlsRegistry } from '@elementor/editor-editing-panel';
-import { stringArrayPropTypeUtil } from '@elementor/editor-props';
+import { stringArrayPropTypeUtil, stringPropTypeUtil } from '@elementor/editor-props';
 
 import { SlidesControl } from './SlidesControl';
 import { AccordionItemsControl } from './AccordionItemsControl';
@@ -26,6 +26,7 @@ import { MobileNavLifecycleControl, NavItemsControl, NavSubItemsControl } from '
 import { QueryChipsControl } from './QueryChipsControl';
 import { DrawPlayControl } from './DrawPlayControl';
 import { HotspotsControl } from './HotspotsControl';
+import { MediaUrlControl } from './MediaUrlControl';
 
 const ELEMENT_CONTROLS = [
 	{ type: 'aae-slides', component: SlidesControl, layout: 'full' },
@@ -44,6 +45,9 @@ const ELEMENT_CONTROLS = [
 	// SettingsField for its bind key; useBoundProp(stringArrayPropTypeUtil)
 	// reads/writes the String_Array prop.
 	{ type: 'aae-query-chips', component: QueryChipsControl, layout: 'full', propTypeUtil: stringArrayPropTypeUtil },
+	// Also prop-bound, to a plain String: a URL field plus a Media Library
+	// picker, for asset types Elementor has no control for (Lottie .json, …).
+	{ type: 'aae-media-url', component: MediaUrlControl, layout: 'full', propTypeUtil: stringPropTypeUtil },
 ];
 
 let registered = false;

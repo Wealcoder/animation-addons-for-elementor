@@ -51,6 +51,7 @@ function InnerTabsGroup({ fields, settings, activeBp, element, bindPrefix }) {
 							units={field.units}
 							defaultUnit={field.defaultUnit}
 							datalist={field.datalist}
+							mediaType={field.mediaType}
 							cells={field.cells}
 							addLabel={field.addLabel}
 							rowDefaults={field.rowDefaults}
@@ -176,6 +177,7 @@ export function ResponsiveSection({ config }) {
 						units={field.units}
 						defaultUnit={field.defaultUnit}
 						datalist={field.datalist}
+						mediaType={field.mediaType}
 						cells={field.cells}
 						addLabel={field.addLabel}
 						rowDefaults={field.rowDefaults}

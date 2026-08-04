@@ -120,7 +120,21 @@ final class Local_Fallback {
 
 		// Native atomic widgets (e-heading, e-button, …) — one shared root,
 		// one sub-folder per element type; folder name IS both the type key
-		// and the category label.
+		// and the category label. No detect_primary_widget_type() here: a
+		// native preset's root is a plain e-flexbox wrapper, so detection
+		// would file every one of them under e-flexbox.
+		//
+		// The directory does NOT exist right now — the five bundled samples
+		// were removed once Controls::ALLOWED_NATIVE_TYPES was emptied, which
+		// made them unreachable from the panel. That is a normal state, not a
+		// missing dependency: the is_dir() guard below is the whole handling,
+		// and this class is contracted to work with no local files at all.
+		//
+		// The root is hardcoded to THIS plugin and has no filter, so another
+		// plugin cannot contribute native-type presets. Widget-OWNED presets
+		// are different and do work cross-plugin — the loop above derives the
+		// directory from each widget's own `file`, which is absolute for a
+		// widget registered by Pro (see StackCards).
 		$native_root = wp_normalize_path( WCF_ADDONS_PATH . 'inc/AtomicWidgets/Presets' );
 
 		if ( is_dir( $native_root ) ) {

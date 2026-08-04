@@ -123,11 +123,37 @@ final class Bootstrap {
 			( new \WCF_ADDONS\Atomic\ScrollTo\Controls() )->register();
 		}
 
+		// Mask — clips an element to a shape. Registered as real atomic STYLE
+		// props (`mask-image` & friends on the styles schema), NOT settings
+		// props, so responsive values, :hover variants and global classes come
+		// from Elementor's own styles engine and the CSS compiles into the
+		// element's stylesheet — no runtime JS. v3's mask is widget-only, so
+		// containers gain something they never had.
+		if ( $extensions->is_extension_active( 'mask' ) ) {
+			( new \WCF_ADDONS\Atomic\Mask\Schema() )->register();
+			( new \WCF_ADDONS\Atomic\Mask\Transformers() )->register();
+		}
+
+		// Background Video — a video layer behind e-flexbox / e-div-block /
+		// e-grid. Wholly free (Schema + Controls + Render + runtime): it adds
+		// what v4's atomic Background control is missing rather than an
+		// animation, and it needs no GSAP, so there is nothing here for the Pro
+		// split to own. Frontend reads window.AAE_INTERACTIONS_BGV[<id>].
+		if ( $extensions->is_extension_active( 'background-video' ) ) {
+			( new \WCF_ADDONS\Atomic\BackgroundVideo\Schema() )->register();
+			( new \WCF_ADDONS\Atomic\BackgroundVideo\Controls() )->register();
+			( new \WCF_ADDONS\Atomic\BackgroundVideo\Render() )->register();
+		}
+
 		// Custom CSS — NOT part of the move to Pro, so it keeps its Render here.
-		// Two bundled free presets
-		// (Presets/e-button/shine-pulse.json, Presets/e-flexbox/pill-button.json)
-		// carry their animation in this extension's props, so taking it away
-		// would leave them rendering as static elements with no error.
+		// Presets are the reason: an "animated" preset (keyframes, ::before
+		// layers, descendant :hover — anything atomic per-element styles cannot
+		// express) bakes its CSS into THIS extension's props, so a preset that
+		// uses them renders as a static element, with no error, wherever the
+		// extension is missing. That is true of remote presets as much as
+		// bundled ones. (It used to cite two bundled free presets by name;
+		// those files are gone — see the Presets note below — but the
+		// dependency is a property of the preset format, not of those files.)
 		if ( $extensions->is_extension_active( 'custom-css' ) ) {
 			( new \WCF_ADDONS\Atomic\CustomCss\Schema() )->register();
 			( new \WCF_ADDONS\Atomic\CustomCss\Controls() )->register();
@@ -135,10 +161,18 @@ final class Bootstrap {
 		}
 
 		// Presets — "Apply Preset" picker section for NATIVE atomic widgets
-		// (e-heading, e-button, …). Preset JSONs live one folder per element
-		// type under inc/AtomicWidgets/Presets/; the section only appears for
-		// types that have at least one preset bundled. AAE's own widgets add
-		// the section themselves in define_atomic_controls().
+		// (e-heading, e-button, …). AAE's own widgets add the section
+		// themselves in define_atomic_controls(); this only covers types whose
+		// classes we do not own.
+		//
+		// CURRENTLY A NO-OP, deliberately: injection is driven by
+		// Controls::ALLOWED_NATIVE_TYPES, which is empty, so no native widget
+		// offers the picker. It is registered anyway because the whitelist is
+		// the intended on-switch — put a type in it and the section returns.
+		// The section does NOT appear just because presets exist for a type;
+		// that was the old behaviour and it surfaced "Presets" on widgets
+		// nobody had opted in (e-paragraph, e-image), which is why the
+		// whitelist replaced it.
 		( new \WCF_ADDONS\Atomic\Presets\Controls() )->register();
 
 		// Nested Slider. (No Controls class — the slider's panel section is built
@@ -184,6 +218,7 @@ final class Bootstrap {
 			'e-aae-a-post-image',
 			'e-aae-a-icon-list',
 			'e-aae-a-icon-list-item',
+			'e-aae-a-advanced-heading'
 		];
 	}
 }
