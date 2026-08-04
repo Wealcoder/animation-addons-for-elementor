@@ -96,6 +96,29 @@ class AAE_A_Advanced_Heading extends Atomic_Widget_Base {
 	}
 
 	protected static function define_props_schema(): array {
+		// Rich text. NOT the stock Html_V3_Prop_Type: that one's wp_kses pass
+		// allows no attributes at all, so `style="color:…"` — the whole point
+		// of the colour button — is deleted on save. The subclass keeps the
+		// `html-v3` KEY (so the client util and the transformer are unchanged)
+		// and only widens the whitelist. `class` stays disallowed.
+		$content = AAE_Rich_Text_Prop_Type::make()
+			->default( [
+				'content'  => String_Prop_Type::generate(
+					__( 'Build your <b>Innovate</b> Our Core Solution', 'animation-addons-for-elementor' )
+				),
+				'children' => [],
+			] )
+			->description( 'The text content of the heading.' );
+
+		// alias() only exists on Elementor's prop-type meta concern in newer
+		// atomic builds (4.2.x+). Guard it — an older Elementor throws
+		// "undefined method ...::alias()" while this widget's schema is built,
+		// which fatals the whole editor. The aliases are an inline-editor
+		// nicety, not required for the widget to render.
+		if ( method_exists( $content, 'alias' ) ) {
+			$content = $content->alias( 'text', 'content', 'heading' );
+		}
+
 		return [
 			'classes'    => Classes_Prop_Type::make()->default( [] ),
 			'attributes' => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
@@ -106,20 +129,7 @@ class AAE_A_Advanced_Heading extends Atomic_Widget_Base {
 			// never attach to this type anyway. See the class docblock.
 			'ah_tag'  => String_Prop_Type::make()->default( 'h2' ),
 
-			// Rich text. NOT the stock Html_V3_Prop_Type: that one's wp_kses pass
-			// allows no attributes at all, so `style="color:…"` — the whole point
-			// of the colour button — is deleted on save. The subclass keeps the
-			// `html-v3` KEY (so the client util and the transformer are unchanged)
-			// and only widens the whitelist. `class` stays disallowed.
-			'content' => AAE_Rich_Text_Prop_Type::make()
-				->default( [
-					'content'  => String_Prop_Type::generate(
-						__( 'Build your <b>Innovate</b> Our Core Solution', 'animation-addons-for-elementor' )
-					),
-					'children' => [],
-				] )
-				->description( 'The text content of the heading.' )
-				->alias( 'text', 'content', 'heading' ),
+			'content' => $content,
 		];
 	}
 
