@@ -3,7 +3,6 @@ import {
   RiCommandLine,
   RiLayoutGridLine,
   RiMagicLine,
-  RiPuzzle2Line,
   RiShareBoxLine,
   RiVipCrown2Line,
 } from "react-icons/ri";
@@ -39,12 +38,12 @@ export const MainNavData = [
     role: ["administrator"],
     icon: <RiVipCrown2Line size={20} />,
   },
-  {
-    name: "Integrations",
-    path: "integrations",
-    role: ["administrator"],
-    icon: <RiPuzzle2Line size={20} />,
-  },
+  /*
+   * "Integrations" left the sidebar 2026-08-04 — the Library screen it held
+   * now lives as an Animation Settings tab. The `?tab=integrations` route is
+   * deliberately still served (showFullContent.jsx) for old bookmarks, the
+   * same arrangement Performance has.
+   */
   {
     name: "Starter Template",
     path: "stater-template",

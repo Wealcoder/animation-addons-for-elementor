@@ -1,3 +1,4 @@
+import InfoNote from "@/components/shared/InfoToggle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -189,12 +190,9 @@ const ConditionsField = ({ field, feature, name, value, disabled, onChange }) =>
 
   return (
     <div className="mt-6">
-      <p className="text-[13px] text-[var(--900,#181B25)]">{field.label}</p>
-      {field.help && (
-        <p className="text-[12px] text-[var(--600,#525866)] mt-1.5">
-          {field.help}
-        </p>
-      )}
+      <InfoNote label={field.label} testid={`${feature}.${name}.help`}>
+        {field.help}
+      </InfoNote>
 
       <div className="mt-3 space-y-3">
         {rules.map((rule, index) => (
