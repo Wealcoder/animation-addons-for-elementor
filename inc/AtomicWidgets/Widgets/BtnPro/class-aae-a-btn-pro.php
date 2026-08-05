@@ -171,9 +171,20 @@ class AAE_A_Btn_Pro extends Atomic_Element_Base
 
 		// Basic pill button — solid fill, no border, rounded ends.
 		$button_styles = [
+			// Required by every remote/local preset for this widget: presets
+			// build their own decorative children (fill circles, ripple
+			// spans, swap clones) as `position: absolute` descendants
+			// centered/clipped against THIS root — dropping any of these
+			// breaks them (mispositioned or unclipped effect layers) even
+			// though the default pill design has no visible use for them.
+			'overflow' => String_Prop_Type::generate('hidden'),
+			'position' => String_Prop_Type::generate('relative'),
+			'z-index'  => Number_Prop_Type::generate(10),
+
 			'cursor'      => String_Prop_Type::generate('pointer'),
 			'font-weight' => String_Prop_Type::generate('700'),
 			'transition'  => $transition_200ms,
+			'color' => Color_Prop_Type::generate('#ffffff'),
 
 			'padding' => Dimensions_Prop_Type::generate([
 				'block-start'  => Size_Prop_Type::generate(['size' => 10, 'unit' => 'px']),
@@ -184,23 +195,24 @@ class AAE_A_Btn_Pro extends Atomic_Element_Base
 
 			'border-radius' => Size_Prop_Type::generate(['size' => 100, 'unit' => 'px']),
 			'background'    => Background_Prop_Type::generate([
-				'color' => Color_Prop_Type::generate('#cfef00'),
+				'color' => Color_Prop_Type::generate('#3d405b'),
 			]),
 
 			'border-width' => Size_Prop_Type::generate(['size' => 1, 'unit' => 'px']),
 			'border-style' => String_Prop_Type::generate('solid'),
 			'border-color' => Color_Prop_Type::generate('transparent'),
 
-			'display'     => String_Prop_Type::generate('flex'),
+			'display'     => String_Prop_Type::generate('inline-flex'),
+			'width'    => Size_Prop_Type::generate(['size' => null, 'unit' => 'auto']),
 			'align-items' => String_Prop_Type::generate('center'),
 			'font-size'   => Size_Prop_Type::generate(['size' => 15, 'unit' => 'px']),
 		];
 
 		// Hover — a touch darker.
 		$button_hover_styles = [
-			'background' => Background_Prop_Type::generate([
-				'color' => Color_Prop_Type::generate('#c4e201'),
-			]),
+			// 'background' => Background_Prop_Type::generate([
+			// 	'color' => Color_Prop_Type::generate('#c4e201'),
+			// ]),
 		];
 
 		// Active/press — a quick shrink.
