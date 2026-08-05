@@ -1,3 +1,14 @@
+// Default design — basic pill button. Resting/hover/active background,
+// transform and typography are real PHP-declared styles
+// (define_base_styles()'s 'base' key, HOVER/ACTIVE states). Only the
+// icon's hover slide is a cross-element effect (the BUTTON's hover moving a
+// CHILD's style) that the atomic style schema can't express — a
+// Style_Variant's HOVER state only ever reacts to THIS element's own hover —
+// so it lives here instead.
+.e-aae-a-btn-pro-base:hover .e-aae-a-btn-pro-icon {
+  transform: translateX(5px);
+}
+
 // 4  — Ripple (GSAP)
 .aae-btn-ripple .aae-btn-ripple-arrow::after {
   position: absolute;
