@@ -91,7 +91,7 @@ class AAE_A_Progressbar_Fill extends Atomic_Widget_Base {
 						->add_prop( 'display',       String_Prop_Type::generate( 'block' ) )
 						->add_prop( 'width',         Size_Prop_Type::generate( [ 'size' => 0, 'unit' => '%' ] ) )
 						->add_prop( 'height',        Size_Prop_Type::generate( [ 'size' => 100, 'unit' => '%' ] ) )
-						->add_prop( 'background',    Background_Prop_Type::generate( [ 'color' => Color_Prop_Type::generate( '#1a1a1a' ) ] ) )
+						->add_prop( 'background',    Background_Prop_Type::generate( [ 'color' => Color_Prop_Type::generate( '#3d405b' ) ] ) )
 						->add_prop( 'border-radius', Size_Prop_Type::generate( [ 'size' => 999, 'unit' => 'px' ] ) )
 						->add_prop( 'transition', Transition_Prop_Type::generate( [
 							Selection_Size_Prop_Type::generate( [

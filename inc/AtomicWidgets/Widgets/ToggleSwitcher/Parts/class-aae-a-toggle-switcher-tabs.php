@@ -116,7 +116,10 @@ class AAE_A_Toggle_Switcher_Tabs extends Atomic_Element_Base {
 	 * seed a fresh Tabs row directly (mirrors
 	 * AAE_A_Timeline_Item::build_default_inner_children()). Tab 1 carries the
 	 * literal `e--selected` class as the default active tab; toggle-switcher.js
-	 * toggles the same class at runtime alongside `.active`.
+	 * toggles the same class at runtime alongside `.active`. The active-tab
+	 * look itself (background/color/border-radius) comes from Tab's own
+	 * shared define_base_styles() SELECTED variant — see
+	 * class-aae-a-toggle-switcher-tab.php — not from anything seeded here.
 	 */
 	public static function build_default_inner_children(): array {
 		return [

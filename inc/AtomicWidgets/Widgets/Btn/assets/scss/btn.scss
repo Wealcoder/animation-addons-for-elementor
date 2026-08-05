@@ -1,6 +1,14 @@
 .e-aae-a-btn-base {
 	cursor: pointer;
 }
+
+// The icon-size override against Elementor's native `.e-svg-base` default
+// (65px) is NOT hardcoded here — a static duplicate of that value in a
+// compiled .scss file would silently keep winning even after
+// AAE_A_Btn::ICON_SIZE_PX changes (this happened to Button Pro's copy of
+// this same rule). It's generated from that constant instead and injected
+// as inline CSS by Atomic::fix_frontend_atomic_css_order() — see
+// AAE_A_Btn::get_frontend_css_override().
 .e-aae-a-btn-base:hover .aae-btn-divide-hr {
 	width: 120%;
 }

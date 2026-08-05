@@ -7,6 +7,7 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Select_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Switch_Control;
@@ -132,6 +133,7 @@ class AAE_A_Video_Mask extends Atomic_Element_Base {
 			'base' => Style_Definition::make()
 				->add_variant( Style_Variant::make()->add_props( [
 					'display'  => String_Prop_Type::generate( 'grid' ),
+					'width'  => Size_Prop_Type::generate( [ 'size' => 500, 'unit' => 'px' ] ),
 					'position' => String_Prop_Type::generate( 'relative' ),
 				] ) ),
 		];

@@ -71,6 +71,7 @@ final class Bootstrap {
 		if ( $extensions->is_extension_active( 'image-animation' ) ) {
 			( new \WCF_ADDONS\Atomic\ImageAnimation\Schema() )->register();
 			( new \WCF_ADDONS\Atomic\ImageAnimation\Controls() )->register();
+			( new \WCF_ADDONS\Atomic\ImageAnimation\Render() )->register();
 		}
 
 		// Image hover — cursor-following floating image overlay on any

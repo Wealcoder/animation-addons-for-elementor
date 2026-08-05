@@ -17,6 +17,13 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Transition_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Selection_Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Key_Value_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Background_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Dimensions_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Transform\Transform_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Transform\Transform_Functions_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Transform\Functions\Transform_Scale_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Svg_Src_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Url_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Select_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Switch_Control;
@@ -36,6 +43,18 @@ if (! defined('ABSPATH')) {
 class AAE_A_Btn_Pro extends Atomic_Element_Base
 {
 	use Has_Element_Template;
+
+	/**
+	 * Single source of truth for the icon's fixed square size.
+	 *
+	 * Read by BOTH define_base_styles() (the real default) AND
+	 * get_frontend_css_override() (the CSS that must load after Elementor's
+	 * base-desktop.css to win the tie against e-svg-base's native 65px
+	 * default — see Atomic::fix_frontend_atomic_css_order()). Change ONLY
+	 * this constant; a hardcoded duplicate in a .scss file would silently
+	 * keep winning forever even after this value changes.
+	 */
+	const ICON_SIZE_PX = 25;
 
 	public function __construct($data = [], $args = null)
 	{
@@ -142,55 +161,137 @@ class AAE_A_Btn_Pro extends Atomic_Element_Base
 
 	protected function define_base_styles(): array
 	{
+		$transition_200ms = Transition_Prop_Type::generate([
+			Selection_Size_Prop_Type::generate([
+				'selection' => Key_Value_Prop_Type::generate([
+					'key'   => String_Prop_Type::generate('All properties'),
+					'value' => String_Prop_Type::generate('all'),
+				]),
+				'size' => Size_Prop_Type::generate(['size' => 200, 'unit' => 'ms']),
+			]),
+		]);
+
+		$transition_300ms = Transition_Prop_Type::generate([
+			Selection_Size_Prop_Type::generate([
+				'selection' => Key_Value_Prop_Type::generate([
+					'key'   => String_Prop_Type::generate('All properties'),
+					'value' => String_Prop_Type::generate('all'),
+				]),
+				'size' => Size_Prop_Type::generate(['size' => 300, 'unit' => 'ms']),
+			]),
+		]);
+
+		// Basic pill button — solid fill, no border, rounded ends.
 		$button_styles = [
-			'width'         => Size_Prop_Type::generate(['size' => null, 'unit' => 'auto']),
-			'padding'       => Size_Prop_Type::generate(['size' => 10, 'unit' => 'px']),
-			'overflow'      => String_Prop_Type::generate('hidden'),
-			'position'      => String_Prop_Type::generate('relative'),
-			'z-index'       => Number_Prop_Type::generate(10),
-			'color'         => Color_Prop_Type::generate('#000000'),
+			// Required by every remote/local preset for this widget: presets
+			// build their own decorative children (fill circles, ripple
+			// spans, swap clones) as `position: absolute` descendants
+			// centered/clipped against THIS root — dropping any of these
+			// breaks them (mispositioned or unclipped effect layers) even
+			// though the default pill design has no visible use for them.
+			'overflow' => String_Prop_Type::generate('hidden'),
+			'position' => String_Prop_Type::generate('relative'),
+			'z-index'  => Number_Prop_Type::generate(10),
 
-			'border-radius' => Size_Prop_Type::generate(['size' => 4, 'unit' => 'px']),
-			'border-width'  => Size_Prop_Type::generate(['size' => 1, 'unit' => 'px']),
-			'border-color'  => Color_Prop_Type::generate('#000000'),
-			'border-style'  => String_Prop_Type::generate('solid'),
+			'cursor'      => String_Prop_Type::generate('pointer'),
+			'font-weight' => String_Prop_Type::generate('700'),
+			'transition'  => $transition_200ms,
+			'color' => Color_Prop_Type::generate('#ffffff'),
 
-			'transition'    => Transition_Prop_Type::generate([
-				Selection_Size_Prop_Type::generate([
-					'selection' => Key_Value_Prop_Type::generate([
-						'key'   => String_Prop_Type::generate('All properties'),
-						'value' => String_Prop_Type::generate('all'),
-					]),
-					'size' => Size_Prop_Type::generate([
-						'size' => 700,
-						'unit' => 'ms',
+			'padding' => Dimensions_Prop_Type::generate([
+				'block-start'  => Size_Prop_Type::generate(['size' => 10, 'unit' => 'px']),
+				'inline-end'   => Size_Prop_Type::generate(['size' => 20, 'unit' => 'px']),
+				'block-end'    => Size_Prop_Type::generate(['size' => 10, 'unit' => 'px']),
+				'inline-start' => Size_Prop_Type::generate(['size' => 20, 'unit' => 'px']),
+			]),
+
+			'border-radius' => Size_Prop_Type::generate(['size' => 100, 'unit' => 'px']),
+			'background'    => Background_Prop_Type::generate([
+				'color' => Color_Prop_Type::generate('#3d405b'),
+			]),
+
+			'border-width' => Size_Prop_Type::generate(['size' => 1, 'unit' => 'px']),
+			'border-style' => String_Prop_Type::generate('solid'),
+			'border-color' => Color_Prop_Type::generate('transparent'),
+
+			'display'     => String_Prop_Type::generate('inline-flex'),
+			'width'    => Size_Prop_Type::generate(['size' => null, 'unit' => 'auto']),
+			'align-items' => String_Prop_Type::generate('center'),
+			'font-size'   => Size_Prop_Type::generate(['size' => 15, 'unit' => 'px']),
+		];
+
+		// Hover — a touch darker.
+		$button_hover_styles = [
+			// 'background' => Background_Prop_Type::generate([
+			// 	'color' => Color_Prop_Type::generate('#c4e201'),
+			// ]),
+		];
+
+		// Active/press — a quick shrink.
+		$button_active_styles = [
+			'transform' => Transform_Prop_Type::generate([
+				'transform-functions' => Transform_Functions_Prop_Type::generate([
+					Transform_Scale_Prop_Type::generate([
+						'x' => Number_Prop_Type::generate(0.95),
+						'y' => Number_Prop_Type::generate(0.95),
 					]),
 				]),
 			]),
-
-			'display'         => String_Prop_Type::generate('inline-flex'),
-			'flex-direction'  => String_Prop_Type::generate('row'),
-			'gap'             => Size_Prop_Type::generate(['size' => 8, 'unit' => 'px']),
-			'align-items'     => String_Prop_Type::generate('center'),
 		];
 
-		$button_hover_styles = [
-			'color' => Color_Prop_Type::generate('#ffffff'),
+		// Icon — sits after the label with a 10px gap; the hover slide
+		// (translateX on the button's own hover) is a cross-element effect
+		// the atomic style schema can't express (a Style_Variant's HOVER
+		// state only ever reacts to THIS element's own hover), so it lives
+		// in btn-pro.scss instead.
+		$icon_styles = [
+			'width'  => Size_Prop_Type::generate(['size' => self::ICON_SIZE_PX, 'unit' => 'px']),
+			'height' => Size_Prop_Type::generate(['size' => self::ICON_SIZE_PX, 'unit' => 'px']),
+			'margin' => Dimensions_Prop_Type::generate([
+				'block-start'  => Size_Prop_Type::generate(['size' => 0, 'unit' => 'px']),
+				'inline-end'   => Size_Prop_Type::generate(['size' => 0, 'unit' => 'px']),
+				'block-end'    => Size_Prop_Type::generate(['size' => 0, 'unit' => 'px']),
+				'inline-start' => Size_Prop_Type::generate(['size' => 10, 'unit' => 'px']),
+			]),
+			'transition' => $transition_300ms,
 		];
 
 		return [
 			'base' => Style_Definition::make()
 				->add_variant(Style_Variant::make()->add_props($button_styles))
-				// ->add_variant(Style_Variant::make()->set_state(Style_States::HOVER)->add_props($button_hover_styles)),
+				->add_variant(Style_Variant::make()->set_state(Style_States::HOVER)->add_props($button_hover_styles))
+				->add_variant(Style_Variant::make()->set_state(Style_States::ACTIVE)->add_props($button_active_styles)),
+
+			// Label carries no props of its own in this design — the key is
+			// kept so its class stays a registered style (an unregistered
+			// class on the child's `classes` prop shows up as Elementor's
+			// "missing classes" panel warning, see class-atomic.php's
+			// documented gotcha for this pattern).
+			'label' => Style_Definition::make()
+				->set_label(__('Label', 'animation-addons-for-elementor'))
+				->add_variant(Style_Variant::make()),
+
+			'icon' => Style_Definition::make()
+				->set_label(__('Icon', 'animation-addons-for-elementor'))
+				->add_variant(Style_Variant::make()->add_props($icon_styles)),
 		];
 	}
 
 	protected function define_default_children()
 	{
-		// Paragraph first so the label sits before the icon in flex order.
+		// Same "{element_type}-{key}" naming as define_base_styles() above —
+		// see AAE_A_Btn::define_default_children() / Accordion Item's
+		// header_icon for the same convention.
+		$label_class = static::get_element_type() . '-label';
+		$icon_class  = static::get_element_type() . '-icon';
+
+		// Label first, then icon — the icon sits inline after the text with
+		// a margin-start gap (see the 'icon' style key's `margin` above), so
+		// DOM order is also visual order here.
 		return [
 			Atomic_Paragraph::generate()
 				->settings([
+					'classes'   => Classes_Prop_Type::generate([$label_class]),
 					'paragraph' => Html_V3_Prop_Type::generate([
 						'content'  => String_Prop_Type::generate('Click here'),
 						'children' => [],
@@ -198,7 +299,15 @@ class AAE_A_Btn_Pro extends Atomic_Element_Base
 					'tag' => String_Prop_Type::generate('span'),
 				])
 				->build(),
-			Atomic_Svg::generate()->build(),
+			Atomic_Svg::generate()
+				->settings([
+					'classes' => Classes_Prop_Type::generate([$icon_class]),
+					'svg'     => Svg_Src_Prop_Type::generate([
+						'id'  => null,
+						'url' => Url_Prop_Type::generate(WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/BtnPro/assets/icons/arrow-right.svg'),
+					]),
+				])
+				->build(),
 		];
 	}
 
@@ -237,5 +346,31 @@ class AAE_A_Btn_Pro extends Atomic_Element_Base
 	public function get_style_depends(): array
 	{
 		return ['aae-a-btn-pro-css'];
+	}
+
+	/**
+	 * Inline CSS that Atomic::fix_frontend_atomic_css_order() injects right
+	 * after this widget's own stylesheet, once that stylesheet is guaranteed
+	 * to load after Elementor's base-desktop.css.
+	 *
+	 * WHY: `.e-aae-a-btn-pro-icon` and Elementor core's native `.e-svg-base`
+	 * default (65px, atomic-svg.php) share the exact same selector shape
+	 * (`.elementor .<class>`) and therefore the same specificity. Elementor
+	 * bundles every registered atomic element's base styles into ONE cached
+	 * file (base-desktop.css) ordered by registration, and its own native
+	 * elements register after ours — so `.e-svg-base` lands later in that
+	 * file and wins the tie on the frontend, even though the builder
+	 * recomputes styles live per request and shows the correct size.
+	 *
+	 * Deriving this from ICON_SIZE_PX (rather than a hardcoded value in a
+	 * .scss file) means changing that ONE constant is enough — no separate
+	 * value to remember to keep in sync.
+	 */
+	public static function get_frontend_css_override(): string
+	{
+		return sprintf(
+			'.elementor .e-aae-a-btn-pro-icon{width:%1$dpx;height:%1$dpx}',
+			self::ICON_SIZE_PX
+		);
 	}
 }

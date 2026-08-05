@@ -26,10 +26,13 @@ final class Assets
 	 * Custom CSS is here because it never moved to Pro (two bundled free presets
 	 * depend on it); nested-slider is here because it is a WIDGET runtime, not an
 	 * extension effect — the Nested Slider and Loop Grid Slider both enqueue it.
+	 * Image animation stays free (its Schema/Controls/Render never moved to Pro),
+	 * so its bundle is registered here too.
 	 */
 	const EFFECT_BUNDLES = [
-		'aae-effect-custom-css'    => 'effects/custom-css.js',
-		'aae-effect-nested-slider' => 'effects/nested-slider.js',
+		'aae-effect-custom-css'      => 'effects/custom-css.js',
+		'aae-effect-nested-slider'   => 'effects/nested-slider.js',
+		'aae-effect-image-animation' => 'effects/image-animation.js',
 		// No GSAP dependency — a muted looping <video> needs none, so this one
 		// costs only its own ~2KB on pages that use it.
 		'aae-effect-background-video' => 'effects/background-video.js',

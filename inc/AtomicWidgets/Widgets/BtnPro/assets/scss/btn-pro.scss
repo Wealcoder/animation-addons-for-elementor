@@ -1,3 +1,24 @@
+// Default design — basic pill button. Resting/hover/active background,
+// transform and typography are real PHP-declared styles
+// (define_base_styles()'s 'base' key, HOVER/ACTIVE states). Only the
+// icon's hover slide is a cross-element effect (the BUTTON's hover moving a
+// CHILD's style) that the atomic style schema can't express — a
+// Style_Variant's HOVER state only ever reacts to THIS element's own hover —
+// so it lives here instead.
+.e-aae-a-btn-pro-base:hover .e-aae-a-btn-pro-icon {
+  transform: translateX(5px);
+}
+
+// The icon-size override against Elementor's native `.e-svg-base` default
+// (65px) is NOT hardcoded here — a static duplicate of that value in this
+// compiled .scss file is what caused a real bug: changing
+// AAE_A_Btn_Pro::ICON_SIZE_PX from 34 to 25 had no visible effect, because
+// this file's own 34px kept winning regardless (both load after
+// base-desktop.css, so whichever prints last wins, and this file always
+// printed last). It's generated from that constant instead and injected as
+// inline CSS by Atomic::fix_frontend_atomic_css_order() — see
+// AAE_A_Btn_Pro::get_frontend_css_override().
+
 // 4  — Ripple (GSAP)
 .aae-btn-ripple .aae-btn-ripple-arrow::after {
   position: absolute;
