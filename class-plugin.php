@@ -1713,32 +1713,33 @@ class Plugin
 	 * @access public
 	 */
 	/**
-	 * Whether any legacy (v3) extension or widget is still switched on.
+	 * Whether any legacy (v3) WIDGET is still switched on.
 	 *
-	 * Both options hold key => bool arrays while anything is enabled, and are
-	 * saved as an empty string once the dashboard has everything switched off —
-	 * hence the is_array() guard before array_filter().
+	 * This gates the free v3 core `wcf--addons` (JS + CSS) — the v3 WIDGET base
+	 * layer (the widget stylesheet + the WCF_ADDONS_JS data). Only v3 widgets
+	 * need it, so the EXTENSION option is deliberately NOT checked:
+	 *   - v3 extensions add control sections to widgets; they render no widget of
+	 *     their own and do not need the widget base CSS.
+	 *   - anything that DOES need `wcf--addons` at runtime (a v3 extension bundle,
+	 *     or Pro's chrome bundle `wcf--addons-ex`) declares it as a script
+	 *     DEPENDENCY, so it is still pulled wherever it is actually used —
+	 *     independent of this standalone gate.
 	 *
-	 * Read lazily (at enqueue time, never in the constructor) so that filters on
-	 * option_wcf_save_extensions registered by the Pro plugin have already run.
+	 * The option holds a key => bool array while anything is enabled and an empty
+	 * string once the dashboard has switched everything off — hence the
+	 * is_array() guard before array_filter().
 	 *
 	 * @since 1.2.1
 	 * @access public
 	 * @static
 	 *
-	 * @return bool True when at least one legacy extension or widget is active.
+	 * @return bool True when at least one legacy widget is active.
 	 */
 	public static function has_active_legacy_assets()
 	{
-		foreach (array('wcf_save_extensions', 'wcf_save_widgets') as $option) {
-			$value = get_option($option);
-
-			if (is_array($value) && array_filter($value)) {
-				return true;
-			}
-		}
-
-		return false;
+		$value = get_option('wcf_save_widgets');
+		
+		return is_array($value) && (bool) array_filter($value);
 	}
 
 	public function register_starter_animation_style()
