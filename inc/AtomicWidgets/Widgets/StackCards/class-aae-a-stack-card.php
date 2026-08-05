@@ -92,11 +92,12 @@ class AAE_A_Stack_Card extends Atomic_Element_Base {
 
 	/**
 	 * The neutral card look — only props verified safe in the installed schema
-	 * (one bad key/value voids the WHOLE definition). Border + box-shadow are
-	 * deliberately left to the deck's scoped inline CSS / presets so an unverified
-	 * generate() shape can't silently void the whole card style. The frontend JS
-	 * handles positioning/stacking, so no `position` lives here (on the canvas the
-	 * card is a normal flow block).
+	 * (one bad key/value voids the WHOLE definition). The border is deliberately
+	 * left to the deck's scoped inline CSS / presets so an unverified generate()
+	 * shape can't silently void the whole card style; there is no box-shadow
+	 * default at all any more (it painted a grey halo on light pages — users add
+	 * their own from the Style tab). The frontend JS handles positioning/stacking,
+	 * so no `position` lives here (on the canvas the card is a normal flow block).
 	 */
 	protected function define_base_styles(): array {
 		$pad = Size_Prop_Type::generate( [ 'size' => 48, 'unit' => 'px' ] );
