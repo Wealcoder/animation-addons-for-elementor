@@ -3537,6 +3537,10 @@ final class Atomic
 		add_action('elementor/preview/enqueue_styles', function () {
 			add_action('wp_print_styles', [$this, 'fix_preview_css_order'], 0);
 		});
+		// Frontend counterpart: our atomic widget stylesheets (e.g. aae-a-btn-css)
+		// must print AFTER Elementor's own cached `base-desktop` styles. See
+		// fix_frontend_atomic_css_order()'s docblock for why.
+		add_action('wp_print_styles', [$this, 'fix_frontend_atomic_css_order'], 0);
 		add_action('elementor/editor/after_enqueue_scripts', [$this, 'enqueue_atomic_editor_scripts'], 100);
 
 		// AJAX endpoints for Editor previews
@@ -5261,6 +5265,83 @@ final class Atomic
 			}
 			if ( ! in_array( 'editor-preview', $style->deps, true ) ) {
 				$style->deps[] = 'editor-preview';
+			}
+		}
+	}
+
+	/**
+	 * Force our atomic widget stylesheets to print AFTER Elementor's cached
+	 * atomic base-styles file on the frontend.
+	 *
+	 * WHY THIS EXISTS:
+	 * Elementor merges EVERY registered atomic element's define_base_styles()
+	 * into one cached file (`base-desktop.css`), ordered by element
+	 * registration — and its own native elements (e-svg, e-heading, …)
+	 * register after ours. So when one of our named base-style classes (e.g.
+	 * AAE_A_Btn's `e-aae-a-btn-icon`, 30px) collides with a native default
+	 * sharing the exact same selector shape (`.elementor .<class>`, hence the
+	 * same specificity — e.g. `e-svg-base`'s 65px), the native rule lands
+	 * LATER in that single file and wins the tie on the frontend, even though
+	 * the builder recomputes styles live per request and shows the correct
+	 * value. Confirmed on a real page: `aae-a-btn-css`'s <link> already prints
+	 * BEFORE `base-desktop-css`'s in <head>, so a same-specificity override in
+	 * our own stylesheet loses regardless of what it says.
+	 *
+	 * Deliberately NOT !important and NOT extra selector specificity — either
+	 * would ALSO out-rank a future per-element LOCAL style override of the
+	 * same property, since Elementor compiles every local override to the
+	 * identical selector shape/specificity too. Depending on `base-desktop`
+	 * only changes ORDER: Elementor always enqueues local per-element
+	 * overrides even later than `base-desktop` (Atomic_Widget_Styles' 'local'
+	 * style key registers at priority 30 vs Atomic_Widget_Base_Styles' 'base'
+	 * key at priority 10, both on the same `elementor/atomic-widgets/styles/
+	 * register` action), so a real customization still wins.
+	 *
+	 * Mirrors fix_preview_css_order() above: patch wp_styles()->registered
+	 * deps directly at wp_print_styles (priority 0, the last safe moment
+	 * before anything is echoed) rather than declaring the dependency at
+	 * registration time, since our style handles are registered/enqueued
+	 * before Elementor's own `base-desktop` handle even exists.
+	 */
+	public function fix_frontend_atomic_css_order(): void {
+		if ( ! wp_style_is( 'base-desktop', 'registered' ) ) {
+			return;
+		}
+
+		$styles = wp_styles();
+
+		foreach ( $this->get_available_widgets() as $widget_data ) {
+			if ( empty( $widget_data['style_handle'] ) ) {
+				continue;
+			}
+
+			$handle = $widget_data['style_handle'];
+
+			if ( ! isset( $styles->registered[ $handle ] ) ) {
+				continue;
+			}
+
+			$style = $styles->registered[ $handle ];
+
+			if ( ! in_array( 'base-desktop', $style->deps, true ) ) {
+				$style->deps[] = 'base-desktop';
+			}
+
+			// Opt-in: a widget class may expose get_frontend_css_override() to
+			// inject a small inline CSS block (e.g. pinning a named base-style
+			// class's size against a native Elementor default sharing the same
+			// selector specificity) that must load after base-desktop.css.
+			// wp_add_inline_style() attaches directly after this handle's own
+			// <link>, and we've just guaranteed this handle loads after
+			// base-desktop above, so the inline block does too. The widget
+			// class is the single source of truth for the value — nothing is
+			// hardcoded here.
+			$class = $widget_data['class'] ?? null;
+			if ( $class && is_callable( [ $class, 'get_frontend_css_override' ] ) ) {
+				$css = $class::get_frontend_css_override();
+				if ( '' !== $css ) {
+					wp_add_inline_style( $handle, $css );
+				}
 			}
 		}
 	}

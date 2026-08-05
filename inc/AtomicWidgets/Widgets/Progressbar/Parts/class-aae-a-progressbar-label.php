@@ -101,6 +101,7 @@ class AAE_A_Progressbar_Label extends Atomic_Widget_Base {
 						->add_prop( 'display',    String_Prop_Type::generate( 'block' ) )
 						->add_prop( 'font-size',   Size_Prop_Type::generate( [ 'size' => 14, 'unit' => 'px' ] ) )
 						->add_prop( 'font-weight', String_Prop_Type::generate( '500' ) )
+						->add_prop( 'text-align',  String_Prop_Type::generate( 'center' ) )
 						->add_prop( 'color',       Color_Prop_Type::generate( '#1a1a1a' ) )
 						->add_prop( 'margin', Dimensions_Prop_Type::generate( [
 							'block-start'  => Size_Prop_Type::generate( [ 'size' => 8, 'unit' => 'px' ] ),

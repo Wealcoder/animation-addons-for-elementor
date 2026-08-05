@@ -59,18 +59,6 @@ const AUTO_PRESETS = {
     },
   },
 
-  // Progress Bar renders fine bare (its parts are real widget types with their
-  // own base styles), so this is a "start from a designed look" default rather
-  // than a repair. Circle deliberately: a fresh drop already IS the Line look,
-  // so auto-applying `progressbar-line` would be an invisible no-op — and,
-  // worse, it would seed the same [track, label] child shape the defaults have,
-  // which defaultChildren below could then never distinguish, re-applying
-  // forever. Circle's tree is [svg, label], so the test settles on one pass.
-  'e-aae-a-progressbar': {
-    presetId: 'progressbar-circle',
-    defaultChildren: ['e-aae-a-progressbar-track', 'e-aae-a-progressbar-label'],
-  },
-
   // Image Compare carries NO per-child layout of its own: the absolute
   // positioning, the before image's clip-path, the divider/thumb placement and
   // the z-index stack all live in the preset (define_base_styles() only styles

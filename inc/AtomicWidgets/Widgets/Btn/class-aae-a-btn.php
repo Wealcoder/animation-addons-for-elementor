@@ -43,6 +43,19 @@ class AAE_A_Btn extends Atomic_Element_Base
 {
 	use Has_Element_Template;
 
+	/**
+	 * Single source of truth for the icon's fixed square size.
+	 *
+	 * Read by BOTH define_base_styles() (the real default) AND
+	 * get_frontend_css_override() (the CSS that must load after Elementor's
+	 * base-desktop.css to win the tie against e-svg-base's native 65px
+	 * default — see Atomic::fix_frontend_atomic_css_order()). Change ONLY
+	 * this constant; a hardcoded duplicate in a .scss file would silently
+	 * keep winning forever even after this value changes (see AAE_A_Btn_Pro
+	 * for the incident that taught us this the hard way).
+	 */
+	const ICON_SIZE_PX = 30;
+
 	public function __construct($data = [], $args = null)
 	{
 		parent::__construct($data, $args);
@@ -241,8 +254,8 @@ class AAE_A_Btn extends Atomic_Element_Base
 		];
 
 		$icon_styles = [
-			'width'  => Size_Prop_Type::generate(['size' => 30, 'unit' => 'px']),
-			'height' => Size_Prop_Type::generate(['size' => 30, 'unit' => 'px']),
+			'width'  => Size_Prop_Type::generate(['size' => self::ICON_SIZE_PX, 'unit' => 'px']),
+			'height' => Size_Prop_Type::generate(['size' => self::ICON_SIZE_PX, 'unit' => 'px']),
 		];
 
 		return [
@@ -323,5 +336,31 @@ class AAE_A_Btn extends Atomic_Element_Base
 	public function get_style_depends(): array
 	{
 		return ['aae-a-btn-css'];
+	}
+
+	/**
+	 * Inline CSS that Atomic::fix_frontend_atomic_css_order() injects right
+	 * after this widget's own stylesheet, once that stylesheet is guaranteed
+	 * to load after Elementor's base-desktop.css.
+	 *
+	 * WHY: `.e-aae-a-btn-icon` and Elementor core's native `.e-svg-base`
+	 * default (65px, atomic-svg.php) share the exact same selector shape
+	 * (`.elementor .<class>`) and therefore the same specificity. Elementor
+	 * bundles every registered atomic element's base styles into ONE cached
+	 * file (base-desktop.css) ordered by registration, and its own native
+	 * elements register after ours — so `.e-svg-base` lands later in that
+	 * file and wins the tie on the frontend, even though the builder
+	 * recomputes styles live per request and shows the correct size.
+	 *
+	 * Deriving this from ICON_SIZE_PX (rather than a hardcoded value in a
+	 * .scss file) means changing that ONE constant is enough — no separate
+	 * value to remember to keep in sync.
+	 */
+	public static function get_frontend_css_override(): string
+	{
+		return sprintf(
+			'.elementor .e-aae-a-btn-icon{width:%1$dpx;height:%1$dpx}',
+			self::ICON_SIZE_PX
+		);
 	}
 }
