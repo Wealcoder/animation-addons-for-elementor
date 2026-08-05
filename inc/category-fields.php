@@ -233,8 +233,31 @@ function aae_inline_category_light_media_uploader( $hook_suffix ) {
 
 
 
-function aae_addon_tax_category_light_styles()
+/**
+ * Build the `.aae-cat-<slug>` badge CSS, cached in a transient.
+ *
+ * This used to walk every category (`hide_empty => false`) and read two term
+ * metas each, on EVERY front-end request, only to produce a string that is
+ * empty unless a term has a badge colour set. The result changes only when a
+ * category's badge colour changes, so it is cached and rebuilt on those term
+ * events (see aae_addon_flush_cat_badge_css). Returns '' when nothing is
+ * styled — stored as-is, so the walk does not repeat on a site that uses no
+ * badge colours.
+ *
+ * @return string
+ */
+function aae_addon_build_cat_badge_css()
 {
+    // String literal, not a top-level const: this file returns early (line ~9)
+    // when the Pro plugin is present, so a const there would never be defined,
+    // yet the function declarations below are hoisted and could still be called.
+    $transient = 'aae_cat_badge_css';
+
+    $cached = get_transient($transient);
+    if (false !== $cached) {
+        return $cached;
+    }
+
     $custom_css = '';
     $categories = get_terms(array(
         'taxonomy'   => 'category',
@@ -254,6 +277,31 @@ function aae_addon_tax_category_light_styles()
             }
         }
     }
+
+    set_transient($transient, $custom_css, WEEK_IN_SECONDS);
+
+    return $custom_css;
+}
+
+/** Drop the cache when a category's badge colour is added/changed/removed. */
+function aae_addon_flush_cat_badge_css($meta_id = 0, $object_id = 0, $meta_key = '')
+{
+    // Called both directly (category save hooks) and from *_term_meta hooks,
+    // where the third arg is the meta key — only ours matter.
+    if ('' !== $meta_key && ! in_array($meta_key, array('aae_cat_bg_color', 'aae_cat_color'), true)) {
+        return;
+    }
+    delete_transient('aae_cat_badge_css');
+}
+add_action('added_term_meta', 'aae_addon_flush_cat_badge_css', 10, 3);
+add_action('updated_term_meta', 'aae_addon_flush_cat_badge_css', 10, 3);
+add_action('deleted_term_meta', 'aae_addon_flush_cat_badge_css', 10, 3);
+add_action('edited_category', 'aae_addon_flush_cat_badge_css');
+add_action('delete_category', 'aae_addon_flush_cat_badge_css');
+
+function aae_addon_tax_category_light_styles()
+{
+    $custom_css = aae_addon_build_cat_badge_css();
 
     if ($custom_css != '') {
         // Attached to the always-enqueued inline carrier, not the legacy

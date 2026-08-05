@@ -288,6 +288,16 @@ class CodeSnippet {
 	 */
 	public function handle_add_wcf_code_snippet() {
 		check_admin_referer( 'wcf_code_snippet' );
+
+		// This stores code_content unsanitised — it is executed PHP/JS/CSS — so
+		// authorization cannot rest on the nonce alone. The snippet screen this
+		// posts from is registered with `manage_options` (add_submenu_page),
+		// so require the same capability here rather than trusting that the
+		// only way to hold the nonce is to have already passed that gate.
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'You are not allowed to do this.', 'animation-addons-for-elementor' ) );
+		}
+
 		$snippet_id = isset( $_POST['snippet_id'] ) ? absint( $_POST['snippet_id'] ) : '';
 		$referer    = wp_get_referer();
 

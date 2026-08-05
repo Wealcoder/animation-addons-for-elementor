@@ -12,6 +12,54 @@ if (function_exists('wcf_set_postview')) {
    add_action('wp', 'wcf_set_postview');
 }
 
+/**
+ * A stable per-visitor key for the public counters (shares/reactions).
+ *
+ * HASHED, never a raw IP — the raw address is not stored anywhere, only used
+ * to salt a one-way hash (auth-salted via wp_hash), matching the plugin's
+ * "no raw IP without opt-in" rule. Good enough to stop trivial inflation from
+ * one client; it is not identity, and is not meant to be.
+ */
+if (! function_exists('aae_public_counter_visitor_key')) {
+    function aae_public_counter_visitor_key()
+    {
+        $ip = isset($_SERVER['REMOTE_ADDR']) ? wp_unslash($_SERVER['REMOTE_ADDR']) : '';
+        $ua = isset($_SERVER['HTTP_USER_AGENT']) ? wp_unslash($_SERVER['HTTP_USER_AGENT']) : '';
+
+        return substr(wp_hash($ip . '|' . $ua), 0, 16);
+    }
+}
+
+/**
+ * Has this visitor already counted `$bucket` on `$post_id` within the window?
+ *
+ * These endpoints are public (wp_ajax_nopriv) and authorised only by the
+ * shared front-end nonce every visitor holds, so without this a single client
+ * — or a bot — can increment a post's share/reaction meta without limit, and
+ * on ANY post id. The caller validates the post; this throttles the write to
+ * once per visitor per bucket per window. Returns true when the write should
+ * be SKIPPED (already counted), false when it is fresh (and marks it counted).
+ *
+ * @param int    $post_id Target post.
+ * @param string $bucket  What is being counted, e.g. 'reaction' or 'share:facebook'.
+ * @param int    $window  Seconds the vote is remembered for.
+ * @return bool
+ */
+if (! function_exists('aae_public_counter_throttled')) {
+    function aae_public_counter_throttled($post_id, $bucket, $window = HOUR_IN_SECONDS)
+    {
+        $key = 'aae_pc_' . md5($post_id . '|' . $bucket . '|' . aae_public_counter_visitor_key());
+
+        if (false !== get_transient($key)) {
+            return true;
+        }
+
+        set_transient($key, 1, $window);
+
+        return false;
+    }
+}
+
 function aae_handle_aae_post_shares_count()
 {
 
@@ -29,12 +77,31 @@ function aae_handle_aae_post_shares_count()
         $post_id = intval(sanitize_text_field(wp_unslash($_POST['post_id'])));
         $social = sanitize_text_field(wp_unslash($_POST['social']));
 
+        // The target must be a real, published post — otherwise this writes
+        // share meta onto arbitrary or non-existent ids.
+        $post = get_post($post_id);
+        if (! $post || 'publish' !== $post->post_status) {
+            wp_send_json_error('Invalid post ID');
+        }
+
         // Retrieve current share count, increment it, or set it if it doesn't exist
         $current_shares = get_post_meta($post_id, 'aae_post_shares', true);
 
         if (! is_array($current_shares)) {
             $current_shares = [];
         }
+
+        // One count per visitor per network per window — a repeat is a graceful
+        // no-op returning the current totals, so the UI still reflects state
+        // without letting one client inflate the number.
+        if (aae_public_counter_throttled($post_id, 'share:' . $social)) {
+            wp_send_json_success(array(
+                'share_count' => array_sum(array_values($current_shares)),
+                'post_shares' => $current_shares,
+                'counted'     => false,
+            ));
+        }
+
         if (isset($current_shares[$social])) {
             $current_shares[$social]++;
         } else {
@@ -126,9 +193,21 @@ if (!function_exists('aaeaddon_post_lite_reaction_ajax')) {
             wp_send_json_error('Invalid data');
         }
 
+        // Real, published post only — no reaction meta on arbitrary ids.
+        $post = get_post($post_id);
+        if (! $post || 'publish' !== $post->post_status) {
+            wp_send_json_error('Invalid data');
+        }
+
         $reactions = get_post_meta($post_id, 'aaeaddon_post_reactions', true);
         if (! is_array($reactions)) {
             $reactions = [];
+        }
+
+        // One reaction per visitor per post per window; a repeat returns the
+        // current tally unchanged instead of inflating it.
+        if (aae_public_counter_throttled($post_id, 'reaction')) {
+            wp_send_json_success($reactions);
         }
 
         if (isset($reactions[$reaction])) {

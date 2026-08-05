@@ -46,6 +46,43 @@ function isEditorMobileMode( breakpoint ) {
 	return widthMatches;
 }
 
+/* Find the Nav a companion drives. `source_nav_id` can be empty (saved before
+ * the reconciler stamped it), so fall back to the page's only Nav — with two or
+ * more there is no safe guess, so make none. */
+function navForCompanion( companion ) {
+	const sourceId = companion.dataset.sourceNavId;
+
+	if ( sourceId ) {
+		const byId = document.querySelector( `.aae-a-nav[data-id="${ sourceId }"]` );
+		if ( byId ) return byId;
+	}
+
+	const all = document.querySelectorAll( '.aae-a-nav' );
+
+	return 1 === all.length ? all[ 0 ] : null;
+}
+
+/* Read one mobile setting, PREFERRING the Nav's own attribute. The companion's
+ * copies are a mirror written only while the Nav is selected, so they can be
+ * stale — that is the "sometimes works, sometimes not" bug. Companion values
+ * remain the fallback for pages saved before the Nav carried these. */
+function mobileCfg( companion, nav, navKey, companionKey, fallback ) {
+	const fromNav = nav?.dataset?.[ navKey ];
+
+	if ( fromNav !== undefined && '' !== fromNav ) {
+		return fromNav;
+	}
+
+	const fromCompanion = companion.dataset[ companionKey ];
+
+	return ( fromCompanion !== undefined && '' !== fromCompanion ) ? fromCompanion : fallback;
+}
+
+/* Resolved breakpoint in px. 320 floor matches the old inline expression. */
+function mobileBreakpoint( companion, nav ) {
+	return Math.max( 320, Number.parseInt( mobileCfg( companion, nav, 'mobileBreakpoint', 'breakpoint', '767' ), 10 ) || 767 );
+}
+
 /* Dropdown content = the first direct child of the nav-item that isn't the
  * label span/anchor. Typically an Elementor Flexbox the user styles themselves. */
 function getSub( item ) {
@@ -510,8 +547,16 @@ function initEditorMobilePreview( companion ) {
 	const render = () => {
 		window.clearTimeout( timer );
 		timer = window.setTimeout( () => {
-			const breakpoint = Math.max( 320, Number.parseInt( companion.dataset.breakpoint || '767', 10 ) );
-			const mobile = isEditorMobileMode( breakpoint ) && companion.dataset.enabled === 'true';
+			/* Source FIRST: the Nav owns the authoritative mobile config, so the
+			 * mode decision below has to be made against it, not against the
+			 * companion's possibly-unconverged mirror. Deliberately the STRICT
+			 * id lookup (not navForCompanion) so the orphan guard further down
+			 * keeps its exact meaning. */
+			const sourceId = companion.dataset.sourceNavId;
+			const source = sourceId ? document.querySelector( `.aae-a-nav[data-id="${ sourceId }"]` ) : null;
+			const breakpoint = mobileBreakpoint( companion, source );
+			const enabled = mobileCfg( companion, source, 'mobileEnabled', 'enabled', 'false' ) === 'true';
+			const mobile = isEditorMobileMode( breakpoint ) && enabled;
 			const drawer = companion.querySelector( '.aae-mobile-nav-drawer' );
 			const menuArea = companion.querySelector( '.aae-mobile-nav-menu-area' ) || drawer;
 			if ( ! drawer ) return;
@@ -519,10 +564,8 @@ function initEditorMobilePreview( companion ) {
 			/* Orphaned companion (its source Nav was deleted but this sibling
 			 * lingers): bail BEFORE mutating so we don't drive an observer/render
 			 * loop against a missing source. healthCheck tears it down shortly. */
-			const sourceId = companion.dataset.sourceNavId;
-			const source = sourceId ? document.querySelector( `.aae-a-nav[data-id="${ sourceId }"]` ) : null;
 			observeSource( source );
-			if ( sourceId && ! source && companion.dataset.enabled === 'true' && isEditorMobileMode( breakpoint ) ) {
+			if ( sourceId && ! source && enabled && isEditorMobileMode( breakpoint ) ) {
 				return;
 			}
 
@@ -609,12 +652,13 @@ function initEditorMobilePreview( companion ) {
 			ctrl.abort();
 			return;
 		}
-		const breakpoint = Math.max( 320, Number.parseInt( companion.dataset.breakpoint || '767', 10 ) );
-		const mobile = isEditorMobileMode( breakpoint ) && companion.dataset.enabled === 'true';
-		const menuArea = companion.querySelector( '.aae-mobile-nav-menu-area' ) ||
-			companion.querySelector( '.aae-mobile-nav-drawer' );
 		const sourceId = companion.dataset.sourceNavId;
 		const currentSource = sourceId ? document.querySelector( `.aae-a-nav[data-id="${ sourceId }"]` ) : null;
+		const breakpoint = mobileBreakpoint( companion, currentSource );
+		const mobile = isEditorMobileMode( breakpoint ) &&
+			mobileCfg( companion, currentSource, 'mobileEnabled', 'enabled', 'false' ) === 'true';
+		const menuArea = companion.querySelector( '.aae-mobile-nav-menu-area' ) ||
+			companion.querySelector( '.aae-mobile-nav-drawer' );
 		const replacedSource = currentSource !== observedSource;
 		const staleMode = companion.classList.contains( 'is-mobile' ) !== mobile;
 		const missingPreview = mobile && menuArea &&
@@ -629,8 +673,10 @@ function initEditorMobilePreview( companion ) {
 		}
 	}, { once: true } );
 	const previewObserver = new MutationObserver( () => {
-		const breakpoint = Math.max( 320, Number.parseInt( companion.dataset.breakpoint || '767', 10 ) );
-		if ( ! isEditorMobileMode( breakpoint ) || companion.dataset.enabled !== 'true' ) return;
+		const observerSource = navForCompanion( companion );
+		const breakpoint = mobileBreakpoint( companion, observerSource );
+		if ( ! isEditorMobileMode( breakpoint ) ||
+			mobileCfg( companion, observerSource, 'mobileEnabled', 'enabled', 'false' ) !== 'true' ) return;
 		const currentMenuArea = companion.querySelector( '.aae-mobile-nav-menu-area' ) ||
 			companion.querySelector( '.aae-mobile-nav-drawer' );
 		if ( currentMenuArea && ! currentMenuArea.querySelector( ':scope > .aae-mobile-editor-clone' ) ) {
@@ -1045,10 +1091,14 @@ register( {
 			initEditorMobilePreview( companion );
 			return;
 		}
-		if ( companion.dataset.enabled !== 'true' ) return;
+		/* Nav first: it holds the authoritative config, so the enabled check
+		 * below cannot run before it. The old code bailed on the stale mirror. */
+		const nav = navForCompanion( companion );
+		if ( ! nav ) return;
 
-		const sourceId = companion.dataset.sourceNavId;
-		const nav = document.querySelector( `.aae-a-nav[data-id="${ sourceId }"]` );
+		const sourceId = nav.getAttribute( 'data-id' ) || companion.dataset.sourceNavId;
+
+		if ( mobileCfg( companion, nav, 'mobileEnabled', 'enabled', 'false' ) !== 'true' ) return;
 		const mount = companion.querySelector( '.aae-mobile-nav-menu-area' ) ||
 			companion.querySelector( '.aae-mobile-nav-mount' ) ||
 			companion.querySelector( '.aae-mobile-nav-drawer' );
@@ -1081,7 +1131,9 @@ register( {
 		let drillStack = [];
 		let drillPanelRecords = [];
 
-		companion.classList.toggle( 'position-left', companion.dataset.position === 'left' );
+		companion.classList.toggle( 'position-left', mobileCfg( companion, nav, 'mobilePosition', 'position', 'right' ) === 'left' );
+		const lockScroll = mobileCfg( companion, nav, 'mobileLockScroll', 'lockScroll', 'true' ) === 'true';
+		const closeOnLink = mobileCfg( companion, nav, 'mobileCloseOnLink', 'closeOnLink', 'true' ) === 'true';
 	drawer.id = `aae-mobile-nav-drawer-${ id }`;
 	toggle.setAttribute( 'role', 'button' );
 	toggle.setAttribute( 'tabindex', '0' );
@@ -1205,7 +1257,7 @@ register( {
 			toggle.setAttribute( 'aria-expanded', 'false' );
 			drawer.setAttribute( 'aria-hidden', 'true' );
 			resetDrill();
-			if ( companion.dataset.lockScroll === 'true' ) document.body.classList.remove( 'aae-mobile-nav-scroll-lock' );
+			if ( lockScroll ) document.body.classList.remove( 'aae-mobile-nav-scroll-lock' );
 			if ( restoreFocus ) lastFocus?.focus?.();
 		};
 
@@ -1214,7 +1266,7 @@ register( {
 			companion.classList.add( 'is-open' );
 			toggle.setAttribute( 'aria-expanded', 'true' );
 			drawer.setAttribute( 'aria-hidden', 'false' );
-			if ( companion.dataset.lockScroll === 'true' ) document.body.classList.add( 'aae-mobile-nav-scroll-lock' );
+			if ( lockScroll ) document.body.classList.add( 'aae-mobile-nav-scroll-lock' );
 			window.requestAnimationFrame( () => close.focus?.() );
 		};
 
@@ -1243,7 +1295,7 @@ register( {
 			mounted = false;
 		};
 
-		const breakpoint = Math.max( 320, Number.parseInt( companion.dataset.breakpoint || '767', 10 ) );
+		const breakpoint = mobileBreakpoint( companion, nav );
 		media = window.matchMedia( `(max-width: ${ breakpoint }px)` );
 		const syncMode = () => media.matches ? enterMobile() : leaveMobile();
 		media.addEventListener( 'change', syncMode, { signal: sig } );
@@ -1275,7 +1327,7 @@ register( {
 				openDrillPanel( item, button );
 				return;
 			}
-			if ( companion.dataset.closeOnLink === 'true' && e.target.closest( 'a' ) && ! e.target.closest( '[data-has-dropdown="true"] > .aae-a-nav-item-label' ) ) {
+			if ( closeOnLink && e.target.closest( 'a' ) && ! e.target.closest( '[data-has-dropdown="true"] > .aae-a-nav-item-label' ) ) {
 				closeDrawer();
 			}
 		}, { capture: true, signal: sig } );

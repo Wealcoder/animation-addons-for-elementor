@@ -4,6 +4,7 @@ import { disposeAll } from './editor-bridge/disposables';
 import { FEATURES } from './editor-bridge/features';
 import { registerResponsiveSection } from './responsive-section';
 import { registerAaeElementControls } from './element-controls';
+import { startNavMenuAutoSync } from './element-controls/NavItemsControl';
 import { registerMaskStyleSection } from './style-sections/mask';
 import { startCardBranding } from './widget-panel/card-branding';
 import regularAnimationSection from './extensions/regular-animation/config';
@@ -133,7 +134,7 @@ import { startSlideSelectNav } from './editor-bridge/slide-select-nav';
 import { startSliderEditorPreview } from './editor-bridge/slider-editor-preview';
 import { startAutoPreset } from './editor-bridge/auto-preset';
 import { startFormGuards } from './editor-bridge/form-guards';
-import { startAdvancedHeadingInline } from './editor-bridge/advanced-heading-inline';
+import { startNavCompanionLifecycle } from './editor-bridge/nav-companion-lifecycle';
 
 function bootstrap() {
 	// `preview:loaded` fires on EVERY preview (re)load — switching documents,
@@ -161,9 +162,22 @@ function bootstrap() {
 	// (spec hard rules — warn, never block the save).
 	startFormGuards();
 
-	// Advanced Heading: click its text in the canvas to edit inline, with the
-	// same floating format toolbar core gives e-paragraph plus a colour field.
-	startAdvancedHeadingInline();
+	// Delete a Nav → its Mobile Nav companion goes with it. Must live HERE and
+	// not in the Nav's panel control: a panel control unmounts the moment the
+	// Nav is deleted, so its sweep can never run for that Nav.
+	startNavCompanionLifecycle();
+
+	// Navs imported from a WordPress menu re-sync themselves on document open,
+	// so the "Update from WordPress" button is only needed for a deliberate
+	// reset. Structure only — it never overwrites a label you edited here.
+	startNavMenuAutoSync();
+
+	// NOTE — Advanced Heading used to install a hand-rolled contenteditable
+	// toolbar here (startAdvancedHeadingInline, deleted 2026-08-04). Its text is
+	// now an html-v3 prop edited through core's Inline_Editing_Control in the
+	// panel, so there is nothing to boot. Do not reinstate a canvas toolbar
+	// without reading the widget's class docblock first: anything that writes
+	// `class`/`style` into the content is stripped by wp_kses on save.
 }
 
 if (window.elementor && window.elementor.on) {

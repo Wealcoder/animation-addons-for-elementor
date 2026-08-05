@@ -1454,7 +1454,7 @@ final class Atomic
 
 			'aae-a-advanced-heading' => [
 				'label'        => 'Advanced Heading',
-				'description'  => 'Heading that accepts raw inline HTML (span, mark, b, i, a …) with your own classes — highlight and style any part of the text yourself.',
+				'description'  => 'Heading with rich inline text editing — bold, italic, underline, strikethrough, super/subscript and links, on any tag from h1 to span.',
 				'icon'         => 'eicon-t-letter',
 				'is_pro'       => false,
 				'is_extension' => false,
@@ -3484,6 +3484,27 @@ final class Atomic
 
 		add_action('elementor/widgets/register', [$this, 'register_widgets']);
 		add_action('elementor/elements/elements_registered', [$this, 'register_elements']);
+
+		// Advanced Heading's `content` prop changed shape (string → html-v3) on
+		// 2026-08-04. Registered UNCONDITIONALLY, not behind is_widget_active():
+		// the read path has to keep converting even while the widget is switched
+		// off, or turning it off and on again is enough to erase every heading
+		// on the site the next time a page is saved. See the class docblock.
+		require_once __DIR__ . '/Widgets/AdvancedHeading/class-aae-advanced-heading-migration.php';
+		\WCF_ADDONS\AtomicWidgets\Widgets\AdvancedHeading\AAE_Advanced_Heading_Migration::register();
+
+		// A Mobile Nav is a SIBLING of its Nav, so Elementor never cascade-deletes
+		// it. The editor sweeps are best-effort JS; this is the save-time belt that
+		// stops an orphan ever being written to the document. Registered
+		// unconditionally for the same reason as the migration above — the guard
+		// must hold even while the widget is switched off.
+		require_once __DIR__ . '/Widgets/Nav/class-aae-a-nav-companion-sweep.php';
+		\WCF_ADDONS\AtomicWidgets\Widgets\Nav\AAE_A_Nav_Companion_Sweep::register();
+
+		// Rewrites saved pages when a WP menu changes, so an imported Nav updates on
+		// the FRONTEND without anyone opening Elementor.
+		require_once __DIR__ . '/Widgets/Nav/class-aae-a-nav-menu-sync.php';
+		\WCF_ADDONS\AtomicWidgets\Widgets\Nav\AAE_A_Nav_Menu_Sync::register();
 
 		// Panel grouping: AAE's atomic widgets otherwise inherit Elementor's
 		// generic "Atomic Elements" (v4-elements) category and all land in one
@@ -6133,7 +6154,7 @@ final class Atomic
 				$out[] = [
 					'id'    => (int) $menu->term_id,
 					'name'  => $menu->name,
-					'items' => $this->build_nav_menu_tree(is_array($items) ? $items : []),
+					'items' => self::build_nav_menu_tree(is_array($items) ? $items : []),
 				];
 			}
 		}
@@ -6149,7 +6170,7 @@ final class Atomic
 	 * @param array $items Output of wp_get_nav_menu_items().
 	 * @return array Nested nodes: [ [ 'title', 'url', 'target', 'children' ], ... ].
 	 */
-	private function build_nav_menu_tree(array $items): array
+	public static function build_nav_menu_tree(array $items): array
 	{
 		$by_parent = [];
 		foreach ($items as $item) {

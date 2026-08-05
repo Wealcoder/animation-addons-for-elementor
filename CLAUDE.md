@@ -900,6 +900,41 @@ a stored id list.
 duty: search by title, and resolve stored ids back to titles so a saved rule
 reloads as page names instead of bare numbers.
 
+## GSAP Library — per-library display conditions + the deferral trap (2026-08-04)
+
+The dashboard's GSAP Library toggles (`wcf_save_gsap_library`, Pro
+`inc/core/dashboard.php::gsap_library_push()`) enqueue every enabled library on
+EVERY page with a hard `gsap` dep. Two things shipped around that:
+
+**1. The toggles no longer kill Lazy Animation.** Measured before the fix: ONE
+enabled toggle collapsed the parked set from 5 handles to 1 — each toggle
+handle read as an eager consumer by `gsap_deferrable()` because it was missing
+from `LIBRARY_HANDLES` (the `flip` bug, back through a third list).
+`Lazy_Scripts::library_handles()` now merges the ACTIVE toggle handles into the
+family at runtime; after the fix the same page parks 21 handles and the chrome
+lane delivers all of them at `load`→idle (verified in-browser: Physics2D,
+GSDevTools, Pixi all live, zero errors). The parity probe
+(`E:\Local Testing\check-library-handles-parity.php`) walks this option-driven
+third list too.
+
+**2. Each library card gained a ⚙ gear → Display Conditions dialog** (same
+include/exclude rules as every Animation Settings feature). Storage is an
+optional `conditions` key on the element inside the same blob — **absent means
+everywhere, exactly the pre-feature behaviour**, so existing installs upgrade
+byte-identical. Evaluation is free's `Animation_Settings::display_matches()`
+behind `class_exists` (older free plugin ⇒ load everywhere); editor/preview
+always loads; save sanitises rules (ids are `intval`+`>0`, NEVER `absint` —
+`absint(-3)` is 3, a different valid post) and purges LiteSpeed/Rocket. Unknown
+locations are KEPT on save and neutralised at eval, so a deregistered CPT's
+rule survives an unrelated save. The Library screen moved from the Integrations
+page into an **Animation Settings tab** (`ShowIntegrationsLibrary embedded`,
+same pattern as Performance); `?tab=integrations` stays routable for bookmarks.
+The dialog paints its own panel — `DialogContent` ships `bg-transparent` and a
+caller that passes no background renders as floating controls (it did).
+
+Tests: `verify-library-conditions.php` (15 — old-user contract first),
+the parity probe (9), and the UI flow run 2026-08-04 (11, Playwright).
+
 ## Performance — lazy animation & reduced motion (shipped 2026-07-31)
 
 Dashboard → **Performance**. Governs how the animation runtime is DELIVERED,
@@ -1968,6 +2003,92 @@ reads `litespeed.conf.optm-js_comb` / `optm-css_comb` live, and the panel relabe
 the option to "Do not combine (nothing is combined)" plus a banner naming which
 of JS/CSS is off. An enabled control that cannot do anything is worse than an
 absent one — you set it, nothing changes, and you debug the wrong thing.
+
+#### What the UI does when there is NO cache plugin (2026-08-04)
+
+Same rule as the row above, applied to every surface at once: **a control that
+cannot act is hidden, and the hiding is explained where it is visible.** The
+gates, and what each one is gated on:
+
+| Surface | Gate | Behaviour without it |
+|---|---|---|
+| Performance → Cache Compatibility panel | `Cache_Compat::is_active()` | already hidden (`schema_for_ui()`), value kept in the option |
+| Admin bar → **AAE Cache** | `Cache_Compat::is_active()` in `can_edit()` | node absent |
+| Panel → Cache tab, LiteSpeed tab | `CFG.hasLs`, per tab | tab not built at all |
+| Panel → "What LiteSpeed did to this render" | `CFG.hasLs` | block not built |
+| Panel → Files tab | **not gated** | stays; only "Do not combine" is disabled |
+
+**`is_active()`, not `litespeed_active()`, for the admin bar** — a WP Rocket
+site has a real use for the Animation tab's marker override, and narrowing the
+gate to LiteSpeed would hide the node from them too.
+
+**The Files tab was the bug, and it is the one worth remembering.** It used to
+open with `if ( ! CFG.hasLs ) return noLs;`, which was too broad by three
+controls: "Do not load" is `wp_dequeue_script()` and Position/Strategy are
+`wp_script_add_data()` — plain WordPress, no cache plugin involved. Dropping a
+script a page does not need is the most useful thing in the panel for a site
+with no cache plugin, and it was unreachable. Gate per CONTROL, not per panel.
+
+**The disabled option is disabled, not removed.** A page saved while LiteSpeed
+was active can still carry `nocombine`; removing the option would make the row
+read "Load normally" and misreport a stored choice that returns the moment
+LiteSpeed does. The exclusion list is left untouched for the same reason.
+
+**Saying `noLs` three times is not an explanation.** "No LiteSpeed Cache
+detected on this site." answered none of the questions someone actually has —
+is this broken, can I get it back, is anything here still usable. One notice at
+the top (`noLsTitle`/`noLsBody`/`noLsStill`) answers all three, and `howStart`
+swaps to `howStartNoLs` because the original names the Cache tab, which is no
+longer on screen. **A first step pointing at a tab that does not exist is worse
+than no first step.**
+
+#### Cache_Advisor — which cache plugin, and can this server use it (2026-08-04)
+
+`pro/inc/Performance/class-cache-advisor.php`, rendered by `<CacheAdvice>` at the
+top of the free Performance screen. Rides the existing
+`aae/performance/dashboard_payload` filter as a `cache` key — no second seam.
+
+**The recommendation is a server × plugin matrix, and the server half is the
+part nobody is told.** LSCache's page cache runs ONLY on LiteSpeed/OpenLiteSpeed
+or through QUIC.cloud (`conf.cls.php:459` defines `LITESPEED_ON` only when
+`LITESPEED_ALLOWED` is set). On nginx or Apache every settings screen renders and
+nothing caches. So:
+
+| server | LiteSpeed Cache | state | says |
+|---|---|---|---|
+| LiteSpeed | active | `good` | "Your setup is ideal." |
+| LiteSpeed | absent | `warn` | the one real recommendation |
+| LiteSpeed | installed, off | `warn` | "…but LiteSpeed Cache is switched off." |
+| other | active | `info` | works, but page caching does not run here |
+| other | absent/off | `info` | informational only — never nag |
+
+Three things that are load-bearing, each of which was wrong first:
+
+- **`detect` delegates to `Cache_Compat`**, never re-tests the constants. Those
+  checks are what the whole fence hangs off; a second copy that drifted would put
+  the advice and the behaviour out of step.
+- **Installed-but-inactive is its own case.** The action link resolves to
+  Plugins / install-search / wordpress.org, and its `kind` is threaded INTO the
+  copy — an "install LiteSpeed Cache" headline over a "Go to Plugins" button
+  reads as the plugin not knowing what is already installed. `verify-cache-advice.mjs`
+  asserts the headline never says "install" when the kind is `activate`.
+- **Green must keep meaning "nothing to do".** LiteSpeed on nginx is `info`, not
+  `good` — green under "this server cannot use all of it" contradicts the
+  sentence it tints.
+
+**Adding W3 Total Cache (or any plugin) is one entry in `plugins()`** —
+`slug`/`name`/`detect`/`support`/`note`. It is already listed with
+`SUPPORT_PLANNED`, which reports it if running and never recommends it: someone
+on W3TC today needs to know AAE does not fence its files there yet, because
+that is the difference between "my animations broke when I turned on JS combine"
+being a mystery and being a known limitation with a stated workaround.
+
+**Tests:** `verify-cache-advice.mjs` (14 — payload shape, all three states, the
+rendered card matching the server's own headline and tone, the Cache
+Compatibility tab absent, and the admin-bar node gone with a guard against the
+false pass where the whole admin bar is missing) and `verify-panel-nols.mjs`
+(20 — tab set, which tab opens, the notice, the Files tab surviving with only
+"Do not combine" disabled). Both run against a site with LiteSpeed deactivated.
 
 #### Custom asset bundles — BUILT, PROVEN, THEN REMOVED (2026-08-02)
 

@@ -46,6 +46,19 @@ class WCF_Theme_Builder
 	private $deferred_template_styles = array();
 
 	/**
+	 * Per-request memo of get_current_post_by_condition(), keyed by template
+	 * type. The resolver runs a `-1` scan of the template CPT (plus, for
+	 * slug-based "specific" rules, a query over site content) and is called
+	 * 6–12 times per front-end page — from get_header, get_footer, body_class,
+	 * template_include and the builder-content actions. Within one request the
+	 * conditional tags it branches on do not change, so the answer is a pure
+	 * function of the template type: compute once, reuse.
+	 *
+	 * @var array<string, int|false>
+	 */
+	private $condition_cache = array();
+
+	/**
 	 * [instance] Initializes a singleton instance
 	 *
 	 */
@@ -644,30 +657,49 @@ class WCF_Theme_Builder
 
 	function get_ids_from_slugs_any_type($slugs = []) {
 
-		$clean_slugs = array_map('sanitize_title', $slugs);
+		$clean_slugs = array_filter(array_map('sanitize_title', (array) $slugs));
 
-		// Query ALL posts from ALL post types that match these slugs
-		$query = new \WP_Query([
-			'post_type'      => 'any',
-			'post_status'    => 'any',
-			'posts_per_page' => -1,
-		]);
-
-		$results = [];
-
-		if ($query->have_posts()) {
-			foreach ($query->posts as $post) {
-				if (in_array($post->post_name, $clean_slugs)) {
-					$results[] = $post->ID;
-				}
-			}
+		if (empty($clean_slugs)) {
+			return [];
 		}
 
-		return $results;
+		/*
+		 * Target the slugs at the SQL level with post_name__in instead of
+		 * loading every post of every type into memory and filtering with a
+		 * PHP in_array(). The old form hydrated the entire posts table on each
+		 * call — and this runs inside the per-request resolver, so on a large
+		 * site it was tens of thousands of post objects materialised per page.
+		 * fields=ids and no_found_rows keep it to the ids we actually need.
+		 */
+		$query = new \WP_Query([
+			'post_type'           => 'any',
+			'post_status'         => 'any',
+			'post_name__in'       => $clean_slugs,
+			'fields'              => 'ids',
+			'posts_per_page'      => -1,
+			'no_found_rows'       => true,
+			'ignore_sticky_posts' => true,
+		]);
+
+		return $query->posts;
 	}
 
 
+	/**
+	 * Memoising front door — see $condition_cache. The heavy resolution below
+	 * runs at most once per template type per request; every later caller in
+	 * the same request gets the cached answer.
+	 */
 	public function get_current_post_by_condition($tmpType = '')
+	{
+		if (array_key_exists($tmpType, $this->condition_cache)) {
+			return $this->condition_cache[$tmpType];
+		}
+
+		return $this->condition_cache[$tmpType] = $this->resolve_current_post_by_condition($tmpType);
+	}
+
+	private function resolve_current_post_by_condition($tmpType = '')
 	{
 		$query_args         = array(
 			'post_type'      => self::CPTTYPE,

@@ -73,6 +73,9 @@ class AAE_A_Nav_Item extends Atomic_Element_Base {
 			 * update, add and remove items by identity without disturbing the
 			 * user's styling. Empty for hand-added items (never touched by sync). */
 			'wp_id'              => String_Prop_Type::make()->default( '' ),
+			/* What WordPress last called this item. The menu sync updates the label
+			 * only while it still matches — after you edit it here, it is yours. */
+			'wp_title'           => String_Prop_Type::make()->default( '' ),
 		];
 	}
 

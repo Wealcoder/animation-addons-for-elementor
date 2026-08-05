@@ -188,11 +188,18 @@ function handle_lite_post_rating_submission()
 		wp_send_json_error(['message' => 'Invalid data.']);
 	}
 
-	$post_id     = sanitize_text_field(wp_unslash($_POST['post_id']));
+	$post_id     = intval(wp_unslash($_POST['post_id']));
 	$rating      = sanitize_text_field(wp_unslash($_POST['rating']));
 	$review_text = sanitize_text_field(wp_unslash($_POST['review']));
 
 	$user_id     = get_current_user_id();
+
+	// The target must be a real, published post — otherwise review_count below
+	// can be inflated on any (or a non-existent) id.
+	$target = get_post($post_id);
+	if (! $target || 'publish' !== $target->post_status) {
+		wp_send_json_error(['message' => __('Invalid data.', 'animation-addons-for-elementor')]);
+	}
 
 	$name  = '';
 	$email = '';
@@ -206,8 +213,16 @@ function handle_lite_post_rating_submission()
 	}
 
 
-	$require_approval = isset($_POST['require_approval']) && $_POST['require_approval'] === 'yes';
-	$post_status      = $require_approval ? 'pending' : 'publish';
+	/*
+	 * Moderation is decided SERVER-side — the request used to carry
+	 * `require_approval` (the widget prints it as a data-attribute), so anyone
+	 * posting to this public endpoint could send `no` and auto-publish. A
+	 * public submission is always `pending` unless the submitter can moderate,
+	 * or a site opts back in with the filter (server-side, never the client).
+	 */
+	$can_publish = current_user_can('moderate_comments')
+		|| apply_filters('aae_post_rating_auto_publish', false, $post_id, $user_id);
+	$post_status = $can_publish ? 'publish' : 'pending';
 
 	$post_title = get_the_title($post_id);
 	$post_type  = get_post_type($post_id);
@@ -232,9 +247,9 @@ function handle_lite_post_rating_submission()
 
 	if ($rating_post_id) {
 		wp_send_json_success([
-			'message' => $require_approval
-				? __('Review submitted for approval.', 'animation-addons-for-elementor')
-				: __('Review submitted successfully!', 'animation-addons-for-elementor')
+			'message' => $can_publish
+				? __('Review submitted successfully!', 'animation-addons-for-elementor')
+				: __('Review submitted for approval.', 'animation-addons-for-elementor')
 		]);
 	} else {
 		wp_send_json_error([

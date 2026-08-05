@@ -54,6 +54,9 @@ export const ShowContent = (item) => {
           <FreePro />
         </MainLayout.FirstLayout>
       );
+    // Same arrangement as `performance`: the sidebar no longer lists it (the
+    // Library screen became an Animation Settings tab) but the URL keeps
+    // working for anyone who bookmarked it.
     case "integrations":
       return (
         <MainLayout.FirstLayout>

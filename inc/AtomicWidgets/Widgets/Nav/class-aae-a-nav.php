@@ -80,6 +80,15 @@ class AAE_A_Nav extends Atomic_Element_Base {
 			 * Binds this nav to that WP menu so the panel offers "Update from
 			 * WordPress" (id-based smart sync) instead of a duplicate import. */
 			'imported_menu_id' => String_Prop_Type::make()->default( '' ),
+			/* Re-sync this nav from its linked WP menu on every editor open, so
+			 * "Update from WordPress" is only needed for a deliberate reset.
+			 * Structure only — auto-sync adds and removes items but never
+			 * overwrites a label or link edited here (see syncMenuLevel's
+			 * structureOnly path in NavItemsControl.jsx).
+			 * Defaults to FALSE and is switched on at import time instead: a page
+			 * imported before this existed must not change behaviour by itself
+			 * the next time someone opens it. */
+			'menu_autosync' => Boolean_Prop_Type::make()->default( false ),
 			/* Desktop dropdown indicator icon. nav.js inlines this SVG next to the
 			 * label of every item that has a dropdown (see injectDropdownIcons). */
 			'show_dropdown_icon' => Boolean_Prop_Type::make()->default( true ),
@@ -104,6 +113,78 @@ class AAE_A_Nav extends Atomic_Element_Base {
 		];
 	}
 
+	/**
+	 * Breakpoint choices, built from the SITE'S OWN active breakpoints.
+	 *
+	 * This used to be a hardcoded 767 / 1024 pair. Elementor's breakpoints are
+	 * user-configurable — 767 and 1024 are only the DEFAULTS
+	 * (`elementor/core/breakpoints/manager.php`) — so on a site that customised
+	 * them, the Nav switched to mobile at a width nothing else on the page
+	 * agreed with. Reading the real values is what makes the menu flip at the
+	 * same point as the rest of the site's responsive design.
+	 *
+	 * The stored value stays the PIXEL NUMBER as a string, exactly as before, so
+	 * every saved page keeps working untouched. (`mobile_breakpoint` has no
+	 * ->enum(), so no schema change is involved either.)
+	 *
+	 * 767 and 1024 are ALWAYS offered even when the site no longer uses them: an
+	 * atomic Select whose stored value is absent from its options renders blank
+	 * and can lose the value on the next save. A slightly longer list is a fair
+	 * price for never silently resetting a live page's breakpoint.
+	 *
+	 * Guard pattern copied from inc/Atomic/Traits/Responsive_Config.php:166.
+	 *
+	 * @return array<int, array{value: string, label: string}>
+	 */
+	private static function breakpoint_options(): array {
+		$by_px = [];
+
+		if ( class_exists( '\Elementor\Plugin' )
+			&& isset( \Elementor\Plugin::$instance->breakpoints )
+			&& method_exists( \Elementor\Plugin::$instance->breakpoints, 'get_active_breakpoints' ) ) {
+
+			foreach ( \Elementor\Plugin::$instance->breakpoints->get_active_breakpoints() as $key => $breakpoint ) {
+				if ( ! is_object( $breakpoint ) || ! method_exists( $breakpoint, 'get_value' ) ) {
+					continue;
+				}
+
+				$px = (int) $breakpoint->get_value();
+
+				if ( $px <= 0 ) {
+					continue;
+				}
+
+				$name = ucwords( str_replace( '_', ' ', (string) $key ) );
+
+				$by_px[ $px ] = [
+					'value' => (string) $px,
+					/* translators: 1: breakpoint name, 2: width in pixels. */
+					'label' => sprintf( __( '%1$s (%2$dpx)', 'animation-addons-for-elementor' ), $name, $px ),
+				];
+			}
+		}
+
+		// Legacy fallbacks — also the whole list when Elementor's manager is absent.
+		$legacy = [
+			767  => __( 'Mobile', 'animation-addons-for-elementor' ),
+			1024 => __( 'Tablet', 'animation-addons-for-elementor' ),
+		];
+
+		foreach ( $legacy as $px => $name ) {
+			if ( ! isset( $by_px[ $px ] ) ) {
+				$by_px[ $px ] = [
+					'value' => (string) $px,
+					/* translators: 1: breakpoint name, 2: width in pixels. */
+					'label' => sprintf( __( '%1$s (%2$dpx)', 'animation-addons-for-elementor' ), $name, $px ),
+				];
+			}
+		}
+
+		ksort( $by_px );
+
+		return array_values( $by_px );
+	}
+
 	protected function define_atomic_controls(): array {
 		return [
 			Section::make()
@@ -114,10 +195,7 @@ class AAE_A_Nav extends Atomic_Element_Base {
 						->set_label( __( 'Enable Mobile Menu', 'animation-addons-for-elementor' ) ),
 					Select_Control::bind_to( 'mobile_breakpoint' )
 						->set_label( __( 'Breakpoint', 'animation-addons-for-elementor' ) )
-						->set_options( [
-							[ 'value' => '767', 'label' => __( 'Mobile (767px)', 'animation-addons-for-elementor' ) ],
-							[ 'value' => '1024', 'label' => __( 'Tablet (1024px)', 'animation-addons-for-elementor' ) ],
-						] ),
+						->set_options( self::breakpoint_options() ),
 					Select_Control::bind_to( 'mobile_position' )
 						->set_label( __( 'Drawer Position', 'animation-addons-for-elementor' ) )
 						->set_options( [
@@ -153,6 +231,8 @@ class AAE_A_Nav extends Atomic_Element_Base {
 				->set_label( __( 'Menu Items', 'animation-addons-for-elementor' ) )
 				->set_id( 'menu_items' )
 				->set_items( [
+					Switch_Control::bind_to( 'menu_autosync' )
+						->set_label( __( 'Auto-sync from WordPress', 'animation-addons-for-elementor' ) ),
 					AAE_A_Nav_Items_Control::make()
 						->set_label( __( 'Items', 'animation-addons-for-elementor' ) )
 						->set_meta( [ 'layout' => 'custom' ] ),

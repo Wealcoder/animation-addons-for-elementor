@@ -13,7 +13,7 @@
  */
 
 import { controlsRegistry } from '@elementor/editor-editing-panel';
-import { stringArrayPropTypeUtil, stringPropTypeUtil } from '@elementor/editor-props';
+import { htmlV3PropTypeUtil, stringArrayPropTypeUtil, stringPropTypeUtil } from '@elementor/editor-props';
 
 import { SlidesControl } from './SlidesControl';
 import { AccordionItemsControl } from './AccordionItemsControl';
@@ -27,6 +27,7 @@ import { QueryChipsControl } from './QueryChipsControl';
 import { DrawPlayControl } from './DrawPlayControl';
 import { HotspotsControl } from './HotspotsControl';
 import { MediaUrlControl } from './MediaUrlControl';
+import { InlineTextControl } from './InlineTextControl';
 
 const ELEMENT_CONTROLS = [
 	{ type: 'aae-slides', component: SlidesControl, layout: 'full' },
@@ -48,6 +49,10 @@ const ELEMENT_CONTROLS = [
 	// Also prop-bound, to a plain String: a URL field plus a Media Library
 	// picker, for asset types Elementor has no control for (Lottie .json, …).
 	{ type: 'aae-media-url', component: MediaUrlControl, layout: 'full', propTypeUtil: stringPropTypeUtil },
+	// Rich text bound to an html-v3 prop. Core's own Inline_Editing_Control
+	// would bind the same value but renders no toolbar — its buttons live on
+	// the canvas, which is closed to third-party types. See InlineTextControl.
+	{ type: 'aae-inline-text', component: InlineTextControl, layout: 'full', propTypeUtil: htmlV3PropTypeUtil },
 ];
 
 let registered = false;

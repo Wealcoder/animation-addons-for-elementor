@@ -124,6 +124,7 @@ export const useLibrary = () => {
     mainState: { allLibrary },
     updateLibrary,
     updateActiveGroupLibrary,
+    updateLibraryConditions,
   } = useContext(AppContext);
-  return { allLibrary, updateLibrary, updateActiveGroupLibrary };
+  return { allLibrary, updateLibrary, updateActiveGroupLibrary, updateLibraryConditions };
 };

@@ -33,6 +33,7 @@ import {
 	v1ReadyEvent,
 } from '@elementor/editor-v1-adapters';
 import { useElement } from '@elementor/editor-editing-panel';
+import { track } from '../editor-bridge/disposables';
 import {
 	Box,
 	Button,
@@ -389,7 +390,8 @@ function directNavItems( container ) {
  * fresh getContainer at each step, because every create/update re-renders and
  * detaches prior container instances. `containerId` is the nav root or a
  * dropdown flexbox. */
-function syncMenuLevel( containerId, wpNodes ) {
+function syncMenuLevel( containerId, wpNodes, options = {} ) {
+	const { structureOnly = false } = options;
 	const container = getContainer( containerId );
 	if ( ! container ) {
 		return;
@@ -420,15 +422,32 @@ function syncMenuLevel( containerId, wpNodes ) {
 		const hasChildren = Array.isArray( node.children ) && node.children.length > 0;
 
 		if ( matchId ) {
-			const props = {
-				text: prop( 'html-v3', { content: prop( 'string', node.title || 'Menu Item' ), children: [] } ),
-				has_dropdown: prop( 'boolean', hasChildren ),
-			};
-			const link = importedLinkProp( node );
-			if ( link ) {
-				props.link = link;
+			if ( structureOnly ) {
+				/* Auto-sync runs unattended, so it never touches labels/links — that
+				 * would revert your edits on every open. Writes only on a real
+				 * difference, or the document goes dirty every time. */
+				const currentHasDropdown = !! readProp(
+					getContainer( matchId )?.settings?.get?.( 'has_dropdown' ),
+					false
+				);
+
+				if ( currentHasDropdown !== hasChildren ) {
+					updateElementSettings( {
+						id: matchId,
+						props: { has_dropdown: prop( 'boolean', hasChildren ) },
+					} );
+				}
+			} else {
+				const props = {
+					text: prop( 'html-v3', { content: prop( 'string', node.title || 'Menu Item' ), children: [] } ),
+					has_dropdown: prop( 'boolean', hasChildren ),
+				};
+				const link = importedLinkProp( node );
+				if ( link ) {
+					props.link = link;
+				}
+				updateElementSettings( { id: matchId, props } );
 			}
-			updateElementSettings( { id: matchId, props } );
 
 			if ( hasChildren ) {
 				let flex = findFirstChildOfType( getContainer( matchId ), 'e-flexbox' );
@@ -436,7 +455,7 @@ function syncMenuLevel( containerId, wpNodes ) {
 					flex = ensureItemFlexbox( matchId );
 				}
 				if ( flex ) {
-					syncMenuLevel( getElementId( flex ), node.children );
+					syncMenuLevel( getElementId( flex ), node.children, options );
 				}
 			}
 		} else {
@@ -450,6 +469,130 @@ function syncMenuLevel( containerId, wpNodes ) {
 			}
 		}
 	} );
+}
+
+/* ---------------------------------------------------------------- auto-sync */
+
+/** One-shot fetch of the site's WP menus. Same endpoint as useWpMenus(). */
+function fetchWpMenus() {
+	const cfg = window.AAE_LOOP_GRID || {};
+
+	if ( ! cfg.ajaxUrl ) {
+		return Promise.resolve( null );
+	}
+
+	const body = new window.FormData();
+	body.append( 'action', 'aae_get_nav_menus' );
+	body.append( 'nonce', cfg.nonce || '' );
+
+	return window.fetch( cfg.ajaxUrl, { method: 'POST', body, credentials: 'same-origin' } )
+		.then( ( r ) => r.json() )
+		// null (not []) on failure — runAutoSync relies on that distinction.
+		.then( ( json ) => ( Array.isArray( json?.data?.menus ) ? json.data.menus : null ) )
+		.catch( () => null );
+}
+
+/** Every nav in the document that has opted into auto-sync. */
+function collectAutoSyncNavs() {
+	const root = window.elementor?.documents?.getCurrent?.()?.container;
+
+	if ( ! root ) {
+		return [];
+	}
+
+	const found = [];
+
+	const walk = ( container ) => {
+		const model = container?.model;
+		const type = model?.get?.( 'elType' ) === 'widget'
+			? model.get( 'widgetType' )
+			: model?.get?.( 'elType' );
+
+		if ( 'e-aae-a-nav' === type ) {
+			const menuId = readProp( container.settings?.get?.( 'imported_menu_id' ), '' );
+			const autoSync = !! readProp( container.settings?.get?.( 'menu_autosync' ), false );
+
+			if ( menuId && autoSync ) {
+				found.push( { navId: container.id, menuId: String( menuId ) } );
+			}
+		}
+
+		( container?.children ? Array.from( container.children ) : [] ).forEach( walk );
+	};
+
+	walk( root );
+
+	return found;
+}
+
+function runAutoSync() {
+	const navs = collectAutoSyncNavs();
+
+	if ( ! navs.length ) {
+		return;
+	}
+
+	// Mutating under an open popover tears its MUI portal out from under React.
+	if ( isEditorModalOrPopoverActive() ) {
+		return;
+	}
+
+	fetchWpMenus().then( ( menus ) => {
+		/* null = request failed. Sync REMOVES items missing from the payload, so a
+		 * failure must mean "do nothing", never "delete everything". */
+		if ( ! menus ) {
+			return;
+		}
+
+		navs.forEach( ( { navId, menuId } ) => {
+			const menu = menus.find( ( m ) => String( m.id ) === menuId );
+
+			if ( ! menu || ! Array.isArray( menu.items ) || ! menu.items.length ) {
+				return;
+			}
+
+			if ( ! getContainer( navId ) || isEditorModalOrPopoverActive() ) {
+				return;
+			}
+
+			syncMenuLevel( navId, menu.items, { structureOnly: true } );
+		} );
+	} );
+}
+
+/**
+ * Re-sync imported navs from their WP menu once per document load. Lives in the
+ * editor-bridge, not a panel control — a control only exists while selected.
+ *
+ * Syncs the DOCUMENT, not the live page: items are real elements (which is what
+ * makes them styleable), so changes reach visitors only after a save.
+ */
+export function startNavMenuAutoSync() {
+	let done = false;
+	let attempts = 0;
+
+	// The container is not ready at preview load. Poll briefly, act once, stop;
+	// `track` also kills it on a document switch.
+	const timer = window.setInterval( () => {
+		attempts++;
+
+		if ( done || attempts > 40 ) {
+			window.clearInterval( timer );
+			return;
+		}
+
+		if ( ! window.elementor?.documents?.getCurrent?.()?.container ) {
+			return;
+		}
+
+		done = true;
+		window.clearInterval( timer );
+
+		// Out of the load path, and after the reconcilers have settled.
+		window.setTimeout( runAutoSync, 400 );
+	}, 250 );
+
+	track( () => window.clearInterval( timer ) );
 }
 
 /* Fetch the site's WordPress menus (with nested item trees) once. Reuses the
@@ -521,8 +664,8 @@ function NavMenuImport( { linkedMenuId, onImport, onUpdate } ) {
 		<Box sx={ { p: 1, border: '1px dashed', borderColor: 'divider', borderRadius: 1 } }>
 			<Typography variant="caption" sx={ { color: 'text.tertiary', display: 'block', mb: 0.5 } }>
 				{ isLinked
-					? 'Re-sync from WordPress: adds new items, removes deleted ones, refreshes labels/links — your styling stays.'
-					: 'Import from a WordPress menu (Appearance → Menus). Items are appended.' }
+					? 'Re-sync now and reset labels from WordPress. Styling stays.'
+					: 'Import from a WordPress menu. Items are appended.' }
 			</Typography>
 			<Stack direction="row" gap={ 0.5 } alignItems="center">
 				<Select
@@ -1383,7 +1526,15 @@ export function NavItemsControl( { label } ) {
 				options: { at: topCount + i },
 			} ) ),
 		} );
-		updateElementSettings( { id: navId, props: { imported_menu_id: prop( 'string', String( menu.id ) ) } } );
+		/* Switched on at IMPORT, not by the prop default — pages imported before
+		 * this feature existed keep their old behaviour until opted in. */
+		updateElementSettings( {
+			id: navId,
+			props: {
+				imported_menu_id: prop( 'string', String( menu.id ) ),
+				menu_autosync: prop( 'boolean', true ),
+			},
+		} );
 	};
 
 	/* Non-destructive re-sync of an already-imported menu (see syncMenuLevel):
@@ -1605,7 +1756,7 @@ export function NavItemsControl( { label } ) {
 				</Button>
 			</Stack>
 			<Typography variant="caption" sx={ { color: 'text.tertiary' } }>
-				{ 'Click a main item (▶) to unfold its submenu; opening another folds the previous one. Drag a row up/down to reorder, RIGHT to nest it under the item above, LEFT to move it out a level — just like the WordPress menu.' }
+				{ 'Click ▶ to open a submenu. Drag up/down to reorder, right to nest, left to unnest.' }
 			</Typography>
 
 			<NavMenuImport
