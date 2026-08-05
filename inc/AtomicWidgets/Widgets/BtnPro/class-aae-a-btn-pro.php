@@ -17,6 +17,9 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Transition_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Selection_Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Key_Value_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Background_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Svg_Src_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Url_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Select_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Switch_Control;
@@ -142,55 +145,100 @@ class AAE_A_Btn_Pro extends Atomic_Element_Base
 
 	protected function define_base_styles(): array
 	{
-		$button_styles = [
-			'width'         => Size_Prop_Type::generate(['size' => null, 'unit' => 'auto']),
-			'padding'       => Size_Prop_Type::generate(['size' => 10, 'unit' => 'px']),
-			'overflow'      => String_Prop_Type::generate('hidden'),
-			'position'      => String_Prop_Type::generate('relative'),
-			'z-index'       => Number_Prop_Type::generate(10),
-			'color'         => Color_Prop_Type::generate('#000000'),
+		$transition_500ms = Transition_Prop_Type::generate([
+			Selection_Size_Prop_Type::generate([
+				'selection' => Key_Value_Prop_Type::generate([
+					'key'   => String_Prop_Type::generate('All properties'),
+					'value' => String_Prop_Type::generate('all'),
+				]),
+				'size' => Size_Prop_Type::generate(['size' => 500, 'unit' => 'ms']),
+			]),
+		]);
 
-			'border-radius' => Size_Prop_Type::generate(['size' => 4, 'unit' => 'px']),
+		$button_styles = [
+			'width'    => Size_Prop_Type::generate(['size' => 'auto', 'unit' => 'auto']),
+			'height'   => Size_Prop_Type::generate(['size' => 'auto', 'unit' => 'auto']),
+			'position' => String_Prop_Type::generate('relative'),
+			'overflow' => String_Prop_Type::generate('hidden'),
+			'z-index'  => Number_Prop_Type::generate(10),
+
+			'background' => Background_Prop_Type::generate([
+				'color' => Color_Prop_Type::generate('#ffffff'),
+			]),
+			'color' => Color_Prop_Type::generate('#000000'),
+
+			'padding'       => Size_Prop_Type::generate(['size' => 16, 'unit' => 'px']),
+			'margin'        => Size_Prop_Type::generate(['size' => 5, 'unit' => 'px']),
+
 			'border-width'  => Size_Prop_Type::generate(['size' => 1, 'unit' => 'px']),
 			'border-color'  => Color_Prop_Type::generate('#000000'),
 			'border-style'  => String_Prop_Type::generate('solid'),
+			'border-radius' => Size_Prop_Type::generate(['size' => 4, 'unit' => 'px']),
 
-			'transition'    => Transition_Prop_Type::generate([
-				Selection_Size_Prop_Type::generate([
-					'selection' => Key_Value_Prop_Type::generate([
-						'key'   => String_Prop_Type::generate('All properties'),
-						'value' => String_Prop_Type::generate('all'),
-					]),
-					'size' => Size_Prop_Type::generate([
-						'size' => 700,
-						'unit' => 'ms',
-					]),
-				]),
-			]),
+			'font-size' => Size_Prop_Type::generate(['size' => 17, 'unit' => 'px']),
+			'cursor'    => String_Prop_Type::generate('pointer'),
+			'transition' => $transition_500ms,
 
 			'display'         => String_Prop_Type::generate('inline-flex'),
 			'flex-direction'  => String_Prop_Type::generate('row'),
-			'gap'             => Size_Prop_Type::generate(['size' => 8, 'unit' => 'px']),
 			'align-items'     => String_Prop_Type::generate('center'),
+			'justify-content' => String_Prop_Type::generate('center'),
 		];
 
-		$button_hover_styles = [
-			'color' => Color_Prop_Type::generate('#ffffff'),
+		// Label — no visual props of its own; just needs a `transition` so the
+		// hover-triggered padding shift (btn-pro.scss) animates instead of
+		// snapping. The shift itself has to live in scss: it's the BUTTON's
+		// hover state changing the LABEL's own padding — a cross-element
+		// effect the atomic style schema can't express (a Style_Variant's
+		// HOVER state only ever reacts to THIS element's own hover).
+		$label_styles = [
+			'transition' => $transition_500ms,
+		];
+
+		// Icon — sits just outside the button's right edge, invisible
+		// (opacity 0, and overflow:hidden on the button clips it too). Same
+		// cross-element limitation as the label: the actual reveal
+		// (opacity 1, moving inward) on button-hover is a scss rule in
+		// btn-pro.scss, not something declarable here. No `top`/inset on the
+		// block axis — being absolutely positioned but auto on that axis, it
+		// still gets centered by the button's own `align-items: center`.
+		$icon_styles = [
+			'position'         => String_Prop_Type::generate('absolute'),
+			'inset-inline-end' => Size_Prop_Type::generate(['size' => -8, 'unit' => 'px']),
+			'opacity'          => Size_Prop_Type::generate(['size' => 0, 'unit' => '%']),
+			'width'            => Size_Prop_Type::generate(['size' => 16, 'unit' => 'px']),
+			'height'           => Size_Prop_Type::generate(['size' => 16, 'unit' => 'px']),
+			'transition'       => $transition_500ms,
 		];
 
 		return [
 			'base' => Style_Definition::make()
-				->add_variant(Style_Variant::make()->add_props($button_styles))
-				// ->add_variant(Style_Variant::make()->set_state(Style_States::HOVER)->add_props($button_hover_styles)),
+				->add_variant(Style_Variant::make()->add_props($button_styles)),
+
+			'label' => Style_Definition::make()
+				->set_label(__('Label', 'animation-addons-for-elementor'))
+				->add_variant(Style_Variant::make()->add_props($label_styles)),
+
+			'icon' => Style_Definition::make()
+				->set_label(__('Icon', 'animation-addons-for-elementor'))
+				->add_variant(Style_Variant::make()->add_props($icon_styles)),
 		];
 	}
 
 	protected function define_default_children()
 	{
-		// Paragraph first so the label sits before the icon in flex order.
+		// Same "{element_type}-{key}" naming as define_base_styles() above —
+		// see AAE_A_Btn::define_default_children() / Accordion Item's
+		// header_icon for the same convention.
+		$label_class = static::get_element_type() . '-label';
+		$icon_class  = static::get_element_type() . '-icon';
+
+		// Label first, then icon — the icon is absolutely positioned (out of
+		// flex flow) so this only decides DOM/tab order, not visual order.
 		return [
 			Atomic_Paragraph::generate()
 				->settings([
+					'classes'   => Classes_Prop_Type::generate([$label_class]),
 					'paragraph' => Html_V3_Prop_Type::generate([
 						'content'  => String_Prop_Type::generate('Click here'),
 						'children' => [],
@@ -198,7 +246,15 @@ class AAE_A_Btn_Pro extends Atomic_Element_Base
 					'tag' => String_Prop_Type::generate('span'),
 				])
 				->build(),
-			Atomic_Svg::generate()->build(),
+			Atomic_Svg::generate()
+				->settings([
+					'classes' => Classes_Prop_Type::generate([$icon_class]),
+					'svg'     => Svg_Src_Prop_Type::generate([
+						'id'  => null,
+						'url' => Url_Prop_Type::generate(WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/BtnPro/assets/icons/arrow-right.svg'),
+					]),
+				])
+				->build(),
 		];
 	}
 
