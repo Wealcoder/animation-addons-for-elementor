@@ -433,6 +433,20 @@ class WCF_Admin_Init
 			'adminURL'       => admin_url(),
 			'smoothScroller' => json_decode(get_option('wcf_smooth_scroller')),
 
+			// When MotionKit is connected and its ScrollSmoother is switched on
+			// site-wide, AAE Pro stands its own smoother down (MotionKit has
+			// priority). Surface that here so the Scroll Smoother panel can tell the
+			// user why their setting is inactive instead of looking broken.
+			'motionkitSmoother' => array(
+				'active' => (
+					defined('MOTIONKIT_VERSION')
+					&& ! empty(get_option('motionkit_access_token'))
+					&& class_exists('\MotionKit\Frontend\ScrollSmoother')
+					&& method_exists('\MotionKit\Frontend\ScrollSmoother', 'is_enabled_globally')
+					&& \MotionKit\Frontend\ScrollSmoother::is_enabled_globally()
+				),
+			),
+
 			'cf_settings' => is_string($font_settings)
 				? json_decode($font_settings)
 				: array(),

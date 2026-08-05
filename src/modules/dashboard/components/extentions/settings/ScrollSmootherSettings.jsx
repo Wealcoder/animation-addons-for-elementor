@@ -25,6 +25,7 @@ import { useRef, useState } from "react";
 import { deviceList } from "@//config/data/deviceList";
 import { Badge } from "@/components/ui/badge";
 import {
+  InfoIcon,
   LaptopIcon,
   MonitorIcon,
   SmartphoneIcon,
@@ -205,6 +206,18 @@ const ScrollSmootherSettings = () => {
           </p>
         </div>
       </div>
+
+      {WCF_ADDONS_ADMIN?.motionkitSmoother?.active && (
+        <div className="mt-5 flex items-start gap-2.5 rounded-lg border border-[#ffab47]/40 bg-[#ffab47]/10 p-3">
+          <InfoIcon size={18} className="mt-[1px] shrink-0 text-[#c77700]" />
+          <p className="text-[13px] leading-5 text-[var(--900,#181B25)]">
+            {__(
+              "Smooth scrolling is currently handled by MotionKit. Animation Addons' Scroll Smoother is paused site-wide while MotionKit's ScrollSmoother is enabled — these settings won't take effect until you turn MotionKit's smoother off.",
+              "animation-addons-for-elementor"
+            )}
+          </p>
+        </div>
+      )}
 
       <div className="mt-7">
         <Tabs value={tabValue} onValueChange={setTabValue}>
