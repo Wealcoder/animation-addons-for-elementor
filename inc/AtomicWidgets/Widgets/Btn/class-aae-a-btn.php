@@ -155,9 +155,9 @@ class AAE_A_Btn extends Atomic_Element_Base
 			'z-index'  => Number_Prop_Type::generate(10),
 
 			'background' => Background_Prop_Type::generate([
-				'color' => Color_Prop_Type::generate('#ffffff'),
+				'color' => Color_Prop_Type::generate('#3d405b'),
 			]),
-			'color' => Color_Prop_Type::generate('#000000'),
+			'color' => Color_Prop_Type::generate('#ffffff'),
 
 			'padding' => Dimensions_Prop_Type::generate([
 				'block-start'  => Size_Prop_Type::generate(['size' => 12, 'unit' => 'px']),
@@ -167,8 +167,8 @@ class AAE_A_Btn extends Atomic_Element_Base
 			]),
 
 			'border-radius' => Size_Prop_Type::generate(['size' => 8, 'unit' => 'px']),
-			'border-width'  => Size_Prop_Type::generate(['size' => 1, 'unit' => 'px']),
-			'border-color'  => Color_Prop_Type::generate('#000000'),
+			'border-width'  => Size_Prop_Type::generate(['size' => 0, 'unit' => 'px']),
+			// 'border-color'  => Color_Prop_Type::generate('#000000'),
 			'border-style'  => String_Prop_Type::generate('solid'),
 
 			'transition'    => Transition_Prop_Type::generate([

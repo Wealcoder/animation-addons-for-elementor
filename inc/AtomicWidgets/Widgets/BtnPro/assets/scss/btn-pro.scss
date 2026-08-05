@@ -1,15 +1,12 @@
-// Default design — arrow icon slides in from the right on hover. The base
-// (hidden) position/opacity are real PHP-declared styles (define_base_styles()'s
-// 'label'/'icon' keys, classes "e-aae-a-btn-pro-label"/"-icon"); only the
-// BUTTON-hover-changes-a-SIBLING'S-style part has to live here — the atomic
-// style schema has no way to express "when an ANCESTOR is hovered" on an
-// element's own Style_Variant, only "when THIS element is hovered".
+// Default design — basic pill button. Resting/hover/active background,
+// transform and typography are real PHP-declared styles
+// (define_base_styles()'s 'base' key, HOVER/ACTIVE states). Only the
+// icon's hover slide is a cross-element effect (the BUTTON's hover moving a
+// CHILD's style) that the atomic style schema can't express — a
+// Style_Variant's HOVER state only ever reacts to THIS element's own hover —
+// so it lives here instead.
 .e-aae-a-btn-pro-base:hover .e-aae-a-btn-pro-icon {
-  opacity: 1;
-  inset-inline-end: 12px;
-}
-.e-aae-a-btn-pro-base:hover .e-aae-a-btn-pro-label {
-  padding-right: 15px;
+  transform: translateX(5px);
 }
 
 // 4  — Ripple (GSAP)
