@@ -54,20 +54,17 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
  * compiles to, so no runtime change was needed — only the panel/PHP side was
  * missing the wiring.
  *
- * Deliberately NO default color/border-color baked into a SELECTED variant
- * in define_base_styles() (there was one briefly — removed the same day it
- * was added). `.e--selected` (persistent — "this is the current tab") and
- * `:active` (transient — mouse literally down) both match the SAME element
- * at once when a visitor presses the currently-selected tab, and both
- * compile to identical specificity (`.elementor` + 2 classes, or
- * `.elementor` + 1 class + 1 pseudo-class — same weight either way). A tie
- * is resolved purely by which stylesheet/rule renders later, which is not
- * something this widget controls — so a hardcoded SELECTED color in the
- * shared base stylesheet silently beat a user's own per-instance `:active`
- * override the one time this was tried. Leaving SELECTED's default empty
- * means there's nothing in base-desktop.css left to tie against; the
- * accent color for both "current tab" and "being pressed" is entirely the
- * builder's choice from the Style panel's Selected/Active states.
+ * A default SELECTED-state look (dark pill background, white text, rounded
+ * corners) IS baked into define_base_styles() below, by deliberate choice —
+ * an earlier revision left it empty specifically to avoid a CSS-specificity
+ * tie with a per-instance `:active` override (`.e--selected` and `:active`
+ * both match the same element while a visitor presses the currently-selected
+ * tab, and both compile to identical specificity, so the winner depends on
+ * stylesheet load order rather than anything this widget controls). That
+ * tradeoff is superseded now: every fresh tab needs a visible "this is the
+ * active one" indicator out of the box, not just via a builder's manual
+ * per-instance styling. If a builder later customizes `:active` and it fights
+ * this default, that's the accepted cost of shipping a usable default.
  */
 class AAE_A_Toggle_Switcher_Tab extends Atomic_Widget_Base {
 
@@ -189,6 +186,15 @@ class AAE_A_Toggle_Switcher_Tab extends Atomic_Widget_Base {
 							] ),
 						] ),
 					] )
+				)
+				->add_variant(
+					Style_Variant::make()
+						->set_state( Style_States::SELECTED )
+						->add_props( [
+							'background'    => Background_Prop_Type::generate( [ 'color' => Color_Prop_Type::generate( '#1a1a1a' ) ] ),
+							'color'         => Color_Prop_Type::generate( '#ffffff' ),
+							'border-radius' => Size_Prop_Type::generate( [ 'size' => 8, 'unit' => 'px' ] ),
+						] )
 				),
 		];
 	}

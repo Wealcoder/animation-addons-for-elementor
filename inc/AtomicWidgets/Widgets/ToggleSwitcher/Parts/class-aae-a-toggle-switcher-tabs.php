@@ -22,10 +22,8 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Dimensions_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Border_Width_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Color_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Background_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
-use Elementor\Modules\AtomicWidgets\Styles\Style_States;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
 require_once __DIR__ . '/class-aae-a-toggle-switcher-tab.php';
@@ -114,83 +112,39 @@ class AAE_A_Toggle_Switcher_Tabs extends Atomic_Element_Base {
 	}
 
 	/**
-	 * A locally-scoped class id, matching the shape of Elementor's own
-	 * per-instance "local" style classes (e-<random>-<random>). Must be
-	 * randomly generated, not a fixed literal string: build_default_inner_children()
-	 * runs fresh on every drop, and the class name IS the compiled CSS
-	 * selector — two Toggle Switchers on the same page sharing one literal
-	 * class would mean editing one instance's Selected-state color from the
-	 * Style panel silently repaints the other instance too.
-	 */
-	private static function local_class_id(): string {
-		return 'e-' . wp_generate_password( 8, false ) . '-' . wp_generate_password( 7, false );
-	}
-
-	/**
-	 * A per-instance "Selected" pill look, seeded on each default tab's own
-	 * local class rather than the shared Tab base style. Tab's own
-	 * define_base_styles() deliberately ships the Selected state with NO
-	 * default color — see class-aae-a-toggle-switcher-tab.php's docblock for
-	 * the incident that decision avoids: a hardcoded SELECTED color there
-	 * once tied in CSS specificity with a builder's own per-instance
-	 * `:active` override and silently won. Seeding it HERE instead — one
-	 * local class per default tab, exactly what a builder gets by opening
-	 * the Style panel and setting Selected-state colors by hand — carries
-	 * none of that risk.
-	 */
-	private static function selected_pill_style( string $local_class ): array {
-		return [
-			$local_class => Style_Definition::make()
-				->set_label( 'local' )
-				->add_variant(
-					Style_Variant::make()
-						->set_state( Style_States::SELECTED )
-						->add_props( [
-							'background'    => Background_Prop_Type::generate( [ 'color' => Color_Prop_Type::generate( '#1a1a1a' ) ] ),
-							'color'         => Color_Prop_Type::generate( '#ffffff' ),
-							'border-radius' => Size_Prop_Type::generate( [ 'size' => 8, 'unit' => 'px' ] ),
-						] )
-				)
-				->build( $local_class ),
-		];
-	}
-
-	/**
 	 * Exposed publicly so the parent Switcher's define_default_children() can
 	 * seed a fresh Tabs row directly (mirrors
 	 * AAE_A_Timeline_Item::build_default_inner_children()). Tab 1 carries the
 	 * literal `e--selected` class as the default active tab; toggle-switcher.js
-	 * toggles the same class at runtime alongside `.active`.
+	 * toggles the same class at runtime alongside `.active`. The active-tab
+	 * look itself (background/color/border-radius) comes from Tab's own
+	 * shared define_base_styles() SELECTED variant — see
+	 * class-aae-a-toggle-switcher-tab.php — not from anything seeded here.
 	 */
 	public static function build_default_inner_children(): array {
-		$tab_monthly_class = self::local_class_id();
-		$tab_yearly_class  = self::local_class_id();
+		return [
+			AAE_A_Toggle_Switcher_Tab::generate()
+				->editor_settings( [ 'title' => 'Tab — Monthly' ] )
+				->settings( [
+					'classes' => Classes_Prop_Type::generate( [ 'aae-ts-label-before', 'active', 'e--selected' ] ),
+					'text'    => Html_V3_Prop_Type::generate( [
+						'content'  => String_Prop_Type::generate( 'Monthly' ),
+						'children' => [],
+					] ),
+				] )
+				->build(),
 
-		$tab_monthly = AAE_A_Toggle_Switcher_Tab::generate()
-			->editor_settings( [ 'title' => 'Tab — Monthly' ] )
-			->settings( [
-				'classes' => Classes_Prop_Type::generate( [ 'aae-ts-label-before', 'active', 'e--selected', $tab_monthly_class ] ),
-				'text'    => Html_V3_Prop_Type::generate( [
-					'content'  => String_Prop_Type::generate( 'Monthly' ),
-					'children' => [],
-				] ),
-			] )
-			->build();
-		$tab_monthly['styles'] = self::selected_pill_style( $tab_monthly_class );
-
-		$tab_yearly = AAE_A_Toggle_Switcher_Tab::generate()
-			->editor_settings( [ 'title' => 'Tab — Yearly' ] )
-			->settings( [
-				'classes' => Classes_Prop_Type::generate( [ 'aae-ts-label-after', $tab_yearly_class ] ),
-				'text'    => Html_V3_Prop_Type::generate( [
-					'content'  => String_Prop_Type::generate( 'Yearly' ),
-					'children' => [],
-				] ),
-			] )
-			->build();
-		$tab_yearly['styles'] = self::selected_pill_style( $tab_yearly_class );
-
-		return [ $tab_monthly, $tab_yearly ];
+			AAE_A_Toggle_Switcher_Tab::generate()
+				->editor_settings( [ 'title' => 'Tab — Yearly' ] )
+				->settings( [
+					'classes' => Classes_Prop_Type::generate( [ 'aae-ts-label-after' ] ),
+					'text'    => Html_V3_Prop_Type::generate( [
+						'content'  => String_Prop_Type::generate( 'Yearly' ),
+						'children' => [],
+					] ),
+				] )
+				->build(),
+		];
 	}
 
 	protected function define_default_children() {
