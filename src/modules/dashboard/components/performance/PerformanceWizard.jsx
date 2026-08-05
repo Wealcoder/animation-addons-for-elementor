@@ -46,6 +46,122 @@ const ToggleRow = ({ id, label, description, checked, disabled, onChange, danger
   </div>
 );
 
+/**
+ * The one destructive, IRREVERSIBLE action in the wizard: permanently delete the
+ * site's v3 configuration. Unlike every toggle above it, there is no backup — so
+ * it is gated behind a typed "DELETE" confirmation on both sides (the server
+ * refuses the same token too). Page content is never touched: the copy says so,
+ * and a site that still renders v3 keeps its used widgets via the server's own
+ * rescue.
+ */
+const CleanV3 = ({ onCleaned }) => {
+  const [open, setOpen] = useState(false);
+  const [text, setText] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [done, setDone] = useState(false);
+
+  const run = async () => {
+    setBusy(true);
+    try {
+      const data = await ajax("aae_wizard_clean_v3", { confirm: "DELETE" });
+      setDone(true);
+      setOpen(false);
+      setText("");
+      onCleaned?.();
+      const n = (data?.removed_options?.length || 0) + (data?.removed_kit_keys || 0);
+      toast.success(__("v3 data deleted", "animation-addons-for-elementor"), {
+        position: "top-right",
+        description:
+          n > 0
+            ? __("Your v3 settings were permanently removed.", "animation-addons-for-elementor")
+            : __("There was no v3 configuration left to remove.", "animation-addons-for-elementor"),
+      });
+    } catch (e) {
+      toast.error(__("Could not delete v3 data", "animation-addons-for-elementor"), {
+        position: "top-right",
+        description: String(e?.message || e),
+      });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  if (done) {
+    return (
+      <div className="mt-5 rounded-lg border border-[#E1E4EA] bg-[#f6f8fa] p-3 text-[12px] text-[var(--600,#525866)]">
+        {__(
+          "v3 configuration permanently deleted. Your page content is untouched; any v3 widget still used on a page comes back by itself.",
+          "animation-addons-for-elementor",
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-5 rounded-lg border border-[#f4c7c3] bg-[#fef3f2] p-3.5">
+      <p className="text-[13px] font-semibold text-[#912018]">
+        {__("Permanently delete v3 data", "animation-addons-for-elementor")}
+      </p>
+      <p className="text-[12px] text-[#a15c00] mt-1 leading-relaxed">
+        {__(
+          "Deletes the v3 widget, extension, GSAP-library and smooth-scroll settings, plus the v3 site chrome and popup styling stored in Elementor Site Settings. This CANNOT be undone. Your page content is not touched, and the Pro licence, menus and v4 settings are left alone.",
+          "animation-addons-for-elementor",
+        )}
+      </p>
+
+      {!open ? (
+        <button
+          type="button"
+          className="mt-3 text-[12px] font-medium text-[#b42318] underline"
+          onClick={() => setOpen(true)}
+          data-aae-wizard-clean-open
+        >
+          {__("I understand — delete v3 data…", "animation-addons-for-elementor")}
+        </button>
+      ) : (
+        <div className="mt-3">
+          <label className="block text-[12px] text-[#912018] mb-1.5">
+            {__('Type DELETE to confirm', "animation-addons-for-elementor")}
+          </label>
+          <input
+            type="text"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder="DELETE"
+            disabled={busy}
+            autoFocus
+            className="w-full rounded-[8px] border border-[#f4c7c3] bg-white px-3 py-2 text-[13px] outline-none focus:border-[#b42318]"
+            data-aae-wizard-clean-input
+          />
+          <div className="flex items-center gap-2 mt-3">
+            <Button
+              className="rounded-[8px] bg-[#b42318] hover:bg-[#912018]"
+              disabled={busy || text !== "DELETE"}
+              onClick={run}
+              data-aae-wizard-clean-confirm
+            >
+              {busy
+                ? __("Deleting…", "animation-addons-for-elementor")
+                : __("Delete permanently", "animation-addons-for-elementor")}
+            </Button>
+            <Button
+              variant="secondary"
+              className="rounded-[8px]"
+              disabled={busy}
+              onClick={() => {
+                setOpen(false);
+                setText("");
+              }}
+            >
+              {__("Cancel", "animation-addons-for-elementor")}
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const PerformanceWizard = ({ wizard, perfSettings, onSavePerf, onDone, onExit }) => {
   // Local, live view of the v3 state (the payload is the initial snapshot).
   const [v3, setV3] = useState({
@@ -273,6 +389,12 @@ const PerformanceWizard = ({ wizard, perfSettings, onSavePerf, onDone, onExit })
               onChange={toggleLegacy}
             />
           </div>
+
+          <CleanV3
+            onCleaned={() =>
+              setV3((s) => ({ ...s, widgets: false, extensions: false, global: false }))
+            }
+          />
         </div>
       )}
 
