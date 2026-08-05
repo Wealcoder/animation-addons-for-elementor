@@ -1,0 +1,350 @@
+{
+  "name": "Clip Reveal — Wipe",
+  "model": {
+    "elType": "e-aae-a-stack-cards",
+    "settings": {
+      "animation": {
+        "$$type": "string",
+        "value": "clip-reveal"
+      },
+      "direction": {
+        "$$type": "string",
+        "value": "up"
+      },
+      "overlap": {
+        "$$type": "number",
+        "value": 85
+      },
+      "scroll_length": {
+        "$$type": "number",
+        "value": 80
+      },
+      "ease": {
+        "$$type": "string",
+        "value": "power2.inOut"
+      }
+    },
+    "elements": [
+      {
+        "elType": "e-aae-a-stack-card",
+        "settings": {
+          "classes": {
+            "$$type": "classes",
+            "value": [
+              "e-scclip-c1"
+            ]
+          }
+        },
+        "elements": [
+          {
+            "elType": "widget",
+            "widgetType": "e-heading",
+            "elements": [],
+            "settings": {
+              "title": {
+                "$$type": "html-v3",
+                "value": {
+                  "content": {
+                    "$$type": "string",
+                    "value": "Wipe"
+                  },
+                  "children": []
+                }
+              }
+            }
+          },
+          {
+            "elType": "widget",
+            "widgetType": "e-paragraph",
+            "elements": [],
+            "settings": {
+              "paragraph": {
+                "$$type": "html-v3",
+                "value": {
+                  "content": {
+                    "$$type": "string",
+                    "value": "No movement — just a clean edge travelling up."
+                  },
+                  "children": []
+                }
+              }
+            }
+          }
+        ],
+        "editor_settings": {
+          "title": "Card 1"
+        },
+        "styles": {
+          "e-scclip-c1": {
+            "id": "e-scclip-c1",
+            "label": "local",
+            "type": "class",
+            "variants": [
+              {
+                "meta": {
+                  "breakpoint": "desktop",
+                  "state": null
+                },
+                "props": {
+                  "background": {
+                    "$$type": "background",
+                    "value": {
+                      "color": {
+                        "$$type": "color",
+                        "value": "#3b0764"
+                      }
+                    }
+                  },
+                  "color": {
+                    "$$type": "color",
+                    "value": "#faf5ff"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "elType": "e-aae-a-stack-card",
+        "settings": {
+          "classes": {
+            "$$type": "classes",
+            "value": [
+              "e-scclip-c2"
+            ]
+          }
+        },
+        "elements": [
+          {
+            "elType": "widget",
+            "widgetType": "e-heading",
+            "elements": [],
+            "settings": {
+              "title": {
+                "$$type": "html-v3",
+                "value": {
+                  "content": {
+                    "$$type": "string",
+                    "value": "Crisp"
+                  },
+                  "children": []
+                }
+              }
+            }
+          },
+          {
+            "elType": "widget",
+            "widgetType": "e-paragraph",
+            "elements": [],
+            "settings": {
+              "paragraph": {
+                "$$type": "html-v3",
+                "value": {
+                  "content": {
+                    "$$type": "string",
+                    "value": "Cheapest animation here, and the sharpest."
+                  },
+                  "children": []
+                }
+              }
+            }
+          }
+        ],
+        "editor_settings": {
+          "title": "Card 2"
+        },
+        "styles": {
+          "e-scclip-c2": {
+            "id": "e-scclip-c2",
+            "label": "local",
+            "type": "class",
+            "variants": [
+              {
+                "meta": {
+                  "breakpoint": "desktop",
+                  "state": null
+                },
+                "props": {
+                  "background": {
+                    "$$type": "background",
+                    "value": {
+                      "color": {
+                        "$$type": "color",
+                        "value": "#581c87"
+                      }
+                    }
+                  },
+                  "color": {
+                    "$$type": "color",
+                    "value": "#faf5ff"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "elType": "e-aae-a-stack-card",
+        "settings": {
+          "classes": {
+            "$$type": "classes",
+            "value": [
+              "e-scclip-c3"
+            ]
+          }
+        },
+        "elements": [
+          {
+            "elType": "widget",
+            "widgetType": "e-heading",
+            "elements": [],
+            "settings": {
+              "title": {
+                "$$type": "html-v3",
+                "value": {
+                  "content": {
+                    "$$type": "string",
+                    "value": "Layered"
+                  },
+                  "children": []
+                }
+              }
+            }
+          },
+          {
+            "elType": "widget",
+            "widgetType": "e-paragraph",
+            "elements": [],
+            "settings": {
+              "paragraph": {
+                "$$type": "html-v3",
+                "value": {
+                  "content": {
+                    "$$type": "string",
+                    "value": "Each card covers the one below it exactly."
+                  },
+                  "children": []
+                }
+              }
+            }
+          }
+        ],
+        "editor_settings": {
+          "title": "Card 3"
+        },
+        "styles": {
+          "e-scclip-c3": {
+            "id": "e-scclip-c3",
+            "label": "local",
+            "type": "class",
+            "variants": [
+              {
+                "meta": {
+                  "breakpoint": "desktop",
+                  "state": null
+                },
+                "props": {
+                  "background": {
+                    "$$type": "background",
+                    "value": {
+                      "color": {
+                        "$$type": "color",
+                        "value": "#6b21a8"
+                      }
+                    }
+                  },
+                  "color": {
+                    "$$type": "color",
+                    "value": "#faf5ff"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "elType": "e-aae-a-stack-card",
+        "settings": {
+          "classes": {
+            "$$type": "classes",
+            "value": [
+              "e-scclip-c4"
+            ]
+          }
+        },
+        "elements": [
+          {
+            "elType": "widget",
+            "widgetType": "e-heading",
+            "elements": [],
+            "settings": {
+              "title": {
+                "$$type": "html-v3",
+                "value": {
+                  "content": {
+                    "$$type": "string",
+                    "value": "Complete"
+                  },
+                  "children": []
+                }
+              }
+            }
+          },
+          {
+            "elType": "widget",
+            "widgetType": "e-paragraph",
+            "elements": [],
+            "settings": {
+              "paragraph": {
+                "$$type": "html-v3",
+                "value": {
+                  "content": {
+                    "$$type": "string",
+                    "value": "Nothing overshoots, nothing bounces."
+                  },
+                  "children": []
+                }
+              }
+            }
+          }
+        ],
+        "editor_settings": {
+          "title": "Card 4"
+        },
+        "styles": {
+          "e-scclip-c4": {
+            "id": "e-scclip-c4",
+            "label": "local",
+            "type": "class",
+            "variants": [
+              {
+                "meta": {
+                  "breakpoint": "desktop",
+                  "state": null
+                },
+                "props": {
+                  "background": {
+                    "$$type": "background",
+                    "value": {
+                      "color": {
+                        "$$type": "color",
+                        "value": "#7e22ce"
+                      }
+                    }
+                  },
+                  "color": {
+                    "$$type": "color",
+                    "value": "#faf5ff"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+}

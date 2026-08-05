@@ -28,6 +28,8 @@ import { DrawPlayControl } from './DrawPlayControl';
 import { HotspotsControl } from './HotspotsControl';
 import { MediaUrlControl } from './MediaUrlControl';
 import { InlineTextControl } from './InlineTextControl';
+import { StackCardsControl } from './StackCardsControl';
+import { StackPreviewControl } from './StackPreviewControl';
 
 const ELEMENT_CONTROLS = [
 	{ type: 'aae-slides', component: SlidesControl, layout: 'full' },
@@ -42,6 +44,8 @@ const ELEMENT_CONTROLS = [
 	{ type: 'aae-form-actions', component: FormActionsControl, layout: 'full' },
 	{ type: 'aae-form-conditions', component: FormConditionsControl, layout: 'full' },
 	{ type: 'aae-draw-play', component: DrawPlayControl, layout: 'full' },
+	{ type: 'aae-stack-cards', component: StackCardsControl, layout: 'full' },
+	{ type: 'aae-stack-preview', component: StackPreviewControl, layout: 'full' },
 	// Prop-bound (unlike the element-controls above): the panel wraps it in a
 	// SettingsField for its bind key; useBoundProp(stringArrayPropTypeUtil)
 	// reads/writes the String_Array prop.

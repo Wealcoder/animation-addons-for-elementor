@@ -1,19 +1,19 @@
 {#
-  AAE Stack Cards — deck root, faithful to the reference "Scroll Stack" (example 1):
-  a tall SCENE (root) → a sticky, full-viewport, overflow-hidden VIEWPORT that
-  keeps the deck centred → the DECK the cards absolutely stack inside. The cards
-  are real AAE_A_Stack_Card children (children_placeholder). All motion config
-  rides on data-attrs the JS reads.
+  AAE Stack Cards — deck root: a tall SCENE (root) → a full-viewport,
+  overflow-hidden VIEWPORT that ScrollTrigger pins → the DECK the cards
+  absolutely stack inside. The cards are real AAE_A_Stack_Card children
+  (children_placeholder). All motion config rides on data-attrs the JS reads.
 
   The <style> block carries only layout mechanics a base style can't express
-  (sticky/scene/deck sizing) + a cosmetic card border/shadow default at zero
-  specificity + editor-only rules that flatten the whole thing into a plain,
-  selectable vertical list on the canvas (the scroll-stack is a frontend-only
-  JS effect).
+  (sticky/scene/deck sizing, the progress indicator) + a cosmetic card
+  border/shadow default at zero specificity + editor-only rules that flatten
+  the whole thing into a plain, selectable vertical list on the canvas.
 #}
 {% set classes = ['aae-a-stack-cards', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') | trim %}
 {% set dw = settings.deck_width | default(620) %}
 {% set dh = settings.deck_height | default(400) %}
+{% set mobile_behavior = settings.mobile_behavior | default('stack') %}
+{% set mobile_bp = settings.mobile_breakpoint | default('767') %}
 
 <div class="{{ classes }} {{ editor_classes | default('') }}"
     data-id="{{ id }}"
@@ -26,6 +26,19 @@
     data-deck-height="{{ dh }}"
     data-scroll-length="{{ settings.scroll_length | default(100) }}"
     data-scrub="{{ settings.scrub | default(0.6) }}"
+    data-direction="{{ settings.direction | default('up') }}"
+    data-offset-step="{{ settings.offset_step | default(34) }}"
+    data-scale-step="{{ settings.scale_step | default(5) }}"
+    data-rotate-step="{{ settings.rotate_step | default(0) }}"
+    data-fade-back="{{ settings.fade_back | default(0) }}"
+    data-overlap="{{ settings.overlap | default(70) }}"
+    data-ease="{{ settings.ease | default('power2.out') }}"
+    data-perspective="{{ settings.perspective | default(1200) }}"
+    data-snap-cards="{{ settings.snap_cards ? 'true' : 'false' }}"
+    data-mobile-behavior="{{ settings.mobile_behavior | default('stack') }}"
+    data-mobile-breakpoint="{{ settings.mobile_breakpoint | default('767') }}"
+    data-pin-type="{{ settings.pin_type | default('fixed') }}"
+    data-markers="{{ settings.markers ? 'true' : 'false' }}"
     {% if settings._cssid is defined and settings._cssid is not empty %}
         id="{{ settings._cssid | e('html_attr') }}"
     {% endif %}
@@ -35,14 +48,14 @@
     {{ editor_attributes | default('') | raw }}>
 
     <style>
-        /* Scene (root): tall scroll track — its real height is set by the JS from
-           the card count so the sticky viewport has travel. */
+        /* Scene (root): tall scroll track — ScrollTrigger's pinSpacing provides
+           the travel, so no manual height is set here. */
         [data-id="{{ id }}"] { position: relative; display: block; width: 100%; }
 
         /* Full-viewport stage that keeps the deck centred while the scene scrolls
            past — the JS ScrollTrigger-PINS this (CSS `position: sticky` is
            unreliable inside Elementor's transformed container ancestors).
-           overflow:hidden clips the cards to the screen (reference). */
+           overflow:hidden clips the cards to the screen. */
         [data-id="{{ id }}"] .aae-a-stack-cards-viewport {
             position: relative; height: 100vh;
             display: flex; align-items: center; justify-content: center;
@@ -56,12 +69,78 @@
             margin: 0 auto;
         }
 
-        /* Cosmetic card border/shadow default — zero specificity so a user's
-           Style-tab choice always wins. */
+        /* Cosmetic card border default — zero specificity so a user's Style-tab
+           choice always wins. No box-shadow: the deck ships design-less, and the
+           old `0 24px 80px rgba(0,0,0,.3)` default painted a heavy grey halo
+           around every card on a light page. Add one from the Style tab if you
+           want it. */
         :where([data-id="{{ id }}"] [data-e-type="e-aae-a-stack-card"]) {
             border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.3);
         }
+
+        {% if 'stack' != mobile_behavior %}
+        /* Mobile falls back to a flowing list, so the DECK SIZING has to unwind
+           with it. The rules above size a stacked deck — a 100vh clipped
+           viewport wrapping a fixed {{ dh }}px box — and cards laid out in
+           normal flow inside that simply get cut off after the first one or
+           two. CSS, not JS, so it holds before the runtime boots and with
+           JS off entirely. */
+        @media (max-width: {{ mobile_bp }}px) {
+            [data-id="{{ id }}"] .aae-a-stack-cards-viewport {
+                height: auto;
+                overflow: visible;
+                display: block;
+            }
+            [data-id="{{ id }}"] .aae-a-stack-cards-deck {
+                width: 100%;
+                height: auto;
+                margin: 0;
+                display: flex;
+                flex-direction: column;
+                gap: 16px;
+            }
+            /* !important beats the inline absolute positioning left behind when
+               a resize crosses the breakpoint from the stacked desktop scene.
+               :not(.aae-stack-previewing) for the same reason the editor rules
+               carry it — the panel's Preview needs the cards back on GSAP. */
+            [data-id="{{ id }}"]:not(.aae-stack-previewing) [data-e-type="e-aae-a-stack-card"] {
+                position: relative !important;
+                inset: auto !important;
+                width: 100%;
+            }
+        }
+        {% endif %}
+
+        {% if settings.show_progress %}
+        /* Progress indicator. The host is empty markup; the JS fills it to match
+           the card count and drives it from ScrollTrigger's onUpdate. */
+        [data-id="{{ id }}"] .aae-a-stack-cards-progress {
+            position: absolute; z-index: 5; left: 50%; bottom: 32px;
+            transform: translateX(-50%);
+            display: flex; align-items: center; gap: 8px;
+            pointer-events: auto;
+        }
+        [data-id="{{ id }}"] .aae-a-stack-cards-dot {
+            width: 8px; height: 8px; padding: 0; border: 0; border-radius: 50%;
+            background: currentColor; opacity: .3; cursor: pointer;
+            transition: opacity .25s ease, transform .25s ease;
+        }
+        [data-id="{{ id }}"] .aae-a-stack-cards-dot.is-active { opacity: 1; transform: scale(1.5); }
+        [data-id="{{ id }}"] .aae-a-stack-cards-progress[data-style="bar"] {
+            width: min({{ dw }}px, 90vw); height: 3px;
+            background: currentColor; border-radius: 3px;
+        }
+        /* The bar host is translucent track; the fill is the opaque part. */
+        [data-id="{{ id }}"] .aae-a-stack-cards-progress[data-style="bar"] { opacity: .25; }
+        [data-id="{{ id }}"] .aae-a-stack-cards-progress-fill {
+            display: block; width: 100%; height: 100%; border-radius: 3px;
+            background: currentColor; transform: scaleX(0); transform-origin: left center;
+        }
+        [data-id="{{ id }}"] .aae-a-stack-cards-progress-count {
+            font-size: 13px; letter-spacing: .04em; opacity: .7;
+            font-variant-numeric: tabular-nums;
+        }
+        {% endif %}
 
         /* Editor-only. In edit-mode Elementor mounts the real cards as DIRECT
            children of the root (NOT inside the Twig viewport/deck), so those
@@ -73,8 +152,13 @@
         .elementor-edit-mode [data-id="{{ id }}"] { height: auto !important; min-height: 0 !important; }
         .elementor-editor-active [data-id="{{ id }}"] .aae-a-stack-cards-viewport,
         .elementor-edit-mode [data-id="{{ id }}"] .aae-a-stack-cards-viewport { display: none !important; }
-        .elementor-editor-active [data-id="{{ id }}"] > [data-e-type="e-aae-a-stack-card"],
-        .elementor-edit-mode [data-id="{{ id }}"] > [data-e-type="e-aae-a-stack-card"] {
+        /* `:not(.aae-stack-previewing)` is LOAD-BEARING, not decoration. This rule
+           carries `transform: none !important`, and a stylesheet !important beats
+           GSAP's un-important inline transform — so without the guard the preview
+           would pose every card and none of them would move. Excluding the
+           previewing state is the only way to hand the transform back to JS. */
+        .elementor-editor-active [data-id="{{ id }}"]:not(.aae-stack-previewing) > [data-e-type="e-aae-a-stack-card"],
+        .elementor-edit-mode [data-id="{{ id }}"]:not(.aae-stack-previewing) > [data-e-type="e-aae-a-stack-card"] {
             position: relative !important; inset: auto !important;
             transform: none !important; opacity: 1 !important; margin-bottom: 16px;
         }
@@ -82,10 +166,24 @@
 
         /* "Edit Cards" switch OFF → the JS adds .aae-stack-collapsed to the root;
            show only the FIRST card, hide the rest (each card after another card).
-           The general-sibling selector is robust to any non-card node in between. */
-        .elementor-editor-active [data-id="{{ id }}"].aae-stack-collapsed [data-e-type="e-aae-a-stack-card"] ~ [data-e-type="e-aae-a-stack-card"],
-        .elementor-edit-mode [data-id="{{ id }}"].aae-stack-collapsed [data-e-type="e-aae-a-stack-card"] ~ [data-e-type="e-aae-a-stack-card"] {
+           The general-sibling selector is robust to any non-card node in between.
+           Suspended during preview, which always shows the whole deck. */
+        .elementor-editor-active [data-id="{{ id }}"].aae-stack-collapsed:not(.aae-stack-previewing) [data-e-type="e-aae-a-stack-card"] ~ [data-e-type="e-aae-a-stack-card"],
+        .elementor-edit-mode [data-id="{{ id }}"].aae-stack-collapsed:not(.aae-stack-previewing) [data-e-type="e-aae-a-stack-card"] ~ [data-e-type="e-aae-a-stack-card"] {
             display: none !important;
+        }
+
+        /* Preview Animation is running: give the cards a real stacking box back.
+           Note there is deliberately NO transform/opacity here — those belong to
+           GSAP for the duration. The JS restores the editing layout on stop. */
+        .elementor-editor-active [data-id="{{ id }}"].aae-stack-previewing > [data-e-type="e-aae-a-stack-card"],
+        .elementor-edit-mode [data-id="{{ id }}"].aae-stack-previewing > [data-e-type="e-aae-a-stack-card"] {
+            position: absolute !important; inset: 0 !important;
+            margin-bottom: 0 !important; display: block !important;
+        }
+        .elementor-editor-active [data-id="{{ id }}"].aae-stack-previewing,
+        .elementor-edit-mode [data-id="{{ id }}"].aae-stack-previewing {
+            overflow: hidden; perspective: {{ settings.perspective | default(1200) }}px;
         }
     </style>
 
@@ -93,5 +191,8 @@
         <div class="aae-a-stack-cards-deck">
             {{ children_placeholder | raw }}
         </div>
+        {% if settings.show_progress %}
+        <div class="aae-a-stack-cards-progress" data-style="{{ settings.progress_style | default('dots') }}"></div>
+        {% endif %}
     </div>
 </div>

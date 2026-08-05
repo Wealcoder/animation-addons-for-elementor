@@ -1,0 +1,350 @@
+{
+  "name": "Fan Deck — Hand of Cards",
+  "model": {
+    "elType": "e-aae-a-stack-cards",
+    "settings": {
+      "animation": {
+        "$$type": "string",
+        "value": "fan-deck"
+      },
+      "rotate_step": {
+        "$$type": "number",
+        "value": 9
+      },
+      "offset_step": {
+        "$$type": "number",
+        "value": 60
+      },
+      "scroll_length": {
+        "$$type": "number",
+        "value": 70
+      },
+      "ease": {
+        "$$type": "string",
+        "value": "back.out(1.7)"
+      }
+    },
+    "elements": [
+      {
+        "elType": "e-aae-a-stack-card",
+        "settings": {
+          "classes": {
+            "$$type": "classes",
+            "value": [
+              "e-scfan-c1"
+            ]
+          }
+        },
+        "elements": [
+          {
+            "elType": "widget",
+            "widgetType": "e-heading",
+            "elements": [],
+            "settings": {
+              "title": {
+                "$$type": "html-v3",
+                "value": {
+                  "content": {
+                    "$$type": "string",
+                    "value": "Ace"
+                  },
+                  "children": []
+                }
+              }
+            }
+          },
+          {
+            "elType": "widget",
+            "widgetType": "e-paragraph",
+            "elements": [],
+            "settings": {
+              "paragraph": {
+                "$$type": "html-v3",
+                "value": {
+                  "content": {
+                    "$$type": "string",
+                    "value": "The one you lead with."
+                  },
+                  "children": []
+                }
+              }
+            }
+          }
+        ],
+        "editor_settings": {
+          "title": "Card 1"
+        },
+        "styles": {
+          "e-scfan-c1": {
+            "id": "e-scfan-c1",
+            "label": "local",
+            "type": "class",
+            "variants": [
+              {
+                "meta": {
+                  "breakpoint": "desktop",
+                  "state": null
+                },
+                "props": {
+                  "background": {
+                    "$$type": "background",
+                    "value": {
+                      "color": {
+                        "$$type": "color",
+                        "value": "#831843"
+                      }
+                    }
+                  },
+                  "color": {
+                    "$$type": "color",
+                    "value": "#fdf2f8"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "elType": "e-aae-a-stack-card",
+        "settings": {
+          "classes": {
+            "$$type": "classes",
+            "value": [
+              "e-scfan-c2"
+            ]
+          }
+        },
+        "elements": [
+          {
+            "elType": "widget",
+            "widgetType": "e-heading",
+            "elements": [],
+            "settings": {
+              "title": {
+                "$$type": "html-v3",
+                "value": {
+                  "content": {
+                    "$$type": "string",
+                    "value": "King"
+                  },
+                  "children": []
+                }
+              }
+            }
+          },
+          {
+            "elType": "widget",
+            "widgetType": "e-paragraph",
+            "elements": [],
+            "settings": {
+              "paragraph": {
+                "$$type": "html-v3",
+                "value": {
+                  "content": {
+                    "$$type": "string",
+                    "value": "Held back until it counts."
+                  },
+                  "children": []
+                }
+              }
+            }
+          }
+        ],
+        "editor_settings": {
+          "title": "Card 2"
+        },
+        "styles": {
+          "e-scfan-c2": {
+            "id": "e-scfan-c2",
+            "label": "local",
+            "type": "class",
+            "variants": [
+              {
+                "meta": {
+                  "breakpoint": "desktop",
+                  "state": null
+                },
+                "props": {
+                  "background": {
+                    "$$type": "background",
+                    "value": {
+                      "color": {
+                        "$$type": "color",
+                        "value": "#9d174d"
+                      }
+                    }
+                  },
+                  "color": {
+                    "$$type": "color",
+                    "value": "#fdf2f8"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "elType": "e-aae-a-stack-card",
+        "settings": {
+          "classes": {
+            "$$type": "classes",
+            "value": [
+              "e-scfan-c3"
+            ]
+          }
+        },
+        "elements": [
+          {
+            "elType": "widget",
+            "widgetType": "e-heading",
+            "elements": [],
+            "settings": {
+              "title": {
+                "$$type": "html-v3",
+                "value": {
+                  "content": {
+                    "$$type": "string",
+                    "value": "Queen"
+                  },
+                  "children": []
+                }
+              }
+            }
+          },
+          {
+            "elType": "widget",
+            "widgetType": "e-paragraph",
+            "elements": [],
+            "settings": {
+              "paragraph": {
+                "$$type": "html-v3",
+                "value": {
+                  "content": {
+                    "$$type": "string",
+                    "value": "Quietly the most useful card here."
+                  },
+                  "children": []
+                }
+              }
+            }
+          }
+        ],
+        "editor_settings": {
+          "title": "Card 3"
+        },
+        "styles": {
+          "e-scfan-c3": {
+            "id": "e-scfan-c3",
+            "label": "local",
+            "type": "class",
+            "variants": [
+              {
+                "meta": {
+                  "breakpoint": "desktop",
+                  "state": null
+                },
+                "props": {
+                  "background": {
+                    "$$type": "background",
+                    "value": {
+                      "color": {
+                        "$$type": "color",
+                        "value": "#be185d"
+                      }
+                    }
+                  },
+                  "color": {
+                    "$$type": "color",
+                    "value": "#fdf2f8"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "elType": "e-aae-a-stack-card",
+        "settings": {
+          "classes": {
+            "$$type": "classes",
+            "value": [
+              "e-scfan-c4"
+            ]
+          }
+        },
+        "elements": [
+          {
+            "elType": "widget",
+            "widgetType": "e-heading",
+            "elements": [],
+            "settings": {
+              "title": {
+                "$$type": "html-v3",
+                "value": {
+                  "content": {
+                    "$$type": "string",
+                    "value": "Jack"
+                  },
+                  "children": []
+                }
+              }
+            }
+          },
+          {
+            "elType": "widget",
+            "widgetType": "e-paragraph",
+            "elements": [],
+            "settings": {
+              "paragraph": {
+                "$$type": "html-v3",
+                "value": {
+                  "content": {
+                    "$$type": "string",
+                    "value": "Never underestimate the last one."
+                  },
+                  "children": []
+                }
+              }
+            }
+          }
+        ],
+        "editor_settings": {
+          "title": "Card 4"
+        },
+        "styles": {
+          "e-scfan-c4": {
+            "id": "e-scfan-c4",
+            "label": "local",
+            "type": "class",
+            "variants": [
+              {
+                "meta": {
+                  "breakpoint": "desktop",
+                  "state": null
+                },
+                "props": {
+                  "background": {
+                    "$$type": "background",
+                    "value": {
+                      "color": {
+                        "$$type": "color",
+                        "value": "#db2777"
+                      }
+                    }
+                  },
+                  "color": {
+                    "$$type": "color",
+                    "value": "#fdf2f8"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+}

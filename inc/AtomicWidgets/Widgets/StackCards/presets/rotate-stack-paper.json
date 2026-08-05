@@ -1,0 +1,350 @@
+{
+  "name": "Rotate Stack — Paper Pile",
+  "model": {
+    "elType": "e-aae-a-stack-cards",
+    "settings": {
+      "animation": {
+        "$$type": "string",
+        "value": "rotate-stack"
+      },
+      "rotate_step": {
+        "$$type": "number",
+        "value": 4
+      },
+      "offset_step": {
+        "$$type": "number",
+        "value": 26
+      },
+      "scale_step": {
+        "$$type": "number",
+        "value": 3
+      },
+      "ease": {
+        "$$type": "string",
+        "value": "power2.out"
+      }
+    },
+    "elements": [
+      {
+        "elType": "e-aae-a-stack-card",
+        "settings": {
+          "classes": {
+            "$$type": "classes",
+            "value": [
+              "e-scrot-c1"
+            ]
+          }
+        },
+        "elements": [
+          {
+            "elType": "widget",
+            "widgetType": "e-heading",
+            "elements": [],
+            "settings": {
+              "title": {
+                "$$type": "html-v3",
+                "value": {
+                  "content": {
+                    "$$type": "string",
+                    "value": "Draft"
+                  },
+                  "children": []
+                }
+              }
+            }
+          },
+          {
+            "elType": "widget",
+            "widgetType": "e-paragraph",
+            "elements": [],
+            "settings": {
+              "paragraph": {
+                "$$type": "html-v3",
+                "value": {
+                  "content": {
+                    "$$type": "string",
+                    "value": "The first pass is never the good one."
+                  },
+                  "children": []
+                }
+              }
+            }
+          }
+        ],
+        "editor_settings": {
+          "title": "Card 1"
+        },
+        "styles": {
+          "e-scrot-c1": {
+            "id": "e-scrot-c1",
+            "label": "local",
+            "type": "class",
+            "variants": [
+              {
+                "meta": {
+                  "breakpoint": "desktop",
+                  "state": null
+                },
+                "props": {
+                  "background": {
+                    "$$type": "background",
+                    "value": {
+                      "color": {
+                        "$$type": "color",
+                        "value": "#292524"
+                      }
+                    }
+                  },
+                  "color": {
+                    "$$type": "color",
+                    "value": "#fafaf9"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "elType": "e-aae-a-stack-card",
+        "settings": {
+          "classes": {
+            "$$type": "classes",
+            "value": [
+              "e-scrot-c2"
+            ]
+          }
+        },
+        "elements": [
+          {
+            "elType": "widget",
+            "widgetType": "e-heading",
+            "elements": [],
+            "settings": {
+              "title": {
+                "$$type": "html-v3",
+                "value": {
+                  "content": {
+                    "$$type": "string",
+                    "value": "Notes"
+                  },
+                  "children": []
+                }
+              }
+            }
+          },
+          {
+            "elType": "widget",
+            "widgetType": "e-paragraph",
+            "elements": [],
+            "settings": {
+              "paragraph": {
+                "$$type": "html-v3",
+                "value": {
+                  "content": {
+                    "$$type": "string",
+                    "value": "Scribbled in the margins and kept."
+                  },
+                  "children": []
+                }
+              }
+            }
+          }
+        ],
+        "editor_settings": {
+          "title": "Card 2"
+        },
+        "styles": {
+          "e-scrot-c2": {
+            "id": "e-scrot-c2",
+            "label": "local",
+            "type": "class",
+            "variants": [
+              {
+                "meta": {
+                  "breakpoint": "desktop",
+                  "state": null
+                },
+                "props": {
+                  "background": {
+                    "$$type": "background",
+                    "value": {
+                      "color": {
+                        "$$type": "color",
+                        "value": "#44403c"
+                      }
+                    }
+                  },
+                  "color": {
+                    "$$type": "color",
+                    "value": "#fafaf9"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "elType": "e-aae-a-stack-card",
+        "settings": {
+          "classes": {
+            "$$type": "classes",
+            "value": [
+              "e-scrot-c3"
+            ]
+          }
+        },
+        "elements": [
+          {
+            "elType": "widget",
+            "widgetType": "e-heading",
+            "elements": [],
+            "settings": {
+              "title": {
+                "$$type": "html-v3",
+                "value": {
+                  "content": {
+                    "$$type": "string",
+                    "value": "Revision"
+                  },
+                  "children": []
+                }
+              }
+            }
+          },
+          {
+            "elType": "widget",
+            "widgetType": "e-paragraph",
+            "elements": [],
+            "settings": {
+              "paragraph": {
+                "$$type": "html-v3",
+                "value": {
+                  "content": {
+                    "$$type": "string",
+                    "value": "Stacked on the desk, slightly askew."
+                  },
+                  "children": []
+                }
+              }
+            }
+          }
+        ],
+        "editor_settings": {
+          "title": "Card 3"
+        },
+        "styles": {
+          "e-scrot-c3": {
+            "id": "e-scrot-c3",
+            "label": "local",
+            "type": "class",
+            "variants": [
+              {
+                "meta": {
+                  "breakpoint": "desktop",
+                  "state": null
+                },
+                "props": {
+                  "background": {
+                    "$$type": "background",
+                    "value": {
+                      "color": {
+                        "$$type": "color",
+                        "value": "#57534e"
+                      }
+                    }
+                  },
+                  "color": {
+                    "$$type": "color",
+                    "value": "#fafaf9"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "elType": "e-aae-a-stack-card",
+        "settings": {
+          "classes": {
+            "$$type": "classes",
+            "value": [
+              "e-scrot-c4"
+            ]
+          }
+        },
+        "elements": [
+          {
+            "elType": "widget",
+            "widgetType": "e-heading",
+            "elements": [],
+            "settings": {
+              "title": {
+                "$$type": "html-v3",
+                "value": {
+                  "content": {
+                    "$$type": "string",
+                    "value": "Final"
+                  },
+                  "children": []
+                }
+              }
+            }
+          },
+          {
+            "elType": "widget",
+            "widgetType": "e-paragraph",
+            "elements": [],
+            "settings": {
+              "paragraph": {
+                "$$type": "html-v3",
+                "value": {
+                  "content": {
+                    "$$type": "string",
+                    "value": "The one that made it to the top."
+                  },
+                  "children": []
+                }
+              }
+            }
+          }
+        ],
+        "editor_settings": {
+          "title": "Card 4"
+        },
+        "styles": {
+          "e-scrot-c4": {
+            "id": "e-scrot-c4",
+            "label": "local",
+            "type": "class",
+            "variants": [
+              {
+                "meta": {
+                  "breakpoint": "desktop",
+                  "state": null
+                },
+                "props": {
+                  "background": {
+                    "$$type": "background",
+                    "value": {
+                      "color": {
+                        "$$type": "color",
+                        "value": "#78716c"
+                      }
+                    }
+                  },
+                  "color": {
+                    "$$type": "color",
+                    "value": "#fafaf9"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+}
