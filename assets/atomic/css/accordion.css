@@ -79,21 +79,4 @@
   padding: var(--padding-top) var(--padding-right) var(--padding-bottom) var(--padding-left);
   transition: padding var(--aae-accordion-speed, 400ms) ease;
 }
-
-/* ---------- EDITOR ONLY ---------- */
-.elementor-editor-active .aae-a-accordion-item .aae-content-element {
-  opacity: 0;
-  visibility: hidden;
-  max-height: 0;
-  overflow: hidden;
-  transform: translateY(-8px);
-  transition: opacity var(--aae-accordion-speed, 400ms) ease, transform var(--aae-accordion-speed, 400ms) ease, max-height var(--aae-accordion-speed, 400ms) ease, visibility 0s linear var(--aae-accordion-speed, 400ms);
-}
-.elementor-editor-active .aae-a-accordion-item.active .aae-content-element {
-  opacity: 1;
-  visibility: visible;
-  max-height: 1000px;
-  transform: translateY(0);
-  transition: opacity var(--aae-accordion-speed, 400ms) ease, transform var(--aae-accordion-speed, 400ms) ease, max-height var(--aae-accordion-speed, 400ms) ease, visibility 0s;
-}
 /*# sourceMappingURL=accordion.css.map */

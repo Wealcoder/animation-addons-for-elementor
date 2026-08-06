@@ -131,14 +131,30 @@ const isEditor = node => {
 // <button> was missing in the editor). Running distribution from the enqueued
 // bundle fixes both: the template stays pure static markup, and distribution
 // works in the editor and on the frontend.
+const isComposedChild = child => child.classList.contains('elementor-element') || child.classList.contains('e-con') || child.classList.contains('e-widget') || child.hasAttribute('data-element_type');
 const distributeChildren = item => {
   if (!item || item.dataset.aaeDistributed === 'true') return;
-  const injector = item.querySelector(':scope > .aae-children-injector');
-  if (!injector) return;
   const headerContent = item.querySelector('.aae-header-content');
   const contentArea = item.querySelector('.aae-accordion-content');
   if (!headerContent || !contentArea) return;
-  const children = Array.from(injector.children).filter(child => child.classList.contains('elementor-element') || child.classList.contains('e-con') || child.classList.contains('e-widget') || child.hasAttribute('data-element_type'));
+
+  // Server (twig) renders place the composed Header/Content Div_Blocks
+  // inside the hidden .aae-children-injector, exactly where
+  // {{ children_placeholder }} sits in the twig. Elementor's OWN editor
+  // view does NOT respect that position at all — it mounts child element
+  // views directly onto the item's root node instead (bypassing the
+  // injector entirely), which left the header title and content text
+  // inheriting the page's default typography instead of ours, since they
+  // never made it into `.aae-header-content` / `.aae-accordion-content`.
+  // isComposedChild() already excludes every one of our own structural
+  // wrappers (title-wrapper, content-wrapper, the injector itself) and
+  // Elementor's own `.elementor-element-overlay` — none of them carry an
+  // `elementor-element`/`e-con`/`e-widget` class or `data-element_type`.
+  const injector = item.querySelector(':scope > .aae-children-injector');
+  let children = injector ? Array.from(injector.children).filter(isComposedChild) : [];
+  if (children.length === 0) {
+    children = Array.from(item.children).filter(isComposedChild);
+  }
   if (children.length === 0) return;
 
   // children[0] = Header Div_Block, children[1] = Content Div_Block
