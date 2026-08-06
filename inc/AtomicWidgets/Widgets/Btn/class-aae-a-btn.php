@@ -113,6 +113,14 @@ class AAE_A_Btn extends Atomic_Element_Base
 			'btn_url'      => String_Prop_Type::make()->default(''),
 			'btn_target'   => String_Prop_Type::make()->default('_self'),
 			'btn_nofollow' => Boolean_Prop_Type::make()->default(false),
+
+			// Preset-driven only — no panel control. Drives the 'aae-btn-txtflip'
+			// hook class from the twig instead of a preset seeding it into the
+			// `classes` prop, so it never shows as a Style-panel chip and can
+			// never be flagged/stripped by the "Some classes are missing" alert.
+			// See CLAUDE.md's "Never put a functional hook class in the classes
+			// prop" for why this pattern exists.
+			'aae_btn_text_flip' => Boolean_Prop_Type::make()->default(false),
 		];
 	}
 

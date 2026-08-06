@@ -9,8 +9,14 @@ import maskBtnImg from '../images/mask-btn.png';
 document.documentElement.style.setProperty('--aae-btn-mask-img', `url(${maskBtnImg})`);
 
 // Text-flip (pro-3)
+// Targets Elementor's own unconditional `.e-paragraph-base` class (always
+// rendered by atomic-paragraph.html.twig, regardless of the `classes` prop)
+// instead of a custom hook class on the child — that class can never be
+// flagged "missing" or stripped via the Style panel's dismiss action, and it
+// keeps working on pages saved before this change (the old literal
+// `aae-btn-txtflip-content` class is simply unused now, not required).
 function textFlipSync(container) {
-  const contentEl = container.querySelector('.aae-btn-txtflip-content');
+  const contentEl = container.querySelector('.e-paragraph-base');
   if (!contentEl) return;
 
   const text = contentEl.textContent.trim();

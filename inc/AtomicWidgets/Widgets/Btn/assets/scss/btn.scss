@@ -29,11 +29,14 @@
 	z-index: 4;
 	left: -92%;
 }
-/* text flip */
-.aae-btn-txtflip .aae-btn-txtflip-content {
+/* text flip — targets Elementor's own unconditional `.e-paragraph-base`
+   class (see btn.js's textFlipSync() for why) rather than a custom hook
+   class on the child, so it can never be flagged "missing"/stripped by the
+   Style panel and needs no local style entry of its own. */
+.aae-btn-txtflip .e-paragraph-base {
   transform-style: preserve-3d;
 }
-.aae-btn-txtflip .aae-btn-txtflip-content::before {
+.aae-btn-txtflip .e-paragraph-base::before {
   position: absolute;
   top: 100%;
   left: 0;
@@ -45,7 +48,7 @@
   transform-origin: 50% 0;
   text-align: center;
 }
-.aae-btn-txtflip:hover .aae-btn-txtflip-content {
+.aae-btn-txtflip:hover .e-paragraph-base {
   transform: rotateX(90deg) translateY(-100%);
 }
 /* border devide */
