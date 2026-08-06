@@ -135,11 +135,23 @@ function bind(container, config) {
 	sliderDiv.setAttribute('aria-roledescription', 'carousel');
 	sliderDiv.setAttribute('tabindex', '0');
 	// The slider is focusable (for keyboard arrows), but the browser's default
-	// focus outline shows as a black border across the top on click. Suppress it
-	// — navigation is driven by the slide itself, not an outlined focus state.
-	sliderDiv.style.outline = 'none';
+	// focus outline shows as a black border across the top on CLICK. That is
+	// suppressed in nestedslider.scss via `:focus:not(:focus-visible)`, which
+	// hides it for pointer focus only — an unconditional inline `outline: none`
+	// (what this used to do) removes it for KEYBOARD focus too and fails
+	// WCAG 2.4.7, leaving a tab stop with no visible indicator.
+
+	// Every slider used to get the same hardcoded label, so two sliders on one
+	// page became two same-named `region` landmarks — indistinguishable in a
+	// screen reader's landmark list, and an axe landmark-unique violation.
+	// Number them per document instead; `aria-roledescription` above already
+	// says "carousel", so the label only has to disambiguate.
 	if (!sliderDiv.getAttribute('aria-label')) {
-		sliderDiv.setAttribute('aria-label', 'Slider Carousel');
+		const doc = sliderDiv.ownerDocument || document;
+		// This slider already carries the roledescription set above, so it is
+		// counted too — the first one is 1, not 0.
+		const index = doc.querySelectorAll('[aria-roledescription="carousel"]').length;
+		sliderDiv.setAttribute('aria-label', `Carousel ${index}`);
 	}
 	track.setAttribute('aria-live', getAutoplay() ? 'off' : 'polite');
 

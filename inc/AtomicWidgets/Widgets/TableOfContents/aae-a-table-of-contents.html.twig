@@ -65,17 +65,21 @@
     {% if settings.attributes is defined and settings.attributes is not empty %}{{ settings.attributes | raw }}{% endif %}
     {{ editor_attributes | default('') | raw }}
 >
-    <div class="toc__header {{ base_styles.header | default('') }}" aria-controls="toc__body">
+    {# aria-controls must name an ID, and aria-expanded belongs on the CONTROL,
+       never on the region it controls — both live on the toggle buttons below.
+       The header itself is a plain heading row and takes no ARIA. #}
+    {% set toc_body_id = 'aae-toc-body-' ~ id %}
+    <div class="toc__header {{ base_styles.header | default('') }}">
         <{{ html_tag }} class="toc__header-title {{ base_styles.header_title | default('') }}">{{ settings.title | default('Table of Contents') | e }}</{{ html_tag }}>
         {% if settings.minimize_box %}
-            <div class="toc__toggle-button toc__toggle-button--expand" role="button" tabindex="0" aria-label="{{ 'Open table of contents' | e('html_attr') }}">
+            <div class="toc__toggle-button toc__toggle-button--expand" role="button" tabindex="0" aria-expanded="false" aria-controls="{{ toc_body_id }}" aria-label="{{ 'Open table of contents' | e('html_attr') }}">
                 {% if expand_icon_url is not empty %}
                     <img src="{{ expand_icon_url | e('html_attr') }}" alt="" aria-hidden="true">
                 {% else %}
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
                 {% endif %}
             </div>
-            <div class="toc__toggle-button toc__toggle-button--collapse" role="button" tabindex="0" aria-label="{{ 'Close table of contents' | e('html_attr') }}">
+            <div class="toc__toggle-button toc__toggle-button--collapse" role="button" tabindex="0" aria-expanded="true" aria-controls="{{ toc_body_id }}" aria-label="{{ 'Close table of contents' | e('html_attr') }}">
                 {% if collapse_icon_url is not empty %}
                     <img src="{{ collapse_icon_url | e('html_attr') }}" alt="" aria-hidden="true">
                 {% else %}
@@ -85,7 +89,7 @@
         {% endif %}
     </div>
 
-    <div class="toc__body {{ base_styles.body | default('') }}{{ settings.collapse_subitems ? ' toc__list-items--collapsible' : '' }}" aria-expanded="true">
+    <div id="{{ toc_body_id }}" class="toc__body {{ base_styles.body | default('') }}{{ settings.collapse_subitems ? ' toc__list-items--collapsible' : '' }}">
         <div class="toc__spinner-container">
             <svg class="toc__spinner" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9"/></svg>
         </div>
