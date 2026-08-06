@@ -1,12 +1,13 @@
 @charset "UTF-8";
-/* AAE Atomic Icon List — default size for the auto-spawned SVG icon.
-   The Atomic_Svg base style sets 65x65 px which is way too large for a
-   list bullet. This rule targets only the class our PHP attaches to the
-   default child (.e-aae-icon-list-item-icon), so user-added SVGs are
-   unaffected and the user can still resize from the Style panel
-   (local styles cascade after this rule). */
-.e-aae-icon-list-item-icon {
-  font-size: 20px;
-  width: 1em;
-  height: 1em;
-}
+/* AAE Atomic Icon List — the default icon size fix used to live here as a
+   plain `.e-aae-icon-list-item-icon { width: 1em; ... }` rule. That selector
+   has specificity (0,1,0), strictly lower than Elementor's own native
+   `.elementor .e-svg-base` (0,2,0) which sets the 65px default — so it could
+   never win regardless of stylesheet load order, and (separately) this file
+   was never even enqueued because neither PHP class declared
+   get_style_depends(). Both are fixed now in PHP: see
+   AAE_A_Icon_List::get_frontend_css_override() for the sizing (an inline
+   block guaranteed to load after base-desktop.css with matching
+   `.elementor`-prefixed specificity) and AAE_A_Icon_List::get_style_depends()
+   for why this stylesheet actually loads at all. */
+/*# sourceMappingURL=icon-list.css.map */

@@ -137,7 +137,7 @@ class AAE_A_Social_Share extends Atomic_Element_Base {
 						->add_prop( 'flex-direction', String_Prop_Type::generate( 'row' ) )
 						->add_prop( 'flex-wrap',      String_Prop_Type::generate( 'wrap' ) )
 						->add_prop( 'align-items',    String_Prop_Type::generate( 'center' ) )
-						->add_prop( 'gap',            Size_Prop_Type::generate( [ 'size' => 10, 'unit' => 'px' ] ) )
+						->add_prop( 'gap',            Size_Prop_Type::generate( [ 'size' => 12, 'unit' => 'px' ] ) )
 				),
 		];
 	}
@@ -157,6 +157,9 @@ class AAE_A_Social_Share extends Atomic_Element_Base {
 		foreach ( $defaults as $vendor => $label ) {
 			$children[] = AAE_A_Social_Share_Item::generate()
 				->editor_settings( [ 'title' => $label ] )
+				->settings( [
+					'btn_url' => String_Prop_Type::generate( AAE_A_Social_Share_Item::get_default_share_url( $vendor ) ),
+				] )
 				->children( AAE_A_Social_Share_Item::build_default_inner_children( $vendor, $label ) )
 				->build();
 		}
@@ -190,5 +193,25 @@ class AAE_A_Social_Share extends Atomic_Element_Base {
 
 	public function get_style_depends(): array {
 		return ['aae-a-social-share-css'];
+	}
+
+	/**
+	 * Inline CSS that Atomic::fix_frontend_atomic_css_order() injects right
+	 * after this widget's own stylesheet, once that stylesheet is guaranteed
+	 * to load after Elementor's base-desktop.css.
+	 *
+	 * Lives HERE rather than on AAE_A_Social_Share_Item: only THIS class has a
+	 * registered `style_handle` in class-atomic.php's widget registry, which
+	 * is what fix_frontend_atomic_css_order() keys off — an override defined
+	 * on the item class would never be called. Sized from
+	 * AAE_A_Social_Share_Item::ICON_SIZE_PX so there is one source of truth;
+	 * see AAE_A_Btn::get_frontend_css_override() for the original of this
+	 * pattern and why the value can't just live in a compiled .scss file.
+	 */
+	public static function get_frontend_css_override(): string {
+		return sprintf(
+			'.elementor .e-aae-a-social-share-item-icon{width:%1$dpx;height:%1$dpx}',
+			AAE_A_Social_Share_Item::ICON_SIZE_PX
+		);
 	}
 }

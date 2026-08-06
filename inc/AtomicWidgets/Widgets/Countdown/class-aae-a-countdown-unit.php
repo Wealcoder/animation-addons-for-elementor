@@ -20,6 +20,11 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Number_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Color_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Background_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Dimensions_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Box_Shadow_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Shadow_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
@@ -99,11 +104,30 @@ class AAE_A_Countdown_Unit extends Atomic_Element_Base {
 	}
 
 	/**
-	 * Wrapper-level layout for a single unit — stacked vertically, centered.
-	 * Digit + label styling lives on the Atomic_Heading / Atomic_Paragraph
-	 * children themselves (each has its own Style panel).
+	 * Wrapper-level layout for a single unit — a small card (background,
+	 * border, radius, soft shadow) stacking a big digit over a muted label.
+	 * Everything here is still a plain Style_Definition, so a builder can
+	 * override any of it per-instance from the Style panel — these are just
+	 * good-looking resting values instead of an unstyled box.
 	 */
 	protected function define_base_styles(): array {
+		$card_shadow = Box_Shadow_Prop_Type::generate( [
+			Shadow_Prop_Type::generate( [
+				'hOffset' => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+				'vOffset' => Size_Prop_Type::generate( [ 'size' => 1, 'unit' => 'px' ] ),
+				'blur'    => Size_Prop_Type::generate( [ 'size' => 3, 'unit' => 'px' ] ),
+				'spread'  => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+				'color'   => Color_Prop_Type::generate( '#0000000d' ),
+			] ),
+			Shadow_Prop_Type::generate( [
+				'hOffset' => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+				'vOffset' => Size_Prop_Type::generate( [ 'size' => 1, 'unit' => 'px' ] ),
+				'blur'    => Size_Prop_Type::generate( [ 'size' => 2, 'unit' => 'px' ] ),
+				'spread'  => Size_Prop_Type::generate( [ 'size' => -1, 'unit' => 'px' ] ),
+				'color'   => Color_Prop_Type::generate( '#0000001a' ),
+			] ),
+		] );
+
 		return [
 			self::BASE_STYLE_KEY => Style_Definition::make()
 				->add_variant(
@@ -112,8 +136,45 @@ class AAE_A_Countdown_Unit extends Atomic_Element_Base {
 						->add_prop( 'flex-direction',  String_Prop_Type::generate( 'column' ) )
 						->add_prop( 'align-items',     String_Prop_Type::generate( 'center' ) )
 						->add_prop( 'justify-content', String_Prop_Type::generate( 'center' ) )
-						->add_prop( 'gap',             Size_Prop_Type::generate( [ 'size' => 10, 'unit' => 'px' ] ) )
-						->add_prop( 'min-width',       Size_Prop_Type::generate( [ 'size' => 60,  'unit' => 'px' ] ) )
+						->add_prop( 'gap',             Size_Prop_Type::generate( [ 'size' => 6, 'unit' => 'px' ] ) )
+						->add_prop( 'min-width',       Size_Prop_Type::generate( [ 'size' => 76, 'unit' => 'px' ] ) )
+						->add_prop( 'background', Background_Prop_Type::generate( [
+							'color' => Color_Prop_Type::generate( '#ffffff' ),
+						] ) )
+						->add_prop( 'border-style', String_Prop_Type::generate( 'solid' ) )
+						->add_prop( 'border-color', Color_Prop_Type::generate( '#e5e7eb' ) )
+						->add_prop( 'border-width', Size_Prop_Type::generate( [ 'size' => 1, 'unit' => 'px' ] ) )
+						->add_prop( 'border-radius', Size_Prop_Type::generate( [ 'size' => 10, 'unit' => 'px' ] ) )
+						->add_prop( 'padding', Dimensions_Prop_Type::generate( [
+							'block-start'  => Size_Prop_Type::generate( [ 'size' => 18, 'unit' => 'px' ] ),
+							'inline-end'   => Size_Prop_Type::generate( [ 'size' => 20, 'unit' => 'px' ] ),
+							'block-end'    => Size_Prop_Type::generate( [ 'size' => 18, 'unit' => 'px' ] ),
+							'inline-start' => Size_Prop_Type::generate( [ 'size' => 20, 'unit' => 'px' ] ),
+						] ) )
+						->add_prop( 'box-shadow', $card_shadow )
+				),
+
+			// Applied to the digit span via the '{element_type}-digit' class
+			// (see build_default_inner_children()) — same convention as
+			// Accordion Item's header_element/header_icon keys.
+			'digit' => Style_Definition::make()
+				->set_label( __( 'Digit', 'animation-addons-for-elementor' ) )
+				->add_variant(
+					Style_Variant::make()
+						->add_prop( 'color', Color_Prop_Type::generate( '#111827' ) )
+						->add_prop( 'font-size', Size_Prop_Type::generate( [ 'size' => 32, 'unit' => 'px' ] ) )
+						->add_prop( 'font-weight', String_Prop_Type::generate( '700' ) )
+						->add_prop( 'line-height', Size_Prop_Type::generate( [ 'size' => 34, 'unit' => 'px' ] ) )
+				),
+
+			'label' => Style_Definition::make()
+				->set_label( __( 'Label', 'animation-addons-for-elementor' ) )
+				->add_variant(
+					Style_Variant::make()
+						->add_prop( 'color', Color_Prop_Type::generate( '#6b7280' ) )
+						->add_prop( 'font-size', Size_Prop_Type::generate( [ 'size' => 11, 'unit' => 'px' ] ) )
+						->add_prop( 'font-weight', String_Prop_Type::generate( '600' ) )
+						->add_prop( 'text-transform', String_Prop_Type::generate( 'uppercase' ) )
 				),
 		];
 	}
@@ -143,12 +204,20 @@ class AAE_A_Countdown_Unit extends Atomic_Element_Base {
 		// Atomic_Paragraph's `tag` enum allows `p` and `span`. The user
 		// still gets full typography control via the paragraph's Style
 		// panel.
+		//
+		// The `-digit`/`-label` classes wear the 'digit'/'label' base-style
+		// keys defined above (static, cached CSS); the `aae-a-countdown-*`
+		// classes are unrelated JS/CSS hooks (countdown.js's tick selector,
+		// the show/hide-on-expire rule) and must stay exactly as they are.
+		$digit_class = static::get_element_type() . '-digit';
+		$label_class = static::get_element_type() . '-label';
+
 		return [
 			Atomic_Paragraph::generate()
 				->is_locked( true )
 				->editor_settings( [ 'title' => 'Digit' ] )
 				->settings( [
-					'classes'   => Classes_Prop_Type::generate( [ 'aae-a-countdown-unit-count' ] ),
+					'classes'   => Classes_Prop_Type::generate( [ 'aae-a-countdown-unit-count', $digit_class ] ),
 					'paragraph' => Html_V3_Prop_Type::generate( [
 						'content'  => String_Prop_Type::generate( '00' ),
 						'children' => [],
@@ -161,7 +230,7 @@ class AAE_A_Countdown_Unit extends Atomic_Element_Base {
 				->is_locked( true )
 				->editor_settings( [ 'title' => 'Label' ] )
 				->settings( [
-					'classes'   => Classes_Prop_Type::generate( [ 'aae-a-countdown-unit-label' ] ),
+					'classes'   => Classes_Prop_Type::generate( [ 'aae-a-countdown-unit-label', $label_class ] ),
 					'paragraph' => Html_V3_Prop_Type::generate( [
 						'content'  => String_Prop_Type::generate( $label_text ),
 						'children' => [],

@@ -2,9 +2,33 @@
     /* Title + Icon live inside the injected .aae-header-element. */
 
     .aae-accordion-header {
-
+        // Reset the native <button> chrome and lay it out — everything a
+        // builder can actually restyle (padding, colors, font) comes from
+        // the 'header' base style instead (define_base_styles() in
+        // class-aae-a-accordion-item.php), never a hardcoded value here.
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        margin: 0;
+        background: transparent;
+        border: none;
+        outline: none;
+        cursor: pointer;
         text-align: left;
-        transition: background-color 0.3s ease;
+        font: inherit;
+        transition: background-color 0.2s ease;
+        -webkit-tap-highlight-color: transparent;
+
+        // Browsers paint their own focus ring on a clicked <button> (Chrome:
+        // a blue outline, Firefox: a dotted one that reads as "black
+        // border"). We already show the open/closed state via the content
+        // reveal and the arrow flip, so no separate focus ring is needed.
+        &:focus,
+        &:focus-visible {
+            outline: none;
+            box-shadow: none;
+        }
 
         // Header slot - holds the injected Header Div_Block
         .aae-header-content {
@@ -37,8 +61,8 @@
                 align-items: center;
                 justify-content: center;
                 flex-shrink: 0;
-                width: 24px !important;
-                height: 24px !important;
+                width: 18px !important;
+                height: 18px !important;
 
                 svg {
                     width: 100% !important;
@@ -49,7 +73,7 @@
         }
     }
 
-    
+
     .aae-a-accordion-item .aae-header-icon-element.aae-header-icon-close {
         display: none !important;
     }
@@ -70,29 +94,21 @@
         display: inline-flex !important;
     }
 
-    .aae-a-accordion-item.active {
-        .aae-accordion-header {
-            background: #f1f1f1;
-        }
-
-        .aae-accordion-content {
-            &.e-con {
-                // --padding-top: 20px;
-                // --padding-bottom: 20px;
-            }
-        }
-    }
+    // Deliberately no ".active .aae-accordion-header" background here — the
+    // reference "collapse-arrow" design leaves the header's resting look
+    // unchanged when open; the revealed content plus the arrow flipping to
+    // "close" are the only state cues. A subtle hover tint still comes from
+    // the 'header' base style's HOVER variant.
 
     .aae-accordion-content {
-        // padding: 0 20px;
         transition: padding var(--aae-accordion-speed, 400ms) ease;
 
         /* Inner container padding can be overridden by Elementor */
         &.e-con {
             --padding-top: 0px;
-            --padding-bottom: 0px;
-            --padding-left: 20px;
-            --padding-right: 20px;
+            --padding-bottom: 12px;
+            --padding-left: 16px;
+            --padding-right: 16px;
             padding: var(--padding-top) var(--padding-right) var(--padding-bottom) var(--padding-left);
             transition: padding var(--aae-accordion-speed, 400ms) ease;
         }

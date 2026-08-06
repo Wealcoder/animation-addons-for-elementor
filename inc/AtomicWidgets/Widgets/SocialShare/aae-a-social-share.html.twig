@@ -14,19 +14,5 @@
      {% endif %}
      {{ editor_attributes | default('') | raw }}>
 
-    {# <style>
-        :where([data-id="{{ id }}"] .aae-a-social-share-item-icon) {
-            width: 22px;
-            height: 22px;
-            font-size: 22px;
-            flex-shrink: 0;
-            fill: currentColor;
-        }
-        :where([data-id="{{ id }}"] .aae-a-social-share-item-label) {
-            line-height: 1;
-            font-size: 14px;
-        }
-    </style> #}
-
     {{ children_placeholder | raw }}
 </div>
