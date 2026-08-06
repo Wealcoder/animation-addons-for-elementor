@@ -51,6 +51,7 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Number_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
@@ -256,15 +257,27 @@ class AAE_A_Offcanvas extends Atomic_Element_Base {
 	/**
 	 * The ROOT is a thin inline wrapper that only has to sit inline with its
 	 * neighbours (so the trigger flows like a button). It carries no look — the
-	 * drawer's look lives on the Panel child's base style. One declaration only:
-	 * `display: inline-block`.
+	 * drawer's look lives on the Panel child's base style.
+	 *
+	 * Both declarations exist to undo Elementor's `.e-con`, which the Twig puts
+	 * on this element: without them the closed offcanvas is a full-width, 120px-
+	 * tall flex container instead of just the toggle icon.
+	 *
+	 * They belong HERE and not in the Twig's <style> block. As `[data-id="…"]
+	 * { … !important }` they also outranked the user's own Style-tab styles
+	 * (`.elementor .e-<id>-<hash>`), so setting Display to Flex on the root did
+	 * nothing at all. As base styles they compile to
+	 * `.elementor .e-aae-a-offcanvas-base` — enough to beat `.e-con` on
+	 * specificity and document order, and correctly LOSING to a Style-tab
+	 * override, which is the whole point of a base style.
 	 */
 	protected function define_base_styles(): array {
 		return [
 			self::BASE_STYLE_KEY => Style_Definition::make()
 				->add_variant(
 					Style_Variant::make()
-						->add_prop( 'display', String_Prop_Type::generate( 'inline-block' ) )
+						->add_prop( 'display',    String_Prop_Type::generate( 'inline-block' ) )
+						->add_prop( 'min-height', Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ) )
 				),
 		];
 	}

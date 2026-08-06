@@ -77,13 +77,24 @@ class AAE_A_Offcanvas_Panel extends Atomic_Element_Base {
 	}
 
 	/**
-	 * Seed a real, selectable close button as the panel's first child so the
-	 * drawer is closable out of the box. It's NOT locked — builders can move,
-	 * restyle, or delete it freely (Esc + overlay-click still close the drawer).
+	 * Seed a real close button as the panel's first child so the drawer is
+	 * closable out of the box.
+	 *
+	 * LOCKED, like the Trigger / Overlay / Panel on the parent. It stays fully
+	 * selectable, movable and Style-tab styleable — locking only blocks deletion.
+	 *
+	 * This used to be unlocked, on the reasoning that Esc and overlay-click still
+	 * close the drawer. They do not reliably: `close_on_esc` and
+	 * `close_on_overlay` are both builder-facing Switch props on the parent, so
+	 * turning both off and deleting this button leaves an open drawer with NO way
+	 * to close it — a dead end for the visitor, with nothing in the editor
+	 * flagging it. The escape hatch that justified leaving it deletable is itself
+	 * deletable, so it could not carry that weight.
 	 */
 	protected function define_default_children(): array {
 		return [
 			AAE_A_Offcanvas_Close::generate()
+				->is_locked( true )
 				->editor_settings( [ 'title' => __( 'Close', 'animation-addons-for-elementor' ) ] )
 				->build(),
 		];
@@ -103,8 +114,19 @@ class AAE_A_Offcanvas_Panel extends Atomic_Element_Base {
 				->add_variant(
 					Style_Variant::make()
 						->add_props( [
-							'display'        => String_Prop_Type::generate( 'flex' ),
-							'flex-direction' => String_Prop_Type::generate( 'column' ),
+							// A plain block, NOT a flex column — the panel is a
+							// drop-zone, so its children should stack in normal flow and
+							// the builder decides any layout by dropping a Div Block /
+							// Flexbox inside it.
+							//
+							// `block` must be stated EXPLICITLY: the Twig puts `e-con` on
+							// this element and `.e-con` carries `display:flex`, so merely
+							// omitting `display` here would leave it flex. Declared as a
+							// base style it beats `.e-con` and still loses to the Style
+							// tab, so Display stays overridable.
+							//
+							// `flex-direction` is gone with it — inert on a block box.
+							'display'        => String_Prop_Type::generate( 'block' ),
 							'overflow-y'     => String_Prop_Type::generate( 'auto' ),
 							'max-width'      => Size_Prop_Type::generate( [ 'size' => 90, 'unit' => 'vw' ] ),
 							'height'         => Size_Prop_Type::generate( [ 'size' => 100, 'unit' => 'vh' ] ),

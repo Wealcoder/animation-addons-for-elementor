@@ -1262,7 +1262,14 @@ class WCF_Theme_Builder
 					<?php echo esc_html__('All', 'animation-addons-for-elementor'); ?>
 				</a>
 				<?php
-				foreach (self::get_template_type() as $tabkey => $tab) {
+				foreach (self::get_offered_template_type() as $tabkey => $tab) {
+					// Legacy v3 type on a site that has switched v3 off and owns
+					// none of them. query_filter() still honours the GET param,
+					// so an old ?template_type=popup bookmark keeps working.
+					if (! empty($tab['hidden'])) {
+						continue;
+					}
+
 					$active_class = ($current_type == $tabkey ? 'nav-tab-active' : '');
 					$url          = 'edit.php?post_type=' . self::CPTTYPE . '&template_type=' . $tabkey;
 
@@ -1384,6 +1391,142 @@ class WCF_Theme_Builder
 		);
         // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility hook.
 		return apply_filters('wcf_builder_template_types', $template_type);
+	}
+
+	/**
+	 * Template types that belong to the v3 era and should disappear from the
+	 * builder's UI once the legacy surface is switched off.
+	 *
+	 * `popup` is registered by the Pro plugin (inc/hook.php) and `loop-builder`
+	 * by widgets/loop-builder/init.php. Both are listed here rather than being
+	 * dropped at their own registration points ON PURPOSE — see
+	 * get_offered_template_type().
+	 */
+	const LEGACY_V3_TEMPLATE_TYPES = array('popup', 'loop-builder');
+
+	/**
+	 * The template types the UI should OFFER, as opposed to the ones it must be
+	 * able to name.
+	 *
+	 * Legacy entries are marked `hidden => true`, never removed. Two things
+	 * break the moment a type actually leaves get_template_type():
+	 *
+	 * 1. columns_content() bails on `! array_key_exists( $tmpType, … )`, so an
+	 *    existing popup template would lose BOTH its Type and its Display
+	 *    column and render as a blank row.
+	 * 2. The edit modal's type <select> is built from this same list, and
+	 *    theme-builder.js does an unguarded
+	 *    `document.querySelector( "#wcf-addons-template-type option[value='popup']" ).selected`.
+	 *    With the option gone that throws, the success callback dies before it
+	 *    fills in the title or enables "Edit with Elementor" — and because the
+	 *    select then sits on its first entry, saving would silently rewrite the
+	 *    template's type to `header`.
+	 *
+	 * A hidden <option> is still selectable from script and still submits, so
+	 * marking beats removing on both counts: a NEW template is never offered the
+	 * legacy types, while an EXISTING one keeps editing and saving exactly as
+	 * before.
+	 *
+	 * @return array
+	 */
+	public static function get_offered_template_type()
+	{
+		$types = self::get_template_type();
+
+		foreach (self::hidden_legacy_template_types() as $key) {
+			if (isset($types[$key])) {
+				$types[$key]['hidden'] = true;
+			}
+		}
+
+		return $types;
+	}
+
+	/**
+	 * Which legacy types to hide right now.
+	 *
+	 * A type that already has templates behind it is never hidden — the tab is
+	 * the only filtered view of them, and taking it away from someone who has
+	 * four popups is how a feature reads as "my templates are gone". This
+	 * mirrors the ratchet the animation settings use: evidence of v3 keeps the
+	 * v3 surface reachable, and only a site with nothing to show gets the clean
+	 * UI.
+	 *
+	 * @return string[]
+	 */
+	private static function hidden_legacy_template_types()
+	{
+		if (self::legacy_v3_enabled()) {
+			return array();
+		}
+
+		$hidden = array();
+
+		foreach (self::LEGACY_V3_TEMPLATE_TYPES as $key) {
+			if (! in_array($key, self::template_types_in_use(), true)) {
+				$hidden[] = $key;
+			}
+		}
+
+		return $hidden;
+	}
+
+	/**
+	 * Is the v3 UI surface still switched on?
+	 *
+	 * Guarded exactly like the Pro plugin's own callers: an older free plugin
+	 * without the class must fall back to SHOWING the tabs, never to hiding
+	 * them.
+	 *
+	 * @return bool
+	 */
+	private static function legacy_v3_enabled()
+	{
+		$cls = '\WCF_ADDONS\AnimationSettings\Animation_Settings';
+
+		if (class_exists($cls) && method_exists($cls, 'legacy_v3_enabled')) {
+			return (bool) $cls::legacy_v3_enabled();
+		}
+
+		return true;
+	}
+
+	/**
+	 * Every template type that at least one non-trashed template is using.
+	 *
+	 * One query, memoised per request: this is asked once for the tab bar and
+	 * once for the modal's localized payload, both on the same admin screen.
+	 *
+	 * @return string[]
+	 */
+	private static function template_types_in_use()
+	{
+		static $types = null;
+
+		if (null !== $types) {
+			return $types;
+		}
+
+		global $wpdb;
+
+		// Direct query: counting DISTINCT meta values across a post type has no
+		// WP_Query equivalent that does not load the posts themselves.
+		$types = $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->prepare(
+				"SELECT DISTINCT pm.meta_value
+				 FROM {$wpdb->postmeta} pm
+				 INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+				 WHERE pm.meta_key = %s
+				   AND p.post_type = %s
+				   AND p.post_status NOT IN ( 'trash', 'auto-draft' )",
+				self::CPT_META . '_type',
+				self::CPTTYPE
+			)
+		);
+
+		$types = array_map('strval', (array) $types);
+
+		return $types;
 	}
 
 	/**
@@ -1723,7 +1866,7 @@ class WCF_Theme_Builder
 							_.each( data.templatetype, function( item, key ) {
 
 							#>
-							<option value="{{ key }}">{{{ item.label }}}</option>
+							<option value="{{ key }}" <# if ( item.hidden ) { #>hidden<# } #>>{{{ item.label }}}</option>
 							<#
 
 							} );
@@ -2344,7 +2487,7 @@ class WCF_Theme_Builder
 				'archivelocation' => self::get_archive_location_selections(),
 				'singlelocation'  => self::get_single_location_selections(),
 				'postcategory'    => self::get_category_location_selections(),
-				'templatetype'    => self::get_template_type(),
+				'templatetype'    => self::get_offered_template_type(),
 				'labels'          => array(
 					'fields'  => array(
 						'name'     => array(

@@ -268,11 +268,14 @@ const initOffcanvas = ( root ) => {
 
 	// Base fixed geometry — always applied, independent of the animation engine.
 	// transition:none so a GSAP tween never fights a CSS transition.
+	// NB: no `display` / `flexDirection` here. The panel is a plain block whose
+	// layout comes from its base style (and whatever the builder sets in the
+	// Style tab). Writing them inline would beat BOTH and silently pin every
+	// panel to a flex column — only the fixed-position geometry belongs inline,
+	// because that is runtime state, not a design choice.
 	Object.assign( panel.style, {
 		position:      'fixed',
 		zIndex:        '9999',
-		display:       'flex',
-		flexDirection: 'column',
 		overflowY:     'auto',
 		visibility:    'hidden',
 		pointerEvents: 'none',

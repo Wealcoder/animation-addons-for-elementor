@@ -208,23 +208,76 @@ window.elementor.on('document:loaded', () => {
 		// When an element is deleted in Elementor, it is removed from the DOM.
 		// If we don't kill its ScrollTrigger, the GSAP markers will stay on screen forever.
 		// A MutationObserver catches removed nodes so we can properly dispose of them.
+		//
+		// DANGER — a `removedNodes` entry is NOT proof of a deletion, and reading it
+		// as one froze the editor solid. Elementor hides an element from the
+		// Structure panel's eye by WRAPPING it, not by deleting it:
+		//
+		//     this.$el.wrap( '<div data-type="hide-atomic-widget" style="display: none" />' )
+		//     — elementor/assets/dev/js/editor/elements/views/base.js, toggleVisibilityClass()
+		//
+		// jQuery's `.wrap()` detaches the node and re-inserts it, so it arrives here
+		// as a removal. We then reset every `[data-interaction-id]` under it (387 on
+		// the aae-v4-widgets fixture, from ONE click) — and because a reset itself
+		// re-parents nodes, each one comes back through this callback. Measured gain
+		// was ~5 resets per reset, i.e. divergent: capping real resets at 500 still
+		// produced 2990 calls, at 1000 it produced 4979, uncapped it never finished.
+		// The main thread never yields, so there is no error and nothing in the
+		// console — the tab is simply dead. Three guards, all load-bearing:
+		//
+		//   1. `isConnected` — still in the document means re-parented, not deleted.
+		//      This alone takes the fixture from "never terminates" to 388 skipped
+		//      calls and a responsive editor. It is also just correct: a wrapped
+		//      element still needs its ScrollTrigger.
+		//   2. `seen` — removed subtrees overlap, so the same element is reachable
+		//      from several removed ancestors and would be reset repeatedly.
+		//   3. `sweeping` — reset mutates the DOM, and a MutationObserver callback
+		//      is a microtask: re-entering here never lets the queue drain.
+		//
+		// Repro/regression: E:\Local Testing\probe-eye-proof.mjs (control/count/
+		// trace/noop/fix modes) and probe-eye-stack.mjs (CDP stack of the hung thread).
+		let sweeping = false;
 		const observer = new win.MutationObserver((mutations) => {
-			mutations.forEach((mutation) => {
-				mutation.removedNodes.forEach((node) => {
-					if (node.nodeType === 1) { // ELEMENT_NODE
+			if (sweeping) return;
+			sweeping = true;
+			try {
+				const seen = new Set();
+				mutations.forEach((mutation) => {
+					mutation.removedNodes.forEach((node) => {
+						if (node.nodeType !== 1) return; // ELEMENT_NODE only
+						if (node.isConnected) return;    // re-parented, not deleted
 						const targets = Array.from(node.querySelectorAll('[data-interaction-id]'));
 						if (node.hasAttribute('data-interaction-id')) {
 							targets.push(node);
 						}
 						targets.forEach(el => {
+							if (seen.has(el)) return;
+							seen.add(el);
 							if (win.aaeAtomicAnimations && typeof win.aaeAtomicAnimations.reset === 'function') {
 								win.aaeAtomicAnimations.reset(el);
 							}
 						});
-					}
+					});
 				});
-			});
+			} finally {
+				sweeping = false;
+			}
 		});
+
+		// One observer per preview window, always. `document:loaded` fires again on
+		// every document switch, and the preview iframe is NOT reloaded for that —
+		// so without this each switch stacked another live observer on the same
+		// body, multiplying the fan-out above. Keyed on the preview window rather
+		// than tracked through disposables/`track()` deliberately: disposeAll()
+		// runs from `preview:loaded`, and this observer is created from
+		// `document:loaded`, so the two orderings are not guaranteed and a
+		// tracked teardown could dispose the observer moments after it was
+		// installed — silently switching the cleanup off. A stale observer from a
+		// previous preview document dies with its window.
+		if (win.__aaeRemovalObserver) {
+			try { win.__aaeRemovalObserver.disconnect(); } catch (_) {}
+		}
+		win.__aaeRemovalObserver = observer;
 		observer.observe(win.document.body, { childList: true, subtree: true });
 
 		const elements = getElements();

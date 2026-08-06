@@ -2,6 +2,26 @@
     width: 100%;
 }
 
+// Visually hidden, still in the accessibility tree AND still part of the
+// element's text content — which is what separates it from `display: none`
+// (removed from both) and from aria-label (replaces the name, and Lighthouse's
+// link-text audit never sees it). Used by the Read More link to name its post.
+//
+// `clip-path` plus the legacy `clip` for older engines; `white-space: nowrap`
+// stops a long title wrapping into layout before it is clipped.
+.aae-a-sr-only {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+}
+
 // ── Grid ───────────────────────────────────────────────────────────
 .aae-a-posts-grid {
     --aae-posts-gap:              24px;
