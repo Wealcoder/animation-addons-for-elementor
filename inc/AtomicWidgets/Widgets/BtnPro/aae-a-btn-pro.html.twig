@@ -1,7 +1,9 @@
-{% set btn_classes = ['aae-a-btn', 'e-con', 'e-atomic-element', base_styles.base]
-    | merge(settings.aae_btn_text_flip ? ['aae-btn-txtflip'] : [])
-    | merge(settings.aae_btn_border_divide ? ['aae-btn-borderdivide'] : [])
-    | merge(settings.aae_btn_mask ? ['aae-btn-mask'] : [])
+{% set btn_classes = ['aae-a-btn-pro', 'e-con', 'e-atomic-element', base_styles.base]
+    | merge(settings.aae_btn_polygon ? ['aae-btn-polygon'] : [])
+    | merge(settings.aae_btn_ellipse ? ['aae-btn-ellipse'] : [])
+    | merge(settings.aae_btn_grswapl ? ['aae-btn-grswapl'] : [])
+    | merge(settings.aae_btn_grswapr ? ['aae-btn-grswapr'] : [])
+    | merge(settings.aae_btn_ripple ? ['aae-btn-ripple'] : [])
     | merge(settings.classes | default([])) %}
 
 {% if settings.btn_target == '_blank' %}
@@ -34,4 +36,3 @@
 
     {{ children_placeholder | raw }}
 </a>
-

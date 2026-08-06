@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Btn;
+namespace WCFAddonsPro\AtomicV4\Widgets\BtnPro;
 
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Svg\Atomic_Svg;
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
@@ -19,8 +19,9 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Selection_Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Key_Value_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Background_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Dimensions_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Box_Shadow_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Shadow_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Transform\Transform_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Transform\Transform_Functions_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Transform\Functions\Transform_Scale_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Svg_Src_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Url_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
@@ -37,9 +38,9 @@ if (! defined('ABSPATH')) {
 }
 
 /**
- * AAE Basic Button — an open atomic container styled like a button.
+ * AAE Button Pro — an open atomic container styled like a button.
  */
-class AAE_A_Btn extends Atomic_Element_Base
+class AAE_A_Btn_Pro extends Atomic_Element_Base
 {
 	use Has_Element_Template;
 
@@ -51,10 +52,9 @@ class AAE_A_Btn extends Atomic_Element_Base
 	 * base-desktop.css to win the tie against e-svg-base's native 65px
 	 * default — see Atomic::fix_frontend_atomic_css_order()). Change ONLY
 	 * this constant; a hardcoded duplicate in a .scss file would silently
-	 * keep winning forever even after this value changes (see AAE_A_Btn_Pro
-	 * for the incident that taught us this the hard way).
+	 * keep winning forever even after this value changes.
 	 */
-	const ICON_SIZE_PX = 30;
+	const ICON_SIZE_PX = 25;
 
 	public function __construct($data = [], $args = null)
 	{
@@ -64,17 +64,17 @@ class AAE_A_Btn extends Atomic_Element_Base
 
 	public static function get_type()
 	{
-		return 'e-aae-a-btn';
+		return 'e-aae-a-btn-pro';
 	}
 
 	public static function get_element_type(): string
 	{
-		return 'e-aae-a-btn';
+		return 'e-aae-a-btn-pro';
 	}
 
 	public function get_title()
 	{
-		return esc_html__('Button', 'animation-addons-for-elementor');
+		return esc_html__('Button Pro', 'animation-addons-for-elementor');
 	}
 
 	public function get_icon()
@@ -84,7 +84,7 @@ class AAE_A_Btn extends Atomic_Element_Base
 
 	public function get_keywords()
 	{
-		return ['button', 'aae', 'cta', 'call to action', 'atomic', 'link', 'container'];
+		return ['button', 'aae', 'cta', 'call to action', 'atomic', 'link', 'container', 'pro'];
 	}
 
 	public function get_categories(): array
@@ -116,13 +116,16 @@ class AAE_A_Btn extends Atomic_Element_Base
 
 			// Preset-driven only — no panel control. Each drives its matching
 			// 'aae-btn-*' hook class from the twig instead of a preset seeding
-			// it into the `classes` prop, so it never shows as a Style-panel
-			// chip and can never be flagged/stripped by the "Some classes are
-			// missing" alert. See CLAUDE.md's "Never put a functional hook
-			// class in the classes prop" for why this pattern exists.
-			'aae_btn_text_flip'     => Boolean_Prop_Type::make()->default(false),
-			'aae_btn_border_divide' => Boolean_Prop_Type::make()->default(false),
-			'aae_btn_mask'          => Boolean_Prop_Type::make()->default(false),
+			// it into the `classes` prop — see AAE_A_Btn's identical pattern
+			// and CLAUDE.md's "Never put a functional hook class in the
+			// classes prop". Only the WRAPPER-level hooks move here; hooks on
+			// native-widget children (e-div-block/e-svg) can't, since we
+			// don't own those twigs — see btn-pro.js / btn-pro.scss comments.
+			'aae_btn_polygon' => Boolean_Prop_Type::make()->default(false),
+			'aae_btn_ellipse' => Boolean_Prop_Type::make()->default(false),
+			'aae_btn_grswapl' => Boolean_Prop_Type::make()->default(false),
+			'aae_btn_grswapr' => Boolean_Prop_Type::make()->default(false),
+			'aae_btn_ripple'  => Boolean_Prop_Type::make()->default(false),
 		];
 	}
 
@@ -171,109 +174,115 @@ class AAE_A_Btn extends Atomic_Element_Base
 
 	protected function define_base_styles(): array
 	{
+		$transition_200ms = Transition_Prop_Type::generate([
+			Selection_Size_Prop_Type::generate([
+				'selection' => Key_Value_Prop_Type::generate([
+					'key'   => String_Prop_Type::generate('All properties'),
+					'value' => String_Prop_Type::generate('all'),
+				]),
+				'size' => Size_Prop_Type::generate(['size' => 200, 'unit' => 'ms']),
+			]),
+		]);
+
+		$transition_300ms = Transition_Prop_Type::generate([
+			Selection_Size_Prop_Type::generate([
+				'selection' => Key_Value_Prop_Type::generate([
+					'key'   => String_Prop_Type::generate('All properties'),
+					'value' => String_Prop_Type::generate('all'),
+				]),
+				'size' => Size_Prop_Type::generate(['size' => 300, 'unit' => 'ms']),
+			]),
+		]);
+
+		// Basic pill button — solid fill, no border, rounded ends.
 		$button_styles = [
-			'width'    => Size_Prop_Type::generate(['size' => null, 'unit' => 'auto']),
+			// Required by every remote/local preset for this widget: presets
+			// build their own decorative children (fill circles, ripple
+			// spans, swap clones) as `position: absolute` descendants
+			// centered/clipped against THIS root — dropping any of these
+			// breaks them (mispositioned or unclipped effect layers) even
+			// though the default pill design has no visible use for them.
 			'overflow' => String_Prop_Type::generate('hidden'),
 			'position' => String_Prop_Type::generate('relative'),
 			'z-index'  => Number_Prop_Type::generate(10),
 
-			'background' => Background_Prop_Type::generate([
-				'color' => Color_Prop_Type::generate('#3d405b'),
-			]),
+			'cursor'      => String_Prop_Type::generate('pointer'),
+			'font-weight' => String_Prop_Type::generate('700'),
+			'transition'  => $transition_200ms,
 			'color' => Color_Prop_Type::generate('#ffffff'),
 
 			'padding' => Dimensions_Prop_Type::generate([
-				'block-start'  => Size_Prop_Type::generate(['size' => 12, 'unit' => 'px']),
-				'inline-end'   => Size_Prop_Type::generate(['size' => 24, 'unit' => 'px']),
-				'block-end'    => Size_Prop_Type::generate(['size' => 12, 'unit' => 'px']),
-				'inline-start' => Size_Prop_Type::generate(['size' => 24, 'unit' => 'px']),
+				'block-start'  => Size_Prop_Type::generate(['size' => 10, 'unit' => 'px']),
+				'inline-end'   => Size_Prop_Type::generate(['size' => 20, 'unit' => 'px']),
+				'block-end'    => Size_Prop_Type::generate(['size' => 10, 'unit' => 'px']),
+				'inline-start' => Size_Prop_Type::generate(['size' => 20, 'unit' => 'px']),
 			]),
 
-			'border-radius' => Size_Prop_Type::generate(['size' => 8, 'unit' => 'px']),
-			'border-width'  => Size_Prop_Type::generate(['size' => 0, 'unit' => 'px']),
-			// 'border-color'  => Color_Prop_Type::generate('#000000'),
-			'border-style'  => String_Prop_Type::generate('solid'),
-
-			'transition'    => Transition_Prop_Type::generate([
-				Selection_Size_Prop_Type::generate([
-					'selection' => Key_Value_Prop_Type::generate([
-						'key'   => String_Prop_Type::generate('All properties'),
-						'value' => String_Prop_Type::generate('all'),
-					]),
-					'size' => Size_Prop_Type::generate([
-						'size' => 600,
-						'unit' => 'ms',
-					]),
-				]),
+			'border-radius' => Size_Prop_Type::generate(['size' => 100, 'unit' => 'px']),
+			'background'    => Background_Prop_Type::generate([
+				'color' => Color_Prop_Type::generate('#3d405b'),
 			]),
 
-			'display'         => String_Prop_Type::generate('inline-flex'),
-			'flex-direction'  => String_Prop_Type::generate('row'),
-			'gap'             => Size_Prop_Type::generate(['size' => 12, 'unit' => 'px']),
-			'align-items'     => String_Prop_Type::generate('center'),
+			'border-width' => Size_Prop_Type::generate(['size' => 1, 'unit' => 'px']),
+			'border-style' => String_Prop_Type::generate('solid'),
+			'border-color' => Color_Prop_Type::generate('transparent'),
 
-			'font-size'      => Size_Prop_Type::generate(['size' => 12, 'unit' => 'px']),
-			'line-height'    => Size_Prop_Type::generate(['size' => 16, 'unit' => 'px']),
-			'font-weight'    => String_Prop_Type::generate('700'),
-			'text-align'     => String_Prop_Type::generate('center'),
-			'text-transform' => String_Prop_Type::generate('uppercase'),
-
-			// Soft blue glow — mirrors the reference design's resting box-shadow.
-			'box-shadow' => Box_Shadow_Prop_Type::generate([
-				Shadow_Prop_Type::generate([
-					'hOffset' => Size_Prop_Type::generate(['size' => 0, 'unit' => 'px']),
-					'vOffset' => Size_Prop_Type::generate(['size' => 4, 'unit' => 'px']),
-					'blur'    => Size_Prop_Type::generate(['size' => 6, 'unit' => 'px']),
-					'spread'  => Size_Prop_Type::generate(['size' => -1, 'unit' => 'px']),
-					'color'   => Color_Prop_Type::generate('#488aec31'),
-				]),
-				Shadow_Prop_Type::generate([
-					'hOffset' => Size_Prop_Type::generate(['size' => 0, 'unit' => 'px']),
-					'vOffset' => Size_Prop_Type::generate(['size' => 2, 'unit' => 'px']),
-					'blur'    => Size_Prop_Type::generate(['size' => 4, 'unit' => 'px']),
-					'spread'  => Size_Prop_Type::generate(['size' => -1, 'unit' => 'px']),
-					'color'   => Color_Prop_Type::generate('#488aec17'),
-				]),
-			]),
+			'display'     => String_Prop_Type::generate('inline-flex'),
+			'width'    => Size_Prop_Type::generate(['size' => null, 'unit' => 'auto']),
+			'align-items' => String_Prop_Type::generate('center'),
+			'font-size'   => Size_Prop_Type::generate(['size' => 15, 'unit' => 'px']),
 		];
 
-		// Hover lifts the glow — same two-layer shadow, larger offset/blur.
+		// Hover — a touch darker.
 		$button_hover_styles = [
-			'box-shadow' => Box_Shadow_Prop_Type::generate([
-				Shadow_Prop_Type::generate([
-					'hOffset' => Size_Prop_Type::generate(['size' => 0, 'unit' => 'px']),
-					'vOffset' => Size_Prop_Type::generate(['size' => 10, 'unit' => 'px']),
-					'blur'    => Size_Prop_Type::generate(['size' => 15, 'unit' => 'px']),
-					'spread'  => Size_Prop_Type::generate(['size' => -3, 'unit' => 'px']),
-					'color'   => Color_Prop_Type::generate('#488aec4f'),
-				]),
-				Shadow_Prop_Type::generate([
-					'hOffset' => Size_Prop_Type::generate(['size' => 0, 'unit' => 'px']),
-					'vOffset' => Size_Prop_Type::generate(['size' => 4, 'unit' => 'px']),
-					'blur'    => Size_Prop_Type::generate(['size' => 6, 'unit' => 'px']),
-					'spread'  => Size_Prop_Type::generate(['size' => -2, 'unit' => 'px']),
-					'color'   => Color_Prop_Type::generate('#488aec17'),
+			// 'background' => Background_Prop_Type::generate([
+			// 	'color' => Color_Prop_Type::generate('#c4e201'),
+			// ]),
+		];
+
+		// Active/press — a quick shrink.
+		$button_active_styles = [
+			'transform' => Transform_Prop_Type::generate([
+				'transform-functions' => Transform_Functions_Prop_Type::generate([
+					Transform_Scale_Prop_Type::generate([
+						'x' => Number_Prop_Type::generate(0.95),
+						'y' => Number_Prop_Type::generate(0.95),
+					]),
 				]),
 			]),
 		];
 
-		// Pressed / keyboard-focus — drop the glow, dim slightly.
-		$button_pressed_styles = [
-			'opacity'    => Size_Prop_Type::generate(['size' => 85, 'unit' => '%']),
-			'box-shadow' => Box_Shadow_Prop_Type::generate([]),
-		];
-
+		// Icon — sits after the label with a 10px gap; the hover slide
+		// (translateX on the button's own hover) is a cross-element effect
+		// the atomic style schema can't express (a Style_Variant's HOVER
+		// state only ever reacts to THIS element's own hover), so it lives
+		// in btn-pro.scss instead.
 		$icon_styles = [
 			'width'  => Size_Prop_Type::generate(['size' => self::ICON_SIZE_PX, 'unit' => 'px']),
 			'height' => Size_Prop_Type::generate(['size' => self::ICON_SIZE_PX, 'unit' => 'px']),
+			'margin' => Dimensions_Prop_Type::generate([
+				'block-start'  => Size_Prop_Type::generate(['size' => 0, 'unit' => 'px']),
+				'inline-end'   => Size_Prop_Type::generate(['size' => 0, 'unit' => 'px']),
+				'block-end'    => Size_Prop_Type::generate(['size' => 0, 'unit' => 'px']),
+				'inline-start' => Size_Prop_Type::generate(['size' => 10, 'unit' => 'px']),
+			]),
+			'transition' => $transition_300ms,
 		];
 
 		return [
 			'base' => Style_Definition::make()
 				->add_variant(Style_Variant::make()->add_props($button_styles))
 				->add_variant(Style_Variant::make()->set_state(Style_States::HOVER)->add_props($button_hover_styles))
-				->add_variant(Style_Variant::make()->set_state(Style_States::ACTIVE)->add_props($button_pressed_styles))
-				->add_variant(Style_Variant::make()->set_state(Style_States::FOCUS)->add_props($button_pressed_styles)),
+				->add_variant(Style_Variant::make()->set_state(Style_States::ACTIVE)->add_props($button_active_styles)),
+
+			// Label carries no props of its own in this design — the key is
+			// kept so its class stays a registered style (an unregistered
+			// class on the child's `classes` prop shows up as Elementor's
+			// "missing classes" panel warning, see class-atomic.php's
+			// documented gotcha for this pattern).
+			'label' => Style_Definition::make()
+				->set_label(__('Label', 'animation-addons-for-elementor'))
+				->add_variant(Style_Variant::make()),
 
 			'icon' => Style_Definition::make()
 				->set_label(__('Icon', 'animation-addons-for-elementor'))
@@ -283,29 +292,33 @@ class AAE_A_Btn extends Atomic_Element_Base
 
 	protected function define_default_children()
 	{
-		// Matches define_base_styles()'s "{element_type}-{key}" naming for the
-		// 'icon' style key — same convention Accordion Item uses for its own
-		// header_icon class (see that class's define_default_children()).
-		$icon_class = static::get_element_type() . '-icon';
+		// Same "{element_type}-{key}" naming as define_base_styles() above —
+		// see AAE_A_Btn::define_default_children() / Accordion Item's
+		// header_icon for the same convention.
+		$label_class = static::get_element_type() . '-label';
+		$icon_class  = static::get_element_type() . '-icon';
 
-		// Icon first, then label — matches the reference design's flex order.
+		// Label first, then icon — the icon sits inline after the text with
+		// a margin-start gap (see the 'icon' style key's `margin` above), so
+		// DOM order is also visual order here.
 		return [
-			Atomic_Svg::generate()
-				->settings([
-					'classes' => Classes_Prop_Type::generate([$icon_class]),
-					'svg'     => Svg_Src_Prop_Type::generate([
-						'id'  => null,
-						'url' => Url_Prop_Type::generate(WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/Btn/assets/icons/add-file.svg'),
-					]),
-				])
-				->build(),
 			Atomic_Paragraph::generate()
 				->settings([
+					'classes'   => Classes_Prop_Type::generate([$label_class]),
 					'paragraph' => Html_V3_Prop_Type::generate([
 						'content'  => String_Prop_Type::generate('Click here'),
 						'children' => [],
 					]),
 					'tag' => String_Prop_Type::generate('span'),
+				])
+				->build(),
+			Atomic_Svg::generate()
+				->settings([
+					'classes' => Classes_Prop_Type::generate([$icon_class]),
+					'svg'     => Svg_Src_Prop_Type::generate([
+						'id'  => null,
+						'url' => Url_Prop_Type::generate(WCF_ADDONS_PRO_URL . 'inc/AtomicV4/Widgets/BtnPro/assets/icons/arrow-right.svg'),
+					]),
 				])
 				->build(),
 		];
@@ -334,18 +347,18 @@ class AAE_A_Btn extends Atomic_Element_Base
 	protected function get_templates(): array
 	{
 		return [
-			'elementor/elements/aae-a-btn' => __DIR__ . '/aae-a-btn.html.twig',
+			'elementor/elements/aae-a-btn-pro' => __DIR__ . '/aae-a-btn-pro.html.twig',
 		];
 	}
 
 	public function get_script_depends(): array
 	{
-		return ['aae-a-btn-js'];
+		return ['aae-a-btn-pro-js'];
 	}
 
 	public function get_style_depends(): array
 	{
-		return ['aae-a-btn-css'];
+		return ['aae-a-btn-pro-css'];
 	}
 
 	/**
@@ -353,7 +366,7 @@ class AAE_A_Btn extends Atomic_Element_Base
 	 * after this widget's own stylesheet, once that stylesheet is guaranteed
 	 * to load after Elementor's base-desktop.css.
 	 *
-	 * WHY: `.e-aae-a-btn-icon` and Elementor core's native `.e-svg-base`
+	 * WHY: `.e-aae-a-btn-pro-icon` and Elementor core's native `.e-svg-base`
 	 * default (65px, atomic-svg.php) share the exact same selector shape
 	 * (`.elementor .<class>`) and therefore the same specificity. Elementor
 	 * bundles every registered atomic element's base styles into ONE cached
@@ -369,7 +382,7 @@ class AAE_A_Btn extends Atomic_Element_Base
 	public static function get_frontend_css_override(): string
 	{
 		return sprintf(
-			'.elementor .e-aae-a-btn-icon{width:%1$dpx;height:%1$dpx}',
+			'.elementor .e-aae-a-btn-pro-icon{width:%1$dpx;height:%1$dpx}',
 			self::ICON_SIZE_PX
 		);
 	}

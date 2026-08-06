@@ -1,0 +1,443 @@
+{
+    "name": "button-free-border-divide-div",
+    "model": {
+        "id": "2f4ced3f",
+        "settings": {
+            "classes": {
+                "$$type": "classes",
+                "value": [
+                    "e-2f4ced3f-3e7248b"
+                ]
+            }
+        },
+        "elements": [
+            {
+                "id": "57967bce",
+                "settings": {
+                    "classes": {
+                        "$$type": "classes",
+                        "value": [
+                            "e-57967bce-f6eed36"
+                        ]
+                    },
+                    "aae_btn_border_divide": {
+                        "$$type": "boolean",
+                        "value": true
+                    }
+                },
+                "elements": [
+                    {
+                        "id": "7ac4f8d3",
+                        "settings": {
+                            "classes": {
+                                "$$type": "classes",
+                                "value": [
+                                    "e-7ac4f8d3-f67691d"
+                                ]
+                            }
+                        },
+                        "elements": [],
+                        "isInner": false,
+                        "widgetType": "e-svg",
+                        "elType": "widget",
+                        "styles": {
+                            "e-7ac4f8d3-f67691d": {
+                                "id": "e-7ac4f8d3-f67691d",
+                                "label": "local",
+                                "type": "class",
+                                "variants": [
+                                    {
+                                        "meta": {
+                                            "breakpoint": "desktop",
+                                            "state": null
+                                        },
+                                        "props": {
+                                            "width": {
+                                                "$$type": "size",
+                                                "value": {
+                                                    "unit": "px",
+                                                    "size": 30
+                                                }
+                                            },
+                                            "height": {
+                                                "$$type": "size",
+                                                "value": {
+                                                    "unit": "px",
+                                                    "size": 30
+                                                }
+                                            },
+                                            "overflow": {
+                                                "$$type": "string",
+                                                "value": "hidden"
+                                            },
+                                            "position": {
+                                                "$$type": "string",
+                                                "value": "relative"
+                                            },
+                                            "padding": {
+                                                "$$type": "dimensions",
+                                                "value": {
+                                                    "block-start": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "unit": "px",
+                                                            "size": 0
+                                                        }
+                                                    },
+                                                    "inline-end": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "unit": "px",
+                                                            "size": 0
+                                                        }
+                                                    },
+                                                    "block-end": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "unit": "px",
+                                                            "size": 2
+                                                        }
+                                                    },
+                                                    "inline-start": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "unit": "px",
+                                                            "size": 0
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "margin": {
+                                                "$$type": "size",
+                                                "value": {
+                                                    "unit": "px",
+                                                    "size": 0
+                                                }
+                                            },
+                                            "border-width": {
+                                                "$$type": "border-width",
+                                                "value": {
+                                                    "block-start": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "unit": "px",
+                                                            "size": 0
+                                                        }
+                                                    },
+                                                    "block-end": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "unit": "px",
+                                                            "size": 1
+                                                        }
+                                                    },
+                                                    "inline-start": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "unit": "px",
+                                                            "size": 0
+                                                        }
+                                                    },
+                                                    "inline-end": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "unit": "px",
+                                                            "size": 0
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "border-color": {
+                                                "$$type": "color",
+                                                "value": "#ffffff"
+                                            },
+                                            "border-style": {
+                                                "$$type": "string",
+                                                "value": "solid"
+                                            },
+                                            "transition": {
+                                                "$$type": "transition",
+                                                "value": []
+                                            },
+                                            "display": {
+                                                "$$type": "string",
+                                                "value": "inline-flex"
+                                            }
+                                        },
+                                        "custom_css": null
+                                    }
+                                ]
+                            }
+                        },
+                        "interactions": [],
+                        "editor_settings": [],
+                        "version": "0.0"
+                    },
+                    {
+                        "id": "3864f698",
+                        "settings": {
+                            "classes": {
+                                "$$type": "classes",
+                                "value": [
+                                    "e-3864f698-c24a325"
+                                ]
+                            },
+                            "paragraph": {
+                                "$$type": "html-v3",
+                                "value": {
+                                    "content": {
+                                        "$$type": "string",
+                                        "value": "Border Devide"
+                                    },
+                                    "children": []
+                                }
+                            }
+                        },
+                        "elements": [],
+                        "isInner": false,
+                        "widgetType": "e-paragraph",
+                        "elType": "widget",
+                        "styles": {
+                            "e-3864f698-c24a325": {
+                                "id": "e-3864f698-c24a325",
+                                "label": "local",
+                                "type": "class",
+                                "variants": [
+                                    {
+                                        "meta": {
+                                            "breakpoint": "desktop",
+                                            "state": null
+                                        },
+                                        "props": {
+                                            "padding": {
+                                                "$$type": "dimensions",
+                                                "value": {
+                                                    "block-start": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "unit": "px",
+                                                            "size": 0
+                                                        }
+                                                    },
+                                                    "inline-end": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "unit": "px",
+                                                            "size": 0
+                                                        }
+                                                    },
+                                                    "block-end": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "unit": "px",
+                                                            "size": 0
+                                                        }
+                                                    },
+                                                    "inline-start": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "unit": "px",
+                                                            "size": 0
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "border-width": {
+                                                "$$type": "border-width",
+                                                "value": {
+                                                    "block-start": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "unit": "px",
+                                                            "size": 0
+                                                        }
+                                                    },
+                                                    "block-end": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "unit": "px",
+                                                            "size": 1
+                                                        }
+                                                    },
+                                                    "inline-start": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "unit": "px",
+                                                            "size": 0
+                                                        }
+                                                    },
+                                                    "inline-end": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "unit": "px",
+                                                            "size": 0
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "border-color": {
+                                                "$$type": "color",
+                                                "value": "#ffffff"
+                                            },
+                                            "border-style": {
+                                                "$$type": "string",
+                                                "value": "solid"
+                                            }
+                                        },
+                                        "custom_css": null
+                                    }
+                                ]
+                            }
+                        },
+                        "interactions": [],
+                        "editor_settings": [],
+                        "version": "0.0"
+                    }
+                ],
+                "isInner": false,
+                "elType": "e-aae-a-btn",
+                "styles": {
+                    "e-57967bce-f6eed36": {
+                        "id": "e-57967bce-f6eed36",
+                        "label": "local",
+                        "type": "class",
+                        "variants": [
+                            {
+                                "meta": {
+                                    "breakpoint": "desktop",
+                                    "state": null
+                                },
+                                "props": {
+                                    "font-weight": {
+                                        "$$type": "string",
+                                        "value": "400"
+                                    },
+                                    "font-size": {
+                                        "$$type": "size",
+                                        "value": {
+                                            "unit": "px",
+                                            "size": 16
+                                        }
+                                    },
+                                    "color": {
+                                        "$$type": "color",
+                                        "value": "#ffffff"
+                                    },
+                                    "line-height": {
+                                        "$$type": "size",
+                                        "value": {
+                                            "unit": "px",
+                                            "size": 24
+                                        }
+                                    },
+                                    "text-transform": {
+                                        "$$type": "string",
+                                        "value": "none"
+                                    },
+                                    "padding": {
+                                        "$$type": "dimensions",
+                                        "value": {
+                                            "block-start": {
+                                                "$$type": "size",
+                                                "value": {
+                                                    "unit": "px",
+                                                    "size": 10
+                                                }
+                                            },
+                                            "inline-end": {
+                                                "$$type": "size",
+                                                "value": {
+                                                    "unit": "px",
+                                                    "size": 10
+                                                }
+                                            },
+                                            "block-end": {
+                                                "$$type": "size",
+                                                "value": {
+                                                    "unit": "px",
+                                                    "size": 10
+                                                }
+                                            },
+                                            "inline-start": {
+                                                "$$type": "size",
+                                                "value": {
+                                                    "unit": "px",
+                                                    "size": 10
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "border-width": {
+                                        "$$type": "size",
+                                        "value": {
+                                            "unit": "px",
+                                            "size": 0
+                                        }
+                                    },
+                                    "background": {
+                                        "$$type": "background",
+                                        "value": []
+                                    },
+                                    "box-shadow": {
+                                        "$$type": "box-shadow",
+                                        "value": []
+                                    }
+                                },
+                                "custom_css": null
+                            },
+                            {
+                                "meta": {
+                                    "breakpoint": "desktop",
+                                    "state": "hover"
+                                },
+                                "props": {
+                                    "color": {
+                                        "$$type": "color",
+                                        "value": "#ffffff"
+                                    },
+                                    "box-shadow": {
+                                        "$$type": "box-shadow",
+                                        "value": []
+                                    }
+                                },
+                                "custom_css": null
+                            }
+                        ]
+                    }
+                },
+                "interactions": [],
+                "editor_settings": {
+                    "title": "border-divide"
+                },
+                "version": "0.0"
+            }
+        ],
+        "isInner": false,
+        "elType": "e-flexbox",
+        "styles": {
+            "e-2f4ced3f-3e7248b": {
+                "id": "e-2f4ced3f-3e7248b",
+                "label": "local",
+                "type": "class",
+                "variants": [
+                    {
+                        "meta": {
+                            "breakpoint": "desktop",
+                            "state": null
+                        },
+                        "props": {
+                            "flex-direction": {
+                                "$$type": "string",
+                                "value": "row"
+                            }
+                        },
+                        "custom_css": null
+                    }
+                ]
+            }
+        },
+        "interactions": [],
+        "editor_settings": [],
+        "version": "0.0"
+    }
+}

@@ -55,9 +55,14 @@ function borderDivideSetup(container) {
 }
 
 // Mask (mask-btn)
+// Targets Elementor's own unconditional `.e-paragraph-base` / `.e-divider-base`
+// classes (see textFlipSync() above for why) instead of the custom
+// `aae-btn-mask-content` / `aae-btn-mask-effect` hook classes on the
+// children — querySelector is scoped to this button's own `container`, so
+// there's no risk of matching a paragraph/divider outside it.
 function maskBtn(container) {
-  const textEl = container.querySelector('.aae-btn-mask-content');
-  const effectEl = container.querySelector('.aae-btn-mask-effect');
+  const textEl = container.querySelector('.e-paragraph-base');
+  const effectEl = container.querySelector('.e-divider-base');
   if (!textEl || !effectEl) return;
 
   const text = textEl.textContent.trim();

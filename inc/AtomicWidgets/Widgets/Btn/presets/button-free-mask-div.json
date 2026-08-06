@@ -1,0 +1,386 @@
+{
+    "name": "button-free-mask-div",
+    "model": {
+        "id": "7d2748fb",
+        "settings": {
+            "classes": {
+                "$$type": "classes",
+                "value": [
+                    "e-7d2748fb-aafdeb0"
+                ]
+            }
+        },
+        "elements": [
+            {
+                "id": "6b263c94",
+                "settings": {
+                    "classes": {
+                        "$$type": "classes",
+                        "value": [
+                            "e-6b263c94-7430946"
+                        ]
+                    },
+                    "aae_btn_mask": {
+                        "$$type": "boolean",
+                        "value": true
+                    }
+                },
+                "elements": [
+                    {
+                        "id": "2a5f716a",
+                        "settings": {
+                            "classes": {
+                                "$$type": "classes",
+                                "value": [
+                                    "e-2a5f716a-837dd46"
+                                ]
+                            },
+                            "paragraph": {
+                                "$$type": "html-v3",
+                                "value": {
+                                    "content": {
+                                        "$$type": "string",
+                                        "value": "Mask Here"
+                                    },
+                                    "children": []
+                                }
+                            },
+                            "tag": {
+                                "$$type": "string",
+                                "value": "span"
+                            },
+                            "link": {
+                                "$$type": "link",
+                                "value": []
+                            }
+                        },
+                        "elements": [],
+                        "isInner": false,
+                        "widgetType": "e-paragraph",
+                        "elType": "widget",
+                        "styles": {
+                            "e-2a5f716a-837dd46": {
+                                "id": "e-2a5f716a-837dd46",
+                                "label": "local",
+                                "type": "class",
+                                "variants": [
+                                    {
+                                        "meta": {
+                                            "breakpoint": "desktop",
+                                            "state": null
+                                        },
+                                        "props": {
+                                            "width": {
+                                                "$$type": "size",
+                                                "value": {
+                                                    "unit": "%",
+                                                    "size": 100
+                                                }
+                                            },
+                                            "height": {
+                                                "$$type": "size",
+                                                "value": {
+                                                    "unit": "%",
+                                                    "size": 100
+                                                }
+                                            },
+                                            "display": {
+                                                "$$type": "string",
+                                                "value": "flex"
+                                            },
+                                            "justify-content": {
+                                                "$$type": "string",
+                                                "value": "center"
+                                            },
+                                            "align-items": {
+                                                "$$type": "string",
+                                                "value": "center"
+                                            }
+                                        },
+                                        "custom_css": null
+                                    }
+                                ]
+                            }
+                        },
+                        "interactions": [],
+                        "editor_settings": [],
+                        "version": "0.0"
+                    },
+                    {
+                        "id": "21940d88",
+                        "settings": {
+                            "classes": {
+                                "$$type": "classes",
+                                "value": [
+                                    "e-21940d88-4f498c9"
+                                ]
+                            }
+                        },
+                        "elements": [],
+                        "isInner": false,
+                        "widgetType": "e-divider",
+                        "elType": "widget",
+                        "styles": {
+                            "e-21940d88-4f498c9": {
+                                "id": "e-21940d88-4f498c9",
+                                "label": "local",
+                                "type": "class",
+                                "variants": [
+                                    {
+                                        "meta": {
+                                            "breakpoint": "desktop",
+                                            "state": null
+                                        },
+                                        "props": {
+                                            "width": {
+                                                "$$type": "size",
+                                                "value": {
+                                                    "unit": "%",
+                                                    "size": 100
+                                                }
+                                            },
+                                            "height": {
+                                                "$$type": "size",
+                                                "value": {
+                                                    "unit": "%",
+                                                    "size": 100
+                                                }
+                                            },
+                                            "min-width": {
+                                                "$$type": "size",
+                                                "value": {
+                                                    "unit": "px",
+                                                    "size": 0
+                                                }
+                                            },
+                                            "min-height": {
+                                                "$$type": "size",
+                                                "value": {
+                                                    "unit": "px",
+                                                    "size": 0
+                                                }
+                                            },
+                                            "position": {
+                                                "$$type": "string",
+                                                "value": "absolute"
+                                            },
+                                            "inset-block-start": {
+                                                "$$type": "size",
+                                                "value": {
+                                                    "unit": "px",
+                                                    "size": 0
+                                                }
+                                            },
+                                            "inset-inline-start": {
+                                                "$$type": "size",
+                                                "value": {
+                                                    "unit": "px",
+                                                    "size": 0
+                                                }
+                                            },
+                                            "color": {
+                                                "$$type": "color",
+                                                "value": "#ffffff"
+                                            },
+                                            "padding": {
+                                                "$$type": "dimensions",
+                                                "value": {
+                                                    "block-start": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "unit": "px",
+                                                            "size": 15
+                                                        }
+                                                    },
+                                                    "inline-end": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "unit": "px",
+                                                            "size": 30
+                                                        }
+                                                    },
+                                                    "block-end": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "unit": "px",
+                                                            "size": 15
+                                                        }
+                                                    },
+                                                    "inline-start": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "unit": "px",
+                                                            "size": 30
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "background": {
+                                                "$$type": "background",
+                                                "value": {
+                                                    "color": {
+                                                        "$$type": "color",
+                                                        "value": "#3d405b"
+                                                    }
+                                                }
+                                            },
+                                            "display": {
+                                                "$$type": "string",
+                                                "value": "flex"
+                                            },
+                                            "justify-content": {
+                                                "$$type": "string",
+                                                "value": "center"
+                                            },
+                                            "align-items": {
+                                                "$$type": "string",
+                                                "value": "center"
+                                            }
+                                        },
+                                        "custom_css": null
+                                    }
+                                ]
+                            }
+                        },
+                        "interactions": [],
+                        "editor_settings": {
+                            "title": "effect"
+                        },
+                        "version": "0.0"
+                    }
+                ],
+                "isInner": false,
+                "elType": "e-aae-a-btn",
+                "styles": {
+                    "e-6b263c94-7430946": {
+                        "id": "e-6b263c94-7430946",
+                        "label": "local",
+                        "type": "class",
+                        "variants": [
+                            {
+                                "meta": {
+                                    "breakpoint": "desktop",
+                                    "state": null
+                                },
+                                "props": {
+                                    "padding": {
+                                        "$$type": "dimensions",
+                                        "value": {
+                                            "block-start": {
+                                                "$$type": "size",
+                                                "value": {
+                                                    "unit": "px",
+                                                    "size": 15
+                                                }
+                                            },
+                                            "inline-end": {
+                                                "$$type": "size",
+                                                "value": {
+                                                    "unit": "px",
+                                                    "size": 30
+                                                }
+                                            },
+                                            "block-end": {
+                                                "$$type": "size",
+                                                "value": {
+                                                    "unit": "px",
+                                                    "size": 15
+                                                }
+                                            },
+                                            "inline-start": {
+                                                "$$type": "size",
+                                                "value": {
+                                                    "unit": "px",
+                                                    "size": 30
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "border-radius": {
+                                        "$$type": "size",
+                                        "value": {
+                                            "unit": "px",
+                                            "size": 5
+                                        }
+                                    },
+                                    "background": {
+                                        "$$type": "background",
+                                        "value": {
+                                            "color": {
+                                                "$$type": "color",
+                                                "value": "#1C1D20"
+                                            }
+                                        }
+                                    },
+                                    "transition": {
+                                        "$$type": "transition",
+                                        "value": [
+                                            {
+                                                "$$type": "selection-size",
+                                                "value": {
+                                                    "selection": {
+                                                        "$$type": "key-value",
+                                                        "value": {
+                                                            "key": {
+                                                                "$$type": "string",
+                                                                "value": "All properties"
+                                                            },
+                                                            "value": {
+                                                                "$$type": "string",
+                                                                "value": "all"
+                                                            }
+                                                        }
+                                                    },
+                                                    "size": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "unit": "ms",
+                                                            "size": 500
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                "custom_css": null
+                            }
+                        ]
+                    }
+                },
+                "interactions": [],
+                "editor_settings": {
+                    "title": "mask"
+                },
+                "version": "0.0"
+            }
+        ],
+        "isInner": false,
+        "elType": "e-flexbox",
+        "styles": {
+            "e-7d2748fb-aafdeb0": {
+                "id": "e-7d2748fb-aafdeb0",
+                "label": "local",
+                "type": "class",
+                "variants": [
+                    {
+                        "meta": {
+                            "breakpoint": "desktop",
+                            "state": null
+                        },
+                        "props": {
+                            "flex-direction": {
+                                "$$type": "string",
+                                "value": "row"
+                            }
+                        },
+                        "custom_css": null
+                    }
+                ]
+            }
+        },
+        "interactions": [],
+        "editor_settings": [],
+        "version": "0.0"
+    }
+}
