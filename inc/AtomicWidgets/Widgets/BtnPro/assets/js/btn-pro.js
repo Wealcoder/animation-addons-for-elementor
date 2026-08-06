@@ -20,12 +20,12 @@
 // both plain e-div-block children with no distinguishing widget type, so a
 // shared class can't tell them apart by itself. querySelectorAll returns
 // matches in DOCUMENT ORDER regardless of nesting depth, and that order
-// always matches the template's authored order — effect first, arrow last —
-// so indexing is safe here even if Elementor wraps children differently in
-// the editor preview than on the frontend. (A pure-CSS equivalent would need
-// a sibling-adjacency selector, which — unlike querySelectorAll — DOES
-// depend on real DOM sibling structure; that's why "arrow" keeps its own
-// hook class in the preset instead of being migrated the same way.)
+// always matches this preset's authored order — effect first, arrow last —
+// so indexing is safe here. (An older ripple template variant found while
+// auditing real saved content wraps the label in its own extra div-block,
+// which would break this index — but that variant has no real usage, so
+// it's not accounted for here. If that ever changes, this needs the same
+// literal-class treatment "arrow" gets below.)
 function rippleGsapSetup(container) {
   const span = container.querySelectorAll('.e-div-block-base')[0];
   if (!span || typeof gsap === 'undefined') return;
