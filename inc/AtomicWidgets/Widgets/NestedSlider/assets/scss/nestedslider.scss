@@ -1,5 +1,16 @@
 .aae-a-slider {
 
+    // The slider carries tabindex="0" so keyboard users can drive it with the
+    // arrow keys. Clicking it then also focuses it, and the UA outline reads as
+    // a stray black border across the top — which is what the runtime used to
+    // kill with an inline `outline: none`. That killed it for KEYBOARD focus
+    // too, leaving a tab stop with no visible indicator (WCAG 2.4.7).
+    // `:focus:not(:focus-visible)` is the narrow version: quiet for pointer
+    // focus, untouched for keyboard focus.
+    &:focus:not(:focus-visible) {
+        outline: none;
+    }
+
     // NOTE: the track's default 10px `.e-con` padding (which shrinks the slide
     // content box and leaves a right-side gap) is zeroed via the atomic base-style
     // in AAE_A_Slider_Track::define_base_styles(), not here — that emits `padding: 0`

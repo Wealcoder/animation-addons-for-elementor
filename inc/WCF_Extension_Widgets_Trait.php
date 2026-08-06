@@ -17,19 +17,40 @@ trait WCF_Extension_Widgets_Trait {
 	 */
 	public static function get_widgets() {
 
-		$config = wcf_get_config();
+		$widgets = get_option( 'wcf_save_widgets' );
 
-		$widgets       = get_option( 'wcf_save_widgets' );
-		$saved_widgets = is_array( $widgets ) ? array_keys( $widgets ) : [];
+		return self::active_from_config( 'widgets', is_array( $widgets ) ? array_keys( $widgets ) : [] );
+	}
 
-		$awidgets  = [];
-		$foundKeys = [];
+	/**
+	 * Pick the saved keys out of a config section.
+	 *
+	 * Replaces a full recursive walk of the ~2,125-node config tree per call
+	 * (see wcf_config_index()). Iteration is over the INDEX, not the saved list,
+	 * so the returned order stays config-traversal order exactly as before —
+	 * registration order is observable, so it is not safe to reorder.
+	 *
+	 * @param string   $section 'widgets' or 'extensions'.
+	 * @param string[] $saved   Saved keys from the option.
+	 * @return array<string,array>
+	 */
+	private static function active_from_config( $section, array $saved ) {
 
-		if ( ! empty( $config['widgets'] ) ) {
-			wcf_get_search_active_keys( $config['widgets'], $saved_widgets, $foundKeys, $awidgets );
+		if ( empty( $saved ) ) {
+			return [];
 		}
 
-		return is_array( $awidgets ) ? $awidgets : [];
+		$wanted = array_flip( $saved );
+		$active = [];
+
+		foreach ( wcf_config_index( $section ) as $key => $node ) {
+			if ( isset( $wanted[ $key ] ) ) {
+				$node['is_active'] = 1;
+				$active[ $key ]    = $node;
+			}
+		}
+
+		return $active;
 	}
 
 	/**
@@ -39,18 +60,8 @@ trait WCF_Extension_Widgets_Trait {
 	 */
 	public static function get_extensions() {
 
-		$config = wcf_get_config();
+		$extensions = get_option( 'wcf_save_extensions' );
 
-		$extensions       = get_option( 'wcf_save_extensions' );
-		$saved_extensions = is_array( $extensions ) ? array_keys( $extensions ) : [];
-
-		$active    = [];
-		$foundKeys = [];
-
-		if ( ! empty( $config['extensions'] ) ) {
-			wcf_get_search_active_keys( $config['extensions'], $saved_extensions, $foundKeys, $active );
-		}
-
-		return is_array( $active ) ? $active : [];
+		return self::active_from_config( 'extensions', is_array( $extensions ) ? array_keys( $extensions ) : [] );
 	}
 }

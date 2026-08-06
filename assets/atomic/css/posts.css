@@ -2,6 +2,19 @@
   width: 100%;
 }
 
+.aae-a-sr-only {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
 .aae-a-posts-grid {
   --aae-posts-gap: 24px;
   --aae-post-bg: var(--e-global-color-text-inverse, #ffffff);
@@ -135,3 +148,4 @@
     width: 100%;
   }
 }
+/*# sourceMappingURL=posts.css.map */

@@ -118,7 +118,21 @@ class Notices {
 			} else {
 				$this->dismiss( $notice_id );
 			}
-			wp_cache_flush();
+			/*
+			 * No wp_cache_flush() here.
+			 *
+			 * It used to sit on this line, almost certainly to fight the
+			 * "dismissed notice comes back" symptom that is_dismissed() above
+			 * was actually causing. It could never have fixed that — under a
+			 * persistent object cache the row it was looking for does not exist,
+			 * so emptying the cache just makes the next read miss and find
+			 * nothing again.
+			 *
+			 * What it DID do was throw away the entire site's object cache —
+			 * every option, query and term — because someone closed a notice.
+			 * update_option() and set_transient() both maintain their own cache
+			 * entries, so there was nothing to invalidate by hand.
+			 */
 			wp_send_json_success();
 			exit;
 		}
@@ -247,7 +261,21 @@ class Notices {
 	 * @return bool
 	 */
 	public function is_dismissed( $id ) {
-		if ( 'yes' === get_option( $id ) || 'yes' === get_option( '_transient_' . $id ) ) {
+		/*
+		 * get_transient(), NOT get_option( '_transient_' . $id ).
+		 *
+		 * snooze() stores this with set_transient(). Reading the transient's
+		 * underlying option row only works while transients happen to live in
+		 * wp_options — which stops being true the moment the site has a
+		 * persistent object cache: set_transient() then writes to Redis or
+		 * Memcached and creates NO row at all. The read returned false forever,
+		 * so snoozing silently did nothing and the notice reappeared on the very
+		 * next page load.
+		 *
+		 * get_transient() is correct in both storage modes, and it also honours
+		 * the expiry, which the raw option read did not.
+		 */
+		if ( 'yes' === get_option( $id ) || 'yes' === get_transient( $id ) ) {
 			return true;
 		} else {
 			return false;

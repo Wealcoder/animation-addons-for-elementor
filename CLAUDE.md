@@ -715,6 +715,48 @@ Settings"** switch (`legacy_v3`) that restores them. It saves immediately on
 flip rather than waiting for the panel's Save button — a switch this
 consequential shouldn't sit in an uncommitted form.
 
+### The AAE Builder's legacy template tabs (2026-08-06)
+
+`legacy_v3` also governs two tabs on **AAE Builder** (`edit.php?post_type=wcf-addons-template`):
+**PopUp** (`popup`, registered by Pro's `inc/hook.php`) and **Loop Builder**
+(`loop-builder`, by `widgets/loop-builder/init.php`). Off ⇒ both disappear from
+the tab bar and from the Add New Template dropdown. The v4 **Popup — Atomic**
+(`aae-popup`) is a different type and is never touched.
+
+**Mark, never remove.** `get_template_type()` stays complete and
+`get_offered_template_type()` sets `hidden => true` on the legacy entries. Two
+things break the moment a type genuinely leaves that array, and neither errors
+in a way anyone would connect to this:
+
+1. `columns_content()` bails on `! array_key_exists( $tmpType, get_template_type() )`,
+   so an existing popup template loses **both** its Type and its Display column
+   and renders as a blank row.
+2. The type `<select>` is shared by the create AND edit modals, and
+   `theme-builder.js`'s success callback does an **unguarded**
+   `document.querySelector("#wcf-addons-template-type option[value='popup']").selected = "true"`.
+   With the option gone that throws — the callback dies before it fills the
+   title or enables "Edit with Elementor" — and the select then sits on its
+   first entry, so saving silently rewrites the template's type to `header`.
+
+A hidden `<option>` is absent from the dropdown list yet still selectable from
+script and still submits, which is exactly the split needed: not offered for a
+NEW template, fully functional for an existing one. Verified in-browser —
+`option[value='popup'].selected = true` still yields `select.value === 'popup'`.
+
+**A type with templates behind it is never hidden.** `template_types_in_use()`
+(one memoised query) keeps the tab for a site that owns popups — the tab is the
+only filtered view of them, and removing it from someone with four popups is how
+this reads as "my templates are gone". Same ratchet as Rule 5. `query_filter()`
+is untouched either way, so an old `?template_type=popup` bookmark keeps working
+even while the tab is hidden.
+
+Test: `E:\Local Testing\verify-builder-legacy-tabs.php` (22 checks over three
+phases — `on` / `off-empty` / `off-used`). **One phase per process**:
+`template_types_in_use()` memoises into a static, so a single run cannot
+honestly observe two different DB states. It also ABORTS unless `popup` and
+`loop-builder` are both present in `get_template_type()` — without the Pro and
+loop-builder filters having run, every assertion below would pass vacuously.
+
 ### DANGER — do not gate `register_widgets()` on a heuristic
 
 `class-plugin.php::register_widgets()` / `register_extensions()` are the only
@@ -1265,6 +1307,133 @@ loads every matching id. Only runs when Sticky First is on.
 **Test:** `E:\Local Testing\verify-loop-grid-perf.php` (15 checks) — asserts on
 the SQL WordPress actually emits, not on the args array, since a flag that never
 reaches the query is worth nothing.
+
+## Caching computed artifacts — and why option VALUES are not one (2026-08-06)
+
+Asked directly: "what would we gain by file-caching the option values?" The
+measured answer is **nothing**, and the reasoning generalises to every future
+cache proposal here, so it is written down rather than re-derived.
+
+### Option values are already cached, by WordPress, in one query
+
+Measured on the dev site:
+
+| | |
+|---|---|
+| AAE's autoloaded options | ~21 keys, **6.3 KB total** (largest: `aae_animation_settings`, 2.9 KB) |
+| The whole site's autoload | 103 options / 30.5 KB — healthy |
+| AAE options NOT autoloaded | 4 (`aae_pp_cache_versions`, `aae_speed_preview_secret`, two popup migration markers) |
+
+Autoloaded means `wp_load_alloptions()` fetches all of them in **one** query at
+boot, so `get_option('aae_atomic_widgets')` costs **zero** additional queries —
+it is already in memory. A file cache can only remove a per-option query, and
+there is no per-option query to remove.
+
+It also is not where the time goes. On that site a static file answered in 6 ms
+while `robots.txt` — full WP boot, no theme, no render — took **720 ms**, and
+the cause was 1,444 PHP files recompiling per request with OPcache absent. The
+DB was not measurably involved. Option file-caching moves ~1 ms of that; OPcache
+moves ~400-550 ms.
+
+**`config.php` is already this pattern, done correctly**: a 128 KB static file,
+versioned by shipping with the release, read with `require`. With OPcache it is
+approximately free, and it cannot go stale because it is code.
+
+### If you DO cache a computed artifact, these are the rules
+
+Worth caching is something **expensive to COMPUTE**, not something expensive to
+fetch — the flattened config index (`wcf_config_index()`), a generated
+stylesheet, a resolved registry. Never a raw option value.
+
+1. **Put the version in the FILENAME, not the contents.** A version inside the
+   file has to be read before it can be checked, which is the cost you were
+   avoiding.
+2. **Write atomically** — temp file plus `rename()`. Two concurrent requests
+   writing the same path produce a truncated PHP file, and the next `include`
+   is a fatal, not a cache miss.
+3. **`var_export()`, never string concatenation.** Generated PHP that is later
+   included is an arbitrary-code-execution surface, and WP.org review flags
+   runtime PHP generation.
+4. **Accept that it does not work multi-server.** A file written on one node is
+   not on the others. Redis is shared; the filesystem is not.
+5. **Assume the directory may be read-only.** Managed hosts (WP Engine, Kinsta)
+   restrict plugin directories, and `uploads` can be synced or wiped.
+
+### DANGER — OPcache makes a written PHP cache STALER, not fresher
+
+On a server with `opcache.validate_timestamps=0`, a cache file you just wrote is
+**not read** until the PHP process reloads. The faster the server is configured,
+the longer the stale copy survives, and nothing errors. This is the same trap
+that makes a plugin update keep running its previous code, which is why
+`Server_Advisor::maybe_reset_after_update()` exists.
+
+### DANGER — do not hook the option/meta write hooks to keep a cache fresh
+
+This has already cost a day once. The Loop Grid count cache (previous section)
+was written and removed the same day because keeping it correct meant hooking
+`updated_post_meta` / `added_post_meta`, which fire many times per save — every
+save and every bulk import became a storm of `update_option()` writes, to avoid
+a query core was already caching. *"It cost more than it saved."*
+
+The same shape applies to option values: another plugin, WP-CLI, or the user can
+write the option, and a file cache has no way to know without subscribing to
+those hooks.
+
+### What was done instead (2026-08-06)
+
+Per-request memoisation, which has none of the above failure modes because it
+cannot outlive the request: the atomic registry, the registerable-class
+classification, `is_widget_active()`, asset path/version resolution, and
+`wcf_config_index()`. Measured on `/aae-v4-widgets/`: registry builds per page
+view went from ~459 (446 rendered elements, each rebuilding it) to **1**.
+
+`wcf_get_config()` moved from `wp_cache_get()` to a `static` in the same pass.
+That was a **correctness fix, not just a speed one** — it cached the config
+under a key with no version, so on a site with Redis or Memcached a plugin
+update could keep serving the previous release's config until someone flushed
+the cache by hand. A static cannot outlive the request, so it cannot be stale.
+
+Regression tests: `E:\Local Testing\verify-perf-{registry-memo,classify,active-widgets,config-index}.php`.
+
+### Redis / Memcached compatibility — audited 2026-08-06
+
+Both plugins are safe with a persistent object cache. Pro contains **no**
+`wp_cache_*` calls at all; free's remaining ones are one `wp_cache_set` in
+`inc/admin/page-import.php` (own group, 60 s TTL, admin only — fine) and the
+transients, which are core's API and genuinely benefit from Redis.
+
+**Two defects found and FIXED in `inc/admin/Notices/Notices.php`.** They were the
+same incident: one caused a visible symptom, the other was the wrong cure.
+
+1. **Snoozing a notice did nothing on any site with a persistent object cache.**
+   `snooze()` writes with `set_transient()`, but `is_dismissed()` read
+   `get_option( '_transient_' . $id )` — the transient's underlying option row.
+   That row only exists while transients live in `wp_options`; with Redis or
+   Memcached `set_transient()` writes to the cache and creates **no row at all**,
+   so the read returned false forever and the notice reappeared on the next page
+   load. Now `get_transient()`, which is correct in both storage modes and also
+   honours the expiry the raw option read ignored.
+2. **`wp_cache_flush()` on notice dismissal, removed.** It emptied the entire
+   site's object cache — every option, query and term — because someone closed a
+   notice, and on a shared Memcached instance could reach beyond this site. It
+   was almost certainly added to fight defect 1, and could never have fixed it:
+   under an object cache the row it wanted does not exist, so flushing just makes
+   the next read miss and find nothing again. `update_option()` and
+   `set_transient()` maintain their own cache entries, so nothing needed manual
+   invalidation.
+
+`inc/admin/base/WXRImporter.php:621` still flushes, deliberately — that is after
+a full demo import, where the blast radius is proportionate.
+
+**The generalisable rule:** never read a transient through its option row. Write
+with `set_transient()`, read with `get_transient()`. The option-row shortcut
+works on exactly the sites that have no object cache, which is why it survives
+testing and then fails on the customer running Redis.
+
+Test: `E:\Local Testing\verify-notice-object-cache.php` (6 checks). It flips
+`wp_using_ext_object_cache( true )` to take the Redis code path without
+installing Redis, and asserts the OLD read path is blind in that mode — so a
+future refactor cannot quietly reintroduce it and still pass.
 
 ## Cache / optimization plugin compatibility
 
@@ -3215,6 +3384,7 @@ JS.** Diagnose this class of failure fast: `head` the served file in
 | Per-breakpoint values don't preview | `applySettingsToDom()` writing only desktop attrs — check `AAE_RESPONSIVE_BASES` includes the base |
 | Number input rounds decimals | Add label to `FLOAT_LABEL_BASES` in `float-step-fix.js` |
 | Two tabs visually selected | Don't fight React on `aria-selected` / `Mui-selected` — use `!important` on the indicator, not class strips |
+| The editor locks up solid — no error, empty console — right after clicking the **eye** (Show/hide Element) in the Structure panel | The preview-removal `MutationObserver` in `editor-bridge.js` read `removedNodes` as "deleted". Elementor HIDES an atomic element by `$el.wrap('<div data-type="hide-atomic-widget" style="display:none">')` (`views/base.js::toggleVisibilityClass`), and jQuery's `.wrap()` detaches + re-inserts — so a hide arrived as a removal and reset every `[data-interaction-id]` under it (387 from one click on the `aae-v4-widgets` fixture). Each reset re-parents more nodes, which feeds the same callback: measured gain ~5×, so capping real resets at 500 still produced 2990 calls and uncapped it never terminated. A MutationObserver callback is a microtask, so the queue never drains — hence no paint, no console output. Fixed with three guards (`isConnected` = re-parented not deleted, a `seen` set for overlapping subtrees, a `sweeping` re-entry flag) plus one-observer-per-preview-window. **A removal record is not proof of a deletion — always test `isConnected`.** Repro/regression: `E:\Local Testing\verify-eye-toggle-hang.mjs` (10 checks), `probe-eye-stack.mjs` (CDP stack of the hung thread), `probe-eye-proof.mjs`. |
 | Console floods with `Cannot use import statement outside a module` + `Identifier 'register' has already been declared` across many widget scripts at once | RAW widget sources got copied over webpack's bundles in `assets/atomic/js/` — see [`assets/atomic/js/` belongs to WEBPACK](#assetsatomicjs-belongs-to-webpack--never-raw-copy-sources-into-it). Recover with `npm run build`. |
 
 ---

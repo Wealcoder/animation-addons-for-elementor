@@ -439,6 +439,60 @@ if ( ! function_exists( 'wcf_get_search_active_keys' ) ) {
 	}
 }
 
+if ( ! function_exists( 'wcf_config_index' ) ) {
+	/**
+	 * Flat `key => node` index of every activatable node in a config section.
+	 *
+	 * wcf_get_search_active_keys() re-walks the whole ~2,125-node config tree on
+	 * every call, and get_widgets()/get_extensions() are called several times per
+	 * request (include_files() at plugins_loaded, the widget registrar, and Pro).
+	 * Indexing once turns each of those from O(tree) into O(saved keys).
+	 *
+	 * Traversal order and last-wins-on-duplicate-keys match the recursive
+	 * version exactly, and eligibility is the same `is_extension` test, so the
+	 * resulting set is identical — only the cost changes.
+	 *
+	 * The recursive function is deliberately left in place: the admin screens
+	 * (dashboard.php, setup-wizard.php) still use it, and they are not on a hot
+	 * path.
+	 *
+	 * @param string $section 'widgets' or 'extensions'.
+	 * @return array<string,array>
+	 */
+	function wcf_config_index( $section ) {
+		static $index = [];
+
+		if ( isset( $index[ $section ] ) ) {
+			return $index[ $section ];
+		}
+
+		$config = wcf_get_config();
+		$flat   = [];
+
+		$walk = static function ( $nodes ) use ( &$walk, &$flat ) {
+			foreach ( $nodes as $key => $value ) {
+				if ( ! is_array( $value ) ) {
+					continue;
+				}
+				if ( array_key_exists( 'is_extension', $value ) ) {
+					$flat[ $key ] = $value;
+				}
+				// Keep descending even after a match — the original does, and a
+				// deeper node with the same key is meant to win.
+				$walk( $value );
+			}
+		};
+
+		if ( ! empty( $config[ $section ] ) ) {
+			$walk( $config[ $section ] );
+		}
+
+		$index[ $section ] = $flat;
+
+		return $flat;
+	}
+}
+
 if ( ! function_exists( 'wcf_get_addon_active_extension_by_key' ) ) {
 
 	function wcf_get_addon_active_extension_by_key( $search ) {
@@ -758,13 +812,26 @@ add_filter(
 );
 
 
+/**
+ * The widget/extension config tree from config.php.
+ *
+ * A `static` rather than the object cache, for two reasons:
+ *
+ * 1. SPEED. config.php is ~128 KB / 3,553 lines. Without a persistent object
+ *    cache backend wp_cache_get() is request-scoped anyway, so the round trip
+ *    bought nothing while still costing a cache lookup on every call.
+ * 2. CORRECTNESS on sites that DO have Redis/Memcached. The old code cached a
+ *    serialized copy of the file's contents under a key with no version in it,
+ *    so a plugin update could keep serving the PREVIOUS release's config until
+ *    the cache was flushed by hand. A static cannot outlive the request, so it
+ *    can never be stale.
+ */
 function wcf_get_config() {
 
-    $config = wp_cache_get('wcf_addons_config');
+    static $config = null;
 
-    if ($config === false) {
+    if (null === $config) {
         $config = require WCF_ADDONS_PATH . 'config.php';
-        wp_cache_set('wcf_addons_config', $config);
     }
 
     return $config;

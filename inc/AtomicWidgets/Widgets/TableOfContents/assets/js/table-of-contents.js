@@ -308,12 +308,19 @@ const bindSmoothScroll = ( el ) => {
 	} );
 };
 
+// aria-expanded is only valid on the CONTROL, never on the region it controls
+// (a plain <div> with no role does not support it at all, and axe flags it as a
+// critical aria-allowed-attr failure). Both toggle buttons carry the current
+// state; only one of the pair is ever visible, so the hidden one is harmless.
+const setExpandedState = ( el, expanded ) => {
+	el.querySelectorAll( '.toc__toggle-button' ).forEach( ( btn ) => {
+		btn.setAttribute( 'aria-expanded', expanded ? 'true' : 'false' );
+	} );
+};
+
 const collapseBox = ( el, changeFocus = true ) => {
 	el.classList.add( CLASSES.collapsed );
-	const body = el.querySelector( '.toc__body' );
-	if ( body ) {
-		body.setAttribute( 'aria-expanded', 'false' );
-	}
+	setExpandedState( el, false );
 	if ( changeFocus ) {
 		const expandBtn = el.querySelector( '.toc__toggle-button--expand' );
 		if ( expandBtn ) {
@@ -324,10 +331,7 @@ const collapseBox = ( el, changeFocus = true ) => {
 
 const expandBox = ( el, changeFocus = true ) => {
 	el.classList.remove( CLASSES.collapsed );
-	const body = el.querySelector( '.toc__body' );
-	if ( body ) {
-		body.setAttribute( 'aria-expanded', 'true' );
-	}
+	setExpandedState( el, true );
 	if ( changeFocus ) {
 		const collapseBtn = el.querySelector( '.toc__toggle-button--collapse' );
 		if ( collapseBtn ) {

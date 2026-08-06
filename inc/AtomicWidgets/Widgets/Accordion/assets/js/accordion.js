@@ -68,8 +68,34 @@ const distributeChildren = (item) => {
     item.dataset.aaeDistributed = 'true';
 };
 
+// A header <button> with no text is a critical WCAG 4.1.2 failure, and it also
+// silently breaks the content region below it: that region is labelled via
+// aria-labelledby pointing here, so a nameless button leaves an unnamed
+// landmark too (axe reports it as a second, unrelated-looking landmark-unique
+// violation). Normally the title arrives as a child and distributeChildren()
+// moves it in — this only fires when the button genuinely ends up empty, so a
+// visible title is never overridden by a mismatched aria-label (WCAG 2.5.3).
+//
+// Runs AFTER distribution, and is deliberately outside distributeChildren(),
+// which early-returns when there is nothing to distribute — exactly the case
+// that produces the nameless button.
+const ensureHeaderName = (item) => {
+    const button = item.querySelector('.aae-accordion-header');
+    if (!button || button.getAttribute('aria-label')) return;
+
+    if (button.textContent.trim() !== '') return;
+
+    const fallback = (button.getAttribute('data-aae-fallback-label') || '').trim();
+    if (fallback) {
+        button.setAttribute('aria-label', fallback);
+    }
+};
+
 const distributeAll = (container) => {
-    container.querySelectorAll('.aae-a-accordion-item').forEach(distributeChildren);
+    container.querySelectorAll('.aae-a-accordion-item').forEach((item) => {
+        distributeChildren(item);
+        ensureHeaderName(item);
+    });
 };
 
 // Measure the wrapper's natural (fully-expanded) pixel height reliably — even

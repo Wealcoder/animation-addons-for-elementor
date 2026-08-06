@@ -42,8 +42,21 @@
                         <p class="aae-a-post-excerpt">{{ post.excerpt }}</p>
                     {% endif %}
                     {% if settings.show_read_more %}
+                        {# Every card repeats the same "Read More" wording, so on
+                           its own the link text says nothing about where it goes
+                           — WCAG 2.4.4 (Link Purpose), and Lighthouse's
+                           link-text audit counts it as non-descriptive.
+
+                           The post name goes in a visually-hidden SPAN rather
+                           than in aria-label: an aria-label satisfies screen
+                           readers but Lighthouse reads the link's visible TEXT
+                           and keeps failing (measured — the aria-label version
+                           left the audit at 0). Hidden text lands in both, and
+                           unlike aria-label it does not replace the accessible
+                           name, so the builder's own button copy is still the
+                           first thing announced. #}
                         <a href="{{ post.url | e('full_url') }}" class="aae-a-post-read-more-link">
-                            {{ settings.read_more_text | default('Read More') }}
+                            {{ settings.read_more_text | default('Read More') }}<span class="aae-a-sr-only">: {{ post.title }}</span>
                         </a>
                     {% endif %}
                 </div>
