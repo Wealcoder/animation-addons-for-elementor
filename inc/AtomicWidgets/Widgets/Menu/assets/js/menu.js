@@ -190,31 +190,56 @@ const initMenu = (root) => {
 
 	let closeAllSubmenus = null;
 
-	/* ---------- Editor preview AJAX fallback ---------- */
-	const inEditor = !!(window.elementorFrontend
-		&& typeof window.elementorFrontend.isEditMode === 'function'
-		&& window.elementorFrontend.isEditMode());
-	const placeholder = nav.querySelector('.aae-a-menu-placeholder');
+	/* ---------- Editor preview AJAX fallback ----------
+	   The menu markup is built by wp_nav_menu() in get_atomic_settings(), which
+	   is PHP — so it only exists on a server render. The editor canvas renders
+	   this Twig CLIENT-side, where `settings.rendered_menu` is simply absent and
+	   the template falls through to `.aae-a-menu-placeholder`. Fetching the real
+	   markup is the only way the builder ever sees their menu.
 
-	if (inEditor && placeholder) {
-		const slug = nav.getAttribute('data-menu-slug');
-		if (slug) {
-			const ajaxUrl = (window.elementorFrontend
-				&& window.elementorFrontend.config
-				&& window.elementorFrontend.config.ajaxurl)
-				|| window.ajaxurl
-				|| '/wp-admin/admin-ajax.php';
-			fetch(`${ajaxUrl}?action=aae_get_menu_html&menu=${encodeURIComponent(slug)}`)
-				.then((r) => r.json())
-				.then((data) => {
-					if (data && data.success && data.data) {
-						const body = nav.querySelector('.aae-a-menu-nav-body');
-						if (body) body.innerHTML = data.data;
-						closeAllSubmenus = buildDropdowns();
-					}
-				})
-				.catch(() => {});
-		}
+	   The trigger is the PLACEHOLDER, not an edit-mode test. That is deliberate:
+	   `elementorFrontend.isEditMode()` is not dependable inside the v4 canvas
+	   (counter.js already pairs it with an `elementor-editor-active` body check
+	   for the same reason), and gating on it meant one false negative left the
+	   builder staring at "Menu rendered on frontend / preview." forever. The
+	   placeholder is the exact, self-scoping signal for "this render has no menu
+	   HTML in it" — on the frontend get_atomic_settings() always fills
+	   `rendered_menu`, so the placeholder is never present and this never runs. */
+	const placeholder = nav.querySelector('.aae-a-menu-placeholder');
+	const body = nav.querySelector('.aae-a-menu-nav-body');
+	const slug = nav.getAttribute('data-menu-slug');
+
+	if (placeholder && slug) {
+		// AAE_MENU_CFG.ajaxUrl is admin_url('admin-ajax.php'), localized onto
+		// this handle in the editor preview. It is FIRST because it is the only
+		// entry that is right on every install layout — the root-relative last
+		// resort points at the NETWORK MAIN SITE on a subdirectory multisite
+		// (a subsite's admin is /<site>/wp-admin/), which is why the editor
+		// preview worked on a single site and silently failed on a network.
+		const ajaxUrl = (window.AAE_MENU_CFG && window.AAE_MENU_CFG.ajaxUrl)
+			|| (window.elementorFrontend
+			&& window.elementorFrontend.config
+			&& window.elementorFrontend.config.ajaxurl)
+			|| window.ajaxurl
+			|| '/wp-admin/admin-ajax.php';
+		fetch(`${ajaxUrl}?action=aae_get_menu_html&menu=${encodeURIComponent(slug)}`, {
+			// admin-ajax authenticates by cookie; without this the request is
+			// anonymous, the priv-only action never matches and it 400s.
+			credentials: 'same-origin',
+		})
+			.then((r) => r.json())
+			.then((data) => {
+				if (data && data.success && data.data && body) {
+					body.innerHTML = data.data;
+					closeAllSubmenus = buildDropdowns();
+				}
+			})
+			.catch(() => {});
+	} else if (placeholder && ! slug) {
+		// No menu chosen yet. Say so, instead of the frontend/preview line that
+		// reads as "this is fine, it'll show later" when in fact nothing will.
+		placeholder.textContent = 'Please select a menu';
+		closeAllSubmenus = buildDropdowns();
 	} else {
 		closeAllSubmenus = buildDropdowns();
 	}
