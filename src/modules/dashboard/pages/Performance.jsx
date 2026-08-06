@@ -84,14 +84,155 @@ const PANEL_NOTES = {
  * server AND plugin, and splitting a matrix across PHP and React is how the two
  * halves end up disagreeing. This component renders; it decides nothing.
  *
- * It sits ABOVE the tabs rather than inside one, because it explains which tabs
- * are there: Cache Compatibility silently disappears without a cache plugin, and
- * a panel that vanishes with no explanation is the thing this answers.
+ * It lives in the Diagnostics tab alongside ServerHealth. It used to sit above
+ * the tab strip — it explains why Cache Compatibility disappears without a cache
+ * plugin, and a panel that vanishes unexplained is what this answers — but a
+ * report that pushes every actual setting below the fold costs more than that
+ * explanation is worth. The dot on the Diagnostics trigger is what carries the
+ * "something needs your attention" signal now.
  */
 const STATE_STYLES = {
   good: "bg-[#eaf8ef] border-[#b7e4c7] text-[#0d5b2b]",
   warn: "bg-[#fff6e5] border-[#ffe0a3] text-[#7a4a00]",
   info: "bg-[#f4f6ff] border-[#ccd4ff] text-[#2c2c3a]",
+};
+
+/** Per-row dot colour. The card's own tone is the worst row's tone (PHP decides). */
+const ROW_DOT = {
+  good: "bg-[#2f9e5e]",
+  warn: "bg-[#d98324]",
+  info: "bg-[#5566d6]",
+};
+
+/**
+ * PHP-runtime health, from Pro's `Server_Advisor`.
+ *
+ * Sits under CacheAdvice because it answers the layer below it: a page cache
+ * removes most server time, and this is what is left once PHP has to run.
+ *
+ * EVERYTHING here is decided server-side — the state word, the copy, and the
+ * per-host instructions. This component renders and decides nothing, for the
+ * same reason CacheAdvice does: the rules are a matrix (host × setting × what we
+ * can actually read), and splitting a matrix across PHP and React is how the two
+ * halves end up contradicting each other on the same screen.
+ *
+ * There is deliberately NO "enable OPcache" button. OPcache is a zend_extension
+ * loaded before WordPress exists; no plugin can switch it on, and a button that
+ * pretended otherwise would be a lie. The one thing we can genuinely do — flush
+ * already-compiled code — is offered separately and only when the server allows
+ * it.
+ */
+const ServerHealth = ({ server, onReset, resetting, resetNote }) => {
+  const [openRow, setOpenRow] = useState(null);
+
+  if (!server?.rows?.length) return null;
+
+  const tone = STATE_STYLES[server.state] || STATE_STYLES.info;
+
+  return (
+    <div
+      className={`rounded-lg border p-4 mt-4 ${tone}`}
+      data-aae-server-advice={server.state}
+    >
+      <p className="text-[13px] font-semibold leading-snug">{server.headline}</p>
+      <p className="text-[12px] leading-relaxed mt-1.5 opacity-90">{server.body}</p>
+
+      <ul className="mt-3 space-y-1 list-none">
+        {server.rows.map((row) => {
+          const expandable = !!(row.why || row.steps?.length || row.snippet?.length);
+          const open = openRow === row.id;
+
+          return (
+            <li key={row.id} data-aae-server-row={row.id} data-state={row.state}>
+              <button
+                type="button"
+                disabled={!expandable}
+                onClick={() => setOpenRow(open ? null : row.id)}
+                className={`w-full flex items-center gap-2 text-left text-[12px] py-1 ${
+                  expandable ? "cursor-pointer" : "cursor-default"
+                }`}
+                aria-expanded={expandable ? open : undefined}
+              >
+                <span
+                  className={`w-1.5 h-1.5 rounded-full shrink-0 ${
+                    ROW_DOT[row.state] || ROW_DOT.info
+                  }`}
+                  aria-hidden="true"
+                />
+                <span className="font-medium">{row.label}</span>
+                <span className="opacity-80">{row.value}</span>
+                {expandable && (
+                  <span className="ml-auto opacity-60" aria-hidden="true">
+                    {open ? "−" : "+"}
+                  </span>
+                )}
+              </button>
+
+              {open && (
+                <div className="pl-3.5 pb-2 text-[12px] leading-relaxed">
+                  {row.why && <p className="opacity-90">{row.why}</p>}
+
+                  {!!row.steps?.length && (
+                    <ol className="list-decimal ml-4 mt-1.5 space-y-0.5 opacity-90">
+                      {row.steps.map((step, i) => (
+                        <li key={i}>{step}</li>
+                      ))}
+                    </ol>
+                  )}
+
+                  {/*
+                    The settings to paste. Shown only where they mean something —
+                    a snippet under "PHP version" would be noise.
+                  */}
+                  {!!row.snippet?.length && (
+                    <pre className="mt-2 p-2 rounded bg-black/5 overflow-x-auto text-[11px] leading-relaxed whitespace-pre">
+                      {row.snippet.join("\n")}
+                    </pre>
+                  )}
+                </div>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+
+      {/*
+        Which php.ini this PHP actually read. "Add this to php.ini" is useless
+        advice when a server has several and the obvious one is not the live one,
+        so the path is stated rather than implied.
+      */}
+      {server.ini?.loaded && (
+        <p className="text-[11px] mt-3 opacity-70 break-all">
+          Loaded php.ini: <code>{server.ini.loaded}</code>
+          {!!server.ini.scanned?.length && (
+            <>
+              {" "}
+              (+{server.ini.scanned.length} more scanned)
+            </>
+          )}
+        </p>
+      )}
+
+      {server.canReset && (
+        <div className="mt-3">
+          <button
+            type="button"
+            onClick={onReset}
+            disabled={resetting}
+            className="text-[12px] font-medium underline disabled:opacity-60"
+            data-aae-server-action="opcache-reset"
+          >
+            {resetting ? "Flushing…" : "Flush compiled code cache"}
+          </button>
+          <p className="text-[11px] mt-1 opacity-70">
+            Only useful right after deploying code. On shared PHP-FPM this clears
+            the cache for every site in the pool, and they all recompile.
+          </p>
+          {resetNote && <p className="text-[11px] mt-1 font-medium">{resetNote}</p>}
+        </div>
+      )}
+    </div>
+  );
 };
 
 const CacheAdvice = ({ cache }) => {
@@ -278,6 +419,43 @@ const Performance = ({ embedded = false }) => {
     return body.data.settings;
   };
 
+  /**
+   * Flush OPcache on request.
+   *
+   * Same contract as every other call on this screen (nonce + admin-ajax). The
+   * outcome is reported inline rather than as a toast because it is a statement
+   * about the server that the user may want to read twice — and because a
+   * refusal here is usually opcache.restrict_api, which needs explaining, not a
+   * disappearing "failed".
+   */
+  const [opcacheResetting, setOpcacheResetting] = useState(false);
+  const [opcacheNote, setOpcacheNote] = useState("");
+
+  const resetOpcache = async () => {
+    if (!WCF_ADDONS_ADMIN?.nonce || !WCF_ADDONS_ADMIN?.ajaxurl) return;
+
+    setOpcacheResetting(true);
+    setOpcacheNote("");
+
+    try {
+      const response = await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded", Accept: "application/json" },
+        credentials: "same-origin",
+        body: new URLSearchParams({
+          action: "aae_server_opcache_reset",
+          nonce: WCF_ADDONS_ADMIN.nonce,
+        }),
+      });
+      const body = await response.json();
+      setOpcacheNote(body?.data?.message || (body?.success ? "Done." : "Could not flush."));
+    } catch (e) {
+      setOpcacheNote("Could not reach the server.");
+    } finally {
+      setOpcacheResetting(false);
+    }
+  };
+
   /*
     The intro is split into its icon and its paragraph rather than handed to
     InfoNote whole, because the two do not sit together: embedded there is no
@@ -357,11 +535,32 @@ const Performance = ({ embedded = false }) => {
 
   const groups = Object.entries(schema);
 
+  /*
+    Diagnostics gets its OWN tab rather than sitting above the strip.
+
+    Floating above, the two cards pushed every actual setting below the fold —
+    and they are a report, not a control, so they do not need to be on screen
+    while someone is toggling Lazy Animation. Its key is deliberately prefixed
+    so it can never collide with a group name coming from the server schema.
+
+    It is NOT the default tab. This screen is where people come to change a
+    setting, and opening onto a page of server warnings would put a wall in
+    front of that. The dot on the trigger is how a problem still announces
+    itself without hijacking the screen.
+  */
+  const DIAGNOSTICS_TAB = "__diagnostics";
+
+  const diagnosticsState = boot.server?.rows?.length
+    ? boot.server.state
+    : boot.cache?.state;
+  const hasDiagnostics = !!(boot.cache?.headline || boot.server?.rows?.length);
+
   // Fall back to the first group rather than trusting the stored key: the
   // schema is the server's and a group can disappear from it between renders
   // (Theme Assets is only offered while the companion theme is active), which
   // would otherwise leave the strip with nothing selected.
-  const current = schema[active] ? active : groups[0][0];
+  const current =
+    active === DIAGNOSTICS_TAB && hasDiagnostics ? DIAGNOSTICS_TAB : schema[active] ? active : groups[0][0];
 
   return (
     <div>
@@ -373,6 +572,31 @@ const Performance = ({ embedded = false }) => {
             {embedded && introIcon}
 
             <TabsList className="gap-1 h-11 flex-wrap">
+              {hasDiagnostics && (
+                <TabsTrigger
+                  value={DIAGNOSTICS_TAB}
+                  className="data-[state=active]:bg-[#E1E4EA] bg-[#F5F7FA] text-[12px]"
+                  sx={{ boxShadow: "none" }}
+                  data-aae-perf-tab={DIAGNOSTICS_TAB}
+                  data-aae-diagnostics-state={diagnosticsState}
+                >
+                  {__("Diagnostics", "animation-addons-for-elementor")}
+                  {/*
+                    A problem has to be visible from a tab the user is not on,
+                    or the report only reaches people who already went looking.
+                    A dot does that without a number to argue about.
+                  */}
+                  {(diagnosticsState === "warn" || diagnosticsState === "info") && (
+                    <span
+                      className={`inline-block w-1.5 h-1.5 rounded-full ml-1.5 align-middle ${
+                        ROW_DOT[diagnosticsState]
+                      }`}
+                      aria-hidden="true"
+                    />
+                  )}
+                </TabsTrigger>
+              )}
+
               {groups.map(([key, group]) => (
                 <TabsTrigger
                   key={key}
@@ -421,7 +645,23 @@ const Performance = ({ embedded = false }) => {
           </div>
         )}
 
-        <CacheAdvice cache={boot.cache} />
+        {hasDiagnostics && (
+          <TabsContent value={DIAGNOSTICS_TAB} className="mt-6" data-aae-diagnostics-panel>
+            {/*
+              Cache advice first: a page cache removes most server time
+              outright, so it is the thing to get right before anything below it
+              matters. Server health is what is left once PHP does have to run.
+            */}
+            <CacheAdvice cache={boot.cache} />
+
+            <ServerHealth
+              server={boot.server}
+              onReset={resetOpcache}
+              resetting={opcacheResetting}
+              resetNote={opcacheNote}
+            />
+          </TabsContent>
+        )}
 
         {groups.map(([key, group]) => (
           <TabsContent key={key} value={key} className="mt-6">
