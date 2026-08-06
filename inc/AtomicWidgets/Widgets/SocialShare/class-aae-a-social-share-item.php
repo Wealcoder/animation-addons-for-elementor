@@ -27,8 +27,14 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Svg_Src_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Url_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Background_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Dimensions_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Transition_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Selection_Size_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Key_Value_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
+use Elementor\Modules\AtomicWidgets\Styles\Style_States;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
 /**
@@ -45,6 +51,42 @@ class AAE_A_Social_Share_Item extends Atomic_Element_Base {
 	use Has_Element_Template;
 
 	const BASE_STYLE_KEY = 'base';
+
+	/**
+	 * Single source of truth for the icon's fixed square size.
+	 *
+	 * Read by BOTH define_base_styles() (the real default) AND
+	 * AAE_A_Social_Share::get_frontend_css_override() (the CSS that must load
+	 * after Elementor's base-desktop.css to win the tie against e-svg-base's
+	 * native 65px default). The override lives on the CONTAINER class, not
+	 * here, because only the container has a registered style_handle for
+	 * Atomic::fix_frontend_atomic_css_order() to hook — see AAE_A_Btn for the
+	 * single-widget version of this same pattern.
+	 */
+	const ICON_SIZE_PX = 30;
+
+	/**
+	 * Starter share links, one per supported vendor (see get_vendor_svg_url()
+	 * for the same allow-list). Bare network endpoints, deliberately with NO
+	 * `?u=`/`?url=` query string — a default child's settings are baked once
+	 * into `_elementor_data` at drop time and would otherwise hardcode
+	 * whichever post happened to be open in the editor at that moment,
+	 * silently wrong the instant the layout is reused as a template/on
+	 * another post. The V3 widget's own get_generated_link()
+	 * (widgets/post-social-share.php) can do this correctly because it runs
+	 * at RENDER time via get_the_permalink() — a builder who wants that here
+	 * fills in the real permalink themselves in the Link section.
+	 */
+	const DEFAULT_SHARE_URLS = [
+		'facebook'  => 'https://www.facebook.com/sharer/sharer.php',
+		'twitter'   => 'https://twitter.com/intent/tweet',
+		'linkedin'  => 'https://www.linkedin.com/shareArticle',
+		'pinterest' => 'https://pinterest.com/pin/create/button/',
+		'reddit'    => 'https://www.reddit.com/submit',
+		'tumblr'    => 'https://www.tumblr.com/share/link',
+		'blogger'   => 'https://www.blogger.com/blog-this.g',
+		'instagram' => 'https://www.instagram.com/',
+	];
 
 	public static $widget_description = 'An open, freely editable share-link item (icon + label). Duplicate it inside an AAE Social Share to build a custom social-share row, or use it standalone as any icon+label link.';
 
@@ -122,22 +164,75 @@ class AAE_A_Social_Share_Item extends Atomic_Element_Base {
 	}
 
 	/**
-	 * Structural-only base style — no colors/typography beyond a sane
-	 * neutral default, so preset templates and per-item Style panel edits
-	 * both start from a clean, low-opinion baseline.
+	 * A plain neutral CHIP by default — no theme colors assumed, so it reads
+	 * fine before any preset/per-item Style panel edit is ever made. Icon and
+	 * label are unstyled children (see build_default_inner_children()) that
+	 * pick up size/weight/color entirely by inheriting from this base, so
+	 * there is nothing to keep in sync if this palette changes later.
 	 */
 	protected function define_base_styles(): array {
+		$item_styles = [
+			'display'        => String_Prop_Type::generate( 'inline-flex' ),
+			'align-items'    => String_Prop_Type::generate( 'center' ),
+			'gap'            => Size_Prop_Type::generate( [ 'size' => 6, 'unit' => 'px' ] ),
+
+			'padding' => Dimensions_Prop_Type::generate( [
+				'block-start'  => Size_Prop_Type::generate( [ 'size' => 14, 'unit' => 'px' ] ),
+				'inline-end'   => Size_Prop_Type::generate( [ 'size' => 24, 'unit' => 'px' ] ),
+				'block-end'    => Size_Prop_Type::generate( [ 'size' => 14, 'unit' => 'px' ] ),
+				'inline-start' => Size_Prop_Type::generate( [ 'size' => 24, 'unit' => 'px' ] ),
+			] ),
+
+			'background' => Background_Prop_Type::generate( [
+				'color' => Color_Prop_Type::generate( '#f2f3f5' ),
+			] ),
+			'color'         => Color_Prop_Type::generate( '#26282c' ),
+			'border-radius' => Size_Prop_Type::generate( [ 'size' => 999, 'unit' => 'px' ] ),
+
+			'font-size'      => Size_Prop_Type::generate( [ 'size' => 20, 'unit' => 'px' ] ),
+			'line-height'    => Size_Prop_Type::generate( [ 'size' => 16, 'unit' => 'px' ] ),
+			'font-weight'    => String_Prop_Type::generate( '600' ),
+			'text-decoration' => String_Prop_Type::generate( 'none' ),
+			'cursor'         => String_Prop_Type::generate( 'pointer' ),
+
+			'transition' => Transition_Prop_Type::generate( [
+				Selection_Size_Prop_Type::generate( [
+					'selection' => Key_Value_Prop_Type::generate( [
+						'key'   => String_Prop_Type::generate( 'Background color' ),
+						'value' => String_Prop_Type::generate( 'background-color' ),
+					] ),
+					'size' => Size_Prop_Type::generate( [ 'size' => 200, 'unit' => 'ms' ] ),
+				] ),
+			] ),
+		];
+
+		// Hover — darken the chip a touch, no motion (kept deliberately plain).
+		$item_hover_styles = [
+			'background' => Background_Prop_Type::generate( [
+				'color' => Color_Prop_Type::generate( '#e4e6ea' ),
+			] ),
+		];
+
+		// Pressed / keyboard-focus — same quiet feedback the Btn wrapper uses.
+		$item_pressed_styles = [
+			'opacity' => Size_Prop_Type::generate( [ 'size' => 85, 'unit' => '%' ] ),
+		];
+
+		$icon_styles = [
+			'width'  => Size_Prop_Type::generate( [ 'size' => self::ICON_SIZE_PX, 'unit' => 'px' ] ),
+			'height' => Size_Prop_Type::generate( [ 'size' => self::ICON_SIZE_PX, 'unit' => 'px' ] ),
+		];
+
 		return [
 			self::BASE_STYLE_KEY => Style_Definition::make()
-				->add_variant(
-					Style_Variant::make()
-						->add_prop( 'display',         String_Prop_Type::generate( 'inline-flex' ) )
-						->add_prop( 'align-items',      String_Prop_Type::generate( 'center' ) )
-						->add_prop( 'gap',              Size_Prop_Type::generate( [ 'size' => 8, 'unit' => 'px' ] ) )
-						->add_prop( 'cursor',           String_Prop_Type::generate( 'pointer' ) )
-						->add_prop( 'text-decoration',  String_Prop_Type::generate( 'none' ) )
-						->add_prop( 'color',            Color_Prop_Type::generate( '#1a1a1a' ) )
-				),
+				->add_variant( Style_Variant::make()->add_props( $item_styles ) )
+				->add_variant( Style_Variant::make()->set_state( Style_States::HOVER )->add_props( $item_hover_styles ) )
+				->add_variant( Style_Variant::make()->set_state( Style_States::ACTIVE )->add_props( $item_pressed_styles ) )
+				->add_variant( Style_Variant::make()->set_state( Style_States::FOCUS )->add_props( $item_pressed_styles ) ),
+
+			'icon' => Style_Definition::make()
+				->set_label( __( 'Icon', 'animation-addons-for-elementor' ) )
+				->add_variant( Style_Variant::make()->add_props( $icon_styles ) ),
 		];
 	}
 
@@ -146,8 +241,14 @@ class AAE_A_Social_Share_Item extends Atomic_Element_Base {
 	 * define_default_children() can seed each fresh (unlocked) instance.
 	 */
 	public static function build_default_inner_children( string $vendor = 'facebook', string $label = 'Share' ): array {
+		// Matches define_base_styles()'s "{element_type}-{key}" naming for the
+		// 'icon' style key — same convention AAE_A_Btn uses for its own icon
+		// class. Required, not cosmetic: this is the exact class the generated
+		// "icon" style rule targets.
+		$icon_class = static::get_element_type() . '-icon';
+
 		$svg_settings = [
-			'classes' => Classes_Prop_Type::generate( [ 'aae-a-social-share-item-icon' ] ),
+			'classes' => Classes_Prop_Type::generate( [ $icon_class ] ),
 		];
 		$svg_url = self::get_vendor_svg_url( $vendor );
 		if ( $svg_url ) {
@@ -193,6 +294,15 @@ class AAE_A_Social_Share_Item extends Atomic_Element_Base {
 		return [
 			'elementor/elements/aae-a-social-share-item' => __DIR__ . '/aae-a-social-share-item.html.twig',
 		];
+	}
+
+	/**
+	 * The starter share URL for a vendor, or '' for one not in the map — same
+	 * "unknown input degrades to empty, never an error" contract as
+	 * get_vendor_svg_url().
+	 */
+	public static function get_default_share_url( string $vendor ): string {
+		return self::DEFAULT_SHARE_URLS[ $vendor ] ?? '';
 	}
 
 	public static function get_vendor_svg_url( string $vendor ): string {

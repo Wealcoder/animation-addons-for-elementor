@@ -22,9 +22,11 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Color_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
-use Elementor\Modules\AtomicWidgets\Elements\Atomic_Divider\Atomic_Divider;
+use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
 // Sub-element file — loaded eagerly so define_default_children() can call ::generate().
@@ -38,14 +40,17 @@ use WCF_ADDONS\AtomicWidgets\Widgets\Countdown\AAE_A_Countdown_Unit;
  * Structure:
  *   AAE_A_Countdown (this class — the parent users drop in)
  *     ├─ AAE_A_Countdown_Unit  (locked — unit_type=days)
+ *     ├─ Atomic_Paragraph ":"  (locked — separator, toggled by show_separator)
  *     ├─ AAE_A_Countdown_Unit  (locked — unit_type=hours)
+ *     ├─ Atomic_Paragraph ":"
  *     ├─ AAE_A_Countdown_Unit  (locked — unit_type=minutes)
+ *     ├─ Atomic_Paragraph ":"
  *     └─ AAE_A_Countdown_Unit  (locked — unit_type=seconds)
  *
- * Each unit internally hosts an Atomic_Heading (digit) + Atomic_Paragraph
- * (label) — see class-aae-a-countdown-unit.php. The JS handler updates
- * each unit's `.aae-a-countdown-unit-count` text every second based on
- * the `due_date` set here.
+ * Each unit internally hosts two Atomic_Paragraph children (digit + label)
+ * — see class-aae-a-countdown-unit.php. The JS handler updates each unit's
+ * `.aae-a-countdown-unit-count` text every second based on the `due_date`
+ * set here.
  */
 class AAE_A_Countdown extends Atomic_Element_Base {
 
@@ -170,7 +175,21 @@ class AAE_A_Countdown extends Atomic_Element_Base {
 						->add_prop( 'flex-direction',  String_Prop_Type::generate( 'row' ) )
 						->add_prop( 'justify-content', String_Prop_Type::generate( 'center' ) )
 						->add_prop( 'align-items',     String_Prop_Type::generate( 'center' ) )
-						->add_prop( 'gap',             Size_Prop_Type::generate( [ 'size' => 40, 'unit' => 'px' ] ) )
+						->add_prop( 'gap',             Size_Prop_Type::generate( [ 'size' => 16, 'unit' => 'px' ] ) )
+				),
+
+			// Applied to the default ":" separator between units (see
+			// define_default_children()) via the '{element_type}-separator'
+			// class — same "static base-style class on a composed child"
+			// convention as Accordion Item's header_element/header_icon.
+			'separator' => Style_Definition::make()
+				->set_label( __( 'Separator', 'animation-addons-for-elementor' ) )
+				->add_variant(
+					Style_Variant::make()
+						->add_prop( 'color', Color_Prop_Type::generate( '#9ca3af' ) )
+						->add_prop( 'font-size', Size_Prop_Type::generate( [ 'size' => 28, 'unit' => 'px' ] ) )
+						->add_prop( 'font-weight', String_Prop_Type::generate( '600' ) )
+						->add_prop( 'line-height', Size_Prop_Type::generate( [ 'size' => 28, 'unit' => 'px' ] ) )
 				),
 		];
 	}
@@ -182,7 +201,7 @@ class AAE_A_Countdown extends Atomic_Element_Base {
 	 * allows deletion of locked children via the structure panel); the JS
 	 * gracefully skips missing units.
 	 *
-	 * Each unit's grandchild tree (digit Atomic_Heading + label
+	 * Each unit's grandchild tree (digit Atomic_Paragraph + label
 	 * Atomic_Paragraph) is composed HERE via `->children([...])` so the
 	 * correct localized label lands on the first render. The unit's own
 	 * `define_default_children()` only kicks in if a unit is spawned
@@ -197,6 +216,13 @@ class AAE_A_Countdown extends Atomic_Element_Base {
 			'minutes' => __( 'Minutes', 'animation-addons-for-elementor' ),
 			'seconds' => __( 'Seconds', 'animation-addons-for-elementor' ),
 		];
+
+		// '{element_type}-separator' — see define_base_styles(). Kept
+		// alongside the pre-existing 'aae-a-countdown-separator' marker,
+		// which is what the inline show/hide-on-toggle <style> block in
+		// aae-a-countdown.html.twig targets — untouched, still works
+		// regardless of which element type wears it.
+		$separator_class = static::get_element_type() . '-separator';
 
 		$children   = [];
 		$unit_keys  = array_keys( $units );
@@ -213,11 +239,22 @@ class AAE_A_Countdown extends Atomic_Element_Base {
 				->build();
 
 			if ( $unit_type !== $last_unit ) {
-				$children[] = Atomic_Divider::generate()
+				// A plain ":" glyph rather than an Atomic_Divider — a native
+				// divider's own base style hardcodes height/background
+				// (a horizontal 1px line), which would need to fight that
+				// widget's own CSS for a vertical-bar look. A text glyph
+				// styles cleanly with zero cascade conflicts and matches the
+				// conventional "12 : 34 : 56" countdown look.
+				$children[] = Atomic_Paragraph::generate()
 					->is_locked( true )
 					->editor_settings( [ 'title' => 'Separator' ] )
 					->settings( [
-						'classes' => Classes_Prop_Type::generate( [ 'aae-a-countdown-separator' ] ),
+						'classes'   => Classes_Prop_Type::generate( [ 'aae-a-countdown-separator', $separator_class ] ),
+						'paragraph' => Html_V3_Prop_Type::generate( [
+							'content'  => String_Prop_Type::generate( ':' ),
+							'children' => [],
+						] ),
+						'tag'       => String_Prop_Type::generate( 'span' ),
 					] )
 					->build();
 			}
@@ -232,7 +269,7 @@ class AAE_A_Countdown extends Atomic_Element_Base {
 	 * Atomic_Paragraph etc. still nest inside the unit itself.)
 	 */
 	protected function define_allowed_child_types() {
-		return [ 'e-aae-a-countdown-unit', 'e-divider' ];
+		return [ 'e-aae-a-countdown-unit', 'e-divider', 'widget', 'e-paragraph' ];
 	}
 
 	protected function define_default_html_tag() {

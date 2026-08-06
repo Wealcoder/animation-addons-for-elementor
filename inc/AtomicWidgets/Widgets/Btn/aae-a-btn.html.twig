@@ -1,4 +1,8 @@
-{% set btn_classes = ['aae-a-btn', 'e-con', 'e-atomic-element', base_styles.base] | merge(settings.classes | default([])) %}
+{% set btn_classes = ['aae-a-btn', 'e-con', 'e-atomic-element', base_styles.base]
+    | merge(settings.aae_btn_text_flip ? ['aae-btn-txtflip'] : [])
+    | merge(settings.aae_btn_border_divide ? ['aae-btn-borderdivide'] : [])
+    | merge(settings.aae_btn_mask ? ['aae-btn-mask'] : [])
+    | merge(settings.classes | default([])) %}
 
 {% if settings.btn_target == '_blank' %}
     {% set rel_attr = 'noopener' ~ (settings.btn_nofollow ? ' nofollow' : '') %}
