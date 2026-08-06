@@ -2,33 +2,9 @@
     /* Title + Icon live inside the injected .aae-header-element. */
 
     .aae-accordion-header {
-        // Reset the native <button> chrome and lay it out — everything a
-        // builder can actually restyle (padding, colors, font) comes from
-        // the 'header' base style instead (define_base_styles() in
-        // class-aae-a-accordion-item.php), never a hardcoded value here.
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        width: 100%;
-        margin: 0;
-        background: transparent;
-        border: none;
-        outline: none;
-        cursor: pointer;
-        text-align: left;
-        font: inherit;
-        transition: background-color 0.2s ease;
-        -webkit-tap-highlight-color: transparent;
 
-        // Browsers paint their own focus ring on a clicked <button> (Chrome:
-        // a blue outline, Firefox: a dotted one that reads as "black
-        // border"). We already show the open/closed state via the content
-        // reveal and the arrow flip, so no separate focus ring is needed.
-        &:focus,
-        &:focus-visible {
-            outline: none;
-            box-shadow: none;
-        }
+        text-align: left;
+        transition: background-color 0.3s ease;
 
         // Header slot - holds the injected Header Div_Block
         .aae-header-content {
@@ -61,8 +37,8 @@
                 align-items: center;
                 justify-content: center;
                 flex-shrink: 0;
-                width: 18px !important;
-                height: 18px !important;
+                width: 24px !important;
+                height: 24px !important;
 
                 svg {
                     width: 100% !important;
@@ -73,7 +49,7 @@
         }
     }
 
-
+    
     .aae-a-accordion-item .aae-header-icon-element.aae-header-icon-close {
         display: none !important;
     }
@@ -94,21 +70,29 @@
         display: inline-flex !important;
     }
 
-    // Deliberately no ".active .aae-accordion-header" background here — the
-    // reference "collapse-arrow" design leaves the header's resting look
-    // unchanged when open; the revealed content plus the arrow flipping to
-    // "close" are the only state cues. A subtle hover tint still comes from
-    // the 'header' base style's HOVER variant.
+    .aae-a-accordion-item.active {
+        .aae-accordion-header {
+            background: #f1f1f1;
+        }
+
+        .aae-accordion-content {
+            &.e-con {
+                // --padding-top: 20px;
+                // --padding-bottom: 20px;
+            }
+        }
+    }
 
     .aae-accordion-content {
+        // padding: 0 20px;
         transition: padding var(--aae-accordion-speed, 400ms) ease;
 
         /* Inner container padding can be overridden by Elementor */
         &.e-con {
             --padding-top: 0px;
-            --padding-bottom: 12px;
-            --padding-left: 16px;
-            --padding-right: 16px;
+            --padding-bottom: 0px;
+            --padding-left: 20px;
+            --padding-right: 20px;
             padding: var(--padding-top) var(--padding-right) var(--padding-bottom) var(--padding-left);
             transition: padding var(--aae-accordion-speed, 400ms) ease;
         }
@@ -116,17 +100,30 @@
     }
 }
 
-// A previous "EDITOR ONLY" block used to live here, toggling opacity/
-// visibility/max-height directly on .aae-content-element via the .active
-// class. It was a workaround for accordion.js's distributeChildren() never
-// actually nesting .aae-content-element inside .aae-accordion-content-wrapper
-// in the editor (Elementor's editor view mounts child element views onto the
-// item's root node, bypassing the twig's children_placeholder position — see
-// the isComposedChild() fallback in accordion.js). Now that distribution is
-// fixed and content really is nested inside the wrapper, that block actively
-// fights setWrapperHeight()'s scrollHeight measurement — its own 400ms
-// max-height transition hadn't resolved yet at the moment JS measured the
-// wrapper's natural height, so the wrapper animated to a collapsed height and
-// content never visibly opened in the editor. The JS-driven wrapper animation
-// already works identically in editor and frontend; do not reintroduce a
-// second, CSS-only height/opacity toggle on the nested content div.
+/* ---------- EDITOR ONLY ---------- */
+.elementor-editor-active {
+    .aae-a-accordion-item .aae-content-element {
+        opacity: 0;
+        visibility: hidden;
+        max-height: 0;
+        overflow: hidden;
+        transform: translateY(-8px);
+        transition:
+            opacity var(--aae-accordion-speed, 400ms) ease,
+            transform var(--aae-accordion-speed, 400ms) ease,
+            max-height var(--aae-accordion-speed, 400ms) ease,
+            visibility 0s linear var(--aae-accordion-speed, 400ms);
+    }
+
+    .aae-a-accordion-item.active .aae-content-element {
+        opacity: 1;
+        visibility: visible;
+        max-height: 1000px; // any value safely larger than your content
+        transform: translateY(0);
+        transition:
+            opacity var(--aae-accordion-speed, 400ms) ease,
+            transform var(--aae-accordion-speed, 400ms) ease,
+            max-height var(--aae-accordion-speed, 400ms) ease,
+            visibility 0s;
+    }
+}
