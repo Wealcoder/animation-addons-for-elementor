@@ -21,6 +21,7 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Number_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Color_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
@@ -107,6 +108,22 @@ class AAE_A_Counter extends Atomic_Element_Base {
 		];
 	}
 
+	/**
+	 * Typography lives on the ROOT, not on the three children.
+	 *
+	 * Atomic_Paragraph's own base style sets nothing but `margin: 0`, so
+	 * font-size/weight/line-height/colour declared here inherit down into
+	 * Prefix, Number and Suffix — and a builder restyling the Counter
+	 * restyles all three at once, which is what "one counter" should mean.
+	 * Declaring them per child would instead need three separate style edits
+	 * to change one number's size.
+	 *
+	 * Without these the counter rendered at the theme's body copy size — a
+	 * 16px "0 +" that reads as a stray paragraph rather than a stat.
+	 *
+	 * `line-height` uses the `custom` unit so it emits the unitless `1.2`
+	 * verbatim; a unit here would stop it scaling with font-size.
+	 */
 	protected function define_base_styles(): array {
 		return [
 			self::BASE_STYLE_KEY => Style_Definition::make()
@@ -116,6 +133,10 @@ class AAE_A_Counter extends Atomic_Element_Base {
 						->add_prop( 'align-items',     String_Prop_Type::generate( 'baseline' ) )
 						->add_prop( 'justify-content', String_Prop_Type::generate( 'center' ) )
 						->add_prop( 'gap',             Size_Prop_Type::generate( [ 'size' => 5, 'unit' => 'px' ] ) )
+						->add_prop( 'font-size',       Size_Prop_Type::generate( [ 'size' => 48, 'unit' => 'px' ] ) )
+						->add_prop( 'font-weight',     String_Prop_Type::generate( '700' ) )
+						->add_prop( 'line-height',     Size_Prop_Type::generate( [ 'size' => 1.2, 'unit' => 'custom' ] ) )
+						->add_prop( 'color',           Color_Prop_Type::generate( '#0C0D0E' ) )
 				),
 		];
 	}
@@ -134,12 +155,17 @@ class AAE_A_Counter extends Atomic_Element_Base {
 				] )
 				->build(),
 
+			// The Number child's TEXT is the end value — there is no end-value
+			// prop (see counter.js's header). It defaults to 50, not 0: with
+			// `start_number` also defaulting to 0 the two matched, play()'s
+			// `from === info.value` short-circuit fired, and a freshly dropped
+			// Counter sat at "0 +" forever looking like a dead widget.
 			Atomic_Paragraph::generate()
 				->editor_settings( [ 'title' => 'Number' ] )
 				->settings( [
 					'classes'   => Classes_Prop_Type::generate( [ 'aae-a-counter-number' ] ),
 					'paragraph' => Html_V3_Prop_Type::generate( [
-						'content'  => String_Prop_Type::generate( '0' ),
+						'content'  => String_Prop_Type::generate( '50' ),
 						'children' => [],
 					] ),
 					'tag'       => String_Prop_Type::generate( 'span' ),

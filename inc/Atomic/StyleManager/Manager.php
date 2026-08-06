@@ -48,6 +48,40 @@ class Manager {
 	}
 
 	/**
+	 * Does any of the rendered documents actually contain atomic content?
+	 *
+	 * The utility classes below (aae-flex, aae-a-svg, …) only ever apply to
+	 * atomic content — AAE atomic widgets emit them from their own twig, and a
+	 * user can add one to any atomic element via the `classes` prop. A document
+	 * with no atomic element can't use a single one. But Elementor's styles
+	 * pipeline runs `styles/register` for EVERY rendered document (its `$post_ids`
+	 * come from `elementor/post/render`), so this stylesheet used to be generated
+	 * and linked on every Elementor page — a pure-v3 page with zero atomic widgets
+	 * included. `$post_ids` covers the main content AND any builder header/footer/
+	 * popup rendered on the request, so scanning their saved data is the honest,
+	 * render-order-independent signal (atomic widgets don't fire the legacy
+	 * `elementor/frontend/before_render`, so a render-time flag never trips).
+	 *
+	 * Atomic widgets/containers are the only types Elementor saves with an `e-`
+	 * prefix (`e-heading`, `e-div-block`, `e-aae-a-*`); v1 (`heading`, `section`)
+	 * and v3 (`wcf--*`) never are.
+	 *
+	 * @param array $post_ids
+	 * @return bool
+	 */
+	private function any_post_has_atomic( array $post_ids ): bool {
+		foreach ( array_unique( $post_ids ) as $post_id ) {
+			$data = get_post_meta( $post_id, '_elementor_data', true );
+
+			if ( is_string( $data ) && preg_match( '/"(?:elType|widgetType)":"e-/', $data ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Register custom Elementor utility classes via the Atomic Styles Manager.
 	 */
 	public function register_utility_styles( $styles_manager, array $post_ids ): void {
@@ -56,6 +90,14 @@ class Manager {
 		}
 
 		$context = \Elementor\Plugin::$instance->preview->is_editor_or_preview() ? 'preview' : 'frontend';
+
+		// Frontend: emit these utilities only when a rendered document actually
+		// contains atomic content — nothing else can use them (see
+		// any_post_has_atomic()). The editor always registers, so a live-added
+		// atomic widget styles correctly regardless of render order.
+		if ( 'frontend' === $context && ! $this->any_post_has_atomic( $post_ids ) ) {
+			return;
+		}
 
 		$get_styles = function() {
 			// AAE utility classes, emitted through Elementor's atomic styles pipeline.
