@@ -38,12 +38,21 @@
     {{ editor_attributes | default('') | raw }}>
 
     <style>
-        /* Root hugs the trigger — the closed offcanvas is just the toggle icon,
-           not a full-width tall container. Overrides Elementor's `.e-con`
-           (display:flex + min-height) which would otherwise stretch it. */
+        /* `vertical-align` has no key in the atomic style schema, so it can only
+           live here.
+
+           `display` and `min-height` USED to be here too, as `!important`, to
+           beat Elementor's `.e-con` (flex + min-height) and keep the closed
+           offcanvas hugging its trigger. They are now plain props on the base
+           style instead — see define_base_styles(). The `!important` was not
+           buying the override: a base style compiles to
+           `.elementor .e-aae-a-offcanvas-base`, (0,2,0), which already beats
+           both `.e-con` (0,1,0) and `:is(.elementor-section-wrap,
+           [data-elementor-id]) > .e-con` (0,2,0, and earlier in document
+           order). What it DID do was outrank the user's own Style-tab styles,
+           which compile to `.elementor .e-<id>-<hash>` — so setting Display to
+           Flex on the root silently did nothing. */
         [data-id="{{ id }}"] {
-            display: inline-block !important;
-            min-height: 0 !important;
             vertical-align: top;
         }
 

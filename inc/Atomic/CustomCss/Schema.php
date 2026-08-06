@@ -71,7 +71,8 @@ final class Schema
 			'e-tabs-controls',
 			'e-tabs-content',
 			'e-tabs-content-wrapper',		
-			'e-aae-a-nav'
+			'e-aae-a-nav',
+			'e-aae-a-offcanvas',
 		];
 	}
 }

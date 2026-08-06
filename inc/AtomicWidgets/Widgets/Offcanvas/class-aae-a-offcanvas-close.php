@@ -114,8 +114,17 @@ class AAE_A_Offcanvas_Close extends Atomic_Widget_Base {
 
 	/**
 	 * Neutral, design-less defaults: a chromeless icon button sitting top-right
-	 * of the panel column. font-size drives the 1em icon so a single Font Size
-	 * edit resizes the icon; everything else is fully overridable.
+	 * of the panel. font-size drives the 1em icon so a single Font Size edit
+	 * resizes the icon; everything else is fully overridable.
+	 *
+	 * The right alignment is `margin-inline-start: auto` on a BLOCK-level flex
+	 * box, not `align-self: flex-end`. The panel is a plain block (see
+	 * AAE_A_Offcanvas_Panel::define_base_styles) and `align-self` only does
+	 * anything to a flex/grid ITEM — left as-is it would be dead CSS and this
+	 * button would silently fall back to the left edge. An auto inline-start
+	 * margin is the block-flow equivalent, and it needs `display:flex` rather
+	 * than `inline-flex` (an inline box ignores auto margins) plus a
+	 * `fit-content` width so the box hugs the icon instead of filling the row.
 	 */
 	protected function define_base_styles(): array {
 		$zero = Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] );
@@ -124,10 +133,10 @@ class AAE_A_Offcanvas_Close extends Atomic_Widget_Base {
 			'base' => Style_Definition::make()
 				->add_variant(
 					Style_Variant::make()
-						->add_prop( 'display', String_Prop_Type::generate( 'inline-flex' ) )
+						->add_prop( 'display', String_Prop_Type::generate( 'flex' ) )
 						->add_prop( 'align-items', String_Prop_Type::generate( 'center' ) )
 						->add_prop( 'justify-content', String_Prop_Type::generate( 'center' ) )
-						->add_prop( 'align-self', String_Prop_Type::generate( 'flex-end' ) )
+						->add_prop( 'width', Size_Prop_Type::generate( [ 'size' => 'fit-content', 'unit' => 'custom' ] ) )
 						->add_prop( 'cursor', String_Prop_Type::generate( 'pointer' ) )
 						->add_prop( 'color', Color_Prop_Type::generate( '#000000' ) )
 						->add_prop( 'font-size', Size_Prop_Type::generate( [ 'size' => 24, 'unit' => 'px' ] ) )
@@ -147,12 +156,17 @@ class AAE_A_Offcanvas_Close extends Atomic_Widget_Base {
 								'inline-end'   => $zero,
 							] )
 						)
+						// `inline-start: auto` is what pushes the button to the panel's
+						// right edge now that the panel is a block (see the docblock).
+						// It shares this one prop with the 16px block-end gap — margin
+						// is a single Dimensions prop, so a second add_prop('margin')
+						// would silently drop whichever came first.
 						->add_prop(
 							'margin',
 							Dimensions_Prop_Type::generate( [
 								'block-start'  => $zero,
 								'block-end'    => Size_Prop_Type::generate( [ 'size' => 16, 'unit' => 'px' ] ),
-								'inline-start' => $zero,
+								'inline-start' => Size_Prop_Type::generate( [ 'size' => 'auto', 'unit' => 'auto' ] ),
 								'inline-end'   => $zero,
 							] )
 						)
