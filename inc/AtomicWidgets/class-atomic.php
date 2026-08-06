@@ -45,6 +45,17 @@ final class Atomic
 	const EXTENSIONS_OFFERED_OPTION_NAME = 'aae_atomic_extensions_offered';
 
 	/**
+	 * Plugin version the newly-offered-extensions migration last completed for.
+	 *
+	 * Its two sibling migrations (V3_ADMIN_BACKFILL_OPTION_NAME,
+	 * FORCED_BACKFILL_OPTION_NAME) have always had a marker; this one did not,
+	 * which is why it reached update_option() on EVERY request, front end
+	 * included. The version — rather than a plain boolean — is what still lets a
+	 * plugin update re-run it when the registry gains an extension.
+	 */
+	const OFFERED_MIGRATION_OPTION_NAME = 'aae_atomic_offered_migration';
+
+	/**
 	 * Marker for the one-time copy of the v3 admin-feature toggles into the
 	 * atomic extension option. See backfill_v3_admin_extensions().
 	 */
@@ -152,6 +163,44 @@ final class Atomic
 	private $active_extensions = null;
 
 	/**
+	 * Memoised return of build_available_widgets().
+	 *
+	 * Null means "not cached yet" — see get_available_widgets() for why this is
+	 * not simply filled on first call.
+	 *
+	 * @var array<string,array>|null
+	 */
+	private $available_widgets = null;
+
+	/**
+	 * Signature of the `aae/atomic/available_widgets` callback set at the moment
+	 * $available_widgets was cached. A change means someone hooked (or unhooked)
+	 * the filter after we cached, so the cache is stale.
+	 *
+	 * @var string|null
+	 */
+	private $available_widgets_signature = null;
+
+	/**
+	 * Memoised output of resolve_registerable_classes().
+	 *
+	 * Depends on the registry AND on which slugs are active, so it is cleared
+	 * wherever $active_widgets is cleared.
+	 *
+	 * @var array{widgets: array<string,string>, elements: array<string,string>}|null
+	 */
+	private $registerable_classes = null;
+
+	/**
+	 * Memoised is_widget_active() answers, keyed by slug.
+	 *
+	 * Derived from the saved option, so it is cleared wherever $active_widgets is.
+	 *
+	 * @var array<string,bool>
+	 */
+	private $widget_active_cache = [];
+
+	/**
 	 * Get singleton instance.
 	 *
 	 * @return Atomic
@@ -199,7 +248,28 @@ final class Atomic
 		 *
 		 * @param array<string,array> $registry
 		 */
-		return (array) apply_filters('aae/atomic/widgets_registry', $this->widgets_registry);
+		// Memoised on the same terms as get_available_widgets(): never cached
+		// before `init` (Pro adds its cards filter at plugins_loaded 11, and
+		// caching earlier would drop every Pro dashboard card), and invalidated
+		// when the callback set changes. Pro's callback runs ~60 esc_html__()
+		// lookups, and assert_registry_integrity() alone asked for this twice.
+		static $cache = null;
+		static $signature = null;
+
+		$current = $this->filter_signature('aae/atomic/widgets_registry');
+
+		if (null !== $cache && $current === $signature) {
+			return $cache;
+		}
+
+		$registry = (array) apply_filters('aae/atomic/widgets_registry', $this->widgets_registry);
+
+		if (did_action('init')) {
+			$cache = $registry;
+			$signature = $current;
+		}
+
+		return $registry;
 	}
 
 	/**
@@ -522,19 +592,79 @@ final class Atomic
 	 */
 	private function always_active_widgets(): array
 	{
-		return (array) apply_filters('aae/atomic/always_active_widgets', self::ALWAYS_ACTIVE_WIDGETS);
+		// Memoised: is_widget_active() asks for this once per slug, for every
+		// registration and asset loop, and each call re-ran the filter chain.
+		// Pro hooks it at plugins_loaded 11; the signature guard catches anyone
+		// hooking or unhooking later.
+		static $cache = null;
+		static $signature = null;
+
+		$current = $this->filter_signature('aae/atomic/always_active_widgets');
+
+		if (null === $cache || $current !== $signature) {
+			$cache = (array) apply_filters('aae/atomic/always_active_widgets', self::ALWAYS_ACTIVE_WIDGETS);
+			$signature = $current;
+		}
+
+		return $cache;
+	}
+
+	/**
+	 * always_active_widgets() as a slug => true lookup.
+	 *
+	 * is_widget_active() used in_array() over the list, i.e. a linear scan per
+	 * slug on every registration and asset loop. This must stay SEPARATE from
+	 * always_active_widgets(): assert_registry_integrity() passes that method's
+	 * return straight into array_diff(), which compares VALUES — handing it a
+	 * flipped map would silently stop excluding always-active slugs and report
+	 * phantom orphan children.
+	 *
+	 * @return array<string,int>
+	 */
+	private function always_active_lookup(): array
+	{
+		static $cache = null;
+		static $signature = null;
+
+		$current = $this->filter_signature('aae/atomic/always_active_widgets');
+
+		if (null === $cache || $current !== $signature) {
+			$cache = array_flip($this->always_active_widgets());
+			$signature = $current;
+		}
+
+		return $cache;
 	}
 
 	/** @return array<string,string> child slug => parent slug */
 	private function widget_parent_map(): array
 	{
-		return (array) apply_filters('aae/atomic/widget_parent_map', self::WIDGET_PARENT_MAP);
+		static $cache = null;
+		static $signature = null;
+
+		$current = $this->filter_signature('aae/atomic/widget_parent_map');
+
+		if (null === $cache || $current !== $signature) {
+			$cache = (array) apply_filters('aae/atomic/widget_parent_map', self::WIDGET_PARENT_MAP);
+			$signature = $current;
+		}
+
+		return $cache;
 	}
 
 	public function is_widget_active(string $slug): bool
 	{
-		if (in_array($slug, $this->always_active_widgets(), true)) {
-			return true;
+		// Asked for every slug of every registration and asset loop, and it
+		// recurses through the parent map on top of that. The answer only moves
+		// when the saved option does, so this is cleared alongside
+		// $active_widgets.
+		if (isset($this->widget_active_cache[$slug])) {
+			return $this->widget_active_cache[$slug];
+		}
+
+		// Hash lookup rather than the previous in_array() scan over the list.
+		if (isset($this->always_active_lookup()[$slug])) {
+			return $this->widget_active_cache[$slug] = true;
 		}
 
 		// Internal child widgets inherit their parent's active state, so
@@ -542,12 +672,12 @@ final class Atomic
 		// every one of its children.
 		$parents = $this->widget_parent_map();
 		if (isset($parents[$slug])) {
-			return $this->is_widget_active($parents[$slug]);
+			return $this->widget_active_cache[$slug] = $this->is_widget_active($parents[$slug]);
 		}
 
 		$saved = $this->get_saved_options();
 
-		return isset($saved[$slug]);
+		return $this->widget_active_cache[$slug] = isset($saved[$slug]);
 	}
 
 	/* =====================================================================
@@ -3775,6 +3905,9 @@ final class Atomic
 		if ($changed) {
 			update_option(self::OPTION_NAME, $saved);
 			$this->active_widgets = null;
+			// Both are derived from the active set.
+			$this->registerable_classes = null;
+			$this->widget_active_cache  = [];
 		}
 
 		update_option(self::FORCED_BACKFILL_OPTION_NAME, true);
@@ -3842,7 +3975,28 @@ final class Atomic
 		$saved = get_option(self::EXTENSIONS_OPTION_NAME);
 
 		// No settings yet -> fresh install, the wizard decides. Don't pre-empt it.
+		//
+		// Deliberately does NOT stamp the marker below: the migration still has
+		// to run on the first boot AFTER the wizard saves, which is exactly the
+		// moment the DANGER box in CLAUDE.md is about.
 		if (! is_array($saved)) {
+			return;
+		}
+
+		// Already done for this build.
+		//
+		// This runs on `plugins_loaded`, on every request including the front
+		// end, and it used to fall through to update_option() unconditionally.
+		// That is a no-op only while the stored array happens to match — append
+		// or reorder a single registry slug and it becomes a real UPDATE plus an
+		// `alloptions` cache flush on EVERY page view.
+		//
+		// The hook is left exactly where it is on purpose. Moving it to
+		// admin_init would change which boots the migration observes, and that
+		// is the precise axis the wizard bug lived on; it would also break the
+		// documented "must run AFTER the migration" ordering with
+		// backfill_v3_admin_extensions().
+		if (WCF_ADDONS_VERSION === get_option(self::OFFERED_MIGRATION_OPTION_NAME)) {
 			return;
 		}
 
@@ -3866,8 +4020,11 @@ final class Atomic
 			$this->active_extensions = null;
 		}
 
-		// No-op write when unchanged — WordPress skips identical option values.
 		update_option(self::EXTENSIONS_OFFERED_OPTION_NAME, $registry_slugs);
+
+		// Stamped only after the work above completed, so an interrupted request
+		// re-runs rather than recording a migration that never finished.
+		update_option(self::OFFERED_MIGRATION_OPTION_NAME, WCF_ADDONS_VERSION);
 	}
 
 	/* =====================================================================
@@ -3899,6 +4056,86 @@ final class Atomic
 	 * no such block exists.)
 	 */
 	protected function get_available_widgets()
+	{
+		// Cheap path: the registry is immutable within a request, but it is
+		// assembled from a 940-line literal plus a filter, and it used to be
+		// rebuilt at all 14 call sites — including once per rendered element via
+		// maybe_enqueue_widget_script(), which made a 200-element page build this
+		// array 200 times.
+		//
+		// TWO GUARDS, both load-bearing:
+		//
+		// 1. NEVER CACHE BEFORE `init`. Pro injects ~20 widgets through
+		//    `aae/atomic/available_widgets`, and it adds that filter at
+		//    `plugins_loaded` priority 11. Caching a call made before that would
+		//    freeze a pre-Pro registry and PERMANENTLY DELETE every Pro atomic
+		//    widget from the site — silently, with no error. do_action()
+		//    increments its counter before running callbacks, so did_action('init')
+		//    is already true inside `elementor/init` callbacks (where the real
+		//    first call lives) and false during plugins_loaded. An early caller
+		//    still gets a correct array; it just does not get to cache it.
+		//
+		// 2. INVALIDATE WHEN THE CALLBACK SET CHANGES. Guard 1 does not cover a
+		//    third-party addon that hooks the filter on `elementor/init` at a
+		//    priority after our first read, nor remove_filter(). Comparing a
+		//    signature of the callback set catches both.
+		$signature = $this->filter_signature('aae/atomic/available_widgets');
+
+		if (null !== $this->available_widgets && $signature === $this->available_widgets_signature) {
+			return $this->available_widgets;
+		}
+
+		$widgets = $this->build_available_widgets();
+
+		if (did_action('init')) {
+			$this->available_widgets = $widgets;
+			$this->available_widgets_signature = $signature;
+		}
+
+		return $widgets;
+	}
+
+	/**
+	 * Identity of a filter's callback set, used to invalidate memoised results.
+	 *
+	 * Priorities plus per-priority callback counts are enough: the only way to
+	 * change what the filter produces without changing this string is to mutate
+	 * a callback in place, which nothing does.
+	 */
+	private function filter_signature(string $filter): string
+	{
+		$hook = $GLOBALS['wp_filter'][$filter] ?? null;
+
+		if (!$hook || !isset($hook->callbacks) || !is_array($hook->callbacks)) {
+			return '0';
+		}
+
+		$parts = [];
+		foreach ($hook->callbacks as $priority => $callbacks) {
+			$parts[] = $priority . ':' . count((array) $callbacks);
+		}
+
+		return implode('|', $parts);
+	}
+
+	/**
+	 * Drop the memoised registry.
+	 *
+	 * For tests and for any code that changes what the filter would return
+	 * mid-request. Normal operation never needs this — the signature guard in
+	 * get_available_widgets() handles filter changes on its own.
+	 */
+	public function flush_available_widgets_cache(): void
+	{
+		$this->available_widgets = null;
+		$this->available_widgets_signature = null;
+	}
+
+	/**
+	 * Assemble the registry. Call get_available_widgets() instead — this is the
+	 * uncached builder and is expensive.
+	 */
+	private function build_available_widgets()
 	{
 		$widgets = [
 			// Counter — deliberately GSAP-free (rAF + IntersectionObserver), so it
@@ -5503,20 +5740,63 @@ final class Atomic
 	 */
 	public function register_widgets($widgets_manager)
 	{
-	
-		foreach ($this->get_available_widgets() as $widget_id => $widget_data) {
-			if ($this->is_widget_active($widget_id)) {
-			
-				$file_path = self::widget_class_file($widget_data);
-				if (! file_exists($file_path)) {
-					continue; // Skip missing widget files gracefully.
-				}
-				require_once $file_path;
-				if (class_exists($widget_data['class']) && is_subclass_of($widget_data['class'], '\Elementor\Widget_Base')) {
-					$widgets_manager->register(new $widget_data['class']());
-				}
-			}
+		foreach ($this->resolve_registerable_classes()['widgets'] as $class) {
+			$widgets_manager->register(new $class());
 		}
+	}
+
+	/**
+	 * Classify every active atomic slug as a WIDGET or an ELEMENT, once.
+	 *
+	 * register_widgets() and register_elements() ran byte-identical loops and
+	 * differed only in the polarity of the is_subclass_of() test and which
+	 * manager received the instance. Both fire on a rendered page, so the work
+	 * was done twice: two registry reads, two is_widget_active() passes over
+	 * ~135 slugs, and ~270 file_exists calls.
+	 *
+	 * The predicate chain below is the SAME chain, in the SAME order, with the
+	 * SAME short-circuits, so the set of registered types is unchanged — which
+	 * matters more than the speed: CLAUDE.md's DANGER box notes that failing to
+	 * register a widget renders NOTHING on pages already using it, with no error.
+	 *
+	 * Note is_subclass_of() is called on a class-name STRING, so it does not
+	 * construct anything; each class is instantiated exactly once, by whichever
+	 * registrar owns it.
+	 *
+	 * @return array{widgets: array<string,string>, elements: array<string,string>}
+	 */
+	private function resolve_registerable_classes(): array
+	{
+		if (null !== $this->registerable_classes) {
+			return $this->registerable_classes;
+		}
+
+		$buckets = ['widgets' => [], 'elements' => []];
+
+		foreach ($this->get_available_widgets() as $widget_id => $widget_data) {
+			if (! $this->is_widget_active($widget_id)) {
+				continue;
+			}
+
+			$file_path = self::widget_class_file($widget_data);
+			if (! file_exists($file_path)) {
+				continue; // Skip missing widget files gracefully.
+			}
+
+			require_once $file_path;
+
+			if (! class_exists($widget_data['class'])) {
+				continue;
+			}
+
+			$bucket = is_subclass_of($widget_data['class'], '\Elementor\Widget_Base') ? 'widgets' : 'elements';
+
+			$buckets[$bucket][$widget_id] = $widget_data['class'];
+		}
+
+		$this->registerable_classes = $buckets;
+
+		return $buckets;
 	}
 
 	/**
@@ -5526,17 +5806,8 @@ final class Atomic
 	 */
 	public function register_elements($elements_manager)
 	{
-		foreach ($this->get_available_widgets() as $widget_id => $widget_data) {
-			if ($this->is_widget_active($widget_id)) {
-				$file_path = self::widget_class_file($widget_data);
-				if (! file_exists($file_path)) {
-					continue; // Skip missing widget files gracefully.
-				}
-				require_once $file_path;
-				if (class_exists($widget_data['class']) && !is_subclass_of($widget_data['class'], '\Elementor\Widget_Base')) {
-					$elements_manager->register_element_type(new $widget_data['class']());
-				}
-			}
+		foreach ($this->resolve_registerable_classes()['elements'] as $class) {
+			$elements_manager->register_element_type(new $class());
 		}
 	}
 
@@ -5702,21 +5973,61 @@ final class Atomic
 		return wp_normalize_path(__DIR__ . '/' . $file);
 	}
 
+	/**
+	 * Resolve an atomic asset's served path and cache-busting version, once.
+	 *
+	 * Both registrars did the same two things per handle: probe for a `.min`
+	 * sibling (production only) and stat the file for its mtime. That is up to
+	 * three filesystem calls per handle, and register_atomic_styles() alone is
+	 * invoked from four places, so the same stats were repeated several times a
+	 * request.
+	 *
+	 * The version source is deliberately still filemtime, not WCF_ADDONS_VERSION:
+	 * switching it would change cache-busting behaviour for existing sites
+	 * mid-release, which is a user-visible change, not an optimisation.
+	 *
+	 * @param array  $widget_data Registry entry.
+	 * @param string $kind        'script' or 'style'.
+	 * @return array{path: string, version: int|string}
+	 */
+	private function resolve_asset_meta(array $widget_data, string $kind): array
+	{
+		static $cache = [];
+
+		$base = self::widget_base_path($widget_data);
+		$raw  = (string) ($widget_data[$kind . '_path'] ?? '');
+		$key  = $base . '|' . $raw;
+
+		if (isset($cache[$key])) {
+			return $cache[$key];
+		}
+
+		$path = $raw;
+
+		if (! $this->is_dev_environment()) {
+			$ext = 'script' === $kind ? '.js' : '.css';
+			$min = str_replace($ext, '.min' . $ext, $path);
+			if (file_exists($base . $min)) {
+				$path = $min;
+			}
+		}
+
+		$file_path = $base . $path;
+
+		return $cache[$key] = [
+			'path'    => $path,
+			'version' => file_exists($file_path) ? filemtime($file_path) : WCF_ADDONS_VERSION,
+		];
+	}
+
 	public function register_atomic_scripts($loader)
 	{
 
 		foreach ($this->get_available_widgets() as $widget_id => $widget_data) {
 			if ($this->is_widget_active($widget_id) && !empty($widget_data['has_script'])) {
-				$base_path = self::widget_base_path($widget_data);
-				$path = $widget_data['script_path'];
-				if (! $this->is_dev_environment()) {
-					$min_path = str_replace('.js', '.min.js', $path);
-					if (file_exists($base_path . $min_path)) {
-						$path = $min_path;
-					}
-				}
-				$file_path = $base_path . $path;
-				$version = file_exists($file_path) ? filemtime($file_path) : WCF_ADDONS_VERSION;
+				$asset   = $this->resolve_asset_meta($widget_data, 'script');
+				$path    = $asset['path'];
+				$version = $asset['version'];
 
 				$deps = [ 'elementor-v2-frontend-handlers' ]; // Required for @elementor/frontend-handlers register API
 				if ( ! empty( $widget_data['script_deps'] ) ) {
@@ -5756,18 +6067,67 @@ final class Atomic
 		// get widget settings condition css / js file load
 		//$widget_settings = $element->get_atomic_settings();
 
-		foreach ($this->get_available_widgets() as $slug => $data) {
+		// This fires once per RENDERED ELEMENT. It used to walk the whole
+		// registry looking for one string, so a 200-element page did ~200 × 135
+		// comparisons on top of 200 registry builds. An element-type-keyed map
+		// makes it a single hash lookup, and $enqueued collapses the repeat work
+		// for pages that use the same widget many times (wp_enqueue_* is
+		// idempotent, so skipping a repeat cannot change the output).
+		static $enqueued = [];
 
-			if (('e-' . $slug) === $element_type) {
-				if (! empty($data['has_script'])) {
-					wp_enqueue_script($data['script_handle']);
-				}
-				if (! empty($data['style_handle'])) {
-					wp_enqueue_style($data['style_handle']);
-				}
-				break;
-			}
+		if (isset($enqueued[$element_type])) {
+			return;
 		}
+
+		$map = $this->widget_assets_by_element_type();
+
+		if (! isset($map[$element_type])) {
+			return;
+		}
+
+		$data = $map[$element_type];
+
+		if (! empty($data['has_script'])) {
+			wp_enqueue_script($data['script_handle']);
+		}
+		if (! empty($data['style_handle'])) {
+			wp_enqueue_style($data['style_handle']);
+		}
+
+		$enqueued[$element_type] = true;
+	}
+
+	/**
+	 * The registry re-keyed by element type (`e-<slug>`) instead of slug.
+	 *
+	 * Built from the memoised registry, so it inherits its invalidation: when the
+	 * `aae/atomic/available_widgets` callback set changes the registry is rebuilt
+	 * and this map is rebuilt with it.
+	 *
+	 * @return array<string,array>
+	 */
+	private function widget_assets_by_element_type(): array
+	{
+		static $map = null;
+		static $signature = null;
+
+		$current = $this->filter_signature('aae/atomic/available_widgets');
+
+		if (null !== $map && $current === $signature) {
+			return $map;
+		}
+
+		$map = [];
+
+		foreach ($this->get_available_widgets() as $slug => $data) {
+			// Slugs are unique keys, so re-keying preserves the old loop's
+			// first-match-wins semantics exactly.
+			$map['e-' . $slug] = $data;
+		}
+
+		$signature = $current;
+
+		return $map;
 	}
 
 	/**
@@ -5914,16 +6274,9 @@ final class Atomic
 	{
 		foreach ($this->get_available_widgets() as $widget_id => $widget_data) {
 			if ($this->is_widget_active($widget_id) && !empty($widget_data['style_handle'])) {
-				$base_path = self::widget_base_path($widget_data);
-				$path = $widget_data['style_path'];
-				if (! $this->is_dev_environment()) {
-					$min_path = str_replace('.css', '.min.css', $path);
-					if (file_exists($base_path . $min_path)) {
-						$path = $min_path;
-					}
-				}
-				$file_path = $base_path . $path;
-				$version = file_exists($file_path) ? filemtime($file_path) : WCF_ADDONS_VERSION;
+				$asset   = $this->resolve_asset_meta($widget_data, 'style');
+				$path    = $asset['path'];
+				$version = $asset['version'];
 				wp_register_style(
 					$widget_data['style_handle'],
 					self::asset_url($path, self::widget_base_url($widget_data)),
@@ -6162,6 +6515,9 @@ final class Atomic
 
 		// Reset cache.
 		$this->active_widgets = null;
+		// Both are derived from the active set.
+		$this->registerable_classes = null;
+		$this->widget_active_cache  = [];
 
 		wp_send_json([
 			'status' => $updated,
