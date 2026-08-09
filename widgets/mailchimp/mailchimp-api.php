@@ -28,9 +28,10 @@ class Mailchimp_Api {
             $args['body'] = wp_json_encode($body);
         }
 
-        $resp = wp_remote_request($url, $args);
+        $args['redirection'] = 0; // Prevent redirect-based scheme bypass (e.g. → http://169.254.169.254)
+        $resp = wp_safe_remote_request($url, $args);
         if (is_wp_error($resp)) {
-            return ['http_code' => 0, 'body' => ['title' => $resp->get_error_message()], 'raw' => null];
+            return ['http_code' => 0, 'body' => ['title' => __('Unable to connect to the subscription service.', 'animation-addons-for-elementor')], 'raw' => null];
         }
         $code = wp_remote_retrieve_response_code($resp);
         $raw  = wp_remote_retrieve_body($resp);
@@ -42,7 +43,13 @@ class Mailchimp_Api {
     /** Extract DC ("usX") from API key */
     private static function dc_from_key($api_key) {
         $parts = explode('-', (string) $api_key);
-        return $parts[1] ?? null;
+        $dc = $parts[1] ?? null;
+        // Mailchimp DCs follow the pattern: us1, us20, eu1, etc.
+        // Block anything else to prevent host injection (SSRF).
+        if ( $dc && preg_match( '/^[a-z]{2,3}\d{1,2}$/', $dc ) ) {
+            return $dc;
+        }
+        return null;
     }
 
     /** Keep only merge tags that exist in the audience */
@@ -173,14 +180,14 @@ class Mailchimp_Api {
         // 7) Normalize response
         if ($res['http_code'] >= 400) {
             $msg = self::pretty_mailchimp_error($res['body']);
-            return ['status' => 0, 'msg' => sanitize_text_field($msg), 'body' => $res['body']];
+            return ['status' => 0, 'msg' => sanitize_text_field($msg)];
         }
 
         $member_status = $res['body']['status'] ?? '';
         if ($member_status === 'pending') {
-            return ['status' => 'confirmation_message', 'msg' => esc_html__('Confirm your subscription from your email.', 'animation-addons-for-elementor'), 'body' => $res['body']];
+            return ['status' => 'confirmation_message', 'msg' => esc_html__('Confirm your subscription from your email.', 'animation-addons-for-elementor')];
         }
-        return ['status' => 'success_message', 'msg' => esc_html__('Your subscription updated.', 'animation-addons-for-elementor'), 'body' => $res['body']];
+        return ['status' => 'success_message', 'msg' => esc_html__('Your subscription updated.', 'animation-addons-for-elementor')];
     }
 
     /** Get audience lists (unchanged but use GET helper) */
