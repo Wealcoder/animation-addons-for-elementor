@@ -5,6 +5,7 @@
 {% set item_hover_bg      = settings.item_hover_bg             | default('') %}
 {% set active_color       = settings.active_color              | default('') %}
 {% set dd_bg              = settings.dropdown_bg               | default('') %}
+{% set dd_text            = settings.dropdown_text_color       | default('') %}
 {% set dd_hover_bg        = settings.dropdown_hover_bg         | default('') %}
 {% set dd_hover_text      = settings.dropdown_hover_text_color | default('') %}
 {% set ham_color          = settings.hamburger_color           | default('') %}
@@ -18,6 +19,7 @@
 {% if item_hover_bg %}--aae-menu-item-hover-bg: {{ item_hover_bg }};{% endif %}
 {% if active_color  %}--aae-menu-active-color: {{ active_color }};{% endif %}
 {% if dd_bg         %}--aae-menu-dropdown-bg: {{ dd_bg }};{% endif %}
+{% if dd_text       %}--aae-menu-dropdown-text-color: {{ dd_text }};{% endif %}
 {% if dd_hover_bg   %}--aae-menu-dropdown-hover-bg: {{ dd_hover_bg }};{% endif %}
 {% if dd_hover_text %}--aae-menu-dropdown-hover-text-color: {{ dd_hover_text }};{% endif %}
 {% if ham_color     %}--aae-menu-hamburger-color: {{ ham_color }};{% endif %}
@@ -44,6 +46,7 @@
     data-breakpoint="{{ settings.breakpoint | default(768) }}"
     data-drawer-effect="{{ settings.drawer_animation | default('slide-left') }}"
     data-dropdown-effect="{{ settings.dropdown_animation | default('slide') }}"
+    data-dropdown-trigger="{{ settings.dropdown_trigger | default('hover') }}"
     style="{{ style_vars | replace({'\n':' '}) }}"
     {% if settings._cssid is defined and settings._cssid is not empty %}
         id="{{ settings._cssid | e('html_attr') }}"

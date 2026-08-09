@@ -90,9 +90,45 @@ const initMenu = (root) => {
 	const closeBtn = root.querySelector('.aae-a-menu-close');
 	if (!nav) return;
 
-	const breakpoint     = parseInt(root.getAttribute('data-breakpoint'), 10) || 768;
+	// NOT `parseInt(...) || 768`: 0 is a legitimate value meaning "never switch
+	// to mobile", and it is falsy, so the old form silently replaced it with the
+	// 768 default. Only a genuinely unparseable attribute falls back now.
+	const parsedBp       = parseInt(root.getAttribute('data-breakpoint'), 10);
+	const breakpoint     = Number.isFinite(parsedBp) ? parsedBp : 768;
 	const isHamburger    = root.getAttribute('data-hamburger') === 'true';
 	const isMobile       = () => window.innerWidth <= breakpoint;
+
+	/**
+	 * Mirror isMobile() onto a class on the root.
+	 *
+	 * The stylesheet used to switch layouts with hardcoded
+	 * `@media (max-width: 768px)` / `(min-width: 769px)` blocks, which the
+	 * Mobile Breakpoint setting could never reach — it only ever fed this JS.
+	 * So the hamburger and the drawer appeared at 768px no matter what the
+	 * builder typed, and the field looked broken because it WAS inert for
+	 * everything visual. A media query cannot read a per-widget value, so the
+	 * gate is now `.aae-a-menu--mobile` and this is what sets it. One source of
+	 * truth: the same isMobile() that already drove the behaviour.
+	 */
+	const syncMobileClass = () => {
+		// Re-reads the attribute instead of closing over `breakpoint`. initMenu()
+		// re-runs on every editor re-render, so a closure would pin the value
+		// from whichever run bound the listener and go stale the moment the
+		// builder edits the field. Stateless like this, one binding stays
+		// correct forever — which is what makes the bind-once guard safe.
+		const bp = parseInt(root.getAttribute('data-breakpoint'), 10);
+		root.classList.toggle(
+			'aae-a-menu--mobile',
+			window.innerWidth <= (Number.isFinite(bp) ? bp : 768)
+		);
+	};
+
+	syncMobileClass();
+
+	if (!root.__aaeBpBound) {
+		root.__aaeBpBound = true;
+		window.addEventListener('resize', syncMobileClass);
+	}
 	let   dropdownEffect = root.getAttribute('data-dropdown-effect') || 'slide';
 	const transitionMs   = (parseInt(root.style.getPropertyValue('--aae-menu-transition'), 10) || 250);
 
@@ -177,6 +213,26 @@ const initMenu = (root) => {
 					playSubMenuEffect(subMenu, dropdownEffect, duration, 'open');
 				}
 			});
+
+			/* Open On = Click: the parent LINK toggles instead of navigating.
+			   Without this, "click" would mean "click the small arrow", which is
+			   not what the setting says and is a much smaller hit target.
+
+			   It forwards to arrow.click() rather than repeating the toggle: that
+			   logic handles siblings, aria-expanded and the mobile effect, and a
+			   second copy would drift from it. Read live from the attribute so
+			   switching the setting in the editor takes effect without a rebind,
+			   and skipped on mobile, where the drawer is arrow-driven and a parent
+			   link must stay navigable. */
+			const link = item.querySelector(':scope > a');
+			if (link) {
+				link.addEventListener('click', (e) => {
+					if (root.getAttribute('data-dropdown-trigger') !== 'click') return;
+					if (isMobile()) return;
+					e.preventDefault();
+					arrow.click();
+				});
+			}
 		});
 
 		return () => {

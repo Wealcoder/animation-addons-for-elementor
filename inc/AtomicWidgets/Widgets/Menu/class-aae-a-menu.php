@@ -83,7 +83,9 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 			'link_radius'   => Number_Prop_Type::make()->default( 6 ),
 
 			// Dropdown
+			'dropdown_trigger'          => String_Prop_Type::make()->enum( [ 'hover', 'click' ] )->default( 'hover' ),
 			'dropdown_bg'               => String_Prop_Type::make()->default( '' ),
+			'dropdown_text_color'       => String_Prop_Type::make()->default( '' ),
 			'dropdown_hover_bg'         => String_Prop_Type::make()->default( '' ),
 			'dropdown_hover_text_color' => String_Prop_Type::make()->default( '' ),
 			'dropdown_min_width'        => Number_Prop_Type::make()->default( 220 ),
@@ -188,9 +190,23 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 				->set_label( __( 'Dropdown Style', 'animation-addons-for-elementor' ) )
 				->set_id( 'dropdown_style' )
 				->set_items( [
+					// Behaviour, so it leads the section — a builder decides HOW the
+					// dropdown opens before they style it. Desktop only: the mobile
+					// drawer is always tap-driven regardless of this.
+					Select_Control::bind_to( 'dropdown_trigger' )
+						->set_label( __( 'Open On', 'animation-addons-for-elementor' ) )
+						->set_options( [
+							[ 'value' => 'hover', 'label' => __( 'Hover', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'click', 'label' => __( 'Click', 'animation-addons-for-elementor' ) ],
+						] ),
 					Text_Control::bind_to( 'dropdown_bg' )
 						->set_label( __( 'Background', 'animation-addons-for-elementor' ) )
 						->set_placeholder( '#ffffff' ),
+					// Sits directly under Background so the resting pair reads
+					// together, above the two hover fields.
+					Text_Control::bind_to( 'dropdown_text_color' )
+						->set_label( __( 'Text Color', 'animation-addons-for-elementor' ) )
+						->set_placeholder( '#1a1a18' ),
 					Text_Control::bind_to( 'dropdown_hover_bg' )
 						->set_label( __( 'Item Hover Background', 'animation-addons-for-elementor' ) )
 						->set_placeholder( 'rgba(15,23,42,0.05)' ),

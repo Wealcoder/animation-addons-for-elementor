@@ -5,6 +5,10 @@
   --accent: var(--aae-menu-hover-color, var(--e-global-color-accent, #534ab7));
   --active: var(--aae-menu-active-color, var(--accent));
   --bg: var(--aae-menu-dropdown-bg, #ffffff);
+  /* Resting colour of dropdown links. Falls back to --c, the top-level menu
+     colour, so leaving the field empty keeps the pre-existing behaviour of
+     sub-menu items simply inheriting the main menu colour. */
+  --dd-c: var(--aae-menu-dropdown-text-color, var(--c));
   --bg-2: var(--aae-menu-dropdown-hover-bg, rgba(0, 0, 0, 0.05));
   --border: 1px solid rgba(0, 0, 0, 0.08);
   --shadow: 0 12px 32px rgba(15, 23, 42, 0.12), 0 2px 6px rgba(15, 23, 42, 0.06);
@@ -21,6 +25,12 @@
   --aae-dd-r: var(--aae-menu-dropdown-radius, 12px);
   --aae-drawer-w: var(--aae-menu-drawer-width, 320px);
   --t: var(--aae-menu-transition, 250ms cubic-bezier(.4, 0, .2, 1));
+  /* Grace period before a hovered dropdown closes. Reaching a nested panel
+     means travelling DIAGONALLY, and that path leaves the parent <li> for a
+     moment — over the gap, or across a sibling item. With no delay the menu
+     closed the instant that happened, so it only worked if you moved fast and
+     in a straight line. Opening stays instant; only the close waits. */
+  --aae-dd-delay: 280ms;
   /* Effect defaults — overridden by data-dropdown-effect / data-drawer-effect */
   --aae-dd-from-transform: translateY(-6px) scale(0.97);
   --aae-dd-to-transform: translateY(0) scale(1);
@@ -143,6 +153,18 @@
   background: var(--aae-menu-item-hover-bg, transparent);
 }
 
+/* Dropdown (sub-menu) items use their own Text Color when set, otherwise fall
+   back to the top-level menu colour.
+
+   POSITION IS LOAD-BEARING: this selector is (0,2,1), exactly the same as the
+   .current-menu-item rule below it, so the tie is broken by document order.
+   Declared AFTER that rule it would repaint the active dropdown item with the
+   resting colour and the active state would silently disappear. The :hover
+   rule above is (0,3,1) and wins from anywhere. */
+.aae-a-menu-list .sub-menu a {
+  color: var(--dd-c);
+}
+
 /* Dropdown (sub-menu) items use their own Item Hover Text Color when set,
    otherwise fall back to the global hover text color. */
 .aae-a-menu-list .sub-menu a:hover,
@@ -217,8 +239,14 @@
   opacity: 0;
   visibility: hidden;
   transform: var(--aae-dd-from-transform);
-  pointer-events: none;
-  transition: opacity var(--t), transform var(--t), visibility var(--t);
+  /* No `pointer-events: none` here on purpose. `visibility: hidden` already
+     makes this non-interactive, and pointer-events is NOT delayed by the
+     transition below — so keeping it would flip to `none` the instant the
+     pointer left, leaving the panel visible-but-dead for the whole grace
+     period. Moving back into it would do nothing and the delay would buy
+     nothing. The mobile drawer closes with `display: none` and re-asserts
+     both properties when open, so it is unaffected. */
+  transition: opacity var(--t) var(--aae-dd-delay), transform var(--t) var(--aae-dd-delay), visibility var(--t) var(--aae-dd-delay);
 }
 
 .aae-a-menu-list .sub-menu a {
@@ -252,21 +280,36 @@
 }
 
 /* Desktop: hover, focus-within, click-open all reveal dropdown */
-@media (min-width: 769px) {
-  .aae-a-menu .menu-item-has-children:hover > .sub-menu,
-  .aae-a-menu .menu-item-has-children:focus-within > .sub-menu,
-  .aae-a-menu .menu-item-has-children.aae-a-menu-item--open > .sub-menu {
-    opacity: 1;
-    visibility: visible;
-    transform: var(--aae-dd-to-transform);
-    pointer-events: auto;
-  }
-  .aae-a-menu .sub-menu .menu-item-has-children:hover > .sub-menu,
-  .aae-a-menu .sub-menu .menu-item-has-children:focus-within > .sub-menu,
-  .aae-a-menu .sub-menu .menu-item-has-children.aae-a-menu-item--open > .sub-menu {
-    transform: translateX(0) scale(1);
-  }
+/* Open On = Hover reveals on :hover / :focus-within. Open On = Click gates BOTH
+   off and relies solely on .aae-a-menu-item--open, which menu.js toggles — that
+   selector stays ungated so the arrow and the parent link work in either mode.
+
+   :focus-within MUST be gated too, not just :hover. Clicking a parent link also
+   FOCUSES it, so with focus-within live the submenu would have two independent
+   reasons to be open: the second click would remove the class and the panel
+   would stay put, making Click mode look like it only opens and never closes.
+   Keyboard access survives — Enter on the link (or the arrow button) fires a
+   click, which is the same toggle.
+
+   `:where()` again, so the trigger gate contributes no specificity and these
+   rules keep exactly the weight they had. */
+.aae-a-menu:not(:where(.aae-a-menu--mobile)):not(:where([data-dropdown-trigger=click])) .menu-item-has-children:hover > .sub-menu,
+.aae-a-menu:not(:where(.aae-a-menu--mobile)):not(:where([data-dropdown-trigger=click])) .menu-item-has-children:focus-within > .sub-menu,
+.aae-a-menu:not(:where(.aae-a-menu--mobile)) .menu-item-has-children.aae-a-menu-item--open > .sub-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: var(--aae-dd-to-transform);
+  pointer-events: auto;
+  /* Open immediately; only the CLOSE (the base rule) carries the delay. */
+  transition-delay: 0s;
 }
+
+.aae-a-menu:not(:where(.aae-a-menu--mobile)):not(:where([data-dropdown-trigger=click])) .sub-menu .menu-item-has-children:hover > .sub-menu,
+.aae-a-menu:not(:where(.aae-a-menu--mobile)):not(:where([data-dropdown-trigger=click])) .sub-menu .menu-item-has-children:focus-within > .sub-menu,
+.aae-a-menu:not(:where(.aae-a-menu--mobile)) .sub-menu .menu-item-has-children.aae-a-menu-item--open > .sub-menu {
+  transform: translateX(0) scale(1);
+}
+
 /* ============== HAMBURGER TOGGLE (mobile only) ============== */
 .aae-a-menu-toggle {
   all: unset;
@@ -348,189 +391,211 @@
 }
 
 /* ============== MOBILE / OFFCANVAS DRAWER ============== */
-@media (max-width: 768px) {
-  .aae-a-menu[data-hamburger=true] {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    min-height: 40px;
-  }
-  .aae-a-menu[data-hamburger=true] .aae-a-menu-toggle {
-    display: inline-flex;
-    position: relative;
-    z-index: 2;
-  }
-  /* Overlay — completely hidden until drawer opens (prevents off-screen artifacts) */
-  .aae-a-menu[data-hamburger=true] .aae-a-menu-overlay {
-    display: block;
-    position: fixed;
-    inset: 0;
-    z-index: 9990;
-    background: var(--overlay-c);
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    transition: opacity var(--t), visibility var(--t);
-  }
-  .aae-a-menu[data-hamburger=true].aae-a-menu--open .aae-a-menu-overlay {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-  }
-  /* Drawer — completely hidden + clipped from layout when closed */
-  .aae-a-menu[data-hamburger=true] .aae-a-menu-nav {
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: min(var(--aae-drawer-w), 90vw);
-    max-width: 100vw;
-    background: var(--drawer-bg);
-    color: var(--c);
-    z-index: 9995;
-    flex-direction: column;
-    overflow: hidden;
-    opacity: 0;
-    transform: var(--aae-drawer-from-transform);
-    visibility: hidden;
-    transition: transform var(--t), opacity var(--t), visibility var(--t);
-    box-shadow: 4px 0 32px rgba(0, 0, 0, 0.18);
-  }
-  .aae-a-menu[data-hamburger=true].aae-a-menu--open .aae-a-menu-nav {
-    opacity: 1;
-    transform: var(--aae-drawer-to-transform);
-    visibility: visible;
-  }
-  /* Drawer effect (transform vars + per-effect nav positioning) is applied
-     from JS — see DRAWER_EFFECTS / applyDrawerEffect in menu.js. */
-  /* Drawer header (title + close) */
-  .aae-a-menu[data-hamburger=true] .aae-a-menu-nav-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    height: 60px;
-    padding: 0 1.25rem;
-    border-bottom: var(--border);
-    flex-shrink: 0;
-  }
-  .aae-a-menu-nav-title {
-    font-weight: 600;
-    font-size: 1.05em;
-    letter-spacing: 0.01em;
-  }
-  .aae-a-menu-close {
-    all: unset;
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    cursor: pointer;
-    color: var(--c);
-    transition: background var(--t), color var(--t);
-  }
-  .aae-a-menu-close:hover {
-    background: var(--bg-2);
-    color: var(--accent);
-  }
-  .aae-a-menu-close-icon {
-    position: relative;
-    width: 16px;
-    height: 16px;
-  }
-  .aae-a-menu-close-icon::before,
-  .aae-a-menu-close-icon::after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: currentColor;
-    border-radius: 2px;
-  }
-  .aae-a-menu-close-icon::before {
-    transform: translateY(-50%) rotate(45deg);
-  }
-  .aae-a-menu-close-icon::after {
-    transform: translateY(-50%) rotate(-45deg);
-  }
-  /* Drawer scrollable body */
-  .aae-a-menu[data-hamburger=true] .aae-a-menu-nav-body {
-    flex: 1 1 auto;
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    padding: 0.5rem 0.75rem 1.25rem;
-  }
-  /* Mobile list — full-width stack */
-  .aae-a-menu[data-hamburger=true] .aae-a-menu-list {
-    flex-direction: column;
-    width: 100%;
-    gap: 2px;
-  }
-  .aae-a-menu[data-hamburger=true] .aae-a-menu-list li {
-    flex-direction: row;
-    flex-wrap: wrap;
-    width: 100%;
-    align-items: center;
-  }
-  .aae-a-menu[data-hamburger=true] .aae-a-menu-list a {
-    padding: 12px 14px;
-    flex: 1 1 auto;
-    min-width: 0;
-    width: auto;
-    font-size: 15px;
-    border-radius: var(--aae-r);
-    flex: inherit;
-  }
-  /* Bigger, right-aligned tap target for chevron on mobile */
-  .aae-a-menu[data-hamburger=true] .aae-a-menu-arrow {
-    width: 40px;
-    height: 40px;
-    margin-left: auto;
-    flex-shrink: 0;
-  }
-  /* Mobile sub-menu — closed = display:none, open = display:flex.
-     The open/close visual effect is driven by menu.js (Web Animations API).
-     Opened state explicitly resets the desktop-only hidden properties from
-     the base rule (opacity / visibility / pointer-events / transform). */
-  .aae-a-menu[data-hamburger=true] .aae-a-menu-list .sub-menu {
-    position: static;
-    display: none;
-    flex: 0 0 100%;
-    width: 100%;
-    min-width: 0;
-    padding: 0;
-    margin: 0;
-    background: var(--aae-menu-dropdown-bg, transparent);
-    border: 0;
-    box-shadow: none;
-    border-radius: 0;
-  }
-  .aae-a-menu[data-hamburger=true] .aae-a-menu-list .menu-item-has-children.aae-a-menu-item--open > .sub-menu {
-    display: flex;
-    flex-direction: column;
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-    transform: none;
-  }
-  /* Indented nested levels */
-  .aae-a-menu[data-hamburger=true] .aae-a-menu-list .sub-menu a {
-    padding-left: 2rem;
-    font-size: 14px;
-    opacity: 0.9;
-  }
-  .aae-a-menu[data-hamburger=true] .aae-a-menu-list .sub-menu .sub-menu a {
-    padding-left: 3rem;
-  }
-  .aae-a-menu[data-hamburger=true] .aae-a-menu-list .sub-menu .sub-menu .sub-menu a {
-    padding-left: 4rem;
-  }
+.aae-a-menu:where(.aae-a-menu--mobile)[data-hamburger=true] {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  min-height: 40px;
 }
+
+.aae-a-menu:where(.aae-a-menu--mobile)[data-hamburger=true] .aae-a-menu-toggle {
+  display: inline-flex;
+  position: relative;
+  z-index: 2;
+}
+
+/* Overlay — completely hidden until drawer opens (prevents off-screen artifacts) */
+.aae-a-menu:where(.aae-a-menu--mobile)[data-hamburger=true] .aae-a-menu-overlay {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 9990;
+  background: var(--overlay-c);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity var(--t), visibility var(--t);
+}
+
+.aae-a-menu:where(.aae-a-menu--mobile)[data-hamburger=true].aae-a-menu--open .aae-a-menu-overlay {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* Drawer — completely hidden + clipped from layout when closed */
+.aae-a-menu:where(.aae-a-menu--mobile)[data-hamburger=true] .aae-a-menu-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: min(var(--aae-drawer-w), 90vw);
+  max-width: 100vw;
+  background: var(--drawer-bg);
+  color: var(--c);
+  z-index: 9995;
+  flex-direction: column;
+  overflow: hidden;
+  opacity: 0;
+  transform: var(--aae-drawer-from-transform);
+  visibility: hidden;
+  transition: transform var(--t), opacity var(--t), visibility var(--t);
+  box-shadow: 4px 0 32px rgba(0, 0, 0, 0.18);
+}
+
+.aae-a-menu:where(.aae-a-menu--mobile)[data-hamburger=true].aae-a-menu--open .aae-a-menu-nav {
+  opacity: 1;
+  transform: var(--aae-drawer-to-transform);
+  visibility: visible;
+}
+
+/* Drawer effect (transform vars + per-effect nav positioning) is applied
+   from JS — see DRAWER_EFFECTS / applyDrawerEffect in menu.js. */
+/* Drawer header (title + close) */
+.aae-a-menu:where(.aae-a-menu--mobile)[data-hamburger=true] .aae-a-menu-nav-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  height: 60px;
+  padding: 0 1.25rem;
+  border-bottom: var(--border);
+  flex-shrink: 0;
+}
+
+:where(.aae-a-menu--mobile) .aae-a-menu-nav-title {
+  font-weight: 600;
+  font-size: 1.05em;
+  letter-spacing: 0.01em;
+}
+
+:where(.aae-a-menu--mobile) .aae-a-menu-close {
+  all: unset;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--c);
+  transition: background var(--t), color var(--t);
+}
+
+:where(.aae-a-menu--mobile) .aae-a-menu-close:hover {
+  background: var(--bg-2);
+  color: var(--accent);
+}
+
+:where(.aae-a-menu--mobile) .aae-a-menu-close-icon {
+  position: relative;
+  width: 16px;
+  height: 16px;
+}
+
+:where(.aae-a-menu--mobile) .aae-a-menu-close-icon::before,
+:where(.aae-a-menu--mobile) .aae-a-menu-close-icon::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: currentColor;
+  border-radius: 2px;
+}
+
+:where(.aae-a-menu--mobile) .aae-a-menu-close-icon::before {
+  transform: translateY(-50%) rotate(45deg);
+}
+
+:where(.aae-a-menu--mobile) .aae-a-menu-close-icon::after {
+  transform: translateY(-50%) rotate(-45deg);
+}
+
+/* Drawer scrollable body */
+.aae-a-menu:where(.aae-a-menu--mobile)[data-hamburger=true] .aae-a-menu-nav-body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0.5rem 0.75rem 1.25rem;
+}
+
+/* Mobile list — full-width stack */
+.aae-a-menu:where(.aae-a-menu--mobile)[data-hamburger=true] .aae-a-menu-list {
+  flex-direction: column;
+  width: 100%;
+  gap: 2px;
+}
+
+.aae-a-menu:where(.aae-a-menu--mobile)[data-hamburger=true] .aae-a-menu-list li {
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+  align-items: center;
+}
+
+.aae-a-menu:where(.aae-a-menu--mobile)[data-hamburger=true] .aae-a-menu-list a {
+  padding: 12px 14px;
+  flex: 1 1 auto;
+  min-width: 0;
+  width: auto;
+  font-size: 15px;
+  border-radius: var(--aae-r);
+  flex: inherit;
+}
+
+/* Bigger, right-aligned tap target for chevron on mobile */
+.aae-a-menu:where(.aae-a-menu--mobile)[data-hamburger=true] .aae-a-menu-arrow {
+  width: 40px;
+  height: 40px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* Mobile sub-menu — closed = display:none, open = display:flex.
+   The open/close visual effect is driven by menu.js (Web Animations API).
+   Opened state explicitly resets the desktop-only hidden properties from
+   the base rule (opacity / visibility / pointer-events / transform). */
+.aae-a-menu:where(.aae-a-menu--mobile)[data-hamburger=true] .aae-a-menu-list .sub-menu {
+  position: static;
+  display: none;
+  flex: 0 0 100%;
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  background: var(--aae-menu-dropdown-bg, transparent);
+  border: 0;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.aae-a-menu:where(.aae-a-menu--mobile)[data-hamburger=true] .aae-a-menu-list .menu-item-has-children.aae-a-menu-item--open > .sub-menu {
+  display: flex;
+  flex-direction: column;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: none;
+}
+
+/* Indented nested levels */
+.aae-a-menu:where(.aae-a-menu--mobile)[data-hamburger=true] .aae-a-menu-list .sub-menu a {
+  padding-left: 2rem;
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.aae-a-menu:where(.aae-a-menu--mobile)[data-hamburger=true] .aae-a-menu-list .sub-menu .sub-menu a {
+  padding-left: 3rem;
+}
+
+.aae-a-menu:where(.aae-a-menu--mobile)[data-hamburger=true] .aae-a-menu-list .sub-menu .sub-menu .sub-menu a {
+  padding-left: 4rem;
+}
+
 /* Prevent body scroll-shift when drawer is open */
 .aae-a-menu-body-lock {
   overflow: hidden;
