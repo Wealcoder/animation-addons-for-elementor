@@ -109,7 +109,7 @@ class AAE_A_Countdown extends Atomic_Element_Base {
 			// Due-date string — passed verbatim into `new Date(...)` on the
 			// client. Default = 1 day from now so the editor shows a live
 			// counter on first drop without the user having to set it.
-			'due_date'       => String_Prop_Type::make()->default( gmdate( 'Y-m-d H:i:s', strtotime( '+1 day' ) ) ),
+			'due_date'       => String_Prop_Type::make()->default( gmdate( 'Y-m-d H:i:s', strtotime( '+2 day' ) ) ),
 
 			// Expire message — surfaced via data-attributes so the JS handler
 			// can swap the markup when the timer hits zero. Kept as widget-

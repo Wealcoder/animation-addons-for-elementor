@@ -105,7 +105,7 @@ class AAE_A_Icon_List extends Atomic_Element_Base {
 			'align-items' => String_Prop_Type::generate( 'flex-start' ),
 			// Each item is now a chip with its own background — without a gap
 			// here, stacked chips would touch edge to edge with no separation.
-			'gap' => \Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type::generate( [ 'size' => 8, 'unit' => 'px' ] ),
+			'gap' => \Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type::generate( [ 'size' => 15, 'unit' => 'px' ] ),
 			'list-style' => String_Prop_Type::generate( 'none' ),
 			'width' => String_Prop_Type::generate( '100%' ),
 			'margin' => \Elementor\Modules\AtomicWidgets\PropTypes\Dimensions_Prop_Type::generate([

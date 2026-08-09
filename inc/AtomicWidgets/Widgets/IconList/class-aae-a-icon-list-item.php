@@ -47,7 +47,7 @@ class AAE_A_Icon_List_Item extends Atomic_Element_Base {
 	 * enqueued on any page. Both are fixed now: the size lives here + the
 	 * override, and the container declares the dependency.
 	 */
-	const ICON_SIZE_PX = 20;
+	const ICON_SIZE_PX = 25;
 
 	public function __construct( $data = [], $args = null ) {
 		parent::__construct( $data, $args );
@@ -109,13 +109,13 @@ class AAE_A_Icon_List_Item extends Atomic_Element_Base {
 			'align-items' => String_Prop_Type::generate( 'center' ),
 			// Icon and label had NO gap at all — Atomic_Paragraph's own base
 			// style sets margin:0, so the two sat glued together edge to edge.
-			'gap'         => Size_Prop_Type::generate( [ 'size' => 8, 'unit' => 'px' ] ),
+			'gap'         => Size_Prop_Type::generate( [ 'size' => 10, 'unit' => 'px' ] ),
 
 			'padding' => Dimensions_Prop_Type::generate( [
-				'block-start'  => Size_Prop_Type::generate( [ 'size' => 8, 'unit' => 'px' ] ),
-				'inline-end'   => Size_Prop_Type::generate( [ 'size' => 14, 'unit' => 'px' ] ),
-				'block-end'    => Size_Prop_Type::generate( [ 'size' => 8, 'unit' => 'px' ] ),
-				'inline-start' => Size_Prop_Type::generate( [ 'size' => 14, 'unit' => 'px' ] ),
+				'block-start'  => Size_Prop_Type::generate( [ 'size' => 12, 'unit' => 'px' ] ),
+				'inline-end'   => Size_Prop_Type::generate( [ 'size' => 24, 'unit' => 'px' ] ),
+				'block-end'    => Size_Prop_Type::generate( [ 'size' => 12, 'unit' => 'px' ] ),
+				'inline-start' => Size_Prop_Type::generate( [ 'size' => 24, 'unit' => 'px' ] ),
 			] ),
 			'margin' => Dimensions_Prop_Type::generate( [
 				'block-start'  => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
@@ -130,7 +130,7 @@ class AAE_A_Icon_List_Item extends Atomic_Element_Base {
 			'color'         => Color_Prop_Type::generate( '#26282c' ),
 			'border-radius' => Size_Prop_Type::generate( [ 'size' => 999, 'unit' => 'px' ] ),
 
-			'font-size'   => Size_Prop_Type::generate( [ 'size' => 14, 'unit' => 'px' ] ),
+			'font-size'   => Size_Prop_Type::generate( [ 'size' => 16, 'unit' => 'px' ] ),
 			'line-height' => Size_Prop_Type::generate( [ 'size' => 18, 'unit' => 'px' ] ),
 
 			'transition' => Transition_Prop_Type::generate( [
