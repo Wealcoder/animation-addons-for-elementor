@@ -16,7 +16,16 @@
         outline: none;
         cursor: pointer;
         text-align: left;
-        font: inherit;
+        // Reset the native <button> chrome's font — but ONLY font-family.
+        // The old `font: inherit` shorthand also reset font-size/weight/
+        // line-height, which ties in specificity with the 'header' base
+        // style (define_base_styles() in class-aae-a-accordion-item.php)
+        // and let document order decide the winner: the editor appends
+        // base styles LAST (so the intended size showed there), while the
+        // frontend bundle prints this rule after the base style, silently
+        // falling back to the button's inherited size — the exact "smaller
+        // in builder, bigger on frontend" mismatch this fixes.
+        font-family: inherit;
         transition: background-color 0.2s ease;
         -webkit-tap-highlight-color: transparent;
 

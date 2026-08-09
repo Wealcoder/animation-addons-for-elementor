@@ -283,7 +283,7 @@ class AAE_A_Accordion_Item extends Atomic_Element_Base {
 		$header_styles = [
 			'background' => Background_Prop_Type::generate([]),
 			'color' => Color_Prop_Type::generate( '#1f2937' ),
-			'font-size' => Size_Prop_Type::generate( [ 'size' => 14, 'unit' => 'px' ] ),
+			'font-size' => Size_Prop_Type::generate( [ 'size' => 18, 'unit' => 'px' ] ),
 			'font-weight' => String_Prop_Type::generate( '600' ),
 			'line-height' => Size_Prop_Type::generate( [ 'size' => 20, 'unit' => 'px' ] ),
 			'border-style' => String_Prop_Type::generate(''),

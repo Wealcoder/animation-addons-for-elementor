@@ -105,24 +105,6 @@ __webpack_require__.r(__webpack_exports__);
 const openItems = new Set();
 const itemId = item => item.getAttribute('data-id') || item.id || '';
 
-// True when running inside the Elementor editor preview. Elementor toggles
-// between `elementor-editor-active` and `elementor-editor-preview` on the
-// preview body (e.g. when selecting an element), so accept either; also fall
-// back to detecting the editor's preview iframe.
-const isEditor = node => {
-  const doc = node?.ownerDocument || document;
-  const win = doc.defaultView || window;
-  const body = doc.body;
-  if (body && (body.classList.contains('elementor-editor-active') || body.classList.contains('elementor-editor-preview'))) {
-    return true;
-  }
-  try {
-    return win !== win.parent && !!win.parent.elementor;
-  } catch (e) {
-    return false;
-  }
-};
-
 // Move the two injected Div_Blocks (Header, Content) out of the hidden
 // injector into their slots. This used to live in an inline <script> in the
 // item twig, but inline scripts don't run when Elementor compiles the twig
@@ -347,22 +329,17 @@ const installDelegatedToggle = doc => {
     if (!e.target.closest) return;
     const item = e.target.closest('.aae-a-accordion-item');
     if (!item) return;
-    if (isEditor(item)) {
-      // In the editor, toggle ONLY on the bare header element area.
-      if (!e.target.closest('.aae-header-element')) return;
 
-      // …but ignore clicks that land on the inner child widgets
-      // (title paragraph, open/close icons) so those stay selectable
-      // and editable instead of toggling the item.
-      if (e.target.closest('.aae-header-title-element') || e.target.closest('.aae-header-icon-element')) {
-        return;
-      }
-    } else {
-      // On the frontend, toggle on clicks anywhere in the item EXCEPT
-      // inside the content area — otherwise interacting with the open
-      // content would collapse it.
-      if (e.target.closest('.aae-accordion-content-wrapper')) return;
-    }
+    // Toggle on a click anywhere on the item — including directly on
+    // the title text or the icon — except inside the content area,
+    // where interacting with the open content would collapse it. Same
+    // rule in the editor and on the frontend: no editor-only "bare
+    // header element" carve-out. `preventDefault()` alone (no
+    // `stopPropagation()`) still lets the click bubble to Elementor's
+    // own selection handler afterwards, so the title/icon widgets stay
+    // selectable/editable in the builder even though the same click
+    // also toggles the item.
+    if (e.target.closest('.aae-accordion-content-wrapper')) return;
     e.preventDefault();
     toggleItem(item);
   }, true // capture phase
