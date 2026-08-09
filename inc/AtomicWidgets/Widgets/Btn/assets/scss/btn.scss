@@ -29,11 +29,14 @@
 	z-index: 4;
 	left: -92%;
 }
-/* text flip */
-.aae-btn-txtflip .aae-btn-txtflip-content {
+/* text flip — targets Elementor's own unconditional `.e-paragraph-base`
+   class (see btn.js's textFlipSync() for why) rather than a custom hook
+   class on the child, so it can never be flagged "missing"/stripped by the
+   Style panel and needs no local style entry of its own. */
+.aae-btn-txtflip .e-paragraph-base {
   transform-style: preserve-3d;
 }
-.aae-btn-txtflip .aae-btn-txtflip-content::before {
+.aae-btn-txtflip .e-paragraph-base::before {
   position: absolute;
   top: 100%;
   left: 0;
@@ -45,7 +48,7 @@
   transform-origin: 50% 0;
   text-align: center;
 }
-.aae-btn-txtflip:hover .aae-btn-txtflip-content {
+.aae-btn-txtflip:hover .e-paragraph-base {
   transform: rotateX(90deg) translateY(-100%);
 }
 /* border devide */
@@ -79,7 +82,12 @@
   from { -webkit-mask-position: 100% 0; mask-position: 100% 0; }
   to   { -webkit-mask-position: 0 0; mask-position: 0 0; }
 }
-.aae-btn-mask-effect {
+// Scoped under `.aae-btn-mask` (not a bare `.aae-btn-mask-effect` selector) —
+// targets Elementor's own unconditional `.e-divider-base` class instead of a
+// custom hook class on the child (see btn.js's maskBtn() for why), and that
+// class is shared by EVERY e-divider on the page, so scoping is required to
+// avoid painting this mask effect onto unrelated dividers.
+.aae-btn-mask .e-divider-base {
   box-sizing: border-box;
   // Real URL is set by btn.js as a CSS var (webpack-resolved import, so it
   // works under both `npm start` and `npm run build`). The literal path is
@@ -91,6 +99,6 @@
   mask-size: 2300% 100%;
   animation: aae_mask_animation_2 0.7s steps(22) forwards;
 }
-.aae-btn-mask:hover .aae-btn-mask-effect {
+.aae-btn-mask:hover .e-divider-base {
   animation: aae_mask_animation 0.7s steps(22) forwards;
 }

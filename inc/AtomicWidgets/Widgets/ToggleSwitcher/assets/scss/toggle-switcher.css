@@ -1,0 +1,15 @@
+.aae-a-toggle-switcher .aae-ts-pane:not(.show) {
+  display: none;
+}
+.aae-a-toggle-switcher .aae-ts-switch.active .aae-ts-knob {
+  transform: translate(20px, -50%);
+}
+.aae-a-toggle-switcher .aae-ts-switch.active {
+  background-color: var(--aae-ts-switcher-active-bg, #000000);
+  border-color: var(--aae-ts-switcher-active-bg, #000000);
+}
+.aae-a-toggle-switcher .aae-ts-label-before.active .aae-ts-highlight,
+.aae-a-toggle-switcher .aae-ts-label-after.active .aae-ts-highlight {
+  opacity: 1;
+  transform: translateX(0);
+}/*# sourceMappingURL=toggle-switcher.css.map */

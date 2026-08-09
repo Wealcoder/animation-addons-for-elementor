@@ -90,9 +90,58 @@ const initMenu = (root) => {
 	const closeBtn = root.querySelector('.aae-a-menu-close');
 	if (!nav) return;
 
-	const breakpoint     = parseInt(root.getAttribute('data-breakpoint'), 10) || 768;
+	// NOT `parseInt(...) || 768`: 0 is a legitimate value meaning "never switch
+	// to mobile", and it is falsy, so the old form silently replaced it with the
+	// 768 default. Only a genuinely unparseable attribute falls back now.
+	const parsedBp       = parseInt(root.getAttribute('data-breakpoint'), 10);
+	const breakpoint     = Number.isFinite(parsedBp) ? parsedBp : 768;
 	const isHamburger    = root.getAttribute('data-hamburger') === 'true';
 	const isMobile       = () => window.innerWidth <= breakpoint;
+
+	/**
+	 * "Sub-menus expand INLINE instead of flying out" — true for the mobile drawer
+	 * AND for Layout = Vertical, which is the same interaction. Mirrors the
+	 * `$stacked` gate in menu.scss; the two must agree.
+	 *
+	 * Both attributes are read LIVE rather than closed over: `isHamburger` above is
+	 * captured once and goes stale the moment the builder toggles Mobile Hamburger
+	 * in the editor, and `data-layout` can change the same way.
+	 */
+	const isStacked = () =>
+		root.getAttribute('data-layout') === 'vertical'
+		|| (root.getAttribute('data-hamburger') === 'true' && isMobile());
+
+	/**
+	 * Mirror isMobile() onto a class on the root.
+	 *
+	 * The stylesheet used to switch layouts with hardcoded
+	 * `@media (max-width: 768px)` / `(min-width: 769px)` blocks, which the
+	 * Mobile Breakpoint setting could never reach — it only ever fed this JS.
+	 * So the hamburger and the drawer appeared at 768px no matter what the
+	 * builder typed, and the field looked broken because it WAS inert for
+	 * everything visual. A media query cannot read a per-widget value, so the
+	 * gate is now `.aae-a-menu--mobile` and this is what sets it. One source of
+	 * truth: the same isMobile() that already drove the behaviour.
+	 */
+	const syncMobileClass = () => {
+		// Re-reads the attribute instead of closing over `breakpoint`. initMenu()
+		// re-runs on every editor re-render, so a closure would pin the value
+		// from whichever run bound the listener and go stale the moment the
+		// builder edits the field. Stateless like this, one binding stays
+		// correct forever — which is what makes the bind-once guard safe.
+		const bp = parseInt(root.getAttribute('data-breakpoint'), 10);
+		root.classList.toggle(
+			'aae-a-menu--mobile',
+			window.innerWidth <= (Number.isFinite(bp) ? bp : 768)
+		);
+	};
+
+	syncMobileClass();
+
+	if (!root.__aaeBpBound) {
+		root.__aaeBpBound = true;
+		window.addEventListener('resize', syncMobileClass);
+	}
 	let   dropdownEffect = root.getAttribute('data-dropdown-effect') || 'slide';
 	const transitionMs   = (parseInt(root.style.getPropertyValue('--aae-menu-transition'), 10) || 250);
 
@@ -134,10 +183,10 @@ const initMenu = (root) => {
 				const duration = Math.round(transitionMs * 1.4);
 
 				if (wasOpen) {
-					// Closing — on mobile, play the reverse effect THEN remove the class
-					// so the close transition is visible. On desktop, remove immediately
-					// (CSS handles the desktop transition).
-					if (isMobile()) {
+					// Closing — when stacked, play the reverse effect THEN remove the
+					// class so the close is visible. For a flyout, remove immediately
+					// (CSS handles that transition).
+					if (isStacked()) {
 						arrow.setAttribute('aria-expanded', 'false');
 						playSubMenuEffect(subMenu, dropdownEffect, duration, 'close', () => {
 							item.classList.remove('aae-a-menu-item--open');
@@ -161,7 +210,7 @@ const initMenu = (root) => {
 							const sSub   = sib.querySelector(':scope > .sub-menu');
 							sib.classList.remove('aae-a-menu-item--open');
 							if (sArrow) sArrow.setAttribute('aria-expanded', 'false');
-							if (isMobile() && sSub) {
+							if (isStacked() && sSub) {
 								// Sibling closes simultaneously — just cancel its animation;
 								// removing the class above hides it via CSS.
 								if (typeof sSub.getAnimations === 'function') {
@@ -172,11 +221,34 @@ const initMenu = (root) => {
 					});
 				}
 
-				// Mobile-only: play the picked dropdown effect via Web Animations API.
-				if (isMobile()) {
+				// Stacked-only: play the picked dropdown effect via Web Animations API.
+				// A stacked sub-menu goes display:none → flex, which is not
+				// transitionable, so without this it would pop open with no motion —
+				// this is what gives Layout = Vertical the Sub-menu Dropdown Effect.
+				if (isStacked()) {
 					playSubMenuEffect(subMenu, dropdownEffect, duration, 'open');
 				}
 			});
+
+			/* Open On = Click: the parent LINK toggles instead of navigating.
+			   Without this, "click" would mean "click the small arrow", which is
+			   not what the setting says and is a much smaller hit target.
+
+			   It forwards to arrow.click() rather than repeating the toggle: that
+			   logic handles siblings, aria-expanded and the mobile effect, and a
+			   second copy would drift from it. Read live from the attribute so
+			   switching the setting in the editor takes effect without a rebind,
+			   and skipped on mobile, where the drawer is arrow-driven and a parent
+			   link must stay navigable. */
+			const link = item.querySelector(':scope > a');
+			if (link) {
+				link.addEventListener('click', (e) => {
+					if (root.getAttribute('data-dropdown-trigger') !== 'click') return;
+					if (isMobile()) return;
+					e.preventDefault();
+					arrow.click();
+				});
+			}
 		});
 
 		return () => {
@@ -190,38 +262,65 @@ const initMenu = (root) => {
 
 	let closeAllSubmenus = null;
 
-	/* ---------- Editor preview AJAX fallback ---------- */
-	const inEditor = !!(window.elementorFrontend
-		&& typeof window.elementorFrontend.isEditMode === 'function'
-		&& window.elementorFrontend.isEditMode());
-	const placeholder = nav.querySelector('.aae-a-menu-placeholder');
+	/* ---------- Editor preview AJAX fallback ----------
+	   The menu markup is built by wp_nav_menu() in get_atomic_settings(), which
+	   is PHP — so it only exists on a server render. The editor canvas renders
+	   this Twig CLIENT-side, where `settings.rendered_menu` is simply absent and
+	   the template falls through to `.aae-a-menu-placeholder`. Fetching the real
+	   markup is the only way the builder ever sees their menu.
 
-	if (inEditor && placeholder) {
-		const slug = nav.getAttribute('data-menu-slug');
-		if (slug) {
-			const ajaxUrl = (window.elementorFrontend
-				&& window.elementorFrontend.config
-				&& window.elementorFrontend.config.ajaxurl)
-				|| window.ajaxurl
-				|| '/wp-admin/admin-ajax.php';
-			fetch(`${ajaxUrl}?action=aae_get_menu_html&menu=${encodeURIComponent(slug)}`)
-				.then((r) => r.json())
-				.then((data) => {
-					if (data && data.success && data.data) {
-						const body = nav.querySelector('.aae-a-menu-nav-body');
-						if (body) body.innerHTML = data.data;
-						closeAllSubmenus = buildDropdowns();
-					}
-				})
-				.catch(() => {});
-		}
+	   The trigger is the PLACEHOLDER, not an edit-mode test. That is deliberate:
+	   `elementorFrontend.isEditMode()` is not dependable inside the v4 canvas
+	   (counter.js already pairs it with an `elementor-editor-active` body check
+	   for the same reason), and gating on it meant one false negative left the
+	   builder staring at "Menu rendered on frontend / preview." forever. The
+	   placeholder is the exact, self-scoping signal for "this render has no menu
+	   HTML in it" — on the frontend get_atomic_settings() always fills
+	   `rendered_menu`, so the placeholder is never present and this never runs. */
+	const placeholder = nav.querySelector('.aae-a-menu-placeholder');
+	const body = nav.querySelector('.aae-a-menu-nav-body');
+	const slug = nav.getAttribute('data-menu-slug');
+
+	if (placeholder && slug) {
+		// AAE_MENU_CFG.ajaxUrl is admin_url('admin-ajax.php'), localized onto
+		// this handle in the editor preview. It is FIRST because it is the only
+		// entry that is right on every install layout — the root-relative last
+		// resort points at the NETWORK MAIN SITE on a subdirectory multisite
+		// (a subsite's admin is /<site>/wp-admin/), which is why the editor
+		// preview worked on a single site and silently failed on a network.
+		const ajaxUrl = (window.AAE_MENU_CFG && window.AAE_MENU_CFG.ajaxUrl)
+			|| (window.elementorFrontend
+			&& window.elementorFrontend.config
+			&& window.elementorFrontend.config.ajaxurl)
+			|| window.ajaxurl
+			|| '/wp-admin/admin-ajax.php';
+		fetch(`${ajaxUrl}?action=aae_get_menu_html&menu=${encodeURIComponent(slug)}`, {
+			// admin-ajax authenticates by cookie; without this the request is
+			// anonymous, the priv-only action never matches and it 400s.
+			credentials: 'same-origin',
+		})
+			.then((r) => r.json())
+			.then((data) => {
+				if (data && data.success && data.data && body) {
+					body.innerHTML = data.data;
+					closeAllSubmenus = buildDropdowns();
+				}
+			})
+			.catch(() => {});
+	} else if (placeholder && ! slug) {
+		// No menu chosen yet. Say so, instead of the frontend/preview line that
+		// reads as "this is fine, it'll show later" when in fact nothing will.
+		placeholder.textContent = 'Please select a menu';
+		closeAllSubmenus = buildDropdowns();
 	} else {
 		closeAllSubmenus = buildDropdowns();
 	}
 
 	/* ---------- Outside-click + Escape closes desktop dropdowns ---------- */
 	document.addEventListener('click', (e) => {
-		if (isMobile()) return;
+		// Flyouts only. An inline accordion (drawer or Layout = Vertical) must not
+		// collapse because the visitor clicked somewhere unrelated on the page.
+		if (isStacked()) return;
 		if (!root.contains(e.target) && typeof closeAllSubmenus === 'function') {
 			closeAllSubmenus();
 		}

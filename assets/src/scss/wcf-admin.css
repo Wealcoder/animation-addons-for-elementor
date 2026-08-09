@@ -1,0 +1,64 @@
+#adminmenu .toplevel_page_wcf_addons_page .wp-menu-image img {
+  opacity: 1;
+  padding: 7px 0 0;
+}
+
+.animation-addon_page_wcf_addons_settings .notice {
+  display: none !important;
+  height: 0;
+}
+
+#aae-heading-button {
+  background: linear-gradient(45deg, #FF7A00 0%, #FFD439 100%);
+}
+
+#aae-heading-button:hover {
+  background: linear-gradient(45deg, #DB6900 0%, #EFBB00 100%);
+}
+
+#elementor-install-notice {
+  background-color: rgb(255, 222, 205);
+  color: rgb(24, 27, 37);
+  padding: 15px 16px 15px 21px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 3px;
+  border-radius: 16px;
+  border: 0;
+}
+#elementor-install-notice * {
+  font-family: "Inter", sans-serif;
+}
+#elementor-install-notice p {
+  font-size: 18px;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: rgb(82, 88, 102);
+}
+#elementor-install-notice p svg {
+  height: 23px;
+  width: 23px;
+}
+#elementor-install-notice p strong {
+  color: rgb(24, 27, 37);
+  font-weight: 600;
+}
+
+#elementor-install-notice span {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+#wcf-install-elementor {
+  border: 0;
+  background: linear-gradient(45deg, #FF7A00 0%, #FFD439 100%);
+  border-radius: 10px;
+  padding: 6px 13px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}/*# sourceMappingURL=wcf-admin.css.map */

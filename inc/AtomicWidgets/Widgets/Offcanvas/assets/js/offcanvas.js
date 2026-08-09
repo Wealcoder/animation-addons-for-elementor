@@ -28,11 +28,20 @@ const TRANSFORMS = {
 
 // Fixed geometry per edge. Left/right leave width/height to the base style
 // (full-height side drawer); top/bottom force a full-width, content-height bar.
+//
+// No `maxHeight` here any more. It used to cap top/bottom drawers at 90vh, but
+// as an INLINE style it outranked every stylesheet — so a builder who set Max
+// Height in the Style tab watched it do nothing, with no way to discover why.
+// Only genuine runtime state (which edge the drawer is pinned to) belongs
+// inline; a design default belongs in a base style, where it is overridable.
+// It is not moved to the panel's base style because that is shared by all four
+// edges, and a 90vh cap would then also shrink the full-height left/right
+// drawers, which are 100vh by design.
 const POS = {
 	left:   { left: '0',  top: '0',    bottom: '0',    right: 'auto' },
 	right:  { right: '0', top: '0',    bottom: '0',    left: 'auto' },
-	top:    { top: '0',   left: '0',   right: '0',     bottom: 'auto', width: '100%', maxWidth: 'none', height: 'auto', maxHeight: '90vh' },
-	bottom: { bottom: '0', left: '0',  right: '0',     top: 'auto',    width: '100%', maxWidth: 'none', height: 'auto', maxHeight: '90vh' },
+	top:    { top: '0',   left: '0',   right: '0',     bottom: 'auto', width: '100%', maxWidth: 'none', height: 'auto' },
+	bottom: { bottom: '0', left: '0',  right: '0',     top: 'auto',    width: '100%', maxWidth: 'none', height: 'auto' },
 };
 
 const SLIDE = 'transform 0.35s cubic-bezier(0.4, 0, 0.2, 1)';
@@ -268,11 +277,14 @@ const initOffcanvas = ( root ) => {
 
 	// Base fixed geometry — always applied, independent of the animation engine.
 	// transition:none so a GSAP tween never fights a CSS transition.
+	// NB: no `display` / `flexDirection` here. The panel is a plain block whose
+	// layout comes from its base style (and whatever the builder sets in the
+	// Style tab). Writing them inline would beat BOTH and silently pin every
+	// panel to a flex column — only the fixed-position geometry belongs inline,
+	// because that is runtime state, not a design choice.
 	Object.assign( panel.style, {
 		position:      'fixed',
 		zIndex:        '9999',
-		display:       'flex',
-		flexDirection: 'column',
 		overflowY:     'auto',
 		visibility:    'hidden',
 		pointerEvents: 'none',
