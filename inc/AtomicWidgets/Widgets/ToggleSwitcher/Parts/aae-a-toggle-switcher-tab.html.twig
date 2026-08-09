@@ -1,9 +1,0 @@
-{% import 'elementor/macros' as m %}
-{%- set classes = ['aae-ts-tab', 'e-atomic-element', base_styles.base] | merge(settings.classes | default([])) -%}
-{%- set is_selected = 'e--selected' in (settings.classes | default([])) -%}
-<button type="button" role="tab" aria-selected="{{ is_selected ? 'true' : 'false' }}"
-	class="{{ classes | join(' ') }} {{ editor_classes | default('') }}"
-	{{- m.render_data_attributes(id, type, interaction_id | default('')) }}
-	{{- m.render_custom_attributes(settings, editor_attributes) }}>
-	{{ settings.text | striptags('<b><strong><sup><sub><s><em><u><span><br>') | raw }}
-</button>

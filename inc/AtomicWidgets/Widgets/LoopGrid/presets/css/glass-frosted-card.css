@@ -1,5 +1,0 @@
-/* Glass Frosted Card — hover: panel lifts + brightens, image zooms. */
-.aae-glass-card .aae-glass-img { transition: transform .7s ease; will-change: transform; }
-.aae-glass-card .aae-glass-panel { transition: transform .45s ease, background-color .45s ease; }
-.aae-glass-card:hover .aae-glass-img { transform: scale(1.07); }
-.aae-glass-card:hover .aae-glass-panel { transform: translateY(-6px); background-color: rgba(255, 255, 255, .22); }

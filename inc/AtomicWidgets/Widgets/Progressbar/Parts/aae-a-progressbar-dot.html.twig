@@ -1,7 +1,0 @@
-{% import 'elementor/macros' as m %}
-{# `aae-progressbar-dot` is progressbar.js's hook — rendered here, not seeded
-   into `classes`. See the note in aae-a-progressbar-label.html.twig. #}
-{%- set classes = ['aae-progressbar-dot', base_styles.base] | merge( settings.classes | default([]) ) | join(' ') -%}
-<div class="{{ classes }} {{ editor_classes | default('') }}"
-	{{- m.render_data_attributes(id, type, interaction_id | default('')) }}
-	{{- m.render_custom_attributes(settings, editor_attributes) }}></div>

@@ -1,7 +1,0 @@
-/* Split Reveal — hover widens the image half, image zooms. */
-.aae-split-card .aae-split-imgwrap,
-.aae-split-card .aae-split-panel { transition: width .55s cubic-bezier(.2, .7, .2, 1); }
-.aae-split-card .aae-split-img { transition: transform .7s ease; will-change: transform; }
-.aae-split-card:hover .aae-split-imgwrap { width: 68%; }
-.aae-split-card:hover .aae-split-panel { width: 32%; }
-.aae-split-card:hover .aae-split-img { transform: scale(1.06); }

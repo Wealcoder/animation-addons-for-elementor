@@ -1,7 +1,0 @@
-{% import 'elementor/macros' as m %}
-{%- set classes = settings.classes | merge( [ base_styles.base ] ) | join(' ') -%}
-<{{ settings.tag | default('h3') | e('html_tag') }} class="{{ classes }} {{ editor_classes | default('') }}"
-	{{- m.render_data_attributes(id, type, interaction_id | default('')) }}
-	{{- m.render_custom_attributes(settings, editor_attributes) }}>
-	{{ settings.text | striptags('<b><strong><sup><sub><s><em><u><span><br>') | raw }}
-</{{ settings.tag | default('h3') | e('html_tag') }}>
