@@ -6238,6 +6238,25 @@ final class Atomic
 				}
 
 				wp_enqueue_script( $widget_data['script_handle'] );
+
+				// The Menu widget builds its markup with wp_nav_menu() in PHP
+				// (get_atomic_settings), so the client-rendered canvas has no menu
+				// HTML and menu.js fetches it over admin-ajax instead.
+				//
+				// The URL has to come from admin_url(). On a subdirectory MULTISITE
+				// a subsite's admin lives at /<site>/wp-admin/, so the root-relative
+				// '/wp-admin/admin-ajax.php' the script fell back to resolved to the
+				// NETWORK MAIN SITE — where the subsite's menu slug does not exist,
+				// so wp_nav_menu() returned nothing, the response carried no markup
+				// and the editor placeholder never went away. It only ever looked
+				// correct on a single site installed at the domain root.
+				if ( 'aae-a-menu' === $widget_id ) {
+					wp_localize_script(
+						$widget_data['script_handle'],
+						'AAE_MENU_CFG',
+						[ 'ajaxUrl' => admin_url( 'admin-ajax.php' ) ]
+					);
+				}
 			}
 
 			if ( ! empty( $widget_data['style_handle'] ) ) {
