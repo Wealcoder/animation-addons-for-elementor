@@ -30,17 +30,7 @@
             type="button"
             aria-expanded="{{ settings.is_active ? 'true' : 'false' }}"
             aria-controls="aae-accordion-content-{{ id }}"
-            id="aae-accordion-header-{{ id }}"
-            {# Accessible-name safety net. The visible title normally arrives as
-               a child element that accordion.js moves into .aae-header-content,
-               so the button names itself. But a header holding only an icon —
-               or one whose title child was deleted — leaves a <button> with no
-               name at all (a critical WCAG 4.1.2 failure), and it silently takes
-               the content region's aria-labelledby down with it. accordion.js
-               promotes this to aria-label only when the button really is empty,
-               so a visible title is never overridden (WCAG 2.5.3). #}
-            data-aae-fallback-label="{{ settings.item_title | default( 'Accordion Item' ) | e('html_attr') }}"
-            style="display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 15px 20px; background: transparent; border: none; cursor: pointer;">
+            id="aae-accordion-header-{{ id }}">
 
             {# Header Div_Block (Title + Icon) injected here — the icon IS the toggle #}
             <div class="aae-header-content" style="display: flex; align-items: center; flex: 1; gap: 10px; min-width: 0;"></div>
@@ -48,20 +38,12 @@
     </{{ heading_tag }}>
 
     {# Content Div #}
-    {# No role="region" here, deliberately.
-       The disclosure pattern is already complete: the header is a real <button>
-       carrying aria-expanded + aria-controls pointing at this id. ARIA APG lists
-       region on an accordion panel as OPTIONAL and advises against it once an
-       accordion has more than a handful of panels, because each one then joins
-       the page's landmark list. It is also impossible to keep valid: a landmark
-       is named from its header, two panels may legitimately share a title, and
-       identical role+name landmarks fail axe's landmark-unique — which is what
-       three default items did here. Dropping the role loses nothing a screen
-       reader relies on and keeps the landmark map meaningful. #}
     <div id="aae-accordion-content-{{ id }}"
          class="aae-accordion-content-wrapper"
+         role="region"
+         aria-labelledby="aae-accordion-header-{{ id }}"
          style="overflow: hidden;">
-        {# Content Div_Block (Text + Image) - injected here by JS #}
+        {# Content Div_Block (Text) - injected here by JS #}
         <div class="aae-accordion-content {{ base_styles.content | default('') }} e-con" style="display: flex; flex-direction: column; gap: 15px;"></div>
     </div>
 </div>

@@ -1,6 +1,0 @@
-{% import 'elementor/macros' as m %}
-{% set tag = settings.tag | default('div') %}
-{% set classes = ['aae-a-comment-content'] | merge([ base_styles.base ]) | merge(settings.classes | default([])) | join(' ') %}
-<{{ tag }} class="{{ classes }}" data-interaction-id="{{ interaction_id | default('') }}" {{- m.render_custom_attributes(settings) }}>
-    {{ settings.content_html | default('') | raw }}
-</{{ tag }}>
