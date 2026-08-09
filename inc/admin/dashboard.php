@@ -18,6 +18,22 @@ class WCF_Admin_Init
 	use \WCF_ADDONS\WCF_Extension_Widgets_Trait;
 
 	/**
+	 * Allowed option names for AJAX read/write.
+	 * Prevents arbitrary option manipulation (e.g., siteurl, admin_email).
+	 *
+	 * @since 2.7.3
+	 */
+	private static $allowed_option_names = array(
+		'wcf_save_widgets',
+		'wcf_save_extensions',
+		'wcf_custom_font_setting',
+		'wcf_smooth_scroller',
+		'wcf_notice_data',
+		'wcf_addons_setup_wizard',
+		'aae_mailchimp_api',
+	);
+
+	/**
 	 * Parent Menu Page Slug
 	 */
 	const MENU_PAGE_SLUG = 'wcf_addons_page';
@@ -96,18 +112,12 @@ class WCF_Admin_Init
 		add_action('wp_ajax_aae_save_dynamic_settings', array($this, 'save_dynamic_settings'));
 		add_action('wp_ajax_aae_get_dynamic_settings', array($this, 'get_dynamic_settings'));
 		add_action('wp_ajax_save_settings_with_ajax', array($this, 'save_settings'));
-		add_action('wp_ajax_aae_complete_setup_wizard', array($this, 'complete_setup_wizard'));
-		add_action('wp_ajax_aae_wizard_subscribe', array($this, 'wizard_subscribe'));
 		add_action('wp_ajax_wcf_dashboard_notice_store', array($this, 'notice_store'));
 		add_action('wp_ajax_wcf_get_changelog_data', array($this, 'get_changelog'));
 		add_action('wp_ajax_wcf_get_notice_data', array($this, 'get_notice'));
 		add_action('wp_ajax_save_settings_with_ajax_dashboard', array($this, 'save_settings_dashboard'));
 
 		add_action('wp_ajax_save_smooth_scroller_settings', array($this, 'save_smooth_scroller_settings'));
-
-		// Prune AAE widgets only when Elementor's Element Manager list actually changes.
-		add_action('add_option_elementor_disabled_elements', array($this, 'disable_widgets_by_element_manager'));
-		add_action('update_option_elementor_disabled_elements', array($this, 'disable_widgets_by_element_manager'));
 
 		add_filter('admin_body_class', array($this, 'admin_classes'), 100);
 		add_filter('wcf_addons_dashboard_config', array($this, 'dashboard_db_widgets_config'), 11);
@@ -166,23 +176,6 @@ class WCF_Admin_Init
 
 
 	/**
-	 * Saved widget key => Elementor element manager widget name, for the
-	 * widgets whose element name is not simply 'wcf--' . key.
-	 */
-	const ELEMENT_MANAGER_NAME_FIXES = array(
-		'post-paginate'      => 'wcf--blog--post--paginate',
-		'post-social-share'  => 'wcf--blog--post--social-share',
-		'post-title'         => 'wcf--blog--post--title',
-		'search-form'        => 'wcf--blog--search--form',
-		'search-query'       => 'wcf--blog--search--query',
-		'text-hover-image'   => 'wcf--t-h-image',
-		'post-meta-info'     => 'wcf--blog--post--meta-info',
-		'post-excerpt'       => 'wcf--blog--post--excerpt',
-		'post-feature-image' => 'wcf--theme-post-image',
-		'social-icons'       => 'social-icons',
-	);
-
-	/**
 	 * Summary of elementor_disabled_elements
 	 *
 	 * @return void
@@ -190,21 +183,20 @@ class WCF_Admin_Init
 	public function disable_widgets_by_element_manager()
 	{
 
-		if (! class_exists('\Elementor\Modules\ElementManager\Options')) {
-			return;
-		}
-
 		$disable_widgets = Options::get_disabled_elements();
 		$saved_widgets   = get_option('wcf_save_widgets');
+		$pattern         = '/^wcf--\w+/';
 
 		if (is_array($disable_widgets) && is_array($saved_widgets)) {
 
 			foreach ($disable_widgets as $item) {
 
-				$key = $this->element_name_to_widget_key($item);
+				if (preg_match($pattern, $item)) {
 
-				if ($key !== null && isset($saved_widgets[$key])) {
-					unset($saved_widgets[$key]);
+					$toberemove = trim($item, 'wcf--');
+					if (isset($saved_widgets[$toberemove])) {
+						unset($saved_widgets[$toberemove]);
+					}
 				}
 			}
 
@@ -214,69 +206,50 @@ class WCF_Admin_Init
 
 	public function sync_widgets_by_element_manager()
 	{
-
-		if (! class_exists('\Elementor\Modules\ElementManager\Options')) {
-			return;
-		}
-
+		$namefixs        = array(
+			'post-paginate'      => 'wcf--blog--post--paginate',
+			'post-social-share'  => 'wcf--blog--post--social-share',
+			'post-title'         => 'wcf--blog--post--title',
+			'search-form'        => 'wcf--blog--search--form',
+			'search-query'       => 'wcf--blog--search--query',
+			'text-hover-image'   => 'wcf--t-h-image',
+			'post-meta-info'     => 'wcf--blog--post--meta-info',
+			'post-excerpt'       => 'wcf--blog--post--excerpt',
+			'post-feature-image' => 'wcf--theme-post-image',
+			'social-icons'       => 'social-icons',
+		);
 		$disable_widgets = Options::get_disabled_elements();
 		$saved_widgets   = get_option('wcf_save_widgets');
 
 		if (is_array($disable_widgets) && is_array($saved_widgets)) {
 
-			foreach ($disable_widgets as $index => $item) {
+			foreach ($saved_widgets as $key => $state) {
 
-				$key = $this->element_name_to_widget_key($item);
+				$index = false;
+				$index = array_search('wcf--' . $key, $disable_widgets); // Find the index of the element
+				if ($index !== false) {
+					unset($disable_widgets[$index]); // Remove element if found
+				}
 
-				// Widget re-enabled in the AAE dashboard: lift the
-				// Element Manager block so it can register again.
-				if ($key !== null && isset($saved_widgets[$key])) {
-					unset($disable_widgets[$index]);
+				$index = array_search('wcf--blog--' . $key, $disable_widgets); // Find the index of the element
+				if ($index !== false) {
+					unset($disable_widgets[$index]); // Remove element if found
+				}
+
+				if (array_key_exists($key, $namefixs)) {
+
+					$slug  = $namefixs[$key];
+					$index = array_search($slug, $disable_widgets); // Find the index of the element
+					if ($index !== false) {
+						unset($disable_widgets[$index]); // Remove element if found
+					}
 				}
 			}
 
-			Options::update_disabled_elements(array_values($disable_widgets));
+			array_unshift($disable_widgets);
+
+			Options::update_disabled_elements($disable_widgets);
 		}
-	}
-
-	/**
-	 * Resolve an Element Manager element name to its AAE dashboard widget key.
-	 * Primary source is the live map filled while widgets register; the
-	 * name-fix table and prefix strips cover widgets registered outside
-	 * register_widgets() (theme builder blog widgets).
-	 *
-	 * @param string $element_name Widget name as registered with Elementor.
-	 * @return string|null Dashboard widget key, or null for non-AAE elements.
-	 */
-	private function element_name_to_widget_key($element_name)
-	{
-		static $element_to_key = null;
-
-		if ($element_to_key === null) {
-
-			// Force widget registration so register_widgets() fills the
-			// element-name => key map. Widgets the Element Manager just
-			// disabled are still constructed (Elementor only blocks them
-			// from its registry), so they land in the map too.
-			if (did_action('elementor/loaded')) {
-				Plugin::instance()->widgets_manager->get_widget_types();
-			}
-
-			$element_to_key  = \WCF_ADDONS\Plugin::$widget_element_keys;
-			$element_to_key += array_flip(self::ELEMENT_MANAGER_NAME_FIXES);
-		}
-
-		if (isset($element_to_key[$element_name])) {
-			return $element_to_key[$element_name];
-		}
-
-		foreach (array('wcf--blog--', 'wcf--', 'aae--') as $prefix) {
-			if (strpos($element_name, $prefix) === 0) {
-				return substr($element_name, strlen($prefix));
-			}
-		}
-
-		return null;
 	}
 	/**
 	 * merge database saved data with dasboard widgets config
@@ -350,7 +323,7 @@ class WCF_Admin_Init
 			self::MENU_CAPABILITY,
 			self::MENU_PAGE_SLUG,
 			'',
-			WCF_ADDONS_URL . 'assets/images/wcf.png',
+			WCF_ADDONS_URL . '/assets/images/wcf.png',
 			8
 		);
 
@@ -385,6 +358,9 @@ class WCF_Admin_Init
 
 		// Load config once
 		$config = wcf_get_config();
+
+		// sync element manager
+		$this->disable_widgets_by_element_manager();
 
 		// CSS
 		wp_enqueue_style(
@@ -433,20 +409,6 @@ class WCF_Admin_Init
 			'adminURL'       => admin_url(),
 			'smoothScroller' => json_decode(get_option('wcf_smooth_scroller')),
 
-			// When MotionKit is connected and its ScrollSmoother is switched on
-			// site-wide, AAE Pro stands its own smoother down (MotionKit has
-			// priority). Surface that here so the Scroll Smoother panel can tell the
-			// user why their setting is inactive instead of looking broken.
-			'motionkitSmoother' => array(
-				'active' => (
-					defined('MOTIONKIT_VERSION')
-					&& ! empty(get_option('motionkit_access_token'))
-					&& class_exists('\MotionKit\Frontend\ScrollSmoother')
-					&& method_exists('\MotionKit\Frontend\ScrollSmoother', 'is_enabled_globally')
-					&& \MotionKit\Frontend\ScrollSmoother::is_enabled_globally()
-				),
-			),
-
 			'cf_settings' => is_string($font_settings)
 				? json_decode($font_settings)
 				: array(),
@@ -477,27 +439,6 @@ class WCF_Admin_Init
 				: 'no',
 
 			'hero_offer' => WCF_ADDONS_URL . 'assets/video/cyber-sale.mp4',
-
-			// Animation Settings screen. Shipped in the initial payload rather
-			// than fetched, so the panel paints filled in on first open.
-			'animation_settings' => array(
-				'settings'      => \WCF_ADDONS\AnimationSettings\Animation_Settings::get(),
-				'schema'        => \WCF_ADDONS\AnimationSettings\Animation_Settings::schema_for_ui(),
-				'global_colors' => \WCF_ADDONS\AnimationSettings\Animation_Settings::global_colors(),
-				'has_pro'       => \WCF_ADDONS\AnimationSettings\Animation_Settings::has_pro(),
-			),
-
-			/*
-			 * Performance screen. The SCREEN ships in free; the settings store
-			 * and the delivery pipeline behind it are Pro
-			 * (pro/inc/Performance/), so the payload arrives through a filter
-			 * Pro answers rather than a direct class reference.
-			 *
-			 * An empty array is the correct free-only value, not a missing one:
-			 * the React page reads it as "Pro is not here" and renders the
-			 * locked upsell state.
-			 */
-			'performance' => apply_filters('aae/performance/dashboard_payload', array()),
 		);
 
 		wp_localize_script('wcf-admin', 'WCF_ADDONS_ADMIN', $localize_data);
@@ -701,6 +642,12 @@ class WCF_Admin_Init
 
 		$actives       = $foundkeys = array();
 		$option_name   = isset($_POST['settings']) ? sanitize_text_field(wp_unslash($_POST['settings'])) : '';
+
+		// Security: only allow whitelisted option names.
+		if ( ! empty( $option_name ) && ! in_array( $option_name, self::$allowed_option_names, true ) ) {
+			wp_send_json_error( esc_html__( 'Invalid option name.', 'animation-addons-for-elementor' ) );
+		}
+
 		$sanitize_data = sanitize_text_field(wp_unslash($_POST['fields']));
 		$settings      = json_decode($sanitize_data, true);
 		wcf_get_nested_active_config_keys($settings, $found, $actives);
@@ -730,161 +677,6 @@ class WCF_Admin_Init
 		wp_send_json(esc_html__('Option name not found!', 'animation-addons-for-elementor'));
 	}
 
-	/**
-	 * Mark the setup wizard finished.
-	 *
-	 * save_settings() used to be the only thing that wrote this flag, as a side
-	 * effect of persisting wcf_save_widgets. The V4 wizard saves through
-	 * class-atomic.php's own aae_save_atomic_* handlers instead and never calls
-	 * save_settings(), so without this endpoint the flag is never written and
-	 * class-plugin.php's admin_init redirect sends the user back into the wizard
-	 * on every page load — forever.
-	 *
-	 * Kept separate rather than folded into the atomic save handlers: "the
-	 * wizard is done" is a different fact from "these widgets are on", and the
-	 * dashboard's own Save button must never mark a wizard complete.
-	 */
-	public function complete_setup_wizard()
-	{
-		check_ajax_referer('wcf_admin_nonce', 'nonce');
-
-		if (! current_user_can('manage_options')) {
-			wp_send_json_error(esc_html__('Permission denied.', 'animation-addons-for-elementor'));
-		}
-
-		update_option('wcf_addons_setup_wizard', 'complete');
-
-		wp_send_json_success(array('status' => 'complete'));
-	}
-
-	/**
-	 * Lead-capture relay. Holds the Brevo API key and list id server-side, so
-	 * neither ever ships with the plugin.
-	 *
-	 * Its schema (GET https://animation-addons.com/wp-json/leads/v1) accepts
-	 * `email` (required) plus optional firstName / lastName / company / phone /
-	 * source / site — which is exactly what wizard_subscribe() sends. Anything
-	 * added here has to exist there too, or the relay drops it silently.
-	 */
-	const LEADS_ENDPOINT = 'https://animation-addons.com/wp-json/leads/v1/subscribe';
-
-	/**
-	 * Register the site administrator as a product lead.
-	 *
-	 * NO CREDENTIAL LIVES IN THIS PLUGIN, and that is the whole point. The
-	 * relay above owns the Brevo API key and the target list id, and maps these
-	 * neutral fields onto Brevo's attributes itself — so there is nothing here
-	 * to leak, whether from the JS bundle, the PHP source, or the shipped zip.
-	 *
-	 * That matters because of what this replaced: the call used to run in the
-	 * BROWSER, from WizWidget.jsx, POSTing to FluentCRM with an HTTP Basic Auth
-	 * username and password written into the component. webpack published them
-	 * to assets/build/9479.js — fetchable by anyone from any site running the
-	 * plugin — so the key was public and could be used to write to the CRM
-	 * directly. Moving that call to PHP would NOT have fixed it: a distributed
-	 * plugin ships its source too. Only removing the credential fixes it.
-	 * (That FluentCRM key is in git history and in released builds; it has to
-	 * be rotated regardless of this change.)
-	 *
-	 * Server-side rather than from the browser, unlike the brevo-configaration
-	 * branch's version: the request then survives ad/tracker blockers, the
-	 * once-per-site flag is an option instead of per-browser localStorage, and
-	 * the fields come from WordPress rather than from a payload the wizard
-	 * would have to localise (WCF_ADDONS_ADMIN.user carries no last name,
-	 * company or phone, so those keys silently went out empty).
-	 *
-	 * The client sends NOTHING but a nonce — the address is read from the
-	 * current user here, so this cannot be used to push arbitrary addresses.
-	 */
-	public function wizard_subscribe()
-	{
-		check_ajax_referer('wcf_admin_nonce', 'nonce');
-
-		if (! current_user_can('manage_options')) {
-			wp_send_json_error(esc_html__('Permission denied.', 'animation-addons-for-elementor'));
-		}
-
-		// Once per SITE. The old guard was localStorage, so the same site
-		// re-subscribed from every new browser, and clearing site data re-ran it.
-		if ('yes' === get_option('wcf_addons_wizard_subscribed')) {
-			wp_send_json_success(array('status' => 'already'));
-		}
-
-		$user  = wp_get_current_user();
-		$email = sanitize_email($user->user_email);
-
-		if (! is_email($email)) {
-			wp_send_json_error(esc_html__('No valid administrator email.', 'animation-addons-for-elementor'));
-		}
-
-		$first_name = trim((string) $user->first_name);
-
-		if ('' === $first_name) {
-			// Same derivation the JS did: local part, dots to spaces, capitalised.
-			$local      = strstr($email, '@', true);
-			$first_name = implode(' ', array_map('ucfirst', explode('.', (string) $local)));
-		}
-
-		$lead = array(
-			'email'     => $email,
-			'firstName' => $first_name,
-			'lastName'  => trim((string) $user->last_name),
-			'source'    => 'animation-addon',
-			'site'      => home_url(),
-		);
-
-		// Send only what has a value — the relay treats an empty attribute as a
-		// write and would blank a field the contact already has.
-		$lead = array_filter(
-			$lead,
-			static function ($value) {
-				return '' !== $value && null !== $value;
-			}
-		);
-
-		/** Swap the relay (e.g. to api.animationaddons.com) without a release. */
-		$endpoint = apply_filters(
-			'aae/wizard/lead_endpoint',  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
-			self::LEADS_ENDPOINT
-		);
-
-		/** Return [] to opt a site out of lead capture entirely. */
-		$lead = apply_filters('aae/wizard/lead_payload', $lead);  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
-
-		if (empty($endpoint) || empty($lead)) {
-			update_option('wcf_addons_wizard_subscribed', 'yes');
-			wp_send_json_success(array('status' => 'skipped'));
-		}
-
-		$response = wp_remote_post(
-			esc_url_raw($endpoint),
-			array(
-				'timeout' => 15,
-				'headers' => array(
-					'Content-Type' => 'application/json',
-					'Accept'       => 'application/json',
-				),
-				'body'    => wp_json_encode($lead),
-			)
-		);
-
-		// Marked done either way, matching the old behaviour: the JS wrote its
-		// flag in both the success and the catch branch, so a relay outage never
-		// re-queued the request on every wizard visit.
-		update_option('wcf_addons_wizard_subscribed', 'yes');
-
-		if (is_wp_error($response)) {
-			wp_send_json_success(array('status' => 'failed'));
-		}
-
-		wp_send_json_success(
-			array(
-				'status' => 'sent',
-				'code'   => wp_remote_retrieve_response_code($response),
-			)
-		);
-	}
-
 	public function get_dynamic_settings()
 	{
 		check_ajax_referer('wcf_admin_nonce', 'nonce');
@@ -898,6 +690,12 @@ class WCF_Admin_Init
 		}
 
 		$setting_name = sanitize_text_field(wp_unslash($_POST['setting_name']));
+
+		// Security: only allow whitelisted option names.
+		if ( ! in_array( $setting_name, self::$allowed_option_names, true ) ) {
+			wp_send_json_error( esc_html__( 'Invalid option name.', 'animation-addons-for-elementor' ) );
+		}
+
 		$settings     = get_option($setting_name);
 
 		// If the option was stored as JSON, decode it
@@ -940,6 +738,12 @@ class WCF_Admin_Init
 
 		$form_data    = sanitize_text_field(wp_unslash($_POST['form_fields']));
 		$setting_name = sanitize_text_field(wp_unslash($_POST['setting_name']));
+
+		// Security: only allow whitelisted option names.
+		if ( ! in_array( $setting_name, self::$allowed_option_names, true ) ) {
+			wp_send_json_error( esc_html__( 'Invalid option name.', 'animation-addons-for-elementor' ) );
+		}
+
 		update_option($setting_name, $form_data);
 
 		$return_message = array(
@@ -1035,6 +839,12 @@ class WCF_Admin_Init
 
 		$actives       = array();
 		$option_name   = isset($_POST['settings']) ? sanitize_text_field(wp_unslash($_POST['settings'])) : '';
+
+		// Security: only allow whitelisted option names.
+		if ( ! empty( $option_name ) && ! in_array( $option_name, self::$allowed_option_names, true ) ) {
+			wp_send_json_error( esc_html__( 'Invalid option name.', 'animation-addons-for-elementor' ) );
+		}
+
 		$sanitize_data = sanitize_text_field(wp_unslash($_POST['fields']));
 		$settings      = json_decode($sanitize_data, true);
 		$actives       = get_option('wcf_save_widgets');
