@@ -1,0 +1,78 @@
+@charset "UTF-8";
+body:not(.elementor-editor-active) .aae-a-post-pagination[data-aae-pp-mode=sticky_bar].aae-pp-reveal {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999;
+  background: #fff;
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.08);
+  padding: 12px 20px;
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+}
+body:not(.elementor-editor-active) .aae-a-post-pagination[data-aae-pp-mode=sticky_bar].aae-pp-reveal.aae-pp-visible {
+  transform: translateY(0);
+}
+
+body:not(.elementor-editor-active) .aae-a-post-pagination[data-aae-pp-mode=side_arrows].aae-pp-reveal [data-aae-nav=prev], body:not(.elementor-editor-active) .aae-a-post-pagination[data-aae-pp-mode=side_arrows].aae-pp-reveal [data-aae-nav=next] {
+  position: fixed;
+  top: 50%;
+  opacity: 0;
+  z-index: 999;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  background: #fff;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+}
+body:not(.elementor-editor-active) .aae-a-post-pagination[data-aae-pp-mode=side_arrows].aae-pp-reveal [data-aae-nav=prev] {
+  left: 16px;
+  transform: translateY(-50%) translateX(-24px);
+}
+body:not(.elementor-editor-active) .aae-a-post-pagination[data-aae-pp-mode=side_arrows].aae-pp-reveal [data-aae-nav=next] {
+  right: 16px;
+  transform: translateY(-50%) translateX(24px);
+}
+body:not(.elementor-editor-active) .aae-a-post-pagination[data-aae-pp-mode=side_arrows].aae-pp-reveal.aae-pp-visible [data-aae-nav=prev], body:not(.elementor-editor-active) .aae-a-post-pagination[data-aae-pp-mode=side_arrows].aae-pp-reveal.aae-pp-visible [data-aae-nav=next] {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+.aae-a-post-pagination-preview {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+body:not(.elementor-editor-active) .aae-a-post-pagination-preview.aae-pp-preview-visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.aae-a-post-pagination-preview {
+  transform: translateY(4px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+.aae-a-post-pagination-preview.aae-pp-preview-visible {
+  transform: translateY(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .aae-a-post-pagination-preview {
+    transition: none;
+  }
+}
+
+body.elementor-editor-active .elementor .aae-a-post-pagination-preview {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+body.elementor-editor-active .aae-a-post-pagination-item {
+  position: relative;
+}
+
+.aae-a-post-pagination-preview-author::before {
+  content: "· ";
+  opacity: 0.6;
+}/*# sourceMappingURL=post-pagination.css.map */

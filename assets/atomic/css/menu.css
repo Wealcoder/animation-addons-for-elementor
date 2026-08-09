@@ -1,5 +1,25 @@
 @charset "UTF-8";
 /* AAE Atomic Menu — pure CSS dropdown (desktop hover) + mobile offcanvas drawer */
+/* ============== MODE GATES ==============
+   $drawer  — the mobile offcanvas: fixed panel, overlay, close button, and the
+              touch-target sizing that goes with it.
+   $stacked — "sub-menus expand INLINE, indented, instead of flying out". True for
+              the drawer AND for Layout = Vertical, which is the same interaction.
+
+   $stacked is a strict SUPERSET of $drawer: branch 1 IS the old selector verbatim.
+   Specificity is identical — :is() takes its most specific argument, both branches
+   are (0,1,0), so `.aae-a-menu:is(…)` is (0,2,0), exactly what
+   `.aae-a-menu:where(…)[data-hamburger="true"]` already weighed. Same weight, same
+   source position, superset match ⇒ no rule the drawer receives today can stop
+   applying. The only way to regress the drawer is to MOVE or DROP a declaration,
+   which is why the split below is enumerated rather than eyeballed.
+
+   Gated on the ATTRIBUTE, not a JS class, deliberately. `data-layout` is emitted by
+   the twig server-side, so the correct layout is in effect on the first painted
+   frame; a JS-set class would leave a window where a vertical menu is still a
+   flyout (a hover landing there opens an absolute panel), and it would die on every
+   Elementor editor re-render. It also means syncMobileClass() — whose bind-once
+   __aaeBpBound guard is load-bearing — does not need touching. */
 .aae-a-menu {
   --c: var(--aae-menu-color, var(--e-global-color-text, #1a1a18));
   --accent: var(--aae-menu-hover-color, var(--e-global-color-accent, #534ab7));
@@ -163,13 +183,23 @@
    rule above is (0,3,1) and wins from anywhere. */
 .aae-a-menu-list .sub-menu a {
   color: var(--dd-c);
+  /* Resting background of the ITEM (the panel behind them is --aae-menu-dropdown-bg).
+     Transparent by default, so an untouched menu is unchanged. */
+  background: var(--aae-menu-dropdown-item-bg, transparent);
 }
 
 /* Dropdown (sub-menu) items use their own Item Hover Text Color when set,
-   otherwise fall back to the global hover text color. */
+   otherwise fall back to the global hover text color.
+
+   `background` is repeated here ON PURPOSE. The generic `.aae-a-menu-list a:hover`
+   that normally paints it is (0,2,1) — the same weight as the resting rule above,
+   which is declared later and would therefore win, leaving hover with no visible
+   background at all once Item Background is set. This selector is (0,3,1), so it
+   beats the resting rule on specificity rather than relying on order. */
 .aae-a-menu-list .sub-menu a:hover,
 .aae-a-menu-list .sub-menu a:focus-visible {
   color: var(--aae-menu-dropdown-hover-text-color, var(--accent));
+  background: var(--bg-2);
 }
 
 .aae-a-menu-list .current-menu-item > a,
@@ -185,22 +215,29 @@
   display: inline-flex;
   box-sizing: border-box;
   flex-shrink: 0;
-  width: 28px;
-  height: 28px;
+  /* `all: unset` wipes padding, so this re-declares it. box-sizing is border-box
+     (set by the `.aae-a-menu *` rule), so padding insets the glyph WITHIN the
+     Button Size rather than growing the button. */
+  padding: var(--aae-menu-toggle-padding, 0);
+  /* Every value is var-with-fallback so the Sub-menu Toggle controls reach all
+     three modes. The fallbacks ARE the previous hardcoded values, so an untouched
+     menu renders identically. */
+  width: var(--aae-menu-toggle-size, 28px);
+  height: var(--aae-menu-toggle-size, 28px);
   margin-left: -4px;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: inherit;
-  background: transparent;
-  border-radius: 50%;
+  color: var(--aae-menu-toggle-color, inherit);
+  background: var(--aae-menu-toggle-bg, transparent);
+  border-radius: var(--aae-menu-toggle-radius, 50%);
   transition: background var(--t), color var(--t);
 }
 
 .aae-a-menu-arrow:hover,
 .aae-a-menu-arrow:focus-visible {
-  background: var(--bg-2);
-  color: var(--accent);
+  background: var(--aae-menu-toggle-hover-bg, var(--bg-2));
+  color: var(--aae-menu-toggle-color, var(--accent));
   outline: none;
 }
 
@@ -219,6 +256,92 @@
   transform: rotate(-135deg) translate(-1px, -1px);
 }
 
+/* ============== VERTICAL: +/− instead of the chevron ==============
+   An accordion reads as +/−, a flyout reads as a chevron. Vertical only, so a
+   HORIZONTAL menu keeps the chevron everywhere including inside its drawer.
+
+   `.aae-a-menu-list` is in every selector on purpose: without it these are (0,2,0),
+   an exact tie with the open-chevron rule above, and the winner would be decided by
+   source order alone. With it they are (0,3,0) and win on weight.
+
+   Colour is currentColor throughout, so it tracks the arrow's inherited colour and
+   its --accent hover exactly as the chevron did. No new colour props. */
+/* `all: unset` on the arrow resets position to static; the vertical bar is
+   absolutely positioned and needs a containing block. Set here rather than
+   editing the shared base rule. */
+.aae-a-menu[data-layout=vertical] .aae-a-menu-list .aae-a-menu-arrow {
+  position: relative;
+}
+
+/* Horizontal bar — the chevron's ::after, fully reset. `border: 0` (not
+   border-right/bottom: none) because the base sets both explicitly and either
+   survivor leaves a stray edge. `transform: none` at (0,3,0) also neutralises the
+   open-state rotate(-135deg) above — that is what makes this a minus rather than a
+   rotated chevron. */
+.aae-a-menu[data-layout=vertical] .aae-a-menu-list .aae-a-menu-arrow::after {
+  width: 10px;
+  height: 2px;
+  border: 0;
+  border-radius: 1px;
+  background: currentColor;
+  transform: none;
+}
+
+/* Vertical bar — a NEW ::before; nothing declares one on the arrow today, so
+   `content: ''` is what brings it into existence. */
+.aae-a-menu[data-layout=vertical] .aae-a-menu-list .aae-a-menu-arrow::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 2px;
+  height: 10px;
+  margin: -5px 0 0 -1px;
+  border-radius: 1px;
+  background: currentColor;
+  transition: transform var(--t), opacity var(--t);
+}
+
+/* Open → fold the vertical bar away, leaving the minus. */
+.aae-a-menu[data-layout=vertical] .aae-a-menu-list .aae-a-menu-item--open > .aae-a-menu-arrow::before {
+  transform: scaleY(0);
+  opacity: 0;
+}
+
+/* ============== CUSTOM TOGGLE ICON (all modes) ==============
+   Active only when an icon is uploaded — `data-toggle-icon="custom"` is the marker,
+   because CSS cannot ask "is this custom property set?".
+
+   Applied as a MASK with `background: currentColor`, never as an <img> or a
+   background-image: a mask is painted in the element's own colour, so the Icon
+   Color control (and the hover colour) still work. An <img> paints its own file
+   and would ignore every colour field — the exact failure the Offcanvas icons had.
+
+   `.menu-item-has-children` is in the selector to clear the vertical +/− rules
+   above on specificity rather than on source order: those are (0,3,1), these are
+   (0,4,1). Arrows only ever exist on an item with children, so it costs nothing. */
+.aae-a-menu[data-toggle-icon=custom] .aae-a-menu-list .menu-item-has-children > .aae-a-menu-arrow::before {
+  content: none;
+}
+
+.aae-a-menu[data-toggle-icon=custom] .aae-a-menu-list .menu-item-has-children > .aae-a-menu-arrow::after {
+  width: var(--aae-menu-toggle-icon-size, 10px);
+  height: var(--aae-menu-toggle-icon-size, 10px);
+  border: 0;
+  border-radius: 0;
+  transform: none;
+  background: currentColor;
+  -webkit-mask: var(--aae-menu-toggle-icon) center/contain no-repeat;
+  mask: var(--aae-menu-toggle-icon) center/contain no-repeat;
+}
+
+/* Expanded state swaps to the second icon; falls back to the collapsed one so
+   uploading only the first still behaves. */
+.aae-a-menu[data-toggle-icon=custom] .aae-a-menu-list .menu-item-has-children.aae-a-menu-item--open > .aae-a-menu-arrow::after {
+  -webkit-mask-image: var(--aae-menu-toggle-icon-open, var(--aae-menu-toggle-icon));
+  mask-image: var(--aae-menu-toggle-icon-open, var(--aae-menu-toggle-icon));
+}
+
 /* ============== DESKTOP SUB-MENU (dropdown) ============== */
 .aae-a-menu-list .sub-menu {
   position: absolute;
@@ -229,7 +352,9 @@
   flex-direction: column;
   gap: 2px;
   margin: 0;
-  padding: 6px;
+  /* Inner padding of the floating panel. Stacked modes zero this out below —
+     there is no panel box there, just an inline block. */
+  padding: var(--aae-menu-dropdown-panel-padding, 6px);
   list-style: none;
   background: var(--bg);
   border: var(--border);
@@ -250,7 +375,11 @@
 }
 
 .aae-a-menu-list .sub-menu a {
-  padding: 9px 14px;
+  /* Dropdown items get their OWN padding rather than inheriting the top-level
+     --aae-px/--aae-py, because a sub-item is usually tighter than its parent.
+     The fallbacks are the previous hardcoded values, so nothing moves until the
+     Item Padding fields in Dropdown Style are used. */
+  padding: var(--aae-menu-dropdown-padding-y, 9px) var(--aae-menu-dropdown-padding-x, 14px);
   font-size: 0.92em;
   border-radius: calc(var(--aae-r) - 2px);
 }
@@ -293,8 +422,8 @@
 
    `:where()` again, so the trigger gate contributes no specificity and these
    rules keep exactly the weight they had. */
-.aae-a-menu:not(:where(.aae-a-menu--mobile)):not(:where([data-dropdown-trigger=click])) .menu-item-has-children:hover > .sub-menu,
-.aae-a-menu:not(:where(.aae-a-menu--mobile)):not(:where([data-dropdown-trigger=click])) .menu-item-has-children:focus-within > .sub-menu,
+.aae-a-menu:not(:where(.aae-a-menu--mobile)):not(:where([data-layout=vertical])):not(:where([data-dropdown-trigger=click])) .menu-item-has-children:hover > .sub-menu,
+.aae-a-menu:not(:where(.aae-a-menu--mobile)):not(:where([data-layout=vertical])):not(:where([data-dropdown-trigger=click])) .menu-item-has-children:focus-within > .sub-menu,
 .aae-a-menu:not(:where(.aae-a-menu--mobile)) .menu-item-has-children.aae-a-menu-item--open > .sub-menu {
   opacity: 1;
   visibility: visible;
@@ -304,8 +433,8 @@
   transition-delay: 0s;
 }
 
-.aae-a-menu:not(:where(.aae-a-menu--mobile)):not(:where([data-dropdown-trigger=click])) .sub-menu .menu-item-has-children:hover > .sub-menu,
-.aae-a-menu:not(:where(.aae-a-menu--mobile)):not(:where([data-dropdown-trigger=click])) .sub-menu .menu-item-has-children:focus-within > .sub-menu,
+.aae-a-menu:not(:where(.aae-a-menu--mobile)):not(:where([data-layout=vertical])):not(:where([data-dropdown-trigger=click])) .sub-menu .menu-item-has-children:hover > .sub-menu,
+.aae-a-menu:not(:where(.aae-a-menu--mobile)):not(:where([data-layout=vertical])):not(:where([data-dropdown-trigger=click])) .sub-menu .menu-item-has-children:focus-within > .sub-menu,
 .aae-a-menu:not(:where(.aae-a-menu--mobile)) .sub-menu .menu-item-has-children.aae-a-menu-item--open > .sub-menu {
   transform: translateX(0) scale(1);
 }
@@ -522,43 +651,64 @@
   padding: 0.5rem 0.75rem 1.25rem;
 }
 
-/* Mobile list — full-width stack */
-.aae-a-menu:where(.aae-a-menu--mobile)[data-hamburger=true] .aae-a-menu-list {
+/* ---- STACKED: full-width stack. Shared by the drawer and Layout = Vertical. ---- */
+.aae-a-menu:is(:where(.aae-a-menu--mobile)[data-hamburger=true], [data-layout=vertical]) .aae-a-menu-list {
   flex-direction: column;
   width: 100%;
-  gap: 2px;
 }
 
-.aae-a-menu:where(.aae-a-menu--mobile)[data-hamburger=true] .aae-a-menu-list li {
+.aae-a-menu:is(:where(.aae-a-menu--mobile)[data-hamburger=true], [data-layout=vertical]) .aae-a-menu-list li {
   flex-direction: row;
   flex-wrap: wrap;
   width: 100%;
   align-items: center;
 }
 
-.aae-a-menu:where(.aae-a-menu--mobile)[data-hamburger=true] .aae-a-menu-list a {
-  padding: 12px 14px;
+.aae-a-menu:is(:where(.aae-a-menu--mobile)[data-hamburger=true], [data-layout=vertical]) .aae-a-menu-list a {
   flex: 1 1 auto;
   min-width: 0;
   width: auto;
-  font-size: 15px;
   border-radius: var(--aae-r);
   flex: inherit;
 }
 
-/* Bigger, right-aligned tap target for chevron on mobile */
+/* ---- DRAWER-ONLY cosmetics. These OVERRIDE custom properties that back live
+   panel controls, so they must never reach Layout = Vertical:
+     gap        → --aae-gap  (Item Gap)
+     padding    → --aae-py / --aae-px  (Item Padding Y / X)
+     font-size  → --aae-fs  (Font Size)
+   A vertical menu keeps its own spacing/typography from those fields. ---- */
+.aae-a-menu:where(.aae-a-menu--mobile)[data-hamburger=true] .aae-a-menu-list {
+  gap: 2px;
+}
+
+.aae-a-menu:where(.aae-a-menu--mobile)[data-hamburger=true] .aae-a-menu-list a {
+  padding: 12px 14px;
+  font-size: 15px;
+}
+
+/* Bigger, right-aligned tap target for the chevron on mobile. Drawer-only:
+   a desktop vertical sidebar wants the standard 28px arrow.
+   Still var-driven — the drawer's 40px is only the FALLBACK, so an explicit
+   Button Size from the panel wins here too rather than being silently ignored. */
 .aae-a-menu:where(.aae-a-menu--mobile)[data-hamburger=true] .aae-a-menu-arrow {
-  width: 40px;
-  height: 40px;
+  width: var(--aae-menu-toggle-size, 40px);
+  height: var(--aae-menu-toggle-size, 40px);
   margin-left: auto;
   flex-shrink: 0;
 }
 
-/* Mobile sub-menu — closed = display:none, open = display:flex.
+/* Stacked sub-menu — closed = display:none, open = display:flex.
    The open/close visual effect is driven by menu.js (Web Animations API).
    Opened state explicitly resets the desktop-only hidden properties from
-   the base rule (opacity / visibility / pointer-events / transform). */
-.aae-a-menu:where(.aae-a-menu--mobile)[data-hamburger=true] .aae-a-menu-list .sub-menu {
+   the base rule (opacity / visibility / pointer-events / transform).
+
+   DANGER — the closed state MUST stay `display: none`. It is the only reason the
+   desktop hover-reveal rules cannot open a stacked sub-menu: they set opacity /
+   visibility / transform / pointer-events and NEVER display. Swap this for
+   `max-height: 0` or `visibility: hidden` (the obvious way to add a height
+   animation) and hovering a vertical parent will pop its sub-menu open again. */
+.aae-a-menu:is(:where(.aae-a-menu--mobile)[data-hamburger=true], [data-layout=vertical]) .aae-a-menu-list .sub-menu {
   position: static;
   display: none;
   flex: 0 0 100%;
@@ -570,9 +720,14 @@
   border: 0;
   box-shadow: none;
   border-radius: 0;
+  /* The base rule delays opacity/transform by --aae-dd-delay (280ms) so a
+     hovered flyout lingers. display:none→flex is instant and not
+     transitionable, so inheriting that delay opens the row into a 280ms blank
+     gap whenever the WAAPI effect does not run. */
+  transition-delay: 0s;
 }
 
-.aae-a-menu:where(.aae-a-menu--mobile)[data-hamburger=true] .aae-a-menu-list .menu-item-has-children.aae-a-menu-item--open > .sub-menu {
+.aae-a-menu:is(:where(.aae-a-menu--mobile)[data-hamburger=true], [data-layout=vertical]) .aae-a-menu-list .menu-item-has-children.aae-a-menu-item--open > .sub-menu {
   display: flex;
   flex-direction: column;
   opacity: 1;
@@ -581,19 +736,99 @@
   transform: none;
 }
 
-/* Indented nested levels */
-.aae-a-menu:where(.aae-a-menu--mobile)[data-hamburger=true] .aae-a-menu-list .sub-menu a {
+/* The hover bridge is position:absolute. Once the sub-menu is static, the bridge's
+   containing block becomes the <li> instead — turning it into an invisible strip
+   lying over adjacent rows that can swallow clicks (top-level: 10px over the
+   previous item; nested: a full-height strip down the left edge). Latent in the
+   drawer today; neutralised here for both. */
+.aae-a-menu:is(:where(.aae-a-menu--mobile)[data-hamburger=true], [data-layout=vertical]) .aae-a-menu-list .sub-menu::before {
+  content: none;
+}
+
+/* DRAWER indent — kept exactly as shipped: padding on the LINK, three explicit
+   levels. Excluded from a vertical menu, which uses the container indent below;
+   without the :not() a vertical menu inside the drawer would get both and
+   double-indent. */
+.aae-a-menu:where(.aae-a-menu--mobile)[data-hamburger=true]:not([data-layout=vertical]) .aae-a-menu-list .sub-menu a {
   padding-left: 2rem;
+}
+
+.aae-a-menu:where(.aae-a-menu--mobile)[data-hamburger=true]:not([data-layout=vertical]) .aae-a-menu-list .sub-menu .sub-menu a {
+  padding-left: 3rem;
+}
+
+.aae-a-menu:where(.aae-a-menu--mobile)[data-hamburger=true]:not([data-layout=vertical]) .aae-a-menu-list .sub-menu .sub-menu .sub-menu a {
+  padding-left: 4rem;
+}
+
+/* VERTICAL indent — on the CONTAINER, not the link.
+   Padding on the link only reads as a hierarchy when rows are left-aligned: with
+   Alignment = Center it just shoves the text off-centre while the row itself stays
+   put, which is what made nested items look mispositioned. Indenting the sub-menu
+   box instead steps the whole child block in, and each row inside it still honours
+   the Alignment control — so the hierarchy reads at any alignment.
+   It also compounds by itself: a nested <ul> inside an indented <ul> is already
+   offset, so one value covers every depth instead of three hardcoded levels. */
+.aae-a-menu[data-layout=vertical] .aae-a-menu-list .sub-menu {
+  /* Panel Padding applies here too. The shared stacked rule sets `padding: 0`
+     (there is no floating panel box in stacked mode) at the SAME specificity as
+     this rule — (0,4,0) — so this wins only by being declared later, which is
+     also how the indent has always worked. Keep this block below it.
+
+     VERTICAL only, never $stacked: the drawer's sub-menu must stay flush at 0,
+     as shipped.
+
+     The two compose on the leading edge — `calc(indent + padding)` — so raising
+     Panel Padding does not swallow the indent that communicates depth, and the
+     indent does not swallow the padding. Order matters inside this block: the
+     longhand must come after the shorthand or the shorthand resets it. */
+  padding: var(--aae-menu-dropdown-panel-padding, 0px);
+  padding-inline-start: calc(var(--aae-menu-sub-indent, 1.5rem) + var(--aae-menu-dropdown-panel-padding, 0px));
+}
+
+/* Drawer-only sub-item typography — overrides --aae-fs again. The base rule's
+   relative `font-size: 0.92em` is the correct behaviour for a vertical menu. */
+.aae-a-menu:where(.aae-a-menu--mobile)[data-hamburger=true] .aae-a-menu-list .sub-menu a {
   font-size: 14px;
   opacity: 0.9;
 }
 
-.aae-a-menu:where(.aae-a-menu--mobile)[data-hamburger=true] .aae-a-menu-list .sub-menu .sub-menu a {
-  padding-left: 3rem;
+/* VERTICAL: every row starts at its block's leading edge — the Alignment control
+   does NOT apply here, at any level.
+
+   This is a deliberate exception, not an oversight. An indented accordion only
+   reads if parents and children share one edge: centring a row makes its start
+   position depend on how long the label happens to be, so sibling items begin at
+   different x, and a centred parent sits far from its left-aligned children with
+   no way to visually connect them (the child block cannot be centred under its
+   parent while keeping its own items left-aligned without an extra wrapper
+   element, which would mean changing the rendered markup).
+   Alignment still governs a HORIZONTAL menu, which is where it makes sense.
+
+   Deliberately NOT in $stacked: a horizontal menu's drawer must not inherit it. */
+.aae-a-menu[data-layout=vertical] .aae-a-menu-list li {
+  justify-content: flex-start;
 }
 
-.aae-a-menu:where(.aae-a-menu--mobile)[data-hamburger=true] .aae-a-menu-list .sub-menu .sub-menu .sub-menu a {
-  padding-left: 4rem;
+/* VERTICAL: push the +/− to the far edge of the row so every toggle lines up in
+   one column, instead of trailing each label at a different x. `margin-left: auto`
+   absorbs the free space, which works whether or not the link itself grows — the
+   drawer already does exactly this for its chevron. */
+.aae-a-menu[data-layout=vertical] .aae-a-menu-list .aae-a-menu-arrow {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* VERTICAL: the link fills the row, so its background (normal AND hover) spans the
+   full width instead of hugging the label.
+   The shared stacked rule ends in `flex: inherit`, a duplicate declaration that
+   overrides its own `flex: 1 1 auto` two lines earlier and makes the link shrink to
+   its text. That is long-standing behaviour in the drawer, so it is overridden here
+   for vertical only rather than corrected in the shared rule. The arrow keeps its
+   position: with the link growing there is no free space left, so it still ends up
+   flush against the row's end. */
+.aae-a-menu[data-layout=vertical] .aae-a-menu-list a {
+  flex: 1 1 auto;
 }
 
 /* Prevent body scroll-shift when drawer is open */
@@ -608,4 +843,3 @@
     transition-duration: 0.01ms !important;
   }
 }
-/*# sourceMappingURL=menu.css.map */

@@ -1,0 +1,41 @@
+.aae-clickdrop-btn {
+  cursor: pointer;
+}
+
+.aae-clickdrop-modal {
+  width: 150px;
+  background-color: rgb(0, 0, 0);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  position: absolute;
+  top: 100%;
+}
+
+.aae-clickdrop-modal ul li a {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  padding: 10px 13px;
+  text-align: left;
+  cursor: pointer;
+  white-space: nowrap;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 14px;
+  text-transform: none;
+  text-decoration: none;
+  letter-spacing: 0px;
+  color: white;
+}
+
+.aae-clickdrop-modal ul li a svg {
+  fill: #f00;
+  height: 16px;
+  width: 16px;
+}
+
+.aae-clickdrop-modal.visible {
+  opacity: 1;
+  visibility: visible;
+}/*# sourceMappingURL=clickdrop.css.map */

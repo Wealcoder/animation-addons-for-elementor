@@ -13,6 +13,8 @@ use Elementor\Modules\AtomicWidgets\Controls\Types\Select_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Switch_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Number_Control;
+use Elementor\Modules\AtomicWidgets\Controls\Types\Svg_Control;
+use Elementor\Modules\AtomicWidgets\PropTypes\Svg_Src_Prop_Type;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
@@ -86,10 +88,27 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 			'dropdown_trigger'          => String_Prop_Type::make()->enum( [ 'hover', 'click' ] )->default( 'hover' ),
 			'dropdown_bg'               => String_Prop_Type::make()->default( '' ),
 			'dropdown_text_color'       => String_Prop_Type::make()->default( '' ),
+			'dropdown_item_bg'          => String_Prop_Type::make()->default( '' ),
 			'dropdown_hover_bg'         => String_Prop_Type::make()->default( '' ),
 			'dropdown_hover_text_color' => String_Prop_Type::make()->default( '' ),
+			'dropdown_panel_padding'    => Number_Prop_Type::make()->default( 6 ),
+			'dropdown_padding_x'        => Number_Prop_Type::make()->default( 14 ),
+			'dropdown_padding_y'        => Number_Prop_Type::make()->default( 9 ),
 			'dropdown_min_width'        => Number_Prop_Type::make()->default( 220 ),
 			'dropdown_radius'           => Number_Prop_Type::make()->default( 8 ),
+
+			// Sub-menu toggle (the +/− or chevron button menu.js injects on any item
+			// that has children). Icons are optional — leave them empty to keep the
+			// built-in glyph.
+			'toggle_icon'       => Svg_Src_Prop_Type::make(),
+			'toggle_icon_open'  => Svg_Src_Prop_Type::make(),
+			'toggle_color'      => String_Prop_Type::make()->default( '' ),
+			'toggle_bg'         => String_Prop_Type::make()->default( '' ),
+			'toggle_hover_bg'   => String_Prop_Type::make()->default( '' ),
+			'toggle_padding'    => Number_Prop_Type::make()->default( 0 ),
+			'toggle_size'       => Number_Prop_Type::make()->default( 28 ),
+			'toggle_icon_size'  => Number_Prop_Type::make()->default( 10 ),
+			'toggle_radius'     => Number_Prop_Type::make()->default( 50 ),
 
 			// Hamburger / Drawer
 			'hamburger_color' => String_Prop_Type::make()->default( '' ),
@@ -135,6 +154,7 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 						] ),
 					Select_Control::bind_to( 'align' )
 						->set_label( __( 'Alignment', 'animation-addons-for-elementor' ) )
+						->set_description( __( 'Applies to the Horizontal layout. A Vertical menu always aligns to the start, so its indented sub-items line up on one edge.', 'animation-addons-for-elementor' ) )
 						->set_options( [
 							[ 'value' => 'flex-start',    'label' => __( 'Left',    'animation-addons-for-elementor' ) ],
 							[ 'value' => 'center',        'label' => __( 'Center',  'animation-addons-for-elementor' ) ],
@@ -191,10 +211,12 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 				->set_id( 'dropdown_style' )
 				->set_items( [
 					// Behaviour, so it leads the section — a builder decides HOW the
-					// dropdown opens before they style it. Desktop only: the mobile
-					// drawer is always tap-driven regardless of this.
+					// dropdown opens before they style it. Applies to FLYOUT dropdowns
+					// only: the mobile drawer and Layout = Vertical both expand inline
+					// from the toggle, so "Hover" has nothing to act on there.
 					Select_Control::bind_to( 'dropdown_trigger' )
 						->set_label( __( 'Open On', 'animation-addons-for-elementor' ) )
+						->set_description( __( 'Applies to flyout dropdowns. With Layout set to Vertical, sub-menus always expand from the +/− toggle — and from the item itself when this is set to Click.', 'animation-addons-for-elementor' ) )
 						->set_options( [
 							[ 'value' => 'hover', 'label' => __( 'Hover', 'animation-addons-for-elementor' ) ],
 							[ 'value' => 'click', 'label' => __( 'Click', 'animation-addons-for-elementor' ) ],
@@ -207,15 +229,63 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 					Text_Control::bind_to( 'dropdown_text_color' )
 						->set_label( __( 'Text Color', 'animation-addons-for-elementor' ) )
 						->set_placeholder( '#1a1a18' ),
+					// Resting background of each dropdown ITEM, as opposed to
+					// `dropdown_bg`, which paints the panel behind them.
+					Text_Control::bind_to( 'dropdown_item_bg' )
+						->set_label( __( 'Item Background', 'animation-addons-for-elementor' ) )
+						->set_placeholder( 'transparent' ),
 					Text_Control::bind_to( 'dropdown_hover_bg' )
 						->set_label( __( 'Item Hover Background', 'animation-addons-for-elementor' ) )
 						->set_placeholder( 'rgba(15,23,42,0.05)' ),
 					Text_Control::bind_to( 'dropdown_hover_text_color' )
 						->set_label( __( 'Item Hover Text Color', 'animation-addons-for-elementor' ) )
 						->set_placeholder( '#2563eb' ),
+					// The PANEL's own inner padding — the box drawn behind the items.
+					// Distinct from Item Padding below, which insets each link.
+					Number_Control::bind_to( 'dropdown_panel_padding' )
+						->set_label( __( 'Panel Padding (px)', 'animation-addons-for-elementor' ) ),
+					Number_Control::bind_to( 'dropdown_padding_x' )
+						->set_label( __( 'Item Padding X (px)', 'animation-addons-for-elementor' ) ),
+					Number_Control::bind_to( 'dropdown_padding_y' )
+						->set_label( __( 'Item Padding Y (px)', 'animation-addons-for-elementor' ) ),
 					Number_Control::bind_to( 'dropdown_min_width' )
 						->set_label( __( 'Min Width (px)', 'animation-addons-for-elementor' ) ),
 					Number_Control::bind_to( 'dropdown_radius' )
+						->set_label( __( 'Border Radius (px)', 'animation-addons-for-elementor' ) ),
+				] ),
+
+			Section::make()
+				->set_label( __( 'Sub-menu Toggle', 'animation-addons-for-elementor' ) )
+				->set_id( 'toggle_style' )
+				->set_items( [
+					// Optional. Empty keeps the built-in glyph: +/− in Vertical, a
+					// chevron for flyouts and the drawer. An uploaded icon replaces it
+					// in every mode and is painted with the Icon Color below (it is
+					// applied as a CSS mask, not an <img>, so it stays recolourable).
+					Svg_Control::bind_to( 'toggle_icon' )
+						->set_label( __( 'Icon (Collapsed)', 'animation-addons-for-elementor' ) ),
+					Svg_Control::bind_to( 'toggle_icon_open' )
+						->set_label( __( 'Icon (Expanded)', 'animation-addons-for-elementor' ) )
+						->set_description( __( 'Optional. Falls back to the collapsed icon when empty.', 'animation-addons-for-elementor' ) ),
+					Text_Control::bind_to( 'toggle_color' )
+						->set_label( __( 'Icon Color', 'animation-addons-for-elementor' ) )
+						->set_placeholder( __( 'Inherits menu text color', 'animation-addons-for-elementor' ) ),
+					Text_Control::bind_to( 'toggle_bg' )
+						->set_label( __( 'Background', 'animation-addons-for-elementor' ) )
+						->set_placeholder( 'transparent' ),
+					Text_Control::bind_to( 'toggle_hover_bg' )
+						->set_label( __( 'Hover Background', 'animation-addons-for-elementor' ) )
+						->set_placeholder( 'rgba(0,0,0,0.05)' ),
+					Number_Control::bind_to( 'toggle_size' )
+						->set_label( __( 'Button Size (px)', 'animation-addons-for-elementor' ) ),
+					// Insets the glyph inside the button. Button Size still governs the
+					// outer box, so this trades icon area for breathing room rather
+					// than growing the button.
+					Number_Control::bind_to( 'toggle_padding' )
+						->set_label( __( 'Padding (px)', 'animation-addons-for-elementor' ) ),
+					Number_Control::bind_to( 'toggle_icon_size' )
+						->set_label( __( 'Icon Size (px)', 'animation-addons-for-elementor' ) ),
+					Number_Control::bind_to( 'toggle_radius' )
 						->set_label( __( 'Border Radius (px)', 'animation-addons-for-elementor' ) ),
 				] ),
 

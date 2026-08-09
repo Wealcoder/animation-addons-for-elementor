@@ -99,6 +99,19 @@ const initMenu = (root) => {
 	const isMobile       = () => window.innerWidth <= breakpoint;
 
 	/**
+	 * "Sub-menus expand INLINE instead of flying out" — true for the mobile drawer
+	 * AND for Layout = Vertical, which is the same interaction. Mirrors the
+	 * `$stacked` gate in menu.scss; the two must agree.
+	 *
+	 * Both attributes are read LIVE rather than closed over: `isHamburger` above is
+	 * captured once and goes stale the moment the builder toggles Mobile Hamburger
+	 * in the editor, and `data-layout` can change the same way.
+	 */
+	const isStacked = () =>
+		root.getAttribute('data-layout') === 'vertical'
+		|| (root.getAttribute('data-hamburger') === 'true' && isMobile());
+
+	/**
 	 * Mirror isMobile() onto a class on the root.
 	 *
 	 * The stylesheet used to switch layouts with hardcoded
@@ -170,10 +183,10 @@ const initMenu = (root) => {
 				const duration = Math.round(transitionMs * 1.4);
 
 				if (wasOpen) {
-					// Closing — on mobile, play the reverse effect THEN remove the class
-					// so the close transition is visible. On desktop, remove immediately
-					// (CSS handles the desktop transition).
-					if (isMobile()) {
+					// Closing — when stacked, play the reverse effect THEN remove the
+					// class so the close is visible. For a flyout, remove immediately
+					// (CSS handles that transition).
+					if (isStacked()) {
 						arrow.setAttribute('aria-expanded', 'false');
 						playSubMenuEffect(subMenu, dropdownEffect, duration, 'close', () => {
 							item.classList.remove('aae-a-menu-item--open');
@@ -197,7 +210,7 @@ const initMenu = (root) => {
 							const sSub   = sib.querySelector(':scope > .sub-menu');
 							sib.classList.remove('aae-a-menu-item--open');
 							if (sArrow) sArrow.setAttribute('aria-expanded', 'false');
-							if (isMobile() && sSub) {
+							if (isStacked() && sSub) {
 								// Sibling closes simultaneously — just cancel its animation;
 								// removing the class above hides it via CSS.
 								if (typeof sSub.getAnimations === 'function') {
@@ -208,8 +221,11 @@ const initMenu = (root) => {
 					});
 				}
 
-				// Mobile-only: play the picked dropdown effect via Web Animations API.
-				if (isMobile()) {
+				// Stacked-only: play the picked dropdown effect via Web Animations API.
+				// A stacked sub-menu goes display:none → flex, which is not
+				// transitionable, so without this it would pop open with no motion —
+				// this is what gives Layout = Vertical the Sub-menu Dropdown Effect.
+				if (isStacked()) {
 					playSubMenuEffect(subMenu, dropdownEffect, duration, 'open');
 				}
 			});
@@ -302,7 +318,9 @@ const initMenu = (root) => {
 
 	/* ---------- Outside-click + Escape closes desktop dropdowns ---------- */
 	document.addEventListener('click', (e) => {
-		if (isMobile()) return;
+		// Flyouts only. An inline accordion (drawer or Layout = Vertical) must not
+		// collapse because the visitor clicked somewhere unrelated on the page.
+		if (isStacked()) return;
 		if (!root.contains(e.target) && typeof closeAllSubmenus === 'function') {
 			closeAllSubmenus();
 		}

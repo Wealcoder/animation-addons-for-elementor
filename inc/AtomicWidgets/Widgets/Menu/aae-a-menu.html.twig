@@ -6,8 +6,14 @@
 {% set active_color       = settings.active_color              | default('') %}
 {% set dd_bg              = settings.dropdown_bg               | default('') %}
 {% set dd_text            = settings.dropdown_text_color       | default('') %}
+{% set dd_item_bg         = settings.dropdown_item_bg          | default('') %}
 {% set dd_hover_bg        = settings.dropdown_hover_bg         | default('') %}
 {% set dd_hover_text      = settings.dropdown_hover_text_color | default('') %}
+{% set tg_icon            = settings.toggle_icon.url           | default('') %}
+{% set tg_icon_open       = settings.toggle_icon_open.url      | default('') %}
+{% set tg_color           = settings.toggle_color              | default('') %}
+{% set tg_bg              = settings.toggle_bg                 | default('') %}
+{% set tg_hover_bg        = settings.toggle_hover_bg           | default('') %}
 {% set ham_color          = settings.hamburger_color           | default('') %}
 {% set drawer_bg          = settings.drawer_bg                 | default('') %}
 {% set overlay_color      = settings.overlay_color             | default('') %}
@@ -20,8 +26,18 @@
 {% if active_color  %}--aae-menu-active-color: {{ active_color }};{% endif %}
 {% if dd_bg         %}--aae-menu-dropdown-bg: {{ dd_bg }};{% endif %}
 {% if dd_text       %}--aae-menu-dropdown-text-color: {{ dd_text }};{% endif %}
+{% if dd_item_bg    %}--aae-menu-dropdown-item-bg: {{ dd_item_bg }};{% endif %}
 {% if dd_hover_bg   %}--aae-menu-dropdown-hover-bg: {{ dd_hover_bg }};{% endif %}
 {% if dd_hover_text %}--aae-menu-dropdown-hover-text-color: {{ dd_hover_text }};{% endif %}
+{% if tg_icon       %}--aae-menu-toggle-icon: url('{{ tg_icon }}');{% endif %}
+{% if tg_icon_open  %}--aae-menu-toggle-icon-open: url('{{ tg_icon_open }}');{% endif %}
+{% if tg_color      %}--aae-menu-toggle-color: {{ tg_color }};{% endif %}
+{% if tg_bg         %}--aae-menu-toggle-bg: {{ tg_bg }};{% endif %}
+{% if tg_hover_bg   %}--aae-menu-toggle-hover-bg: {{ tg_hover_bg }};{% endif %}
+--aae-menu-toggle-size: {{ settings.toggle_size | default(28) }}px;
+--aae-menu-toggle-padding: {{ settings.toggle_padding | default(0) }}px;
+--aae-menu-toggle-icon-size: {{ settings.toggle_icon_size | default(10) }}px;
+--aae-menu-toggle-radius: {{ settings.toggle_radius | default(50) }}px;
 {% if ham_color     %}--aae-menu-hamburger-color: {{ ham_color }};{% endif %}
 {% if drawer_bg     %}--aae-menu-drawer-bg: {{ drawer_bg }};{% endif %}
 {% if overlay_color %}--aae-menu-drawer-overlay: {{ overlay_color }};{% endif %}
@@ -31,6 +47,9 @@
 --aae-menu-item-padding-y: {{ settings.padding_y          | default(10) }}px;
 --aae-menu-item-gap: {{ settings.item_gap          | default(4) }}px;
 --aae-menu-link-radius: {{ settings.link_radius         | default(6) }}px;
+--aae-menu-dropdown-panel-padding: {{ settings.dropdown_panel_padding | default(6) }}px;
+--aae-menu-dropdown-padding-x: {{ settings.dropdown_padding_x | default(14) }}px;
+--aae-menu-dropdown-padding-y: {{ settings.dropdown_padding_y | default(9) }}px;
 --aae-menu-dropdown-min-width: {{ settings.dropdown_min_width | default(220) }}px;
 --aae-menu-dropdown-radius: {{ settings.dropdown_radius      | default(8) }}px;
 --aae-menu-drawer-width: {{ settings.drawer_width     | default(320) }}px;
@@ -47,6 +66,9 @@
     data-drawer-effect="{{ settings.drawer_animation | default('slide-left') }}"
     data-dropdown-effect="{{ settings.dropdown_animation | default('slide') }}"
     data-dropdown-trigger="{{ settings.dropdown_trigger | default('hover') }}"
+    {# Marker, not a style hook: CSS cannot branch on "is this custom property set",
+       so the stylesheet keys the icon rules on this instead. Absent = built-in glyph. #}
+    {% if tg_icon is not empty %}data-toggle-icon="custom"{% endif %}
     style="{{ style_vars | replace({'\n':' '}) }}"
     {% if settings._cssid is defined and settings._cssid is not empty %}
         id="{{ settings._cssid | e('html_attr') }}"
