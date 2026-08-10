@@ -1,0 +1,24 @@
+.aae-a-slider:focus:not(:focus-visible) {
+  outline: none;
+}
+.aae-a-slider .aae-slider-track > * {
+  flex: 0 0 calc((100% - var(--aae-slide-gap) * (var(--aae-slides-per-view) - 1)) / var(--aae-slides-per-view));
+  max-width: calc((100% - var(--aae-slide-gap) * (var(--aae-slides-per-view) - 1)) / var(--aae-slides-per-view));
+  box-sizing: border-box;
+  transform-style: preserve-3d;
+  transition: transform 0.5s ease-out;
+  height: var(--aae-slide-height, auto);
+}
+.aae-a-slider .aae-a-navigator-prev .e-svg-base,
+.aae-a-slider .aae-a-navigator-prev svg,
+.aae-a-slider .aae-a-navigator-next .e-svg-base,
+.aae-a-slider .aae-a-navigator-next svg {
+  max-width: 24px;
+  max-height: 24px;
+}
+
+.js-aae-progress-fill {
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.4s ease;
+}/*# sourceMappingURL=nestedslider.css.map */

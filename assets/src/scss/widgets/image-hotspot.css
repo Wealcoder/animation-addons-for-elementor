@@ -1,0 +1,206 @@
+.aae--image-hotspot {
+  position: relative;
+}
+.aae--image-hotspot svg {
+  width: 1em;
+  height: 1em;
+}
+.aae--image-hotspot > img {
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+.aae--image-hotspot.beat .hotspot-icon {
+  animation: AAEBeat var(--anim-speed, 1s) infinite;
+}
+.aae--image-hotspot.pulse .hotspot-icon::before {
+  position: absolute;
+  content: "";
+  width: 100%;
+  height: 100%;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 100px;
+  animation: AAEPulse var(--anim-speed, 3s) infinite cubic-bezier(0.4, 0, 1, 1) both;
+}
+.aae--image-hotspot.pulse .hotspot-icon::after {
+  position: absolute;
+  content: "";
+  width: 100%;
+  height: 100%;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 100px;
+  animation: AAEPulse var(--anim-speed, 3s) 0.5s infinite cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+.aae--hotspot-item {
+  position: absolute;
+}
+.aae--hotspot-item.hover:hover .tooltip-content {
+  opacity: 1;
+  visibility: visible;
+}
+.aae--hotspot-item.none .tooltip-content {
+  opacity: 1;
+  visibility: visible;
+}
+.aae--hotspot-item .hotspot-icon {
+  background: #000;
+  border-radius: 100px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+.aae--hotspot-item .hotspot-icon.dot {
+  width: 30px;
+  height: 30px;
+}
+.aae--hotspot-item .hotspot-icon.icon {
+  padding: 5px;
+  font-size: 18px;
+  color: #fff;
+  fill: #fff;
+}
+.aae--hotspot-item .hotspot-icon.text, .aae--hotspot-item .hotspot-icon.icon-text {
+  fill: #fff;
+  color: #fff;
+  padding: 3px 15px;
+  font-size: 16px;
+  line-height: 1.5;
+}
+.aae--hotspot-item .tooltip-content {
+  position: absolute;
+  width: 260px;
+  background: #E8E8E8;
+  padding: 15px;
+  opacity: 0;
+  visibility: hidden;
+  transition: 0.5s ease;
+}
+.aae--hotspot-item .tooltip-content::after {
+  position: absolute;
+  content: "";
+  background-color: #E8E8E8;
+}
+.aae--hotspot-item .tooltip-content.active {
+  opacity: 1;
+  visibility: visible;
+}
+.aae--hotspot-item .tooltip-content p {
+  margin: 0;
+}
+
+.aae--tlp-position-top .tooltip-content {
+  bottom: calc(100% + 15px);
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: var(--tlp-gap, 20px);
+}
+.aae--tlp-position-top .tooltip-content::after {
+  width: 20px;
+  height: 15px;
+  clip-path: polygon(100% 0, 0 0, 50% 100%);
+  bottom: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.aae--tlp-position-top .tooltip-content.active {
+  bottom: 100%;
+}
+.aae--tlp-position-top .hover:hover .tooltip-content {
+  bottom: 100%;
+}
+
+.aae--tlp-position-bottom .tooltip-content {
+  top: calc(100% + 15px);
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: var(--tlp-gap, 20px);
+}
+.aae--tlp-position-bottom .tooltip-content::after {
+  width: 20px;
+  height: 15px;
+  clip-path: polygon(50% 0, 0 100%, 100% 100%);
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.aae--tlp-position-bottom .tooltip-content.active {
+  top: 100%;
+}
+.aae--tlp-position-bottom .hover:hover .tooltip-content {
+  top: 100%;
+}
+
+.aae--tlp-position-left .tooltip-content {
+  right: calc(100% + 15px);
+  top: 50%;
+  transform: translateY(-50%);
+  margin-right: var(--tlp-gap, 20px);
+}
+.aae--tlp-position-left .tooltip-content::after {
+  width: 15px;
+  height: 20px;
+  clip-path: polygon(0 0, 0 100%, 100% 50%);
+  right: -14px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.aae--tlp-position-left .tooltip-content.active {
+  right: 100%;
+}
+.aae--tlp-position-left .hover:hover .tooltip-content {
+  right: 100%;
+}
+
+.aae--tlp-position-right .tooltip-content {
+  left: calc(100% + 15px);
+  top: 50%;
+  transform: translateY(-50%);
+  margin-left: var(--tlp-gap, 20px);
+}
+.aae--tlp-position-right .tooltip-content::after {
+  width: 15px;
+  height: 20px;
+  clip-path: polygon(100% 0, 0 50%, 100% 100%);
+  left: -14px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.aae--tlp-position-right .tooltip-content.active {
+  left: 100%;
+}
+.aae--tlp-position-right .hover:hover .tooltip-content {
+  left: 100%;
+}
+
+@keyframes AAEBeat {
+  0% {
+    transform: scale(1.2);
+  }
+  50% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.2);
+  }
+}
+@keyframes AAEPulse {
+  0% {
+    box-shadow: 0 0 0 0 var(--pulse-color, #111);
+  }
+  70% {
+    box-shadow: 0 0 0 30px var(--pulse-color, #111);
+    opacity: 0;
+  }
+  100% {
+    box-shadow: 0 0 0 0 var(--pulse-color, #111);
+    opacity: 0;
+  }
+}/*# sourceMappingURL=image-hotspot.css.map */

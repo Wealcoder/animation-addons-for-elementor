@@ -1,0 +1,183 @@
+@charset "UTF-8";
+/* ----------------------------------------------------------------------- *
+ *  AAE Loop Grid — EDITOR-ONLY styles.
+ *
+ *  Everything here exists purely to make the Loop Grid pagination editable in
+ *  the Elementor editor canvas: hiding editor helper nodes, fixing the edit-
+ *  handle overlay placement/selectability, neutralising Elementor's empty-view
+ *  min-height, and giving the pagination bar a clickable hit-band.
+ *
+ *  None of it has any effect on a published page (every rule is gated on
+ *  `.elementor-editor-active` or targets editor-only DOM like `.elementor-empty-
+ *  view` / `[data-aae-num-clone]`, which never exist on the frontend). To keep
+ *  the frontend `loop-grid.css` lean, this file is compiled to a SEPARATE
+ *  `loop-grid-editor.css` that is enqueued ONLY inside the editor preview iframe
+ *  (see class-atomic.php: `editor_style_handle` / `enqueue_atomic_preview_styles`)
+ *  and is NEVER shipped to the frontend.
+ *
+ *  Frontend-affecting rules (runtime states, layout, edge-state visibility) stay
+ *  in loop-grid.scss.
+ * ----------------------------------------------------------------------- */
+/* Numbers container — hide the editor helper nodes (empty-view / add-section /
+ * first-add). These elements only exist in the editor. */
+.aae-a-loop-numbers .elementor-empty-view,
+.aae-a-loop-numbers > .elementor-add-section,
+.aae-a-loop-numbers > .elementor-first-add {
+  display: none !important;
+}
+
+/* Editor overlay handle placement + selectability.
+ *
+ * The pagination pieces (Nav wrap / Page Numbers / Load More) AND the single
+ * authored page-number template are plain atomic elements that default to
+ * `position: static` and are NOT tagged `.e-con`, so they never establish a
+ * positioning context. Elementor's edit-handle overlay is
+ * `position:absolute; inset-inline-end:0` — with no positioned ancestor it
+ * resolves against the nearest positioned ancestor (the pagination CONTAINER for
+ * the pieces, the Numbers row for the authored number) instead of the element
+ * itself, collapsing to a 0×0 point pinned at that ancestor's far RIGHT edge.
+ * The visible handle then floats way off to the right of the actual element, and
+ * because the overlay (its clickable band) is a zero-size sliver in the wrong
+ * place, the element is barely selectable on the canvas — e.g. the authored
+ * number "1" could only be grabbed from the right end of the 1..N row.
+ *
+ * Fix, in two parts (verified in the editor at 1600px):
+ *   1. position:relative → the overlay now anchors to the element's OWN box, so
+ *      hovering/clicking the element selects it (selectability restored).
+ *   2. Re-anchor the overlay point from the box's right edge (inset-inline-end:0)
+ *      to its horizontal center (inset-inline-start:50%). The settings toolbar,
+ *      which centers on its overlay via translateX(-50%), then lands dead-center
+ *      over the element instead of at its right edge.
+ *
+ * Only the authored number gets this — the inert preview clones carry no overlay
+ * and are pointer-events:none, so `:not([data-aae-num-clone])` keeps it scoped to
+ * the one selectable template ("1"). */
+.elementor-editor-active :is(.aae-a-loop-nav-wrap,
+.aae-a-loop-numbers,
+.aae-a-loop-loadmore,
+.aae-a-loop-number:not([data-aae-num-clone])) {
+  position: relative !important;
+}
+.elementor-editor-active :is(.aae-a-loop-nav-wrap,
+.aae-a-loop-numbers,
+.aae-a-loop-loadmore,
+.aae-a-loop-number:not([data-aae-num-clone])) > .elementor-element-overlay {
+  inset-inline-start: 50% !important;
+  inset-inline-end: auto !important;
+}
+
+/* Inert preview clones of the number template must never catch pointer/selection
+ * — the authored number stays the single editable element. (Clones only exist in
+ * the editor.) */
+.aae-a-loop-number[data-aae-num-clone] {
+  pointer-events: none;
+}
+
+/* Elementor gives any Atomic element containing an empty-view a 120px minimum
+ * height. Number slots contain that hidden editor helper, but they are leaves;
+ * neutralize the generic rule without affecting frontend or authored height. */
+.elementor-editor-active .e-atomic-element:is(.aae-a-loop-numbers, .aae-a-loop-number):has(.elementor-empty-view) {
+  min-height: 0;
+}
+
+/* Canvas selectability for the pagination bar.
+ *
+ * Pagination always has children (Nav / Numbers / Load More), so Elementor never
+ * gives it an `.elementor-empty-view` — the clickable "grab" band populated
+ * containers rely on. With a column + align-items layout its children hug the
+ * center, so a canvas click almost always lands on a child (often a locked one)
+ * instead of the bar itself, forcing users to select it from the Structure
+ * panel. Give it a guaranteed empty hit-band: a little padding + a min-height so
+ * there is always bar surface to click. */
+.elementor-editor-active .aae-a-loop-pagination {
+  padding: 6px;
+  min-height: 20px;
+}
+
+/* Cold-load skeleton placeholder.
+ *
+ * The Loop Layout renders its per-post loop items as the preview iframe boots,
+ * which on a cold editor open can take a few seconds — during which the canvas
+ * shows an empty layout and reads as "content missing". Show an animated
+ * skeleton grid while the layout (data-element_type="e-aae-a-loop-layout",
+ * which confusingly carries the `aae-a-loop-grid` CSS class) has no
+ * `.aae-a-loop-item` yet; the `:has()`
+ * check makes it vanish automatically the moment the first item is injected — no
+ * JS, no teardown. Editor-only (gated on `.elementor-editor-active`) and this
+ * file never ships to the frontend, so a published page is unaffected. */
+.elementor-editor-active [data-element_type=e-aae-a-loop-layout]:not(:has(.aae-a-loop-item)) {
+  position: relative;
+  min-height: 320px;
+}
+.elementor-editor-active [data-element_type=e-aae-a-loop-layout]:not(:has(.aae-a-loop-item))::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: 12px;
+  /* three shimmering card columns */
+  background-image: linear-gradient(90deg, rgba(0, 0, 0, 0.06) 25%, rgba(0, 0, 0, 0.12) 37%, rgba(0, 0, 0, 0.06) 63%), linear-gradient(90deg, rgba(0, 0, 0, 0.06) 25%, rgba(0, 0, 0, 0.12) 37%, rgba(0, 0, 0, 0.06) 63%), linear-gradient(90deg, rgba(0, 0, 0, 0.06) 25%, rgba(0, 0, 0, 0.12) 37%, rgba(0, 0, 0, 0.06) 63%);
+  background-repeat: no-repeat;
+  background-size: 32% 100%, 32% 100%, 32% 100%;
+  background-position: 0 0, 34% 0, 68% 0;
+  animation: aae-loop-skeleton 1.3s ease-in-out infinite;
+  pointer-events: none;
+}
+.elementor-editor-active [data-element_type=e-aae-a-loop-layout]:not(:has(.aae-a-loop-item))::after {
+  content: "Loading items…";
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+}
+
+/* Clone-refetch ghost cells.
+ *
+ * The cold-load skeleton above dies the moment the FIRST authored item mounts,
+ * but the clone cards only arrive after the `aae_loop_post_data` AJAX
+ * round-trip — and on a genuine QUERY change (source / filters / order) the
+ * preview module strips the old clones before awaiting the fresh fetch. During
+ * that window the grid collapses to a single card, which is indistinguishable
+ * from a broken grid. loop-grid.js (atomic-editor) sets `aae-loop-fetching` on
+ * the grid container for exactly that window; while it's set, render two inert
+ * shimmer cells so the first row reads as "loading" instead of "missing".
+ *
+ * The cells are flex items (the grid is flexbox, cards are `flex: 1 1 32%`), so
+ * they inherit the row gap and stretch to the authored card's height for free.
+ * `order: 1` keeps them AFTER the authored card (pseudo-elements otherwise sort
+ * ::before first). No conflict with the cold-load skeleton's pseudo-elements:
+ * that one requires `:not(:has(.aae-a-loop-item))` and this state only exists
+ * once an item is present — mutually exclusive. Editor-only, never shipped. */
+.elementor-editor-active .aae-loop-fetching::before, .elementor-editor-active .aae-loop-fetching::after {
+  content: "";
+  order: 1;
+  flex: 1 1 32%;
+  min-height: 120px;
+  border-radius: 12px;
+  background-image: linear-gradient(90deg, rgba(0, 0, 0, 0.06) 25%, rgba(0, 0, 0, 0.12) 37%, rgba(0, 0, 0, 0.06) 63%);
+  background-size: 400% 100%;
+  animation: aae-loop-ghost 1.3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes aae-loop-skeleton {
+  0% {
+    background-position: -20% 0, 14% 0, 48% 0;
+  }
+  100% {
+    background-position: 48% 0, 82% 0, 120% 0;
+  }
+}
+@keyframes aae-loop-ghost {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}/*# sourceMappingURL=loop-grid-editor.css.map */

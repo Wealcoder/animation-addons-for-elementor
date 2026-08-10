@@ -1,0 +1,923 @@
+@charset "UTF-8";
+.aae-a-nav {
+  position: relative !important;
+  min-height: unset !important;
+  overflow: visible !important;
+}
+
+.aae-a-nav .aae-a-nav-item {
+  position: relative;
+  list-style: none;
+  width: auto;
+  flex: 0 0 auto;
+  overflow: visible !important;
+}
+
+/* Make the label (which may be an <a>) pick up the colour / text-decoration the
+ * user sets on the nav-item in the Style tab. A bare <a> forces the browser/
+ * theme link colour, so font-size worked (it inherits) but colour did not.
+ * This is structural only — no opinionated colour is imposed, it just lets the
+ * user's own styling cascade to the text. Select the item (or a sub-item) →
+ * Style → Text Color. */
+.aae-a-nav .aae-a-nav-item-label {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+/* Dropdown indicator icon (injected by nav.js into has-dropdown items' labels).
+ * Structural only — inherits the label's colour via currentColor and rotates
+ * when the dropdown opens. Override size/colour/rotation via this class in the
+ * Style tab (or custom CSS). pointer-events:none so a click falls through to
+ * the label/item and toggles the dropdown. */
+.aae-a-nav .aae-a-nav-dropdown-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 0.7em;
+  block-size: 0.7em;
+  margin-inline-start: 6px;
+  pointer-events: none;
+  transition: transform 0.2s ease;
+}
+
+.aae-a-nav .aae-a-nav-dropdown-icon svg {
+  inline-size: 100%;
+  block-size: 100%;
+  fill: currentColor;
+}
+
+.aae-a-nav .aae-a-nav-item.is-open > .aae-a-nav-item-label .aae-a-nav-dropdown-icon,
+.aae-a-nav .aae-a-nav-item.aae-editor-dropdown-open > .aae-a-nav-item-label .aae-a-nav-dropdown-icon {
+  transform: rotate(180deg);
+}
+
+/* In the mobile drawer the submenu-toggle arrow (its own "Dropdown Icon" from
+ * the Mobile Menu section) is the interactive drill trigger — so hide the
+ * desktop indicator there to avoid showing two icons. Covers the live drawer
+ * (`.aae-nav-mobile-mounted`) and the editor's mobile preview clone. */
+.aae-nav-mobile-mounted .aae-a-nav-dropdown-icon {
+  display: none;
+}
+
+.aae-a-nav .aae-a-nav-item[data-has-dropdown=true] > .e-atomic-element:not(.aae-a-nav-item-label),
+.aae-a-nav .aae-a-nav-item[data-has-dropdown=true] > .e-con:not(.aae-a-nav-item-label),
+.aae-a-nav .aae-a-nav-item[data-has-dropdown=true] > .aae-a-nav-dropdown {
+  position: absolute;
+  inset-block-start: 100%;
+  inset-inline-start: 0;
+  min-width: 200px;
+  z-index: 100;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms ease, visibility 0s linear 150ms;
+}
+
+/* Show when frontend runtime toggles .is-open. */
+.aae-a-nav .aae-a-nav-item[data-has-dropdown=true].is-open > .e-atomic-element:not(.aae-a-nav-item-label),
+.aae-a-nav .aae-a-nav-item[data-has-dropdown=true].is-open > .e-con:not(.aae-a-nav-item-label),
+.aae-a-nav .aae-a-nav-item[data-has-dropdown=true].is-open > .aae-a-nav-dropdown {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 150ms ease, visibility 0s;
+}
+
+/* Nested sub-dropdown opens to the right. */
+.aae-a-nav .aae-a-nav-item[data-has-dropdown=true] .aae-a-nav-item[data-has-dropdown=true] > .e-atomic-element:not(.aae-a-nav-item-label),
+.aae-a-nav .aae-a-nav-item[data-has-dropdown=true] .aae-a-nav-item[data-has-dropdown=true] > .e-con:not(.aae-a-nav-item-label),
+.aae-a-nav .aae-a-nav-item[data-has-dropdown=true] .aae-a-nav-item[data-has-dropdown=true] > .aae-a-nav-dropdown {
+  inset-block-start: 0;
+  inset-inline-start: 100%;
+}
+
+.aae-a-nav-runtime-dropdown {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* Cursor pointer on items with dropdown enabled. */
+.aae-a-nav .aae-a-nav-item[data-has-dropdown=true] {
+  cursor: pointer;
+}
+
+/* Multi-level submenu layout. A dropdown that CONTAINS nested menu items is a
+ * submenu → lay it out as a vertical list and make each item full-width, so
+ * sub-items stack instead of sitting in a row (nav-items are flex:0 0 auto).
+ * Scoped with `:has(> .aae-a-nav-item)` so a PURE mega-menu flexbox (columns /
+ * images, no nested items) keeps the direction the user set in the Style tab. */
+.aae-a-nav .aae-a-nav-item[data-has-dropdown=true] > .e-con:has(> .aae-a-nav-item),
+.aae-a-nav .aae-a-nav-item[data-has-dropdown=true] > .e-atomic-element:has(> .aae-a-nav-item) {
+  flex-direction: column !important;
+  flex-wrap: nowrap !important;
+  align-items: stretch !important;
+}
+
+.aae-a-nav .aae-a-nav-item[data-has-dropdown=true] > .e-con:has(> .aae-a-nav-item) > .aae-a-nav-item,
+.aae-a-nav .aae-a-nav-item[data-has-dropdown=true] > .e-atomic-element:has(> .aae-a-nav-item) > .aae-a-nav-item {
+  width: 100% !important;
+  flex: 0 0 auto !important;
+}
+
+/* ══ CSS Dropdown Animations ══ */
+@keyframes aae-nav-grow-down {
+  0% {
+    transform: scaleY(0);
+  }
+  80% {
+    transform: scaleY(1.05);
+  }
+  100% {
+    transform: scaleY(1);
+  }
+}
+@keyframes aae-nav-rotate-3d {
+  0% {
+    transform: rotateX(-90deg);
+    opacity: 0;
+  }
+  70% {
+    transform: rotateX(20deg);
+  }
+  100% {
+    transform: rotateX(0deg);
+    opacity: 1;
+  }
+}
+@keyframes aae-nav-grow-out {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  80% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes aae-nav-slide-item {
+  0% {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes aae-nav-rotate-item {
+  0% {
+    opacity: 0;
+    transform: rotateX(-90deg);
+  }
+  50% {
+    transform: rotateX(-20deg);
+  }
+  100% {
+    opacity: 1;
+    transform: rotateX(0deg);
+  }
+}
+.aae-a-nav {
+  /* grow-down */
+}
+.aae-a-nav .aae-a-nav-item[data-dropdown-anim=grow-down].is-open > *:not(.aae-a-nav-item-label) {
+  animation: aae-nav-grow-down 300ms ease-in-out forwards;
+  transform-origin: top center;
+}
+.aae-a-nav {
+  /* rotate-3d */
+}
+.aae-a-nav .aae-a-nav-item[data-dropdown-anim=rotate-3d] {
+  perspective: 1000px;
+}
+.aae-a-nav .aae-a-nav-item[data-dropdown-anim=rotate-3d].is-open > *:not(.aae-a-nav-item-label) {
+  animation: aae-nav-rotate-3d 400ms ease-in-out forwards;
+  transform-origin: top center;
+}
+.aae-a-nav {
+  /* grow-out */
+}
+.aae-a-nav .aae-a-nav-item[data-dropdown-anim=grow-out].is-open > *:not(.aae-a-nav-item-label) {
+  animation: aae-nav-grow-out 300ms ease-in-out forwards;
+  transform-origin: top center;
+}
+.aae-a-nav {
+  /* slide-items — targets the children of the dropdown container. */
+}
+.aae-a-nav .aae-a-nav-item[data-dropdown-anim=slide-items].is-open > *:not(.aae-a-nav-item-label) > * {
+  animation: aae-nav-slide-item 300ms ease-out forwards;
+  opacity: 0;
+}
+.aae-a-nav .aae-a-nav-item[data-dropdown-anim=slide-items].is-open > *:not(.aae-a-nav-item-label) > *:nth-child(1) {
+  animation-delay: 0ms;
+}
+.aae-a-nav .aae-a-nav-item[data-dropdown-anim=slide-items].is-open > *:not(.aae-a-nav-item-label) > *:nth-child(2) {
+  animation-delay: 60ms;
+}
+.aae-a-nav .aae-a-nav-item[data-dropdown-anim=slide-items].is-open > *:not(.aae-a-nav-item-label) > *:nth-child(3) {
+  animation-delay: 120ms;
+}
+.aae-a-nav .aae-a-nav-item[data-dropdown-anim=slide-items].is-open > *:not(.aae-a-nav-item-label) > *:nth-child(4) {
+  animation-delay: 180ms;
+}
+.aae-a-nav .aae-a-nav-item[data-dropdown-anim=slide-items].is-open > *:not(.aae-a-nav-item-label) > *:nth-child(n+5) {
+  animation-delay: 240ms;
+}
+.aae-a-nav {
+  /* rotate-items */
+}
+.aae-a-nav .aae-a-nav-item[data-dropdown-anim=rotate-items] {
+  perspective: 1000px;
+}
+.aae-a-nav .aae-a-nav-item[data-dropdown-anim=rotate-items].is-open > *:not(.aae-a-nav-item-label) > * {
+  animation: aae-nav-rotate-item 300ms ease-in-out forwards;
+  opacity: 0;
+  transform-origin: top center;
+}
+.aae-a-nav .aae-a-nav-item[data-dropdown-anim=rotate-items].is-open > *:not(.aae-a-nav-item-label) > *:nth-child(1) {
+  animation-delay: 0ms;
+}
+.aae-a-nav .aae-a-nav-item[data-dropdown-anim=rotate-items].is-open > *:not(.aae-a-nav-item-label) > *:nth-child(2) {
+  animation-delay: 60ms;
+}
+.aae-a-nav .aae-a-nav-item[data-dropdown-anim=rotate-items].is-open > *:not(.aae-a-nav-item-label) > *:nth-child(3) {
+  animation-delay: 120ms;
+}
+.aae-a-nav .aae-a-nav-item[data-dropdown-anim=rotate-items].is-open > *:not(.aae-a-nav-item-label) > *:nth-child(4) {
+  animation-delay: 180ms;
+}
+.aae-a-nav .aae-a-nav-item[data-dropdown-anim=rotate-items].is-open > *:not(.aae-a-nav-item-label) > *:nth-child(n+5) {
+  animation-delay: 240ms;
+}
+
+.elementor-editor-active .aae-a-nav .aae-a-nav-item:not([data-has-dropdown=true]) > .elementor-empty-view {
+  display: none;
+}
+
+/* ══ Editor authoring (canvas) ══ */
+.elementor-editor-active,
+.elementor-edit-mode {
+  /* Hide the stray empty-view on non-dropdown items. */
+}
+.elementor-editor-active .aae-a-nav .aae-a-nav-item:not([data-has-dropdown=true]) > .elementor-empty-view,
+.elementor-edit-mode .aae-a-nav .aae-a-nav-item:not([data-has-dropdown=true]) > .elementor-empty-view {
+  display: none;
+}
+.elementor-editor-active,
+.elementor-edit-mode {
+  /* Empty dropdown stays compact instead of full-width; authored size wins
+   * as soon as content is added. `:not(.aae-a-nav-item)` is critical: a nav-item
+   * is ALSO an atomic flexbox container, so without it every empty sub-item row
+   * matched this rule and ballooned to 120px — a revealed dropdown then rendered
+   * tall with its sub-items spaced ~120px apart (ugly, unlike the compact
+   * frontend). Only genuine dropdown containers should get the droppable size. */
+}
+.elementor-editor-active .aae-a-nav :is(.aae-a-nav-dropdown, [data-aae-dropdown-for], .e-con, .e-flexbox-base):not(.aae-a-nav-item):has(.elementor-empty-view):not(:has(> .aae-a-nav-item)),
+.elementor-edit-mode .aae-a-nav :is(.aae-a-nav-dropdown, [data-aae-dropdown-for], .e-con, .e-flexbox-base):not(.aae-a-nav-item):has(.elementor-empty-view):not(:has(> .aae-a-nav-item)) {
+  width: 240px;
+  min-width: 200px;
+  min-height: 120px;
+}
+.elementor-editor-active .aae-a-nav :is(.aae-a-nav-dropdown, [data-aae-dropdown-for], .e-con, .e-flexbox-base) .elementor-empty-view,
+.elementor-edit-mode .aae-a-nav :is(.aae-a-nav-dropdown, [data-aae-dropdown-for], .e-con, .e-flexbox-base) .elementor-empty-view {
+  background: transparent !important;
+}
+.elementor-editor-active,
+.elementor-edit-mode {
+  /* Keep EVERY nav-item row at its label height in the editor. An atomic nav-item
+   * with a descendant empty-view — its own empty sub-item rows OR a nested
+   * sub-dropdown's — otherwise inherits Elementor core's 120px empty-container
+   * min-height and balloons. For a sub-item that owns a nested dropdown that
+   * ballooned the row and spread the PARENT dropdown's items apart, breaking its
+   * layout. The item's dropdown is position:absolute (out of flow), so collapsing
+   * the row to content height never clips it. (Must include items WITH a dropdown,
+   * so no :not([data-has-dropdown]) here.) */
+}
+.elementor-editor-active .aae-a-nav .aae-a-nav-item,
+.elementor-edit-mode .aae-a-nav .aae-a-nav-item {
+  width: auto !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  min-block-size: 0 !important;
+}
+.elementor-editor-active,
+.elementor-edit-mode {
+  /* Elementor core (editor-preview.css) sets
+   * `.e-atomic-element:has(.elementor-empty-view){min-height:120px}`. A POPULATED
+   * submenu dropdown still contains an empty-view (each empty sub-item row has
+   * one), so it inherited that 120px and rendered taller than its content — items
+   * looked spaced out, unlike the compact frontend. Once the dropdown holds
+   * sub-items, collapse it back to content height (empty dropdowns, with no
+   * `> .aae-a-nav-item`, keep the droppable 120px above). */
+}
+.elementor-editor-active .aae-a-nav :is(.aae-a-nav-dropdown, [data-aae-dropdown-for], .e-con, .e-flexbox-base, .e-atomic-element):has(> .aae-a-nav-item),
+.elementor-edit-mode .aae-a-nav :is(.aae-a-nav-dropdown, [data-aae-dropdown-for], .e-con, .e-flexbox-base, .e-atomic-element):has(> .aae-a-nav-item) {
+  min-height: 0 !important;
+  min-block-size: 0 !important;
+}
+.elementor-editor-active,
+.elementor-edit-mode {
+  /* Same core rule, but bubbling UP: when the Nav is dropped INTO another atomic
+   * container (e.g. a Flexbox), that WRAPPER matches
+   * `.e-atomic-element:has(.elementor-empty-view){min-height:120px}` too —
+   * because the Nav's descendant nav-items each carry an editor empty-view and
+   * `:has()` reaches any depth, so the phantom 120px bubbles up to every ancestor
+   * of the Nav and balloons the wrapper on the canvas. The rules above only fix
+   * the Nav's INSIDES (they're scoped under `.aae-a-nav`); this cancels it on any
+   * atomic container that CONTAINS a Nav. No `!important`, so a min-height the
+   * user deliberately sets on the wrapper (equal/higher specificity) still wins —
+   * this only out-specifies core's (0,2,0) phantom rule. */
+}
+.elementor-editor-active .e-atomic-element:has(.aae-a-nav),
+.elementor-edit-mode .e-atomic-element:has(.aae-a-nav) {
+  min-height: 0;
+  min-block-size: 0;
+}
+.elementor-editor-active,
+.elementor-edit-mode {
+  /* Reveal a dropdown when its item is open / selected / contains the
+   * selection (any depth). Editor-only + behavioral → !important is safe and
+   * matches the inline styles nav.js sets. */
+}
+.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown=true]:is(.aae-editor-dropdown-open, :is(.elementor-element-selected, .elementor-element-editable), :has(:is(.elementor-element-selected, .elementor-element-editable))) > :is(.aae-a-nav-dropdown, [data-aae-dropdown-for], .e-con, .e-flexbox-base, .elementor-element):not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle):not(.elementor-element-overlay),
+.elementor-edit-mode .aae-a-nav .aae-a-nav-item[data-has-dropdown=true]:is(.aae-editor-dropdown-open, :is(.elementor-element-selected, .elementor-element-editable), :has(:is(.elementor-element-selected, .elementor-element-editable))) > :is(.aae-a-nav-dropdown, [data-aae-dropdown-for], .e-con, .e-flexbox-base, .elementor-element):not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle):not(.elementor-element-overlay) {
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+.elementor-editor-active,
+.elementor-edit-mode {
+  /* Nested nav-items are position:static globally (below) so their sub-dropdown
+   * anchors to the PARENT dropdown for the cascade. But static makes Elementor's
+   * selection overlay (position:absolute; inset:0) escape to the nearest
+   * positioned ancestor — the dropdown — so selecting a sub-item drew the
+   * selection outline around the WHOLE dropdown container instead of the one row.
+   * In the EDITOR give each nested item its own positioning context so the overlay
+   * hugs just that row. Frontend keeps static (this is scoped to edit-mode), so
+   * the runtime cascade anchoring is unaffected; the sub-dropdown still opens to
+   * the right (verified — only a ~padding-width shift). */
+}
+.elementor-editor-active .aae-a-nav .aae-a-nav-item .aae-a-nav-item,
+.elementor-edit-mode .aae-a-nav .aae-a-nav-item .aae-a-nav-item {
+  position: relative !important;
+}
+
+.elementor-editor-active .aae-a-nav .aae-a-nav-dropdown .elementor-empty-view {
+  background: transparent !important;
+}
+
+.elementor-edit-mode .aae-a-nav .aae-a-nav-item[data-has-dropdown=true].aae-editor-dropdown-open > .e-atomic-element:not(.aae-a-nav-item-label),
+.elementor-edit-mode .aae-a-nav .aae-a-nav-item[data-has-dropdown=true].aae-editor-dropdown-open > .e-con:not(.aae-a-nav-item-label),
+.elementor-edit-mode .aae-a-nav .aae-a-nav-item[data-has-dropdown=true].aae-editor-dropdown-open > .aae-a-nav-dropdown,
+.aae-a-nav > .aae-a-nav-item[data-has-dropdown=true].aae-editor-dropdown-open > .e-atomic-element:not(.aae-a-nav-item-label),
+.aae-a-nav > .aae-a-nav-item[data-has-dropdown=true].aae-editor-dropdown-open > .e-con:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown=true].aae-editor-dropdown-open > .e-atomic-element:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown=true].aae-editor-dropdown-open > .e-con:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown=true]:is(.elementor-element-selected, .elementor-element-editable) > .e-atomic-element:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown=true]:is(.elementor-element-selected, .elementor-element-editable) > .e-con:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown=true]:has(:is(.elementor-element-selected, .elementor-element-editable)) > .e-atomic-element:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav > .aae-a-nav-item[data-has-dropdown=true]:has(:is(.elementor-element-selected, .elementor-element-editable)) > .e-con:not(.aae-a-nav-item-label) {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* 3. Reveal NESTED dropdowns (dropdown-item inside a dropdown). */
+.elementor-edit-mode .aae-a-nav .aae-a-nav-item[data-has-dropdown=true] .aae-a-nav-item[data-has-dropdown=true].aae-editor-dropdown-open > .e-atomic-element:not(.aae-a-nav-item-label),
+.elementor-edit-mode .aae-a-nav .aae-a-nav-item[data-has-dropdown=true] .aae-a-nav-item[data-has-dropdown=true].aae-editor-dropdown-open > .e-con:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown=true] .aae-a-nav-item[data-has-dropdown=true]:is(.elementor-element-selected, .elementor-element-editable) > .e-atomic-element:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown=true] .aae-a-nav-item[data-has-dropdown=true]:is(.elementor-element-selected, .elementor-element-editable) > .e-con:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown=true] .aae-a-nav-item[data-has-dropdown=true]:has(:is(.elementor-element-selected, .elementor-element-editable)) > .e-atomic-element:not(.aae-a-nav-item-label),
+.elementor-editor-active .aae-a-nav .aae-a-nav-item[data-has-dropdown=true] .aae-a-nav-item[data-has-dropdown=true]:has(:is(.elementor-element-selected, .elementor-element-editable)) > .e-con:not(.aae-a-nav-item-label) {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Mobile companion — completely inert until its JS breakpoint matcher adds
+ * `.is-mobile`; desktop Nav selectors and hierarchy remain unchanged.
+ *
+ * NOT hidden via `display: none`: in the editor the companion keeps this
+ * hidden state forever (`.is-mobile` is frontend-only), and display:none on
+ * an atomic element whose empty child Flexboxes carry Elementor's absolutely
+ * positioned empty-view reproduces the same v4 renderer freeze on device
+ * switch as the dropdown hide rule at the top of this file. Hide with the
+ * proven-safe combo instead: out-of-flow + zero size + visibility. */
+.aae-a-mobile-nav {
+  position: absolute !important;
+  inline-size: 0 !important;
+  block-size: 0 !important;
+  min-block-size: 0 !important;
+  min-inline-size: 0 !important;
+  overflow: hidden !important;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.aae-a-mobile-nav.is-mobile {
+  /* Size to the hamburger toggle (the only in-flow child; overlay + drawer
+   * are position:fixed and contribute nothing to the box). A real content
+   * box is REQUIRED in the editor: with the previous 0×0 + overflow:visible
+   * the toggle overflowed a zero-size box, so Elementor drew the companion's
+   * hover/select overlay + toolbar at the 0×0 top-left origin — right on top
+   * of the visually-overflowing hamburger, making the icon impossible to
+   * click/select (the container kept grabbing the hover). fit-content wraps
+   * the toggle so its overlay aligns and the toggle stays independently
+   * hittable. */
+  display: inline-flex !important;
+  align-items: center;
+  position: relative !important;
+  inline-size: -moz-fit-content !important;
+  inline-size: fit-content !important;
+  block-size: auto !important;
+  min-inline-size: 0 !important;
+  min-block-size: 0 !important;
+  max-inline-size: none !important;
+  flex: 0 0 auto !important;
+  overflow: visible !important;
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+  z-index: 9999;
+}
+.aae-a-mobile-nav.is-mobile .aae-mobile-nav-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.aae-a-mobile-nav.is-mobile .aae-mobile-nav-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 9998;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 250ms ease, visibility 0s linear 250ms;
+}
+.aae-a-mobile-nav.is-mobile .aae-mobile-nav-drawer {
+  position: fixed !important;
+  inset-block: 0 !important;
+  inset-inline-end: 0 !important;
+  z-index: 9999;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow-y: auto;
+  max-inline-size: 100vw;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateX(100%);
+  transition: transform 320ms cubic-bezier(0.4, 0, 0.2, 1), visibility 0s linear 320ms;
+}
+.aae-a-mobile-nav.is-mobile .aae-mobile-nav-close {
+  position: relative !important;
+  inset: auto !important;
+  align-self: flex-end;
+  display: inline-flex !important;
+  width: auto !important;
+  flex: 0 0 auto !important;
+  cursor: pointer;
+}
+.aae-a-mobile-nav.is-mobile .aae-mobile-nav-back {
+  display: none !important;
+  width: auto !important;
+  flex: 0 0 auto !important;
+  align-items: center;
+  justify-content: flex-start;
+  cursor: pointer;
+}
+.aae-a-mobile-nav.is-mobile .aae-mobile-nav-back.is-visible {
+  display: inline-flex !important;
+}
+.aae-a-mobile-nav.is-mobile .aae-mobile-nav-arrow-template {
+  display: none !important;
+}
+.aae-a-mobile-nav.is-mobile.position-left .aae-mobile-nav-drawer {
+  inset-inline: 0 auto !important;
+  transform: translateX(-100%);
+}
+.aae-a-mobile-nav.is-mobile.is-open .aae-mobile-nav-overlay {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition-delay: 0s;
+}
+.aae-a-mobile-nav.is-mobile.is-open .aae-mobile-nav-drawer {
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateX(0);
+  transition-delay: 0s;
+}
+
+/* Visual defaults intentionally have zero specificity. Elementor's generated
+ * local Style-tab class therefore always wins for background, dimensions and
+ * spacing without requiring !important. */
+:where(.aae-a-mobile-nav.is-mobile) :where(.aae-mobile-nav-overlay) {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+:where(.aae-a-mobile-nav.is-mobile) :where(.aae-mobile-nav-drawer) {
+  height: 100dvh;
+  padding: 24px;
+  background: #fff;
+  flex-direction: column;
+  justify-content: flex-start !important;
+  align-items: stretch !important;
+  gap: 20px;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+:where(.aae-a-mobile-nav.is-mobile) :where(.aae-mobile-nav-header) {
+  width: 100%;
+  display: flex;
+  justify-content: space-between !important;
+  align-items: center !important;
+  flex: 0 0 auto !important;
+  min-height: 0;
+}
+
+:where(.aae-a-mobile-nav.is-mobile) :where(.aae-mobile-nav-back) {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+}
+
+:where(.aae-a-mobile-nav.is-mobile) :where(.aae-mobile-nav-back-label) {
+  margin: 0;
+}
+
+:where(.aae-a-mobile-nav.is-mobile) :where(.aae-mobile-nav-back-icon) {
+  inline-size: 20px;
+  block-size: 20px;
+  pointer-events: none;
+}
+
+/* Keep the real Atomic Back element available for selection/styling in the
+ * editor. Runtime visibility still becomes exact as soon as a drill level is
+ * opened; the subdued root-state preview signals that it is a template. */
+.elementor-editor-active .aae-a-mobile-nav.is-mobile .aae-mobile-nav-back {
+  display: inline-flex !important;
+  opacity: 0.45;
+}
+
+.elementor-editor-active .aae-a-mobile-nav.is-mobile .aae-mobile-nav-back.is-visible {
+  opacity: 1;
+}
+
+:where(.aae-a-mobile-nav.is-mobile) :where(.aae-mobile-nav-menu-area) {
+  width: 100%;
+  display: flex;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  justify-content: flex-start !important;
+  flex: 1 1 0 !important;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+:where(.aae-a-mobile-nav.is-mobile) :where(.aae-mobile-nav-footer) {
+  width: 100%;
+  display: flex;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  flex: 0 0 auto !important;
+  min-height: 0;
+  margin-block-start: auto !important;
+}
+
+/* In editor the real root-level close model remains selectable (avoids the
+ * v4 nested-model freeze); a sanitized styled clone is rendered in drawer. */
+.elementor-editor-active .aae-a-mobile-nav.is-mobile > .aae-mobile-nav-close {
+  display: none !important;
+}
+
+.elementor-editor-active .aae-a-mobile-nav.is-mobile .aae-mobile-nav-drawer > .elementor-empty-view {
+  display: none !important;
+}
+
+/* Only the Footer Custom Container is a user-content drop zone. Suppress
+ * Elementor's empty placeholders on the companion's structural surfaces. */
+.elementor-editor-active .aae-a-mobile-nav > .elementor-empty-view,
+.elementor-editor-active .aae-a-mobile-nav .aae-mobile-nav-overlay > .elementor-empty-view,
+.elementor-editor-active .aae-a-mobile-nav .aae-mobile-nav-drawer > .elementor-empty-view,
+.elementor-editor-active .aae-a-mobile-nav .aae-mobile-nav-header > .elementor-empty-view,
+.elementor-editor-active .aae-a-mobile-nav .aae-mobile-nav-menu-area > .elementor-empty-view {
+  display: none !important;
+}
+
+.elementor-editor-active .aae-a-mobile-nav .aae-mobile-nav-footer > .elementor-empty-view {
+  display: flex !important;
+}
+
+/* Editor mobile preview: hide the source Nav while its clone lives in the
+ * drawer, so the desktop menu doesn't show in the header alongside the
+ * hamburger. NOT display:none — that plus the nav-items' absolutely
+ * positioned dropdown content re-triggers the v4 device-switch freeze; hide
+ * out-of-flow instead. Runtime-only class (added by nav.js in the editor). */
+.aae-a-nav.aae-nav-editor-mobile-hidden {
+  position: absolute !important;
+  inline-size: 0 !important;
+  block-size: 0 !important;
+  min-inline-size: 0 !important;
+  min-block-size: 0 !important;
+  max-inline-size: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Editor-only: keep the hamburger CLICKABLE (open/close the drawer while
+ * designing) but stop Elementor stacking THREE edit toolbars at the tiny
+ * hamburger spot. Only the toggle stays a pointer hit-target → a single
+ * toolbar (the element you'd style anyway); the companion wrapper and the
+ * icon pass pointer events through so their toolbars don't pile on top. Our
+ * click handler is on the companion, so a click on the toggle still bubbles
+ * up and opens the drawer. Scoped to `.aae-mobile-nav-in-editor` (added only
+ * by the editor preview handler) — the frontend hamburger is untouched. */
+.aae-a-mobile-nav.aae-mobile-nav-in-editor.is-mobile {
+  pointer-events: none !important;
+}
+
+.aae-a-mobile-nav.aae-mobile-nav-in-editor.is-mobile .aae-mobile-nav-toggle {
+  pointer-events: auto !important;
+}
+
+.aae-a-mobile-nav.aae-mobile-nav-in-editor.is-mobile .aae-mobile-nav-toggle * {
+  pointer-events: none !important;
+}
+
+.aae-a-mobile-nav.aae-mobile-nav-in-editor.is-mobile .aae-mobile-nav-drawer {
+  pointer-events: auto !important;
+}
+
+body.aae-mobile-nav-scroll-lock {
+  overflow: hidden;
+}
+
+.aae-a-nav.aae-nav-mobile-mounted {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  justify-content: flex-start !important;
+  width: 100%;
+  max-width: 100%;
+  position: relative !important;
+  /* CONTENT height. `100%` stretched this to fill the drawer's menu-area, and
+   * the white drill panel filled it — the empty block under short submenus.
+   * Scrolling is safe: menu-area is already `overflow-y: auto`. */
+  height: auto;
+  min-height: 0;
+  /* Must clip — this is the box the drill panel slides in from. */
+  overflow-x: hidden !important;
+  overflow-y: hidden !important;
+  /* A styled dropdown can carry its own margin/padding. Fully remove closed
+   * panels from grid layout so those authored styles cannot leave a gap. */
+}
+.aae-a-nav.aae-nav-mobile-mounted [hidden] {
+  display: none !important;
+}
+.aae-a-nav.aae-nav-mobile-mounted .aae-a-nav-item {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  grid-template-areas: "label toggle" "submenu submenu";
+  align-items: center;
+  width: 100%;
+  inline-size: 100% !important;
+  min-inline-size: 0 !important;
+  max-inline-size: 100% !important;
+  height: auto !important;
+  block-size: auto !important;
+  min-height: 0 !important;
+  min-block-size: 0 !important;
+  max-height: none !important;
+  max-block-size: none !important;
+  flex: none;
+  position: static !important;
+}
+.aae-a-nav.aae-nav-mobile-mounted .aae-a-nav-item > .aae-a-nav-item-label {
+  grid-area: label;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+.aae-a-nav.aae-nav-mobile-mounted .aae-mobile-submenu-toggle {
+  grid-area: toggle;
+  justify-self: end;
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  line-height: 0;
+}
+.aae-a-nav.aae-nav-mobile-mounted .aae-mobile-submenu-icon {
+  display: block;
+  flex: none;
+  transform: rotate(-90deg);
+  transition: transform 200ms ease;
+}
+.aae-a-nav.aae-nav-mobile-mounted {
+  /* Runtime wrapper owns viewport geometry; the authored Atomic dropdown
+   * remains an independently styleable child and needs only mount resets. */
+}
+.aae-a-nav.aae-nav-mobile-mounted .aae-mobile-drill-panel {
+  /* IN FLOW + content-height so the drawer hugs the submenu (was absolute /
+   * inset:0 / height:100%, which filled the nav however few items it held).
+   * Safe because only one panel is un-hidden at a time — enforced by the
+   * explicit `[hidden]` rule below, not the generic one above. Stays
+   * relative in both states or the slide jumps mid-transition. */
+  position: relative !important;
+  inset: auto !important;
+  z-index: 5;
+  display: block !important;
+  box-sizing: border-box;
+  width: 100% !important;
+  height: auto !important;
+  /* Inert at content height; menu-area owns scrolling for tall submenus. */
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: translateX(100%);
+  background: #fff;
+  animation: none !important;
+  transition: transform 280ms cubic-bezier(0.4, 0, 0.2, 1), opacity 180ms ease, visibility 0s linear 280ms !important;
+}
+.aae-a-nav.aae-nav-mobile-mounted {
+  /* A closed panel must leave the FLOW. Load-bearing since the panel became
+   * relative: `display: block !important` above out-ranks the generic
+   * `[hidden]` rule, so a stale panel padded the drawer by its full height. */
+}
+.aae-a-nav.aae-nav-mobile-mounted .aae-mobile-drill-panel[hidden] {
+  display: none !important;
+}
+.aae-a-nav.aae-nav-mobile-mounted .aae-mobile-drill-panel.is-active {
+  transform: translateX(0);
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  transition-delay: 0s !important;
+}
+.aae-a-nav.aae-nav-mobile-mounted .aae-mobile-drill-panel > .aae-a-nav-dropdown {
+  position: static !important;
+  display: flex !important;
+  width: 100% !important;
+  inline-size: 100% !important;
+  min-width: 0 !important;
+  min-inline-size: 0 !important;
+  max-width: 100% !important;
+  max-inline-size: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+  box-sizing: border-box !important;
+  overflow-x: hidden !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  transform: none !important;
+  animation: none !important;
+}
+.aae-a-nav.aae-nav-mobile-mounted .aae-mobile-drill-panel > .aae-a-nav-dropdown > *,
+.aae-a-nav.aae-nav-mobile-mounted .aae-mobile-drill-panel .aae-a-nav-item,
+.aae-a-nav.aae-nav-mobile-mounted .aae-mobile-drill-panel .e-con,
+.aae-a-nav.aae-nav-mobile-mounted .aae-mobile-drill-panel .e-atomic-element {
+  max-width: 100% !important;
+  max-inline-size: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+}
+.aae-a-nav.aae-nav-mobile-mounted {
+  /* Inside a submenu the root items leave the FLOW, not just the paint.
+   * `visibility: hidden` kept their full height reserved, so even with the
+   * panel shrunk to its content the drawer stayed as tall as the root menu —
+   * the third contributor to the empty space, alongside the nav's old
+   * `height: 100%` and the panel's `height: 100%`. */
+}
+.aae-a-nav.aae-nav-mobile-mounted[data-drill-depth]:not([data-drill-depth="0"]) > .aae-a-nav-item {
+  display: none !important;
+  pointer-events: none;
+}
+.aae-a-nav.aae-nav-mobile-mounted {
+  /* Legacy mobile accordion rules retained for backwards compatibility with
+   * previously rendered markup that does not use drill-panel wrappers. */
+}
+.aae-a-nav.aae-nav-mobile-mounted .aae-a-nav-item[data-has-dropdown=true] > .e-atomic-element:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle),
+.aae-a-nav.aae-nav-mobile-mounted .aae-a-nav-item[data-has-dropdown=true] > .e-con:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) {
+  position: static !important;
+  grid-area: submenu;
+  width: 100%;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 250ms ease, opacity 200ms ease, visibility 0s linear 250ms;
+}
+.aae-a-nav.aae-nav-mobile-mounted .aae-a-nav-item.is-mobile-submenu-open > .e-atomic-element:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle),
+.aae-a-nav.aae-nav-mobile-mounted .aae-a-nav-item.is-mobile-submenu-open > .e-con:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+  max-height: 2000px;
+  transition-delay: 0s;
+}
+.aae-a-nav.aae-nav-mobile-mounted .aae-a-nav-item.is-mobile-submenu-open > .aae-mobile-submenu-toggle .aae-mobile-submenu-icon {
+  transform: rotate(180deg);
+}
+.aae-a-nav.aae-nav-mobile-mounted {
+  /* Dropdown animations in the legacy mobile accordion. */
+}
+.aae-a-nav.aae-nav-mobile-mounted .aae-a-nav-item[data-dropdown-anim=gsap].is-mobile-submenu-open > *:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle),
+.aae-a-nav.aae-nav-mobile-mounted .aae-a-nav-item[data-dropdown-anim=grow-down].is-mobile-submenu-open > *:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) {
+  animation: aae-nav-grow-down 300ms ease-in-out both;
+  transform-origin: top center;
+}
+.aae-a-nav.aae-nav-mobile-mounted .aae-a-nav-item[data-dropdown-anim=rotate-3d] {
+  perspective: 1000px;
+}
+.aae-a-nav.aae-nav-mobile-mounted .aae-a-nav-item[data-dropdown-anim=rotate-3d].is-mobile-submenu-open > *:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) {
+  animation: aae-nav-rotate-3d 400ms ease-in-out both;
+  transform-origin: top center;
+}
+.aae-a-nav.aae-nav-mobile-mounted .aae-a-nav-item[data-dropdown-anim=grow-out].is-mobile-submenu-open > *:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) {
+  animation: aae-nav-grow-out 300ms ease-in-out both;
+  transform-origin: top center;
+}
+.aae-a-nav.aae-nav-mobile-mounted .aae-a-nav-item[data-dropdown-anim=slide-items].is-mobile-submenu-open > *:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) > * {
+  animation: aae-nav-slide-item 300ms ease-out both;
+}
+.aae-a-nav.aae-nav-mobile-mounted .aae-a-nav-item[data-dropdown-anim=rotate-items] {
+  perspective: 1000px;
+}
+.aae-a-nav.aae-nav-mobile-mounted .aae-a-nav-item[data-dropdown-anim=rotate-items].is-mobile-submenu-open > *:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) > * {
+  animation: aae-nav-rotate-item 300ms ease-in-out both;
+  transform-origin: top center;
+}
+.aae-a-nav.aae-nav-mobile-mounted .aae-a-nav-item[data-dropdown-anim=slide-items].is-mobile-submenu-open > *:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) > *:nth-child(1),
+.aae-a-nav.aae-nav-mobile-mounted .aae-a-nav-item[data-dropdown-anim=rotate-items].is-mobile-submenu-open > *:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) > *:nth-child(1) {
+  animation-delay: 0ms;
+}
+.aae-a-nav.aae-nav-mobile-mounted .aae-a-nav-item[data-dropdown-anim=slide-items].is-mobile-submenu-open > *:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) > *:nth-child(2),
+.aae-a-nav.aae-nav-mobile-mounted .aae-a-nav-item[data-dropdown-anim=rotate-items].is-mobile-submenu-open > *:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) > *:nth-child(2) {
+  animation-delay: 60ms;
+}
+.aae-a-nav.aae-nav-mobile-mounted .aae-a-nav-item[data-dropdown-anim=slide-items].is-mobile-submenu-open > *:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) > *:nth-child(3),
+.aae-a-nav.aae-nav-mobile-mounted .aae-a-nav-item[data-dropdown-anim=rotate-items].is-mobile-submenu-open > *:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) > *:nth-child(3) {
+  animation-delay: 120ms;
+}
+.aae-a-nav.aae-nav-mobile-mounted .aae-a-nav-item[data-dropdown-anim=slide-items].is-mobile-submenu-open > *:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) > *:nth-child(4),
+.aae-a-nav.aae-nav-mobile-mounted .aae-a-nav-item[data-dropdown-anim=rotate-items].is-mobile-submenu-open > *:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) > *:nth-child(4) {
+  animation-delay: 180ms;
+}
+.aae-a-nav.aae-nav-mobile-mounted .aae-a-nav-item[data-dropdown-anim=slide-items].is-mobile-submenu-open > *:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) > *:nth-child(n+5),
+.aae-a-nav.aae-nav-mobile-mounted .aae-a-nav-item[data-dropdown-anim=rotate-items].is-mobile-submenu-open > *:not(.aae-a-nav-item-label):not(.aae-mobile-submenu-toggle) > *:nth-child(n+5) {
+  animation-delay: 240ms;
+}
+
+/* Gap remains a normal Elementor grid property. This zero-specificity value
+ * is only the initial spacing; Nav Item → Layout → Gap overrides it. */
+:where(.aae-a-nav.aae-nav-mobile-mounted) :where(.aae-a-nav-item) {
+  -moz-column-gap: 8px;
+       column-gap: 8px;
+}
+
+/* Runtime buttons are only interaction wrappers. Keep the wrapper neutral so
+ * it cannot make dropdown rows taller than regular menu rows. */
+:where(.aae-a-nav.aae-nav-mobile-mounted) :where(.aae-mobile-submenu-toggle) {
+  min-inline-size: 0;
+  min-block-size: 0;
+  padding: 0;
+}
+
+/* Fallback only. The cloned Atomic SVG local class has higher specificity,
+ * so Width/Height values authored in Elementor override these dimensions. */
+:where(.aae-a-nav.aae-nav-mobile-mounted) :where(.aae-mobile-submenu-icon) {
+  inline-size: 20px;
+  block-size: 20px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aae-a-mobile-nav *,
+  .aae-a-nav.aae-nav-mobile-mounted * {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}/*# sourceMappingURL=nav.css.map */

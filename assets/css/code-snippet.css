@@ -21,6 +21,7 @@ CSP STYLE
   font-family: "Inter", sans-serif;
   padding: 58px 47px;
 }
+
 @media (max-width: 991px) {
   .aae-csp {
     padding: 15px 0;
@@ -33,14 +34,17 @@ CSP STYLE
   box-sizing: border-box;
   transition: 0.3s ease-in-out;
 }
+
 .aae-csp p {
   font-size: 14px;
   line-height: 1.5;
   color: var(--deep-navy);
 }
+
 .aae-csp a {
   color: var(--deep-navy);
 }
+
 .aae-csp .priority-value {
   text-align: center;
   font-weight: 600;
@@ -48,20 +52,25 @@ CSP STYLE
   border: 1px solid var(--off-white);
   padding: 5px 15px;
 }
+
 .aae-csp .priority-value:focus {
   border-color: var(--vibrant-mint);
   outline: 0;
   box-shadow: none;
 }
+
 .aae-csp .CodeMirror-gutter-wrapper {
   left: -38px !important;
 }
+
 .aae-csp .select2-selection {
   border-color: var(--off-white);
 }
+
 .aae-csp .select2-selection:focus {
   border-color: var(--vibrant-mint) !important;
 }
+
 .aae-csp .select2-container--default .select2-selection--multiple.select2-selection--clearable {
   padding-right: 25px;
   max-height: 170px;
@@ -77,11 +86,13 @@ CSP STYLE
   flex-wrap: wrap;
   gap: 15px;
 }
+
 .aae-csp-top__start {
   display: flex;
   align-items: center;
   gap: 20px;
 }
+
 .aae-csp-top__backward-btn {
   border: 1px solid var(--steel-gray);
   height: 46px;
@@ -94,10 +105,12 @@ CSP STYLE
   position: relative;
   overflow: hidden;
 }
+
 .aae-csp-top__backward-btn svg {
   position: relative;
   z-index: 2;
 }
+
 .aae-csp-top__backward-btn::before {
   content: "";
   position: absolute;
@@ -110,15 +123,19 @@ CSP STYLE
   transition: 0.3s ease;
   border-radius: 75px;
 }
+
 .aae-csp-top__backward-btn:hover {
   border-color: transparent;
 }
+
 .aae-csp-top__backward-btn:hover svg path {
   fill: var(--white);
 }
+
 .aae-csp-top__backward-btn:hover::before {
   transform: scale(1);
 }
+
 .aae-csp-top__title {
   font-weight: 600;
   font-size: 20px;
@@ -126,13 +143,16 @@ CSP STYLE
   color: var(--deep-navy);
   margin-bottom: 4px;
 }
+
 .aae-csp-top__text {
   font-weight: 400;
 }
+
 .aae-csp-top__end {
   display: flex;
   gap: 6px;
 }
+
 .aae-csp-top__tools-btn {
   display: inline-flex;
   justify-content: center;
@@ -146,11 +166,13 @@ CSP STYLE
   gap: 5px;
   cursor: pointer;
 }
+
 .aae-csp-top__tools-btn:hover {
   color: rgb(252, 104, 72);
   background-color: rgb(254, 225, 218);
   border-color: rgba(252, 104, 72, 0.2);
 }
+
 .aae-csp-top__tools-btn:hover svg path {
   stroke: var(--theme-bg);
 }
@@ -160,6 +182,7 @@ CSP STYLE
   grid-template-columns: 436px 1fr;
   gap: 24px;
 }
+
 @media (max-width: 1200px) {
   .aae-csp-main {
     grid-template-columns: 1fr;
@@ -172,11 +195,13 @@ CSP STYLE
   margin-bottom: 3px;
   border-radius: 8px;
 }
+
 .aae-csp-main select:focus {
   border: 1px solid var(--vibrant-mint);
   outline: 0;
   box-shadow: none;
 }
+
 .aae-csp-main .aae-csp-aside__label {
   font-weight: 500;
   font-size: 14px;
@@ -185,16 +210,19 @@ CSP STYLE
   display: block;
   margin-bottom: 10px;
 }
+
 .aae-csp-main .aae-csp-aside__input {
   border: 1px solid var(--off-white);
   height: 43px;
   margin-bottom: 3px;
 }
+
 .aae-csp-main .aae-csp-aside__input:focus {
   border: 1px solid var(--vibrant-mint);
   outline: 0;
   box-shadow: none;
 }
+
 .aae-csp-main .aae-csp-aside__help-text {
   font-weight: 400;
   font-size: 12px;
@@ -209,6 +237,7 @@ CSP STYLE
   padding: 24px;
   border-radius: 8px;
 }
+
 .aae-csp-widget:not(:last-child) {
   margin-bottom: 20px;
 }
@@ -225,16 +254,20 @@ CSP STYLE
   text-transform: capitalize;
   margin-bottom: 8px;
 }
+
 .aae-csp-active__status.inactive {
   background-color: rgb(254, 225, 218);
   color: rgb(252, 104, 72);
 }
+
 .aae-csp-active__status.inactive span::before {
   background-color: rgb(252, 104, 72);
 }
+
 .aae-csp-active__status span {
   position: relative;
 }
+
 .aae-csp-active__status span::before {
   position: absolute;
   content: "";
@@ -246,15 +279,18 @@ CSP STYLE
   background-color: var(--vibrant-mint);
   border-radius: 75px;
 }
+
 .aae-csp-active__label {
   font-weight: 500;
 }
+
 .aae-csp-active__input-wrapper {
   display: flex;
   align-items: center;
   gap: 16px;
   margin-bottom: 24px;
 }
+
 .aae-csp-active__title-group {
   display: flex;
   flex-direction: column;
@@ -265,6 +301,7 @@ CSP STYLE
   flex-direction: column;
   gap: 24px;
 }
+
 .aae-csp-visibility__visibility-pages {
   margin-top: 10px;
 }
@@ -274,18 +311,22 @@ CSP STYLE
   padding: 24px;
   border-radius: 8px;
 }
+
 .aae-csp-editor__field-group {
   margin-bottom: 24px;
 }
+
 .aae-csp-editor select {
   width: 161px;
 }
+
 .aae-csp-editor .code-editor-wrapper {
   height: 528px;
   width: 100%;
   border: 1px solid #E2E8F0;
   background: rgba(248, 250, 252, 0.3137254902);
 }
+
 @media (max-width: 1200px) {
   .aae-csp-editor .code-editor-wrapper {
     height: 300px;
@@ -296,9 +337,11 @@ CSP STYLE
   box-shadow: none;
   outline-width: 0;
 }
+
 .aae-csp-editor .CodeMirror.fullscreen {
   margin-top: 32px;
 }
+
 @media (max-width: 1200px) {
   .aae-csp-editor .CodeMirror {
     height: 300px;
@@ -309,6 +352,7 @@ CSP STYLE
   gap: 8px;
   margin-inline-end: 10px;
 }
+
 .aae-csp-editor-top__text {
   display: flex;
   gap: 8px;
@@ -317,12 +361,14 @@ CSP STYLE
   color: var(--deep-navy);
   flex-wrap: wrap;
 }
+
 .aae-csp-editor-top__text span {
   font-weight: 400;
   font-size: 12px;
   line-height: 1.5;
   color: var(--cool-gray);
 }
+
 .aae-csp-editor__footer {
   display: flex;
   justify-content: space-between;
@@ -331,14 +377,17 @@ CSP STYLE
   flex-wrap: wrap;
   gap: 15px;
 }
+
 .aae-csp-editor__wordcount {
   display: flex;
   gap: 5px;
 }
+
 .aae-csp-editor__wordcount li {
   font-size: 12px;
   color: var(--cool-gray);
 }
+
 .aae-csp-editor__insertBtn {
   font-weight: 500;
   font-size: 14px;
@@ -354,11 +403,13 @@ CSP STYLE
   gap: 7px;
   border: 1px solid transparent;
 }
+
 .aae-csp-editor__insertBtn:hover {
   color: rgb(252, 104, 72);
   background-color: rgb(254, 225, 218);
   border-color: rgba(252, 104, 72, 0.2);
 }
+
 .aae-csp-editor__insertBtn:hover svg path {
   stroke: rgb(252, 104, 72);
 }
@@ -371,6 +422,7 @@ CSP STYLE
   flex-wrap: wrap;
   gap: 15px;
 }
+
 .aae-csp-editor-top__end {
   display: flex;
   align-items: center;
@@ -392,6 +444,7 @@ CSP STYLE
   margin-top: 10px;
   background-color: #F1F5F9;
 }
+
 .priority-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
@@ -490,6 +543,7 @@ CHECK BUTTON STYLE
   font-style: italic;
   text-transform: lowercase;
 }
+
 #php-version-notice strong {
   color: var(--vibrant-mint);
 }
@@ -525,5 +579,4 @@ CHECK BUTTON STYLE
   100% {
     transform: rotate(360deg);
   }
-}
-/*# sourceMappingURL=code-snippet.css.map */
+} 
