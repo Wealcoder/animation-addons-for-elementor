@@ -40,7 +40,7 @@
                promotes this to aria-label only when the button really is empty,
                so a visible title is never overridden (WCAG 2.5.3). #}
             data-aae-fallback-label="{{ settings.item_title | default( 'Accordion Item' ) | e('html_attr') }}"
-            style="display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 15px 20px; background: transparent; border: none; cursor: pointer;">
+            style="display: flex; align-items: center; justify-content: space-between; width: 100%; background: transparent; border: none; cursor: pointer;">
 
             {# Header Div_Block (Title + Icon) injected here — the icon IS the toggle #}
             <div class="aae-header-content" style="display: flex; align-items: center; flex: 1; gap: 10px; min-width: 0;"></div>

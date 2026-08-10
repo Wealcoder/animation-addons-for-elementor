@@ -1,17 +1,48 @@
 {#
-  AAE Advanced Heading — renders the rich-text `content` inside the chosen tag.
+  AAE Advanced Heading — renders the INTERPRETED content inside the chosen tag.
 
-  `content` is an html-v3 prop; Html_V3_Transformer has already flattened it to
-  the inner string by the time this runs, so `settings.content` is plain HTML.
-  It was sanitised on save by wp_kses (no attributes survive except a[href|target]),
-  and `striptags` here is the second belt — mirroring core's own heading twig, so
-  a value written by anything other than the panel still cannot inject a tag.
-  Keep this whitelist in sync with atomic-heading.html.twig.
+  `content_html` is the interpreted form: tags the user typed by hand, decoded
+  into real elements and rendered as typed. `content` holds the verbatim source
+  the panel edits and is deliberately NOT rendered — see
+  AAE_A_Advanced_Heading::get_atomic_settings(), which recomputes content_html on
+  every server render.
 #}
-{% set allowed_inline = '<b><strong><sup><sub><s><em><i><u><a><del><span><br>' %}
+{# Must match AAE_Rich_Text_Prop_Type::allowed_tags(). striptags is the SECOND
+   belt — wp_kses already cleaned this on save; this only guards a value that
+   reached the DB by some other route (import, a component override, direct
+   _elementor_data edit). Note striptags filters TAGS only, so it is the kses pass
+   that keeps ATTRIBUTES safe, not this line. #}
+{% set allowed_inline = '<b><strong><sup><sub><s><em><i><u><a><del><ins><span><br><mark><small><code><abbr><cite><q><img><h1><h2><h3><h4><h5><h6><p><div><ul><ol><li><blockquote><pre><hr><figure><figcaption>' %}
 {% set allowed_tags = ['h1','h2','h3','h4','h5','h6','div','p','span'] %}
 {% set tag = settings.ah_tag | default('h2') %}
 {% if tag not in allowed_tags %}{% set tag = 'h2' %}{% endif %}
+
+{# Resolved once: used both to decide the wrapper tag below and to render. Falls
+   back to `content` when the derived value is missing — a heading saved before
+   content_html existed has none, and the server has already recomputed it, so the
+   fallback only matters on the canvas for an element nobody has re-committed. #}
+{% set html = (settings.content_html is defined and settings.content_html is not empty)
+        ? settings.content_html
+        : settings.content | default('') %}
+
+{# A heading cannot legally contain a heading — or any flow content. The HTML
+   PARSER, not CSS, enforces that: given `<h2>a<h2>b</h2>c</h2>` it AUTO-CLOSES the
+   outer tag at the inner one, so `c` is emitted as a SIBLING of the widget and
+   escapes the wrapper entirely, taking its styling and data-id scope with it.
+
+   So when the content carries a block tag, the wrapper stops being a heading and
+   becomes a neutral div. The typed tag is then the only heading, and everything
+   stays inside one element — which is the whole point of the wrapper.
+
+   The HTML Tag control still applies normally whenever the content has no block
+   tags. Substring tests rather than a regex, because this template is also
+   rendered client-side by twig.js in the canvas and `matches` is not dependable
+   there. `'<p' in html` deliberately also catches `<pre`; both are block. #}
+{% set has_block = '<h1' in html or '<h2' in html or '<h3' in html or '<h4' in html
+        or '<h5' in html or '<h6' in html or '<p' in html or '<div' in html
+        or '<ul' in html or '<ol' in html or '<blockquote' in html
+        or '<figure' in html or '<hr' in html %}
+{% if has_block %}{% set tag = 'div' %}{% endif %}
 
 {% set classes = [
         'aae-a-advanced-heading',
@@ -24,7 +55,17 @@
     data-element_type="{{ type }}"
     data-e-type="{{ type }}"
     data-interaction-id="{{ interaction_id | default(id) }}"
+    {# Line Indent. Emitted only when set, so an untouched heading carries no
+       style attribute at all — text-indent:0 is already the initial value, and
+       printing it would add an attribute that does nothing.
+
+       Plain truthiness, NOT `is not null` / `is not empty`: this template is
+       also rendered client-side by twig.js in the canvas, whose test support is
+       narrower than PHP Twig's, and truthiness behaves the same in both. It
+       drops undefined/null/0 and keeps a NEGATIVE value, which is a real
+       setting here — a hanging indent. #}
+    {% if settings.ah_indent is defined and settings.ah_indent %}style="text-indent:{{ settings.ah_indent }}px"{% endif %}
     {% if settings._cssid is defined and settings._cssid is not empty %}id="{{ settings._cssid | e('html_attr') }}"{% endif %}
     {% if settings.attributes is defined and settings.attributes is not empty %}{{ settings.attributes | raw }}{% endif %}
     {{ editor_attributes | default('') | raw }}
->{{ settings.content | default('') | striptags(allowed_inline) | raw }}</{{ tag | e('html_tag') }}>
+>{{ html | striptags(allowed_inline) | raw }}</{{ tag | e('html_tag') }}>

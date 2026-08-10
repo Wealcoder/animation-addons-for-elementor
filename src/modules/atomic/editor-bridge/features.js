@@ -1401,7 +1401,14 @@ export const FEATURES = [
 	},
 	{
 		name: 'custom-css',
-		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid', 'e-aae-a-post-title', 'e-aae-a-post-image', 'e-aae-a-posts', 'e-aae-a-icon-list', 'e-aae-a-icon-list-item'],
+		// Must stay in step with Atomic\Bootstrap::target_element_types() — that
+		// PHP list decides which widgets get the panel section and the frontend
+		// config, this one decides which get mirrored LIVE into the canvas. A
+		// type present there and missing here reads as "custom CSS works on the
+		// frontend but never updates in the editor", with no error anywhere:
+		// featuresForType() below filters on widgetTypes, so an absent type gets
+		// zero features and the bridge never writes the map at all.
+		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid', 'e-aae-a-post-title', 'e-aae-a-post-image', 'e-aae-a-posts', 'e-aae-a-icon-list', 'e-aae-a-icon-list-item', 'e-aae-a-advanced-heading', 'e-aae-a-offcanvas'],
 		enableSetting: 'aae_custom_css_enable',
 		autoReplaySetting: 'aae_custom_css_enable_editor',
 		mapName: 'AAE_INTERACTIONS_CUSTOM_CSS',

@@ -35,7 +35,7 @@ import { applySettingsToDom } from '../editor-bridge/settings-bridge';
 
 const RESPONSIVE_KEY = 'aae-rj';
 
-export function useCellValue({ propValue, bind, activeBp, elementId, defaultValue }) {
+export function useCellValue({ propValue, bind, activeBp, elementId, defaultValue, playGroup = '' }) {
 	const map = (propValue && typeof propValue === 'object' && propValue.$$type === RESPONSIVE_KEY)
 		? (propValue.value || {})
 		: {};
@@ -76,6 +76,24 @@ export function useCellValue({ propValue, bind, activeBp, elementId, defaultValu
 				},
 			}
 		);
+
+		// Push the new value into the preview iframe and rebind.
+		//
+		// REQUIRED, not an optimisation. The maps the runtime reads
+		// (window.AAE_INTERACTIONS_*) are built ONCE, by the bulk sync at editor
+		// load — and the write above deliberately passes render:false, so nothing
+		// else refreshes them. Without this the canvas keeps serving the config it
+		// had when the editor opened: every change to Custom CSS, Tilt, Tooltip and
+		// the rest appeared only after an editor reload, with nothing to indicate
+		// the setting had in fact been saved.
+		//
+		// Runs AFTER the command on purpose — applySettingsToDom rebuilds the
+		// config from container.settings, so it has to read the value the
+		// synchronous command just wrote.
+		//
+		// playGroup scopes which feature is rebuilt; '' would rebuild every feature
+		// on the element, so an unrelated animation would rebind on each keystroke.
+		applySettingsToDom(container, playGroup);
 	};
 
 	const resetValue = () => setValue(null);
