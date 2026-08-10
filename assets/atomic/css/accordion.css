@@ -2,8 +2,23 @@
   /* Title + Icon live inside the injected .aae-header-element. */
 }
 .aae-a-accordion .aae-accordion-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
   text-align: left;
-  transition: background-color 0.3s ease;
+  font-family: inherit;
+  transition: background-color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.aae-a-accordion .aae-accordion-header:focus, .aae-a-accordion .aae-accordion-header:focus-visible {
+  outline: none;
+  box-shadow: none;
 }
 .aae-a-accordion .aae-accordion-header .aae-header-content {
   display: flex;
@@ -31,8 +46,8 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  width: 24px !important;
-  height: 24px !important;
+  width: 18px !important;
+  height: 18px !important;
 }
 .aae-a-accordion .aae-accordion-header .aae-header-element .aae-header-icon-element svg {
   width: 100% !important;
@@ -52,18 +67,15 @@
 .aae-a-accordion .aae-a-accordion-item.active .aae-header-icon-element.aae-header-icon-close {
   display: inline-flex !important;
 }
-.aae-a-accordion .aae-a-accordion-item.active .aae-accordion-header {
-  background: #f1f1f1;
-}
 .aae-a-accordion .aae-accordion-content {
   transition: padding var(--aae-accordion-speed, 400ms) ease;
   /* Inner container padding can be overridden by Elementor */
 }
 .aae-a-accordion .aae-accordion-content.e-con {
   --padding-top: 0px;
-  --padding-bottom: 0px;
-  --padding-left: 20px;
-  --padding-right: 20px;
+  --padding-bottom: 12px;
+  --padding-left: 16px;
+  --padding-right: 16px;
   padding: var(--padding-top) var(--padding-right) var(--padding-bottom) var(--padding-left);
   transition: padding var(--aae-accordion-speed, 400ms) ease;
 }

@@ -103,6 +103,9 @@ class AAE_A_Icon_List extends Atomic_Element_Base {
 			'display' => String_Prop_Type::generate( 'flex' ),
 			'flex-direction' => String_Prop_Type::generate( 'column' ),
 			'align-items' => String_Prop_Type::generate( 'flex-start' ),
+			// Each item is now a chip with its own background — without a gap
+			// here, stacked chips would touch edge to edge with no separation.
+			'gap' => \Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type::generate( [ 'size' => 15, 'unit' => 'px' ] ),
 			'list-style' => String_Prop_Type::generate( 'none' ),
 			'width' => String_Prop_Type::generate( '100%' ),
 			'margin' => \Elementor\Modules\AtomicWidgets\PropTypes\Dimensions_Prop_Type::generate([
@@ -125,15 +128,29 @@ class AAE_A_Icon_List extends Atomic_Element_Base {
 		];
 	}
 
+	/**
+	 * Three ordinary, real-world-labeled items — a usable starting point,
+	 * not three copies of the same placeholder text (was "List Item Text"
+	 * ×3) or the same generic Elementor icon. Same idea as
+	 * AAE_A_Social_Share::define_default_children() seeding
+	 * "Facebook"/"Twitter"/"LinkedIn" instead of one repeated label.
+	 */
 	protected function define_default_children() {
-		return [
-			AAE_A_Icon_List_Item::generate()
-				->build(),
-			AAE_A_Icon_List_Item::generate()
-				->build(),
-			AAE_A_Icon_List_Item::generate()
-				->build(),
+		$defaults = [
+			'Fast & Reliable Performance' => 'bolt',
+			'Easy to Customize'           => 'sliders',
+			'24/7 Customer Support'       => 'headset',
 		];
+
+		$children = [];
+		foreach ( $defaults as $label => $icon ) {
+			$children[] = AAE_A_Icon_List_Item::generate()
+				->editor_settings( [ 'title' => $label ] )
+				->children( AAE_A_Icon_List_Item::build_default_inner_children( $label, $icon ) )
+				->build();
+		}
+
+		return $children;
 	}
 
 	protected function define_allowed_child_types() {
@@ -150,7 +167,35 @@ class AAE_A_Icon_List extends Atomic_Element_Base {
 		];
 	}
 
+	/**
+	 * Was `[]` — icon-list.css was registered (class-atomic.php's registry
+	 * has a style_handle/style_path for both this class and the item) but
+	 * never actually enqueued on any page, since this is the method Elementor
+	 * calls to know what to auto-load for a used element. Declaring it here
+	 * is enough for the item too: they share the same handle, and an item
+	 * only ever renders as this element's child.
+	 */
 	public function get_style_depends(): array {
-		return [];
+		return [ 'aae-a-icon-list-css' ];
+	}
+
+	/**
+	 * Inline CSS that Atomic::fix_frontend_atomic_css_order() injects right
+	 * after this widget's own stylesheet, once that stylesheet is guaranteed
+	 * to load after Elementor's base-desktop.css.
+	 *
+	 * Same pattern as AAE_A_Btn::get_frontend_css_override() /
+	 * AAE_A_Social_Share::get_frontend_css_override(): `.e-svg-base` compiles
+	 * as `.elementor .e-svg-base` (specificity 0,2,0) with a native 65px
+	 * default, so a plain `.e-aae-a-icon-list-item-icon{width:...}` rule
+	 * (0,1,0) can never win regardless of load order — it needs the matching
+	 * `.elementor` ancestor to even tie, and this mechanism is what then
+	 * guarantees the tie is broken in our favor.
+	 */
+	public static function get_frontend_css_override(): string {
+		return sprintf(
+			'.elementor .e-aae-a-icon-list-item-icon{width:%1$dpx;height:%1$dpx}',
+			AAE_A_Icon_List_Item::ICON_SIZE_PX
+		);
 	}
 }

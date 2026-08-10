@@ -18,6 +18,8 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Color_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Dimensions_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Background_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Box_Shadow_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Shadow_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Html_Tag_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Toggle_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Svg_Control;
@@ -26,7 +28,6 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Url_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Svg\Atomic_Svg;
-use Elementor\Modules\AtomicWidgets\Elements\Atomic_Image\Atomic_Image;
 use Elementor\Modules\AtomicWidgets\Elements\Div_Block\Div_Block;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -176,7 +177,11 @@ class AAE_A_Accordion_Item extends Atomic_Element_Base {
 			] )
 			->build();
 
-		// Content children: Text (Paragraph) + Image
+		// Content child: Text (Paragraph). No image by default — an empty
+		// Atomic_Image with no src renders as a broken-image placeholder,
+		// which is exactly the "ugly default" this redesign removes. A
+		// builder can still drop an image into the Content div themselves;
+		// define_allowed_child_types() still permits it.
 		$content_text = Atomic_Paragraph::generate()
 			->editor_settings( [ 'title' => 'Content Text' ] )
 			->settings( [
@@ -185,13 +190,6 @@ class AAE_A_Accordion_Item extends Atomic_Element_Base {
 					'content'  => String_Prop_Type::generate( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.' ),
 					'children' => [],
 				] ),
-			] )
-			->build();
-
-		$content_image = Atomic_Image::generate()
-			->editor_settings( [ 'title' => 'Content Image' ] )
-			->settings( [
-				'classes' => Classes_Prop_Type::generate( [ 'aae-content-image-element' ] ),
 			] )
 			->build();
 
@@ -212,7 +210,7 @@ class AAE_A_Accordion_Item extends Atomic_Element_Base {
 			->settings( [
 				'classes' => Classes_Prop_Type::generate( [ 'aae-content-element' ] ),
 			] )
-			->children( [ $content_text, $content_image ] )
+			->children( [ $content_text ] )
 			->build();
 
 		return [ $header_div, $content_div ];
@@ -229,6 +227,11 @@ class AAE_A_Accordion_Item extends Atomic_Element_Base {
 	}
 
 	protected function define_base_styles(): array {
+		// Default look modeled on a plain "collapse-arrow" card (DaisyUI-style):
+		// a soft-bordered rounded box, a semibold title row, a small arrow that
+		// swaps orientation on open, and muted body copy. No shadows, no accent
+		// color baked in — a builder can still restyle every one of these keys
+		// from the Style panel; these are just sane, good-looking resting values.
 		$wrapper_styles = [
 			'display' => String_Prop_Type::generate( 'block' ),
 			'width' => String_Prop_Type::generate( '100%' ),
@@ -243,11 +246,28 @@ class AAE_A_Accordion_Item extends Atomic_Element_Base {
 				'unit' => 'px',
 			] ),
 			'border-radius' => Size_Prop_Type::generate( [
-				'size' => 4,
+				'size' => 12,
 				'unit' => 'px',
 			] ),
 			'padding' => Dimensions_Prop_Type::generate([]),
 			'margin' => Dimensions_Prop_Type::generate([]),
+			// Soft resting shadow — subtle lift off the page, not a heavy card.
+			'box-shadow' => Box_Shadow_Prop_Type::generate( [
+				Shadow_Prop_Type::generate( [
+					'hOffset' => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+					'vOffset' => Size_Prop_Type::generate( [ 'size' => 1, 'unit' => 'px' ] ),
+					'blur'    => Size_Prop_Type::generate( [ 'size' => 3, 'unit' => 'px' ] ),
+					'spread'  => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+					'color'   => Color_Prop_Type::generate( '#0000000d' ),
+				] ),
+				Shadow_Prop_Type::generate( [
+					'hOffset' => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+					'vOffset' => Size_Prop_Type::generate( [ 'size' => 1, 'unit' => 'px' ] ),
+					'blur'    => Size_Prop_Type::generate( [ 'size' => 2, 'unit' => 'px' ] ),
+					'spread'  => Size_Prop_Type::generate( [ 'size' => -1, 'unit' => 'px' ] ),
+					'color'   => Color_Prop_Type::generate( '#0000001a' ),
+				] ),
+			] ),
 		];
 
 		$wrapper_hover_styles = [
@@ -262,17 +282,31 @@ class AAE_A_Accordion_Item extends Atomic_Element_Base {
 
 		$header_styles = [
 			'background' => Background_Prop_Type::generate([]),
-			'color' => Color_Prop_Type::generate(''),
+			'color' => Color_Prop_Type::generate( '#1f2937' ),
+			'font-size' => Size_Prop_Type::generate( [ 'size' => 18, 'unit' => 'px' ] ),
+			'font-weight' => String_Prop_Type::generate( '600' ),
+			'line-height' => Size_Prop_Type::generate( [ 'size' => 20, 'unit' => 'px' ] ),
 			'border-style' => String_Prop_Type::generate(''),
 			'border-color' => Color_Prop_Type::generate(''),
 			'border-width' => Size_Prop_Type::generate([]),
 			'border-radius' => Dimensions_Prop_Type::generate([]),
-			'padding' => Dimensions_Prop_Type::generate([]),
+			// Tighter vertical padding — a shorter resting row height.
+			'padding' => Dimensions_Prop_Type::generate( [
+				'block-start'  => Size_Prop_Type::generate( [ 'size' => 10, 'unit' => 'px' ] ),
+				'inline-end'   => Size_Prop_Type::generate( [ 'size' => 16, 'unit' => 'px' ] ),
+				'block-end'    => Size_Prop_Type::generate( [ 'size' => 10, 'unit' => 'px' ] ),
+				'inline-start' => Size_Prop_Type::generate( [ 'size' => 16, 'unit' => 'px' ] ),
+			] ),
 			'margin' => Dimensions_Prop_Type::generate([]),
 		];
 
+		// Subtle hover tint only — the reference design keeps the header's
+		// resting look unchanged while a panel is open, so no ".active"
+		// background is baked in here (see accordion.scss).
 		$header_hover_styles = [
-			'background' => Background_Prop_Type::generate([]),
+			'background' => Background_Prop_Type::generate( [
+				'color' => Color_Prop_Type::generate( '#f9fafb' ),
+			] ),
 			'color' => Color_Prop_Type::generate(''),
 			'border-color' => Color_Prop_Type::generate(''),
 		];
@@ -303,7 +337,9 @@ class AAE_A_Accordion_Item extends Atomic_Element_Base {
 
 		$content_styles = [
 			'background' => Background_Prop_Type::generate([]),
-			'color' => Color_Prop_Type::generate(''),
+			'color' => Color_Prop_Type::generate( '#4b5563' ),
+			'font-size' => Size_Prop_Type::generate( [ 'size' => 16, 'unit' => 'px' ] ),
+			'line-height' => Size_Prop_Type::generate( [ 'size' => 23, 'unit' => 'px' ] ),
 			'border-style' => String_Prop_Type::generate(''),
 			'border-color' => Color_Prop_Type::generate(''),
 			'border-width' => Size_Prop_Type::generate([]),
@@ -325,19 +361,18 @@ class AAE_A_Accordion_Item extends Atomic_Element_Base {
 			'justify-content' => String_Prop_Type::generate( 'space-between' ),
 		];
 
+		// A small muted arrow (see open.svg/close.svg — a chevron-down that
+		// swaps for a chevron-up on the active item), not a heavy plus/minus.
 		$header_icon_styles = [
-
-		//    'width' => String_Prop_Type::generate( '24px !important' ),
-		// 	'height' => String_Prop_Type::generate( '24px !important' ),
-			//'justify-content' => String_Prop_Type::generate( 'space-between' ),
 			'width' => Size_Prop_Type::generate( [
-				'size' => 24,
+				'size' => 18,
 				'unit' => 'px',
 			] ),
 			'height' => Size_Prop_Type::generate( [
-				'size' => 24,
+				'size' => 18,
 				'unit' => 'px',
 			] ),
+			'color' => Color_Prop_Type::generate( '#6b7280' ),
 			'align-items' => String_Prop_Type::generate( 'center' ),
 			'justify-content' => String_Prop_Type::generate( 'center' ),
 		];

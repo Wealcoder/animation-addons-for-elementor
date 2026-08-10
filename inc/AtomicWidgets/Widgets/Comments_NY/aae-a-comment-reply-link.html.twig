@@ -1,5 +1,0 @@
-{% import 'elementor/macros' as m %}
-{% set classes = ['aae-a-comment-reply-link-wrap'] | merge([ base_styles.base ]) | merge(settings.classes | default([])) | join(' ') %}
-<div class="{{ classes }}" data-interaction-id="{{ interaction_id | default('') }}" {{- m.render_custom_attributes(settings) }}>
-    {{ settings.reply_html | default('') | raw }}
-</div>

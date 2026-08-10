@@ -18,6 +18,7 @@ use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Dimensions_Prop_Type;
@@ -122,6 +123,19 @@ class AAE_A_Toggle_Switcher_Tab extends Atomic_Widget_Base {
 					'children' => [],
 				] )
 				->description( 'The tab label text.' ),
+			/**
+			 * Structural identity, not runtime state: which of the two tabs this
+			 * is (Monthly/"before" vs Yearly/"after"). Drives the
+			 * aae-ts-label-before/after hook class and the default
+			 * active/e--selected look, both rendered straight from this widget's
+			 * own twig — deliberately NOT via the `classes` prop, which Elementor's
+			 * panel audits against the style registry and flags as "missing" (see
+			 * "Never put a functional hook class in the classes prop" in
+			 * CLAUDE.md). toggle-switcher.js still toggles `active`/`e--selected`
+			 * on click; this prop only decides the tab's fixed identity and its
+			 * out-of-the-box default state.
+			 */
+			'is_after' => Boolean_Prop_Type::make()->default( false ),
 		];
 	}
 

@@ -4988,6 +4988,21 @@ give a composite widget's parts their own types instead of reusing native
 `is_internal`), and its presets were rebuilt onto those parts — a fresh drop and
 every preset now report **zero** missing classes.
 
+**Toggle Switcher Tab hit the exact failure this section warns about** (fixed
+2026-08-10): `AAE_A_Toggle_Switcher_Tabs::build_default_inner_children()` was
+seeding `aae-ts-label-before` / `aae-ts-label-after` / `active` / `e--selected`
+straight into Tab's `classes` prop for the two default children. The panel
+flagged all four as missing, and ✕ stripped them from the DOM — exactly the
+classes `toggle-switcher.js` delegates clicks on and toggles at runtime, so
+dismissing the alert broke the widget. Fixed by adding a real `is_after`
+Boolean prop (structural identity — which of the two tabs this is — not
+runtime state) and having `aae-a-toggle-switcher-tab.html.twig` render the
+position + default active/e--selected classes unconditionally from that prop,
+never from `settings.classes`. `toggle-switcher.js` itself is unchanged — it
+still just looks for those class names on whatever rendered them, so presets
+that assign the same hook classes onto a different widget's `classes` prop
+(the Image Compare tradeoff) still work, at the cost of the same warning.
+
 **Image Compare is the counter-example and still open**: its parts are native
 `e-image`/`e-divider`/`e-paragraph`, whose twigs Elementor owns, so its 7 hook
 classes (`aae-a-image-compare-before`, `-thumb`, `-caption-*`, …) can't move and

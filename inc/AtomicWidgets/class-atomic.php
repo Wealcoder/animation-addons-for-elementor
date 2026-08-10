@@ -477,6 +477,8 @@ final class Atomic
 
 		// Video Mask / Flip Box
 		'aae-a-video-mask-btn'         => 'aae-a-video-mask',
+		'aae-a-video-player'           => 'aae-a-video',
+		'aae-a-video-playbtn'          => 'aae-a-video',
 		'aae-a-flip-box-front'         => 'aae-a-flip-box',
 		'aae-a-flip-box-back'          => 'aae-a-flip-box',
 		'aae-a-flip-box-title'         => 'aae-a-flip-box',
@@ -3133,6 +3135,60 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			'aae-a-video' => [
+				'label'        => 'Video',
+				'description'  => 'A simple video player card with a centered play button and a standard custom controls bar — supports YouTube, Vimeo, a hosted URL, and Media Library uploads.',
+				'icon'         => 'eicon-video-playlist',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'video',
+					'youtube',
+					'vimeo',
+					'player',
+					'media',
+					'atomic',
+				],
+				'category'     => 'video',
+				'order'        => 19,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-video-player' => [
+				'label'        => 'Video — Player',
+				'description'  => 'Internal video-engine sub-element used by the AAE Video widget.',
+				'icon'         => 'eicon-video-playlist',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'is_internal'  => true,
+				'default'      => true,
+				'keywords'     => [ 'video', 'player', 'internal' ],
+				'category'     => 'video',
+				'order'        => 20,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-video-playbtn' => [
+				'label'        => 'Video — Play Button',
+				'description'  => 'Internal play-button trigger used by the AAE Video widget.',
+				'icon'         => 'eicon-play',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'is_internal'  => true,
+				'default'      => true,
+				'keywords'     => [ 'video', 'play', 'button', 'internal' ],
+				'category'     => 'video',
+				'order'        => 21,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
 		];
 	}
 
@@ -5074,6 +5130,28 @@ final class Atomic
 		'aae-a-video-mask-btn' => [
 			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\VideoMask\AAE_A_Video_Mask_Btn',
 			'file'       => 'Widgets/VideoMask/class-aae-a-video-mask-btn.php',
+			'has_script' => false,
+		],
+
+		'aae-a-video' => [
+			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Video\AAE_A_Video',
+			'file'          => 'Widgets/Video/class-aae-a-video.php',
+			'script_handle' => 'aae-a-video-js',
+			'script_path'   => '/assets/atomic/js/video.js',
+			'has_script'    => true,
+			'style_handle'  => 'aae-a-video-css',
+			'style_path'    => '/assets/atomic/css/video.css',
+		],
+
+		'aae-a-video-player' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Video\AAE_A_Video_Player',
+			'file'       => 'Widgets/Video/Parts/class-aae-a-video-player.php',
+			'has_script' => false,
+		],
+
+		'aae-a-video-playbtn' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Video\AAE_A_Video_PlayBtn',
+			'file'       => 'Widgets/Video/Parts/class-aae-a-video-playbtn.php',
 			'has_script' => false,
 		],
 
