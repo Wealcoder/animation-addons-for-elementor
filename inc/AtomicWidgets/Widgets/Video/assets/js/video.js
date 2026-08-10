@@ -5,9 +5,11 @@ import { register } from '@elementor/frontend-handlers';
  * One frontend handler bound to the PARENT element (e-aae-a-video), which
  * owns every source/playback setting as data-aae-video-* attributes. It
  * reaches into its own rendered subtree for:
- *   - .aae-a-video-poster — the native Image child (hook class seeded via
- *     its `classes` prop, since a native widget emits no data-element_type
- *     of its own to key off instead).
+ *   - .aae-a-video-poster — plain `<img>` markup this element's OWN twig
+ *     renders directly from its `poster_image` setting (not a child element
+ *     at all), so its hook class is hardcoded there — nothing for this file
+ *     to swap or protect at runtime; the PHP/twig side already picked
+ *     between the auto-fetched thumbnail and the user's own image.
  *   - .aae-a-video-playbtn — our own Parts\AAE_A_Video_PlayBtn, whose hook
  *     class is hardcoded in ITS OWN twig instead (see that class's docblock
  *     for why it isn't a reused native e-button).
@@ -65,8 +67,6 @@ const readConfig = ( el ) => ( {
 	lazyload: el.getAttribute( 'data-aae-video-lazyload' ) === 'true',
 	youtubePrivacy: el.getAttribute( 'data-aae-video-youtube-privacy' ) === 'true',
 	vimeoDnt: el.getAttribute( 'data-aae-video-vimeo-dnt' ) === 'true',
-	poster: el.getAttribute( 'data-aae-video-poster' ) || '',
-	placeholder: el.getAttribute( 'data-aae-video-placeholder' ) || '',
 	controlsEnabled: el.getAttribute( 'data-aae-video-controls-enabled' ) === 'true',
 	autohide: el.getAttribute( 'data-aae-video-controls-autohide' ) === 'true',
 } );
@@ -544,21 +544,6 @@ const toggleFullscreen = ( fsTarget ) => {
 	fallbackToVideo();
 };
 
-// Swap the poster <img> for the auto-fetched thumbnail, but ONLY while it's
-// still showing Elementor's own placeholder — a user-picked image on the
-// native Image child must never be overridden.
-const applyAutoPoster = ( el, cfg ) => {
-	if ( ! cfg.poster ) return;
-	// Not `:scope >` — the editor wraps a materialized child widget in its
-	// own container for drag/selection purposes, so the poster <img> is a
-	// descendant here even though the frontend's server-rendered HTML (which
-	// has no such wrapper) makes it a direct child. See installDelegatedClicks().
-	const img = el.querySelector( '.aae-a-video-poster' );
-	if ( ! img ) return;
-	if ( cfg.placeholder && img.getAttribute( 'src' ) !== cfg.placeholder ) return;
-	img.src = cfg.poster;
-};
-
 // --- Wiring ---
 
 // The video engine (adapter factory + its play/pause/ended/timeupdate wiring)
@@ -692,8 +677,6 @@ const installDelegatedClicks = ( doc ) => {
 const bindEngineOnce = ( el, mountEl, engine, cfg, signal ) => {
 	if ( mountEl.dataset.aaeVideoBound ) return;
 	mountEl.dataset.aaeVideoBound = 'true';
-
-	applyAutoPoster( el, cfg );
 
 	const controlsBar = mountEl.querySelector( '.aae-a-video-controls' );
 	if ( controlsBar ) {
