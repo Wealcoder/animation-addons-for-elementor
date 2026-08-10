@@ -22,6 +22,8 @@ import { register } from '@elementor/frontend-handlers';
 
 const YT_ID_REGEX = /^(?:https?:\/\/)?(?:www\.)?(?:m\.)?(?:youtu\.be\/|youtube\.com\/(?:(?:watch)?\?(?:.*&)?vi?=|(?:embed|v|vi|user|shorts)\/))([^?&"'>]+)/;
 const VIMEO_ID_REGEX = /vimeo\.com\/(?:.*\/)?(?:videos\/)?(\d+)/;
+const DAILYMOTION_ID_REGEX = /(?:dailymotion\.com\/(?:embed\/)?video\/|dai\.ly\/)([a-zA-Z0-9]+)/;
+const VIDEOPRESS_GUID_REGEX = /videopress\.com\/(?:v|embed)\/([a-zA-Z0-9]+)/;
 
 // Kept in sync with AAE_A_Video::extract_youtube_id() (PHP) — both extract
 // the same id from the same URL shapes, one server-side (poster
@@ -36,11 +38,23 @@ const getVimeoIdFromUrl = ( url ) => {
 	return match ? match[ 1 ] : null;
 };
 
+const getDailymotionIdFromUrl = ( url ) => {
+	const match = ( url || '' ).match( DAILYMOTION_ID_REGEX );
+	return match ? match[ 1 ] : null;
+};
+
+const getVideoPressGuidFromUrl = ( url ) => {
+	const match = ( url || '' ).match( VIDEOPRESS_GUID_REGEX );
+	return match ? match[ 1 ] : null;
+};
+
 const readConfig = ( el ) => ( {
 	type: el.getAttribute( 'data-aae-video-type' ) || 'youtube',
 	youtubeUrl: el.getAttribute( 'data-aae-video-youtube-url' ) || '',
 	hostedUrl: el.getAttribute( 'data-aae-video-hosted-url' ) || '',
 	vimeoUrl: el.getAttribute( 'data-aae-video-vimeo-url' ) || '',
+	dailymotionUrl: el.getAttribute( 'data-aae-video-dailymotion-url' ) || '',
+	videopressUrl: el.getAttribute( 'data-aae-video-videopress-url' ) || '',
 	autoplay: el.getAttribute( 'data-aae-video-autoplay' ) === 'true',
 	mute: el.getAttribute( 'data-aae-video-mute' ) === 'true',
 	loop: el.getAttribute( 'data-aae-video-loop' ) === 'true',
@@ -281,10 +295,154 @@ const createVimeoAdapter = ( mountEl, cfg ) => {
 	};
 };
 
+// --- postMessage-based adapters (Dailymotion, VideoPress) ---
+//
+// Neither provider needs an SDK script or an account-issued player id — both
+// embeds accept simple play/pause/seek/mute commands over window.postMessage
+// and report state back the same way. This is a best-effort implementation
+// against each provider's publicly documented postMessage protocol — unlike
+// YouTube/Vimeo there's no official JS SDK to lean on here, so if a command
+// or an event doesn't do anything, the exact message shape in DAILYMOTION_
+// PROVIDER / VIDEOPRESS_PROVIDER below is the first place to check and
+// correct against a real embed's devtools console.
+
+const createPostMessageAdapter = ( mountEl, cfg, provider ) => {
+	const iframe = document.createElement( 'iframe' );
+	iframe.className = 'aae-a-video-embed';
+	iframe.src = provider.buildSrc( cfg );
+	iframe.allow = 'autoplay; fullscreen; picture-in-picture';
+	iframe.allowFullscreen = true;
+	mountEl.insertBefore( iframe, mountEl.firstChild );
+
+	const listeners = {};
+	const emit = ( evt ) => ( listeners[ evt ] || [] ).forEach( ( cb ) => cb() );
+	const on = ( evt, cb ) => {
+		( listeners[ evt ] = listeners[ evt ] || [] ).push( cb );
+	};
+
+	let currentTime = 0;
+	let duration = 0;
+	let isPlaying = false;
+	let mutedState = cfg.mute || cfg.autoplay;
+
+	const send = ( command ) => iframe.contentWindow?.postMessage( provider.encode( command ), '*' );
+
+	const onMessage = ( e ) => {
+		if ( e.source !== iframe.contentWindow ) return;
+		const parsed = provider.decode( e.data );
+		if ( ! parsed ) return;
+
+		if ( 'timeupdate' === parsed.type ) {
+			if ( 'number' === typeof parsed.currentTime ) currentTime = parsed.currentTime;
+			if ( 'number' === typeof parsed.duration ) duration = parsed.duration;
+			emit( 'timeupdate' );
+		} else if ( 'play' === parsed.type ) {
+			isPlaying = true;
+			emit( 'play' );
+		} else if ( 'pause' === parsed.type ) {
+			isPlaying = false;
+			emit( 'pause' );
+		} else if ( 'ended' === parsed.type ) {
+			isPlaying = false;
+			emit( 'ended' );
+		}
+	};
+	window.addEventListener( 'message', onMessage );
+
+	return {
+		play: () => send( { action: 'play' } ),
+		pause: () => send( { action: 'pause' } ),
+		togglePlay: () => send( { action: isPlaying ? 'pause' : 'play' } ),
+		seekTo: ( s ) => send( { action: 'seek', time: s } ),
+		getCurrentTime: () => currentTime,
+		getDuration: () => duration,
+		mute: () => { mutedState = true; send( { action: 'mute', muted: true } ); },
+		unmute: () => { mutedState = false; send( { action: 'mute', muted: false } ); },
+		isMuted: () => mutedState,
+		getFullscreenTarget: () => iframe,
+		on,
+		destroy: () => { window.removeEventListener( 'message', onMessage ); iframe.remove(); },
+	};
+};
+
+const DAILYMOTION_PROVIDER = {
+	buildSrc: ( cfg ) => {
+		const id = getDailymotionIdFromUrl( cfg.dailymotionUrl );
+		const muted = cfg.mute || cfg.autoplay;
+		const params = new URLSearchParams( {
+			api: 'postMessage',
+			autoplay: cfg.autoplay ? '1' : '0',
+			mute: muted ? '1' : '0',
+			loop: cfg.loop ? '1' : '0',
+			controls: '0',
+			'queue-enable': '0',
+		} );
+		return `https://www.dailymotion.com/embed/video/${ id }?${ params.toString() }`;
+	},
+	// Dailymotion's Player API (`?api=postMessage`) exchanges JSON STRINGS:
+	// commands are {command, parameters: [...]}, events are {event, parameters}.
+	encode: ( command ) => {
+		if ( 'seek' === command.action ) return JSON.stringify( { command: 'seek', parameters: [ command.time ] } );
+		if ( 'mute' === command.action ) return JSON.stringify( { command: 'muted', parameters: [ command.muted ] } );
+		return JSON.stringify( { command: command.action, parameters: [] } );
+	},
+	decode: ( raw ) => {
+		let data;
+		try {
+			data = 'string' === typeof raw ? JSON.parse( raw ) : raw;
+		} catch ( e ) {
+			return null;
+		}
+		if ( ! data || ! data.event ) return null;
+		if ( 'timeupdate' === data.event ) return { type: 'timeupdate', currentTime: data.parameters?.time, duration: data.parameters?.duration };
+		if ( 'video_end' === data.event || 'ended' === data.event ) return { type: 'ended' };
+		if ( 'play' === data.event || 'playing' === data.event ) return { type: 'play' };
+		if ( 'pause' === data.event ) return { type: 'pause' };
+		return null;
+	},
+};
+
+const VIDEOPRESS_PROVIDER = {
+	buildSrc: ( cfg ) => {
+		const guid = getVideoPressGuidFromUrl( cfg.videopressUrl );
+		const muted = cfg.mute || cfg.autoplay;
+		const params = new URLSearchParams( {
+			hd: '0',
+			autoPlay: cfg.autoplay ? '1' : '0',
+			muted: muted ? '1' : '0',
+			loop: cfg.loop ? '1' : '0',
+			controls: '0',
+			persisttime: '0',
+		} );
+		return `https://videopress.com/embed/${ guid }?${ params.toString() }`;
+	},
+	// VideoPress's embed posts/accepts plain OBJECTS (not JSON strings).
+	encode: ( command ) => {
+		if ( 'seek' === command.action ) return { event: 'videopress_action_set_currenttime', currentTime: command.time };
+		if ( 'mute' === command.action ) return { event: 'videopress_action_set_muted', muted: command.muted };
+		if ( 'play' === command.action ) return { event: 'videopress_action_play_video' };
+		return { event: 'videopress_action_pause_video' };
+	},
+	decode: ( raw ) => {
+		const data = raw;
+		if ( ! data || 'object' !== typeof data || ! data.event ) return null;
+		if ( 'videopress_timeupdate' === data.event ) return { type: 'timeupdate', currentTime: data.currentTime, duration: data.duration };
+		if ( 'videopress_ended' === data.event ) return { type: 'ended' };
+		if ( 'videopress_playing' === data.event ) return { type: 'play' };
+		if ( 'videopress_paused' === data.event ) return { type: 'pause' };
+		return null;
+	},
+};
+
+const createDailymotionAdapter = ( mountEl, cfg ) => createPostMessageAdapter( mountEl, cfg, DAILYMOTION_PROVIDER );
+const createVideoPressAdapter = ( mountEl, cfg ) => createPostMessageAdapter( mountEl, cfg, VIDEOPRESS_PROVIDER );
+
 const ADAPTERS = {
 	hosted: createNativeAdapter,
 	youtube: createYoutubeAdapter,
 	vimeo: createVimeoAdapter,
+	dailymotion: createDailymotionAdapter,
+	videopress: createVideoPressAdapter,
 };
 
 // --- UI helpers ---
@@ -346,7 +504,11 @@ const toggleFullscreen = ( fsTarget ) => {
 // native Image child must never be overridden.
 const applyAutoPoster = ( el, cfg ) => {
 	if ( ! cfg.poster ) return;
-	const img = el.querySelector( ':scope > .aae-a-video-poster' );
+	// Not `:scope >` — the editor wraps a materialized child widget in its
+	// own container for drag/selection purposes, so the poster <img> is a
+	// descendant here even though the frontend's server-rendered HTML (which
+	// has no such wrapper) makes it a direct child. See bindTriggers().
+	const img = el.querySelector( '.aae-a-video-poster' );
 	if ( ! img ) return;
 	if ( cfg.placeholder && img.getAttribute( 'src' ) !== cfg.placeholder ) return;
 	img.src = cfg.poster;
@@ -354,17 +516,14 @@ const applyAutoPoster = ( el, cfg ) => {
 
 // --- Wiring ---
 
-const initVideo = ( el, signal ) => {
-	const cfg = readConfig( el );
-	const opts = signal ? { signal } : {};
-
-	const mountEl = el.querySelector( '.aae-a-video-mount' );
-	if ( ! mountEl ) return;
-
-	applyAutoPoster( el, cfg );
+// The video engine (adapter factory + its play/pause/ended/timeupdate wiring)
+// is created ONCE per mount and stashed ON the mount element itself, so a
+// later, independent call (the editor poll tick below) can retrieve the SAME
+// controller-binding closure instead of losing it when initVideo() re-runs.
+const getOrCreateEngine = ( el, mountEl, cfg ) => {
+	if ( mountEl.__aaeVideoEngine ) return mountEl.__aaeVideoEngine;
 
 	let controller = null;
-
 	const bindController = () => {
 		if ( controller ) return controller;
 		const factory = ADAPTERS[ cfg.type ];
@@ -379,23 +538,71 @@ const initVideo = ( el, signal ) => {
 		return controller;
 	};
 
-	const requestPlay = () => bindController()?.play();
+	const engine = {
+		bindController,
+		requestPlay: () => bindController()?.play(),
+		getController: () => controller,
+	};
+	mountEl.__aaeVideoEngine = engine;
 
-	// Poster + play button (initial state) and the click-zone (once playing,
-	// poster/button fade out with pointer-events:none and this is what's
-	// left underneath) all toggle play/pause — clicking the video always
-	// does something, whether or not the controls bar is enabled/visible.
+	return engine;
+};
+
+// Poster + play button (initial state) and the click-zone (once playing,
+// poster/button fade out with pointer-events:none and this is what's left
+// underneath) all toggle play/pause. Bound with a flag on EACH TRIGGER
+// ELEMENT individually — not on the mount — and called on every editor poll
+// tick (cheap no-op once bound): confirmed live that Elementor's editor can
+// re-render the native Image/Button children a SECOND time shortly after
+// the widget is first dropped, independently of the Player part's own mount
+// staying put, leaving a mount already flagged "bound" sitting next to
+// brand-new, listener-less poster/button nodes. Re-scanning every tick
+// (rather than binding once, or a fixed-attempt retry) handles both that
+// case and the initial "children not rendered yet" race uniformly.
+//
+// Poster/button are plain descendant lookups, NOT `:scope >` — confirmed
+// live that the editor wraps each materialized child widget in its own
+// container (for drag/selection), so they're no longer direct children the
+// way they are in the frontend's server-rendered HTML. The click-zone stays
+// `:scope >` since it's plain markup inside the Player part's OWN single
+// twig render, never wrapped like a separate child widget is.
+//
+// No `signal` here — see bindEngineOnce()'s docblock for why.
+const bindTriggers = ( el, mountEl, engine ) => {
 	[
-		el.querySelector( ':scope > .aae-a-video-poster' ),
-		el.querySelector( ':scope > .aae-a-video-playbtn' ),
+		el.querySelector( '.aae-a-video-poster' ),
+		el.querySelector( '.aae-a-video-playbtn' ),
 		mountEl.querySelector( ':scope > .aae-a-video-clickzone' ),
 	].forEach( ( trigger ) => {
-		if ( ! trigger ) return;
+		if ( ! trigger || trigger.dataset.aaeVideoTriggerBound ) return;
+		trigger.dataset.aaeVideoTriggerBound = 'true';
 		trigger.addEventListener( 'click', ( e ) => {
 			e.preventDefault(); // the native button may render as <a> if a Link is set
-			bindController()?.togglePlay();
-		}, opts );
+			engine.bindController()?.togglePlay();
+		} );
 	} );
+};
+
+// Everything else (controls-bar wiring, autoplay) lives on the mount's own
+// stable, twig-rendered markup — confirmed live to never get swapped out
+// independently the way poster/button can — so it's safe to bind once,
+// guarded by the mount's own flag.
+//
+// Deliberately NOT passing Elementor's register()-callback `signal` to any
+// addEventListener call here (or in bindTriggers()) — confirmed live that
+// the editor can abort it independently of these DOM nodes actually being
+// removed (per spec, an aborted signal silently detaches any listener
+// registered with it), which was the real cause of a widget that bound
+// correctly on drop going permanently unresponsive moments later. Our own
+// per-element/per-mount flags already make (re)binding idempotent, so
+// nothing here depends on the signal for correctness — the trade-off is
+// that a listener on a truly-removed node is only cleaned up by garbage
+// collection instead of an explicit abort, which is harmless at this scale.
+const bindEngineOnce = ( el, mountEl, engine, cfg, signal ) => {
+	if ( mountEl.dataset.aaeVideoBound ) return;
+	mountEl.dataset.aaeVideoBound = 'true';
+
+	applyAutoPoster( el, cfg );
 
 	const controlsBar = mountEl.querySelector( '.aae-a-video-controls' );
 	if ( controlsBar ) {
@@ -403,12 +610,13 @@ const initVideo = ( el, signal ) => {
 			controlsBar.remove();
 		} else {
 			controlsBar.querySelector( '.aae-a-video-btn--playpause' )?.addEventListener( 'click', () => {
-				bindController()?.togglePlay();
-			}, opts );
+				engine.bindController()?.togglePlay();
+			} );
 
 			const progressTrack = controlsBar.querySelector( '.aae-a-video-progress' );
 			if ( progressTrack ) {
 				const seekFromEvent = ( evt ) => {
+					const controller = engine.getController();
 					if ( ! controller ) return;
 					const rect = progressTrack.getBoundingClientRect();
 					const pct = Math.min( 1, Math.max( 0, ( evt.clientX - rect.left ) / rect.width ) );
@@ -416,26 +624,26 @@ const initVideo = ( el, signal ) => {
 					if ( duration > 0 ) controller.seekTo( pct * duration );
 				};
 				let dragging = false;
-				progressTrack.addEventListener( 'pointerdown', ( e ) => { dragging = true; seekFromEvent( e ); }, opts );
-				progressTrack.addEventListener( 'pointermove', ( e ) => { if ( dragging ) seekFromEvent( e ); }, opts );
-				window.addEventListener( 'pointerup', () => { dragging = false; }, opts );
+				progressTrack.addEventListener( 'pointerdown', ( e ) => { dragging = true; seekFromEvent( e ); } );
+				progressTrack.addEventListener( 'pointermove', ( e ) => { if ( dragging ) seekFromEvent( e ); } );
+				window.addEventListener( 'pointerup', () => { dragging = false; } );
 			}
 
 			const muteBtn = controlsBar.querySelector( '.aae-a-video-btn--mute' );
 			if ( muteBtn ) {
 				muteBtn.addEventListener( 'click', () => {
-					const c = bindController();
+					const c = engine.bindController();
 					if ( ! c ) return;
 					const nextMuted = ! c.isMuted();
 					nextMuted ? c.mute() : c.unmute();
 					setMutedState( el, nextMuted );
-				}, opts );
+				} );
 				setMutedState( el, cfg.mute || cfg.autoplay );
 			}
 
 			controlsBar.querySelector( '.aae-a-video-btn--fullscreen' )?.addEventListener( 'click', () => {
-				toggleFullscreen( controller?.getFullscreenTarget?.() || mountEl );
-			}, opts );
+				toggleFullscreen( engine.getController()?.getFullscreenTarget?.() || mountEl );
+			} );
 
 			// Auto-hide the controls bar while playing; :hover/:focus-within in
 			// CSS provide an always-available reveal path independent of this timer.
@@ -452,7 +660,7 @@ const initVideo = ( el, signal ) => {
 					el.classList.remove( 'is-controls-hidden' );
 					if ( el.classList.contains( 'is-playing' ) ) scheduleHide();
 				};
-				[ 'pointermove', 'touchstart', 'keydown' ].forEach( ( evt ) => el.addEventListener( evt, onActivity, opts ) );
+				[ 'pointermove', 'touchstart', 'keydown' ].forEach( ( evt ) => el.addEventListener( evt, onActivity ) );
 			}
 		}
 	}
@@ -464,16 +672,29 @@ const initVideo = ( el, signal ) => {
 		if ( cfg.lazyload && 'hosted' !== cfg.type ) {
 			const observer = new IntersectionObserver( ( entries ) => {
 				if ( entries.some( ( entry ) => entry.isIntersecting ) ) {
-					requestPlay();
+					engine.requestPlay();
 					observer.disconnect();
 				}
 			} );
 			observer.observe( el );
 			if ( signal ) signal.addEventListener( 'abort', () => observer.disconnect() );
 		} else {
-			requestPlay();
+			engine.requestPlay();
 		}
 	}
+};
+
+const initVideo = ( el, signal ) => {
+	const mountEl = el.querySelector( '.aae-a-video-mount' );
+	if ( ! mountEl ) return;
+
+	const cfg = readConfig( el );
+	const engine = getOrCreateEngine( el, mountEl, cfg );
+
+	// Safe (and necessary) to call on every invocation, including every
+	// editor poll tick — see bindTriggers()'s own docblock for why.
+	bindTriggers( el, mountEl, engine );
+	bindEngineOnce( el, mountEl, engine, cfg, signal );
 };
 
 register( {
@@ -484,3 +705,20 @@ register( {
 		if ( container ) initVideo( container, signal );
 	},
 } );
+
+// Editor-only polling fallback (same pattern as form.js's multi-step
+// re-render fix — see CLAUDE.md). register()'s callback only fires once,
+// right after a fresh drop; it is never re-invoked when Elementor repaints
+// this element's native children later (a settings change, or — confirmed
+// live — even shortly after the very first drop, with no setting touched at
+// all), which is exactly what leaves a freshly-added video unplayable in the
+// editor while the very same instance works fine on the frontend (which
+// never repaints after load). initVideo() is cheap: bindTriggers() re-checks
+// the actual current poster/button/click-zone nodes every tick (idempotent
+// per element via their own flag), and bindEngineOnce() no-ops once the
+// mount's own stable markup has been wired.
+if ( isEditMode() ) {
+	setInterval( () => {
+		document.querySelectorAll( '.aae-a-video' ).forEach( ( el ) => initVideo( el, null ) );
+	}, 1000 );
+}

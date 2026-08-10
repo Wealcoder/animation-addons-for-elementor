@@ -2,6 +2,11 @@
     | merge(settings.aae_btn_text_flip ? ['aae-btn-txtflip'] : [])
     | merge(settings.aae_btn_border_divide ? ['aae-btn-borderdivide'] : [])
     | merge(settings.aae_btn_mask ? ['aae-btn-mask'] : [])
+    | merge(settings.aae_btn_divide ? ['aae-btn-divide'] : [])
+    | merge(settings.aae_btn_cross ? ['aae-btn-cross'] : [])
+    | merge(settings.aae_btn_outlinepill ? ['aae-btn-outlinepill'] : [])
+    | merge(settings.aae_btn_slidefill ? ['aae-btn-slidefill'] : [])
+    | merge(settings.aae_btn_underline ? ['aae-btn-underline'] : [])
     | merge(settings.classes | default([])) %}
 
 {% if settings.btn_target == '_blank' %}

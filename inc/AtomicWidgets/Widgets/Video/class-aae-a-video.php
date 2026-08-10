@@ -150,10 +150,10 @@ class AAE_A_Video extends Atomic_Element_Base {
 			'attributes' => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
 
 			// Source. Extend the enum + a matching branch in this class'
-			// resolve_source_url()/get_atomic_settings() and video.js's
-			// pickAdapter() to add another provider.
+			// resolve_poster_url()/get_atomic_settings() and video.js's
+			// ADAPTERS map to add another provider.
 			'video_type' => String_Prop_Type::make()
-				->enum( [ 'youtube', 'hosted', 'vimeo' ] )
+				->enum( [ 'youtube', 'hosted', 'vimeo', 'dailymotion', 'videopress' ] )
 				->default( 'youtube' ),
 
 			'video_youtube_url' => String_Prop_Type::make()
@@ -169,6 +169,14 @@ class AAE_A_Video extends Atomic_Element_Base {
 			'video_vimeo_url' => String_Prop_Type::make()
 				->default( '' )
 				->set_dependencies( $when( 'vimeo' ) ),
+
+			'video_dailymotion_url' => String_Prop_Type::make()
+				->default( '' )
+				->set_dependencies( $when( 'dailymotion' ) ),
+
+			'video_videopress_url' => String_Prop_Type::make()
+				->default( '' )
+				->set_dependencies( $when( 'videopress' ) ),
 
 			// Playback — shared across all three sources.
 			'autoplay' => Boolean_Prop_Type::make()->default( false ),
@@ -208,9 +216,11 @@ class AAE_A_Video extends Atomic_Element_Base {
 					Select_Control::bind_to( 'video_type' )
 						->set_label( __( 'Source', 'animation-addons-for-elementor' ) )
 						->set_options( [
-							[ 'value' => 'youtube', 'label' => __( 'YouTube', 'animation-addons-for-elementor' ) ],
-							[ 'value' => 'hosted',  'label' => __( 'Hosted Video', 'animation-addons-for-elementor' ) ],
-							[ 'value' => 'vimeo',   'label' => __( 'Vimeo', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'youtube',     'label' => __( 'YouTube', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'hosted',      'label' => __( 'Hosted Video', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'vimeo',       'label' => __( 'Vimeo', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'dailymotion', 'label' => __( 'Dailymotion', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'videopress',  'label' => __( 'VideoPress', 'animation-addons-for-elementor' ) ],
 						] ),
 
 					Text_Control::bind_to( 'video_youtube_url' )
@@ -222,6 +232,14 @@ class AAE_A_Video extends Atomic_Element_Base {
 
 					Text_Control::bind_to( 'video_vimeo_url' )
 						->set_label( __( 'Vimeo URL', 'animation-addons-for-elementor' ) )
+						->set_placeholder( __( 'Type or paste your URL', 'animation-addons-for-elementor' ) ),
+
+					Text_Control::bind_to( 'video_dailymotion_url' )
+						->set_label( __( 'Dailymotion URL', 'animation-addons-for-elementor' ) )
+						->set_placeholder( __( 'Type or paste your URL', 'animation-addons-for-elementor' ) ),
+
+					Text_Control::bind_to( 'video_videopress_url' )
+						->set_label( __( 'VideoPress URL', 'animation-addons-for-elementor' ) )
 						->set_placeholder( __( 'Type or paste your URL', 'animation-addons-for-elementor' ) ),
 				] ),
 
@@ -403,7 +421,22 @@ class AAE_A_Video extends Atomic_Element_Base {
 				return $id ? "https://img.youtube.com/vi/{$id}/maxresdefault.jpg" : '';
 
 			case 'vimeo':
-				return self::fetch_vimeo_thumbnail( $settings['video_vimeo_url'] ?? '' );
+				return self::fetch_oembed_thumbnail(
+					'vimeo_' . md5( $settings['video_vimeo_url'] ?? '' ),
+					'https://vimeo.com/api/oembed.json?url=' . rawurlencode( $settings['video_vimeo_url'] ?? '' )
+				);
+
+			case 'dailymotion':
+				return self::fetch_oembed_thumbnail(
+					'dm_' . md5( $settings['video_dailymotion_url'] ?? '' ),
+					'https://www.dailymotion.com/services/oembed?url=' . rawurlencode( $settings['video_dailymotion_url'] ?? '' )
+				);
+
+			case 'videopress':
+				return self::fetch_oembed_thumbnail(
+					'vp_' . md5( $settings['video_videopress_url'] ?? '' ),
+					'https://public-api.wordpress.com/oembed/?format=json&url=' . rawurlencode( $settings['video_videopress_url'] ?? '' )
+				);
 
 			default:
 				// hosted: no thumbnail API for an arbitrary file.
@@ -431,24 +464,27 @@ class AAE_A_Video extends Atomic_Element_Base {
 		return null;
 	}
 
-	private static function fetch_vimeo_thumbnail( string $url ): string {
-		if ( empty( $url ) ) {
-			return '';
-		}
-
-		$key    = 'aae_vimeo_thumb_' . md5( $url );
+	/**
+	 * Shared oEmbed thumbnail fetch for every provider with no deterministic
+	 * thumbnail URL pattern (Vimeo, Dailymotion, VideoPress — unlike YouTube,
+	 * where img.youtube.com/vi/<id>/... needs no HTTP call at all).
+	 *
+	 * @param string $cache_key_part Unique per URL+provider; caller salts it
+	 *                               (e.g. 'vimeo_'.md5($url)) so the three
+	 *                               providers can never collide in the cache.
+	 * @param string $oembed_url     Full oEmbed request URL, already built.
+	 */
+	private static function fetch_oembed_thumbnail( string $cache_key_part, string $oembed_url ): string {
+		$key    = 'aae_video_thumb_' . $cache_key_part;
 		$cached = get_transient( $key );
 
 		if ( false !== $cached ) {
 			// '' is itself a valid cached failure — avoid re-hitting the API
-			// on every render of a private/unlisted/invalid Vimeo URL.
+			// on every render of a private/unlisted/invalid video URL.
 			return $cached;
 		}
 
-		$response = wp_remote_get(
-			'https://vimeo.com/api/oembed.json?url=' . rawurlencode( $url ),
-			[ 'timeout' => 3 ]
-		);
+		$response = wp_remote_get( $oembed_url, [ 'timeout' => 3 ] );
 
 		$thumb = '';
 

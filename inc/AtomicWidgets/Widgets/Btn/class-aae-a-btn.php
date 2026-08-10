@@ -121,6 +121,11 @@ class AAE_A_Btn extends Atomic_Element_Base
 			'aae_btn_text_flip'     => Boolean_Prop_Type::make()->default(false),
 			'aae_btn_border_divide' => Boolean_Prop_Type::make()->default(false),
 			'aae_btn_mask'          => Boolean_Prop_Type::make()->default(false),
+			'aae_btn_divide'        => Boolean_Prop_Type::make()->default(false),
+			'aae_btn_cross'         => Boolean_Prop_Type::make()->default(false),
+			'aae_btn_outlinepill'   => Boolean_Prop_Type::make()->default(false),
+			'aae_btn_slidefill'     => Boolean_Prop_Type::make()->default(false),
+			'aae_btn_underline'     => Boolean_Prop_Type::make()->default(false),
 		];
 	}
 
