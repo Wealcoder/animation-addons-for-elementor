@@ -8,9 +8,18 @@
 .aae-a-video {
 	aspect-ratio: 16 / 9;
 
-	// Full-bleed fill for the poster and the Player part's own root.
-	> .aae-a-video-poster,
-	> .aae-a-video-mount {
+	// Full-bleed fill for the poster and the Player part's own root. NOT a
+	// `>` direct-child combinator — confirmed live that the Elementor editor
+	// wraps each of these two (poster, Player) in its own extra container for
+	// drag/selection purposes, same as the JS side's own descendant lookups
+	// (see video.js's applyAutoPoster()/bindTriggers() docblocks). A `>` rule
+	// only ever matched on the frontend's unwrapped markup, so in the editor
+	// neither element got positioned at all — both fell back to normal
+	// document flow, stacking the poster image, player, and play button
+	// vertically instead of overlaying them, which is what made the widget
+	// unplayable and the play button "jump" far down the page when selected.
+	.aae-a-video-poster,
+	.aae-a-video-mount {
 		position: absolute;
 		inset: 0;
 		width: 100%;
@@ -21,12 +30,12 @@
 		aspect-ratio: auto;
 	}
 
-	> .aae-a-video-poster {
+	.aae-a-video-poster {
 		z-index: 1;
 		transition: opacity 0.2s ease;
 	}
 
-	&.is-playing > .aae-a-video-poster {
+	&.is-playing .aae-a-video-poster {
 		opacity: 0;
 		pointer-events: none;
 	}
@@ -34,7 +43,7 @@
 	// Center the native Button child as a circular overlay trigger. Only
 	// structural/positional — background, radius, colour, size all stay on
 	// the button's own Style tab; a real edit there wins over this default.
-	> .aae-a-video-playbtn {
+	.aae-a-video-playbtn {
 		position: absolute;
 		inset: 0;
 		margin: auto;
@@ -56,13 +65,13 @@
 		}
 	}
 
-	&.is-playing > .aae-a-video-playbtn {
+	&.is-playing .aae-a-video-playbtn {
 		opacity: 0;
 		pointer-events: none;
 	}
 
 	@media (max-width: 767px) {
-		> .aae-a-video-playbtn {
+		.aae-a-video-playbtn {
 			width: 48px;
 			height: 48px;
 			font-size: 16px;

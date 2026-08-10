@@ -507,7 +507,7 @@ const applyAutoPoster = ( el, cfg ) => {
 	// Not `:scope >` — the editor wraps a materialized child widget in its
 	// own container for drag/selection purposes, so the poster <img> is a
 	// descendant here even though the frontend's server-rendered HTML (which
-	// has no such wrapper) makes it a direct child. See bindTriggers().
+	// has no such wrapper) makes it a direct child. See installDelegatedClicks().
 	const img = el.querySelector( '.aae-a-video-poster' );
 	if ( ! img ) return;
 	if ( cfg.placeholder && img.getAttribute( 'src' ) !== cfg.placeholder ) return;
@@ -548,39 +548,85 @@ const getOrCreateEngine = ( el, mountEl, cfg ) => {
 	return engine;
 };
 
-// Poster + play button (initial state) and the click-zone (once playing,
-// poster/button fade out with pointer-events:none and this is what's left
-// underneath) all toggle play/pause. Bound with a flag on EACH TRIGGER
-// ELEMENT individually — not on the mount — and called on every editor poll
-// tick (cheap no-op once bound): confirmed live that Elementor's editor can
-// re-render the native Image/Button children a SECOND time shortly after
-// the widget is first dropped, independently of the Player part's own mount
-// staying put, leaving a mount already flagged "bound" sitting next to
-// brand-new, listener-less poster/button nodes. Re-scanning every tick
-// (rather than binding once, or a fixed-attempt retry) handles both that
-// case and the initial "children not rendered yet" race uniformly.
+// Poster, play button, click-zone, and the controls-bar's playpause/mute/
+// fullscreen buttons all dispatch through ONE delegated, CAPTURE-phase
+// listener bound once per document (frontend document AND the editor
+// preview iframe's document — same dual-target Accordion's own
+// installDelegatedToggle() uses, for the same reason).
 //
-// Poster/button are plain descendant lookups, NOT `:scope >` — confirmed
-// live that the editor wraps each materialized child widget in its own
-// container (for drag/selection), so they're no longer direct children the
-// way they are in the frontend's server-rendered HTML. The click-zone stays
-// `:scope >` since it's plain markup inside the Player part's OWN single
-// twig render, never wrapped like a separate child widget is.
+// Why capture, why delegated, why on `document`: confirmed live (here and
+// for Accordion's title/icon child widgets — see accordion.js's
+// installDelegatedToggle() docblock) that in the Elementor editor, a click
+// landing anywhere inside a widget's DOM subtree is intercepted by
+// Elementor's OWN per-widget "select on click" handler, which calls
+// stopPropagation() somewhere in the bubble chain. A plain, non-delegated,
+// bubble-phase listener bound directly to the poster/button/controls (this
+// file's previous approach) never even got a chance to fire — the poster
+// click always resolved to "select the Image widget", never to playback.
+// Capture always runs top-down, document first, BEFORE any bubble-phase
+// listener anywhere in the tree fires and BEFORE Elementor's own
+// interception can stop the event — so a listener on `document` itself
+// always wins the race regardless of which nested wrapper Elementor's own
+// handler sits on.
 //
-// No `signal` here — see bindEngineOnce()'s docblock for why.
-const bindTriggers = ( el, mountEl, engine ) => {
-	[
-		el.querySelector( '.aae-a-video-poster' ),
-		el.querySelector( '.aae-a-video-playbtn' ),
-		mountEl.querySelector( ':scope > .aae-a-video-clickzone' ),
-	].forEach( ( trigger ) => {
-		if ( ! trigger || trigger.dataset.aaeVideoTriggerBound ) return;
-		trigger.dataset.aaeVideoTriggerBound = 'true';
-		trigger.addEventListener( 'click', ( e ) => {
+// `preventDefault()` only, never `stopPropagation()`: letting the click keep
+// bubbling to Elementor's own handler afterwards is what keeps the poster/
+// button still individually selectable/editable in the builder (same
+// trade-off Accordion's own delegated handler documents).
+//
+// Resolved fresh from `e.target` on every click (not a cached reference) —
+// this is also what makes rebinding-per-tick unnecessary even though
+// Elementor can re-render the native Image/Button children after drop.
+const TRIGGER_SELECTOR = '.aae-a-video-poster, .aae-a-video-playbtn, .aae-a-video-clickzone';
+
+const resolveVideoContext = ( target ) => {
+	const el = target.closest( '.aae-a-video' );
+	if ( ! el ) return null;
+	const mountEl = el.querySelector( '.aae-a-video-mount' );
+	if ( ! mountEl ) return null;
+	return { el, mountEl, engine: getOrCreateEngine( el, mountEl, readConfig( el ) ) };
+};
+
+const installDelegatedClicks = ( doc ) => {
+	if ( ! doc || doc.__aaeVideoDelegated ) return;
+	doc.__aaeVideoDelegated = true;
+
+	doc.addEventListener( 'click', ( e ) => {
+		if ( ! e.target.closest ) return;
+
+		const trigger = e.target.closest( TRIGGER_SELECTOR );
+		if ( trigger ) {
+			const ctx = resolveVideoContext( trigger );
+			if ( ! ctx ) return;
 			e.preventDefault(); // the native button may render as <a> if a Link is set
-			engine.bindController()?.togglePlay();
-		} );
-	} );
+			ctx.engine.bindController()?.togglePlay();
+			return;
+		}
+
+		const playPauseBtn = e.target.closest( '.aae-a-video-btn--playpause' );
+		if ( playPauseBtn ) {
+			resolveVideoContext( playPauseBtn )?.engine.bindController()?.togglePlay();
+			return;
+		}
+
+		const muteBtn = e.target.closest( '.aae-a-video-btn--mute' );
+		if ( muteBtn ) {
+			const ctx = resolveVideoContext( muteBtn );
+			const controller = ctx?.engine.bindController();
+			if ( ! controller ) return;
+			const nextMuted = ! controller.isMuted();
+			nextMuted ? controller.mute() : controller.unmute();
+			setMutedState( ctx.el, nextMuted );
+			return;
+		}
+
+		const fsBtn = e.target.closest( '.aae-a-video-btn--fullscreen' );
+		if ( fsBtn ) {
+			const ctx = resolveVideoContext( fsBtn );
+			if ( ! ctx ) return;
+			toggleFullscreen( ctx.engine.getController()?.getFullscreenTarget?.() || ctx.mountEl );
+		}
+	}, true ); // capture phase
 };
 
 // Everything else (controls-bar wiring, autoplay) lives on the mount's own
@@ -589,7 +635,7 @@ const bindTriggers = ( el, mountEl, engine ) => {
 // guarded by the mount's own flag.
 //
 // Deliberately NOT passing Elementor's register()-callback `signal` to any
-// addEventListener call here (or in bindTriggers()) — confirmed live that
+// addEventListener call here (or in installDelegatedClicks()) — confirmed live that
 // the editor can abort it independently of these DOM nodes actually being
 // removed (per spec, an aborted signal silently detaches any listener
 // registered with it), which was the real cause of a widget that bound
@@ -609,10 +655,8 @@ const bindEngineOnce = ( el, mountEl, engine, cfg, signal ) => {
 		if ( ! cfg.controlsEnabled ) {
 			controlsBar.remove();
 		} else {
-			controlsBar.querySelector( '.aae-a-video-btn--playpause' )?.addEventListener( 'click', () => {
-				engine.bindController()?.togglePlay();
-			} );
-
+			// playpause/mute/fullscreen clicks are handled by the single
+			// delegated document-capture listener — see installDelegatedClicks().
 			const progressTrack = controlsBar.querySelector( '.aae-a-video-progress' );
 			if ( progressTrack ) {
 				const seekFromEvent = ( evt ) => {
@@ -629,21 +673,9 @@ const bindEngineOnce = ( el, mountEl, engine, cfg, signal ) => {
 				window.addEventListener( 'pointerup', () => { dragging = false; } );
 			}
 
-			const muteBtn = controlsBar.querySelector( '.aae-a-video-btn--mute' );
-			if ( muteBtn ) {
-				muteBtn.addEventListener( 'click', () => {
-					const c = engine.bindController();
-					if ( ! c ) return;
-					const nextMuted = ! c.isMuted();
-					nextMuted ? c.mute() : c.unmute();
-					setMutedState( el, nextMuted );
-				} );
+			if ( controlsBar.querySelector( '.aae-a-video-btn--mute' ) ) {
 				setMutedState( el, cfg.mute || cfg.autoplay );
 			}
-
-			controlsBar.querySelector( '.aae-a-video-btn--fullscreen' )?.addEventListener( 'click', () => {
-				toggleFullscreen( engine.getController()?.getFullscreenTarget?.() || mountEl );
-			} );
 
 			// Auto-hide the controls bar while playing; :hover/:focus-within in
 			// CSS provide an always-available reveal path independent of this timer.
@@ -691,9 +723,7 @@ const initVideo = ( el, signal ) => {
 	const cfg = readConfig( el );
 	const engine = getOrCreateEngine( el, mountEl, cfg );
 
-	// Safe (and necessary) to call on every invocation, including every
-	// editor poll tick — see bindTriggers()'s own docblock for why.
-	bindTriggers( el, mountEl, engine );
+	installDelegatedClicks( el.ownerDocument );
 	bindEngineOnce( el, mountEl, engine, cfg, signal );
 };
 
@@ -713,10 +743,9 @@ register( {
 // live — even shortly after the very first drop, with no setting touched at
 // all), which is exactly what leaves a freshly-added video unplayable in the
 // editor while the very same instance works fine on the frontend (which
-// never repaints after load). initVideo() is cheap: bindTriggers() re-checks
-// the actual current poster/button/click-zone nodes every tick (idempotent
-// per element via their own flag), and bindEngineOnce() no-ops once the
-// mount's own stable markup has been wired.
+// never repaints after load). initVideo() is cheap: installDelegatedClicks()
+// no-ops after its first call per document, and bindEngineOnce() no-ops once
+// the mount's own stable markup has been wired.
 if ( isEditMode() ) {
 	setInterval( () => {
 		document.querySelectorAll( '.aae-a-video' ).forEach( ( el ) => initVideo( el, null ) );
