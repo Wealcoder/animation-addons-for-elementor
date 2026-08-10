@@ -22,6 +22,7 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Dimensions_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Border_Width_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Color_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
@@ -114,20 +115,24 @@ class AAE_A_Toggle_Switcher_Tabs extends Atomic_Element_Base {
 	/**
 	 * Exposed publicly so the parent Switcher's define_default_children() can
 	 * seed a fresh Tabs row directly (mirrors
-	 * AAE_A_Timeline_Item::build_default_inner_children()). Tab 1 carries the
-	 * literal `e--selected` class as the default active tab; toggle-switcher.js
-	 * toggles the same class at runtime alongside `.active`. The active-tab
-	 * look itself (background/color/border-radius) comes from Tab's own
-	 * shared define_base_styles() SELECTED variant — see
-	 * class-aae-a-toggle-switcher-tab.php — not from anything seeded here.
+	 * AAE_A_Timeline_Item::build_default_inner_children()). Tab identity
+	 * (before/after) and its default active look are set via the `is_after`
+	 * prop, never via `classes` — Tab's own twig renders
+	 * aae-ts-label-before/after + active/e--selected unconditionally from
+	 * that prop (see class-aae-a-toggle-switcher-tab.php). Seeding those as
+	 * literal `classes` entries used to make Elementor's panel flag them as
+	 * "missing" (they're hook classes, not registered styles) and its ✕
+	 * button would strip them straight out of the DOM, breaking
+	 * toggle-switcher.js. The active-tab look itself (background/color/
+	 * border-radius) still comes from Tab's own shared define_base_styles()
+	 * SELECTED variant.
 	 */
 	public static function build_default_inner_children(): array {
 		return [
 			AAE_A_Toggle_Switcher_Tab::generate()
 				->editor_settings( [ 'title' => 'Tab — Monthly' ] )
 				->settings( [
-					'classes' => Classes_Prop_Type::generate( [ 'aae-ts-label-before', 'active', 'e--selected' ] ),
-					'text'    => Html_V3_Prop_Type::generate( [
+					'text' => Html_V3_Prop_Type::generate( [
 						'content'  => String_Prop_Type::generate( 'Monthly' ),
 						'children' => [],
 					] ),
@@ -137,8 +142,8 @@ class AAE_A_Toggle_Switcher_Tabs extends Atomic_Element_Base {
 			AAE_A_Toggle_Switcher_Tab::generate()
 				->editor_settings( [ 'title' => 'Tab — Yearly' ] )
 				->settings( [
-					'classes' => Classes_Prop_Type::generate( [ 'aae-ts-label-after' ] ),
-					'text'    => Html_V3_Prop_Type::generate( [
+					'is_after' => Boolean_Prop_Type::generate( true ),
+					'text'     => Html_V3_Prop_Type::generate( [
 						'content'  => String_Prop_Type::generate( 'Yearly' ),
 						'children' => [],
 					] ),

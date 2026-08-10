@@ -11,12 +11,14 @@
  * in youtube-handler.js, its YT.Player instance never leaves that closure).
  *
  * Mirrors the Progress Bar's "container + dedicated Parts widgets" pattern
- * (inc/AtomicWidgets/Widgets/Progressbar/Parts/): the poster and play button
- * are real, independently editable native atomic elements (e-image, e-button)
- * — "every possible way" editable via their own full Style/Content panels —
- * while the actual video engine is our own Parts\AAE_A_Video_Player, a single
- * mount point + controls bar that assets/js/video.js drives via a small
- * per-source adapter (native <video>, YT.Player, or Vimeo.Player).
+ * (inc/AtomicWidgets/Widgets/Progressbar/Parts/): the poster is a real,
+ * independently editable native atomic element (e-image); the play button is
+ * our own Parts\AAE_A_Video_PlayBtn (see that class for why a native e-button
+ * couldn't carry the click hook class); and the actual video engine is our
+ * own Parts\AAE_A_Video_Player, a single mount point + controls bar that
+ * assets/js/video.js drives via a small per-source adapter (native <video>,
+ * YT.Player, or Vimeo.Player). All three stay "every possible way" editable
+ * via their own full Style/Content panels.
  *
  * This wrapper owns every source/playback SETTING (video_type and everything
  * per-type); the Player part owns none of them — it's a "dumb" rendering
@@ -38,11 +40,12 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Elem
 }
 
 require_once __DIR__ . '/Parts/class-aae-a-video-player.php';
+require_once __DIR__ . '/Parts/class-aae-a-video-playbtn.php';
 
 use WCF_ADDONS\AtomicWidgets\Widgets\Video\AAE_A_Video_Player;
+use WCF_ADDONS\AtomicWidgets\Widgets\Video\AAE_A_Video_PlayBtn;
 
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Image\Atomic_Image;
-use Elementor\Modules\AtomicWidgets\Elements\Atomic_Button\Atomic_Button;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
@@ -56,7 +59,6 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Video_Src_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Image_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Image_Src_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Url_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
@@ -171,7 +173,7 @@ class AAE_A_Video extends Atomic_Element_Base {
 				->set_dependencies( $when( 'vimeo' ) ),
 
 			'video_dailymotion_url' => String_Prop_Type::make()
-				->default( '' )
+				->default( 'https://www.dailymotion.com/video/xauwnn6' )
 				->set_dependencies( $when( 'dailymotion' ) ),
 
 			'video_videopress_url' => String_Prop_Type::make()
@@ -330,21 +332,24 @@ class AAE_A_Video extends Atomic_Element_Base {
 
 	/**
 	 * Fixed structural parts: a native poster image, our own universal video
-	 * Player (Parts\AAE_A_Video_Player), and a native play-button trigger —
-	 * mirrors AAE_A_Btn's icon+label pattern. Hook classes
-	 * ('aae-a-video-poster' / '-playbtn') are how video.js finds the two
-	 * NATIVE children (they render no data-element_type/data-e-type of their
-	 * own to key off instead); per this project's "never put a functional
-	 * hook class in classes" rule that makes them one Style-panel ✕ away from
-	 * being stripped — same accepted trade-off Image Compare already carries
-	 * for the same reason (reusing native part types leaves no twig seam to
-	 * hardcode the class instead). The Player part has no such problem: it's
-	 * OUR OWN twig, so its hooks are hardcoded there instead — see
-	 * Parts/aae-a-video-player.html.twig.
+	 * Player (Parts\AAE_A_Video_Player), and our own play-button trigger
+	 * (Parts\AAE_A_Video_PlayBtn — mirrors AAE_A_Btn's icon+label pattern).
+	 *
+	 * The poster's `aae-a-video-poster` hook class is how video.js finds it —
+	 * it renders no data-element_type/data-e-type of its own to key off
+	 * instead — and has to be seeded through the `classes` prop, since a
+	 * reused NATIVE e-image has no twig of ours to hardcode a class into.
+	 * Per this project's "never put a functional hook class in classes" rule
+	 * that's one Style-panel ✕ away from being stripped — same accepted
+	 * trade-off Image Compare already carries for the same reason. The Player
+	 * and PlayBtn parts have no such problem: both are OUR OWN twig, so their
+	 * hooks are hardcoded there instead — see Parts/aae-a-video-player.html.
+	 * twig and Parts/aae-a-video-playbtn.html.twig.
 	 */
 	protected function define_default_children() {
 		return [
 			Atomic_Image::generate()
+				->editor_settings( [ 'title' => 'Thumbnail' ] )
 				->settings( [
 					'classes' => Classes_Prop_Type::generate( [ 'aae-a-video-poster' ] ),
 					'image'   => Image_Prop_Type::generate( [
@@ -359,20 +364,12 @@ class AAE_A_Video extends Atomic_Element_Base {
 
 			AAE_A_Video_Player::generate()->build(),
 
-			Atomic_Button::generate()
-				->settings( [
-					'classes' => Classes_Prop_Type::generate( [ 'aae-a-video-playbtn' ] ),
-					'text'    => Html_V3_Prop_Type::generate( [
-						'content'  => String_Prop_Type::generate( '▶' ),
-						'children' => [],
-					] ),
-				] )
-				->build(),
+			AAE_A_Video_PlayBtn::generate()->build(),
 		];
 	}
 
 	protected function define_allowed_child_types() {
-		return [ 'e-image', 'e-aae-a-video-player', 'e-button' ];
+		return [ 'e-image', 'e-aae-a-video-player', 'e-aae-a-video-playbtn' ];
 	}
 
 	protected function get_templates(): array {

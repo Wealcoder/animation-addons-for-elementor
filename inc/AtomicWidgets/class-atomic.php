@@ -478,6 +478,7 @@ final class Atomic
 		// Video Mask / Flip Box
 		'aae-a-video-mask-btn'         => 'aae-a-video-mask',
 		'aae-a-video-player'           => 'aae-a-video',
+		'aae-a-video-playbtn'          => 'aae-a-video',
 		'aae-a-flip-box-front'         => 'aae-a-flip-box',
 		'aae-a-flip-box-back'          => 'aae-a-flip-box',
 		'aae-a-flip-box-title'         => 'aae-a-flip-box',
@@ -3172,6 +3173,22 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			'aae-a-video-playbtn' => [
+				'label'        => 'Video — Play Button',
+				'description'  => 'Internal play-button trigger used by the AAE Video widget.',
+				'icon'         => 'eicon-play',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'is_internal'  => true,
+				'default'      => true,
+				'keywords'     => [ 'video', 'play', 'button', 'internal' ],
+				'category'     => 'video',
+				'order'        => 21,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
 		];
 	}
 
@@ -5129,6 +5146,12 @@ final class Atomic
 		'aae-a-video-player' => [
 			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Video\AAE_A_Video_Player',
 			'file'       => 'Widgets/Video/Parts/class-aae-a-video-player.php',
+			'has_script' => false,
+		],
+
+		'aae-a-video-playbtn' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Video\AAE_A_Video_PlayBtn',
+			'file'       => 'Widgets/Video/Parts/class-aae-a-video-playbtn.php',
 			'has_script' => false,
 		],
 

@@ -5,9 +5,12 @@ import { register } from '@elementor/frontend-handlers';
  * One frontend handler bound to the PARENT element (e-aae-a-video), which
  * owns every source/playback setting as data-aae-video-* attributes. It
  * reaches into its own rendered subtree for:
- *   - .aae-a-video-poster / .aae-a-video-playbtn — the native Image/Button
- *     children (hook classes seeded via their `classes` prop, since native
- *     widgets emit no data-element_type of their own to key off instead).
+ *   - .aae-a-video-poster — the native Image child (hook class seeded via
+ *     its `classes` prop, since a native widget emits no data-element_type
+ *     of its own to key off instead).
+ *   - .aae-a-video-playbtn — our own Parts\AAE_A_Video_PlayBtn, whose hook
+ *     class is hardcoded in ITS OWN twig instead (see that class's docblock
+ *     for why it isn't a reused native e-button).
  *   - .aae-a-video-mount / .aae-a-video-controls — our own Parts\
  *     AAE_A_Video_Player, a "dumb" mount point + controls bar shell with no
  *     settings of its own (see that class's docblock).
@@ -189,6 +192,16 @@ const createYoutubeAdapter = ( mountEl, cfg ) => {
 		player = new YT.Player( holder, {
 			videoId,
 			host: cfg.youtubePrivacy ? 'https://www.youtube-nocookie.com' : undefined,
+			// Every param below strips a piece of YouTube's own chrome so only
+			// the video itself shows — no title bar, no keyboard-shortcut
+			// toast, no annotations, and `rel=0` limits the end-screen "more
+			// videos" grid to the same channel. `controls`/`showinfo` stay in
+			// this shape regardless of our own Show Controls Bar setting: our
+			// controls bar is a full replacement for YouTube's native one in
+			// BOTH states, never a toggle of theirs. What CANNOT be removed —
+			// the YouTube logo watermark and the pause/end-screen "watch more"
+			// overlay — is enforced by YouTube itself at the embed level, not
+			// a playerVars flag; no combination of parameters hides it.
 			playerVars: {
 				autoplay: cfg.autoplay ? 1 : 0,
 				mute: mutedState ? 1 : 0,
@@ -196,6 +209,10 @@ const createYoutubeAdapter = ( mountEl, cfg ) => {
 				playlist: cfg.loop && videoId ? videoId : undefined,
 				controls: 0,
 				rel: 0,
+				modestbranding: 1,
+				iv_load_policy: 3,
+				disablekb: 1,
+				fs: 0,
 				playsinline: 1,
 			},
 			events: {
@@ -327,6 +344,24 @@ const createPostMessageAdapter = ( mountEl, cfg, provider ) => {
 
 	const send = ( command ) => iframe.contentWindow?.postMessage( provider.encode( command ), '*' );
 
+	// Confirmed live: Dailymotion's current embed doesn't reliably echo a
+	// `play`/`pause` event back after every command — the command itself
+	// still reaches the player (the video visibly toggles), but our OWN
+	// `isPlaying` bookkeeping, driven only by that echo, silently stops
+	// following reality. That's what made togglePlay() send 'play' forever
+	// after the first click (isPlaying never flipped true) and the controls
+	// bar/poster overlay never update, which reads as "pause/resume broken"
+	// even though playback itself was fine underneath. Setting our own
+	// state (and firing the UI events) the instant WE issue the command —
+	// rather than waiting on a possibly-missing confirmation — makes the
+	// controls always track what we actually told the player to do; a real
+	// inbound event still corrects it if the provider disagrees.
+	const setPlaying = ( playing ) => {
+		if ( isPlaying === playing ) return;
+		isPlaying = playing;
+		emit( playing ? 'play' : 'pause' );
+	};
+
 	const onMessage = ( e ) => {
 		if ( e.source !== iframe.contentWindow ) return;
 		const parsed = provider.decode( e.data );
@@ -337,11 +372,9 @@ const createPostMessageAdapter = ( mountEl, cfg, provider ) => {
 			if ( 'number' === typeof parsed.duration ) duration = parsed.duration;
 			emit( 'timeupdate' );
 		} else if ( 'play' === parsed.type ) {
-			isPlaying = true;
-			emit( 'play' );
+			setPlaying( true );
 		} else if ( 'pause' === parsed.type ) {
-			isPlaying = false;
-			emit( 'pause' );
+			setPlaying( false );
 		} else if ( 'ended' === parsed.type ) {
 			isPlaying = false;
 			emit( 'ended' );
@@ -350,9 +383,13 @@ const createPostMessageAdapter = ( mountEl, cfg, provider ) => {
 	window.addEventListener( 'message', onMessage );
 
 	return {
-		play: () => send( { action: 'play' } ),
-		pause: () => send( { action: 'pause' } ),
-		togglePlay: () => send( { action: isPlaying ? 'pause' : 'play' } ),
+		play: () => { send( { action: 'play' } ); setPlaying( true ); },
+		pause: () => { send( { action: 'pause' } ); setPlaying( false ); },
+		togglePlay: () => {
+			const next = ! isPlaying;
+			send( { action: next ? 'play' : 'pause' } );
+			setPlaying( next );
+		},
 		seekTo: ( s ) => send( { action: 'seek', time: s } ),
 		getCurrentTime: () => currentTime,
 		getDuration: () => duration,
@@ -366,10 +403,18 @@ const createPostMessageAdapter = ( mountEl, cfg, provider ) => {
 };
 
 const DAILYMOTION_PROVIDER = {
+	// `dailymotion.com/embed/video/{id}` now 301-redirects to this exact URL
+	// — but the redirect drops every query string param, including
+	// `api=postMessage`, so a player loaded through the old embed path never
+	// listens for our postMessage commands at all (confirmed live: the old
+	// URL returns HTTP 301 with a Location header stripped of all params).
+	// `geo.dailymotion.com/player.html` is the actual page the redirect
+	// lands on — hitting it directly returns 200 with every param intact.
 	buildSrc: ( cfg ) => {
 		const id = getDailymotionIdFromUrl( cfg.dailymotionUrl );
 		const muted = cfg.mute || cfg.autoplay;
 		const params = new URLSearchParams( {
+			video: id,
 			api: 'postMessage',
 			autoplay: cfg.autoplay ? '1' : '0',
 			mute: muted ? '1' : '0',
@@ -377,7 +422,7 @@ const DAILYMOTION_PROVIDER = {
 			controls: '0',
 			'queue-enable': '0',
 		} );
-		return `https://www.dailymotion.com/embed/video/${ id }?${ params.toString() }`;
+		return `https://geo.dailymotion.com/player.html?${ params.toString() }`;
 	},
 	// Dailymotion's Player API (`?api=postMessage`) exchanges JSON STRINGS:
 	// commands are {command, parameters: [...]}, events are {event, parameters}.
@@ -598,7 +643,7 @@ const installDelegatedClicks = ( doc ) => {
 		if ( trigger ) {
 			const ctx = resolveVideoContext( trigger );
 			if ( ! ctx ) return;
-			e.preventDefault(); // the native button may render as <a> if a Link is set
+			e.preventDefault();
 			ctx.engine.bindController()?.togglePlay();
 			return;
 		}

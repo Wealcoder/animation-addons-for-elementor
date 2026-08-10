@@ -1,6 +1,10 @@
 {% import 'elementor/macros' as m %}
-{%- set classes = ['aae-ts-tab', 'e-atomic-element', base_styles.base] | merge(settings.classes | default([])) -%}
-{%- set is_selected = 'e--selected' in (settings.classes | default([])) -%}
+{%- set legacy_classes = settings.classes | default([]) -%}
+{%- set is_after = (settings.is_after | default(false)) or ('aae-ts-label-after' in legacy_classes) -%}
+{%- set position_class = is_after ? 'aae-ts-label-after' : 'aae-ts-label-before' -%}
+{%- set is_selected = not is_after -%}
+{%- set state_classes = is_selected ? ['active', 'e--selected'] : [] -%}
+{%- set classes = ['aae-ts-tab', position_class, 'e-atomic-element', base_styles.base] | merge(state_classes) | merge(legacy_classes) -%}
 <button type="button" role="tab" aria-selected="{{ is_selected ? 'true' : 'false' }}"
 	class="{{ classes | join(' ') }} {{ editor_classes | default('') }}"
 	{{- m.render_data_attributes(id, type, interaction_id | default('')) }}
