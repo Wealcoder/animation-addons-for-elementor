@@ -3133,6 +3133,28 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			'aae-a-video' => [
+				'label'        => 'Video',
+				'description'  => 'A simple video player card with a centered play button and a standard custom controls bar — supports YouTube, Vimeo, a hosted URL, and Media Library uploads.',
+				'icon'         => 'eicon-video-playlist',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'video',
+					'youtube',
+					'vimeo',
+					'player',
+					'media',
+					'atomic',
+				],
+				'category'     => 'video',
+				'order'        => 19,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
 		];
 	}
 
@@ -5075,6 +5097,16 @@ final class Atomic
 			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\VideoMask\AAE_A_Video_Mask_Btn',
 			'file'       => 'Widgets/VideoMask/class-aae-a-video-mask-btn.php',
 			'has_script' => false,
+		],
+
+		'aae-a-video' => [
+			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Video\AAE_A_Video',
+			'file'          => 'Widgets/Video/class-aae-a-video.php',
+			'script_handle' => 'aae-a-video-js',
+			'script_path'   => '/assets/atomic/js/video.js',
+			'has_script'    => true,
+			'style_handle'  => 'aae-a-video-css',
+			'style_path'    => '/assets/atomic/css/video.css',
 		],
 
 		// Add new atomic widgets below...
