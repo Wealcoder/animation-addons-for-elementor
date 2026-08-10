@@ -477,6 +477,7 @@ final class Atomic
 
 		// Video Mask / Flip Box
 		'aae-a-video-mask-btn'         => 'aae-a-video-mask',
+		'aae-a-video-player'           => 'aae-a-video',
 		'aae-a-flip-box-front'         => 'aae-a-flip-box',
 		'aae-a-flip-box-back'          => 'aae-a-flip-box',
 		'aae-a-flip-box-title'         => 'aae-a-flip-box',
@@ -3155,6 +3156,22 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			'aae-a-video-player' => [
+				'label'        => 'Video — Player',
+				'description'  => 'Internal video-engine sub-element used by the AAE Video widget.',
+				'icon'         => 'eicon-video-playlist',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'is_internal'  => true,
+				'default'      => true,
+				'keywords'     => [ 'video', 'player', 'internal' ],
+				'category'     => 'video',
+				'order'        => 20,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
 		];
 	}
 
@@ -5107,6 +5124,12 @@ final class Atomic
 			'has_script'    => true,
 			'style_handle'  => 'aae-a-video-css',
 			'style_path'    => '/assets/atomic/css/video.css',
+		],
+
+		'aae-a-video-player' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Video\AAE_A_Video_Player',
+			'file'       => 'Widgets/Video/Parts/class-aae-a-video-player.php',
+			'has_script' => false,
 		],
 
 		// Add new atomic widgets below...

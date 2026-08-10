@@ -1,15 +1,12 @@
 {#
   AAE Video — atomic container widget.
 
-  children_placeholder carries the four fixed native children in this exact
-  order: e-image (poster), e-youtube, e-self-hosted-video, e-button (play
-  trigger). Which one is visible is decided entirely by CSS keyed off
-  data-aae-video-type on this wrapper (see video.scss) — all four are always
-  present in the rendered HTML, never conditionally emitted here, since a
-  child once created cannot be selectively skipped from children_placeholder.
-
-  Vimeo has no native Elementor widget, so its mount + settings stay ours,
-  rendered directly below rather than as a child.
+  children_placeholder carries the three fixed children in this exact order:
+  e-image (poster), e-aae-a-video-player (our own universal video engine,
+  see Parts/), e-button (play trigger). All source/playback settings are
+  emitted as data-aae-video-* attributes on THIS wrapper — video.js binds one
+  frontend handler here and reads the Player part's mount/controls bar as
+  descendants (same pattern VideoMask uses for its internal button child).
 #}
 {% set wrapper_classes = ['aae-a-video', 'e-con', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') | trim %}
 
@@ -20,10 +17,15 @@
 	data-e-type="{{ type }}"
 	data-interaction-id="{{ interaction_id | default('') }}"
 	data-aae-video-type="{{ settings.video_type | default('youtube') | e('html_attr') }}"
+	data-aae-video-youtube-url="{{ settings.video_youtube_url | default('') | e('html_attr') }}"
+	data-aae-video-hosted-url="{{ settings.video_hosted.url | default('') | e('html_attr') }}"
 	data-aae-video-vimeo-url="{{ settings.video_vimeo_url | default('') | e('html_attr') }}"
-	data-aae-video-vimeo-autoplay="{{ settings.vimeo_autoplay ? 'true' : 'false' }}"
-	data-aae-video-vimeo-mute="{{ settings.vimeo_mute ? 'true' : 'false' }}"
-	data-aae-video-vimeo-loop="{{ settings.vimeo_loop ? 'true' : 'false' }}"
+	data-aae-video-autoplay="{{ settings.autoplay ? 'true' : 'false' }}"
+	data-aae-video-mute="{{ settings.mute ? 'true' : 'false' }}"
+	data-aae-video-loop="{{ settings.loop ? 'true' : 'false' }}"
+	data-aae-video-preload="{{ settings.preload | default('metadata') | e('html_attr') }}"
+	data-aae-video-lazyload="{{ settings.lazyload ? 'true' : 'false' }}"
+	data-aae-video-youtube-privacy="{{ settings.youtube_privacy ? 'true' : 'false' }}"
 	data-aae-video-vimeo-dnt="{{ settings.vimeo_dnt ? 'true' : 'false' }}"
 	data-aae-video-poster="{{ settings.resolved_poster_url | default('') | e('html_attr') }}"
 	data-aae-video-placeholder="{{ settings.placeholder_image_url | default('') | e('html_attr') }}"
@@ -34,31 +36,4 @@
 	{{ editor_attributes | default('') | raw }}
 >
 	{{ children_placeholder | raw }}
-
-	{# Vimeo has no native widget — our own mount, JS builds the Player SDK iframe here. #}
-	<div class="aae-a-video-vimeo-frame" data-aae-video-role="vimeo-embed"></div>
-
-	{% if settings.controls_enabled %}
-		<div class="aae-a-video-controls {{ base_styles.controls_bar | default('') }}">
-			<button type="button" class="aae-a-video-btn aae-a-video-btn--playpause {{ base_styles.control_button | default('') }}" aria-label="{{ 'Play/Pause'|e('html_attr') }}">
-				<svg class="aae-a-video-icon-play" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
-				<svg class="aae-a-video-icon-pause" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" hidden><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
-			</button>
-
-			<div class="aae-a-video-progress {{ base_styles.progress_track | default('') }}" role="slider" tabindex="0" aria-label="{{ 'Seek'|e('html_attr') }}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-				<div class="aae-a-video-progress-fill {{ base_styles.progress_fill | default('') }}"></div>
-			</div>
-
-			<span class="aae-a-video-time {{ base_styles.time_text | default('') }}"><span class="aae-a-video-time-cur">0:00</span> / <span class="aae-a-video-time-dur">0:00</span></span>
-
-			<button type="button" class="aae-a-video-btn aae-a-video-btn--mute {{ base_styles.control_button | default('') }}" aria-label="{{ 'Mute'|e('html_attr') }}">
-				<svg class="aae-a-video-icon-unmuted" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4.03v8.05A4.5 4.5 0 0 0 16.5 12z"/></svg>
-				<svg class="aae-a-video-icon-muted" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" hidden><path d="M16.5 12A4.5 4.5 0 0 0 14 8v2.18l2.45 2.45c.03-.2.05-.42.05-.63zM19 12c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3 3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06a8.99 8.99 0 0 0 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4 9.91 6.09 12 8.18V4z"/></svg>
-			</button>
-
-			<button type="button" class="aae-a-video-btn aae-a-video-btn--fullscreen {{ base_styles.control_button | default('') }}" aria-label="{{ 'Fullscreen'|e('html_attr') }}">
-				<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
-			</button>
-		</div>
-	{% endif %}
 </div>

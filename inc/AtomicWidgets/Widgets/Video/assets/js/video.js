@@ -2,24 +2,35 @@ import { register } from '@elementor/frontend-handlers';
 
 /* AAE Atomic Video.
  *
- * The wrapper renders four fixed native children (e-image poster, e-youtube,
- * e-self-hosted-video, e-button play trigger) plus, for Vimeo only, our own
- * mount div (no native Elementor widget exists for Vimeo). Which one is
- * visible is decided purely by CSS off data-aae-video-type — this file only
- * wires interaction for the two sources we can actually reach:
+ * One frontend handler bound to the PARENT element (e-aae-a-video), which
+ * owns every source/playback setting as data-aae-video-* attributes. It
+ * reaches into its own rendered subtree for:
+ *   - .aae-a-video-poster / .aae-a-video-playbtn — the native Image/Button
+ *     children (hook classes seeded via their `classes` prop, since native
+ *     widgets emit no data-element_type of their own to key off instead).
+ *   - .aae-a-video-mount / .aae-a-video-controls — our own Parts\
+ *     AAE_A_Video_Player, a "dumb" mount point + controls bar shell with no
+ *     settings of its own (see that class's docblock).
  *
- *   - hosted: the child IS a real <video data-e-type="e-self-hosted-video">
- *     tag, fully controllable via the standard HTML5 media API.
- *   - vimeo: our own mount + the Vimeo Player SDK, fully controllable.
- *
- * YouTube is deliberately left alone: Elementor's own e-youtube handler
- * keeps its YT.Player instance in a private closure (verified directly in
- * youtube-handler.js — never exposed on the DOM or window), so an external
- * controls bar cannot drive it. The native iframe already ships its own
- * thumbnail, play button and controls, editable on that child's own panel.
+ * The mount starts EMPTY — this file builds the actual media element itself
+ * (a real <video>, a YT.Player, or a Vimeo.Player) on first interaction (or
+ * immediately for an in-view autoplay instance), so the same custom controls
+ * bar drives all three uniformly. No dependency on Elementor's own
+ * e-youtube/e-self-hosted-video widgets, whose player internals aren't
+ * reachable from outside (verified directly in youtube-handler.js).
  */
 
+const YT_ID_REGEX = /^(?:https?:\/\/)?(?:www\.)?(?:m\.)?(?:youtu\.be\/|youtube\.com\/(?:(?:watch)?\?(?:.*&)?vi?=|(?:embed|v|vi|user|shorts)\/))([^?&"'>]+)/;
 const VIMEO_ID_REGEX = /vimeo\.com\/(?:.*\/)?(?:videos\/)?(\d+)/;
+
+// Kept in sync with AAE_A_Video::extract_youtube_id() (PHP) — both extract
+// the same id from the same URL shapes, one server-side (poster
+// resolution), one client-side (player mount).
+const getYoutubeIdFromUrl = ( url ) => {
+	const match = ( url || '' ).match( YT_ID_REGEX );
+	return match ? match[ 1 ] : null;
+};
+
 const getVimeoIdFromUrl = ( url ) => {
 	const match = ( url || '' ).match( VIMEO_ID_REGEX );
 	return match ? match[ 1 ] : null;
@@ -27,17 +38,44 @@ const getVimeoIdFromUrl = ( url ) => {
 
 const readConfig = ( el ) => ( {
 	type: el.getAttribute( 'data-aae-video-type' ) || 'youtube',
+	youtubeUrl: el.getAttribute( 'data-aae-video-youtube-url' ) || '',
+	hostedUrl: el.getAttribute( 'data-aae-video-hosted-url' ) || '',
 	vimeoUrl: el.getAttribute( 'data-aae-video-vimeo-url' ) || '',
-	vimeoAutoplay: el.getAttribute( 'data-aae-video-vimeo-autoplay' ) === 'true',
-	vimeoMute: el.getAttribute( 'data-aae-video-vimeo-mute' ) === 'true',
-	vimeoLoop: el.getAttribute( 'data-aae-video-vimeo-loop' ) === 'true',
+	autoplay: el.getAttribute( 'data-aae-video-autoplay' ) === 'true',
+	mute: el.getAttribute( 'data-aae-video-mute' ) === 'true',
+	loop: el.getAttribute( 'data-aae-video-loop' ) === 'true',
+	preload: el.getAttribute( 'data-aae-video-preload' ) || 'metadata',
+	lazyload: el.getAttribute( 'data-aae-video-lazyload' ) === 'true',
+	youtubePrivacy: el.getAttribute( 'data-aae-video-youtube-privacy' ) === 'true',
 	vimeoDnt: el.getAttribute( 'data-aae-video-vimeo-dnt' ) === 'true',
 	poster: el.getAttribute( 'data-aae-video-poster' ) || '',
 	placeholder: el.getAttribute( 'data-aae-video-placeholder' ) || '',
+	controlsEnabled: el.getAttribute( 'data-aae-video-controls-enabled' ) === 'true',
 	autohide: el.getAttribute( 'data-aae-video-controls-autohide' ) === 'true',
 } );
 
 const isEditMode = () => !! window.elementorFrontend?.isEditMode?.();
+
+// --- Lazy SDK loaders — only injected when a widget instance on the page actually needs them. ---
+
+let ytApiPromise = null;
+const loadYoutubeApi = () => {
+	if ( window.YT?.Player ) return Promise.resolve( window.YT );
+	if ( ytApiPromise ) return ytApiPromise;
+
+	ytApiPromise = new Promise( ( resolve ) => {
+		const previous = window.onYouTubeIframeAPIReady;
+		window.onYouTubeIframeAPIReady = () => {
+			if ( typeof previous === 'function' ) previous();
+			resolve( window.YT );
+		};
+		const script = document.createElement( 'script' );
+		script.src = 'https://www.youtube.com/iframe_api';
+		document.head.appendChild( script );
+	} );
+
+	return ytApiPromise;
+};
 
 let vimeoApiPromise = null;
 const loadVimeoApi = () => {
@@ -54,9 +92,22 @@ const loadVimeoApi = () => {
 	return vimeoApiPromise;
 };
 
-// --- Adapters — same shared interface regardless of backend. ---
+// --- Adapters — each mounts its own media element inside `mountEl` (prepended,
+// so the controls bar markup that's already there stays on top) and exposes
+// the same interface, so the controls bar never needs to know which backend
+// it's driving. To add another provider: write one more createXAdapter() and
+// a matching branch in pickAdapter() below. ---
 
-const createNativeAdapter = ( videoEl ) => {
+const createNativeAdapter = ( mountEl, cfg ) => {
+	const videoEl = document.createElement( 'video' );
+	videoEl.className = 'aae-a-video-native';
+	videoEl.preload = cfg.preload;
+	videoEl.loop = cfg.loop;
+	videoEl.playsInline = true;
+	videoEl.muted = cfg.mute || cfg.autoplay;
+	videoEl.src = cfg.hostedUrl;
+	mountEl.insertBefore( videoEl, mountEl.firstChild );
+
 	const listeners = {};
 	const emit = ( evt ) => ( listeners[ evt ] || [] ).forEach( ( cb ) => cb() );
 	const on = ( evt, cb ) => {
@@ -82,12 +133,96 @@ const createNativeAdapter = ( videoEl ) => {
 		mute: () => { videoEl.muted = true; },
 		unmute: () => { videoEl.muted = false; },
 		isMuted: () => videoEl.muted,
+		getFullscreenTarget: () => videoEl,
 		on,
-		destroy: () => Object.entries( handlers ).forEach( ( [ evt, fn ] ) => videoEl.removeEventListener( evt, fn ) ),
+		destroy: () => {
+			Object.entries( handlers ).forEach( ( [ evt, fn ] ) => videoEl.removeEventListener( evt, fn ) );
+			videoEl.remove();
+		},
+	};
+};
+
+const createYoutubeAdapter = ( mountEl, cfg ) => {
+	const holder = document.createElement( 'div' );
+	holder.className = 'aae-a-video-embed';
+	mountEl.insertBefore( holder, mountEl.firstChild );
+
+	const listeners = {};
+	const emit = ( evt ) => ( listeners[ evt ] || [] ).forEach( ( cb ) => cb() );
+	const on = ( evt, cb ) => {
+		( listeners[ evt ] = listeners[ evt ] || [] ).push( cb );
+	};
+
+	const videoId = getYoutubeIdFromUrl( cfg.youtubeUrl );
+	let player = null;
+	let ready = false;
+	let mutedState = cfg.mute || cfg.autoplay;
+	let pollTimer = null;
+	const pending = [];
+	const whenReady = ( fn ) => ( ready ? fn() : pending.push( fn ) );
+
+	const stopPoll = () => {
+		if ( pollTimer ) clearInterval( pollTimer );
+		pollTimer = null;
+	};
+	// YT.Player has no native `timeupdate` — poll while playing and synthesize it.
+	const startPoll = () => {
+		stopPoll();
+		pollTimer = setInterval( () => emit( 'timeupdate' ), 250 );
+	};
+
+	loadYoutubeApi().then( ( YT ) => {
+		player = new YT.Player( holder, {
+			videoId,
+			host: cfg.youtubePrivacy ? 'https://www.youtube-nocookie.com' : undefined,
+			playerVars: {
+				autoplay: cfg.autoplay ? 1 : 0,
+				mute: mutedState ? 1 : 0,
+				loop: cfg.loop ? 1 : 0,
+				playlist: cfg.loop && videoId ? videoId : undefined,
+				controls: 0,
+				rel: 0,
+				playsinline: 1,
+			},
+			events: {
+				onReady: () => {
+					ready = true;
+					if ( mutedState ) player.mute();
+					pending.splice( 0 ).forEach( ( fn ) => fn() );
+				},
+				onStateChange: ( e ) => {
+					if ( e.data === YT.PlayerState.PLAYING ) { startPoll(); emit( 'play' ); }
+					else if ( e.data === YT.PlayerState.PAUSED ) { stopPoll(); emit( 'pause' ); }
+					else if ( e.data === YT.PlayerState.ENDED ) { stopPoll(); emit( 'ended' ); }
+				},
+			},
+		} );
+	} );
+
+	return {
+		play: () => whenReady( () => player.playVideo() ),
+		pause: () => whenReady( () => player.pauseVideo() ),
+		togglePlay: () => whenReady( () => {
+			const state = player.getPlayerState();
+			return state === window.YT.PlayerState.PLAYING ? player.pauseVideo() : player.playVideo();
+		} ),
+		seekTo: ( s ) => whenReady( () => player.seekTo( s, true ) ),
+		getCurrentTime: () => ( ready && player.getCurrentTime ? player.getCurrentTime() : 0 ),
+		getDuration: () => ( ready && player.getDuration ? player.getDuration() : 0 ),
+		mute: () => { mutedState = true; whenReady( () => player.mute() ); },
+		unmute: () => { mutedState = false; whenReady( () => player.unMute() ); },
+		isMuted: () => mutedState,
+		getFullscreenTarget: () => mountEl,
+		on,
+		destroy: () => { stopPoll(); player?.destroy?.(); holder.remove(); },
 	};
 };
 
 const createVimeoAdapter = ( mountEl, cfg ) => {
+	const holder = document.createElement( 'div' );
+	holder.className = 'aae-a-video-embed';
+	mountEl.insertBefore( holder, mountEl.firstChild );
+
 	const listeners = {};
 	const emit = ( evt ) => ( listeners[ evt ] || [] ).forEach( ( cb ) => cb() );
 	const on = ( evt, cb ) => {
@@ -97,18 +232,18 @@ const createVimeoAdapter = ( mountEl, cfg ) => {
 	const videoId = getVimeoIdFromUrl( cfg.vimeoUrl );
 	let player = null;
 	let ready = false;
-	let mutedState = cfg.vimeoMute || cfg.vimeoAutoplay;
+	let mutedState = cfg.mute || cfg.autoplay;
 	let currentTime = 0;
 	let duration = 0;
 	const pending = [];
 	const whenReady = ( fn ) => ( ready ? fn() : pending.push( fn ) );
 
 	loadVimeoApi().then( ( Vimeo ) => {
-		player = new Vimeo.Player( mountEl, {
+		player = new Vimeo.Player( holder, {
 			id: videoId,
-			autoplay: cfg.vimeoAutoplay,
+			autoplay: cfg.autoplay,
 			muted: mutedState,
-			loop: cfg.vimeoLoop,
+			loop: cfg.loop,
 			playsinline: true,
 			controls: false,
 			dnt: cfg.vimeoDnt,
@@ -140,9 +275,16 @@ const createVimeoAdapter = ( mountEl, cfg ) => {
 		mute: () => { mutedState = true; whenReady( () => player.setVolume( 0 ).catch( () => {} ) ); },
 		unmute: () => { mutedState = false; whenReady( () => player.setVolume( 1 ).catch( () => {} ) ); },
 		isMuted: () => mutedState,
+		getFullscreenTarget: () => mountEl,
 		on,
-		destroy: () => player?.destroy?.(),
+		destroy: () => { player?.destroy?.(); holder.remove(); },
 	};
+};
+
+const ADAPTERS = {
+	hosted: createNativeAdapter,
+	youtube: createYoutubeAdapter,
+	vimeo: createVimeoAdapter,
 };
 
 // --- UI helpers ---
@@ -165,15 +307,15 @@ const setMutedState = ( el, muted ) => {
 	el.querySelectorAll( '.aae-a-video-icon-muted' ).forEach( ( icon ) => { icon.hidden = ! muted; } );
 };
 
-const updateProgress = ( el, controller ) => {
+const updateProgress = ( mountEl, controller ) => {
 	const duration = controller.getDuration();
 	const current = controller.getCurrentTime();
 	const pct = duration > 0 ? Math.min( 100, ( current / duration ) * 100 ) : 0;
 
-	const fill = el.querySelector( '.aae-a-video-progress-fill' );
-	const track = el.querySelector( '.aae-a-video-progress' );
-	const curEl = el.querySelector( '.aae-a-video-time-cur' );
-	const durEl = el.querySelector( '.aae-a-video-time-dur' );
+	const fill = mountEl.querySelector( '.aae-a-video-progress-fill' );
+	const track = mountEl.querySelector( '.aae-a-video-progress' );
+	const curEl = mountEl.querySelector( '.aae-a-video-time-cur' );
+	const durEl = mountEl.querySelector( '.aae-a-video-time-dur' );
 
 	if ( fill ) fill.style.width = `${ pct }%`;
 	if ( track ) track.setAttribute( 'aria-valuenow', String( Math.round( pct ) ) );
@@ -181,17 +323,17 @@ const updateProgress = ( el, controller ) => {
 	if ( durEl ) durEl.textContent = formatTime( duration );
 };
 
-const toggleFullscreen = ( el ) => {
+const toggleFullscreen = ( fsTarget ) => {
 	if ( document.fullscreenElement ) {
 		( document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen )?.call( document );
 		return;
 	}
 
-	const request = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
-	const fallbackToVideo = () => el.querySelector( 'video' )?.webkitEnterFullscreen?.();
+	const request = fsTarget.requestFullscreen || fsTarget.webkitRequestFullscreen || fsTarget.mozRequestFullScreen || fsTarget.msRequestFullscreen;
+	const fallbackToVideo = () => ( fsTarget.tagName === 'VIDEO' ? fsTarget : fsTarget.querySelector( 'video' ) )?.webkitEnterFullscreen?.();
 
 	if ( request ) {
-		const result = request.call( el );
+		const result = request.call( fsTarget );
 		if ( result?.catch ) result.catch( fallbackToVideo );
 		return;
 	}
@@ -212,25 +354,12 @@ const applyAutoPoster = ( el, cfg ) => {
 
 // --- Wiring ---
 
-const pickAdapter = ( el, cfg ) => {
-	if ( 'hosted' === cfg.type ) {
-		const videoEl = el.querySelector( ':scope > [data-e-type="e-self-hosted-video"]' );
-		return videoEl ? createNativeAdapter( videoEl ) : null;
-	}
-
-	if ( 'vimeo' === cfg.type ) {
-		const mountEl = el.querySelector( ':scope > .aae-a-video-vimeo-frame' );
-		return mountEl ? createVimeoAdapter( mountEl, cfg ) : null;
-	}
-
-	return null; // youtube — no external control, see class docblock.
-};
-
 const initVideo = ( el, signal ) => {
 	const cfg = readConfig( el );
 	const opts = signal ? { signal } : {};
 
-	if ( 'youtube' === cfg.type ) return; // native child runs entirely on its own.
+	const mountEl = el.querySelector( '.aae-a-video-mount' );
+	if ( ! mountEl ) return;
 
 	applyAutoPoster( el, cfg );
 
@@ -238,90 +367,112 @@ const initVideo = ( el, signal ) => {
 
 	const bindController = () => {
 		if ( controller ) return controller;
-		controller = pickAdapter( el, cfg );
-		if ( ! controller ) return null;
+		const factory = ADAPTERS[ cfg.type ];
+		if ( ! factory ) return null;
 
+		controller = factory( mountEl, cfg );
 		controller.on( 'play', () => setPlayingState( el, true ) );
 		controller.on( 'pause', () => setPlayingState( el, false ) );
 		controller.on( 'ended', () => setPlayingState( el, false ) );
-		controller.on( 'timeupdate', () => updateProgress( el, controller ) );
+		controller.on( 'timeupdate', () => updateProgress( mountEl, controller ) );
 
 		return controller;
 	};
 
-	const playbtn = el.querySelector( ':scope > .aae-a-video-playbtn' );
-	if ( playbtn ) {
-		playbtn.addEventListener( 'click', ( e ) => {
+	const requestPlay = () => bindController()?.play();
+
+	// Poster + play button (initial state) and the click-zone (once playing,
+	// poster/button fade out with pointer-events:none and this is what's
+	// left underneath) all toggle play/pause — clicking the video always
+	// does something, whether or not the controls bar is enabled/visible.
+	[
+		el.querySelector( ':scope > .aae-a-video-poster' ),
+		el.querySelector( ':scope > .aae-a-video-playbtn' ),
+		mountEl.querySelector( ':scope > .aae-a-video-clickzone' ),
+	].forEach( ( trigger ) => {
+		if ( ! trigger ) return;
+		trigger.addEventListener( 'click', ( e ) => {
 			e.preventDefault(); // the native button may render as <a> if a Link is set
 			bindController()?.togglePlay();
 		}, opts );
-	}
+	} );
 
-	const controlsBar = el.querySelector( ':scope > .aae-a-video-controls' );
+	const controlsBar = mountEl.querySelector( '.aae-a-video-controls' );
 	if ( controlsBar ) {
-		controlsBar.querySelector( '.aae-a-video-btn--playpause' )?.addEventListener( 'click', () => {
-			bindController()?.togglePlay();
-		}, opts );
-
-		const progressTrack = controlsBar.querySelector( '.aae-a-video-progress' );
-		if ( progressTrack ) {
-			const seekFromEvent = ( evt ) => {
-				if ( ! controller ) return;
-				const rect = progressTrack.getBoundingClientRect();
-				const pct = Math.min( 1, Math.max( 0, ( evt.clientX - rect.left ) / rect.width ) );
-				const duration = controller.getDuration();
-				if ( duration > 0 ) controller.seekTo( pct * duration );
-			};
-			let dragging = false;
-			progressTrack.addEventListener( 'pointerdown', ( e ) => { dragging = true; seekFromEvent( e ); }, opts );
-			progressTrack.addEventListener( 'pointermove', ( e ) => { if ( dragging ) seekFromEvent( e ); }, opts );
-			window.addEventListener( 'pointerup', () => { dragging = false; }, opts );
-		}
-
-		const muteBtn = controlsBar.querySelector( '.aae-a-video-btn--mute' );
-		if ( muteBtn ) {
-			muteBtn.addEventListener( 'click', () => {
-				const c = bindController();
-				if ( ! c ) return;
-				const nextMuted = ! c.isMuted();
-				nextMuted ? c.mute() : c.unmute();
-				setMutedState( el, nextMuted );
+		if ( ! cfg.controlsEnabled ) {
+			controlsBar.remove();
+		} else {
+			controlsBar.querySelector( '.aae-a-video-btn--playpause' )?.addEventListener( 'click', () => {
+				bindController()?.togglePlay();
 			}, opts );
-			setMutedState( el, cfg.vimeoMute || cfg.vimeoAutoplay );
-		}
 
-		controlsBar.querySelector( '.aae-a-video-btn--fullscreen' )?.addEventListener( 'click', () => toggleFullscreen( el ), opts );
+			const progressTrack = controlsBar.querySelector( '.aae-a-video-progress' );
+			if ( progressTrack ) {
+				const seekFromEvent = ( evt ) => {
+					if ( ! controller ) return;
+					const rect = progressTrack.getBoundingClientRect();
+					const pct = Math.min( 1, Math.max( 0, ( evt.clientX - rect.left ) / rect.width ) );
+					const duration = controller.getDuration();
+					if ( duration > 0 ) controller.seekTo( pct * duration );
+				};
+				let dragging = false;
+				progressTrack.addEventListener( 'pointerdown', ( e ) => { dragging = true; seekFromEvent( e ); }, opts );
+				progressTrack.addEventListener( 'pointermove', ( e ) => { if ( dragging ) seekFromEvent( e ); }, opts );
+				window.addEventListener( 'pointerup', () => { dragging = false; }, opts );
+			}
 
-		// Auto-hide the controls bar while playing; :hover/:focus-within in
-		// CSS provide an always-available reveal path independent of this timer.
-		if ( cfg.autohide ) {
-			let hideTimer = null;
-			const clearHide = () => { if ( hideTimer ) clearTimeout( hideTimer ); hideTimer = null; };
-			const scheduleHide = () => {
-				clearHide();
-				hideTimer = setTimeout( () => {
-					if ( el.classList.contains( 'is-playing' ) ) el.classList.add( 'is-controls-hidden' );
-				}, 2500 );
-			};
-			const onActivity = () => {
-				el.classList.remove( 'is-controls-hidden' );
-				if ( el.classList.contains( 'is-playing' ) ) scheduleHide();
-			};
-			[ 'pointermove', 'touchstart', 'keydown' ].forEach( ( evt ) => el.addEventListener( evt, onActivity, opts ) );
+			const muteBtn = controlsBar.querySelector( '.aae-a-video-btn--mute' );
+			if ( muteBtn ) {
+				muteBtn.addEventListener( 'click', () => {
+					const c = bindController();
+					if ( ! c ) return;
+					const nextMuted = ! c.isMuted();
+					nextMuted ? c.mute() : c.unmute();
+					setMutedState( el, nextMuted );
+				}, opts );
+				setMutedState( el, cfg.mute || cfg.autoplay );
+			}
+
+			controlsBar.querySelector( '.aae-a-video-btn--fullscreen' )?.addEventListener( 'click', () => {
+				toggleFullscreen( controller?.getFullscreenTarget?.() || mountEl );
+			}, opts );
+
+			// Auto-hide the controls bar while playing; :hover/:focus-within in
+			// CSS provide an always-available reveal path independent of this timer.
+			if ( cfg.autohide ) {
+				let hideTimer = null;
+				const clearHide = () => { if ( hideTimer ) clearTimeout( hideTimer ); hideTimer = null; };
+				const scheduleHide = () => {
+					clearHide();
+					hideTimer = setTimeout( () => {
+						if ( el.classList.contains( 'is-playing' ) ) el.classList.add( 'is-controls-hidden' );
+					}, 2500 );
+				};
+				const onActivity = () => {
+					el.classList.remove( 'is-controls-hidden' );
+					if ( el.classList.contains( 'is-playing' ) ) scheduleHide();
+				};
+				[ 'pointermove', 'touchstart', 'keydown' ].forEach( ( evt ) => el.addEventListener( evt, onActivity, opts ) );
+			}
 		}
 	}
 
-	// Vimeo autoplay: skip in the editor so builders don't get sound while
-	// designing the page, and only bind once the widget scrolls into view.
-	if ( 'vimeo' === cfg.type && cfg.vimeoAutoplay && ! isEditMode() ) {
-		const observer = new IntersectionObserver( ( entries ) => {
-			if ( entries.some( ( entry ) => entry.isIntersecting ) ) {
-				bindController()?.play();
-				observer.disconnect();
-			}
-		} );
-		observer.observe( el );
-		if ( signal ) signal.addEventListener( 'abort', () => observer.disconnect() );
+	// Autoplay: force-mute regardless of the Mute setting (browsers block
+	// audible autoplay), and skip it entirely in the editor so builders
+	// don't get sound while designing the page.
+	if ( cfg.autoplay && ! isEditMode() ) {
+		if ( cfg.lazyload && 'hosted' !== cfg.type ) {
+			const observer = new IntersectionObserver( ( entries ) => {
+				if ( entries.some( ( entry ) => entry.isIntersecting ) ) {
+					requestPlay();
+					observer.disconnect();
+				}
+			} );
+			observer.observe( el );
+			if ( signal ) signal.addEventListener( 'abort', () => observer.disconnect() );
+		} else {
+			requestPlay();
+		}
 	}
 };
 

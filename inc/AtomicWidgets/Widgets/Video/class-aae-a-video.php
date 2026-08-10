@@ -2,26 +2,27 @@
 /**
  * AAE Video — atomic container WIDGET.
  *
- * A video card that delegates actual playback to Elementor's own native
- * atomic elements — e-image (poster), e-youtube, e-self-hosted-video, and
- * e-button (play trigger) — as real, independently editable child elements
- * (same "container + native/fixed children" pattern as Btn's
- * define_default_children()). This wrapper only adds what none of those
- * natively provide: the video-source switch, a unified poster/play-button
- * overlay with auto-thumbnail fallback, a custom hideable controls bar for
- * Hosted/Vimeo, and Vimeo support (which has no native Elementor widget).
+ * A single video widget for every source — YouTube, Vimeo, a hosted URL, or
+ * a Media Library upload — built entirely on our own engine (Parts\
+ * AAE_A_Video_Player, see that class) so the same custom controls bar
+ * (play/pause, seek, time, mute, fullscreen) works identically regardless of
+ * source, with no dependence on Elementor's own e-youtube/e-self-hosted-video
+ * widgets (whose internals aren't reachable from outside — verified directly
+ * in youtube-handler.js, its YT.Player instance never leaves that closure).
  *
- * YouTube is intentionally left AS-IS, full-bleed, with none of our overlay
- * chrome: Elementor's e-youtube handler keeps its YT.Player instance in a
- * private closure (verified directly in youtube-handler.js — never exposed
- * on the DOM or window), so an external custom controls bar cannot drive it.
- * YouTube's own iframe already ships a thumbnail + play button + controls,
- * all editable directly on that child's own panel.
+ * Mirrors the Progress Bar's "container + dedicated Parts widgets" pattern
+ * (inc/AtomicWidgets/Widgets/Progressbar/Parts/): the poster and play button
+ * are real, independently editable native atomic elements (e-image, e-button)
+ * — "every possible way" editable via their own full Style/Content panels —
+ * while the actual video engine is our own Parts\AAE_A_Video_Player, a single
+ * mount point + controls bar that assets/js/video.js drives via a small
+ * per-source adapter (native <video>, YT.Player, or Vimeo.Player).
  *
- * Hosted video is a real <video> tag (data-e-type="e-self-hosted-video") and
- * Vimeo is our own mount + Vimeo Player SDK — both fully reachable, so our
- * poster overlay + custom controls bar (play/pause, seek, time, mute,
- * fullscreen) work for those two.
+ * This wrapper owns every source/playback SETTING (video_type and everything
+ * per-type); the Player part owns none of them — it's a "dumb" rendering
+ * surface, and video.js reads all config from THIS element's own
+ * data-aae-video-* attributes (same "parent owns the value, JS applies it to
+ * the children at runtime" pattern Progress Bar uses for pb_percentage).
  *
  * @package AnimationAddonsForElementor
  */
@@ -36,9 +37,11 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Elem
 	return;
 }
 
+require_once __DIR__ . '/Parts/class-aae-a-video-player.php';
+
+use WCF_ADDONS\AtomicWidgets\Widgets\Video\AAE_A_Video_Player;
+
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Image\Atomic_Image;
-use Elementor\Modules\AtomicWidgets\Elements\Atomic_Youtube\Atomic_Youtube;
-use Elementor\Modules\AtomicWidgets\Elements\Atomic_Self_Hosted_Video\Atomic_Self_Hosted_Video;
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Button\Atomic_Button;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
@@ -46,11 +49,12 @@ use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Select_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Switch_Control;
+use Elementor\Modules\AtomicWidgets\Controls\Types\Video_Control;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Video_Src_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Image_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Image_Src_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Image_Attachment_Id_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Url_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
@@ -121,28 +125,22 @@ class AAE_A_Video extends Atomic_Element_Base {
 				->get();
 		};
 
-		// True when video_type is anything other than 'youtube'.
-		$not_youtube = Dependency_Manager::make()
+		// True when video_type is anything other than 'hosted'.
+		$not_hosted = Dependency_Manager::make()
 			->where( [
 				'operator' => 'nin',
 				'path'     => [ 'video_type' ],
-				'value'    => [ 'youtube' ],
+				'value'    => [ 'hosted' ],
 				'effect'   => 'hide',
 			] )
 			->get();
 
-		// True when controls_enabled is on AND video_type isn't youtube.
-		$controls_on_and_not_youtube = Dependency_Manager::make( Dependency_Manager::RELATION_AND )
+		// True when controls_enabled is on.
+		$controls_on = Dependency_Manager::make()
 			->where( [
 				'operator' => 'eq',
 				'path'     => [ 'controls_enabled' ],
 				'value'    => true,
-				'effect'   => 'hide',
-			] )
-			->where( [
-				'operator' => 'nin',
-				'path'     => [ 'video_type' ],
-				'value'    => [ 'youtube' ],
 				'effect'   => 'hide',
 			] )
 			->get();
@@ -151,37 +149,53 @@ class AAE_A_Video extends Atomic_Element_Base {
 			'classes'    => Classes_Prop_Type::make()->default( [] ),
 			'attributes' => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
 
-			// Which child element actually plays the video.
+			// Source. Extend the enum + a matching branch in this class'
+			// resolve_source_url()/get_atomic_settings() and video.js's
+			// pickAdapter() to add another provider.
 			'video_type' => String_Prop_Type::make()
 				->enum( [ 'youtube', 'hosted', 'vimeo' ] )
 				->default( 'youtube' ),
 
-			// Vimeo has no native Elementor widget, so its source + playback
-			// options stay on this wrapper and are handled by our own JS +
-			// the Vimeo Player SDK. YouTube/Hosted are edited directly on
-			// their own child element — no duplicate props needed here.
+			'video_youtube_url' => String_Prop_Type::make()
+				->default( 'https://www.youtube.com/watch?v=XHOmBV4js_E' )
+				->set_dependencies( $when( 'youtube' ) ),
+
+			// Video_Control gives one field for BOTH "choose from Media
+			// Library" and "paste a URL" (id XOR url), same as Elementor's
+			// own e-self-hosted-video — no need for two separate props.
+			'video_hosted' => Video_Src_Prop_Type::make()
+				->set_dependencies( $when( 'hosted' ) ),
+
 			'video_vimeo_url' => String_Prop_Type::make()
 				->default( '' )
 				->set_dependencies( $when( 'vimeo' ) ),
-			'vimeo_autoplay'  => Boolean_Prop_Type::make()->default( false )->set_dependencies( $when( 'vimeo' ) ),
-			'vimeo_mute'      => Boolean_Prop_Type::make()->default( false )->set_dependencies( $when( 'vimeo' ) ),
-			'vimeo_loop'      => Boolean_Prop_Type::make()->default( false )->set_dependencies( $when( 'vimeo' ) ),
+
+			// Playback — shared across all three sources.
+			'autoplay' => Boolean_Prop_Type::make()->default( false ),
+			'mute'     => Boolean_Prop_Type::make()->default( false ),
+			'loop'     => Boolean_Prop_Type::make()->default( false ),
+
+			'preload' => String_Prop_Type::make()
+				->enum( [ 'auto', 'metadata', 'none' ] )
+				->default( 'metadata' )
+				->set_dependencies( $when( 'hosted' ) ),
+
+			'lazyload' => Boolean_Prop_Type::make()->default( true )->set_dependencies( $not_hosted ),
+
+			'youtube_privacy' => Boolean_Prop_Type::make()->default( false )->set_dependencies( $when( 'youtube' ) ),
 			'vimeo_dnt'       => Boolean_Prop_Type::make()->default( false )->set_dependencies( $when( 'vimeo' ) ),
 
-			// Poster/play-button overlay only applies to Hosted + Vimeo —
-			// YouTube's own iframe already ships its own thumbnail + button.
-			// Auto-fetch only has somewhere to fetch FROM for Vimeo (YouTube
-			// isn't reachable here since it's not our prop anymore; Hosted
-			// files have no thumbnail API at all).
-			'poster_auto_fetch' => Boolean_Prop_Type::make()->default( true )->set_dependencies( $when( 'vimeo' ) ),
+			// Poster/play-button overlay. Auto-fetch only has somewhere to
+			// fetch FROM for YouTube (deterministic thumbnail URL) and Vimeo
+			// (oEmbed) — a hosted file has no thumbnail API at all.
+			'poster_auto_fetch' => Boolean_Prop_Type::make()->default( true )->set_dependencies( $not_hosted ),
 			// Computed server-side in get_atomic_settings() — no panel control.
-			'resolved_poster_url'  => String_Prop_Type::make()->default( '' ),
+			'resolved_poster_url'   => String_Prop_Type::make()->default( '' ),
 			'placeholder_image_url' => String_Prop_Type::make()->default( '' ),
 
-			// Custom controls bar — Hosted (real <video>) + Vimeo (our own
-			// Player instance) only; unreachable for YouTube, see class docblock.
-			'controls_enabled'  => Boolean_Prop_Type::make()->default( true )->set_dependencies( $not_youtube ),
-			'controls_autohide' => Boolean_Prop_Type::make()->default( true )->set_dependencies( $controls_on_and_not_youtube ),
+			// Custom controls bar.
+			'controls_enabled'  => Boolean_Prop_Type::make()->default( true ),
+			'controls_autohide' => Boolean_Prop_Type::make()->default( true )->set_dependencies( $controls_on ),
 		];
 	}
 
@@ -199,18 +213,44 @@ class AAE_A_Video extends Atomic_Element_Base {
 							[ 'value' => 'vimeo',   'label' => __( 'Vimeo', 'animation-addons-for-elementor' ) ],
 						] ),
 
+					Text_Control::bind_to( 'video_youtube_url' )
+						->set_label( __( 'YouTube URL', 'animation-addons-for-elementor' ) )
+						->set_placeholder( __( 'Type or paste your URL', 'animation-addons-for-elementor' ) ),
+
+					Video_Control::bind_to( 'video_hosted' )
+						->set_label( __( 'Video', 'animation-addons-for-elementor' ) ),
+
 					Text_Control::bind_to( 'video_vimeo_url' )
 						->set_label( __( 'Vimeo URL', 'animation-addons-for-elementor' ) )
 						->set_placeholder( __( 'Type or paste your URL', 'animation-addons-for-elementor' ) ),
+				] ),
 
-					Switch_Control::bind_to( 'vimeo_autoplay' )
+			Section::make()
+				->set_id( 'playback' )
+				->set_label( __( 'Playback', 'animation-addons-for-elementor' ) )
+				->set_items( [
+					Switch_Control::bind_to( 'autoplay' )
 						->set_label( __( 'Autoplay', 'animation-addons-for-elementor' ) ),
 
-					Switch_Control::bind_to( 'vimeo_mute' )
+					Switch_Control::bind_to( 'mute' )
 						->set_label( __( 'Mute', 'animation-addons-for-elementor' ) ),
 
-					Switch_Control::bind_to( 'vimeo_loop' )
+					Switch_Control::bind_to( 'loop' )
 						->set_label( __( 'Loop', 'animation-addons-for-elementor' ) ),
+
+					Select_Control::bind_to( 'preload' )
+						->set_label( __( 'Preload', 'animation-addons-for-elementor' ) )
+						->set_options( [
+							[ 'value' => 'auto',     'label' => __( 'Auto', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'metadata', 'label' => __( 'Metadata', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'none',     'label' => __( 'None (Lazy Load)', 'animation-addons-for-elementor' ) ],
+						] ),
+
+					Switch_Control::bind_to( 'lazyload' )
+						->set_label( __( 'Lazy Load Player', 'animation-addons-for-elementor' ) ),
+
+					Switch_Control::bind_to( 'youtube_privacy' )
+						->set_label( __( 'Privacy-Enhanced Mode', 'animation-addons-for-elementor' ) ),
 
 					Switch_Control::bind_to( 'vimeo_dnt' )
 						->set_label( __( 'Do Not Track', 'animation-addons-for-elementor' ) ),
@@ -221,7 +261,7 @@ class AAE_A_Video extends Atomic_Element_Base {
 				->set_label( __( 'Poster & Play Button', 'animation-addons-for-elementor' ) )
 				->set_items( [
 					Switch_Control::bind_to( 'poster_auto_fetch' )
-						->set_label( __( 'Auto-fetch Thumbnail (Vimeo)', 'animation-addons-for-elementor' ) ),
+						->set_label( __( 'Auto-fetch Thumbnail', 'animation-addons-for-elementor' ) ),
 				] ),
 
 			Section::make()
@@ -247,12 +287,11 @@ class AAE_A_Video extends Atomic_Element_Base {
 	}
 
 	/**
-	 * Structural styles only for THIS element (the wrapper). The four child
-	 * elements (image/youtube/self-hosted-video/button) carry their own full
-	 * Style-tab panels, independently editable — this plugin never overrides
-	 * their look beyond the full-bleed/positioning rules in video.scss.
-	 * Every key here is verified against atomic-style-schema-reference.md —
-	 * one invalid key silently voids this whole method.
+	 * Structural styles for THIS element only. The poster/button children
+	 * carry their own full Style-tab panels; the Player part carries its own
+	 * minimal one. Every key here is verified against
+	 * atomic-style-schema-reference.md — one invalid key silently voids this
+	 * whole method.
 	 */
 	protected function define_base_styles(): array {
 		return [
@@ -268,81 +307,22 @@ class AAE_A_Video extends Atomic_Element_Base {
 						] ),
 					] )
 				),
-
-			// Bottom controls bar shell (Hosted/Vimeo only) — reveal opacity
-			// and gradient are runtime-state-driven, so they live in
-			// video.scss; this only sets structural layout.
-			'controls_bar' => Style_Definition::make()
-				->set_label( __( 'Controls Bar', 'animation-addons-for-elementor' ) )
-				->add_variant(
-					Style_Variant::make()->add_props( [
-						'display'     => String_Prop_Type::generate( 'flex' ),
-						'align-items' => String_Prop_Type::generate( 'center' ),
-						'gap'         => Size_Prop_Type::generate( [ 'size' => 10, 'unit' => 'px' ] ),
-						'width'       => Size_Prop_Type::generate( [ 'size' => 100, 'unit' => '%' ] ),
-					] )
-				),
-
-			'progress_track' => Style_Definition::make()
-				->set_label( __( 'Progress Track', 'animation-addons-for-elementor' ) )
-				->add_variant(
-					Style_Variant::make()->add_props( [
-						'width'         => Size_Prop_Type::generate( [ 'size' => 100, 'unit' => '%' ] ),
-						'height'        => Size_Prop_Type::generate( [ 'size' => 4, 'unit' => 'px' ] ),
-						'border-radius' => Size_Prop_Type::generate( [ 'size' => 2, 'unit' => 'px' ] ),
-						'cursor'        => String_Prop_Type::generate( 'pointer' ),
-						'background'    => Background_Prop_Type::generate( [
-							'color' => Color_Prop_Type::generate( 'rgba(255,255,255,0.35)' ),
-						] ),
-					] )
-				),
-
-			'progress_fill' => Style_Definition::make()
-				->set_label( __( 'Progress Fill', 'animation-addons-for-elementor' ) )
-				->add_variant(
-					Style_Variant::make()->add_props( [
-						'height'        => Size_Prop_Type::generate( [ 'size' => 4, 'unit' => 'px' ] ),
-						'border-radius' => Size_Prop_Type::generate( [ 'size' => 2, 'unit' => 'px' ] ),
-						'background'    => Background_Prop_Type::generate( [
-							'color' => Color_Prop_Type::generate( '#ffffff' ),
-						] ),
-					] )
-				),
-
-			'control_button' => Style_Definition::make()
-				->set_label( __( 'Control Button', 'animation-addons-for-elementor' ) )
-				->add_variant(
-					Style_Variant::make()->add_props( [
-						'display'         => String_Prop_Type::generate( 'flex' ),
-						'align-items'     => String_Prop_Type::generate( 'center' ),
-						'justify-content' => String_Prop_Type::generate( 'center' ),
-						'width'           => Size_Prop_Type::generate( [ 'size' => 28, 'unit' => 'px' ] ),
-						'height'          => Size_Prop_Type::generate( [ 'size' => 28, 'unit' => 'px' ] ),
-						'color'           => Color_Prop_Type::generate( '#ffffff' ),
-						'cursor'          => String_Prop_Type::generate( 'pointer' ),
-					] )
-				),
-
-			'time_text' => Style_Definition::make()
-				->set_label( __( 'Time Text', 'animation-addons-for-elementor' ) )
-				->add_variant(
-					Style_Variant::make()->add_props( [
-						'font-size' => Size_Prop_Type::generate( [ 'size' => 12, 'unit' => 'px' ] ),
-						'color'     => Color_Prop_Type::generate( '#ffffff' ),
-					] )
-				),
 		];
 	}
 
 	/**
-	 * Fixed structural parts, mirroring AAE_A_Btn's icon+label pattern —
-	 * real, independent, fully-editable native atomic elements rather than
-	 * markup this widget owns. Hook classes ('aae-a-video-poster' /
-	 * '-playbtn') are how video.js/video.scss find them; per this project's
-	 * "never put a functional hook class in classes" rule that makes them
-	 * one Style-panel ✕ away from being stripped — same accepted trade-off
-	 * Image Compare already carries for the same reason (reusing native
-	 * part types leaves no twig seam to hardcode the class instead).
+	 * Fixed structural parts: a native poster image, our own universal video
+	 * Player (Parts\AAE_A_Video_Player), and a native play-button trigger —
+	 * mirrors AAE_A_Btn's icon+label pattern. Hook classes
+	 * ('aae-a-video-poster' / '-playbtn') are how video.js finds the two
+	 * NATIVE children (they render no data-element_type/data-e-type of their
+	 * own to key off instead); per this project's "never put a functional
+	 * hook class in classes" rule that makes them one Style-panel ✕ away from
+	 * being stripped — same accepted trade-off Image Compare already carries
+	 * for the same reason (reusing native part types leaves no twig seam to
+	 * hardcode the class instead). The Player part has no such problem: it's
+	 * OUR OWN twig, so its hooks are hardcoded there instead — see
+	 * Parts/aae-a-video-player.html.twig.
 	 */
 	protected function define_default_children() {
 		return [
@@ -359,17 +339,7 @@ class AAE_A_Video extends Atomic_Element_Base {
 				] )
 				->build(),
 
-			Atomic_Youtube::generate()
-				->settings( [
-					'source' => String_Prop_Type::generate( 'https://www.youtube.com/watch?v=XHOmBV4js_E' ),
-				] )
-				->build(),
-
-			Atomic_Self_Hosted_Video::generate()
-				->settings( [
-					'controls' => Boolean_Prop_Type::generate( true ),
-				] )
-				->build(),
+			AAE_A_Video_Player::generate()->build(),
 
 			Atomic_Button::generate()
 				->settings( [
@@ -384,7 +354,7 @@ class AAE_A_Video extends Atomic_Element_Base {
 	}
 
 	protected function define_allowed_child_types() {
-		return [ 'e-image', 'e-youtube', 'e-self-hosted-video', 'e-button' ];
+		return [ 'e-image', 'e-aae-a-video-player', 'e-button' ];
 	}
 
 	protected function get_templates(): array {
@@ -402,21 +372,63 @@ class AAE_A_Video extends Atomic_Element_Base {
 	}
 
 	/**
-	 * Resolve the Vimeo poster thumbnail server-side, since Twig has no HTTP
-	 * client and the oEmbed lookup needs caching. Same computed-value hook
-	 * AAE_A_Site_Logo uses — accepted trade-off: the editor's client-side
-	 * twig re-render only refreshes this on an actual server round-trip, not
-	 * on every keystroke while editing the Vimeo URL.
+	 * Resolve the poster thumbnail + Elementor's placeholder URL server-side,
+	 * since Twig has no HTTP client and the Vimeo oEmbed lookup needs
+	 * caching. Same computed-value hook AAE_A_Site_Logo uses — accepted
+	 * trade-off: the editor's client-side twig re-render only refreshes this
+	 * on an actual server round-trip, not on every keystroke while editing
+	 * the video URL.
 	 */
 	public function get_atomic_settings(): array {
 		$settings = parent::get_atomic_settings();
 
-		$settings['resolved_poster_url'] = ( 'vimeo' === ( $settings['video_type'] ?? 'youtube' ) && $settings['poster_auto_fetch'] )
-			? self::fetch_vimeo_thumbnail( $settings['video_vimeo_url'] ?? '' )
-			: '';
+		$settings['resolved_poster_url']   = $this->resolve_poster_url( $settings );
 		$settings['placeholder_image_url'] = esc_url( \Elementor\Utils::get_placeholder_image_src() );
 
 		return $settings;
+	}
+
+	private function resolve_poster_url( array $settings ): string {
+		if ( empty( $settings['poster_auto_fetch'] ) ) {
+			return '';
+		}
+
+		switch ( $settings['video_type'] ?? 'youtube' ) {
+			case 'youtube':
+				$id = self::extract_youtube_id( $settings['video_youtube_url'] ?? '' );
+
+				// hqdefault fallback happens CLIENT-SIDE via <img onerror> —
+				// maxresdefault doesn't exist for every video and this URL
+				// is otherwise fully deterministic, no HTTP call needed here.
+				return $id ? "https://img.youtube.com/vi/{$id}/maxresdefault.jpg" : '';
+
+			case 'vimeo':
+				return self::fetch_vimeo_thumbnail( $settings['video_vimeo_url'] ?? '' );
+
+			default:
+				// hosted: no thumbnail API for an arbitrary file.
+				return '';
+		}
+	}
+
+	/**
+	 * Must stay in sync with the identical regex in assets/js/video.js's
+	 * getYoutubeIdFromUrl() — both extract the same ID from the same URL
+	 * shapes, one server-side (poster resolution), one client-side (player
+	 * mount). Ported from Elementor core's own youtube-handler.js.
+	 */
+	public static function extract_youtube_id( string $url ): ?string {
+		if ( empty( $url ) ) {
+			return null;
+		}
+
+		$regex = '#^(?:https?://)?(?:www\.)?(?:m\.)?(?:youtu\.be/|youtube\.com/(?:(?:watch)?\?(?:.*&)?vi?=|(?:embed|v|vi|user|shorts)/))([^?&"\'>]+)#i';
+
+		if ( preg_match( $regex, $url, $matches ) ) {
+			return $matches[1];
+		}
+
+		return null;
 	}
 
 	private static function fetch_vimeo_thumbnail( string $url ): string {
