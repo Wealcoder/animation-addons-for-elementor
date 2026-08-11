@@ -42,15 +42,21 @@ class AAE_A_Btn extends Atomic_Element_Base
 	use Has_Element_Template;
 
 	/**
-	 * Single source of truth for the icon's fixed square size.
+	 * Single source of truth for the icon's size — but, as of the em/font-size
+	 * rework below, this is now a FONT-SIZE default, not a width/height default.
+	 * The icon's actual width/height are fixed at 1em (see define_base_styles());
+	 * this constant only sets what 1em resolves to. Same trick as
+	 * AAE_A_Offcanvas_Trigger's icon span: one Font Size edit in the Style
+	 * panel's Typography section resizes the icon, instead of exposing a
+	 * separate native Width/Height (Size) control.
 	 *
 	 * Read by BOTH define_base_styles() (the real default) AND
 	 * get_frontend_css_override() (the CSS that must load after Elementor's
-	 * base-desktop.css to win the tie against e-svg-base's native 65px
-	 * default — see Atomic::fix_frontend_atomic_css_order()). Change ONLY
-	 * this constant; a hardcoded duplicate in a .scss file would silently
-	 * keep winning forever even after this value changes (see AAE_A_Btn_Pro
-	 * for the incident that taught us this the hard way).
+	 * base-desktop.css to win the tie against the native e-svg wrapper's own
+	 * 65px width/height default — see Atomic::fix_frontend_atomic_css_order()).
+	 * Change ONLY this constant; a hardcoded duplicate in a .scss file would
+	 * silently keep winning forever even after this value changes (see
+	 * AAE_A_Btn_Pro for the incident that taught us this the hard way).
 	 */
 	const ICON_SIZE_PX = 30;
 
@@ -227,9 +233,16 @@ class AAE_A_Btn extends Atomic_Element_Base
 			'opacity' => Size_Prop_Type::generate(['size' => 85, 'unit' => '%']),
 		];
 
+		// em, not px: width/height stay pinned to the icon's own font-size, so
+		// resizing it is one Font Size (Typography) edit — same mechanism as
+		// AAE_A_Offcanvas_Trigger's 1em icon box. The wrapper this class lands
+		// on (the native e-svg element's own root) already gets its inner
+		// <svg> stamped to width:100%;height:100% by Svg_Src_Transformer, so
+		// it fills whatever box font-size produces here.
 		$icon_styles = [
-			'width'  => Size_Prop_Type::generate(['size' => self::ICON_SIZE_PX, 'unit' => 'px']),
-			'height' => Size_Prop_Type::generate(['size' => self::ICON_SIZE_PX, 'unit' => 'px']),
+			'font-size' => Size_Prop_Type::generate(['size' => self::ICON_SIZE_PX, 'unit' => 'px']),
+			'width'     => Size_Prop_Type::generate(['size' => 1, 'unit' => 'em']),
+			'height'    => Size_Prop_Type::generate(['size' => 1, 'unit' => 'em']),
 		];
 
 		return [
@@ -316,14 +329,19 @@ class AAE_A_Btn extends Atomic_Element_Base
 	 * after this widget's own stylesheet, once that stylesheet is guaranteed
 	 * to load after Elementor's base-desktop.css.
 	 *
-	 * WHY: `.e-aae-a-btn-icon` and Elementor core's native `.e-svg-base`
-	 * default (65px, atomic-svg.php) share the exact same selector shape
-	 * (`.elementor .<class>`) and therefore the same specificity. Elementor
-	 * bundles every registered atomic element's base styles into ONE cached
-	 * file (base-desktop.css) ordered by registration, and its own native
-	 * elements register after ours — so `.e-svg-base` lands later in that
-	 * file and wins the tie on the frontend, even though the builder
-	 * recomputes styles live per request and shows the correct size.
+	 * WHY: `.e-aae-a-btn-icon` and the native e-svg element's own base-style
+	 * class (65px width/height, atomic-svg.php) share the exact same selector
+	 * shape (`.elementor .<class>`) and therefore the same specificity.
+	 * Elementor bundles every registered atomic element's base styles into
+	 * ONE cached file (base-desktop.css) ordered by registration, and its own
+	 * native elements register after ours — so the native 65px rule lands
+	 * later in that file and wins the tie on the frontend, even though the
+	 * builder recomputes styles live per request and shows the correct size.
+	 *
+	 * Emits font-size + width/height:1em together (not just width/height) —
+	 * em is meaningless without the font-size that defines it, and the native
+	 * competing rule only sets width/height, so a partial override here would
+	 * still lose the font-size half to nothing and collapse to 0.
 	 *
 	 * Deriving this from ICON_SIZE_PX (rather than a hardcoded value in a
 	 * .scss file) means changing that ONE constant is enough — no separate
@@ -332,7 +350,7 @@ class AAE_A_Btn extends Atomic_Element_Base
 	public static function get_frontend_css_override(): string
 	{
 		return sprintf(
-			'.elementor .e-aae-a-btn-icon{width:%1$dpx;height:%1$dpx}',
+			'.elementor .e-aae-a-btn-icon{font-size:%1$dpx;width:1em;height:1em}',
 			self::ICON_SIZE_PX
 		);
 	}
