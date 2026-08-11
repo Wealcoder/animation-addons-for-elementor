@@ -113,6 +113,26 @@ class AAE_A_Video_Popup_Trigger extends Atomic_Widget_Base {
 				->default( 'WATCH THE VIDEO • WATCH THE VIDEO •' )
 				->set_dependencies( $is_text ),
 
+			// The curved text lives inside an SVG <textPath> (see the twig),
+			// so it's outside the atomic Style tab's normal CSS vocabulary —
+			// there's no "SVG path radius" style key, and a generic Style-tab
+			// font-size would only ever reach it by CSS inheritance, which an
+			// explicit rule on the <text> element always wins over regardless
+			// of specificity. Both need their own dedicated controls instead.
+			'rotator_text_font_size' => Number_Prop_Type::make()
+				->default( 10 )
+				->set_dependencies( $is_text ),
+
+			// How far the text sits IN from the circle's outer edge. The
+			// path radius used in the twig is `50 - this value` (the SVG
+			// viewBox is a fixed 0..100 box), so a bigger number pulls the
+			// text closer to the center — "distance from the border" in the
+			// same sense as padding, just expressed as a radius offset
+			// rather than a box inset.
+			'rotator_text_padding' => Number_Prop_Type::make()
+				->default( 8 )
+				->set_dependencies( $is_text ),
+
 			'rotation_duration' => Number_Prop_Type::make()->default( 8 ),
 			'rotation_direction' => String_Prop_Type::make()
 				->enum( [ 'cw', 'ccw' ] )
@@ -141,6 +161,10 @@ class AAE_A_Video_Popup_Trigger extends Atomic_Widget_Base {
 						->set_label( __( 'Rotator Image', 'animation-addons-for-elementor' ) ),
 					Text_Control::bind_to( 'rotator_text' )
 						->set_label( __( 'Rotator Text', 'animation-addons-for-elementor' ) ),
+					Number_Control::bind_to( 'rotator_text_font_size' )
+						->set_label( __( 'Text Font Size', 'animation-addons-for-elementor' ) ),
+					Number_Control::bind_to( 'rotator_text_padding' )
+						->set_label( __( 'Text Distance from Edge', 'animation-addons-for-elementor' ) ),
 					Number_Control::bind_to( 'rotation_duration' )
 						->set_label( __( 'Rotation Duration (s)', 'animation-addons-for-elementor' ) ),
 					Select_Control::bind_to( 'rotation_direction' )

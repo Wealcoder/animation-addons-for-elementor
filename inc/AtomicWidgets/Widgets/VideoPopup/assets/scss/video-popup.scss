@@ -22,18 +22,23 @@
 	object-fit: cover;
 }
 
+// Curved text: an SVG whose only visible content is a <textPath> following
+// a circle sized via the rotator_text_padding control (viewBox 0 0 100 100
+// — see the twig for the path `d`), so the wording hugs the circle's edge
+// the same way the reference demo's pre-baked image does. `fill:
+// currentColor` keeps it themeable from the Trigger's own Style-tab text
+// colour, same as the icon layer. Font-size is NOT set here — it's an
+// inline style on the <text> element from rotator_text_font_size (see the
+// twig), so a rule here would only ever be the loser.
 .aae-a-video-popup-trigger-rotator--text {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	text-align: center;
-	white-space: nowrap;
-	overflow: hidden;
-	font-size: 11px;
-	font-weight: 700;
-	letter-spacing: 0.08em;
-	text-transform: uppercase;
-	padding: 0 6px;
+	overflow: visible;
+	fill: currentColor;
+
+	text {
+		font-weight: 700;
+		letter-spacing: 0.5px;
+		text-transform: uppercase;
+	}
 }
 
 .aae-a-video-popup-trigger-icon {
