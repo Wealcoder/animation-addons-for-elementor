@@ -9,27 +9,6 @@ const openItems = new Set();
 
 const itemId = (item) => item.getAttribute('data-id') || item.id || '';
 
-// True when running inside the Elementor editor preview. Elementor toggles
-// between `elementor-editor-active` and `elementor-editor-preview` on the
-// preview body (e.g. when selecting an element), so accept either; also fall
-// back to detecting the editor's preview iframe.
-const isEditor = (node) => {
-    const doc = node?.ownerDocument || document;
-    const win = doc.defaultView || window;
-    const body = doc.body;
-    if (body && (
-        body.classList.contains('elementor-editor-active') ||
-        body.classList.contains('elementor-editor-preview')
-    )) {
-        return true;
-    }
-    try {
-        return win !== win.parent && !!win.parent.elementor;
-    } catch (e) {
-        return false;
-    }
-};
-
 // Move the two injected Div_Blocks (Header, Content) out of the hidden
 // injector into their slots. This used to live in an inline <script> in the
 // item twig, but inline scripts don't run when Elementor compiles the twig
@@ -38,22 +17,36 @@ const isEditor = (node) => {
 // <button> was missing in the editor). Running distribution from the enqueued
 // bundle fixes both: the template stays pure static markup, and distribution
 // works in the editor and on the frontend.
+const isComposedChild = (child) =>
+    child.classList.contains('elementor-element') ||
+    child.classList.contains('e-con') ||
+    child.classList.contains('e-widget') ||
+    child.hasAttribute('data-element_type');
+
 const distributeChildren = (item) => {
     if (!item || item.dataset.aaeDistributed === 'true') return;
-
-    const injector = item.querySelector(':scope > .aae-children-injector');
-    if (!injector) return;
 
     const headerContent = item.querySelector('.aae-header-content');
     const contentArea = item.querySelector('.aae-accordion-content');
     if (!headerContent || !contentArea) return;
 
-    const children = Array.from(injector.children).filter((child) =>
-        child.classList.contains('elementor-element') ||
-        child.classList.contains('e-con') ||
-        child.classList.contains('e-widget') ||
-        child.hasAttribute('data-element_type')
-    );
+    // Server (twig) renders place the composed Header/Content Div_Blocks
+    // inside the hidden .aae-children-injector, exactly where
+    // {{ children_placeholder }} sits in the twig. Elementor's OWN editor
+    // view does NOT respect that position at all — it mounts child element
+    // views directly onto the item's root node instead (bypassing the
+    // injector entirely), which left the header title and content text
+    // inheriting the page's default typography instead of ours, since they
+    // never made it into `.aae-header-content` / `.aae-accordion-content`.
+    // isComposedChild() already excludes every one of our own structural
+    // wrappers (title-wrapper, content-wrapper, the injector itself) and
+    // Elementor's own `.elementor-element-overlay` — none of them carry an
+    // `elementor-element`/`e-con`/`e-widget` class or `data-element_type`.
+    const injector = item.querySelector(':scope > .aae-children-injector');
+    let children = injector ? Array.from(injector.children).filter(isComposedChild) : [];
+    if (children.length === 0) {
+        children = Array.from(item.children).filter(isComposedChild);
+    }
     if (children.length === 0) return;
 
     // children[0] = Header Div_Block, children[1] = Content Div_Block
@@ -68,34 +61,8 @@ const distributeChildren = (item) => {
     item.dataset.aaeDistributed = 'true';
 };
 
-// A header <button> with no text is a critical WCAG 4.1.2 failure, and it also
-// silently breaks the content region below it: that region is labelled via
-// aria-labelledby pointing here, so a nameless button leaves an unnamed
-// landmark too (axe reports it as a second, unrelated-looking landmark-unique
-// violation). Normally the title arrives as a child and distributeChildren()
-// moves it in — this only fires when the button genuinely ends up empty, so a
-// visible title is never overridden by a mismatched aria-label (WCAG 2.5.3).
-//
-// Runs AFTER distribution, and is deliberately outside distributeChildren(),
-// which early-returns when there is nothing to distribute — exactly the case
-// that produces the nameless button.
-const ensureHeaderName = (item) => {
-    const button = item.querySelector('.aae-accordion-header');
-    if (!button || button.getAttribute('aria-label')) return;
-
-    if (button.textContent.trim() !== '') return;
-
-    const fallback = (button.getAttribute('data-aae-fallback-label') || '').trim();
-    if (fallback) {
-        button.setAttribute('aria-label', fallback);
-    }
-};
-
 const distributeAll = (container) => {
-    container.querySelectorAll('.aae-a-accordion-item').forEach((item) => {
-        distributeChildren(item);
-        ensureHeaderName(item);
-    });
+    container.querySelectorAll('.aae-a-accordion-item').forEach(distributeChildren);
 };
 
 // Measure the wrapper's natural (fully-expanded) pixel height reliably — even
@@ -292,25 +259,16 @@ const installDelegatedToggle = (doc) => {
             const item = e.target.closest('.aae-a-accordion-item');
             if (!item) return;
 
-            if (isEditor(item)) {
-                // In the editor, toggle ONLY on the bare header element area.
-                if (!e.target.closest('.aae-header-element')) return;
-
-                // …but ignore clicks that land on the inner child widgets
-                // (title paragraph, open/close icons) so those stay selectable
-                // and editable instead of toggling the item.
-                if (
-                    e.target.closest('.aae-header-title-element') ||
-                    e.target.closest('.aae-header-icon-element')
-                ) {
-                    return;
-                }
-            } else {
-                // On the frontend, toggle on clicks anywhere in the item EXCEPT
-                // inside the content area — otherwise interacting with the open
-                // content would collapse it.
-                if (e.target.closest('.aae-accordion-content-wrapper')) return;
-            }
+            // Toggle on a click anywhere on the item — including directly on
+            // the title text or the icon — except inside the content area,
+            // where interacting with the open content would collapse it. Same
+            // rule in the editor and on the frontend: no editor-only "bare
+            // header element" carve-out. `preventDefault()` alone (no
+            // `stopPropagation()`) still lets the click bubble to Elementor's
+            // own selection handler afterwards, so the title/icon widgets stay
+            // selectable/editable in the builder even though the same click
+            // also toggles the item.
+            if (e.target.closest('.aae-accordion-content-wrapper')) return;
 
             e.preventDefault();
             toggleItem(item);

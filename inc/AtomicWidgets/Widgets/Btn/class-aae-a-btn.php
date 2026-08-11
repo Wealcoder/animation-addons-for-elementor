@@ -19,8 +19,6 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Selection_Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Key_Value_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Background_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Dimensions_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Box_Shadow_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Shadow_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Svg_Src_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Url_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
@@ -123,6 +121,11 @@ class AAE_A_Btn extends Atomic_Element_Base
 			'aae_btn_text_flip'     => Boolean_Prop_Type::make()->default(false),
 			'aae_btn_border_divide' => Boolean_Prop_Type::make()->default(false),
 			'aae_btn_mask'          => Boolean_Prop_Type::make()->default(false),
+			'aae_btn_divide'        => Boolean_Prop_Type::make()->default(false),
+			'aae_btn_cross'         => Boolean_Prop_Type::make()->default(false),
+			'aae_btn_outlinepill'   => Boolean_Prop_Type::make()->default(false),
+			'aae_btn_slidefill'     => Boolean_Prop_Type::make()->default(false),
+			'aae_btn_underline'     => Boolean_Prop_Type::make()->default(false),
 		];
 	}
 
@@ -172,7 +175,7 @@ class AAE_A_Btn extends Atomic_Element_Base
 	protected function define_base_styles(): array
 	{
 		$button_styles = [
-			'width'    => Size_Prop_Type::generate(['size' => null, 'unit' => 'auto']),
+			'width'    => Size_Prop_Type::generate(['size' => 'max-content', 'unit' => 'custom']),
 			'overflow' => String_Prop_Type::generate('hidden'),
 			'position' => String_Prop_Type::generate('relative'),
 			'z-index'  => Number_Prop_Type::generate(10),
@@ -217,50 +220,11 @@ class AAE_A_Btn extends Atomic_Element_Base
 			'font-weight'    => String_Prop_Type::generate('700'),
 			'text-align'     => String_Prop_Type::generate('center'),
 			'text-transform' => String_Prop_Type::generate('uppercase'),
-
-			// Soft blue glow — mirrors the reference design's resting box-shadow.
-			'box-shadow' => Box_Shadow_Prop_Type::generate([
-				Shadow_Prop_Type::generate([
-					'hOffset' => Size_Prop_Type::generate(['size' => 0, 'unit' => 'px']),
-					'vOffset' => Size_Prop_Type::generate(['size' => 4, 'unit' => 'px']),
-					'blur'    => Size_Prop_Type::generate(['size' => 6, 'unit' => 'px']),
-					'spread'  => Size_Prop_Type::generate(['size' => -1, 'unit' => 'px']),
-					'color'   => Color_Prop_Type::generate('#488aec31'),
-				]),
-				Shadow_Prop_Type::generate([
-					'hOffset' => Size_Prop_Type::generate(['size' => 0, 'unit' => 'px']),
-					'vOffset' => Size_Prop_Type::generate(['size' => 2, 'unit' => 'px']),
-					'blur'    => Size_Prop_Type::generate(['size' => 4, 'unit' => 'px']),
-					'spread'  => Size_Prop_Type::generate(['size' => -1, 'unit' => 'px']),
-					'color'   => Color_Prop_Type::generate('#488aec17'),
-				]),
-			]),
 		];
 
-		// Hover lifts the glow — same two-layer shadow, larger offset/blur.
-		$button_hover_styles = [
-			'box-shadow' => Box_Shadow_Prop_Type::generate([
-				Shadow_Prop_Type::generate([
-					'hOffset' => Size_Prop_Type::generate(['size' => 0, 'unit' => 'px']),
-					'vOffset' => Size_Prop_Type::generate(['size' => 10, 'unit' => 'px']),
-					'blur'    => Size_Prop_Type::generate(['size' => 15, 'unit' => 'px']),
-					'spread'  => Size_Prop_Type::generate(['size' => -3, 'unit' => 'px']),
-					'color'   => Color_Prop_Type::generate('#488aec4f'),
-				]),
-				Shadow_Prop_Type::generate([
-					'hOffset' => Size_Prop_Type::generate(['size' => 0, 'unit' => 'px']),
-					'vOffset' => Size_Prop_Type::generate(['size' => 4, 'unit' => 'px']),
-					'blur'    => Size_Prop_Type::generate(['size' => 6, 'unit' => 'px']),
-					'spread'  => Size_Prop_Type::generate(['size' => -2, 'unit' => 'px']),
-					'color'   => Color_Prop_Type::generate('#488aec17'),
-				]),
-			]),
-		];
-
-		// Pressed / keyboard-focus — drop the glow, dim slightly.
+		// Pressed / keyboard-focus — dim slightly.
 		$button_pressed_styles = [
-			'opacity'    => Size_Prop_Type::generate(['size' => 85, 'unit' => '%']),
-			'box-shadow' => Box_Shadow_Prop_Type::generate([]),
+			'opacity' => Size_Prop_Type::generate(['size' => 85, 'unit' => '%']),
 		];
 
 		$icon_styles = [
@@ -271,7 +235,6 @@ class AAE_A_Btn extends Atomic_Element_Base
 		return [
 			'base' => Style_Definition::make()
 				->add_variant(Style_Variant::make()->add_props($button_styles))
-				->add_variant(Style_Variant::make()->set_state(Style_States::HOVER)->add_props($button_hover_styles))
 				->add_variant(Style_Variant::make()->set_state(Style_States::ACTIVE)->add_props($button_pressed_styles))
 				->add_variant(Style_Variant::make()->set_state(Style_States::FOCUS)->add_props($button_pressed_styles)),
 

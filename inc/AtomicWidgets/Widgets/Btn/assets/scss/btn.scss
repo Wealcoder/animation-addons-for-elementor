@@ -2,13 +2,28 @@
 	cursor: pointer;
 }
 
-// The icon-size override against Elementor's native `.e-svg-base` default
-// (65px) is NOT hardcoded here — a static duplicate of that value in a
-// compiled .scss file would silently keep winning even after
-// AAE_A_Btn::ICON_SIZE_PX changes (this happened to Button Pro's copy of
-// this same rule). It's generated from that constant instead and injected
-// as inline CSS by Atomic::fix_frontend_atomic_css_order() — see
-// AAE_A_Btn::get_frontend_css_override().
+.aae-btn-divide:hover .e-divider-base {
+	width: 120%;
+}
+.aae-btn-cross:hover .e-divider-base {
+	height: 120%;
+}
+.aae-btn-underline:hover .e-divider-base {
+	width: 0%;
+	min-width: 0;
+}
+.aae-btn-outlinepill:hover .e-div-block-base {
+	z-index: 0;
+	top: 4px;
+	width: 50%;
+	transform: translate(-50%, -100%);
+}
+.aae-btn-slidefill:hover > .e-div-block-base:last-of-type {
+	z-index: 4;
+	left: -92%;
+}
+
+// Legacy support for pages built BEFORE the fix above.
 .e-aae-a-btn-base:hover .aae-btn-divide-hr {
 	width: 120%;
 }
@@ -29,10 +44,7 @@
 	z-index: 4;
 	left: -92%;
 }
-/* text flip — targets Elementor's own unconditional `.e-paragraph-base`
-   class (see btn.js's textFlipSync() for why) rather than a custom hook
-   class on the child, so it can never be flagged "missing"/stripped by the
-   Style panel and needs no local style entry of its own. */
+/* text flip  */
 .aae-btn-txtflip .e-paragraph-base {
   transform-style: preserve-3d;
 }
@@ -82,17 +94,8 @@
   from { -webkit-mask-position: 100% 0; mask-position: 100% 0; }
   to   { -webkit-mask-position: 0 0; mask-position: 0 0; }
 }
-// Scoped under `.aae-btn-mask` (not a bare `.aae-btn-mask-effect` selector) —
-// targets Elementor's own unconditional `.e-divider-base` class instead of a
-// custom hook class on the child (see btn.js's maskBtn() for why), and that
-// class is shared by EVERY e-divider on the page, so scoping is required to
-// avoid painting this mask effect onto unrelated dividers.
 .aae-btn-mask .e-divider-base {
   box-sizing: border-box;
-  // Real URL is set by btn.js as a CSS var (webpack-resolved import, so it
-  // works under both `npm start` and `npm run build`). The literal path is
-  // only a fallback for the gulp-compiled copy of this stylesheet, in case
-  // JS never runs — see gulpfile.js's copy:atomic-images task.
   -webkit-mask: var(--aae-btn-mask-img, url("../images/mask-btn.png"));
   mask: var(--aae-btn-mask-img, url("../images/mask-btn.png"));
   -webkit-mask-size: 2300% 100%;

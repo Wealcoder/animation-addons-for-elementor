@@ -301,6 +301,9 @@ function ResponsiveCellRow({
     activeBp,
     elementId,
     defaultValue,
+    // Lets the write push the new config into the preview iframe, so a change
+    // shows on the canvas immediately instead of only after an editor reload.
+    playGroup: play_group,
   });
 
   const hasOverride = ownValue !== null && activeBp !== "desktop";

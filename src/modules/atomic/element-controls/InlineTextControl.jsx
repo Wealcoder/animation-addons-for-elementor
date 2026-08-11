@@ -45,20 +45,43 @@
 import * as React from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useBoundProp } from '@elementor/editor-controls';
+import { useElement } from '@elementor/editor-editing-panel';
+import { getContainer } from '@elementor/editor-elements';
 import { htmlV3PropTypeUtil, stringPropTypeUtil } from '@elementor/editor-props';
 import { Box, IconButton, Stack, TextField, Tooltip } from '@elementor/ui';
 
 const COMMIT_DEBOUNCE_MS = 250;
 
 // Kept lowercase; compared against nodeName.toLowerCase().
-const ALLOWED_TAGS = new Set( [ 'span', 'b', 'strong', 'i', 'em', 'u', 's', 'del', 'sub', 'sup', 'mark', 'small', 'a', 'br' ] );
-const ALLOWED_ATTRS = new Set( [ 'style', 'title', 'dir', 'href', 'target', 'rel' ] );
+//
+// Hand-written HTML is a supported way to author this widget, so the list covers
+// block-level structure too, not just inline formatting. Everything NOT here is
+// unwrapped by cleanHtml() and refused again by wp_kses on save — that is where
+// script/iframe/object/embed/form/input/style/link stay excluded.
+const ALLOWED_TAGS = new Set( [
+	// inline
+	'span', 'b', 'strong', 'i', 'em', 'u', 's', 'del', 'ins', 'sub', 'sup',
+	'mark', 'small', 'code', 'abbr', 'cite', 'q', 'br', 'a', 'img',
+	// block
+	'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'div', 'ul', 'ol', 'li',
+	'blockquote', 'pre', 'hr', 'figure', 'figcaption',
+] );
+const ALLOWED_ATTRS = new Set( [
+	'style', 'title', 'dir', 'lang', 'id', 'class',
+	'href', 'target', 'rel',
+	'src', 'alt', 'width', 'height', 'loading',
+] );
 
 // execCommand emits these in some engines; PHP's whitelist does not carry them.
 // Normalised at commit time rather than refused, so the user keeps the effect.
 const TAG_ALIASES = { strike: 's', font: 'span' };
 
 const DEFAULT_COLOR = '#000000';
+
+// Starting colour for a newly created link. Applied inline to the anchor, never
+// as a CSS rule — see submitLink(). Repaintable with the colour swatch like any
+// other run of text.
+const DEFAULT_LINK_COLOR = '#2563eb';
 
 // The buttons carry TEXT glyphs, not icon components, so MUI's size="tiny" only
 // shrinks the padding — the glyph keeps the inherited font size and holds the
@@ -73,6 +96,11 @@ const BTN_SX = {
 };
 
 const SWATCH_SIZE = 18;
+
+// Stable reference for "no active formats". Returned as-is whenever the caret
+// leaves the editable, so the identity check in syncFormatState() can short out
+// instead of re-rendering the toolbar on every selection change.
+const EMPTY_FORMATS = Object.freeze( {} );
 
 const FORMAT_BUTTONS = [
 	{ cmd: 'bold', label: 'Bold', glyph: 'B', sx: { fontWeight: 700 } },
@@ -121,6 +149,37 @@ function colorsToHex( html ) {
 }
 
 /**
+ * Rewrite `text-decoration-line:` as the `text-decoration:` shorthand, and drop
+ * the other text-decoration longhands.
+ *
+ * THIS IS WHY STRIKETHROUGH DID NOTHING. WordPress's `safecss_filter_attr()`
+ * whitelists `text-decoration` but not `text-decoration-line` — and one
+ * unrecognised declaration makes it discard the WHOLE style attribute, so
+ * `<span style="text-decoration-line: line-through">x</span>` came back from a
+ * save as `<span>x</span>`. Measured against the real sanitiser, not assumed:
+ *
+ *     text-decoration: line-through        => text-decoration: line-through
+ *     text-decoration-line: line-through   => REJECTED
+ *
+ * Chrome emits the longhand whenever execCommand runs with styleWithCSS on, so
+ * this is the ordinary path, not an edge case. Underline via CSS falls into the
+ * identical trap and is fixed by the same rewrite.
+ *
+ * `-color`/`-style`/`-thickness` are DROPPED rather than converted: they have no
+ * safe shorthand equivalent to fold into, and leaving one in place would take
+ * the entire attribute — and with it the strike itself — down with it. Losing a
+ * decoration's colour is a far smaller loss than losing the decoration.
+ *
+ * String-level, alongside colorsToHex(), because any round-trip through a
+ * CSSStyleDeclaration re-expands the shorthand back into longhands.
+ */
+function decorationToShorthand( html ) {
+	return html
+		.replace( /(^|[;\s"'{])text-decoration-line\s*:/gi, '$1text-decoration:' )
+		.replace( /(^|[;\s"'{])text-decoration-(?:color|style|thickness)\s*:[^;"']*;?/gi, '$1' );
+}
+
+/**
  * Strip everything the server would strip anyway, so what the panel shows is
  * what survives a save. Operates on a DETACHED clone — never on the live
  * editable, because rewriting the DOM under the caret makes it jump.
@@ -134,7 +193,26 @@ function cleanHtml( html ) {
 	const elements = Array.from( holder.querySelectorAll( '*' ) );
 
 	elements.forEach( ( el ) => {
-		if ( ! el.isConnected ) {
+		// Still part of the working tree?
+		//
+		// `holder.contains(el)`, NEVER `el.isConnected`. `holder` is a DETACHED
+		// div, and isConnected asks whether a node is in the live DOCUMENT — which
+		// is false for everything inside a detached tree. That made this entire
+		// loop dead code: every element returned on the first line, so nothing was
+		// aliased, unwrapped or attribute-filtered, and the only surviving work was
+		// the string passes below.
+		//
+		// The visible symptom was Strikethrough. Chrome's execCommand emits
+		// `<strike>` (measured: bold/italic/underline/strike produce
+		// `<b><i><u><strike>`), the alias below rewrites it to `<s>` — and with the
+		// loop inert it never ran, so `<strike>` reached wp_kses, which does not
+		// whitelist it and deleted the tag. The strike showed in the panel and
+		// nowhere else.
+		//
+		// The check itself is needed: the walk MUTATES the tree while iterating a
+		// snapshot, so an element unwrapped by an earlier pass must be skipped.
+		// `contains()` answers that question correctly for a detached root.
+		if ( ! holder.contains( el ) ) {
 			return;
 		}
 
@@ -172,14 +250,34 @@ function cleanHtml( html ) {
 			}
 		} );
 
-		// A style attribute holding anything but colour is noise we would rather
-		// not store; PHP's safecss pass would keep some of it silently.
+		// The style attribute is reduced to the declarations the TOOLBAR can
+		// produce; anything else is execCommand noise we would rather not store.
+		//
+		// text-decoration MUST be on this list. Leaving it off is what made
+		// Strikethrough (and CSS underline) look broken in the most confusing way
+		// possible: the strike showed in the panel and vanished everywhere else.
+		// cleanHtml works on a DETACHED CLONE, so the live editable kept the
+		// decoration while the value on its way to the database lost it — the box
+		// and the page disagreeing, with nothing logged.
+		//
+		// Read the LONGHAND first: Chrome sets `text-decoration-line` under
+		// styleWithCSS, and the shorthand property can serialise back out with
+		// colour and style components attached, which safecss_filter_attr()
+		// rejects — taking the whole attribute with it. Assigning through
+		// `textDecoration` re-serialises it as the bare shorthand WordPress
+		// accepts.
 		if ( el.hasAttribute( 'style' ) ) {
 			const color = el.style.color;
+			const decoration = el.style.textDecorationLine || el.style.textDecoration;
+
 			el.removeAttribute( 'style' );
 
 			if ( color ) {
 				el.style.color = color;
+			}
+
+			if ( decoration ) {
+				el.style.textDecoration = decoration;
 			}
 		}
 
@@ -191,41 +289,97 @@ function cleanHtml( html ) {
 
 	// Must be the LAST step and must operate on the serialised string — see
 	// colorsToHex(). Anything that touches the DOM after this puts rgb() back.
-	return colorsToHex( holder.innerHTML );
+	return decorationToShorthand( colorsToHex( holder.innerHTML ) );
+}
+
+/* -------------------------------------------------- source interpretation */
+
+// Attribute group is a TEMPERED match — "any character that does not begin
+// `&gt;`" — not a negated class. `[^&]` also rejects a legitimate `&amp;` inside
+// an attribute, so `<a href="/x?a=1&amp;b=2">` would silently fail to decode.
+// Built FROM ALLOWED_TAGS so the tag list cannot drift into a second copy.
+const TYPED_TAG_RE = new RegExp(
+	`&lt;(\\/?)(${ [ ...ALLOWED_TAGS ].join( '|' ) })((?:\\s(?:(?!&gt;).)*?)?)(\\/?)&gt;`,
+	'gi'
+);
+/**
+ * Turn the verbatim source into what should actually be displayed: tags the user
+ * typed become real elements, rendered AS TYPED — an `<h2>` stays an `<h2>`.
+ *
+ * DELIBERATE DUPLICATE of AAE_A_Advanced_Heading::interpret_source(). The two
+ * exist because they serve different renderers: PHP feeds the FRONTEND, this
+ * feeds the editor CANVAS, which renders the same Twig client-side and never
+ * runs PHP. Without this the canvas shows raw `<h2>` angle brackets while the
+ * published page shows the interpreted result.
+ *
+ * PHP is the authority: get_atomic_settings() RECOMPUTES this value on every
+ * render and ignores whatever was stored, so drift between the two shows up as a
+ * preview mismatch and can never reach the page — and a hand-crafted
+ * `content_html` in the database is inert.
+ */
+function interpretSource( html ) {
+	const decoded = html.replace( TYPED_TAG_RE, ( _full, slash, tag, attrs, selfClose ) =>
+		`<${ slash }${ tag }${ attrs.replace( /&amp;/g, '&' ) }${ selfClose }>`
+	);
+
+	return collapseSpaces( decoded );
 }
 
 /**
- * Turn tags the user TYPED into real markup.
+ * Collapse every run of spaces to ONE, in the RENDERED value only.
  *
- * Typing `<` into a contenteditable inserts a literal character, so
- * `<strong>x</strong>` serialises as `&lt;strong&gt;x&lt;/strong&gt;` and renders
- * as visible angle brackets. This converts those back into actual elements so
- * hand-written HTML behaves the way it did in the old Textarea.
+ * The panel field keeps whatever was typed — that is the point of `content`
+ * being the verbatim source — while `content_html`, which is what the canvas and
+ * the front end render, gets a single space. So the box can be laid out for
+ * readability without the heading inheriting the gaps.
  *
- * Only WHITELISTED tags are decoded, and that is the safety property: something
- * unsupported like `<div>` stays visible as literal text, which TELLS the user
- * it was not applied. Decoding everything and letting cleanHtml() unwrap it
- * would silently delete what they typed.
+ * NBSP is collapsed alongside the plain space. Ordinary spaces would fold on
+ * their own (HTML collapses whitespace), but a contenteditable inserts U+00A0
+ * for consecutive spaces and those DO render — which is exactly why multiple
+ * spaces were reaching the output before.
  *
- * Runs on BLUR only, never per keystroke — rewriting innerHTML mid-typing to
- * show the parsed result would throw the caret to the end on every character.
- * Whatever survives here still goes through cleanHtml() and then wp_kses.
+ * Splitting on tags first is what keeps this out of attribute values: collapsing
+ * the spaces inside `class="a  b"` or a `style` rule would silently change what
+ * a selector matches. preg_split's JS equivalent — a capturing split — puts the
+ * tags on the odd indices, so only the even ones are touched.
  */
-// The attribute group is a TEMPERED match — "any character that does not begin
-// `&gt;`" — rather than a simple negated class. `[^&…]` was the obvious spelling
-// and it is wrong: it also rejects a legitimate `&amp;` inside an attribute, so
-// `<a href="/x?a=1&amp;b=2">` silently failed to decode while every other tag
-// worked.
-const TYPED_TAG_RE = /&lt;(\/?)(span|b|strong|i|em|u|s|del|sub|sup|mark|small|a|br)((?:\s(?:(?!&gt;).)*?)?)(\/?)&gt;/gi;
+function collapseSpaces( html ) {
+	return html
+		.split( /(<[^>]*>)/ )
+		.map( ( part, index ) =>
+			index % 2
+				? part
+				: part.replace( /(?:&nbsp;|[ \t\u00a0]){2,}/gi, ' ' )
+		)
+		.join( '' );
+}
 
-function decodeTypedTags( html ) {
-	return html.replace( TYPED_TAG_RE, ( _full, slash, tag, attrs, selfClose ) => {
-		// Inside a text node the browser escapes `&` but leaves quotes alone, so
-		// only ampersands need undoing before this becomes real markup.
-		const cleanAttrs = attrs.replace( /&amp;/g, '&' );
+// Inline wrappers a space should be able to step out of — everything the
+// toolbar can put around a run of text.
+const FORMAT_ELEMENTS = new Set( [
+	'b', 'strong', 'i', 'em', 'u', 's', 'strike', 'del', 'ins',
+	'sub', 'sup', 'mark', 'a',
+] );
 
-		return `<${ slash }${ tag }${ cleanAttrs }${ selfClose }>`;
-	} );
+/**
+ * Is this element one the caret should escape when a space is typed at its end?
+ *
+ * A `span` counts only when it carries a style — that is the colour swatch's
+ * output. A bare span is structural and stepping out of it would change nothing
+ * visible while moving the caret somewhere the user did not ask for.
+ */
+function isFormatElement( el ) {
+	if ( ! el || el.nodeType !== Node.ELEMENT_NODE ) {
+		return false;
+	}
+
+	const tag = el.nodeName.toLowerCase();
+
+	if ( 'span' === tag ) {
+		return el.hasAttribute( 'style' );
+	}
+
+	return FORMAT_ELEMENTS.has( tag );
 }
 
 /** Remove any colour already set inside `root`, so re-colouring replaces. */
@@ -244,10 +398,19 @@ function stripColorsWithin( root ) {
 
 export function InlineTextControl() {
 	const { value, setValue, placeholder } = useBoundProp( htmlV3PropTypeUtil );
+	// Needed only to write the derived `content_html` sibling prop — useBoundProp
+	// binds exactly one prop, so the canvas-facing value has to go through the
+	// settings command like every other multi-prop control here.
+	const { element } = useElement();
 
 	const editableRef = useRef( null );
 	const colorInputRef = useRef( null );
 	const commitTimer = useRef( null );
+
+	// Which format commands are active at the caret, so the toolbar shows what
+	// the cursor is standing in. Kept in state, not a ref — the buttons render
+	// from it. See syncFormatState().
+	const [ activeFormats, setActiveFormats ] = useState( EMPTY_FORMATS );
 
 	// The last HTML this component itself put into, or read out of, the DOM.
 	// Guards the value→DOM sync below: without it every commit round-trips back
@@ -283,6 +446,24 @@ export function InlineTextControl() {
 			return;
 		}
 
+		// NEVER rewrite while the box has focus. Assigning innerHTML destroys the
+		// selection, and the browser then puts the caret at the START of the
+		// element — the "cursor jumps to the beginning while typing" bug.
+		//
+		// The `content === lastHtml` guard above was supposed to prevent this, but
+		// it only holds while the value survives its round-trip through the prop
+		// system byte-for-byte. Any normalisation on the way back — entity
+		// encoding, attribute order, quote style — makes the strings differ and
+		// this effect repaints mid-keystroke. Comparing strings is guessing at the
+		// cause; refusing to touch a focused editable removes it outright.
+		//
+		// Nothing is lost: on blur, syncFromDom({ settle: true }) repaints from the
+		// committed value anyway, so an external change (undo, switching element)
+		// lands as soon as the field is not being typed into.
+		if ( document.activeElement === el || el.contains( document.activeElement ) ) {
+			return;
+		}
+
 		el.innerHTML = content;
 		lastHtml.current = content;
 	}, [ content ] );
@@ -296,16 +477,47 @@ export function InlineTextControl() {
 			content: html ? stringPropTypeUtil.create( html ) : null,
 			children: [],
 		} );
-	}, [ setValue ] );
+
+		// Mirror the interpreted form into `content_html`, which is what the Twig
+		// renders. The CANVAS runs that Twig client-side straight off the model, so
+		// without this write the preview shows raw `<h2>` angle brackets while the
+		// published page shows the heading — the two disagreeing is exactly the
+		// thing this widget is judged on.
+		//
+		// PHP recomputes the same value at render and ignores what is stored, so
+		// this is a preview cache, not a second source of truth: if the two
+		// implementations ever drift, the page still comes out right.
+		const container = element?.id ? getContainer( element.id ) : null;
+
+		if ( container && window.$e?.run ) {
+			window.$e.run( 'document/elements/settings', {
+				container,
+				settings: {
+					// Same envelope as `content` — content_html is an
+					// AAE_Rich_Text_Prop_Type (`html-v3`), NOT a string prop. It was a
+					// string prop once, and String_Prop_Type sanitises with
+					// sanitize_text_field(), so every tag written here was stripped on
+					// save: the canvas came back as bare text after a reload while the
+					// front end stayed right, because PHP recomputes the value and only
+					// the preview reads what was stored.
+					content_html: htmlV3PropTypeUtil.create( {
+						content: stringPropTypeUtil.create( interpretSource( html || '' ) ),
+						children: [],
+					} ),
+				},
+				// `external: true` keeps this out of the control's own change
+				// pipeline — it is a derived write, not something the user did.
+				options: { external: true },
+			} );
+		}
+	}, [ setValue, element ] );
 
 	/**
 	 * Read the editable, clean it, and schedule a debounced write.
 	 *
 	 * @param {Object}  options
-	 * @param {boolean} options.settle Blur-time pass: additionally interpret
-	 *                                 typed tags, paint the parsed result back
-	 *                                 into the box, and commit immediately
-	 *                                 instead of after the debounce.
+	 * @param {boolean} options.settle Blur-time pass: commit immediately instead
+	 *                                 of after the debounce.
 	 */
 	const syncFromDom = useCallback( ( { settle = false } = {} ) => {
 		const el = editableRef.current;
@@ -314,7 +526,17 @@ export function InlineTextControl() {
 			return;
 		}
 
-		const html = cleanHtml( settle ? decodeTypedTags( el.innerHTML ) : el.innerHTML );
+		// Typed markup is stored VERBATIM — it is not decoded into real elements
+		// here, and the box is never repainted with a parsed result. What you type
+		// is what stays in the field, so `<h2 class="x">Solution</h2>` remains
+		// visible and re-editable instead of turning into styled text you can no
+		// longer take apart.
+		//
+		// The interpretation happens once, on the render path, in
+		// AAE_A_Advanced_Heading::get_atomic_settings() — see that method for the
+		// tag-unwrapping rule. cleanHtml() still runs, because the TOOLBAR emits
+		// real markup (bold, colour, links) and that half must stay whitelisted.
+		const html = cleanHtml( el.innerHTML );
 
 		// Record the CLEANED html as what we last saw. Mid-typing the live DOM
 		// may still hold the dirtier original, and that is fine — the two only
@@ -328,13 +550,9 @@ export function InlineTextControl() {
 		}
 
 		if ( settle ) {
-			// Safe to repaint now: focus has left, so there is no caret to lose,
-			// and this is what makes a typed <strong> visibly become bold text
-			// rather than staying as angle brackets.
-			if ( html !== el.innerHTML ) {
-				el.innerHTML = html;
-			}
-
+			// Deliberately NO repaint here. Rewriting the box on blur is what used
+			// to replace typed markup with its parsed result; the field is now the
+			// verbatim source and must survive losing focus untouched.
 			commit( html );
 			return;
 		}
@@ -342,12 +560,73 @@ export function InlineTextControl() {
 		commitTimer.current = setTimeout( () => commit( html ), COMMIT_DEBOUNCE_MS );
 	}, [ commit ] );
 
+	/**
+	 * Light up the toolbar buttons that describe the caret's current position, so
+	 * putting the cursor inside bold text shows B as active.
+	 *
+	 * Read through `queryCommandState` rather than by walking ancestors for
+	 * `<b>`/`<strong>`: the browser already answers for every spelling its own
+	 * execCommand produces (b vs strong, i vs em, and a `style="font-weight:700"`
+	 * span pasted in), and an ancestor walk would have to re-derive all of it and
+	 * would still disagree with the button it is labelling.
+	 *
+	 * Scoped to OUR editable. `queryCommandState` answers for the document
+	 * selection wherever it is, so without the containment test a bold selection
+	 * anywhere else in the panel would light these up.
+	 */
+	const syncFormatState = useCallback( () => {
+		const el = editableRef.current;
+		const selection = document.getSelection();
+
+		if (
+			! el ||
+			! selection ||
+			! selection.rangeCount ||
+			! el.contains( selection.getRangeAt( 0 ).commonAncestorContainer )
+		) {
+			setActiveFormats( EMPTY_FORMATS );
+			return;
+		}
+
+		const next = {};
+
+		FORMAT_BUTTONS.forEach( ( { cmd } ) => {
+			try {
+				next[ cmd ] = document.queryCommandState( cmd );
+			} catch {
+				// Engines throw rather than return false for a command they do not
+				// implement. An unknown state is "not active"; never let it break
+				// the whole toolbar.
+				next[ cmd ] = false;
+			}
+		} );
+
+		// Bail when nothing changed. `selectionchange` fires on every keystroke and
+		// every caret move, and handing back a fresh object each time would
+		// re-render the whole toolbar continuously while someone is typing.
+		setActiveFormats( ( prev ) =>
+			FORMAT_BUTTONS.every( ( { cmd } ) => !! prev[ cmd ] === next[ cmd ] ) ? prev : next
+		);
+	}, [] );
+
+	// `selectionchange` is the only event that catches every way the caret can
+	// move — typing, clicking, arrow keys, Ctrl+B, and the execCommand calls
+	// below. It fires on the DOCUMENT, so it must be torn down with the control.
+	useEffect( () => {
+		document.addEventListener( 'selectionchange', syncFormatState );
+		return () => document.removeEventListener( 'selectionchange', syncFormatState );
+	}, [ syncFormatState ] );
+
 	const runCommand = ( cmd ) => {
 		// Focus is guaranteed by the mousedown preventDefault on the buttons,
 		// but a keyboard-driven click has no mousedown at all.
 		editableRef.current?.focus();
 		document.execCommand( cmd, false, null );
 		syncFromDom();
+		// Explicit, not left to selectionchange: toggling a format at a COLLAPSED
+		// caret changes the pending state without moving the selection, so no
+		// selectionchange is guaranteed to fire.
+		syncFormatState();
 	};
 
 	const saveSelection = () => {
@@ -433,6 +712,25 @@ export function InlineTextControl() {
 		editableRef.current?.focus();
 		document.execCommand( linkUrl ? 'createLink' : 'unlink', false, linkUrl || null );
 
+		// Give a new link a visible colour of its own.
+		//
+		// An <a> here inherits the heading's colour, so a link was indistinguishable
+		// from the text around it. Painted as an INLINE COLOUR on the anchor rather
+		// than as a stylesheet rule: this widget deliberately ships no CSS, and an
+		// inline value is a plain starting point the user can then repaint with the
+		// colour swatch — a rule with `!important` could not be overridden at all,
+		// which is the opposite of a *default*.
+		//
+		// Only anchors with NO colour of their own are touched, so re-editing the
+		// URL of a link somebody has already recoloured leaves that colour alone.
+		if ( linkUrl && editableRef.current ) {
+			editableRef.current.querySelectorAll( 'a' ).forEach( ( anchor ) => {
+				if ( ! anchor.style.color ) {
+					anchor.style.color = DEFAULT_LINK_COLOR;
+				}
+			} );
+		}
+
 		setLinkOpen( false );
 		syncFromDom();
 	};
@@ -481,9 +779,26 @@ export function InlineTextControl() {
 					<Tooltip key={ cmd } title={ label } placement="top">
 						<IconButton
 							size="tiny"
+							// Announced, not just painted — a colour-only "on" state is
+							// invisible to a screen reader and to anyone who cannot
+							// separate the two greys.
+							aria-pressed={ !! activeFormats[ cmd ] }
 							onMouseDown={ keepFocus }
 							onClick={ () => runCommand( cmd ) }
-							sx={ { ...BTN_SX, ...sx } }
+							sx={ {
+								...BTN_SX,
+								...sx,
+								...( activeFormats[ cmd ]
+									? {
+										bgcolor: 'action.selected',
+										color: 'text.primary',
+										// Hold the pressed look through hover, which would
+										// otherwise repaint the background and make an
+										// active button read as inactive under the pointer.
+										'&:hover': { bgcolor: 'action.selected' },
+									}
+									: {} ),
+							} }
 						>
 							{ glyph }
 						</IconButton>
@@ -542,7 +857,10 @@ export function InlineTextControl() {
 			</Stack>
 
 			{ linkOpen ? (
-				<Stack direction="row" gap={ 0.5 } sx={ { mb: 0.5 } }>
+				// `alignItems: center` is what puts the ✓ on the input's centre line.
+				// Without it the row stretches both children to its own height and
+				// the button, being shorter than the field, sat at the top.
+				<Stack direction="row" gap={ 0.5 } alignItems="center" sx={ { mb: 0.5 } }>
 					<TextField
 						size="tiny"
 						fullWidth
@@ -561,7 +879,26 @@ export function InlineTextControl() {
 							}
 						} }
 					/>
-					<IconButton size="tiny" onMouseDown={ keepFocus } onClick={ submitLink }>✓</IconButton>
+					{ /* Smaller than the format buttons: this one sits beside a text
+					     field rather than in the toolbar row, and at BTN_SX's 24px it
+					     towered over the tiny input. The glyph is sized explicitly
+					     because MUI's size="tiny" only trims padding — the ✓ would
+					     otherwise keep the inherited font size and hold the box
+					     open. */ }
+					<IconButton
+						size="tiny"
+						onMouseDown={ keepFocus }
+						onClick={ submitLink }
+						sx={ {
+							width: 18,
+							height: 18,
+							minWidth: 18,
+							p: 0,
+							fontSize: '11px',
+							lineHeight: 1,
+							flexShrink: 0,
+						} }
+					>✓</IconButton>
 				</Stack>
 			) : null }
 
@@ -584,11 +921,74 @@ export function InlineTextControl() {
 					// most of that is stripped on save anyway — pasting
 					// something that silently loses half its formatting is worse
 					// than pasting text. Pasted MARKUP is not lost either: it
-					// lands as literal text and decodeTypedTags() interprets it
-					// on blur, same as if it had been typed.
+					// lands as literal text, is stored verbatim, and is
+						// interpreted on the render path — same as if typed.
 					event.preventDefault();
-					const text = event.clipboardData?.getData( 'text/plain' ) ?? '';
+
+					// Flatten to ONE LINE before inserting.
+					//
+					// `insertText` turns every newline in the clipboard into a real
+					// line break, and a contenteditable spells that as a <div> — so
+					// pasting
+					//
+					//     First
+					//       Second
+					//         Thir
+					//
+					// produced `First<div> Second</div><div> Thir</div>` INSIDE the
+					// heading. Those divs are block-level, so the Twig's block
+					// detection then demoted the whole widget from <h1> to <div>, and
+					// one paste silently changed the element's tag.
+					//
+					// A heading is a single line — Enter is already refused for the
+					// same reason — so newlines have no meaning here and collapsing
+					// them is the honest interpretation of the paste, not a loss.
+					//
+					// `\s+` also folds tabs and the leading indentation of pasted
+					// code/lists into the single space the one-space rule requires,
+					// which is why this runs BEFORE insertion rather than being left
+					// to the cleanHtml pass: by then the divs already exist.
+					const text = ( event.clipboardData?.getData( 'text/plain' ) ?? '' )
+						.replace( /\s+/g, ' ' );
+
+					if ( ! text ) {
+						return;
+					}
+
+					// Insert UNFORMATTED. `insertText` alone adopts whatever the caret
+					// is standing in, so pasting at the end of an italic run came out
+					// italic — and pasting into a styled span silently inherited that
+					// span's tags too. Selecting what we just inserted and clearing the
+					// formatting on that range is what makes a plain-text paste
+					// actually plain.
 					document.execCommand( 'insertText', false, text );
+
+					const selection = document.getSelection();
+
+					if ( selection && selection.rangeCount ) {
+						// insertText leaves the caret collapsed at the END of the run,
+						// so walking back its length reselects exactly the inserted
+						// text and nothing else.
+						const end = selection.getRangeAt( 0 );
+						const range = document.createRange();
+
+						try {
+							range.setEnd( end.endContainer, end.endOffset );
+							range.setStart( end.endContainer, Math.max( 0, end.endOffset - text.length ) );
+							selection.removeAllRanges();
+							selection.addRange( range );
+							document.execCommand( 'removeFormat', false, null );
+							document.execCommand( 'unlink', false, null );
+							selection.collapseToEnd();
+						} catch {
+							// A paste that straddles nodes can leave offsets that do not
+							// resolve. The text is already in — leaving it with inherited
+							// formatting is a far better outcome than throwing here and
+							// losing the paste altogether.
+						}
+					}
+
+					syncFromDom();
 				} }
 				onKeyDown={ ( event ) => {
 					// A heading is one line; Enter would create a <div> or <br>
@@ -596,16 +996,100 @@ export function InlineTextControl() {
 					if ( 'Enter' === event.key ) {
 						event.preventDefault();
 					}
+
+					// One space only — refuse a second consecutive one.
+					//
+					// Blocked at the KEY rather than cleaned up afterwards because
+					// cleanHtml works on a detached clone and the box is never
+					// repainted while it has focus (repainting is what used to throw
+					// the caret to the start). Cleaning alone would leave the field
+					// showing spaces that the saved value does not have.
+					//
+					// NBSP counts as a space here: the browser inserts U+00A0 by
+					// itself when you type a space next to another one, so testing
+					// for ' ' alone would miss exactly the case this exists to catch.
+					if ( ' ' === event.key && ! event.ctrlKey && ! event.metaKey ) {
+						// A space at the END of a formatted run steps OUT of it.
+						//
+						// Without this the caret stays inside the <s> (or <b>, <a>...), so
+						// the space and everything typed after it joined the strike and it
+						// ran on to the end of the line.
+						//
+						// The space is inserted as a plain text node AFTER the element
+						// rather than by moving the caret and letting the browser type into
+						// the boundary: browsers routinely re-enter the element at that
+						// position, which would put the character straight back inside the
+						// formatting.
+						//
+						// Only fires when the caret is at the very END of the run, so
+						// editing INSIDE formatted text is untouched -- and it walks up
+						// through nested wrappers (<b><i><s>) so one space escapes all of
+						// them at once, not one layer per keypress.
+						const escSel = document.getSelection();
+
+						if ( escSel?.isCollapsed && escSel.rangeCount ) {
+							const escRange = escSel.getRangeAt( 0 );
+							const escNode = escRange.startContainer;
+
+							if (
+								escNode.nodeType === Node.TEXT_NODE &&
+								escRange.startOffset === escNode.nodeValue.length
+							) {
+								let child = escNode;
+								let parent = escNode.parentNode;
+								let outermost = null;
+
+								while (
+									parent &&
+									parent !== editableRef.current &&
+									isFormatElement( parent ) &&
+									parent.lastChild === child
+								) {
+									outermost = parent;
+									child = parent;
+									parent = parent.parentNode;
+								}
+
+								if ( outermost?.parentNode ) {
+									event.preventDefault();
+
+									const space = document.createTextNode( ' ' );
+									outermost.parentNode.insertBefore( space, outermost.nextSibling );
+
+									const after = document.createRange();
+									after.setStart( space, 1 );
+									after.collapse( true );
+									escSel.removeAllRanges();
+									escSel.addRange( after );
+
+									syncFromDom();
+								}
+							}
+						}
+					}
 				} }
 				sx={ {
 					p: 0.8,
 					minHeight: '70px',
 					fontSize: '12px',
+					// Editing-surface only — the panel field, never the rendered
+					// heading. Typed markup makes these lines long and they wrap
+					// several times, so the extra leading is what separates one
+					// wrapped line from the next while you are reading the source.
+					lineHeight: 2,
 					border: '1px solid',
 					borderColor: 'grey.200',
 					borderRadius: '8px',
 					outline: 'none',
 					overflowWrap: 'anywhere',
+					// Drag the bottom-right corner to make the box taller.
+					// `resize` is ignored while overflow is `visible`, which is the
+					// default for a div — so the pair below is one setting, not two,
+					// and dropping the overflow line silently kills the grip.
+					// `vertical` rather than `both`: the panel column is a fixed
+					// width and a wider box would just overflow it.
+					resize: 'vertical',
+					overflow: 'auto',
 					transition: 'border-color .2s ease, box-shadow .2s ease',
 					'&:hover': { borderColor: 'black' },
 					'&:focus': { borderColor: 'black', boxShadow: '0 0 0 1px black' },

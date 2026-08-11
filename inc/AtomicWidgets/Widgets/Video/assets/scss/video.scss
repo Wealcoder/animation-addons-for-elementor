@@ -1,0 +1,190 @@
+// AAE Atomic Video — positioning/state CSS for the poster (native Image
+// child) and the mount + controls bar (our own Player part,
+// Parts/aae-a-video-player.html.twig). The play button's own look lives
+// entirely in its own element type's define_base_styles() instead — see
+// Parts/class-aae-a-video-playbtn.php — since it's OUR OWN element, not a
+// reused native one; only its runtime is-playing fade stays here (an
+// ancestor-class rule a per-element base style can never express). Each
+// child keeps its own full Style-tab panel; this file only forces the
+// full-bleed layout and runtime state (playing/hidden/muted), never
+// colour/typography/spacing on the poster.
+
+.aae-a-video {
+	aspect-ratio: 16 / 9;
+
+	// Full-bleed fill for the poster and the Player part's own root. NOT a
+	// `>` direct-child combinator — confirmed live that the Elementor editor
+	// wraps each of these two (poster, Player) in its own extra container for
+	// drag/selection purposes, same as the JS side's own descendant lookups
+	// (see video.js's applyAutoPoster()/bindTriggers() docblocks). A `>` rule
+	// only ever matched on the frontend's unwrapped markup, so in the editor
+	// neither element got positioned at all — both fell back to normal
+	// document flow, stacking the poster image, player, and play button
+	// vertically instead of overlaying them, which is what made the widget
+	// unplayable and the play button "jump" far down the page when selected.
+	.aae-a-video-poster,
+	.aae-a-video-mount {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		max-width: none;
+		object-fit: cover;
+		border: 0;
+		aspect-ratio: auto;
+	}
+
+	.aae-a-video-poster {
+		z-index: 1;
+		transition: opacity 0.2s ease;
+	}
+
+	&.is-playing .aae-a-video-poster {
+		opacity: 0;
+		pointer-events: none;
+	}
+
+	// Everything about the play button's LOOK (circle, size, background,
+	// position) is now real Style-tab CSS owned by its own element type —
+	// see Parts/class-aae-a-video-playbtn.php's define_base_styles(). Only
+	// the fade-out-while-playing STATE survives here: it depends on an
+	// ANCESTOR's `.is-playing` class, which a per-element base style can
+	// never reach, and `pointer-events`/`opacity`-as-a-transition aren't in
+	// the atomic style schema at all (see that class's own docblock).
+	.aae-a-video-playbtn {
+		transition: opacity 0.2s ease;
+	}
+
+	&.is-playing .aae-a-video-playbtn {
+		opacity: 0;
+		pointer-events: none;
+	}
+}
+
+// --- The Player part (mount + injected media + controls bar) ---
+
+.aae-a-video-mount {
+	background: #000;
+}
+
+.aae-a-video-native,
+.aae-a-video-embed {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	border: 0;
+	object-fit: cover;
+}
+
+.aae-a-video-embed iframe {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	border: 0;
+}
+
+// Transparent layer above the media, below the controls bar — see the
+// twig's comment for why this exists (iframe clicks never bubble to us).
+.aae-a-video-clickzone {
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	cursor: pointer;
+}
+
+.aae-a-video-controls {
+	position: absolute;
+	inset-inline: 0;
+	inset-block-end: 0;
+	z-index: 3;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 10px 14px;
+	background: linear-gradient(to top, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0));
+	opacity: 0;
+	transition: opacity 0.2s ease;
+}
+
+.aae-a-video:hover .aae-a-video-controls,
+.aae-a-video:focus-within .aae-a-video-controls,
+.aae-a-video:not(.is-playing) .aae-a-video-controls {
+	opacity: 1;
+}
+
+.aae-a-video.is-playing.is-controls-hidden .aae-a-video-controls {
+	opacity: 0;
+}
+
+.aae-a-video.is-playing.is-controls-hidden:hover .aae-a-video-controls,
+.aae-a-video.is-playing.is-controls-hidden:focus-within .aae-a-video-controls {
+	opacity: 1;
+}
+
+.aae-a-video-progress {
+	position: relative;
+	flex: 1 1 auto;
+	height: 4px;
+	border-radius: 2px;
+	background: rgba(255, 255, 255, 0.35);
+	cursor: pointer;
+	transition: height 0.15s ease;
+
+	&:hover {
+		height: 6px;
+	}
+}
+
+.aae-a-video-progress-fill {
+	position: absolute;
+	inset-block: 0;
+	inset-inline-start: 0;
+	width: 0%;
+	border-radius: 2px;
+	background: #ffffff;
+	pointer-events: none;
+}
+
+.aae-a-video-time {
+	white-space: nowrap;
+	flex: 0 0 auto;
+	font-size: 12px;
+	color: #ffffff;
+}
+
+.aae-a-video-btn {
+	flex: 0 0 auto;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	border: 0;
+	background: transparent;
+	padding: 0;
+	color: #ffffff;
+	cursor: pointer;
+
+	&:hover,
+	&:focus-visible {
+		opacity: 0.8;
+	}
+}
+
+.aae-a-video-icon-play[hidden],
+.aae-a-video-icon-pause[hidden],
+.aae-a-video-icon-unmuted[hidden],
+.aae-a-video-icon-muted[hidden] {
+	display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.aae-a-video-playbtn,
+	.aae-a-video-poster,
+	.aae-a-video-controls,
+	.aae-a-video-progress {
+		transition: none;
+	}
+}

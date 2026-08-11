@@ -19,7 +19,10 @@ const DROPDOWN_EFFECT_KEYFRAMES = {
 const DRAWER_EFFECTS = {
 	'slide-left':   { from: 'translateX(-100%)', to: 'translateX(0)' },
 	'slide-right':  { from: 'translateX(100%)',  to: 'translateX(0)',  navStyle: { left: 'auto', right: '0', boxShadow: '-4px 0 32px rgba(0,0,0,0.18)' } },
-	'slide-top':    { from: 'translateY(-100%)', to: 'translateY(0)',  navStyle: { left: '0', right: '0', top: '0', bottom: 'auto', width: '100%', maxWidth: '100vw', height: 'auto', maxHeight: '85vh', boxShadow: '0 4px 32px rgba(0,0,0,0.18)' } },
+	// `top` clears the WP admin bar, matching the CSS default in menu.scss. This
+	// inline value would otherwise override it and re-hide the drawer header
+	// behind the bar for logged-in users on this effect only.
+	'slide-top':    { from: 'translateY(-100%)', to: 'translateY(0)',  navStyle: { left: '0', right: '0', top: 'var(--wp-admin--admin-bar--height, 0px)', bottom: 'auto', width: '100%', maxWidth: '100vw', height: 'auto', maxHeight: '85vh', boxShadow: '0 4px 32px rgba(0,0,0,0.18)' } },
 	'slide-bottom': { from: 'translateY(100%)',  to: 'translateY(0)',  navStyle: { left: '0', right: '0', top: 'auto', bottom: '0', width: '100%', maxWidth: '100vw', height: 'auto', maxHeight: '85vh', boxShadow: '0 -4px 32px rgba(0,0,0,0.18)' } },
 	fade:           { from: 'none', to: 'none', navStyle: { left: '50%', right: 'auto', top: '50%', bottom: 'auto', width: 'min(var(--aae-drawer-w),92vw)', height: 'min(80vh,600px)', margin: 'calc(-1 * min(80vh,600px) / 2) 0 0 calc(-1 * min(var(--aae-drawer-w),92vw) / 2)', borderRadius: 'var(--aae-dd-r)', transformOrigin: 'center center' } },
 	scale:          { from: 'scale(0.7)', to: 'scale(1)', navStyle: { transformOrigin: 'left center' } },
@@ -49,7 +52,7 @@ const playSubMenuEffect = (subMenu, effectName, durationMs, direction, onFinish)
 
 	// Cancel any in-flight animation on this sub-menu so the new one starts clean
 	if (typeof subMenu.getAnimations === 'function') {
-		subMenu.getAnimations().forEach((a) => { try { a.cancel(); } catch (e) {} });
+		subMenu.getAnimations().forEach((a) => { try { a.cancel(); } catch (e) { /* already settled — nothing to cancel */ } });
 	}
 
 	subMenu.style.transformOrigin = 'top center';
@@ -80,7 +83,114 @@ const playSubMenuEffect = (subMenu, effectName, durationMs, direction, onFinish)
 	});
 };
 
+/* ---------- Editor canvas: drop the wrapper's `display: contents` ----------
+   Elementor core stamps `style="display: contents !important"` on the
+   Marionette wrapper of EVERY atomic widget — see the atomic widget view's
+   attributes() in editor-canvas.js, commented "Make the wrapper non-existent
+   in terms of CSS to mimic the frontend DOM tree". It is there because
+   Atomic_Widget_Base::before_render()/after_render() are empty, so on the
+   frontend that wrapper does not exist at all and `.aae-a-menu` is a direct
+   child of the container.
+
+   Removed here for this widget only, on request, and paired with
+   `width: fit-content` so the wrapper hugs the menu instead of stretching.
+   Consequence worth knowing: the editor now has one layout box the frontend
+   does not, so container flex/`max-width` rules land on the wrapper there.
+
+   JS is the only lever — an inline `!important` outranks any stylesheet
+   declaration, including `!important` ones.
+
+   No-op on the frontend: there is no wrapper, so closest() returns null. */
+const normalizeEditorWrapper = (root) => {
+	const wrapper = root.closest('.elementor-widget-e-aae-a-menu');
+	if (!wrapper) return;
+
+	/**
+	 * The wrapper has to be exactly as wide as `.aae-a-menu` would be with no
+	 * wrapper at all, and that width is MODE-DEPENDENT — a constant desyncs the
+	 * editor from the frontend in whichever mode it does not match:
+	 *
+	 *   desktop  → fit-content, the width define_base_styles() gives the menu
+	 *   drawer   → 100%, because the mobile gate re-widens the row so
+	 *              `justify-content: flex-end` has free space to push the
+	 *              hamburger to the right edge
+	 *
+	 * Pinning it to fit-content collapsed the drawer row to the 40px button, so
+	 * flex-end had nothing to push against and the burger sat LEFT in the editor
+	 * while the frontend — which has no wrapper and so takes the full row —
+	 * showed it RIGHT.
+	 */
+	const syncWidth = () => {
+		const isDrawerRow = root.classList.contains('aae-a-menu--mobile')
+			&& root.getAttribute('data-hamburger') === 'true';
+		const width = isDrawerRow ? '100%' : 'fit-content';
+
+		if (wrapper.style.width !== width) {
+			wrapper.style.setProperty('width', width);
+		}
+	};
+
+	const apply = () => {
+		if (wrapper.style.display === 'contents') {
+			wrapper.style.removeProperty('display');
+		}
+		syncWidth();
+	};
+
+	apply();
+
+	// attributes() is re-applied on every re-render, and the panel re-renders
+	// on each setting change — so one pass is not enough. The guards inside
+	// apply() mean our own writes don't re-trigger any work, so observing our
+	// own target cannot loop. Bound once per wrapper node.
+	if (typeof MutationObserver !== 'undefined' && !wrapper.__aaeUnwrapped) {
+		wrapper.__aaeUnwrapped = true;
+
+		new MutationObserver(apply).observe(wrapper, {
+			attributes: true,
+			attributeFilter: ['style'],
+		});
+
+		// Watched on the ROOT, not the wrapper: syncMobileClass() toggles
+		// `.aae-a-menu--mobile` on every resize — including each device-preview
+		// switch — and that flips which of the two widths is correct. Without
+		// this the wrapper keeps whichever width was right at first render, so
+		// switching to a mobile device in the editor left it at fit-content.
+		new MutationObserver(syncWidth).observe(root, {
+			attributes: true,
+			attributeFilter: ['class', 'data-hamburger'],
+		});
+	}
+};
+
+/**
+ * Collapse every open item BELOW `item`, leaving `item` itself alone.
+ *
+ * Closing a row only ever cleared its own `aae-a-menu-item--open`, so a nested
+ * chain kept its classes while hidden and the entire previously-expanded tree
+ * sprang back on the next open — which is what made a deep drawer look like it
+ * never really closed. Re-opening now always starts collapsed.
+ *
+ * In-flight animations are cancelled too: a descendant mid-open would otherwise
+ * keep its WAAPI `fill: both` end state and stay visible after losing the class.
+ */
+const closeDescendants = (item) => {
+	item.querySelectorAll('.aae-a-menu-item--open').forEach((descendant) => {
+		descendant.classList.remove('aae-a-menu-item--open');
+
+		const dArrow = descendant.querySelector(':scope > .aae-a-menu-arrow');
+		if (dArrow) dArrow.setAttribute('aria-expanded', 'false');
+
+		const dSub = descendant.querySelector(':scope > .sub-menu');
+		if (dSub && typeof dSub.getAnimations === 'function') {
+			dSub.getAnimations().forEach((a) => { try { a.cancel(); } catch (e) { /* already settled — nothing to cancel */ } });
+		}
+	});
+};
+
 const initMenu = (root) => {
+	normalizeEditorWrapper(root);
+
 	if (root.dataset.aaeMenuInit === '1') return;
 	root.dataset.aaeMenuInit = '1';
 
@@ -190,10 +300,17 @@ const initMenu = (root) => {
 						arrow.setAttribute('aria-expanded', 'false');
 						playSubMenuEffect(subMenu, dropdownEffect, duration, 'close', () => {
 							item.classList.remove('aae-a-menu-item--open');
+							// AFTER the animation, not before: collapsing the subtree
+							// first would yank the rows out from under a still-visible
+							// panel and the close would play against a collapsing
+							// height. By here the sub-menu is display:none, so the
+							// reset is invisible.
+							closeDescendants(item);
 						});
 					} else {
 						item.classList.remove('aae-a-menu-item--open');
 						arrow.setAttribute('aria-expanded', 'false');
+						closeDescendants(item);
 					}
 					return;
 				}
@@ -210,11 +327,15 @@ const initMenu = (root) => {
 							const sSub   = sib.querySelector(':scope > .sub-menu');
 							sib.classList.remove('aae-a-menu-item--open');
 							if (sArrow) sArrow.setAttribute('aria-expanded', 'false');
+							// Same reset the manual close does — a sibling auto-closed
+							// here would otherwise keep its own expanded subtree and
+							// restore it wholesale when the visitor returns to it.
+							closeDescendants(sib);
 							if (isStacked() && sSub) {
 								// Sibling closes simultaneously — just cancel its animation;
 								// removing the class above hides it via CSS.
 								if (typeof sSub.getAnimations === 'function') {
-									sSub.getAnimations().forEach((a) => { try { a.cancel(); } catch (e) {} });
+									sSub.getAnimations().forEach((a) => { try { a.cancel(); } catch (e) { /* already settled — nothing to cancel */ } });
 								}
 							}
 						}

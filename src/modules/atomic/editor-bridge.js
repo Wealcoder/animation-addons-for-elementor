@@ -236,13 +236,57 @@ window.elementor.on('document:loaded', () => {
 		//
 		// Repro/regression: E:\Local Testing\probe-eye-proof.mjs (control/count/
 		// trace/noop/fix modes) and probe-eye-stack.mjs (CDP stack of the hung thread).
+		// Re-apply every element's config after Elementor repaints the canvas.
+		//
+		// Elementor re-renders a widget's DOM on ANY settings change, and the new
+		// node is a different element: the runtime's bound flag, its `__aae*`
+		// handles and the injected Custom CSS <style> all belonged to the node that
+		// was just thrown away. Nothing put them back — the maps were populated
+		// once, by the bulk sync below at editor load — so changing any unrelated
+		// field made Custom CSS (and every other effect) silently stop applying
+		// until the editor was reloaded.
+		//
+		// DEBOUNCED AND SCHEDULED OUT OF THE CALLBACK, deliberately. A
+		// MutationObserver callback is a microtask, and re-syncing inline would
+		// mutate the very tree being reported and feed itself — that is precisely
+		// the shape that once froze the editor solid with an empty console (see the
+		// removal-sweep note above). A timer breaks the loop: the work lands in a
+		// later task, and repaint storms coalesce into ONE resync.
+		let resyncTimer = null;
+		const scheduleResync = () => {
+			if (resyncTimer) {
+				clearTimeout(resyncTimer);
+			}
+
+			resyncTimer = setTimeout(() => {
+				resyncTimer = null;
+				syncAllElements();
+			}, 150);
+		};
+
 		let sweeping = false;
 		const observer = new win.MutationObserver((mutations) => {
 			if (sweeping) return;
 			sweeping = true;
 			try {
 				const seen = new Set();
+				let sawAdded = false;
+
 				mutations.forEach((mutation) => {
+					// An ADDED node carrying an interaction id is a re-render landing.
+					// Only a flag is set here; the work happens in the timer above.
+					if (!sawAdded) {
+						mutation.addedNodes.forEach((node) => {
+							if (sawAdded || node.nodeType !== 1) return;
+							if (
+								node.hasAttribute('data-interaction-id') ||
+								node.querySelector('[data-interaction-id]')
+							) {
+								sawAdded = true;
+							}
+						});
+					}
+
 					mutation.removedNodes.forEach((node) => {
 						if (node.nodeType !== 1) return; // ELEMENT_NODE only
 						if (node.isConnected) return;    // re-parented, not deleted
@@ -259,6 +303,10 @@ window.elementor.on('document:loaded', () => {
 						});
 					});
 				});
+
+				if (sawAdded) {
+					scheduleResync();
+				}
 			} finally {
 				sweeping = false;
 			}
@@ -280,40 +328,50 @@ window.elementor.on('document:loaded', () => {
 		win.__aaeRemovalObserver = observer;
 		observer.observe(win.document.body, { childList: true, subtree: true });
 
-		const elements = getElements();
-		let syncCount = 0;
-		
-		elements.forEach((element) => {
-			const elType = element.model.get('elType');
-			const widgetType = element.model.get('widgetType');
-			
-			// Get ALL settings from the element
-			const allSettings = element.settings.toJSON();
-			if(element.id == 'document'){
-				return;
-			}
-			
-			// Create a mock container that settings-bridge / featuresFor can read.
-			// featuresFor() accesses container.model.get('widgetType'), so the
-			// getter MUST live under `.model`, not at the top level.
-			const mockContainer = {
-				id: element.id,
-				model: {
-					get: (prop) => prop === 'elType' ? elType : (prop === 'widgetType' ? widgetType : undefined),
-				},
-				settings: {
-					attributes: allSettings
+		// Declared as a FUNCTION, not a const arrow: scheduleResync() above closes
+		// over it and is defined earlier in the file, so it relies on hoisting.
+		function syncAllElements() {
+			const elements = getElements();
+
+			elements.forEach((element) => {
+				const elType = element.model.get('elType');
+				const widgetType = element.model.get('widgetType');
+
+				// Get ALL settings from the element
+				const allSettings = element.settings.toJSON();
+				if(element.id == 'document'){
+					return;
 				}
-			};
 
-			// Bulk sync without requiring the target DOM element to exist yet
-			applySettingsToDoms(mockContainer);
-			
-			syncCount++;	
-		
-		});
-		
+				// Create a mock container that settings-bridge / featuresFor can read.
+				// featuresFor() accesses container.model.get('widgetType'), so the
+				// getter MUST live under `.model`, not at the top level.
+				const mockContainer = {
+					id: element.id,
+					model: {
+						get: (prop) => prop === 'elType' ? elType : (prop === 'widgetType' ? widgetType : undefined),
+					},
+					settings: {
+						attributes: allSettings
+					}
+				};
 
-		win.aaeAtomicAnimations.scan(win.document);
+				// Bulk sync without requiring the target DOM element to exist yet
+				applySettingsToDoms(mockContainer);
+			});
+
+			// Rebuilding the maps is only half of it — scan() is what binds the
+			// freshly-rendered DOM nodes to them. A re-render produces new elements
+			// with no bound flag, so this re-injects the Custom CSS <style> and
+			// re-arms every other effect on them.
+			try {
+				win.aaeAtomicAnimations?.scan(win.document);
+			} catch (_) {
+				// A resync racing a preview teardown is not worth breaking the editor
+				// over; the next one will pick it up.
+			}
+		}
+
+		syncAllElements();
 	}, 500);
 });

@@ -97,9 +97,14 @@ class AAE_A_Toggle_Pane extends Atomic_Element_Base {
 		];
 	}
 
-	protected function define_allowed_child_types(): array {
-		return [ 'widget', 'e-aae-a-toggle-pane-title', 'e-aae-a-toggle-pane-desc', 'e-heading', 'e-paragraph', 'e-svg' ];
-	}
+	/**
+	 * No override: Atomic_Element_Base::define_allowed_child_types() already
+	 * defaults to [], which the editor reads as "unrestricted" and falls back
+	 * to the generic container behaviour (getChildType() in editor-canvas.js)
+	 * — the same thing e-div-block/e-flexbox rely on to accept every widget
+	 * type. Listing specific types here is what RESTRICTS the pane; removing
+	 * the override is what opens it back up.
+	 */
 
 	/**
 	 * Exposed publicly so the parent Switcher's define_default_children() can
