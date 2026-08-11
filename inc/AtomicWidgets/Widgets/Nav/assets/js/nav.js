@@ -35,15 +35,40 @@ function getEditorDeviceMode() {
 	}
 }
 
+/* Is the editor previewing a viewport at or below the nav's breakpoint?
+ *
+ * At a RESPONSIVE device mode Elementor sizes the preview iframe to that
+ * device's width, so `window.innerWidth` (we run inside that iframe) IS the
+ * simulated viewport and comparing it to the breakpoint is exact. That single
+ * comparison also covers every device the site has — including custom
+ * breakpoints, `laptop` and `widescreen` — which the old hardcoded
+ * `tablet && breakpoint >= 1024` special case did not: on a site whose tablet
+ * is 1100px it claimed mobile for a 1024 breakpoint, when a 1100px visitor
+ * gets the DESKTOP nav.
+ *
+ * DESKTOP mode is the exception and was the bug. There the iframe is the
+ * editor's available CANVAS — the screen minus the ~300px panel — which is not
+ * a viewport at all. Comparing it to the breakpoint made a narrow canvas read
+ * as a phone: with the breakpoint at 1024 a 1280px screen yields a 980px
+ * canvas, so the mobile menu appeared while the device switcher said Desktop,
+ * and the widget looked like its responsive logic was broken. (At 767 it never
+ * triggered, which is why only 1024 appeared affected.) The frontend was
+ * always correct — it uses matchMedia against the real viewport.
+ *
+ * The width check is KEPT as the fallback for an UNKNOWN mode, which is what
+ * the previous comment here was protecting: the frontend API / device channel
+ * can be unavailable when this runs, and a best-effort answer beats none. The
+ * deliberate trade-off is that DevTools-resizing the editor window no longer
+ * flips the preview while the toolbar still says `desktop` — the device
+ * switcher is the supported way to preview a breakpoint, and the editor chrome
+ * does not reflow into a device anyway.
+ */
 function isEditorMobileMode( breakpoint ) {
 	const mode = String( getEditorDeviceMode() ).toLowerCase();
-	const widthMatches = window.innerWidth <= breakpoint;
-	if ( mode.includes( 'mobile' ) ) return true;
-	if ( mode.includes( 'tablet' ) && breakpoint >= 1024 ) return true;
 
-	/* DevTools responsive mode can resize the preview iframe while Elementor's
-	 * toolbar channel still reports `desktop`. Either signal is sufficient. */
-	return widthMatches;
+	if ( mode.includes( 'desktop' ) ) return false;
+
+	return window.innerWidth <= breakpoint;
 }
 
 /* Find the Nav a companion drives. `source_nav_id` can be empty (saved before
