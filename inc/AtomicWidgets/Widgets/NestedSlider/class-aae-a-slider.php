@@ -195,6 +195,9 @@ class AAE_A_Slider extends Atomic_Element_Base {
 			'e-aae-a-slider-counter',
 			'e-aae-a-slider-divider',
 			'e-aae-a-slider-progress-fill',
+			'e-flexbox',
+			'e-grid',
+			'e-div-block'
 		];
 	}
 
