@@ -202,6 +202,8 @@ class AAE_A_Video_Popup_Trigger extends Atomic_Widget_Base {
 	 * shaped upload.
 	 */
 	protected function define_base_styles(): array {
+		$zero = Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] );
+
 		return [
 			'base' => Style_Definition::make()
 				->add_variant(
@@ -222,14 +224,48 @@ class AAE_A_Video_Popup_Trigger extends Atomic_Widget_Base {
 					] )
 				),
 
+			// The rotator layer (uploaded image, or the curved-text SVG) —
+			// must fill the circle exactly, or it renders at its own natural
+			// size instead. `display: block` matters here too: an inline
+			// `<img>`/`<svg>` with no explicit box still respects width/
+			// height as a replaced element, but leaving it `display: inline`
+			// leaves stray line-height gap under it inside the flex circle.
+			// video-popup.scss layers the spin `@keyframes`/animation-*
+			// properties on top of this same class — no atomic prop for
+			// keyframes, so that part has to stay there.
+			'rotator' => Style_Definition::make()
+				->set_label( __( 'Rotator', 'animation-addons-for-elementor' ) )
+				->add_variant( Style_Variant::make()->add_props( [
+					'position'           => String_Prop_Type::generate( 'absolute' ),
+					'inset-block-start'  => $zero,
+					'inset-inline-end'   => $zero,
+					'inset-block-end'    => $zero,
+					'inset-inline-start' => $zero,
+					'width'              => Size_Prop_Type::generate( [ 'size' => 100, 'unit' => '%' ] ),
+					'height'             => Size_Prop_Type::generate( [ 'size' => 100, 'unit' => '%' ] ),
+					'display'            => String_Prop_Type::generate( 'block' ),
+				] ) ),
+
 			// The static icon layer — sized independently of the circle so it
 			// stays a fixed, legible size regardless of the circle's own width/
 			// height. Matches AAE_A_Video_PlayBtn's own "icon" style key naming.
+			//
+			// `position: relative` + `z-index: 1` are load-bearing, not just
+			// "look": the rotator layer is `position: absolute` (see
+			// video-popup.scss), and CSS always paints a positioned element
+			// above a non-positioned sibling regardless of DOM order — so
+			// without these two the icon renders BEHIND the rotator and is
+			// invisible, even though it comes later in the twig. `display:
+			// block` is likewise required for width/height to apply at all
+			// (a `<span>` is inline by default and ignores box sizing).
 			'icon' => Style_Definition::make()
 				->set_label( __( 'Icon', 'animation-addons-for-elementor' ) )
 				->add_variant( Style_Variant::make()->add_props( [
-					'width'  => Size_Prop_Type::generate( [ 'size' => 28, 'unit' => 'px' ] ),
-					'height' => Size_Prop_Type::generate( [ 'size' => 28, 'unit' => 'px' ] ),
+					'position' => String_Prop_Type::generate( 'relative' ),
+					'z-index'  => Number_Prop_Type::generate( 1 ),
+					'display'  => String_Prop_Type::generate( 'block' ),
+					'width'    => Size_Prop_Type::generate( [ 'size' => 28, 'unit' => 'px' ] ),
+					'height'   => Size_Prop_Type::generate( [ 'size' => 28, 'unit' => 'px' ] ),
 				] ) ),
 		];
 	}

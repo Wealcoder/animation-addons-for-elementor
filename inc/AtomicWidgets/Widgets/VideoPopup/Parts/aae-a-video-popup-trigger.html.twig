@@ -56,14 +56,14 @@
     {{ editor_attributes | default('') | raw }}
 >{% if rotator_type == 'text' %}<svg
         xmlns="http://www.w3.org/2000/svg"
-        class="aae-a-video-popup-trigger-rotator aae-a-video-popup-trigger-rotator--text"
+        class="aae-a-video-popup-trigger-rotator aae-a-video-popup-trigger-rotator--text {{ base_styles.rotator }}"
         aria-hidden="true"
         viewBox="0 0 100 100"
         style="--aae-vp-rot-duration:{{ duration }}s;--aae-vp-rot-direction:{{ direction }};"
     ><defs><path id="aae-vp-circle-{{ id }}" d="M 50,50 m -{{ text_radius }},0 a {{ text_radius }},{{ text_radius }} 0 1,1 {{ text_radius * 2 }},0 a {{ text_radius }},{{ text_radius }} 0 1,1 -{{ text_radius * 2 }},0" /></defs><text style="font-size:{{ text_font_size }}px;"><textPath href="#aae-vp-circle-{{ id }}" startOffset="0%">{{ settings.rotator_text | default('') }}</textPath></text></svg>{% else %}<img
-        class="aae-a-video-popup-trigger-rotator aae-a-video-popup-trigger-rotator--image"
+        class="aae-a-video-popup-trigger-rotator aae-a-video-popup-trigger-rotator--image {{ base_styles.rotator }}"
         aria-hidden="true"
         style="--aae-vp-rot-duration:{{ duration }}s;--aae-vp-rot-direction:{{ direction }};"
         src="{{ settings.rotator_image.src | default('') | e('full_url') }}"
         alt=""
-    />{% endif %}<span class="{{ type }}-icon aae-a-video-popup-trigger-icon" aria-hidden="true">{% if icon_svg is not empty %}{{ icon_svg | raw }}{% else %}<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="100%" height="100%" fill="currentColor" style="display:block;"><path d="M8 5v14l11-7z"/></svg>{% endif %}</span></button>
+    />{% endif %}<span class="{{ base_styles.icon }} aae-a-video-popup-trigger-icon" aria-hidden="true">{% if icon_svg is not empty %}{{ icon_svg | raw }}{% else %}<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="100%" height="100%" fill="currentColor" style="display:block;"><path d="M8 5v14l11-7z"/></svg>{% endif %}</span></button>

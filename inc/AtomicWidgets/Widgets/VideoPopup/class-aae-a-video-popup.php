@@ -215,6 +215,14 @@ class AAE_A_Video_Popup extends Atomic_Element_Base {
 		return [ 'aae-a-video-popup-js' ];
 	}
 
+	/**
+	 * video-popup.scss still carries what can't become a Style-tab prop:
+	 * the rotator's `@keyframes`, the curved-text `<textPath>` styling, any
+	 * rule that reveals one element off a DIFFERENT element's hover/state
+	 * class (no atomic Style_Variant can target that — see
+	 * class-aae-a-video-popup-player.php's docblock for the full list of
+	 * what already moved OUT of it and into a `define_base_styles()`).
+	 */
 	public function get_style_depends(): array {
 		return [ 'aae-a-video-popup-css' ];
 	}

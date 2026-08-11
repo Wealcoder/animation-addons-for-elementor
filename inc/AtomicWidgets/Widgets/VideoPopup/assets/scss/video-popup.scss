@@ -1,16 +1,4 @@
-// AAE Video Popup — positioning/state CSS for the Trigger's rotating layer
-// and the Panel's poster/mount/controls bar. Self-contained: every class
-// here is namespaced `-popup-`, deliberately never reusing AAE Video's own
-// `.aae-a-video-*` class names (see video-popup.js's header comment for why).
-
-// ── Trigger: the spinning rotator + static icon ────────────────────────────
-
 .aae-a-video-popup-trigger-rotator {
-	position: absolute;
-	inset: 0;
-	width: 100%;
-	height: 100%;
-	display: block;
 	animation-name: aae-vp-spin;
 	animation-duration: var(--aae-vp-rot-duration, 8s);
 	animation-direction: var(--aae-vp-rot-direction, normal);
@@ -22,14 +10,7 @@
 	object-fit: cover;
 }
 
-// Curved text: an SVG whose only visible content is a <textPath> following
-// a circle sized via the rotator_text_padding control (viewBox 0 0 100 100
-// — see the twig for the path `d`), so the wording hugs the circle's edge
-// the same way the reference demo's pre-baked image does. `fill:
-// currentColor` keeps it themeable from the Trigger's own Style-tab text
-// colour, same as the icon layer. Font-size is NOT set here — it's an
-// inline style on the <text> element from rotator_text_font_size (see the
-// twig), so a rule here would only ever be the loser.
+// Curved text
 .aae-a-video-popup-trigger-rotator--text {
 	overflow: visible;
 	fill: currentColor;
@@ -41,41 +22,27 @@
 	}
 }
 
-.aae-a-video-popup-trigger-icon {
-	position: relative;
-	z-index: 1;
-	display: block;
-}
-
 @keyframes aae-vp-spin {
 	to {
 		transform: rotate(360deg);
 	}
 }
 
-// ── Panel: poster + mount fill the box, mirrors AAE Video's own video.scss ─
+// Poster fill
+.aae-a-video-popup-source .aae-a-video-popup-poster {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	max-width: none;
+	object-fit: cover;
+	border: 0;
+	transition: opacity 0.2s ease;
+}
 
-.aae-a-video-popup-source {
-	.aae-a-video-popup-poster,
-	.aae-a-video-popup-mount {
-		position: absolute;
-		inset: 0;
-		width: 100%;
-		height: 100%;
-		max-width: none;
-		object-fit: cover;
-		border: 0;
-	}
-
-	.aae-a-video-popup-poster {
-		z-index: 1;
-		transition: opacity 0.2s ease;
-	}
-
-	&.is-playing .aae-a-video-popup-poster {
-		opacity: 0;
-		pointer-events: none;
-	}
+.aae-a-video-popup-source.is-playing .aae-a-video-popup-poster {
+	opacity: 0;
+	pointer-events: none;
 }
 
 .aae-a-video-popup-playbtn {
@@ -87,10 +54,8 @@
 	pointer-events: none;
 }
 
-.aae-a-video-popup-mount {
-	background: #000;
-}
-
+// video-popup.js creates these at runtime — no twig renders them, so no
+// widget owns a base style for them.
 .aae-a-video-popup-native,
 .aae-a-video-popup-embed {
 	position: absolute;
@@ -116,16 +81,8 @@
 	cursor: pointer;
 }
 
+// Controls-bar reveal
 .aae-a-video-popup-controls {
-	position: absolute;
-	inset-inline: 0;
-	inset-block-end: 0;
-	z-index: 3;
-	display: flex;
-	align-items: center;
-	gap: 10px;
-	padding: 10px 14px;
-	background: linear-gradient(to top, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0));
 	opacity: 0;
 	transition: opacity 0.2s ease;
 }
@@ -145,54 +102,25 @@
 	opacity: 1;
 }
 
-.aae-a-video-popup-progress {
-	position: relative;
-	flex: 1 1 auto;
-	height: 4px;
-	border-radius: 2px;
-	background: rgba(255, 255, 255, 0.35);
-	cursor: pointer;
-	transition: height 0.15s ease;
-
-	&:hover {
-		height: 6px;
-	}
+// Not in the atomic style schema at all — see the file header.
+.aae-a-video-popup-progress-fill {
+	pointer-events: none;
 }
 
-.aae-a-video-popup-progress-fill {
-	position: absolute;
-	inset-block: 0;
-	inset-inline-start: 0;
-	width: 0%;
-	border-radius: 2px;
-	background: #ffffff;
-	pointer-events: none;
+// The track's own :hover height bump lives on Player's `progress`
+// Style_Definition key (a plain self-hover, no residual CSS needed for it —
+// see class-aae-a-video-popup-player.php). Just the transition TIMING stays
+// here: `transition` is technically a valid atomic key, but its shape needs
+// a Key_Value_Prop_Type "selection" entry whose exact expected value isn't
+// verified against the installed schema, and one wrongly-shaped value voids
+// the entire `progress` Style_Definition silently — not worth the risk for
+// one cosmetic timing value.
+.aae-a-video-popup-progress {
+	transition: height 0.15s ease;
 }
 
 .aae-a-video-popup-time {
 	white-space: nowrap;
-	flex: 0 0 auto;
-	font-size: 12px;
-	color: #ffffff;
-}
-
-.aae-a-video-popup-btn {
-	flex: 0 0 auto;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	width: 28px;
-	height: 28px;
-	border: 0;
-	background: transparent;
-	padding: 0;
-	color: #ffffff;
-	cursor: pointer;
-
-	&:hover,
-	&:focus-visible {
-		opacity: 0.8;
-	}
 }
 
 .aae-a-video-popup-icon-play[hidden],
