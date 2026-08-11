@@ -121,10 +121,27 @@ class AAE_A_Video_Popup extends Atomic_Element_Base {
 			'close_on_overlay' => Boolean_Prop_Type::make()->default( true ),
 			'close_on_esc'     => Boolean_Prop_Type::make()->default( true ),
 
-			// Open/close motion — plain CSS, no GSAP (this widget has no
-			// GSAP dependency at all, matching AAE Video's own JS).
+			// Open/close motion — plain CSS transitions, no GSAP (this
+			// widget has no GSAP dependency at all, matching AAE Video's own
+			// JS). The bouncier variants (zoom-in, rotate-in, elastic-
+			// bounce) get their overshoot from an overshooting
+			// cubic-bezier curve on a single opacity/transform transition —
+			// see video-popup.js's ANIM_FROM map — never a multi-stage
+			// @keyframes; one transition per open/close is enough to match
+			// back.out/elastic.out-style easing without needing GSAP.
 			'popup_animation' => String_Prop_Type::make()
-				->enum( [ 'fade', 'scale-reveal', 'slide-up', 'none' ] )
+				->enum( [
+					'fade',
+					'scale-reveal',
+					'slide-up',
+					'zoom-in',
+					'flip-3d',
+					'curtain-split',
+					'blur-in',
+					'rotate-in',
+					'elastic-bounce',
+					'none',
+				] )
 				->default( 'scale-reveal' ),
 			'anim_duration' => Number_Prop_Type::make()->default( 400 ),
 
@@ -147,10 +164,16 @@ class AAE_A_Video_Popup extends Atomic_Element_Base {
 					Select_Control::bind_to( 'popup_animation' )
 						->set_label( __( 'Popup Animation', 'animation-addons-for-elementor' ) )
 						->set_options( [
-							[ 'value' => 'fade',         'label' => __( 'Fade', 'animation-addons-for-elementor' ) ],
-							[ 'value' => 'scale-reveal',  'label' => __( 'Scale Reveal', 'animation-addons-for-elementor' ) ],
-							[ 'value' => 'slide-up',      'label' => __( 'Slide Up', 'animation-addons-for-elementor' ) ],
-							[ 'value' => 'none',          'label' => __( 'None', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'fade',           'label' => __( 'Fade', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'scale-reveal',    'label' => __( 'Scale Reveal', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'slide-up',        'label' => __( 'Slide Up', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'zoom-in',         'label' => __( 'Zoom In', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'flip-3d',         'label' => __( 'Flip 3D', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'curtain-split',   'label' => __( 'Curtain Split', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'blur-in',         'label' => __( 'Blur In', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'rotate-in',       'label' => __( 'Rotate In', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'elastic-bounce',  'label' => __( 'Elastic Bounce', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'none',            'label' => __( 'None', 'animation-addons-for-elementor' ) ],
 						] ),
 					Number_Control::bind_to( 'anim_duration' )
 						->set_label( __( 'Animation Duration (ms)', 'animation-addons-for-elementor' ) ),

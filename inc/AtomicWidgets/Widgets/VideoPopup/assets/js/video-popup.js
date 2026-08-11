@@ -630,12 +630,42 @@ const initVideoInPanel = ( panel ) => {
 
 // ───────────────────────── Popup mechanics ─────────────────────────────────
 
-// Resting → visible transform per animation preset. `null` = plain fade only.
+// Resting → visible transform per animation preset. `null` = plain fade
+// only. `ease` defaults to the CSS keyword `ease` when omitted; the
+// bouncier presets (zoom-in/rotate-in/elastic-bounce) use an overshooting
+// cubic-bezier instead — a SINGLE opacity/transform transition can already
+// overshoot past 100% and settle back with the right curve, so there is no
+// need for a multi-stage `@keyframes` (or GSAP) to get a back.out/
+// elastic.out-style bounce. `filter` (blur-in only) rides its own
+// transition entry, added conditionally in open()/close() below.
 const ANIM_FROM = {
 	fade: null,
 	'scale-reveal': { transform: 'scale(0.85)' },
 	'slide-up': { transform: 'translateY(40px)' },
+	'zoom-in': { transform: 'scale(0.3)', ease: 'cubic-bezier(0.34, 1.56, 0.64, 1)' },
+	// The `perspective(...)` FUNCTION is what gives this depth, applied
+	// inline in the panel's own transform value — NOT the `perspective`
+	// CSS *property* on an ancestor (that was tried and reverted: per the
+	// CSS spec, `perspective` on an ancestor makes it a containing block
+	// for `position: fixed` descendants, which broke the whole teleport-
+	// to-viewport mechanism this widget depends on — the panel rendered
+	// against the near-empty portal instead of the viewport, and the
+	// overlay's `inset: 0` collapsed to the same near-nothing box).
+	'flip-3d': { transform: 'perspective(1000px) rotateY(90deg)', ease: 'cubic-bezier(0.22, 1, 0.36, 1)' },
+	// The reference this was modeled on doesn't actually split into two
+	// panels either — same single-box scaleX(0→1) from center.
+	'curtain-split': { transform: 'scaleX(0)', ease: 'cubic-bezier(0.83, 0, 0.17, 1)' },
+	'blur-in': { transform: 'scale(1.1)', filter: 'blur(30px)', ease: 'cubic-bezier(0.22, 1, 0.36, 1)' },
+	'rotate-in': { transform: 'rotate(-180deg) scale(0.3)', ease: 'cubic-bezier(0.34, 1.56, 0.64, 1)' },
+	'elastic-bounce': { transform: 'scale(0)', ease: 'cubic-bezier(0.68, -0.55, 0.265, 1.55)' },
 	none: null,
+};
+
+const transitionFor = ( from, duration ) => {
+	const ease = from.ease || 'ease';
+	const props = [ `opacity ${ duration }s ${ ease }`, `transform ${ duration }s ${ ease }` ];
+	if ( from.filter ) props.push( `filter ${ duration }s ${ ease }` );
+	return props.join( ', ' );
 };
 
 const reduceMotion = () => !! ( window.matchMedia && window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches );
@@ -806,10 +836,12 @@ const initVideoPopup = ( root ) => {
 			panel.style.transition = 'none';
 			panel.style.opacity = '0';
 			panel.style.transform = `translate(-50%, -50%) ${ from.transform }`;
+			if ( from.filter ) panel.style.filter = from.filter;
 			requestAnimationFrame( () => {
-				panel.style.transition = `opacity ${ duration }s ease, transform ${ duration }s ease`;
+				panel.style.transition = transitionFor( from, duration );
 				panel.style.opacity = '1';
 				panel.style.transform = 'translate(-50%, -50%)';
+				if ( from.filter ) panel.style.filter = 'none';
 			} );
 		} else {
 			panel.style.transition = animName === 'none' || reduceMotion() ? 'none' : `opacity ${ duration }s ease`;
@@ -850,9 +882,10 @@ const initVideoPopup = ( root ) => {
 
 		const from = reduceMotion() ? null : ANIM_FROM[ animName ];
 		if ( from ) {
-			panel.style.transition = `opacity ${ duration }s ease, transform ${ duration }s ease`;
+			panel.style.transition = transitionFor( from, duration );
 			panel.style.opacity = '0';
 			panel.style.transform = `translate(-50%, -50%) ${ from.transform }`;
+			if ( from.filter ) panel.style.filter = from.filter;
 		} else if ( animName !== 'none' && ! reduceMotion() ) {
 			panel.style.transition = `opacity ${ duration }s ease`;
 			panel.style.opacity = '0';
