@@ -13,11 +13,21 @@
  * Structure:
  *   AAE_A_Video_Popup (this class)
  *     ├─ AAE_A_Video_Popup_Trigger  — the rotating circle (locked)
+ *     │    ├─ (twig-rendered SVG)  — curved text, when rotator_type='text'
+ *     │    ├─ e-image     (locked) — rotator image, shown when rotator_type='image'
+ *     │    └─ e-svg       (locked) — the static icon on top
  *     ├─ AAE_A_Video_Popup_Overlay  — backdrop (locked, teleported to <body>)
  *     └─ AAE_A_Video_Popup_Panel    — the popup box (locked, teleported to
  *          ├─ AAE_A_Video_Popup_Close     <body>). OWNS every video source/
  *          ├─ AAE_A_Video_Popup_PlayBtn   playback/poster/controls prop —
  *          └─ AAE_A_Video_Popup_Player    see that class's own docblock.
+ *
+ * Trigger's Rotator Image and Icon are real, native Elementor elements
+ * (Image/Svg) instead of markup Trigger renders itself; text mode is
+ * Trigger's own inline curved SVG `<textPath>` — see Parts/class-aae-a-
+ * video-popup-trigger.php's own docblock for why (a native Paragraph can't
+ * bend text along a circle — tried twice), and for how `rotator_type`
+ * picks between them.
  *
  * Why teleport (video-popup.js, mirrors Offcanvas's own offcanvas.js): the
  * Overlay/Panel use `position: fixed`, which resolves against the nearest

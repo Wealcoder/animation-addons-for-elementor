@@ -1,4 +1,24 @@
-.aae-a-video-popup-trigger-rotator {
+// AAE Video Popup — the CSS a Style-tab prop genuinely can't express:
+// `@keyframes`, cross-element hover/state reveals (an atomic Style_Variant
+// only ever targets a widget's own root), elements video-popup.js creates
+// at runtime with no twig behind them, and `pointer-events`/`white-space`
+// (not in the atomic style schema at all — see atomic-style-schema-
+// reference.md's "not in the schema" list). Everything else — the Trigger
+// circle/rotator/icon, the Overlay backdrop, the Panel box, the Close
+// button, the Player mount/controls/progress/time/buttons — lives in each
+// Part's own `define_base_styles()`.
+
+// The `--image` suffix class is the Trigger twig's hide-selector
+// discriminator for the Rotator Image child (see class-aae-a-video-popup-
+// trigger.php's docblock) — the rotator's shared look (fill/size/
+// object-fit, for BOTH the curved-text SVG and the Image child) is the
+// `.e-aae-a-video-popup-trigger-rotator` class's own atomic 'rotator'
+// Style_Definition key (that class IS `get_element_type() . '-rotator'` —
+// the same string `generate_base_style_id()` uses, which is why it carries
+// the `e-` prefix and NOT the `aae-` prefix every other selector in this
+// file uses — a mismatch here silently kills the spin animation, it has
+// happened once already).
+.e-aae-a-video-popup-trigger-rotator {
 	animation-name: aae-vp-spin;
 	animation-duration: var(--aae-vp-rot-duration, 8s);
 	animation-direction: var(--aae-vp-rot-direction, normal);
@@ -6,11 +26,12 @@
 	animation-iteration-count: infinite;
 }
 
-.aae-a-video-popup-trigger-rotator--image {
-	object-fit: cover;
-}
-
-// Curved text
+// Curved text: the `<textPath>` circle radius/font-size are rendered as
+// literal SVG geometry/presentation-attribute values in the twig (their own
+// Number controls on Trigger), so they always win regardless of CSS
+// specificity. `fill: currentColor` keeps the text themeable from the
+// Trigger's own Style-tab text colour. `overflow: visible` lets the glyphs
+// spill past the SVG's own 0..100 viewBox edge without clipping.
 .aae-a-video-popup-trigger-rotator--text {
 	overflow: visible;
 	fill: currentColor;
@@ -131,7 +152,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.aae-a-video-popup-trigger-rotator {
+	.e-aae-a-video-popup-trigger-rotator {
 		animation: none;
 	}
 

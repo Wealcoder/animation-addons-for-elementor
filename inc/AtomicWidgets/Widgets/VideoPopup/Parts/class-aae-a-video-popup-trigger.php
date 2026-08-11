@@ -1,14 +1,39 @@
 <?php
 /**
  * AAE Video Popup — Trigger. The spinning circular badge that opens the
- * popup. A leaf widget (not a container) — the rotating layer (image or
- * flat text, per the `rotator_type` switch) and the static icon on top are
- * both rendered directly by THIS class's own twig, mirroring how
- * AAE_A_Offcanvas_Trigger inlines its icon via an `Svg_Src_Prop_Type` prop
- * instead of nesting a child element for it. video-popup.js binds the OPEN
- * behaviour to the `.aae-video-popup-trigger` hook class hardcoded in the
- * twig (never seeded through the `classes` prop — see CLAUDE.md's "Never
- * put a functional hook class in the classes prop").
+ * popup. A CONTAINER (not a leaf) with a mixed rotator:
+ *
+ *   - Text mode renders a curved SVG `<textPath>` directly in THIS class's
+ *     own twig (own Font Size / Distance-from-edge controls). A native
+ *     `e-paragraph` was tried here TWICE and reverted both times: a plain
+ *     paragraph can only spin as a flat rigid block, and there is no CSS or
+ *     atomic-style way to bend text along a circular path — only SVG's own
+ *     `<textPath>` can. The circular look is the one that's wanted, so text
+ *     mode trades away native Style-tab text editing for it. DO NOT
+ *     re-introduce a Paragraph child for text mode without an explicit,
+ *     repeated ask — this has round-tripped twice already.
+ *   - Image mode uses a real, native `e-image` child instead — full
+ *     Style-tab access, no reason to give that one up.
+ *   - The static icon on top is a real, native `e-svg` child.
+ *
+ * The Image and Svg children are both locked default children (non-
+ * deletable) — see define_default_children(). Text mode has no child at
+ * all; it's the twig's own inline markup.
+ *
+ * DANGER — if this class previously shipped with an `e-paragraph` default
+ * child (it did, twice), any page that already has a Trigger from that
+ * window keeps an ORPHANED "Rotator Text" child in its saved data: default
+ * children are seeded once at creation and never retroactively added or
+ * removed when this method changes. That orphan still carries the shared
+ * `-rotator` class, so it still spins — right on top of this twig's SVG,
+ * same text, flat instead of curved. If a "duplicate text" report comes in
+ * again, check the Navigator for a stray locked "Rotator Text" (Paragraph)
+ * under Trigger before assuming a new code bug.
+ *
+ * video-popup.js binds the OPEN behaviour to the `.aae-video-popup-trigger`
+ * hook class hardcoded in the twig (never seeded through the `classes`
+ * prop — see CLAUDE.md's "Never put a functional hook class in the
+ * classes prop").
  *
  * @package AnimationAddonsForElementor
  */
@@ -19,22 +44,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Widget_Base' ) ) {
+if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base' ) ) {
 	return;
 }
 
-use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Widget_Base;
-use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Template;
+use Elementor\Modules\AtomicWidgets\Elements\Atomic_Image\Atomic_Image;
+use Elementor\Modules\AtomicWidgets\Elements\Atomic_Svg\Atomic_Svg;
+use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
+use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
-use Elementor\Modules\AtomicWidgets\Controls\Types\Svg_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Select_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Number_Control;
-use Elementor\Modules\AtomicWidgets\Controls\Types\Image_Control;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Svg_Src_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Image_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Image_Src_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Url_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Number_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
@@ -45,11 +72,20 @@ use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\AtomicWidgets\PropDependencies\Manager as Dependency_Manager;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
-class AAE_A_Video_Popup_Trigger extends Atomic_Widget_Base {
+class AAE_A_Video_Popup_Trigger extends Atomic_Element_Base {
 
-	use Has_Template;
+	use Has_Element_Template;
 
-	public static $widget_description = 'The spinning circular button that opens the Video Popup. Seeded inside the widget; fully styleable via the Style tab.';
+	public static $widget_description = 'The spinning circular button that opens the Video Popup. Seeded inside the widget; fully styleable via the Style tab. Its Rotator Image and Icon children are real Image and Svg elements — edit them directly.';
+
+	public function __construct( $data = [], $args = null ) {
+		parent::__construct( $data, $args );
+		$this->meta( 'is_container', true );
+	}
+
+	public static function get_type() {
+		return 'e-aae-a-video-popup-trigger';
+	}
 
 	public static function get_element_type(): string {
 		return 'e-aae-a-video-popup-trigger';
@@ -67,12 +103,8 @@ class AAE_A_Video_Popup_Trigger extends Atomic_Widget_Base {
 		return [ 'video', 'popup', 'trigger', 'spinner', 'rotate', 'icon', 'atomic' ];
 	}
 
-	public function show_in_panel() {
+	public function should_show_in_panel() {
 		return false;
-	}
-
-	public function hide_on_search() {
-		return true;
 	}
 
 	protected static function define_props_schema(): array {
@@ -85,29 +117,16 @@ class AAE_A_Video_Popup_Trigger extends Atomic_Widget_Base {
 			] )
 			->get();
 
-		$is_image = Dependency_Manager::make()
-			->where( [
-				'operator' => 'eq',
-				'path'     => [ 'rotator_type' ],
-				'value'    => 'image',
-				'effect'   => 'hide',
-			] )
-			->get();
-
 		return [
 			'classes'    => Classes_Prop_Type::make()->default( [] ),
 			'attributes' => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
 
-			// The rotating layer: an uploaded image, or a flat text block —
-			// both spin as a rigid unit (no curved/SVG-textPath text layout).
+			// Text mode has no child element (see the twig) — image mode's
+			// Rotator Image is a real, locked e-image child instead; only
+			// the CHOICE between them lives here.
 			'rotator_type' => String_Prop_Type::make()
 				->enum( [ 'image', 'text' ] )
 				->default( 'image' ),
-
-			'rotator_image' => Image_Prop_Type::make()
-				->default_size( 'large' )
-				->default_url( \Elementor\Utils::get_placeholder_image_src() )
-				->set_dependencies( $is_image ),
 
 			'rotator_text' => String_Prop_Type::make()
 				->default( 'WATCH THE VIDEO • WATCH THE VIDEO •' )
@@ -133,16 +152,10 @@ class AAE_A_Video_Popup_Trigger extends Atomic_Widget_Base {
 				->default( 8 )
 				->set_dependencies( $is_text ),
 
-			'rotation_duration' => Number_Prop_Type::make()->default( 8 ),
+			'rotation_duration'  => Number_Prop_Type::make()->default( 8 ),
 			'rotation_direction' => String_Prop_Type::make()
 				->enum( [ 'cw', 'ccw' ] )
 				->default( 'cw' ),
-
-			// Static, non-rotating icon on top. Empty by default → Twig falls
-			// back to a built-in play glyph. Inlined from `.html` (never an
-			// <img>) so Style-tab colour/hover reach it — same reasoning as
-			// AAE_A_Offcanvas_Trigger's identical icon prop.
-			'icon' => Svg_Src_Prop_Type::make()->default_url( WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/VideoPopup/Parts/assets/icons/play.svg' ),
 		];
 	}
 
@@ -157,8 +170,6 @@ class AAE_A_Video_Popup_Trigger extends Atomic_Widget_Base {
 							[ 'value' => 'image', 'label' => __( 'Image', 'animation-addons-for-elementor' ) ],
 							[ 'value' => 'text',  'label' => __( 'Text', 'animation-addons-for-elementor' ) ],
 						] ),
-					Image_Control::bind_to( 'rotator_image' )
-						->set_label( __( 'Rotator Image', 'animation-addons-for-elementor' ) ),
 					Text_Control::bind_to( 'rotator_text' )
 						->set_label( __( 'Rotator Text', 'animation-addons-for-elementor' ) ),
 					Number_Control::bind_to( 'rotator_text_font_size' )
@@ -173,14 +184,6 @@ class AAE_A_Video_Popup_Trigger extends Atomic_Widget_Base {
 							[ 'value' => 'cw',  'label' => __( 'Clockwise', 'animation-addons-for-elementor' ) ],
 							[ 'value' => 'ccw', 'label' => __( 'Counter-clockwise', 'animation-addons-for-elementor' ) ],
 						] ),
-				] ),
-
-			Section::make()
-				->set_id( 'icon' )
-				->set_label( __( 'Icon', 'animation-addons-for-elementor' ) )
-				->set_items( [
-					Svg_Control::bind_to( 'icon' )
-						->set_label( __( 'Icon', 'animation-addons-for-elementor' ) ),
 				] ),
 
 			Section::make()
@@ -224,15 +227,16 @@ class AAE_A_Video_Popup_Trigger extends Atomic_Widget_Base {
 					] )
 				),
 
-			// The rotator layer (uploaded image, or the curved-text SVG) —
-			// must fill the circle exactly, or it renders at its own natural
-			// size instead. `display: block` matters here too: an inline
-			// `<img>`/`<svg>` with no explicit box still respects width/
-			// height as a replaced element, but leaving it `display: inline`
-			// leaves stray line-height gap under it inside the flex circle.
+			// Shared by both rotator variants — the curved-text `<svg>`
+			// (twig-rendered, class set literally there) and the Rotator
+			// Image child (class set via its `classes` prop below). Must
+			// fill the circle exactly, or whichever is visible renders at
+			// its own natural size instead. `object-fit: cover` is a no-op
+			// on the SVG and crops the Image nicely by default.
 			// video-popup.scss layers the spin `@keyframes`/animation-*
-			// properties on top of this same class — no atomic prop for
-			// keyframes, so that part has to stay there.
+			// properties on top of this same class (`get_element_type() .
+			// '-rotator'`, i.e. carries the `e-` prefix) — no atomic prop
+			// for keyframes, so that part has to stay there.
 			'rotator' => Style_Definition::make()
 				->set_label( __( 'Rotator', 'animation-addons-for-elementor' ) )
 				->add_variant( Style_Variant::make()->add_props( [
@@ -244,6 +248,7 @@ class AAE_A_Video_Popup_Trigger extends Atomic_Widget_Base {
 					'width'              => Size_Prop_Type::generate( [ 'size' => 100, 'unit' => '%' ] ),
 					'height'             => Size_Prop_Type::generate( [ 'size' => 100, 'unit' => '%' ] ),
 					'display'            => String_Prop_Type::generate( 'block' ),
+					'object-fit'         => String_Prop_Type::generate( 'cover' ),
 				] ) ),
 
 			// The static icon layer — sized independently of the circle so it
@@ -251,13 +256,13 @@ class AAE_A_Video_Popup_Trigger extends Atomic_Widget_Base {
 			// height. Matches AAE_A_Video_PlayBtn's own "icon" style key naming.
 			//
 			// `position: relative` + `z-index: 1` are load-bearing, not just
-			// "look": the rotator layer is `position: absolute` (see
-			// video-popup.scss), and CSS always paints a positioned element
-			// above a non-positioned sibling regardless of DOM order — so
-			// without these two the icon renders BEHIND the rotator and is
-			// invisible, even though it comes later in the twig. `display:
-			// block` is likewise required for width/height to apply at all
-			// (a `<span>` is inline by default and ignores box sizing).
+			// "look": the rotator layer is `position: absolute` (see the
+			// 'rotator' key above), and CSS always paints a positioned
+			// element above a non-positioned sibling regardless of DOM
+			// order — so without these two the icon renders BEHIND the
+			// rotator and is invisible, even though it comes later in the
+			// tree. `display: block` is likewise required for width/height
+			// to apply at all on the Svg child's own wrapper.
 			'icon' => Style_Definition::make()
 				->set_label( __( 'Icon', 'animation-addons-for-elementor' ) )
 				->add_variant( Style_Variant::make()->add_props( [
@@ -268,6 +273,56 @@ class AAE_A_Video_Popup_Trigger extends Atomic_Widget_Base {
 					'height'   => Size_Prop_Type::generate( [ 'size' => 28, 'unit' => 'px' ] ),
 				] ) ),
 		];
+	}
+
+	/**
+	 * The Rotator Image is always present (locked, non-deletable) even in
+	 * text mode — the twig hides it by class rather than this class ever
+	 * removing/re-adding it, so switching `rotator_type` back and forth
+	 * never loses the uploaded image. The Icon is likewise locked: there is
+	 * no fallback glyph any more, so losing it would leave the trigger with
+	 * nothing on top of the rotator.
+	 */
+	protected function define_default_children() {
+		$rotator_class = static::get_element_type() . '-rotator';
+		$icon_class    = static::get_element_type() . '-icon';
+
+		return [
+			Atomic_Image::generate()
+				->settings( [
+					'classes' => Classes_Prop_Type::generate( [ $rotator_class, $rotator_class . '--image' ] ),
+					'image'   => Image_Prop_Type::generate( [
+						'src'  => Image_Src_Prop_Type::generate( [
+							'id'  => null,
+							'url' => Url_Prop_Type::generate( \Elementor\Utils::get_placeholder_image_src() ),
+						] ),
+						'size' => String_Prop_Type::generate( 'full' ),
+					] ),
+				] )
+				->is_locked( true )
+				->editor_settings( [ 'title' => 'Rotator Image' ] )
+				->build(),
+
+			Atomic_Svg::generate()
+				->settings( [
+					'classes' => Classes_Prop_Type::generate( [ $icon_class ] ),
+					'svg'     => Svg_Src_Prop_Type::generate( [
+						'id'  => null,
+						'url' => Url_Prop_Type::generate( WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/VideoPopup/Parts/assets/icons/play.svg' ),
+					] ),
+				] )
+				->is_locked( true )
+				->editor_settings( [ 'title' => 'Icon' ] )
+				->build(),
+		];
+	}
+
+	protected function define_allowed_child_types() {
+		return [ 'e-image', 'e-svg' ];
+	}
+
+	protected function define_default_html_tag() {
+		return 'button';
 	}
 
 	protected function get_templates(): array {

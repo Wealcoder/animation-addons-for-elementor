@@ -873,6 +873,12 @@ const initVideoPopup = ( root ) => {
 
 // ── Editor-only preview reveal (mirrors AAE Offcanvas's own reconciler) ────
 const editorReconcilers = new Map();
+// id -> true|false once the trigger/close/overlay has been clicked; wins
+// over the polled "Open Popup (Editor)" setting until that setting itself
+// actually changes (see reconcile() below) — clicking the trigger in the
+// editor should behave like the real popup, not just the switch.
+const editorOverrides = new Map();
+const editorLastSetting = new Map();
 
 const readEditorOpen = ( id ) => {
 	try {
@@ -935,13 +941,61 @@ const initVideoPopupEditor = ( container ) => {
 		}
 	};
 
+	// Click-to-open/close, same as the real widget — just routed through
+	// `apply()` above instead of initVideoPopup()'s teleport-to-body-portal
+	// path (moving elements out of Elementor's own tracked DOM tree here
+	// would fight its re-render cycle). `dataset.aaeVpEditorBound` stops a
+	// later re-render's call to this function from stacking a second
+	// listener onto the SAME still-attached node; a node Elementor actually
+	// replaced on re-render has no such marker and gets bound fresh.
+	const bindOnce = ( el, handler ) => {
+		if ( ! el || el.dataset.aaeVpEditorBound === 'true' ) return;
+		el.dataset.aaeVpEditorBound = 'true';
+		el.addEventListener( 'click', handler );
+	};
+
+	const trigger = container.querySelector( '.aae-video-popup-trigger' )
+		|| container.querySelector( '[data-e-type="e-aae-a-video-popup-trigger"]' );
+	bindOnce( trigger, ( e ) => {
+		e.preventDefault();
+		editorOverrides.set( id, true );
+		apply( true );
+	} );
+
+	const panelEl = container.querySelector( '.aae-a-video-popup-panel' );
+	const closeBtn = panelEl && ( panelEl.querySelector( '.aae-video-popup-close' )
+		|| panelEl.querySelector( '[data-e-type="e-aae-a-video-popup-close"]' ) );
+	bindOnce( closeBtn, ( e ) => {
+		e.preventDefault();
+		editorOverrides.set( id, false );
+		apply( false );
+	} );
+
+	const overlayEl = container.querySelector( '[data-e-type="e-aae-a-video-popup-overlay"]' );
+	bindOnce( overlayEl, () => {
+		editorOverrides.set( id, false );
+		apply( false );
+	} );
+
 	const reconcile = () => {
 		if ( ! document.body.contains( container ) ) {
 			window.clearInterval( editorReconcilers.get( id ) );
 			editorReconcilers.delete( id );
+			editorOverrides.delete( id );
+			editorLastSetting.delete( id );
 			return;
 		}
-		apply( readEditorOpen( id ) );
+
+		const settingValue = readEditorOpen( id );
+		// The ACTUAL "Open Popup (Editor)" switch changing always wins over
+		// a stale click-override — otherwise closing via that switch after
+		// a manual open click would silently do nothing.
+		if ( editorLastSetting.has( id ) && editorLastSetting.get( id ) !== settingValue ) {
+			editorOverrides.delete( id );
+		}
+		editorLastSetting.set( id, settingValue );
+
+		apply( editorOverrides.has( id ) ? editorOverrides.get( id ) : settingValue );
 	};
 
 	if ( editorReconcilers.has( id ) ) window.clearInterval( editorReconcilers.get( id ) );
