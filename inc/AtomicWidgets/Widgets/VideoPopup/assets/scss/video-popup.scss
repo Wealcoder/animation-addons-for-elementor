@@ -1,0 +1,211 @@
+// AAE Video Popup — positioning/state CSS for the Trigger's rotating layer
+// and the Panel's poster/mount/controls bar. Self-contained: every class
+// here is namespaced `-popup-`, deliberately never reusing AAE Video's own
+// `.aae-a-video-*` class names (see video-popup.js's header comment for why).
+
+// ── Trigger: the spinning rotator + static icon ────────────────────────────
+
+.aae-a-video-popup-trigger-rotator {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	display: block;
+	animation-name: aae-vp-spin;
+	animation-duration: var(--aae-vp-rot-duration, 8s);
+	animation-direction: var(--aae-vp-rot-direction, normal);
+	animation-timing-function: linear;
+	animation-iteration-count: infinite;
+}
+
+.aae-a-video-popup-trigger-rotator--image {
+	object-fit: cover;
+}
+
+.aae-a-video-popup-trigger-rotator--text {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	white-space: nowrap;
+	overflow: hidden;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	padding: 0 6px;
+}
+
+.aae-a-video-popup-trigger-icon {
+	position: relative;
+	z-index: 1;
+	display: block;
+}
+
+@keyframes aae-vp-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+// ── Panel: poster + mount fill the box, mirrors AAE Video's own video.scss ─
+
+.aae-a-video-popup-source {
+	.aae-a-video-popup-poster,
+	.aae-a-video-popup-mount {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		max-width: none;
+		object-fit: cover;
+		border: 0;
+	}
+
+	.aae-a-video-popup-poster {
+		z-index: 1;
+		transition: opacity 0.2s ease;
+	}
+
+	&.is-playing .aae-a-video-popup-poster {
+		opacity: 0;
+		pointer-events: none;
+	}
+}
+
+.aae-a-video-popup-playbtn {
+	transition: opacity 0.2s ease;
+}
+
+.aae-a-video-popup-source.is-playing .aae-a-video-popup-playbtn {
+	opacity: 0;
+	pointer-events: none;
+}
+
+.aae-a-video-popup-mount {
+	background: #000;
+}
+
+.aae-a-video-popup-native,
+.aae-a-video-popup-embed {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	border: 0;
+	object-fit: cover;
+}
+
+.aae-a-video-popup-embed iframe {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	border: 0;
+}
+
+.aae-a-video-popup-clickzone {
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	cursor: pointer;
+}
+
+.aae-a-video-popup-controls {
+	position: absolute;
+	inset-inline: 0;
+	inset-block-end: 0;
+	z-index: 3;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 10px 14px;
+	background: linear-gradient(to top, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0));
+	opacity: 0;
+	transition: opacity 0.2s ease;
+}
+
+.aae-a-video-popup-source:hover .aae-a-video-popup-controls,
+.aae-a-video-popup-source:focus-within .aae-a-video-popup-controls,
+.aae-a-video-popup-source:not(.is-playing) .aae-a-video-popup-controls {
+	opacity: 1;
+}
+
+.aae-a-video-popup-source.is-playing.is-controls-hidden .aae-a-video-popup-controls {
+	opacity: 0;
+}
+
+.aae-a-video-popup-source.is-playing.is-controls-hidden:hover .aae-a-video-popup-controls,
+.aae-a-video-popup-source.is-playing.is-controls-hidden:focus-within .aae-a-video-popup-controls {
+	opacity: 1;
+}
+
+.aae-a-video-popup-progress {
+	position: relative;
+	flex: 1 1 auto;
+	height: 4px;
+	border-radius: 2px;
+	background: rgba(255, 255, 255, 0.35);
+	cursor: pointer;
+	transition: height 0.15s ease;
+
+	&:hover {
+		height: 6px;
+	}
+}
+
+.aae-a-video-popup-progress-fill {
+	position: absolute;
+	inset-block: 0;
+	inset-inline-start: 0;
+	width: 0%;
+	border-radius: 2px;
+	background: #ffffff;
+	pointer-events: none;
+}
+
+.aae-a-video-popup-time {
+	white-space: nowrap;
+	flex: 0 0 auto;
+	font-size: 12px;
+	color: #ffffff;
+}
+
+.aae-a-video-popup-btn {
+	flex: 0 0 auto;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	border: 0;
+	background: transparent;
+	padding: 0;
+	color: #ffffff;
+	cursor: pointer;
+
+	&:hover,
+	&:focus-visible {
+		opacity: 0.8;
+	}
+}
+
+.aae-a-video-popup-icon-play[hidden],
+.aae-a-video-popup-icon-pause[hidden],
+.aae-a-video-popup-icon-unmuted[hidden],
+.aae-a-video-popup-icon-muted[hidden] {
+	display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.aae-a-video-popup-trigger-rotator {
+		animation: none;
+	}
+
+	.aae-a-video-popup-playbtn,
+	.aae-a-video-popup-poster,
+	.aae-a-video-popup-controls,
+	.aae-a-video-popup-progress {
+		transition: none;
+	}
+}

@@ -1,0 +1,50 @@
+{#
+  AAE Video Popup Trigger — renders <button class="aae-a-video-popup-trigger
+  aae-video-popup-trigger" ...> directly. video-popup.js binds the OPEN
+  behaviour to the `.aae-video-popup-trigger` hook class (frontend only), so
+  that class is baked into the template here — never seeded via the classes
+  prop (see CLAUDE.md's "Never put a functional hook class in the classes
+  prop").
+
+  Two stacked layers inside: the ROTATOR (image or text, spins forever via
+  CSS — duration/direction ride as inline custom properties so video-popup.
+  scss's single keyframe serves every instance) and the ICON on top, which
+  never rotates — a separate absolutely-centered element, so it stays
+  upright regardless of the rotator's spin.
+
+  Icon is inlined from `settings.icon.html` (never an <img>) so Style-tab
+  colour/hover reach it — see AAE_A_Offcanvas_Trigger's identical reasoning.
+  Its wrapper class follows the "{element_type}-icon" convention so the
+  "Icon" Style_Definition key (define_base_styles()) targets it, the same
+  convention AAE_A_Video_PlayBtn's own nested icon uses.
+#}
+{% set classes = ['aae-a-video-popup-trigger', 'aae-video-popup-trigger', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') | trim %}
+{% set rotator_type = settings.rotator_type | default('image') %}
+{% set duration = settings.rotation_duration | default(8) %}
+{% set direction = (settings.rotation_direction | default('cw') == 'ccw') ? 'reverse' : 'normal' %}
+{% set icon_svg = settings.icon.html | default('') %}
+
+<button
+    class="{{ classes }} {{ editor_classes | default('') }}"
+    type="button"
+    aria-haspopup="dialog"
+    aria-expanded="false"
+    aria-label="{{ 'Play video' | e('html_attr') }}"
+    data-id="{{ id }}"
+    data-element_type="{{ type }}"
+    data-e-type="{{ type }}"
+    data-interaction-id="{{ interaction_id | default(id) }}"
+    {% if settings._cssid is defined and settings._cssid is not empty %}id="{{ settings._cssid | e('html_attr') }}"{% endif %}
+    {% if settings.attributes is defined and settings.attributes is not empty %}{{ settings.attributes | raw }}{% endif %}
+    {{ editor_attributes | default('') | raw }}
+>{% if rotator_type == 'text' %}<span
+        class="aae-a-video-popup-trigger-rotator aae-a-video-popup-trigger-rotator--text"
+        aria-hidden="true"
+        style="--aae-vp-rot-duration:{{ duration }}s;--aae-vp-rot-direction:{{ direction }};"
+    >{{ settings.rotator_text | default('') }}</span>{% else %}<img
+        class="aae-a-video-popup-trigger-rotator aae-a-video-popup-trigger-rotator--image"
+        aria-hidden="true"
+        style="--aae-vp-rot-duration:{{ duration }}s;--aae-vp-rot-direction:{{ direction }};"
+        src="{{ settings.rotator_image.src | default('') | e('full_url') }}"
+        alt=""
+    />{% endif %}<span class="{{ type }}-icon aae-a-video-popup-trigger-icon" aria-hidden="true">{% if icon_svg is not empty %}{{ icon_svg | raw }}{% else %}<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="100%" height="100%" fill="currentColor" style="display:block;"><path d="M8 5v14l11-7z"/></svg>{% endif %}</span></button>

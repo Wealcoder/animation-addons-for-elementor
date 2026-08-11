@@ -1,0 +1,20 @@
+{#
+  AAE Video Popup Overlay — the backdrop. Renders a bare <div> carrying the
+  `.aae-video-popup-overlay` hook class (baked here, never via the classes
+  prop). Colour comes from its own base style / Style-tab Background.
+  Position, size, visibility and the fade animation are applied at runtime
+  by video-popup.js; a flash-guard in the PARENT template keeps it hidden
+  (out of flow) until then, both on the frontend (pre-JS) and in the editor.
+#}
+{% set classes = ['aae-a-video-popup-overlay', 'aae-video-popup-overlay', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') | trim %}
+
+<div
+    class="{{ classes }} {{ editor_classes | default('') }}"
+    data-id="{{ id }}"
+    data-element_type="{{ type }}"
+    data-e-type="{{ type }}"
+    data-interaction-id="{{ interaction_id | default(id) }}"
+    aria-hidden="true"
+    {% if settings._cssid is defined and settings._cssid is not empty %}id="{{ settings._cssid | e('html_attr') }}"{% endif %}
+    {% if settings.attributes is defined and settings.attributes is not empty %}{{ settings.attributes | raw }}{% endif %}
+    {{ editor_attributes | default('') | raw }}></div>
