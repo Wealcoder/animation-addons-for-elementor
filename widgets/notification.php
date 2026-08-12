@@ -580,7 +580,7 @@ class Notification extends Widget_Base
 			$this->add_link_attributes('btn_link', $settings['btn_link']);
 		}
 
-		$text = $settings['notify_text'];
+		$text = isset($settings['notify_text']) ? (string) $settings['notify_text'] : '';
 		preg_match_all('/\[([^\]]*)\]/', $text, $matches);
 		foreach ($matches[0] as $key => $value) {
 			$text = str_replace($value, '<span class="highlight">' . $matches[1][$key] . '</span>', $text,);

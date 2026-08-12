@@ -86,7 +86,7 @@ final class InteractionsMap {
 		self::$hooked = true;
 
 		add_action( 'wp_footer',                    [ __CLASS__, 'print_maps' ], 5 );
-		add_action( 'elementor/preview/footer',     [ __CLASS__, 'print_maps' ], 5 );
+		//add_action( 'elementor/preview/footer',     [ __CLASS__, 'print_maps' ], 5 );
 	}
 
 	public static function print_maps(): void {

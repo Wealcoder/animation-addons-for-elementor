@@ -2023,13 +2023,18 @@ class WXRImporter extends \WP_Importer
 
 			$has_attachments = get_post_meta($post_id, '_wxr_import_has_attachment_refs', true);
 			if (! empty($has_attachments)) {
-				$post = get_post($post_id);
-				$content = $post->post_content;
+				// The post can be gone by the time post-processing runs (deleted
+				// mid-import, or a resumed import over a rolled-back batch), which
+				// would leave $content null and hand null to str_replace().
+				$post    = get_post($post_id);
+				$content = $post instanceof \WP_Post ? (string) $post->post_content : '';
 
-				// Replace all the URLs we've got
-				$new_content = str_replace(array_keys($this->url_remap), $this->url_remap, $content);
-				if ($new_content !== $content) {
-					$data['post_content'] = $new_content;
+				if ('' !== $content) {
+					// Replace all the URLs we've got
+					$new_content = str_replace(array_keys($this->url_remap), $this->url_remap, $content);
+					if ($new_content !== $content) {
+						$data['post_content'] = $new_content;
+					}
 				}
 			}
 
