@@ -9,17 +9,12 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Dimensions_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Background_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Color_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Transition_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Selection_Size_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Key_Value_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
-use Elementor\Modules\AtomicWidgets\Styles\Style_States;
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Svg\Atomic_Svg;
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
 use Elementor\Modules\AtomicWidgets\PropTypes\Svg_Src_Prop_Type;
@@ -47,7 +42,7 @@ class AAE_A_Icon_List_Item extends Atomic_Element_Base {
 	 * enqueued on any page. Both are fixed now: the size lives here + the
 	 * override, and the container declares the dependency.
 	 */
-	const ICON_SIZE_PX = 25;
+	const ICON_SIZE_PX = 16;
 
 	public function __construct( $data = [], $args = null ) {
 		parent::__construct( $data, $args );
@@ -99,9 +94,9 @@ class AAE_A_Icon_List_Item extends Atomic_Element_Base {
 	}
 
 	/**
-	 * Same neutral CHIP language as AAE_A_Social_Share_Item's base style —
-	 * background/padding/radius/hover, no theme colors assumed. Icon and
-	 * label are unstyled children that inherit size/color from this base.
+	 * Elementor-native Icon List look — plain inline icon + text row, no
+	 * background/radius/padding/hover chip. Icon and label are unstyled
+	 * children that inherit size/color from this base.
 	 */
 	protected function define_base_styles(): array {
 		$wrapper_styles = [
@@ -109,14 +104,9 @@ class AAE_A_Icon_List_Item extends Atomic_Element_Base {
 			'align-items' => String_Prop_Type::generate( 'center' ),
 			// Icon and label had NO gap at all — Atomic_Paragraph's own base
 			// style sets margin:0, so the two sat glued together edge to edge.
+			// 10px matches native Icon List's default "Icon Spacing".
 			'gap'         => Size_Prop_Type::generate( [ 'size' => 10, 'unit' => 'px' ] ),
 
-			'padding' => Dimensions_Prop_Type::generate( [
-				'block-start'  => Size_Prop_Type::generate( [ 'size' => 12, 'unit' => 'px' ] ),
-				'inline-end'   => Size_Prop_Type::generate( [ 'size' => 24, 'unit' => 'px' ] ),
-				'block-end'    => Size_Prop_Type::generate( [ 'size' => 12, 'unit' => 'px' ] ),
-				'inline-start' => Size_Prop_Type::generate( [ 'size' => 24, 'unit' => 'px' ] ),
-			] ),
 			'margin' => Dimensions_Prop_Type::generate( [
 				'block-start'  => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
 				'block-end'    => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
@@ -124,31 +114,10 @@ class AAE_A_Icon_List_Item extends Atomic_Element_Base {
 				'inline-end'   => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
 			] ),
 
-			'background' => Background_Prop_Type::generate( [
-				'color' => Color_Prop_Type::generate( '#f2f3f5' ),
-			] ),
-			'color'         => Color_Prop_Type::generate( '#26282c' ),
-			'border-radius' => Size_Prop_Type::generate( [ 'size' => 999, 'unit' => 'px' ] ),
+			'color' => Color_Prop_Type::generate( '#26282c' ),
 
 			'font-size'   => Size_Prop_Type::generate( [ 'size' => 16, 'unit' => 'px' ] ),
 			'line-height' => Size_Prop_Type::generate( [ 'size' => 18, 'unit' => 'px' ] ),
-
-			'transition' => Transition_Prop_Type::generate( [
-				Selection_Size_Prop_Type::generate( [
-					'selection' => Key_Value_Prop_Type::generate( [
-						'key'   => String_Prop_Type::generate( 'Background color' ),
-						'value' => String_Prop_Type::generate( 'background-color' ),
-					] ),
-					'size' => Size_Prop_Type::generate( [ 'size' => 200, 'unit' => 'ms' ] ),
-				] ),
-			] ),
-		];
-
-		// Hover — same quiet darken-only feedback as the Social Share chip.
-		$hover_styles = [
-			'background' => Background_Prop_Type::generate( [
-				'color' => Color_Prop_Type::generate( '#e4e6ea' ),
-			] ),
 		];
 
 		$icon_styles = [
@@ -158,8 +127,7 @@ class AAE_A_Icon_List_Item extends Atomic_Element_Base {
 
 		return [
 			'base' => Style_Definition::make()
-				->add_variant( Style_Variant::make()->add_props( $wrapper_styles ) )
-				->add_variant( Style_Variant::make()->set_state( Style_States::HOVER )->add_props( $hover_styles ) ),
+				->add_variant( Style_Variant::make()->add_props( $wrapper_styles ) ),
 
 			'icon' => Style_Definition::make()
 				->set_label( __( 'Icon', 'animation-addons-for-elementor' ) )

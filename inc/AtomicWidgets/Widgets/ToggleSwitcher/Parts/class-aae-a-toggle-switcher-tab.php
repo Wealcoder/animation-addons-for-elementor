@@ -187,7 +187,7 @@ class AAE_A_Toggle_Switcher_Tab extends Atomic_Widget_Base {
 						'font-size' => Size_Prop_Type::generate( [ 'size' => 15, 'unit' => 'px' ] ),
 						'color'     => Color_Prop_Type::generate( '#5f5e5a' ),
 						'cursor'    => String_Prop_Type::generate( 'pointer' ),
-						'transition' => Transition_Prop_Type::generate( [
+							'transition' => Transition_Prop_Type::generate( [
 							Selection_Size_Prop_Type::generate( [
 								'selection' => Key_Value_Prop_Type::generate( [
 									'key'   => String_Prop_Type::generate( 'All properties' ),
