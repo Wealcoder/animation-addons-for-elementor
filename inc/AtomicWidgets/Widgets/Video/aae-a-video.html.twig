@@ -1,14 +1,20 @@
 {#
   AAE Video — atomic container widget.
 
-  children_placeholder carries the three fixed children in this exact order:
-  e-image (poster), e-aae-a-video-player (our own universal video engine,
-  see Parts/), e-button (play trigger). All source/playback settings are
-  emitted as data-aae-video-* attributes on THIS wrapper — video.js binds one
-  frontend handler here and reads the Player part's mount/controls bar as
-  descendants (same pattern VideoMask uses for its internal button child).
+  children_placeholder carries the two fixed children in this exact order:
+  e-aae-a-video-player (our own universal video engine, see Parts/) and
+  e-aae-a-video-playbtn (play trigger, see Parts/). The poster is NOT a
+  child — it's plain `<img>` markup rendered right here from the
+  `poster_image` setting (hook class hardcoded directly, same reason the
+  Parts' own twigs hardcode theirs — see AAE_A_Video_PlayBtn's docblock),
+  skipped entirely (not even a placeholder) when `poster_enabled` is off.
+  All source/playback settings are emitted as data-aae-video-* attributes on
+  THIS wrapper — video.js binds one frontend handler here and reads the
+  Player part's mount/controls bar as descendants (same pattern VideoMask
+  uses for its internal button child).
 #}
 {% set wrapper_classes = ['aae-a-video', 'e-con', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') | trim %}
+{% set poster_src = (settings.poster_auto_fetch and settings.resolved_poster_url is defined and settings.resolved_poster_url is not empty) ? settings.resolved_poster_url : settings.poster_image.src %}
 
 <div
 	class="{{ wrapper_classes }} {{ editor_classes | default('') }}"
@@ -29,13 +35,12 @@
 	data-aae-video-lazyload="{{ settings.lazyload ? 'true' : 'false' }}"
 	data-aae-video-youtube-privacy="{{ settings.youtube_privacy ? 'true' : 'false' }}"
 	data-aae-video-vimeo-dnt="{{ settings.vimeo_dnt ? 'true' : 'false' }}"
-	data-aae-video-poster="{{ settings.resolved_poster_url | default('') | e('html_attr') }}"
-	data-aae-video-placeholder="{{ settings.placeholder_image_url | default('') | e('html_attr') }}"
 	data-aae-video-controls-enabled="{{ settings.controls_enabled ? 'true' : 'false' }}"
 	data-aae-video-controls-autohide="{{ settings.controls_autohide ? 'true' : 'false' }}"
 	{% if settings._cssid is defined and settings._cssid is not empty %}id="{{ settings._cssid | e('html_attr') }}"{% endif %}
 	{% if settings.attributes is defined and settings.attributes is not empty %}{{ settings.attributes | raw }}{% endif %}
 	{{ editor_attributes | default('') | raw }}
 >
+	{% if settings.poster_enabled %}<img class="aae-a-video-poster" src="{{ poster_src | e('full_url') }}" alt="" />{% endif %}
 	{{ children_placeholder | raw }}
 </div>

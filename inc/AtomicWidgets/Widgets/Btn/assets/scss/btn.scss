@@ -105,3 +105,123 @@
 .aae-btn-mask:hover .e-divider-base {
   animation: aae_mask_animation 0.7s steps(22) forwards;
 }
+
+/*
+ * "Default" preset hover-style variants (aae-btn-{aae_btn_hover_style}
+ */
+.aae-btn-hover-none .e-divider-base {
+  display: none;
+}
+
+// scaleX, not a `width` transition — see the block comment above
+// `.aae-btn-rollover-cross` further down for why.
+.aae-btn-hover-divide .e-divider-base {
+  position: absolute;
+  inset-inline-start: 50%;
+  inset-block-start: 50%;
+  width: 100%;
+  // height: 100% !important;
+  height: 100%;
+  transform: translate(-50%, -50%) scaleX(0);
+  transition: all 0.75s;
+  opacity: 0.5;
+  z-index: -1;
+}
+.aae-btn-hover-divide:hover .e-divider-base {
+  transform: translate(-50%, -50%) scaleX(1.2);
+  opacity: 1;
+}
+
+.aae-btn-hover-cross .e-divider-base {
+  position: absolute;
+  inset-inline-start: 50%;
+  inset-block-start: 50%;
+  width: 150%;
+  height: 0%;
+  transform: translate(-50%, -50%);
+  transition: all 0.75s;
+  opacity: 0.5;
+  z-index: -1;
+}
+.aae-btn-hover-cross:hover .e-divider-base {
+  height: 120%;
+  opacity: 1;
+}
+
+.aae-btn-hover-cropping .e-divider-base {
+  position: absolute;
+  inset-inline-start: 50%;
+  inset-block-start: 50%;
+  width: 150%;
+  height: 0%;
+  transform: translate(-50%, -50%) rotate(25deg);
+  transition: all 0.75s;
+  opacity: 0.5;
+  z-index: -1;
+}
+.aae-btn-hover-cropping:hover .e-divider-base {
+  height: 400%;
+  opacity: 1;
+}
+
+.aae-btn-rollover-top .e-divider-base {
+  position: absolute;
+  inset-inline-start: 0;
+  inset-block-end: 0;
+  width: 100%;
+  height: 0;
+  transition: all 0.4s cubic-bezier(0.215, 0.61, 0.355, 1);
+  z-index: -1;
+}
+.aae-btn-rollover-top:hover .e-divider-base {
+  inset-block-start: 0;
+  inset-block-end: auto;
+  height: 100%;
+}
+
+.aae-btn-rollover-left .e-divider-base {
+  position: absolute;
+  inset-inline-end: 0;
+  inset-block-start: 0;
+  width: 100%;
+  // height: 100% !important;
+  height: 100%;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: all 0.4s cubic-bezier(0.42, 0, 0.58, 1);
+  z-index: -1;
+}
+.aae-btn-rollover-left:hover .e-divider-base {
+  transform: scaleX(1);
+}
+
+.aae-btn-rollover-cross .e-divider-base {
+  position: absolute;
+  inset-inline-start: 0;
+  inset-block-end: 0;
+  width: 100%;
+  height: 1px;
+  opacity: 0;
+  transform: translateX(-100%);
+  transition: all 0.75s;
+  z-index: -1;
+}
+.aae-btn-rollover-cross:hover .e-divider-base {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.aae-btn-parallal-border .e-divider-base {
+  position: absolute;
+  inset-inline-start: 0;
+  inset-block-end: 0;
+  width: 100%;
+  height: 1px;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: all 0.75s;
+  z-index: -1;
+}
+.aae-btn-parallal-border:hover .e-divider-base {
+  transform: scaleX(1);
+}

@@ -1,0 +1,165 @@
+// AAE Video Popup — the CSS a Style-tab prop genuinely can't express:
+// `@keyframes`, cross-element hover/state reveals (an atomic Style_Variant
+// only ever targets a widget's own root), elements video-popup.js creates
+// at runtime with no twig behind them, and `pointer-events`/`white-space`
+// (not in the atomic style schema at all — see atomic-style-schema-
+// reference.md's "not in the schema" list). Everything else — the Trigger
+// circle/rotator/icon, the Overlay backdrop, the Panel box, the Close
+// button, the Player mount/controls/progress/time/buttons — lives in each
+// Part's own `define_base_styles()`.
+
+// The `--image` suffix class is the Trigger twig's hide-selector
+// discriminator for the Rotator Image child (see class-aae-a-video-popup-
+// trigger.php's docblock) — the rotator's shared look (fill/size/
+// object-fit, for BOTH the curved-text SVG and the Image child) is the
+// `.e-aae-a-video-popup-trigger-rotator` class's own atomic 'rotator'
+// Style_Definition key (that class IS `get_element_type() . '-rotator'` —
+// the same string `generate_base_style_id()` uses, which is why it carries
+// the `e-` prefix and NOT the `aae-` prefix every other selector in this
+// file uses — a mismatch here silently kills the spin animation, it has
+// happened once already).
+.e-aae-a-video-popup-trigger-rotator {
+	animation-name: aae-vp-spin;
+	animation-duration: var(--aae-vp-rot-duration, 8s);
+	animation-direction: var(--aae-vp-rot-direction, normal);
+	animation-timing-function: linear;
+	animation-iteration-count: infinite;
+}
+
+// Curved text: the `<textPath>` circle radius/font-size are rendered as
+// literal SVG geometry/presentation-attribute values in the twig (their own
+// Number controls on Trigger), so they always win regardless of CSS
+// specificity. `fill: currentColor` keeps the text themeable from the
+// Trigger's own Style-tab text colour. `overflow: visible` lets the glyphs
+// spill past the SVG's own 0..100 viewBox edge without clipping.
+.aae-a-video-popup-trigger-rotator--text {
+	overflow: visible;
+	fill: currentColor;
+
+	text {
+		font-weight: 700;
+		letter-spacing: 0.5px;
+		text-transform: uppercase;
+	}
+}
+
+@keyframes aae-vp-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+// Poster fill
+.aae-a-video-popup-source .aae-a-video-popup-poster {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	max-width: none;
+	object-fit: cover;
+	border: 0;
+	transition: opacity 0.2s ease;
+}
+
+.aae-a-video-popup-source.is-playing .aae-a-video-popup-poster {
+	opacity: 0;
+	pointer-events: none;
+}
+
+.aae-a-video-popup-playbtn {
+	transition: opacity 0.2s ease;
+}
+
+.aae-a-video-popup-source.is-playing .aae-a-video-popup-playbtn {
+	opacity: 0;
+	pointer-events: none;
+}
+
+// video-popup.js creates these at runtime — no twig renders them, so no
+// widget owns a base style for them.
+.aae-a-video-popup-native,
+.aae-a-video-popup-embed {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	border: 0;
+	object-fit: cover;
+}
+
+.aae-a-video-popup-embed iframe {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	border: 0;
+}
+
+.aae-a-video-popup-clickzone {
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	cursor: pointer;
+}
+
+// Controls-bar reveal
+.aae-a-video-popup-controls {
+	opacity: 0;
+	transition: opacity 0.2s ease;
+}
+
+.aae-a-video-popup-source:hover .aae-a-video-popup-controls,
+.aae-a-video-popup-source:focus-within .aae-a-video-popup-controls,
+.aae-a-video-popup-source:not(.is-playing) .aae-a-video-popup-controls {
+	opacity: 1;
+}
+
+.aae-a-video-popup-source.is-playing.is-controls-hidden .aae-a-video-popup-controls {
+	opacity: 0;
+}
+
+.aae-a-video-popup-source.is-playing.is-controls-hidden:hover .aae-a-video-popup-controls,
+.aae-a-video-popup-source.is-playing.is-controls-hidden:focus-within .aae-a-video-popup-controls {
+	opacity: 1;
+}
+
+// Not in the atomic style schema at all — see the file header.
+.aae-a-video-popup-progress-fill {
+	pointer-events: none;
+}
+
+// The track's own :hover height bump lives on Player's `progress`
+// Style_Definition key (a plain self-hover, no residual CSS needed for it —
+// see class-aae-a-video-popup-player.php). Just the transition TIMING stays
+// here: `transition` is technically a valid atomic key, but its shape needs
+// a Key_Value_Prop_Type "selection" entry whose exact expected value isn't
+// verified against the installed schema, and one wrongly-shaped value voids
+// the entire `progress` Style_Definition silently — not worth the risk for
+// one cosmetic timing value.
+.aae-a-video-popup-progress {
+	transition: height 0.15s ease;
+}
+
+.aae-a-video-popup-time {
+	white-space: nowrap;
+}
+
+.aae-a-video-popup-icon-play[hidden],
+.aae-a-video-popup-icon-pause[hidden],
+.aae-a-video-popup-icon-unmuted[hidden],
+.aae-a-video-popup-icon-muted[hidden] {
+	display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.e-aae-a-video-popup-trigger-rotator {
+		animation: none;
+	}
+
+	.aae-a-video-popup-playbtn,
+	.aae-a-video-popup-poster,
+	.aae-a-video-popup-controls,
+	.aae-a-video-popup-progress {
+		transition: none;
+	}
+}

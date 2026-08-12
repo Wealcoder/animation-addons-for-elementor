@@ -16,7 +16,9 @@ use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 
 require_once __DIR__ . '/class-aae-a-icon-list-item.php';
+require_once __DIR__ . '/class-aae-a-icon-list-items-control.php';
 use WCF_ADDONS\AtomicWidgets\Widgets\IconList\AAE_A_Icon_List_Item;
+use WCF_ADDONS\AtomicWidgets\Widgets\IconList\AAE_A_Icon_List_Items_Control;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -87,6 +89,21 @@ class AAE_A_Icon_List extends Atomic_Element_Base {
 							[ 'value' => 'ol', 'label' => __( 'Ordered List (ol)', 'animation-addons-for-elementor' ) ],
 						] ),
 				] ),
+
+			// "Items": a live projection of the icon list's real
+			// <e-aae-a-icon-list-item> children — one repeater row each,
+			// with drag-reorder, duplicate, remove and rename. Mirrors the
+			// Social Share's "Items" element-control. Rendered by the React
+			// component registered under 'aae-icon-list-items'
+			// (src/modules/atomic/element-controls).
+			Section::make()
+				->set_label( __( 'Items', 'animation-addons-for-elementor' ) )
+				->set_id( 'items' )
+				->set_items( [
+					AAE_A_Icon_List_Items_Control::make()
+						->set_label( __( 'Items', 'animation-addons-for-elementor' ) )
+						->set_meta( [ 'layout' => 'custom' ] ),
+				] ),
 			Section::make()
 				->set_label( __( 'Settings', 'animation-addons-for-elementor' ) )
 				->set_id( 'settings' )
@@ -103,11 +120,10 @@ class AAE_A_Icon_List extends Atomic_Element_Base {
 			'display' => String_Prop_Type::generate( 'flex' ),
 			'flex-direction' => String_Prop_Type::generate( 'column' ),
 			'align-items' => String_Prop_Type::generate( 'flex-start' ),
-			// Each item is now a chip with its own background — without a gap
-			// here, stacked chips would touch edge to edge with no separation.
-			'gap' => \Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type::generate( [ 'size' => 15, 'unit' => 'px' ] ),
+			// 10px matches native Elementor Icon List's default "Space Between".
+			'gap' => \Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type::generate( [ 'size' => 10, 'unit' => 'px' ] ),
 			'list-style' => String_Prop_Type::generate( 'none' ),
-			'width' => String_Prop_Type::generate( '100%' ),
+			'width' => \Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type::generate( [ 'size' => 100, 'unit' => '%' ] ),
 			'margin' => \Elementor\Modules\AtomicWidgets\PropTypes\Dimensions_Prop_Type::generate([
 				'block-start' => \Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type::generate(['size' => 0, 'unit' => 'px']),
 				'block-end' => \Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type::generate(['size' => 0, 'unit' => 'px']),
