@@ -105,3 +105,169 @@
 .aae-btn-mask:hover .e-divider-base {
   animation: aae_mask_animation 0.7s steps(22) forwards;
 }
+
+/*
+ * "Default" preset hover-style variants (btn-{aae_btn_hover_style} — see
+ * BtnHoverStyleControl.jsx / presets/default.json). Each block is a hardcoded
+ * adaptation of the matching classic V3 wcf__btn effect (inc/trait-wcf-button.php's
+ * btn_hover_list, CSS in assets/css/widgets/button.css), retargeted from an
+ * ::after/::before pseudo on the <a> itself onto this preset's real e-divider
+ * child, so all eight variants stay ONE swappable element instead of eight
+ * separate presets. Geometry/opacity/transition are hardcoded here on purpose
+ * (2-class selectors beat the divider's own local style, which is by design);
+ * `background` is deliberately left alone so the divider's Style-panel color
+ * stays editable, same as a plain e-divider anywhere else.
+ *
+ * `.e-aae-a-btn-base` already provides position:relative + overflow:hidden
+ * (see AAE_A_Btn::define_base_styles()), so these only need position:absolute
+ * on the divider (or its pseudos) to sit inside it as an overlay.
+ */
+.btn-hover-none .e-divider-base {
+  display: none;
+}
+
+.btn-hover-divide .e-divider-base {
+  position: absolute;
+  inset-inline-start: 50%;
+  inset-block-start: 50%;
+  width: 0%;
+  height: 100%;
+  transform: translate(-50%, -50%);
+  transition: all 0.75s;
+  opacity: 0.5;
+  z-index: -1;
+}
+.btn-hover-divide:hover .e-divider-base {
+  width: 120%;
+  opacity: 1;
+}
+
+.btn-hover-cross .e-divider-base {
+  position: absolute;
+  inset-inline-start: 50%;
+  inset-block-start: 50%;
+  width: 150%;
+  height: 0%;
+  transform: translate(-50%, -50%);
+  transition: all 0.75s;
+  opacity: 0.5;
+  z-index: -1;
+}
+.btn-hover-cross:hover .e-divider-base {
+  height: 120%;
+  opacity: 1;
+}
+
+.btn-hover-cropping .e-divider-base {
+  position: absolute;
+  inset-inline-start: 50%;
+  inset-block-start: 50%;
+  width: 150%;
+  height: 0%;
+  transform: translate(-50%, -50%) rotate(25deg);
+  transition: all 0.75s;
+  opacity: 0.5;
+  z-index: -1;
+}
+.btn-hover-cropping:hover .e-divider-base {
+  height: 400%;
+  opacity: 1;
+}
+
+.btn-rollover-top .e-divider-base {
+  position: absolute;
+  inset-inline-start: 0;
+  inset-block-end: 0;
+  width: 100%;
+  height: 0;
+  transition: all 0.4s cubic-bezier(0.215, 0.61, 0.355, 1);
+  z-index: -1;
+}
+.btn-rollover-top:hover .e-divider-base {
+  inset-block-start: 0;
+  inset-block-end: auto;
+  height: 100%;
+}
+
+.btn-rollover-left .e-divider-base {
+  position: absolute;
+  inset-inline-end: 0;
+  inset-block-start: 0;
+  width: 0;
+  height: 100%;
+  transition: all 0.4s cubic-bezier(0.42, 0, 0.58, 1);
+  z-index: -1;
+}
+.btn-rollover-left:hover .e-divider-base {
+  inset-inline-start: 0;
+  inset-inline-end: auto;
+  width: 100%;
+}
+
+// Two-pseudo effects: the divider itself stays a zero-size anchor, and its
+// OWN ::before/::after (not the button's) draw the two corner frames — they
+// still position relative to `.e-aae-a-btn-base` since the divider has no
+// `position` of its own, matching how V3 anchored these two pseudos directly
+// on the <a>.
+.btn-rollover-cross .e-divider-base,
+.btn-parallal-border .e-divider-base {
+  width: 0;
+  height: 0;
+}
+.btn-rollover-cross .e-divider-base::before,
+.btn-rollover-cross .e-divider-base::after,
+.btn-parallal-border .e-divider-base::before,
+.btn-parallal-border .e-divider-base::after {
+  position: absolute;
+  content: "";
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: all 0.75s;
+}
+.btn-rollover-cross .e-divider-base::before {
+  inset-block-end: 100%;
+  inset-inline-start: 100%;
+  border-bottom: 1px solid #1c1d20;
+  border-left: 1px solid #1c1d20;
+}
+.btn-rollover-cross .e-divider-base::after {
+  inset-block-start: 100%;
+  inset-inline-end: 100%;
+  border-top: 1px solid #1c1d20;
+  border-right: 1px solid #1c1d20;
+}
+.btn-rollover-cross:hover .e-divider-base::before {
+  inset-block-end: 0;
+  inset-inline-start: 0;
+  opacity: 1;
+}
+.btn-rollover-cross:hover .e-divider-base::after {
+  inset-block-start: 0;
+  inset-inline-end: 0;
+  opacity: 1;
+}
+
+.btn-parallal-border .e-divider-base::before,
+.btn-parallal-border .e-divider-base::after {
+  width: 0%;
+  height: 0%;
+}
+.btn-parallal-border .e-divider-base::before {
+  inset-block-end: 0;
+  inset-inline-start: 0;
+  border-bottom: 1px solid #1c1d20;
+  border-left: 1px solid #1c1d20;
+}
+.btn-parallal-border .e-divider-base::after {
+  inset-block-start: 0;
+  inset-inline-end: 0;
+  border-top: 1px solid #1c1d20;
+  border-right: 1px solid #1c1d20;
+}
+.btn-parallal-border:hover .e-divider-base::before,
+.btn-parallal-border:hover .e-divider-base::after {
+  width: 100%;
+  height: 100%;
+  opacity: 1;
+}

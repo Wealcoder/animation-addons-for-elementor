@@ -101,6 +101,7 @@ class AAE_A_Icon_List_Item extends Atomic_Element_Base {
 	protected function define_base_styles(): array {
 		$wrapper_styles = [
 			'display'     => String_Prop_Type::generate( 'inline-flex' ),
+			'width'       => Size_Prop_Type::generate( [ 'size' => 'fit-content', 'unit' => 'custom' ] ),
 			'align-items' => String_Prop_Type::generate( 'center' ),
 			// Icon and label had NO gap at all — Atomic_Paragraph's own base
 			// style sets margin:0, so the two sat glued together edge to edge.

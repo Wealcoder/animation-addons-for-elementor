@@ -31,6 +31,7 @@ import { MediaUrlControl } from './MediaUrlControl';
 import { InlineTextControl } from './InlineTextControl';
 import { StackCardsControl } from './StackCardsControl';
 import { StackPreviewControl } from './StackPreviewControl';
+import { BtnHoverStyleControl } from './BtnHoverStyleControl';
 
 const ELEMENT_CONTROLS = [
 	{ type: 'aae-slides', component: SlidesControl, layout: 'full' },
@@ -59,6 +60,10 @@ const ELEMENT_CONTROLS = [
 	// would bind the same value but renders no toolbar — its buttons live on
 	// the canvas, which is closed to third-party types. See InlineTextControl.
 	{ type: 'aae-inline-text', component: InlineTextControl, layout: 'full', propTypeUtil: htmlV3PropTypeUtil },
+	// Also prop-bound, to a plain String: the Btn widget's "Hover Style"
+	// picker, which additionally hides its own row unless a sibling boolean
+	// prop is set — see BtnHoverStyleControl.jsx.
+	{ type: 'aae-btn-hover-style', component: BtnHoverStyleControl, layout: 'full', propTypeUtil: stringPropTypeUtil },
 ];
 
 let registered = false;

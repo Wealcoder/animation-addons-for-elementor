@@ -132,12 +132,24 @@ class AAE_A_Btn extends Atomic_Element_Base
 			'aae_btn_outlinepill'   => Boolean_Prop_Type::make()->default(false),
 			'aae_btn_slidefill'     => Boolean_Prop_Type::make()->default(false),
 			'aae_btn_underline'     => Boolean_Prop_Type::make()->default(false),
+
+			// Same "preset-driven, hidden by default" family as the flags above,
+			// but this pair DOES get a panel control (see AAE_A_Btn_Hover_Style_Control
+			// below) — the "Default" preset (presets/default.json) is the only preset
+			// that sets aae_btn_hover_effect=true, and BtnHoverStyleControl.jsx hides
+			// its own row whenever that marker is false. aae_btn_hover_style carries the
+			// picked variant and drives a 'btn-{value}' hook class from the twig,
+			// matching the classic V3 wcf__btn `btn_hover_list` option values
+			// (inc/trait-wcf-button.php) so its CSS could be adapted 1:1 in btn.scss.
+			'aae_btn_hover_effect' => Boolean_Prop_Type::make()->default(false),
+			'aae_btn_hover_style'  => String_Prop_Type::make()->default('hover-cross'),
 		];
 	}
 
 	protected function define_atomic_controls(): array
 	{
 		require_once __DIR__ . '/class-aae-a-preset-picker-control.php';
+		require_once __DIR__ . '/class-aae-a-btn-hover-style-control.php';
 
 		return [
 			Section::make()
@@ -165,6 +177,11 @@ class AAE_A_Btn extends Atomic_Element_Base
 
 					Switch_Control::bind_to('btn_nofollow')
 						->set_label(__('Add Nofollow', 'animation-addons-for-elementor')),
+
+					// Hidden unless the "Default" preset's aae_btn_hover_effect marker
+					// is set on the selected button — see BtnHoverStyleControl.jsx.
+					AAE_A_Btn_Hover_Style_Control::bind_to('aae_btn_hover_style')
+						->set_label(__('Hover Style', 'animation-addons-for-elementor')),
 				]),
 
 			Section::make()
