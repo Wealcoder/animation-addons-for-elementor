@@ -107,51 +107,28 @@
 }
 
 /*
- * "Default" preset hover-style variants (aae-btn-{aae_btn_hover_style} — see
- * BtnHoverStyleControl.jsx / presets/default.json). Each block is a hardcoded
- * adaptation of the matching classic V3 wcf__btn effect (inc/trait-wcf-button.php's
- * btn_hover_list, CSS in assets/css/widgets/button.css), retargeted from an
- * ::after/::before pseudo on the <a> itself onto this preset's real e-divider
- * child, so all eight variants stay ONE swappable element instead of eight
- * separate presets. Geometry/opacity/transition are hardcoded here on purpose
- * (2-class selectors beat the divider's own local style, which is by design);
- * `background` is deliberately left alone so the divider's Style-panel color
- * stays editable, same as a plain e-divider anywhere else.
- *
- * PREFIXED `aae-btn-…`, NOT the bare `btn-hover-*` / `btn-rollover-*` /
- * `btn-parallal-border` names `trait-wcf-button.php`'s `btn_hover_list` uses —
- * those exact class names are ALSO what `assets/css/widgets/button.css` (the
- * V3 wcf__btn widget's own global, unscoped stylesheet) defines its own
- * `::after`/`::before` rules against, hardcoded #1C1D20 included. That
- * stylesheet loads sitewide whenever a V3 Button is anywhere on the page, so
- * reusing its bare class names here made a V4 button ALSO match V3's rules —
- * a second, invisible-until-hover overlay fighting the real divider (paints
- * after it at the same z-index, so it's what's left once the transition
- * settles — the reported "goes back to #1c1d20 after the animation" bug).
- * `aae-btn-*` matches this widget's own existing hook-class family
- * (aae-btn-cross, aae-btn-divide, …) and nothing else on the page.
- *
- * `.e-aae-a-btn-base` already provides position:relative + overflow:hidden
- * (see AAE_A_Btn::define_base_styles()), so these only need position:absolute
- * on the divider (or its pseudos) to sit inside it as an overlay.
+ * "Default" preset hover-style variants (aae-btn-{aae_btn_hover_style}
  */
 .aae-btn-hover-none .e-divider-base {
   display: none;
 }
 
+// scaleX, not a `width` transition — see the block comment above
+// `.aae-btn-rollover-cross` further down for why.
 .aae-btn-hover-divide .e-divider-base {
   position: absolute;
   inset-inline-start: 50%;
   inset-block-start: 50%;
-  width: 0%;
+  width: 100%;
+  // height: 100% !important;
   height: 100%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) scaleX(0);
   transition: all 0.75s;
   opacity: 0.5;
   z-index: -1;
 }
 .aae-btn-hover-divide:hover .e-divider-base {
-  width: 120%;
+  transform: translate(-50%, -50%) scaleX(1.2);
   opacity: 1;
 }
 
@@ -206,81 +183,45 @@
   position: absolute;
   inset-inline-end: 0;
   inset-block-start: 0;
-  width: 0;
+  width: 100%;
+  // height: 100% !important;
   height: 100%;
+  transform: scaleX(0);
+  transform-origin: right;
   transition: all 0.4s cubic-bezier(0.42, 0, 0.58, 1);
   z-index: -1;
 }
 .aae-btn-rollover-left:hover .e-divider-base {
-  inset-inline-start: 0;
-  inset-inline-end: auto;
-  width: 100%;
+  transform: scaleX(1);
 }
 
-// Two-pseudo effects: the divider itself stays a zero-size anchor, and its
-// OWN ::before/::after (not the button's) draw the two corner blocks — they
-// still position relative to `.e-aae-a-btn-base` since the divider has no
-// `position` of its own, matching how V3 anchored these two pseudos directly
-// on the <a>. `background-color: inherit` (not a hardcoded hex, and not
-// `border-color`, which doesn't carry the value we want) pulls the COMPUTED
-// background-color of the divider ITSELF — i.e. whatever the divider's own
-// Background field is set to in the Style panel — the same "color comes from
-// the divider's own background" contract button-free-default-cross-div /
-// button-free-square-divide-div already use for their single-box variants.
-.aae-btn-rollover-cross .e-divider-base,
-.aae-btn-parallal-border .e-divider-base {
-  width: 0;
-  height: 0;
-}
-.aae-btn-rollover-cross .e-divider-base::before,
-.aae-btn-rollover-cross .e-divider-base::after,
-.aae-btn-parallal-border .e-divider-base::before,
-.aae-btn-parallal-border .e-divider-base::after {
+.aae-btn-rollover-cross .e-divider-base {
   position: absolute;
-  content: "";
-  background-color: inherit;
-  opacity: 0;
-  transition: all 0.75s;
-}
-.aae-btn-rollover-cross .e-divider-base::before {
-  width: 100%;
-  height: 100%;
-  inset-block-end: 100%;
-  inset-inline-start: 100%;
-}
-.aae-btn-rollover-cross .e-divider-base::after {
-  width: 100%;
-  height: 100%;
-  inset-block-start: 100%;
-  inset-inline-end: 100%;
-}
-.aae-btn-rollover-cross:hover .e-divider-base::before {
-  inset-block-end: 0;
   inset-inline-start: 0;
-  opacity: 1;
+  inset-block-end: 0;
+  width: 100%;
+  height: 1px;
+  opacity: 0;
+  transform: translateX(-100%);
+  transition: all 0.75s;
+  z-index: -1;
 }
-.aae-btn-rollover-cross:hover .e-divider-base::after {
-  inset-block-start: 0;
-  inset-inline-end: 0;
+.aae-btn-rollover-cross:hover .e-divider-base {
+  transform: translateX(0);
   opacity: 1;
 }
 
-.aae-btn-parallal-border .e-divider-base::before,
-.aae-btn-parallal-border .e-divider-base::after {
-  width: 0%;
-  height: 0%;
-}
-.aae-btn-parallal-border .e-divider-base::before {
-  inset-block-end: 0;
+.aae-btn-parallal-border .e-divider-base {
+  position: absolute;
   inset-inline-start: 0;
-}
-.aae-btn-parallal-border .e-divider-base::after {
-  inset-block-start: 0;
-  inset-inline-end: 0;
-}
-.aae-btn-parallal-border:hover .e-divider-base::before,
-.aae-btn-parallal-border:hover .e-divider-base::after {
+  inset-block-end: 0;
   width: 100%;
-  height: 100%;
-  opacity: 1;
+  height: 1px;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: all 0.75s;
+  z-index: -1;
+}
+.aae-btn-parallal-border:hover .e-divider-base {
+  transform: scaleX(1);
 }
