@@ -15,7 +15,7 @@ const WizWidget = () => {
   const hasAtomic = Object.keys(allAtomicWidgets?.elements || {}).length > 0;
 
   /*
-   * Lead capture used to live here, POSTing straight to FluentCRM with an HTTP
+   * 
    * Basic Auth username and password written into this component — which
    * webpack published to assets/build/9479.js, fetchable by anyone from any
    * site running the plugin. Never put a credential in a component.

@@ -11,7 +11,9 @@
  *   1. `content` is AAE_Rich_Text_Prop_Type — a subclass of core's
  *      Html_V3_Prop_Type that KEEPS THE `html-v3` KEY and only widens the
  *      wp_kses whitelist. The stock one allows no attributes at all, so
- *      `style="color:…"` never survives a save. `class` is still refused.
+ *      `style="color:…"` never survives a save. `class` and `id` are allowed
+ *      too, so a typed hook class reaches the page and Custom CSS can target
+ *      it. `content_html` uses the SAME prop type, for the same reason.
  *   2. The panel control is `aae-inline-text`, not core's
  *      `Inline_Editing_Control`. Core's renders the editor with NO toolbar —
  *      its format buttons live on the canvas (see 3).
@@ -64,9 +66,11 @@ use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Template;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Select_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
+use Elementor\Modules\AtomicWidgets\Controls\Types\Number_Control;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Number_Prop_Type;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
 class AAE_A_Advanced_Heading extends Atomic_Widget_Base {
@@ -100,7 +104,7 @@ class AAE_A_Advanced_Heading extends Atomic_Widget_Base {
 		// allows no attributes at all, so `style="color:…"` — the whole point
 		// of the colour button — is deleted on save. The subclass keeps the
 		// `html-v3` KEY (so the client util and the transformer are unchanged)
-		// and only widens the whitelist. `class` stays disallowed.
+		// and only widens the whitelist — `style`, `class` and `id` included.
 		$content = AAE_Rich_Text_Prop_Type::make()
 			->default( [
 				'content'  => String_Prop_Type::generate(
@@ -129,7 +133,42 @@ class AAE_A_Advanced_Heading extends Atomic_Widget_Base {
 			// never attach to this type anyway. See the class docblock.
 			'ah_tag'  => String_Prop_Type::make()->default( 'h2' ),
 
+			// First-line indent, in px. A plain number with the unit appended in the
+			// Twig, matching how the Menu widget carries its sizes — `text-indent`
+			// has NO key in Elementor's atomic style schema, so it cannot come from
+			// the Style tab or from define_base_styles() (one unknown key voids the
+			// whole definition), and this is the remaining route.
+			'ah_indent' => Number_Prop_Type::make()->default( 0 ),
+
 			'content' => $content,
+
+			// DERIVED, never edited directly and given no control. Holds the
+			// interpreted form of `content` — typed tags decoded, block tags
+			// unwrapped — because that is what the Twig renders.
+			//
+			// It exists purely so the editor CANVAS is right: the canvas runs the
+			// Twig client-side off the model and never executes PHP, so a
+			// PHP-only transform left the preview showing raw angle brackets while
+			// the published page showed the heading. InlineTextControl writes this
+			// alongside every commit.
+			//
+			// NOT trusted. get_atomic_settings() recomputes it from `content` on
+			// every render and overwrites whatever is stored, so a value crafted in
+			// the database — or one left stale by an older build — can never reach
+			// the page.
+			//
+			// MUST be the rich-text prop type, NOT String_Prop_Type. A string prop
+			// sanitises with sanitize_text_field(), which strips EVERY tag — so the
+			// value the control wrote was saved as bare text and the canvas lost all
+			// formatting on the next reload while the front end stayed correct
+			// (PHP recomputes, so only the preview could show it). Same wp_kses
+			// whitelist as `content`, so the two cannot disagree about what an
+			// allowed tag is.
+			'content_html' => AAE_Rich_Text_Prop_Type::make()
+				->default( [
+					'content'  => String_Prop_Type::generate( '' ),
+					'children' => [],
+				] ),
 		];
 	}
 
@@ -141,6 +180,7 @@ class AAE_A_Advanced_Heading extends Atomic_Widget_Base {
 				->set_items( [
 					Select_Control::bind_to( 'ah_tag' )
 						->set_label( __( 'HTML Tag', 'animation-addons-for-elementor' ) )
+						->set_description( __( 'Switches to div automatically when the Content contains a block-level tag you typed (h1-h6, p, div, ul, blockquote…). A heading cannot legally contain another heading — the browser would close this one early and push the rest of your text outside the element.', 'animation-addons-for-elementor' ) )
 						->set_options( [
 							[ 'value' => 'h1', 'label' => 'H1' ],
 							[ 'value' => 'h2', 'label' => 'H2' ],
@@ -160,6 +200,10 @@ class AAE_A_Advanced_Heading extends Atomic_Widget_Base {
 					AAE_Inline_Text_Control::bind_to( 'content' )
 						->set_label( __( 'Content', 'animation-addons-for-elementor' ) )
 						->set_placeholder( __( 'Type your heading here', 'animation-addons-for-elementor' ) ),
+
+					Number_Control::bind_to( 'ah_indent' )
+						->set_label( __( 'Line Indent', 'animation-addons-for-elementor' ) )
+						->set_description( __( 'Indents the FIRST line only, in px, like a paragraph indent. Lives here rather than in the Style tab because text-indent is not part of Elementor\'s atomic style schema. Negative values pull the first line out to the left (a hanging indent).', 'animation-addons-for-elementor' ) ),
 				] ),
 
 			Section::make()
@@ -182,4 +226,123 @@ class AAE_A_Advanced_Heading extends Atomic_Widget_Base {
 			'elementor/elements/aae-a-advanced-heading' => __DIR__ . '/aae-a-advanced-heading.html.twig',
 		];
 	}
+
+	/**
+	 * Interpret the stored source at RENDER time.
+	 *
+	 * The panel stores the content EXACTLY as typed, so markup the user wrote by
+	 * hand is still sitting there as escaped text (`&lt;h2&gt;`). That is what
+	 * keeps the field re-editable. This method turns it into output: tags the user
+	 * typed are decoded into real elements and rendered AS TYPED — an `<h2>` comes
+	 * out as an `<h2>`, keeping its class and style.
+	 *
+	 * Only tags on the prop type's whitelist are decoded. Anything else stays
+	 * visible as literal text, which TELLS the user it was not applied instead of
+	 * silently deleting what they wrote.
+	 *
+	 * An earlier revision unwrapped block tags into <span> here, so that a typed
+	 * `<h2>` could not nest inside the widget's own `<h2>` wrapper. That was
+	 * removed on request: the typed tag is now honoured verbatim. The nesting is
+	 * real — set the widget's own HTML Tag to `div` to avoid emitting a heading
+	 * inside a heading.
+	 *
+	 * Re-sanitised afterwards: decoding turns text into markup, so the wp_kses pass
+	 * that ran on save no longer covers it. Without this a crafted value could
+	 * arrive escaped, decode into something the whitelist would have refused, and
+	 * reach the page.
+	 *
+	 * The result is written to `content_html`, which is what the Twig renders —
+	 * `content` itself is left untouched so the panel keeps showing the verbatim
+	 * source.
+	 *
+	 * ALWAYS RECOMPUTED, never read. InlineTextControl also writes `content_html`
+	 * so the editor canvas (which runs this Twig client-side and never executes
+	 * PHP) previews correctly. Overwriting it here is what keeps that a cache
+	 * rather than a second source of truth: a stale value from an older build, or
+	 * one crafted directly in the database, cannot reach the page.
+	 */
+	public function get_atomic_settings(): array {
+		$settings = parent::get_atomic_settings();
+
+		$source = isset( $settings['content'] ) && is_string( $settings['content'] )
+			? $settings['content']
+			: '';
+
+		$settings['content_html'] = self::interpret_source( $source );
+
+		return $settings;
+	}
+
+	private static function interpret_source( string $html ): string {
+		$decoded = self::collapse_spaces( self::decode_typed_tags( $html ) );
+
+		return wp_kses( $decoded, AAE_Rich_Text_Prop_Type::allowed_tags() );
+	}
+
+	/**
+	 * Collapse every run of spaces to ONE, in the RENDERED value only.
+	 *
+	 * MUST MIRROR collapseSpaces() in InlineTextControl.jsx — that one feeds the
+	 * editor canvas, this one the front end, and the two disagreeing shows up as a
+	 * preview that does not match the published page.
+	 *
+	 * The `content` prop keeps whatever was typed, so the panel field can be laid
+	 * out for readability; only this derived value is normalised, so the heading
+	 * never inherits those gaps.
+	 *
+	 * NBSP is collapsed alongside the plain space. Plain runs would fold on their
+	 * own — HTML collapses whitespace — but a contenteditable inserts U+00A0 for
+	 * consecutive spaces and those DO render, which is what put multiple spaces on
+	 * the page in the first place. Both the entity (`&nbsp;`) and the raw UTF-8
+	 * character are matched, because the editor produces both.
+	 *
+	 * Splitting on tags first keeps this out of ATTRIBUTE values: collapsing the
+	 * spaces inside `class="a  b"` or a `style` rule would silently change what a
+	 * selector matches. PREG_SPLIT_DELIM_CAPTURE puts the tags on the odd indices,
+	 * so only the even ones are rewritten.
+	 *
+	 * @param string $html Decoded markup.
+	 * @return string
+	 */
+	private static function collapse_spaces( string $html ): string {
+		$parts = preg_split( '/(<[^>]*>)/', $html, -1, PREG_SPLIT_DELIM_CAPTURE );
+
+		if ( ! is_array( $parts ) ) {
+			// A PCRE limit on a very large value. An uncollapsed heading is a far
+			// better outcome than an empty one.
+			return $html;
+		}
+
+		foreach ( $parts as $i => $part ) {
+			if ( 0 === $i % 2 ) {
+				$parts[ $i ] = preg_replace( '/(?:&nbsp;|[ \t]|\xc2\xa0){2,}/i', ' ', $part );
+			}
+		}
+
+		return implode( '', $parts );
+	}
+
+	/**
+	 * `&lt;h2 class="x"&gt;` → `<h2 class="x">`.
+	 *
+	 * The attribute group is a TEMPERED match — "any character that does not begin
+	 * `&gt;`" — not a negated class. `[^&]` was the obvious spelling and is wrong:
+	 * it also rejects a legitimate `&amp;` inside an attribute, so
+	 * `<a href="/x?a=1&amp;b=2">` would silently fail to decode. Mirrors
+	 * TYPED_TAG_RE in InlineTextControl.jsx.
+	 */
+	private static function decode_typed_tags( string $html ): string {
+		$tags = implode( '|', array_map( 'preg_quote', array_keys( AAE_Rich_Text_Prop_Type::allowed_tags() ) ) );
+
+		return preg_replace_callback(
+			'/&lt;(\/?)(' . $tags . ')((?:\s(?:(?!&gt;).)*?)?)(\/?)&gt;/i',
+			static function ( $m ) {
+				// Only ampersands need undoing: inside a text node the browser
+				// escapes `&` but leaves quotes alone.
+				return '<' . $m[1] . $m[2] . str_replace( '&amp;', '&', $m[3] ) . $m[4] . '>';
+			},
+			$html
+		) ?? $html; // preg_* returns null past a PCRE limit — keep the original.
+	}
+
 }

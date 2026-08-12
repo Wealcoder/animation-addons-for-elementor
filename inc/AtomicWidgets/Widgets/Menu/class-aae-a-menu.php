@@ -14,7 +14,9 @@ use Elementor\Modules\AtomicWidgets\Controls\Types\Switch_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Number_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Svg_Control;
+use Elementor\Modules\AtomicWidgets\Controls\Types\Image_Control;
 use Elementor\Modules\AtomicWidgets\PropTypes\Svg_Src_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Image_Prop_Type;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
@@ -27,6 +29,19 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 	use Has_Template;
 
 	const TD = 'animation-addons-for-elementor';
+
+	/**
+	 * Default sub-menu toggle icons, relative to WCF_ADDONS_URL.
+	 *
+	 * The FILENAMES are load-bearing: aae-a-menu.html.twig decides whether the
+	 * builder picked a custom icon by testing the resolved url against these
+	 * paths. It has to compare strings rather than read a constant because the
+	 * template also renders client-side in the editor, where no PHP value
+	 * exists. Rename a file and the widget silently starts treating its own
+	 * default as a custom upload — keep the two in sync.
+	 */
+	const TOGGLE_ICON_DEFAULT      = 'inc/AtomicWidgets/Widgets/Menu/assets/icons/chevron-down.svg';
+	const TOGGLE_ICON_OPEN_DEFAULT = 'inc/AtomicWidgets/Widgets/Menu/assets/icons/chevron-up.svg';
 
 	public static function get_element_type(): string {
 		return 'e-aae-a-menu';
@@ -77,12 +92,20 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 			'hover_color'   => String_Prop_Type::make()->default( '' ),
 			'item_hover_bg' => String_Prop_Type::make()->default( '' ),
 			'active_color'  => String_Prop_Type::make()->default( '' ),
-			'font_size'     => Number_Prop_Type::make()->default( 15 ),
-			'font_weight'   => String_Prop_Type::make()->default( '500' ),
+			// No font_size / font_weight: typography is the Style tab's job. A
+			// widget-level copy fought it and won — our stylesheet is printed
+			// AFTER Elementor's per-document CSS on purpose (see
+			// fix_frontend_atomic_css_order()), so a hardcoded 15px/500 here beat
+			// whatever Typography the builder set and looked like a broken panel.
 			'padding_x'     => Number_Prop_Type::make()->default( 14 ),
 			'padding_y'     => Number_Prop_Type::make()->default( 10 ),
 			'item_gap'      => Number_Prop_Type::make()->default( 4 ),
 			'link_radius'   => Number_Prop_Type::make()->default( 6 ),
+			// Width 0 = the current look (menu items have never had a border), so
+			// nothing gains an outline until this is raised.
+			'item_border_width' => Number_Prop_Type::make()->default( 0 ),
+			'item_border_style' => String_Prop_Type::make()->enum( [ 'solid', 'dashed', 'dotted', 'double', 'none' ] )->default( 'solid' ),
+			'item_border_color' => String_Prop_Type::make()->default( '' ),
 
 			// Dropdown
 			'dropdown_trigger'          => String_Prop_Type::make()->enum( [ 'hover', 'click' ] )->default( 'hover' ),
@@ -94,14 +117,38 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 			'dropdown_panel_padding'    => Number_Prop_Type::make()->default( 6 ),
 			'dropdown_padding_x'        => Number_Prop_Type::make()->default( 14 ),
 			'dropdown_padding_y'        => Number_Prop_Type::make()->default( 9 ),
+			// 2 matches the gap the panel was hardcoded to, so nothing shifts.
+			'dropdown_item_gap'         => Number_Prop_Type::make()->default( 2 ),
+			// 4 is what the items already rendered at — the old rule derived them
+			// from the top-level Item Radius as calc(6px - 2px). Defaulting to
+			// anything else would silently reshape every existing menu.
+			'dropdown_item_radius'      => Number_Prop_Type::make()->default( 4 ),
 			'dropdown_min_width'        => Number_Prop_Type::make()->default( 220 ),
 			'dropdown_radius'           => Number_Prop_Type::make()->default( 8 ),
+			// Width 1 + the rgba fallback below reproduce the hardcoded
+			// `border: var(--border)` the panel used to carry, so an untouched
+			// dropdown is unchanged — but the border can now be recoloured or
+			// removed, which it could not be before.
+			'dropdown_border_width'     => Number_Prop_Type::make()->default( 1 ),
+			'dropdown_border_style'     => String_Prop_Type::make()->enum( [ 'solid', 'dashed', 'dotted', 'double', 'none' ] )->default( 'solid' ),
+			'dropdown_border_color'     => String_Prop_Type::make()->default( '' ),
 
 			// Sub-menu toggle (the +/− or chevron button menu.js injects on any item
 			// that has children). Icons are optional — leave them empty to keep the
 			// built-in glyph.
-			'toggle_icon'       => Svg_Src_Prop_Type::make(),
-			'toggle_icon_open'  => Svg_Src_Prop_Type::make(),
+			// Given real defaults so the panel shows a chevron thumbnail instead of
+			// an empty Svg control, which renders as a broken image and reads as
+			// "this field is broken". Matches how Nav, Accordion, Offcanvas and
+			// ImageHotspot already seed their icon props.
+			//
+			// A default does NOT switch the widget to custom-icon rendering — the
+			// Twig compares against these paths, so the built-in glyphs (CSS
+			// chevron on flyouts, +/− in Vertical) are untouched until the builder
+			// actually picks a different file. See the `tg_is_custom` note there.
+			'toggle_icon'       => Svg_Src_Prop_Type::make()
+				->default_url( WCF_ADDONS_URL . self::TOGGLE_ICON_DEFAULT ),
+			'toggle_icon_open'  => Svg_Src_Prop_Type::make()
+				->default_url( WCF_ADDONS_URL . self::TOGGLE_ICON_OPEN_DEFAULT ),
 			'toggle_color'      => String_Prop_Type::make()->default( '' ),
 			'toggle_bg'         => String_Prop_Type::make()->default( '' ),
 			'toggle_hover_bg'   => String_Prop_Type::make()->default( '' ),
@@ -110,16 +157,74 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 			'toggle_icon_size'  => Number_Prop_Type::make()->default( 10 ),
 			'toggle_radius'     => Number_Prop_Type::make()->default( 50 ),
 
-			// Hamburger / Drawer
-			'hamburger_color' => String_Prop_Type::make()->default( '' ),
+			// Hamburger button. Every default below is the value that was hardcoded
+			// (or borrowed from an unrelated control) in menu.scss, so the button
+			// renders identically until a field is touched:
+			//   size 40, radius 6 (was --aae-r, i.e. the top-level Item Radius),
+			//   border 1px rgba(0,0,0,.08), bars 18 x 2 with a 4px gap.
+			'hamburger_color'         => String_Prop_Type::make()->default( '' ),
+			'hamburger_bg'            => String_Prop_Type::make()->default( '' ),
+			'hamburger_hover_bg'      => String_Prop_Type::make()->default( '' ),
+			'hamburger_size'          => Number_Prop_Type::make()->default( 40 ),
+			'hamburger_radius'        => Number_Prop_Type::make()->default( 6 ),
+			'hamburger_border_width'  => Number_Prop_Type::make()->default( 1 ),
+			'hamburger_border_color'  => String_Prop_Type::make()->default( '' ),
+			// The three bars. Thickness + gap also drive the open-state X: the
+			// rotate offset is their sum, so it stays a clean X at any size.
+			'hamburger_bar_width'     => Number_Prop_Type::make()->default( 18 ),
+			'hamburger_bar_thickness'  => Number_Prop_Type::make()->default( 2 ),
+			'hamburger_bar_gap'       => Number_Prop_Type::make()->default( 4 ),
+
+			// Drawer
 			'drawer_width'    => Number_Prop_Type::make()->default( 320 ),
 			'drawer_bg'       => String_Prop_Type::make()->default( '' ),
 			'overlay_color'   => String_Prop_Type::make()->default( '' ),
+			// Drawer header — the bar holding the label/logo and the close button.
+			//
+			// `drawer_logo` is intentionally left with NO default: Image_Transformer
+			// throws "Invalid image URL" when it resolves an image with neither an
+			// attachment id nor a url, so seeding it the way the toggle icons are
+			// seeded would break rendering rather than show a placeholder.
+			'drawer_logo'                => Image_Prop_Type::make(),
+			'drawer_logo_width'          => Number_Prop_Type::make()->default( 120 ),
+			// 17px ≈ the 1.05em the label was hardcoded to at a 16px base, and 600
+			// is its previous weight, so the header reads the same until touched.
+			'drawer_label_color'         => String_Prop_Type::make()->default( '' ),
+			'drawer_label_size'          => Number_Prop_Type::make()->default( 17 ),
+			'drawer_label_weight'        => String_Prop_Type::make()->default( '600' ),
+			// The header's divider rule, previously a fixed `border-bottom: var(--border)`.
+			'drawer_header_border_width' => Number_Prop_Type::make()->default( 1 ),
+			'drawer_header_border_style' => String_Prop_Type::make()->enum( [ 'solid', 'dashed', 'dotted', 'double', 'none' ] )->default( 'solid' ),
+			'drawer_header_border_color' => String_Prop_Type::make()->default( '' ),
+
+			// The drawer panel had no border at all, so 0 keeps it that way.
+			'drawer_border_width' => Number_Prop_Type::make()->default( 0 ),
+			'drawer_border_style' => String_Prop_Type::make()->enum( [ 'solid', 'dashed', 'dotted', 'double', 'none' ] )->default( 'solid' ),
+			'drawer_border_color' => String_Prop_Type::make()->default( '' ),
 
 			// Motion
 			'transition_ms'      => Number_Prop_Type::make()->default( 250 ),
 			'drawer_animation'   => String_Prop_Type::make()->default( 'slide-left' ),
 			'dropdown_animation' => String_Prop_Type::make()->default( 'slide' ),
+		];
+	}
+
+	/**
+	 * Shared option list for the three Border Style selects (items, dropdown
+	 * panel, drawer). `none` is included even though Border Width 0 also hides a
+	 * border — it lets a builder park a width/colour they are experimenting with
+	 * instead of zeroing and retyping it.
+	 *
+	 * Text domain is spelled out literally rather than via self::TD because
+	 * `wp i18n make-pot` only extracts literal domains.
+	 */
+	private function get_border_style_options(): array {
+		return [
+			[ 'value' => 'solid',  'label' => __( 'Solid',  'animation-addons-for-elementor' ) ],
+			[ 'value' => 'dashed', 'label' => __( 'Dashed', 'animation-addons-for-elementor' ) ],
+			[ 'value' => 'dotted', 'label' => __( 'Dotted', 'animation-addons-for-elementor' ) ],
+			[ 'value' => 'double', 'label' => __( 'Double', 'animation-addons-for-elementor' ) ],
+			[ 'value' => 'none',   'label' => __( 'None',   'animation-addons-for-elementor' ) ],
 		];
 	}
 
@@ -164,10 +269,10 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 				Switch_Control::bind_to( 'hamburger' )
 						->set_label( __( 'Mobile Hamburger', 'animation-addons-for-elementor' ) ),
 					Number_Control::bind_to( 'breakpoint' )
-						->set_label( __( 'Mobile Breakpoint (px)', 'animation-addons-for-elementor' ) ),
-					Text_Control::bind_to( 'mobile_label' )
-						->set_label( __( 'Mobile Header Label', 'animation-addons-for-elementor' ) )
-						->set_placeholder( __( 'Menu', 'animation-addons-for-elementor' ) ),
+						->set_label( __( 'Mobile Breakpoint (px)', 'animation-addons-for-elementor' ) )
+						->set_description( __( '0 means never switch to the mobile drawer, at any width.', 'animation-addons-for-elementor' ) ),
+					// The header label moved to its own Drawer Header section, next to
+					// the logo and typography that style it.
 				] ),
 
 			Section::make()
@@ -186,16 +291,6 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 					Text_Control::bind_to( 'active_color' )
 						->set_label( __( 'Active Color', 'animation-addons-for-elementor' ) )
 						->set_placeholder( '#2563eb' ),
-					Number_Control::bind_to( 'font_size' )
-						->set_label( __( 'Font Size (px)', 'animation-addons-for-elementor' ) ),
-					Select_Control::bind_to( 'font_weight' )
-						->set_label( __( 'Font Weight', 'animation-addons-for-elementor' ) )
-						->set_options( [
-							[ 'value' => '400', 'label' => __( 'Normal',    'animation-addons-for-elementor' ) ],
-							[ 'value' => '500', 'label' => __( 'Medium',    'animation-addons-for-elementor' ) ],
-							[ 'value' => '600', 'label' => __( 'Semi Bold', 'animation-addons-for-elementor' ) ],
-							[ 'value' => '700', 'label' => __( 'Bold',      'animation-addons-for-elementor' ) ],
-						] ),
 					Number_Control::bind_to( 'padding_x' )
 						->set_label( __( 'Item Padding X (px)', 'animation-addons-for-elementor' ) ),
 					Number_Control::bind_to( 'padding_y' )
@@ -204,16 +299,41 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 						->set_label( __( 'Item Gap (px)', 'animation-addons-for-elementor' ) ),
 					Number_Control::bind_to( 'link_radius' )
 						->set_label( __( 'Item Radius (px)', 'animation-addons-for-elementor' ) ),
+					Number_Control::bind_to( 'item_border_width' )
+						->set_label( __( 'Border Width (px)', 'animation-addons-for-elementor' ) )
+						->set_description( __( 'Drawn around each menu item. Raising it makes the items slightly larger, since the border sits outside the padding.', 'animation-addons-for-elementor' ) ),
+					Select_Control::bind_to( 'item_border_style' )
+						->set_label( __( 'Border Style', 'animation-addons-for-elementor' ) )
+						->set_options( $this->get_border_style_options() ),
+					Text_Control::bind_to( 'item_border_color' )
+						->set_label( __( 'Border Color', 'animation-addons-for-elementor' ) )
+						->set_placeholder( 'rgba(0,0,0,0.08)' ),
 				] ),
 
+			/**
+			 * The dropdown is TWO sections, not one flat list.
+			 *
+			 * The panel (the floating box) and the items (the rows inside it) own
+			 * separate copies of the same properties — two Backgrounds, two
+			 * Paddings — and interleaved they read as duplicates, which is why the
+			 * old list needed "Item" prefixes and inline notes to stay legible. The
+			 * section heading carries that distinction now, so each label can say
+			 * what the property IS without re-stating which box it lands on.
+			 *
+			 * Two TOP-LEVEL sections rather than one section with sub-headings,
+			 * because a nested section is silently DISCARDED: renderSectionItems()
+			 * in editor-editing-panel drops every non-control item with a literal
+			 * `// TODO: Handle 2nd level sections`, so the fields inside would
+			 * simply never render — no error, no clue.
+			 */
 			Section::make()
-				->set_label( __( 'Dropdown Style', 'animation-addons-for-elementor' ) )
-				->set_id( 'dropdown_style' )
+				->set_label( __( 'Dropdown Panel', 'animation-addons-for-elementor' ) )
+				->set_id( 'dropdown_panel' )
 				->set_items( [
-					// Behaviour, so it leads the section — a builder decides HOW the
-					// dropdown opens before they style it. Applies to FLYOUT dropdowns
-					// only: the mobile drawer and Layout = Vertical both expand inline
-					// from the toggle, so "Hover" has nothing to act on there.
+					// Behaviour, so it leads — a builder decides HOW the panel opens
+					// before styling it. Applies to FLYOUT dropdowns only: the mobile
+					// drawer and Layout = Vertical both expand inline from the toggle,
+					// so "Hover" has nothing to act on there.
 					Select_Control::bind_to( 'dropdown_trigger' )
 						->set_label( __( 'Open On', 'animation-addons-for-elementor' ) )
 						->set_description( __( 'Applies to flyout dropdowns. With Layout set to Vertical, sub-menus always expand from the +/− toggle — and from the item itself when this is set to Click.', 'animation-addons-for-elementor' ) )
@@ -224,33 +344,57 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 					Text_Control::bind_to( 'dropdown_bg' )
 						->set_label( __( 'Background', 'animation-addons-for-elementor' ) )
 						->set_placeholder( '#ffffff' ),
-					// Sits directly under Background so the resting pair reads
-					// together, above the two hover fields.
-					Text_Control::bind_to( 'dropdown_text_color' )
-						->set_label( __( 'Text Color', 'animation-addons-for-elementor' ) )
-						->set_placeholder( '#1a1a18' ),
-					// Resting background of each dropdown ITEM, as opposed to
-					// `dropdown_bg`, which paints the panel behind them.
-					Text_Control::bind_to( 'dropdown_item_bg' )
-						->set_label( __( 'Item Background', 'animation-addons-for-elementor' ) )
-						->set_placeholder( 'transparent' ),
-					Text_Control::bind_to( 'dropdown_hover_bg' )
-						->set_label( __( 'Item Hover Background', 'animation-addons-for-elementor' ) )
-						->set_placeholder( 'rgba(15,23,42,0.05)' ),
-					Text_Control::bind_to( 'dropdown_hover_text_color' )
-						->set_label( __( 'Item Hover Text Color', 'animation-addons-for-elementor' ) )
-						->set_placeholder( '#2563eb' ),
-					// The PANEL's own inner padding — the box drawn behind the items.
-					// Distinct from Item Padding below, which insets each link.
 					Number_Control::bind_to( 'dropdown_panel_padding' )
-						->set_label( __( 'Panel Padding (px)', 'animation-addons-for-elementor' ) ),
-					Number_Control::bind_to( 'dropdown_padding_x' )
-						->set_label( __( 'Item Padding X (px)', 'animation-addons-for-elementor' ) ),
-					Number_Control::bind_to( 'dropdown_padding_y' )
-						->set_label( __( 'Item Padding Y (px)', 'animation-addons-for-elementor' ) ),
+						->set_label( __( 'Padding (px)', 'animation-addons-for-elementor' ) )
+						->set_description( __( 'Inset between the panel edge and the items inside it.', 'animation-addons-for-elementor' ) ),
 					Number_Control::bind_to( 'dropdown_min_width' )
 						->set_label( __( 'Min Width (px)', 'animation-addons-for-elementor' ) ),
 					Number_Control::bind_to( 'dropdown_radius' )
+						->set_label( __( 'Border Radius (px)', 'animation-addons-for-elementor' ) ),
+					Number_Control::bind_to( 'dropdown_border_width' )
+						->set_label( __( 'Border Width (px)', 'animation-addons-for-elementor' ) )
+						->set_description( __( 'The panel ships with a 1px hairline. Set to 0 to remove it — with the drop shadow gone, that leaves the panel with no edge at all, so give it a background first.', 'animation-addons-for-elementor' ) ),
+					Select_Control::bind_to( 'dropdown_border_style' )
+						->set_label( __( 'Border Style', 'animation-addons-for-elementor' ) )
+						->set_options( $this->get_border_style_options() ),
+					Text_Control::bind_to( 'dropdown_border_color' )
+						->set_label( __( 'Border Color', 'animation-addons-for-elementor' ) )
+						->set_placeholder( 'rgba(0,0,0,0.08)' ),
+				] ),
+
+			Section::make()
+				->set_label( __( 'Dropdown Items', 'animation-addons-for-elementor' ) )
+				->set_id( 'dropdown_items' )
+				->set_items( [
+					// Resting pair first, then the matching hover pair, so the two
+					// read as before/after of the same two properties rather than
+					// four unrelated colour fields.
+					Text_Control::bind_to( 'dropdown_item_bg' )
+						->set_label( __( 'Background', 'animation-addons-for-elementor' ) )
+						->set_placeholder( 'transparent' ),
+					Text_Control::bind_to( 'dropdown_text_color' )
+						->set_label( __( 'Text Color', 'animation-addons-for-elementor' ) )
+						->set_placeholder( '#1a1a18' ),
+					// Placeholder says "None", not a colour: there is no longer a
+					// default hover wash to hint at. Showing rgba(15,23,42,0.05) here
+					// would promise a highlight that never appears until this is set.
+					Text_Control::bind_to( 'dropdown_hover_bg' )
+						->set_label( __( 'Hover Background', 'animation-addons-for-elementor' ) )
+						->set_placeholder( __( 'None', 'animation-addons-for-elementor' ) ),
+					Text_Control::bind_to( 'dropdown_hover_text_color' )
+						->set_label( __( 'Hover Text Color', 'animation-addons-for-elementor' ) )
+						->set_placeholder( '#2563eb' ),
+					Number_Control::bind_to( 'dropdown_padding_x' )
+						->set_label( __( 'Padding X (px)', 'animation-addons-for-elementor' ) ),
+					Number_Control::bind_to( 'dropdown_padding_y' )
+						->set_label( __( 'Padding Y (px)', 'animation-addons-for-elementor' ) ),
+					// padding → gap → radius, the same order the top-level Menu Items
+					// Style section uses, so the two sections read the same way.
+					Number_Control::bind_to( 'dropdown_item_gap' )
+						->set_label( __( 'Gap (px)', 'animation-addons-for-elementor' ) ),
+					// Independent of the panel's own Border Radius, and of the
+					// top-level Item Radius the items used to be derived from.
+					Number_Control::bind_to( 'dropdown_item_radius' )
 						->set_label( __( 'Border Radius (px)', 'animation-addons-for-elementor' ) ),
 				] ),
 
@@ -263,10 +407,11 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 					// in every mode and is painted with the Icon Color below (it is
 					// applied as a CSS mask, not an <img>, so it stays recolourable).
 					Svg_Control::bind_to( 'toggle_icon' )
-						->set_label( __( 'Icon (Collapsed)', 'animation-addons-for-elementor' ) ),
+						->set_label( __( 'Icon (Collapsed)', 'animation-addons-for-elementor' ) )
+						->set_description( __( 'Showing the built-in chevron. Vertical layout draws a +/− instead until you upload your own icon, which then applies to every layout.', 'animation-addons-for-elementor' ) ),
 					Svg_Control::bind_to( 'toggle_icon_open' )
 						->set_label( __( 'Icon (Expanded)', 'animation-addons-for-elementor' ) )
-						->set_description( __( 'Optional. Falls back to the collapsed icon when empty.', 'animation-addons-for-elementor' ) ),
+						->set_description( __( 'Optional. Falls back to the collapsed icon when you upload one here.', 'animation-addons-for-elementor' ) ),
 					Text_Control::bind_to( 'toggle_color' )
 						->set_label( __( 'Icon Color', 'animation-addons-for-elementor' ) )
 						->set_placeholder( __( 'Inherits menu text color', 'animation-addons-for-elementor' ) ),
@@ -289,21 +434,104 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 						->set_label( __( 'Border Radius (px)', 'animation-addons-for-elementor' ) ),
 				] ),
 
+			// Split out of the old combined "Hamburger & Drawer" section. The button
+			// and the panel it opens are separate objects with separate colours and
+			// sizes, and the hamburger now has ten fields of its own — enough that
+			// sharing one heading with the drawer stopped being readable.
 			Section::make()
-				->set_label( __( 'Hamburger & Drawer', 'animation-addons-for-elementor' ) )
-				->set_id( 'drawer_style' )
+				->set_label( __( 'Hamburger', 'animation-addons-for-elementor' ) )
+				->set_id( 'hamburger_style' )
 				->set_items( [
 					Text_Control::bind_to( 'hamburger_color' )
-						->set_label( __( 'Hamburger Color', 'animation-addons-for-elementor' ) )
-						->set_placeholder( '#1f2937' ),
+						->set_label( __( 'Icon Color', 'animation-addons-for-elementor' ) )
+						->set_placeholder( __( 'Inherits menu text color', 'animation-addons-for-elementor' ) ),
+					Text_Control::bind_to( 'hamburger_bg' )
+						->set_label( __( 'Background', 'animation-addons-for-elementor' ) )
+						->set_placeholder( 'transparent' ),
+					Text_Control::bind_to( 'hamburger_hover_bg' )
+						->set_label( __( 'Hover Background', 'animation-addons-for-elementor' ) )
+						->set_placeholder( 'rgba(0,0,0,0.05)' ),
+					Number_Control::bind_to( 'hamburger_size' )
+						->set_label( __( 'Button Size (px)', 'animation-addons-for-elementor' ) ),
+					Number_Control::bind_to( 'hamburger_radius' )
+						->set_label( __( 'Border Radius (px)', 'animation-addons-for-elementor' ) ),
+					Number_Control::bind_to( 'hamburger_border_width' )
+						->set_label( __( 'Border Width (px)', 'animation-addons-for-elementor' ) )
+						->set_description( __( 'Set to 0 for no border.', 'animation-addons-for-elementor' ) ),
+					Text_Control::bind_to( 'hamburger_border_color' )
+						->set_label( __( 'Border Color', 'animation-addons-for-elementor' ) )
+						->set_placeholder( 'rgba(0,0,0,0.08)' ),
+					Number_Control::bind_to( 'hamburger_bar_width' )
+						->set_label( __( 'Bar Width (px)', 'animation-addons-for-elementor' ) ),
+					Number_Control::bind_to( 'hamburger_bar_thickness' )
+						->set_label( __( 'Bar Thickness (px)', 'animation-addons-for-elementor' ) ),
+					Number_Control::bind_to( 'hamburger_bar_gap' )
+						->set_label( __( 'Bar Gap (px)', 'animation-addons-for-elementor' ) )
+						->set_description( __( 'Also sets how far the top and bottom bars travel when they cross into the close (X) state.', 'animation-addons-for-elementor' ) ),
+				] ),
+
+			Section::make()
+				->set_label( __( 'Drawer Header', 'animation-addons-for-elementor' ) )
+				->set_id( 'drawer_header_style' )
+				->set_items( [
+					// A logo REPLACES the text label when uploaded — the header is a
+					// single-slot bar next to the close button, and rendering both
+					// crowds it. The label is still used as the logo's alt text, so
+					// filling in both is useful rather than redundant.
+					Image_Control::bind_to( 'drawer_logo' )
+						->set_label( __( 'Logo', 'animation-addons-for-elementor' ) )
+						->set_description( __( 'Replaces the label below when set. The label is still used as the logo’s alt text.', 'animation-addons-for-elementor' ) ),
+					Number_Control::bind_to( 'drawer_logo_width' )
+						->set_label( __( 'Logo Width (px)', 'animation-addons-for-elementor' ) )
+						->set_description( __( 'Height follows the image’s own aspect ratio.', 'animation-addons-for-elementor' ) ),
+					Text_Control::bind_to( 'mobile_label' )
+						->set_label( __( 'Label', 'animation-addons-for-elementor' ) )
+						->set_placeholder( __( 'Menu', 'animation-addons-for-elementor' ) ),
+					Text_Control::bind_to( 'drawer_label_color' )
+						->set_label( __( 'Label Color', 'animation-addons-for-elementor' ) )
+						->set_placeholder( __( 'Inherits menu text color', 'animation-addons-for-elementor' ) ),
+					Number_Control::bind_to( 'drawer_label_size' )
+						->set_label( __( 'Label Font Size (px)', 'animation-addons-for-elementor' ) ),
+					Select_Control::bind_to( 'drawer_label_weight' )
+						->set_label( __( 'Label Font Weight', 'animation-addons-for-elementor' ) )
+						->set_options( [
+							[ 'value' => '400', 'label' => __( 'Normal',    'animation-addons-for-elementor' ) ],
+							[ 'value' => '500', 'label' => __( 'Medium',    'animation-addons-for-elementor' ) ],
+							[ 'value' => '600', 'label' => __( 'Semi Bold', 'animation-addons-for-elementor' ) ],
+							[ 'value' => '700', 'label' => __( 'Bold',      'animation-addons-for-elementor' ) ],
+						] ),
+					Number_Control::bind_to( 'drawer_header_border_width' )
+						->set_label( __( 'Border Width (px)', 'animation-addons-for-elementor' ) )
+						->set_description( __( 'The divider under the header. Set to 0 to remove it.', 'animation-addons-for-elementor' ) ),
+					Select_Control::bind_to( 'drawer_header_border_style' )
+						->set_label( __( 'Border Style', 'animation-addons-for-elementor' ) )
+						->set_options( $this->get_border_style_options() ),
+					Text_Control::bind_to( 'drawer_header_border_color' )
+						->set_label( __( 'Border Color', 'animation-addons-for-elementor' ) )
+						->set_placeholder( 'rgba(0,0,0,0.08)' ),
+				] ),
+
+			Section::make()
+				->set_label( __( 'Drawer', 'animation-addons-for-elementor' ) )
+				->set_id( 'drawer_style' )
+				->set_items( [
 					Number_Control::bind_to( 'drawer_width' )
-						->set_label( __( 'Drawer Width (px)', 'animation-addons-for-elementor' ) ),
+						->set_label( __( 'Width (px)', 'animation-addons-for-elementor' ) ),
 					Text_Control::bind_to( 'drawer_bg' )
-						->set_label( __( 'Drawer Background', 'animation-addons-for-elementor' ) )
+						->set_label( __( 'Background', 'animation-addons-for-elementor' ) )
 						->set_placeholder( '#ffffff' ),
 					Text_Control::bind_to( 'overlay_color' )
 						->set_label( __( 'Overlay Color', 'animation-addons-for-elementor' ) )
 						->set_placeholder( 'rgba(0,0,0,0.5)' ),
+					Number_Control::bind_to( 'drawer_border_width' )
+						->set_label( __( 'Border Width (px)', 'animation-addons-for-elementor' ) )
+						->set_description( __( 'Drawn around the whole drawer panel. Only the edge facing the page is normally visible — the other three sit against the viewport.', 'animation-addons-for-elementor' ) ),
+					Select_Control::bind_to( 'drawer_border_style' )
+						->set_label( __( 'Border Style', 'animation-addons-for-elementor' ) )
+						->set_options( $this->get_border_style_options() ),
+					Text_Control::bind_to( 'drawer_border_color' )
+						->set_label( __( 'Border Color', 'animation-addons-for-elementor' ) )
+						->set_placeholder( 'rgba(0,0,0,0.08)' ),
 				] ),
 
 			Section::make()
@@ -342,7 +570,10 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 		$wrapper = [
 			'display'  => String_Prop_Type::generate( 'block' ),
 			'position' => String_Prop_Type::generate( 'relative' ),
-			'width'    => String_Prop_Type::generate( '100%' ),
+			// Hugs the menu instead of stretching the container. `fit-content`
+			// resolves to min(max-content, available), so a long menu still
+			// cannot overflow its container and needs no max-width guard.
+			'width'    => String_Prop_Type::generate( 'fit-content' ),
 		];
 
 		return [

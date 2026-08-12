@@ -30,7 +30,17 @@
             type="button"
             aria-expanded="{{ settings.is_active ? 'true' : 'false' }}"
             aria-controls="aae-accordion-content-{{ id }}"
-            id="aae-accordion-header-{{ id }}">
+            id="aae-accordion-header-{{ id }}"
+            {# Accessible-name safety net. The visible title normally arrives as
+               a child element that accordion.js moves into .aae-header-content,
+               so the button names itself. But a header holding only an icon —
+               or one whose title child was deleted — leaves a <button> with no
+               name at all (a critical WCAG 4.1.2 failure), and it silently takes
+               the content region's aria-labelledby down with it. accordion.js
+               promotes this to aria-label only when the button really is empty,
+               so a visible title is never overridden (WCAG 2.5.3). #}
+            data-aae-fallback-label="{{ settings.item_title | default( 'Accordion Item' ) | e('html_attr') }}"
+            style="display: flex; align-items: center; justify-content: space-between; width: 100%; background: transparent; border: none; cursor: pointer;">
 
             {# Header Div_Block (Title + Icon) injected here — the icon IS the toggle #}
             <div class="aae-header-content" style="display: flex; align-items: center; flex: 1; gap: 10px; min-width: 0;"></div>
