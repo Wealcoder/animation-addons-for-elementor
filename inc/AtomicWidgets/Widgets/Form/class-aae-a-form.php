@@ -350,21 +350,14 @@ class AAE_A_Form extends Atomic_Element_Base {
 
 			$this->build_checkbox_row( __( 'Checkbox', 'animation-addons-for-elementor' ), $prefix . 'checkbox' ),
 
-			// Text set explicitly (like native e-form does) — relying on the
-			// schema default alone left the button empty in the canvas. Not
-			// locked: locking would also block moving it (e.g. into a flexbox
-			// row inside the form).
+			// No `text` setting: the Submit button is a container now and seeds
+			// its own Flexbox › Heading + SVG children, so the label lives on
+			// the Heading child. Passing `text` here would be silently dropped
+			// by Props_Parser (the prop no longer exists) and leave the button
+			// looking empty for the same reason it used to.
+			// Not locked: locking would also block moving it (e.g. into a
+			// flexbox row inside the form).
 			AAE_A_Form_Submit::generate()
-				->settings(
-					[
-						'text' => Html_V3_Prop_Type::generate(
-							[
-								'content'  => String_Prop_Type::generate( __( 'Submit', 'animation-addons-for-elementor' ) ),
-								'children' => [],
-							]
-						),
-					]
-				)
 				->editor_settings( [ 'title' => __( 'Submit', 'animation-addons-for-elementor' ) ] )
 				->build(),
 
