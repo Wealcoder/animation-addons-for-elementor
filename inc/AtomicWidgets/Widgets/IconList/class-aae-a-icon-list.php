@@ -123,7 +123,7 @@ class AAE_A_Icon_List extends Atomic_Element_Base {
 			// 10px matches native Elementor Icon List's default "Space Between".
 			'gap' => \Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type::generate( [ 'size' => 10, 'unit' => 'px' ] ),
 			'list-style' => String_Prop_Type::generate( 'none' ),
-			'width' => String_Prop_Type::generate( '100%' ),
+			'width' => \Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type::generate( [ 'size' => 100, 'unit' => '%' ] ),
 			'margin' => \Elementor\Modules\AtomicWidgets\PropTypes\Dimensions_Prop_Type::generate([
 				'block-start' => \Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type::generate(['size' => 0, 'unit' => 'px']),
 				'block-end' => \Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type::generate(['size' => 0, 'unit' => 'px']),

@@ -7,7 +7,7 @@
     | merge(settings.aae_btn_outlinepill ? ['aae-btn-outlinepill'] : [])
     | merge(settings.aae_btn_slidefill ? ['aae-btn-slidefill'] : [])
     | merge(settings.aae_btn_underline ? ['aae-btn-underline'] : [])
-    | merge(settings.aae_btn_hover_effect ? ['btn-' ~ settings.aae_btn_hover_style] : [])
+    | merge(settings.aae_btn_hover_effect ? ['aae-btn-' ~ settings.aae_btn_hover_style] : [])
     | merge(settings.classes | default([])) %}
 
 {% if settings.btn_target == '_blank' %}

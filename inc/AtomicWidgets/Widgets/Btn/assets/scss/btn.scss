@@ -107,7 +107,7 @@
 }
 
 /*
- * "Default" preset hover-style variants (btn-{aae_btn_hover_style} — see
+ * "Default" preset hover-style variants (aae-btn-{aae_btn_hover_style} — see
  * BtnHoverStyleControl.jsx / presets/default.json). Each block is a hardcoded
  * adaptation of the matching classic V3 wcf__btn effect (inc/trait-wcf-button.php's
  * btn_hover_list, CSS in assets/css/widgets/button.css), retargeted from an
@@ -118,15 +118,28 @@
  * `background` is deliberately left alone so the divider's Style-panel color
  * stays editable, same as a plain e-divider anywhere else.
  *
+ * PREFIXED `aae-btn-…`, NOT the bare `btn-hover-*` / `btn-rollover-*` /
+ * `btn-parallal-border` names `trait-wcf-button.php`'s `btn_hover_list` uses —
+ * those exact class names are ALSO what `assets/css/widgets/button.css` (the
+ * V3 wcf__btn widget's own global, unscoped stylesheet) defines its own
+ * `::after`/`::before` rules against, hardcoded #1C1D20 included. That
+ * stylesheet loads sitewide whenever a V3 Button is anywhere on the page, so
+ * reusing its bare class names here made a V4 button ALSO match V3's rules —
+ * a second, invisible-until-hover overlay fighting the real divider (paints
+ * after it at the same z-index, so it's what's left once the transition
+ * settles — the reported "goes back to #1c1d20 after the animation" bug).
+ * `aae-btn-*` matches this widget's own existing hook-class family
+ * (aae-btn-cross, aae-btn-divide, …) and nothing else on the page.
+ *
  * `.e-aae-a-btn-base` already provides position:relative + overflow:hidden
  * (see AAE_A_Btn::define_base_styles()), so these only need position:absolute
  * on the divider (or its pseudos) to sit inside it as an overlay.
  */
-.btn-hover-none .e-divider-base {
+.aae-btn-hover-none .e-divider-base {
   display: none;
 }
 
-.btn-hover-divide .e-divider-base {
+.aae-btn-hover-divide .e-divider-base {
   position: absolute;
   inset-inline-start: 50%;
   inset-block-start: 50%;
@@ -137,12 +150,12 @@
   opacity: 0.5;
   z-index: -1;
 }
-.btn-hover-divide:hover .e-divider-base {
+.aae-btn-hover-divide:hover .e-divider-base {
   width: 120%;
   opacity: 1;
 }
 
-.btn-hover-cross .e-divider-base {
+.aae-btn-hover-cross .e-divider-base {
   position: absolute;
   inset-inline-start: 50%;
   inset-block-start: 50%;
@@ -153,12 +166,12 @@
   opacity: 0.5;
   z-index: -1;
 }
-.btn-hover-cross:hover .e-divider-base {
+.aae-btn-hover-cross:hover .e-divider-base {
   height: 120%;
   opacity: 1;
 }
 
-.btn-hover-cropping .e-divider-base {
+.aae-btn-hover-cropping .e-divider-base {
   position: absolute;
   inset-inline-start: 50%;
   inset-block-start: 50%;
@@ -169,12 +182,12 @@
   opacity: 0.5;
   z-index: -1;
 }
-.btn-hover-cropping:hover .e-divider-base {
+.aae-btn-hover-cropping:hover .e-divider-base {
   height: 400%;
   opacity: 1;
 }
 
-.btn-rollover-top .e-divider-base {
+.aae-btn-rollover-top .e-divider-base {
   position: absolute;
   inset-inline-start: 0;
   inset-block-end: 0;
@@ -183,13 +196,13 @@
   transition: all 0.4s cubic-bezier(0.215, 0.61, 0.355, 1);
   z-index: -1;
 }
-.btn-rollover-top:hover .e-divider-base {
+.aae-btn-rollover-top:hover .e-divider-base {
   inset-block-start: 0;
   inset-block-end: auto;
   height: 100%;
 }
 
-.btn-rollover-left .e-divider-base {
+.aae-btn-rollover-left .e-divider-base {
   position: absolute;
   inset-inline-end: 0;
   inset-block-start: 0;
@@ -198,75 +211,75 @@
   transition: all 0.4s cubic-bezier(0.42, 0, 0.58, 1);
   z-index: -1;
 }
-.btn-rollover-left:hover .e-divider-base {
+.aae-btn-rollover-left:hover .e-divider-base {
   inset-inline-start: 0;
   inset-inline-end: auto;
   width: 100%;
 }
 
 // Two-pseudo effects: the divider itself stays a zero-size anchor, and its
-// OWN ::before/::after (not the button's) draw the two corner frames — they
+// OWN ::before/::after (not the button's) draw the two corner blocks — they
 // still position relative to `.e-aae-a-btn-base` since the divider has no
 // `position` of its own, matching how V3 anchored these two pseudos directly
-// on the <a>.
-.btn-rollover-cross .e-divider-base,
-.btn-parallal-border .e-divider-base {
+// on the <a>. `background-color: inherit` (not a hardcoded hex, and not
+// `border-color`, which doesn't carry the value we want) pulls the COMPUTED
+// background-color of the divider ITSELF — i.e. whatever the divider's own
+// Background field is set to in the Style panel — the same "color comes from
+// the divider's own background" contract button-free-default-cross-div /
+// button-free-square-divide-div already use for their single-box variants.
+.aae-btn-rollover-cross .e-divider-base,
+.aae-btn-parallal-border .e-divider-base {
   width: 0;
   height: 0;
 }
-.btn-rollover-cross .e-divider-base::before,
-.btn-rollover-cross .e-divider-base::after,
-.btn-parallal-border .e-divider-base::before,
-.btn-parallal-border .e-divider-base::after {
+.aae-btn-rollover-cross .e-divider-base::before,
+.aae-btn-rollover-cross .e-divider-base::after,
+.aae-btn-parallal-border .e-divider-base::before,
+.aae-btn-parallal-border .e-divider-base::after {
   position: absolute;
   content: "";
-  width: 100%;
-  height: 100%;
+  background-color: inherit;
   opacity: 0;
   transition: all 0.75s;
 }
-.btn-rollover-cross .e-divider-base::before {
+.aae-btn-rollover-cross .e-divider-base::before {
+  width: 100%;
+  height: 100%;
   inset-block-end: 100%;
   inset-inline-start: 100%;
-  border-bottom: 1px solid #1c1d20;
-  border-left: 1px solid #1c1d20;
 }
-.btn-rollover-cross .e-divider-base::after {
+.aae-btn-rollover-cross .e-divider-base::after {
+  width: 100%;
+  height: 100%;
   inset-block-start: 100%;
   inset-inline-end: 100%;
-  border-top: 1px solid #1c1d20;
-  border-right: 1px solid #1c1d20;
 }
-.btn-rollover-cross:hover .e-divider-base::before {
+.aae-btn-rollover-cross:hover .e-divider-base::before {
   inset-block-end: 0;
   inset-inline-start: 0;
   opacity: 1;
 }
-.btn-rollover-cross:hover .e-divider-base::after {
+.aae-btn-rollover-cross:hover .e-divider-base::after {
   inset-block-start: 0;
   inset-inline-end: 0;
   opacity: 1;
 }
 
-.btn-parallal-border .e-divider-base::before,
-.btn-parallal-border .e-divider-base::after {
+.aae-btn-parallal-border .e-divider-base::before,
+.aae-btn-parallal-border .e-divider-base::after {
   width: 0%;
   height: 0%;
 }
-.btn-parallal-border .e-divider-base::before {
+.aae-btn-parallal-border .e-divider-base::before {
   inset-block-end: 0;
   inset-inline-start: 0;
-  border-bottom: 1px solid #1c1d20;
-  border-left: 1px solid #1c1d20;
 }
-.btn-parallal-border .e-divider-base::after {
+.aae-btn-parallal-border .e-divider-base::after {
   inset-block-start: 0;
   inset-inline-end: 0;
-  border-top: 1px solid #1c1d20;
-  border-right: 1px solid #1c1d20;
 }
-.btn-parallal-border:hover .e-divider-base::before,
-.btn-parallal-border:hover .e-divider-base::after {
+.aae-btn-parallal-border:hover .e-divider-base::before,
+.aae-btn-parallal-border:hover .e-divider-base::after {
   width: 100%;
   height: 100%;
   opacity: 1;
