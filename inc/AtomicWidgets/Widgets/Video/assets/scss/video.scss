@@ -44,6 +44,18 @@
 		pointer-events: none;
 	}
 
+	// Plain color tint, always on top of the poster/video and always below
+	// the play button/controls (z-index 2/3) — see aae-a-video.html.twig's
+	// `overlay_enabled` branch. `pointer-events: none` is required, not
+	// decorative: without it this layer would sit above the poster/clickzone
+	// and swallow every click meant to toggle playback.
+	.aae-a-video-overlay {
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+		pointer-events: none;
+	}
+
 	// Everything about the play button's LOOK (circle, size, background,
 	// position) is now real Style-tab CSS owned by its own element type —
 	// see Parts/class-aae-a-video-playbtn.php's define_base_styles(). Only

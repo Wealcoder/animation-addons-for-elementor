@@ -52,5 +52,6 @@
 		{% if use_frame_poster %}<video class="aae-a-video-poster aae-a-video-poster-frame" muted playsinline preload="metadata" src="{{ settings.video_external_url | default('') | e('html_attr') }}"></video>
 		{% else %}<img class="aae-a-video-poster" src="{{ poster_src | e('full_url') }}" alt="" />{% endif %}
 	{% endif %}
+	{% if settings.overlay_enabled %}<div class="aae-a-video-overlay" style="background-color: {{ settings.overlay_color | default('rgba(0, 0, 0, 0.4)') | e('html_attr') }};"></div>{% endif %}
 	{{ children_placeholder | raw }}
 </div>

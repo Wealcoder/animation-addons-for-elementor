@@ -159,6 +159,16 @@ class AAE_A_Video extends Atomic_Element_Base {
 			] )
 			->get();
 
+		// True when overlay_enabled is on.
+		$overlay_on = Dependency_Manager::make()
+			->where( [
+				'operator' => 'eq',
+				'path'     => [ 'overlay_enabled' ],
+				'value'    => true,
+				'effect'   => 'hide',
+			] )
+			->get();
+
 		// True when poster_enabled ("Use Thumbnail") is on — everything else
 		// in the Poster & Play Button section only means something once the
 		// poster itself is switched on.
@@ -273,6 +283,20 @@ class AAE_A_Video extends Atomic_Element_Base {
 			// Custom controls bar.
 			'controls_enabled'  => Boolean_Prop_Type::make()->default( true ),
 			'controls_autohide' => Boolean_Prop_Type::make()->default( true )->set_dependencies( $controls_on ),
+
+			// Plain color tint over the whole video area — rendered as a
+			// simple absolutely-positioned <div> straight from THIS wrapper's
+			// own twig (same "no separate child element" choice as
+			// poster_image, see that prop's comment), `pointer-events: none`
+			// so it never blocks the poster/clickzone/controls beneath it.
+			// Free-text CSS color (not a Style-tab Background control —
+			// atomic widgets have no Content-tab color picker at all, see
+			// CLAUDE.md's Range-widget note) so any rgba()/hex/hsl works,
+			// e.g. 'rgba(0, 0, 0, 0.4)'.
+			'overlay_enabled' => Boolean_Prop_Type::make()->default( false ),
+			'overlay_color'   => String_Prop_Type::make()
+				->default( 'rgba(0, 0, 0, 0.4)' )
+				->set_dependencies( $overlay_on ),
 		];
 	}
 
@@ -371,6 +395,18 @@ class AAE_A_Video extends Atomic_Element_Base {
 
 					Image_Control::bind_to( 'poster_image' )
 						->set_label( __( 'Thumbnail', 'animation-addons-for-elementor' ) ),
+				] ),
+
+			Section::make()
+				->set_id( 'overlay' )
+				->set_label( __( 'Overlay', 'animation-addons-for-elementor' ) )
+				->set_items( [
+					Switch_Control::bind_to( 'overlay_enabled' )
+						->set_label( __( 'Enable Overlay', 'animation-addons-for-elementor' ) ),
+
+					Text_Control::bind_to( 'overlay_color' )
+						->set_label( __( 'Overlay Color', 'animation-addons-for-elementor' ) )
+						->set_placeholder( __( 'e.g. rgba(0, 0, 0, 0.4)', 'animation-addons-for-elementor' ) ),
 				] ),
 
 			Section::make()

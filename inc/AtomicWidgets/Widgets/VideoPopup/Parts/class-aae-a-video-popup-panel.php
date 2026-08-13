@@ -138,6 +138,16 @@ class AAE_A_Video_Popup_Panel extends Atomic_Element_Base {
 			] )
 			->get();
 
+		// True when overlay_enabled is on.
+		$overlay_on = Dependency_Manager::make()
+			->where( [
+				'operator' => 'eq',
+				'path'     => [ 'overlay_enabled' ],
+				'value'    => true,
+				'effect'   => 'hide',
+			] )
+			->get();
+
 		// True when poster_enabled ("Use Thumbnail") is on.
 		$poster_on = Dependency_Manager::make()
 			->where( [
@@ -229,6 +239,15 @@ class AAE_A_Video_Popup_Panel extends Atomic_Element_Base {
 
 			'controls_enabled'  => Boolean_Prop_Type::make()->default( true ),
 			'controls_autohide' => Boolean_Prop_Type::make()->default( true )->set_dependencies( $controls_on ),
+
+			// Plain color tint over the video area — see AAE Video's
+			// identical props for the full rationale (free-text CSS color,
+			// no Style-tab control exists for it, rendered as a plain
+			// pointer-events:none <div> straight from this class's own twig).
+			'overlay_enabled' => Boolean_Prop_Type::make()->default( false ),
+			'overlay_color'   => String_Prop_Type::make()
+				->default( 'rgba(0, 0, 0, 0.4)' )
+				->set_dependencies( $overlay_on ),
 		];
 	}
 
@@ -327,6 +346,18 @@ class AAE_A_Video_Popup_Panel extends Atomic_Element_Base {
 
 					Image_Control::bind_to( 'poster_image' )
 						->set_label( __( 'Thumbnail', 'animation-addons-for-elementor' ) ),
+				] ),
+
+			Section::make()
+				->set_id( 'overlay' )
+				->set_label( __( 'Overlay', 'animation-addons-for-elementor' ) )
+				->set_items( [
+					Switch_Control::bind_to( 'overlay_enabled' )
+						->set_label( __( 'Enable Overlay', 'animation-addons-for-elementor' ) ),
+
+					Text_Control::bind_to( 'overlay_color' )
+						->set_label( __( 'Overlay Color', 'animation-addons-for-elementor' ) )
+						->set_placeholder( __( 'e.g. rgba(0, 0, 0, 0.4)', 'animation-addons-for-elementor' ) ),
 				] ),
 
 			Section::make()

@@ -66,6 +66,18 @@
 	pointer-events: none;
 }
 
+// Plain color tint, always on top of the poster/video and always below the
+// play button/controls (z-index 2/3) — see the Panel's own twig
+// `overlay_enabled` branch. `pointer-events: none` is required, not
+// decorative: without it this layer would swallow every click meant to
+// toggle playback.
+.aae-a-video-popup-overlay {
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	pointer-events: none;
+}
+
 .aae-a-video-popup-playbtn {
 	transition: opacity 0.2s ease;
 }
