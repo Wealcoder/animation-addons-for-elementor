@@ -72,17 +72,57 @@ function maskBtn(container) {
   }
 }
 
+// Border-color-from-divider-background bridge — shared by every "Default
+// preset" hover style whose btn.scss rule reads a --aae-btn-<name>-color
+// custom property as its border-color fallback chain (Rollover Cross,
+// Parallel Border). Those effects' border color has to equal the DIVIDER's
+// own Style-panel background, and CSS has no cross-property way for
+// border-color to read another property's value, so this reads it in JS and
+// republishes it under the name that variant's CSS expects.
+const BORDER_COLOR_VARS = {
+  'aae-btn-rollover-cross': '--aae-btn-rollover-cross-color',
+  'aae-btn-parallal-border': '--aae-btn-parallal-border-color',
+};
+const BORDER_COLOR_SELECTOR = Object.keys(BORDER_COLOR_VARS)
+  .map((cls) => `.${cls}`)
+  .join(', ');
+
+function borderColorSync(container) {
+  const divider = container.querySelector('.e-divider-base');
+  if (!divider) return;
+
+  const varName = Object.keys(BORDER_COLOR_VARS).find((cls) => container.classList.contains(cls));
+  if (!varName) return;
+
+  const color = window.getComputedStyle(divider).backgroundColor;
+  if (color) {
+    divider.style.setProperty(BORDER_COLOR_VARS[varName], color);
+  }
+}
+
 function initFreeButtonEffects() {
   document.querySelectorAll('.aae-btn-txtflip').forEach(textFlipSync);
   document.querySelectorAll('.aae-btn-borderdivide').forEach(borderDivideSetup);
   document.querySelectorAll('.aae-btn-mask').forEach(maskBtn);
+  document.querySelectorAll(BORDER_COLOR_SELECTOR).forEach(borderColorSync);
 }
 
 // Run once for whatever is already in the DOM…
 initFreeButtonEffects();
 
+// A Style-panel background-color edit changes a CSS rule, not the DOM tree,
+// so the MutationObserver below (childList only) never sees it — without
+// this, the --aae-btn-*-color vars would go stale until something else (a
+// preset re-apply, a full reload) happened to trigger a resync. Cheap enough
+// to run unconditionally: getComputedStyle on however many matching buttons
+// exist on the page, a handful at most.
+setInterval(() => {
+  document.querySelectorAll(BORDER_COLOR_SELECTOR).forEach(borderColorSync);
+}, 500);
+
 // Relevant classes only — matches initFreeButtonEffects()'s own selectors.
-const FREE_BUTTON_SELECTOR = '.aae-btn-txtflip, .aae-btn-borderdivide, .aae-btn-mask';
+const FREE_BUTTON_SELECTOR =
+  `.aae-btn-txtflip, .aae-btn-borderdivide, .aae-btn-mask, ${BORDER_COLOR_SELECTOR}`;
 
 // True if this mutation batch actually added a node we care about, OR added
 // content inside an already-existing button (Elementor frequently mounts a
