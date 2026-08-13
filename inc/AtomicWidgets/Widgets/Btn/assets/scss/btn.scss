@@ -107,32 +107,46 @@
 }
 
 /*
- * "Default" preset hover-style variants (aae-btn-{aae_btn_hover_style}
+ * "Default" preset hover-style variants (aae-btn-{aae_btn_hover_style}).
+ *
+ * Selector is `.e-aae-a-btn-base.aae-btn-{value}` (THREE classes compounded
+ * on the root, not two) on purpose: the divider is a plain native e-divider,
+ * so its own size/position are freely editable from the Style panel like
+ * any other divider, and a per-instance local style class is exactly as
+ * specific as a plain two-class hook-class rule (`.elementor .e-<hash>` is
+ * two classes too). On that tie the LATER stylesheet in the DOM wins, which
+ * is not reliably this one — a user setting e.g. Height on the divider (or
+ * even Elementor pre-filling min-height/min-width, as seen on a real button)
+ * can silently override the geometry this effect depends on and the whole
+ * variant goes visually dead. The extra `.e-aae-a-btn-base` class (always
+ * present alongside the hook class — see aae-a-btn.html.twig) costs nothing
+ * and reliably wins that tie for the structural props below, while
+ * `background-color` is deliberately never set here, so it stays the one
+ * thing that IS still under the Style panel's control.
  */
-.aae-btn-hover-none .e-divider-base {
+.e-aae-a-btn-base.aae-btn-hover-none .e-divider-base {
   display: none;
 }
 
 // scaleX, not a `width` transition — see the block comment above
-// `.aae-btn-rollover-cross` further down for why.
-.aae-btn-hover-divide .e-divider-base {
+// `.e-aae-a-btn-base.aae-btn-rollover-cross` further down for why.
+.e-aae-a-btn-base.aae-btn-hover-divide .e-divider-base {
   position: absolute;
   inset-inline-start: 50%;
   inset-block-start: 50%;
   width: 100%;
-  // height: 100% !important;
   height: 100%;
   transform: translate(-50%, -50%) scaleX(0);
   transition: all 0.75s;
   opacity: 0.5;
   z-index: -1;
 }
-.aae-btn-hover-divide:hover .e-divider-base {
+.e-aae-a-btn-base.aae-btn-hover-divide:hover .e-divider-base {
   transform: translate(-50%, -50%) scaleX(1.2);
   opacity: 1;
 }
 
-.aae-btn-hover-cross .e-divider-base {
+.e-aae-a-btn-base.aae-btn-hover-cross .e-divider-base {
   position: absolute;
   inset-inline-start: 50%;
   inset-block-start: 50%;
@@ -143,12 +157,12 @@
   opacity: 0.5;
   z-index: -1;
 }
-.aae-btn-hover-cross:hover .e-divider-base {
+.e-aae-a-btn-base.aae-btn-hover-cross:hover .e-divider-base {
   height: 120%;
   opacity: 1;
 }
 
-.aae-btn-hover-cropping .e-divider-base {
+.e-aae-a-btn-base.aae-btn-hover-cropping .e-divider-base {
   position: absolute;
   inset-inline-start: 50%;
   inset-block-start: 50%;
@@ -159,12 +173,12 @@
   opacity: 0.5;
   z-index: -1;
 }
-.aae-btn-hover-cropping:hover .e-divider-base {
+.e-aae-a-btn-base.aae-btn-hover-cropping:hover .e-divider-base {
   height: 400%;
   opacity: 1;
 }
 
-.aae-btn-rollover-top .e-divider-base {
+.e-aae-a-btn-base.aae-btn-rollover-top .e-divider-base {
   position: absolute;
   inset-inline-start: 0;
   inset-block-end: 0;
@@ -173,55 +187,124 @@
   transition: all 0.4s cubic-bezier(0.215, 0.61, 0.355, 1);
   z-index: -1;
 }
-.aae-btn-rollover-top:hover .e-divider-base {
+.e-aae-a-btn-base.aae-btn-rollover-top:hover .e-divider-base {
   inset-block-start: 0;
   inset-block-end: auto;
   height: 100%;
 }
 
-.aae-btn-rollover-left .e-divider-base {
+.e-aae-a-btn-base.aae-btn-rollover-left .e-divider-base {
   position: absolute;
   inset-inline-end: 0;
   inset-block-start: 0;
   width: 100%;
-  // height: 100% !important;
   height: 100%;
   transform: scaleX(0);
   transform-origin: right;
   transition: all 0.4s cubic-bezier(0.42, 0, 0.58, 1);
   z-index: -1;
 }
-.aae-btn-rollover-left:hover .e-divider-base {
+.e-aae-a-btn-base.aae-btn-rollover-left:hover .e-divider-base {
   transform: scaleX(1);
 }
 
-.aae-btn-rollover-cross .e-divider-base {
-  position: absolute;
-  inset-inline-start: 0;
-  inset-block-end: 0;
-  width: 100%;
-  height: 1px;
-  opacity: 0;
-  transform: translateX(-100%);
-  transition: all 0.75s;
-  z-index: -1;
+// Pixel-for-pixel port of V3's `.btn-rollover-cross` (two ::before/::after
+// boxes with only 2 adjacent borders each, sliding in from opposite
+// off-screen corners) — retargeted onto the real e-divider instead of a
+// pseudo on the <a>, same as every other variant. The one thing that can't
+// carry over as a literal port: V3 hardcoded `border-color: #1C1D20`, but
+// here the color has to be whatever the DIVIDER's own Style-panel background
+// is — and `border-color` has no CSS-only way to read another element's
+// `background-color`. `btn.js`'s rolloverCrossSync() bridges that gap: it
+// reads the divider's computed background-color and writes it to
+// --aae-btn-rollover-cross-color once per sync (mount, preset apply, and a
+// light interval so a live Style-panel color edit — which changes no DOM
+// node, just a CSS rule, so the MutationObserver below never sees it — still
+// reaches this variable). Same --aae-btn-* custom-property bridge this file
+// already uses for --aae-btn-mask-img / --aae-btn-hover-color.
+.e-aae-a-btn-base.aae-btn-rollover-cross .e-divider-base {
+  width: 0;
+  height: 0;
 }
-.aae-btn-rollover-cross:hover .e-divider-base {
-  transform: translateX(0);
+.e-aae-a-btn-base.aae-btn-rollover-cross .e-divider-base::before {
+  position: absolute;
+  content: "";
+  width: 100%;
+  height: 100%;
+  inset-block-end: 100%;
+  inset-inline-start: 100%;
+  opacity: 0;
+  border-block-end: 1px solid var(--aae-btn-rollover-cross-color, #000);
+  border-inline-start: 1px solid var(--aae-btn-rollover-cross-color, #000);
+  transition: all 0.75s;
+}
+.e-aae-a-btn-base.aae-btn-rollover-cross .e-divider-base::after {
+  position: absolute;
+  content: "";
+  width: 100%;
+  height: 100%;
+  inset-block-start: 100%;
+  inset-inline-end: 100%;
+  opacity: 0;
+  border-block-start: 1px solid var(--aae-btn-rollover-cross-color, #000);
+  border-inline-end: 1px solid var(--aae-btn-rollover-cross-color, #000);
+  transition: all 0.75s;
+}
+.e-aae-a-btn-base.aae-btn-rollover-cross:hover .e-divider-base::before {
+  inset-block-end: 0;
+  inset-inline-start: 0;
+  opacity: 1;
+}
+.e-aae-a-btn-base.aae-btn-rollover-cross:hover .e-divider-base::after {
+  inset-block-start: 0;
+  inset-inline-end: 0;
   opacity: 1;
 }
 
-.aae-btn-parallal-border .e-divider-base {
-  position: absolute;
-  inset-inline-start: 0;
-  inset-block-end: 0;
-  width: 100%;
-  height: 1px;
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: all 0.75s;
-  z-index: -1;
+// Pixel-for-pixel port of V3's `.btn-parallal-border` (two ::before/::after
+// boxes with only 2 adjacent borders each, growing from 0 AT a corner rather
+// than sliding in from off-screen — the one thing distinguishing it from
+// Rollover Cross) — same --aae-btn-parallal-border-color bridge as Rollover
+// Cross's --aae-btn-rollover-cross-color; see that block's comment and
+// btn.js's borderColorSync() for why a custom property is involved at all.
+// `scale()` from a corner-anchored `transform-origin`, not literal
+// width/height percentages, for the same reason every other variant in this
+// file avoids animating width/height directly (see the comment above
+// `.aae-btn-rollover-left` further up).
+.e-aae-a-btn-base.aae-btn-parallal-border .e-divider-base {
+  width: 0;
+  height: 0;
 }
-.aae-btn-parallal-border:hover .e-divider-base {
-  transform: scaleX(1);
+.e-aae-a-btn-base.aae-btn-parallal-border .e-divider-base::before {
+  position: absolute;
+  content: "";
+  width: 100%;
+  height: 100%;
+  inset-block-end: 0;
+  inset-inline-start: 0;
+  opacity: 0;
+  border-block-end: 1px solid var(--aae-btn-parallal-border-color, #000);
+  border-inline-start: 1px solid var(--aae-btn-parallal-border-color, #000);
+  transform: scale(0);
+  transform-origin: bottom left;
+  transition: all 0.75s;
+}
+.e-aae-a-btn-base.aae-btn-parallal-border .e-divider-base::after {
+  position: absolute;
+  content: "";
+  width: 100%;
+  height: 100%;
+  inset-block-start: 0;
+  inset-inline-end: 0;
+  opacity: 0;
+  border-block-start: 1px solid var(--aae-btn-parallal-border-color, #000);
+  border-inline-end: 1px solid var(--aae-btn-parallal-border-color, #000);
+  transform: scale(0);
+  transform-origin: top right;
+  transition: all 0.75s;
+}
+.e-aae-a-btn-base.aae-btn-parallal-border:hover .e-divider-base::before,
+.e-aae-a-btn-base.aae-btn-parallal-border:hover .e-divider-base::after {
+  opacity: 1;
+  transform: scale(1);
 }
