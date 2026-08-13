@@ -57,6 +57,7 @@ const readConfig = ( el ) => ( {
 	type: el.getAttribute( 'data-aae-video-type' ) || 'youtube',
 	youtubeUrl: el.getAttribute( 'data-aae-video-youtube-url' ) || '',
 	hostedUrl: el.getAttribute( 'data-aae-video-hosted-url' ) || '',
+	externalUrl: el.getAttribute( 'data-aae-video-external-url' ) || '',
 	vimeoUrl: el.getAttribute( 'data-aae-video-vimeo-url' ) || '',
 	dailymotionUrl: el.getAttribute( 'data-aae-video-dailymotion-url' ) || '',
 	videopressUrl: el.getAttribute( 'data-aae-video-videopress-url' ) || '',
@@ -115,6 +116,9 @@ const loadVimeoApi = () => {
 // it's driving. To add another provider: write one more createXAdapter() and
 // a matching branch in pickAdapter() below. ---
 
+// Shared by 'hosted' (Media Library / pasted URL) AND 'external' (a plain
+// URL to a video file on another site) — both are a real <video> tag with
+// no provider SDK, so only the source attribute differs between the two.
 const createNativeAdapter = ( mountEl, cfg ) => {
 	const videoEl = document.createElement( 'video' );
 	videoEl.className = 'aae-a-video-native';
@@ -122,7 +126,7 @@ const createNativeAdapter = ( mountEl, cfg ) => {
 	videoEl.loop = cfg.loop;
 	videoEl.playsInline = true;
 	videoEl.muted = cfg.mute || cfg.autoplay;
-	videoEl.src = cfg.hostedUrl;
+	videoEl.src = 'external' === cfg.type ? cfg.externalUrl : cfg.hostedUrl;
 	mountEl.insertBefore( videoEl, mountEl.firstChild );
 
 	const listeners = {};
@@ -484,6 +488,7 @@ const createVideoPressAdapter = ( mountEl, cfg ) => createPostMessageAdapter( mo
 
 const ADAPTERS = {
 	hosted: createNativeAdapter,
+	external: createNativeAdapter,
 	youtube: createYoutubeAdapter,
 	vimeo: createVimeoAdapter,
 	dailymotion: createDailymotionAdapter,
@@ -729,7 +734,7 @@ const bindEngineOnce = ( el, mountEl, engine, cfg, signal ) => {
 	// audible autoplay), and skip it entirely in the editor so builders
 	// don't get sound while designing the page.
 	if ( cfg.autoplay && ! isEditMode() ) {
-		if ( cfg.lazyload && 'hosted' !== cfg.type ) {
+		if ( cfg.lazyload && 'hosted' !== cfg.type && 'external' !== cfg.type ) {
 			const observer = new IntersectionObserver( ( entries ) => {
 				if ( entries.some( ( entry ) => entry.isIntersecting ) ) {
 					engine.requestPlay();

@@ -58,7 +58,7 @@
   transition: color 0.3s;
   transform: rotateX(-90deg);
   transform-origin: 50% 0;
-  text-align: center;
+  text-align: inherit;
 }
 .aae-btn-txtflip:hover .e-paragraph-base {
   transform: rotateX(90deg) translateY(-100%);
@@ -107,32 +107,46 @@
 }
 
 /*
- * "Default" preset hover-style variants (aae-btn-{aae_btn_hover_style}
+ * "Default" preset hover-style variants (aae-btn-{aae_btn_hover_style}).
+ *
+ * Selector is `.e-aae-a-btn-base.aae-btn-{value}` (THREE classes compounded
+ * on the root, not two) on purpose: the divider is a plain native e-divider,
+ * so its own size/position are freely editable from the Style panel like
+ * any other divider, and a per-instance local style class is exactly as
+ * specific as a plain two-class hook-class rule (`.elementor .e-<hash>` is
+ * two classes too). On that tie the LATER stylesheet in the DOM wins, which
+ * is not reliably this one — a user setting e.g. Height on the divider (or
+ * even Elementor pre-filling min-height/min-width, as seen on a real button)
+ * can silently override the geometry this effect depends on and the whole
+ * variant goes visually dead. The extra `.e-aae-a-btn-base` class (always
+ * present alongside the hook class — see aae-a-btn.html.twig) costs nothing
+ * and reliably wins that tie for the structural props below, while
+ * `background-color` is deliberately never set here, so it stays the one
+ * thing that IS still under the Style panel's control.
  */
-.aae-btn-hover-none .e-divider-base {
+.e-aae-a-btn-base.aae-btn-hover-none .e-divider-base {
   display: none;
 }
 
 // scaleX, not a `width` transition — see the block comment above
-// `.aae-btn-rollover-cross` further down for why.
-.aae-btn-hover-divide .e-divider-base {
+// `.e-aae-a-btn-base.aae-btn-rollover-cross` further down for why.
+.e-aae-a-btn-base.aae-btn-hover-divide .e-divider-base {
   position: absolute;
   inset-inline-start: 50%;
   inset-block-start: 50%;
   width: 100%;
-  // height: 100% !important;
   height: 100%;
   transform: translate(-50%, -50%) scaleX(0);
   transition: all 0.75s;
   opacity: 0.5;
   z-index: -1;
 }
-.aae-btn-hover-divide:hover .e-divider-base {
+.e-aae-a-btn-base.aae-btn-hover-divide:hover .e-divider-base {
   transform: translate(-50%, -50%) scaleX(1.2);
   opacity: 1;
 }
 
-.aae-btn-hover-cross .e-divider-base {
+.e-aae-a-btn-base.aae-btn-hover-cross .e-divider-base {
   position: absolute;
   inset-inline-start: 50%;
   inset-block-start: 50%;
@@ -143,12 +157,12 @@
   opacity: 0.5;
   z-index: -1;
 }
-.aae-btn-hover-cross:hover .e-divider-base {
+.e-aae-a-btn-base.aae-btn-hover-cross:hover .e-divider-base {
   height: 120%;
   opacity: 1;
 }
 
-.aae-btn-hover-cropping .e-divider-base {
+.e-aae-a-btn-base.aae-btn-hover-cropping .e-divider-base {
   position: absolute;
   inset-inline-start: 50%;
   inset-block-start: 50%;
@@ -159,12 +173,12 @@
   opacity: 0.5;
   z-index: -1;
 }
-.aae-btn-hover-cropping:hover .e-divider-base {
+.e-aae-a-btn-base.aae-btn-hover-cropping:hover .e-divider-base {
   height: 400%;
   opacity: 1;
 }
 
-.aae-btn-rollover-top .e-divider-base {
+.e-aae-a-btn-base.aae-btn-rollover-top .e-divider-base {
   position: absolute;
   inset-inline-start: 0;
   inset-block-end: 0;
@@ -173,55 +187,27 @@
   transition: all 0.4s cubic-bezier(0.215, 0.61, 0.355, 1);
   z-index: -1;
 }
-.aae-btn-rollover-top:hover .e-divider-base {
+.e-aae-a-btn-base.aae-btn-rollover-top:hover .e-divider-base {
   inset-block-start: 0;
   inset-block-end: auto;
   height: 100%;
 }
 
-.aae-btn-rollover-left .e-divider-base {
+.e-aae-a-btn-base.aae-btn-rollover-left .e-divider-base {
   position: absolute;
   inset-inline-end: 0;
   inset-block-start: 0;
   width: 100%;
-  // height: 100% !important;
   height: 100%;
   transform: scaleX(0);
   transform-origin: right;
   transition: all 0.4s cubic-bezier(0.42, 0, 0.58, 1);
   z-index: -1;
 }
-.aae-btn-rollover-left:hover .e-divider-base {
+.e-aae-a-btn-base.aae-btn-rollover-left:hover .e-divider-base {
   transform: scaleX(1);
 }
 
-.aae-btn-rollover-cross .e-divider-base {
-  position: absolute;
-  inset-inline-start: 0;
-  inset-block-end: 0;
-  width: 100%;
-  height: 1px;
-  opacity: 0;
-  transform: translateX(-100%);
-  transition: all 0.75s;
-  z-index: -1;
-}
-.aae-btn-rollover-cross:hover .e-divider-base {
-  transform: translateX(0);
-  opacity: 1;
-}
-
-.aae-btn-parallal-border .e-divider-base {
-  position: absolute;
-  inset-inline-start: 0;
-  inset-block-end: 0;
-  width: 100%;
-  height: 1px;
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: all 0.75s;
-  z-index: -1;
-}
-.aae-btn-parallal-border:hover .e-divider-base {
-  transform: scaleX(1);
-}
+// Rollover Cross / Parallel Border removed — see BtnHoverStyleControl.jsx's
+// OPTIONS comment. If revisited, both need the --aae-btn-*-color bridge that
+// used to live in btn.js's borderColorSync()/BORDER_COLOR_VARS.

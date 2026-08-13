@@ -126,12 +126,25 @@ class AAE_A_Video extends Atomic_Element_Base {
 				->get();
 		};
 
-		// True when video_type is anything other than 'hosted'.
+		// True when video_type is anything other than 'hosted' or 'external'
+		// — both play through the same native <video> element, so neither
+		// wants the embed-only Lazy Load Player switch.
 		$not_hosted = Dependency_Manager::make()
 			->where( [
 				'operator' => 'nin',
 				'path'     => [ 'video_type' ],
-				'value'    => [ 'hosted' ],
+				'value'    => [ 'hosted', 'external' ],
+				'effect'   => 'hide',
+			] )
+			->get();
+
+		// True when video_type is 'hosted' OR 'external' — used for the
+		// Preload control, which only makes sense for a real <video> tag.
+		$hosted_or_external = Dependency_Manager::make()
+			->where( [
+				'operator' => 'in',
+				'path'     => [ 'video_type' ],
+				'value'    => [ 'hosted', 'external' ],
 				'effect'   => 'hide',
 			] )
 			->get();
@@ -154,7 +167,7 @@ class AAE_A_Video extends Atomic_Element_Base {
 			// resolve_poster_url()/get_atomic_settings() and video.js's
 			// ADAPTERS map to add another provider.
 			'video_type' => String_Prop_Type::make()
-				->enum( [ 'youtube', 'hosted', 'vimeo', 'dailymotion', 'videopress' ] )
+				->enum( [ 'youtube', 'hosted', 'external', 'vimeo', 'dailymotion', 'videopress' ] )
 				->default( 'youtube' ),
 
 			'video_youtube_url' => String_Prop_Type::make()
@@ -166,6 +179,15 @@ class AAE_A_Video extends Atomic_Element_Base {
 			// own e-self-hosted-video — no need for two separate props.
 			'video_hosted' => Video_Src_Prop_Type::make()
 				->set_dependencies( $when( 'hosted' ) ),
+
+			// Plain-text URL to a video file hosted on another site/CDN —
+			// same native <video> playback as 'hosted' (see video.js's
+			// createNativeAdapter and its cfg.type branch), just a bare
+			// Text_Control instead of Video_Src_Prop_Type's Media-Library
+			// picker, since there is nothing in this site's Library to pick.
+			'video_external_url' => String_Prop_Type::make()
+				->default( 'https://crowdytheme.com/assets/wp-content/uploads/2024/06/arolux-branding-agency-video.mp4' )
+				->set_dependencies( $when( 'external' ) ),
 
 			'video_vimeo_url' => String_Prop_Type::make()
 				->default( '' )
@@ -187,7 +209,7 @@ class AAE_A_Video extends Atomic_Element_Base {
 			'preload' => String_Prop_Type::make()
 				->enum( [ 'auto', 'metadata', 'none' ] )
 				->default( 'metadata' )
-				->set_dependencies( $when( 'hosted' ) ),
+				->set_dependencies( $hosted_or_external ),
 
 			'lazyload' => Boolean_Prop_Type::make()->default( true )->set_dependencies( $not_hosted ),
 
@@ -230,6 +252,7 @@ class AAE_A_Video extends Atomic_Element_Base {
 						->set_options( [
 							[ 'value' => 'youtube',     'label' => __( 'YouTube', 'animation-addons-for-elementor' ) ],
 							[ 'value' => 'hosted',      'label' => __( 'Hosted Video', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'external',    'label' => __( 'External URL', 'animation-addons-for-elementor' ) ],
 							[ 'value' => 'vimeo',       'label' => __( 'Vimeo', 'animation-addons-for-elementor' ) ],
 							[ 'value' => 'dailymotion', 'label' => __( 'Dailymotion', 'animation-addons-for-elementor' ) ],
 							[ 'value' => 'videopress',  'label' => __( 'VideoPress', 'animation-addons-for-elementor' ) ],
@@ -241,6 +264,10 @@ class AAE_A_Video extends Atomic_Element_Base {
 
 					Video_Control::bind_to( 'video_hosted' )
 						->set_label( __( 'Video', 'animation-addons-for-elementor' ) ),
+
+					Text_Control::bind_to( 'video_external_url' )
+						->set_label( __( 'External Video URL', 'animation-addons-for-elementor' ) )
+						->set_placeholder( __( 'Paste a direct video file URL (mp4, webm, ogg)', 'animation-addons-for-elementor' ) ),
 
 					Text_Control::bind_to( 'video_vimeo_url' )
 						->set_label( __( 'Vimeo URL', 'animation-addons-for-elementor' ) )
@@ -438,7 +465,7 @@ class AAE_A_Video extends Atomic_Element_Base {
 				);
 
 			default:
-				// hosted: no thumbnail API for an arbitrary file.
+				// hosted/external: no thumbnail API for an arbitrary file.
 				return '';
 		}
 	}
