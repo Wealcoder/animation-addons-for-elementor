@@ -149,9 +149,9 @@ final class Schema_Walker {
 					$labels[ $for ] = Prop::read_html_text( $settings, 'text', '' );
 				}
 			} elseif ( 'e-aae-a-form-submit' === $type && null === $submit ) {
-				// The label is the Heading child, not a `text` prop — the Submit
-				// button became a container (Flexbox › Heading + SVG) so the label
-				// and icon could be real, styleable elements.
+				// The label is the Paragraph child, not a `text` prop — the Submit
+				// button is a container (Paragraph + SVG) so the label and icon
+				// can be real, styleable elements.
 				$submit = [
 					'text'          => self::first_label_text( $element ),
 					'loading_label' => (string) Prop::read( $settings, 'loading_label', '' ),
@@ -297,10 +297,11 @@ final class Schema_Walker {
 	 * underneath it.
 	 *
 	 * RECURSIVE, unlike first_paragraph_text() below: the default children are
-	 * Flexbox › Heading + SVG, so the label sits one level down, and a builder
-	 * is free to nest it deeper. Heading stores its text under `title`,
-	 * Paragraph under `paragraph` — both are accepted so swapping one for the
-	 * other on the canvas doesn't blank the schema's submit label.
+	 * Paragraph + SVG directly under the button, but a builder is free to nest
+	 * the label inside a flexbox — and buttons saved before the wrapper row was
+	 * dropped still have it one level down. Heading stores its text under
+	 * `title`, Paragraph under `paragraph` — both are accepted so swapping one
+	 * for the other on the canvas doesn't blank the schema's submit label.
 	 */
 	private static function first_label_text( array $element ): string {
 		foreach ( $element['elements'] ?? [] as $child ) {

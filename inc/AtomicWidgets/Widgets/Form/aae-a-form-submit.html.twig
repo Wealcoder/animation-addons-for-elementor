@@ -1,23 +1,22 @@
 {#
   AAE Form Submit — a CONTAINER that renders <button type="submit"> and drops
   its children inside it. The label and the icon are real atomic elements
-  (Flexbox › Heading + SVG, seeded by define_default_children()), so both are
-  selectable in the Structure panel and fully styleable — same shape as
-  aae-a-btn.html.twig.
+  (Paragraph + SVG, seeded by define_default_children() as DIRECT children —
+  there is no wrapper row), so both are selectable in the Structure panel and
+  fully styleable. The button's own base style supplies the flex row and gap.
 
   The tag is hardcoded rather than read from settings: a form that cannot be
   submitted is not a layout choice, so <button> is not negotiable here. The
   only tag-ish control is button_type (submit vs reset).
 
   loading_label rides as a data attribute; setLoading() in form.js swaps it
-  into the label child (the first heading/paragraph inside), leaving the icon
-  in place for the duration of the request.
+  into the label child (labelElOf() matches h1-h6, p, span — so the Paragraph
+  is found either way), leaving the icon in place for the request's duration.
 
-  NOTE: <button> is a phrasing-content element, so a flex/heading subtree
-  inside it is technically invalid HTML nesting. Every browser renders it
-  (Elementor's own composites do the same), but a screen reader will announce
-  the label as a heading. Swap the Heading child for a Paragraph with tag=span
-  if that matters more than the Structure-panel affordance.
+  NOTE: <button> takes phrasing content, so a <p> inside it is technically
+  invalid nesting. Every browser renders it — the parser treats `button` as a
+  scope boundary, so the paragraph is not hoisted out — and the label's own
+  Settings offer tag=span for anyone who wants it strictly valid.
 #}
 {# Deliberately NOT `e-con`, though every other atomic container carries it:
    Elementor's `.e-con` rule sets `width: var(--width)` with `--width: 100%`,
