@@ -4,8 +4,8 @@
  * drops its children inside it.
  *
  * Composite, not a leaf: the label and the icon are real atomic elements
- * (Flexbox › SVG + Heading), so both show in the Structure panel and get the
- * full Style tab — same shape AAE_A_Btn uses. `define_default_children()` and
+ * (Paragraph + SVG, direct children of the button), so both show in the
+ * Structure panel and get the full Style tab. `define_default_children()` and
  * `define_allowed_child_types()` exist ONLY on Atomic_Element_Base
  * (atomic-element-base.php:113), so holding children is exactly why this is
  * not Atomic_Widget_Base any more.
@@ -43,9 +43,8 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Elem
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
-use Elementor\Modules\AtomicWidgets\Elements\Base\Element_Builder;
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Svg\Atomic_Svg;
-use Elementor\Modules\AtomicWidgets\Elements\Atomic_Heading\Atomic_Heading;
+use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Select_Control;
@@ -92,16 +91,24 @@ class AAE_A_Form_Submit extends Atomic_Element_Base {
 	}
 
 	/**
-	 * Seeded as the Form's default child, not dragged from the panel.
+	 * Seeded as the Form's default child, AND listed in the AAE Form panel
+	 * category — a multi-step form wants its submit inside the LAST step, which
+	 * means dragging one in rather than only accepting where the seed put it.
 	 *
-	 * `should_show_in_panel()` — NOT `show_in_panel()`. That pair belongs to
-	 * Widget_Base and is silently never consulted for an Atomic_Element_Base;
-	 * see the inverse warning in class-aae-a-form-next.php, which is a leaf and
+	 * `should_show_in_panel()` / `define_panel_categories()` — NOT
+	 * `show_in_panel()` / `get_categories()`. That pair belongs to Widget_Base
+	 * and is silently never consulted for an Atomic_Element_Base; see the
+	 * inverse warning in class-aae-a-form-next.php, which is a leaf and
 	 * therefore needs the classic pair. Getting this wrong doesn't error, it
-	 * just leaves the element listed in the panel.
+	 * just leaves the element hidden, or listed under Elementor's own
+	 * "Atomic Elements" bucket.
 	 */
 	public function should_show_in_panel() {
-		return false;
+		return true;
+	}
+
+	protected function define_panel_categories(): array {
+		return [ 'aae-atomic-form' ];
 	}
 
 	public function get_keywords() {
@@ -230,8 +237,21 @@ class AAE_A_Form_Submit extends Atomic_Element_Base {
 								]
 							)
 						)
+						// Label and icon are DIRECT children now, so the direction
+						// and gap the old `row` e-flexbox supplied have to live
+						// here — otherwise the two sit flush against each other.
+						->add_prop( 'flex-direction', String_Prop_Type::generate( 'row' ) )
 						->add_prop( 'justify-content', String_Prop_Type::generate( 'center' ) )
 						->add_prop( 'align-items', String_Prop_Type::generate( 'center' ) )
+						->add_prop(
+							'gap',
+							Size_Prop_Type::generate(
+								[
+									'size' => 8,
+									'unit' => 'px',
+								]
+							)
+						)
 						->add_prop( 'border-radius', $zero )
 						->add_prop( 'border-width', $zero )
 				)
@@ -254,6 +274,14 @@ class AAE_A_Form_Submit extends Atomic_Element_Base {
 			// into a child's `classes` prop is safe here: the panel resolves it,
 			// so it never shows up under "Some classes are missing" and its ✕
 			// cannot strip it. A bare hook class would.
+			//
+			// LEGACY-ONLY. Nothing seeds `-row` any more — label and icon are
+			// direct children of the button (see define_default_children()) and
+			// the flex props moved onto `base`. It stays registered for buttons
+			// SAVED before that change, which still hold the e-flexbox child
+			// carrying this class; deleting the key would unstyle them and make
+			// the panel report the class as missing. Same for the padding reset
+			// in form.scss.
 			'row'  => Style_Definition::make()
 				->set_label( __( 'Content row', 'animation-addons-for-elementor' ) )
 				->add_variant(
@@ -310,11 +338,11 @@ class AAE_A_Form_Submit extends Atomic_Element_Base {
 						)
 				),
 
-			// Atomic_Heading's own base style is `margin: 0` and nothing else, so
-			// without this the label arrives at the theme's h2 size — a 32px
-			// "Submit" that dwarfs the button. `inherit` (custom unit ⇒ the value
-			// is emitted verbatim) hands sizing back to the button's own Style
-			// tab, which is how the label behaved when it was a plain span.
+			// Atomic_Paragraph's own base style is `margin: 0` and nothing else,
+			// so without this the label arrives at the theme's `p` size instead
+			// of the button's. `inherit` (custom unit ⇒ the value is emitted
+			// verbatim) hands sizing back to the button's own Style tab, which is
+			// how the label behaved when it was a plain span.
 			// font-weight is deliberately left alone: it is an ENUM in the style
 			// schema, so 'inherit' there would be invalid and would silently void
 			// this whole definition.
@@ -345,11 +373,30 @@ class AAE_A_Form_Submit extends Atomic_Element_Base {
 	}
 
 	/**
-	 * Flexbox › SVG + Heading.
+	 * Paragraph + SVG, as DIRECT children of the button.
 	 *
-	 * The row is a real e-flexbox rather than letting the button's own flex do
-	 * the job, so the builder gets a element they can set direction, gap and
-	 * alignment on without touching the button's padding/background.
+	 * There used to be an e-flexbox "Content" row wrapping the pair, so the
+	 * builder got an element to set direction/gap/alignment on. It bought
+	 * nothing the button doesn't already offer — the button's own base style is
+	 * `display:flex` with justify/align centred, and it now carries the `gap`
+	 * too — while costing a redundant node in the Structure panel and an
+	 * e-flexbox `padding:10px` that had to be fought off from form.scss.
+	 *
+	 * The label is a PARAGRAPH, not a heading: a heading inside a <button> makes
+	 * a screen reader announce the submit label as a heading, and it arrived at
+	 * the theme's h6 size instead of the button's own.
+	 *
+	 * `tag` is left at the Paragraph's default (`p`). Strictly, <button> takes
+	 * phrasing content only, so `span` would be the valid nesting — it is one
+	 * click away in the label's own Settings if that matters more than the
+	 * default. Every browser renders `p` here; the HTML parser treats `button`
+	 * as a scope boundary, so the paragraph stays a child rather than being
+	 * hoisted out.
+	 *
+	 * The `row` base-style key and form.scss's padding reset for it are KEPT on
+	 * purpose: buttons saved before this change still hold that e-flexbox child
+	 * with `e-aae-a-form-submit-row` in its `classes`, and dropping the key
+	 * would both unstyle them and light up "Some classes are missing".
 	 */
 	protected function define_default_children() {
 		$type = static::get_element_type();
@@ -369,12 +416,11 @@ class AAE_A_Form_Submit extends Atomic_Element_Base {
 			->editor_settings( [ 'title' => __( 'Icon', 'animation-addons-for-elementor' ) ] )
 			->build();
 
-		$label = Atomic_Heading::generate()
+		$label = Atomic_Paragraph::generate()
 			->settings(
 				[
-					'classes' => Classes_Prop_Type::generate( [ $type . '-label' ] ),
-					'tag'     => String_Prop_Type::generate( 'h6' ),
-					'title'   => Html_V3_Prop_Type::generate(
+					'classes'   => Classes_Prop_Type::generate( [ $type . '-label' ] ),
+					'paragraph' => Html_V3_Prop_Type::generate(
 						[
 							'content'  => String_Prop_Type::generate( __( 'Submit', 'animation-addons-for-elementor' ) ),
 							'children' => [],
@@ -385,17 +431,7 @@ class AAE_A_Form_Submit extends Atomic_Element_Base {
 			->editor_settings( [ 'title' => __( 'Label', 'animation-addons-for-elementor' ) ] )
 			->build();
 
-		return [
-			Element_Builder::make( 'e-flexbox' )
-				->children( [ $label, $icon ] )
-				->settings(
-					[
-						'classes' => Classes_Prop_Type::generate( [ $type . '-row' ] ),
-					]
-				)
-				->editor_settings( [ 'title' => __( 'Content', 'animation-addons-for-elementor' ) ] )
-				->build(),
-		];
+		return [ $label, $icon ];
 	}
 
 	protected function define_allowed_child_types() {

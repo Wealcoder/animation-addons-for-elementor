@@ -167,6 +167,89 @@ export function isContainerModel(model) {
 }
 
 /**
+ * Text-ish prop name per element type, for carrying a converted leaf's label
+ * into the container's seeded label child. Keyed by the CHILD's type.
+ */
+const TEXT_PROP_BY_TYPE = {
+  'e-paragraph': 'paragraph',
+  'e-heading': 'title',
+};
+
+/**
+ * Repair preset nodes that were exported while an element type was still a
+ * LEAF WIDGET and has since become an Atomic_Element_Base container.
+ *
+ * The shape a leaf saves is `{ elType: 'widget', widgetType: 'e-x' }`; a
+ * container saves `{ elType: 'e-x' }`. A preset published before the switch
+ * keeps the old shape forever, and applying it is FATAL rather than merely
+ * wrong, for a reason worth spelling out because nothing about the error names
+ * this cause:
+ *
+ *   ElementsCollection.model() resolves the class by `widgetType || elType`
+ *   (editor.js), so `widgetType: 'e-x'` still finds the now-ELEMENT type and
+ *   hands back AtomicElementBaseModel. That model's initialize() then does
+ *   `this.config = elementor.config.elements[ this.get('elType') ]` — and
+ *   `elType` is the literal string 'widget', which is NOT a key in
+ *   config.elements. `this.config` is undefined, and because a converted leaf
+ *   has `elements: []`, initialize() goes on to call onElementCreate() →
+ *   getDefaultChildren() → `undefined.default_children` and throws. The
+ *   element comes back null from createElements() and Elementor's own forEach
+ *   then dies on `.model` of null — which is the error the user actually sees,
+ *   two frames removed from anything that mentions the real problem.
+ *
+ * Real case: every AAE form preset on the preset server stores
+ * `e-aae-a-form-submit` as a widget (18 nodes across all 16 presets); the
+ * Submit button became a container so its label and icon could be real,
+ * styleable elements. Regenerating the presets is the actual fix — this keeps
+ * already-published ones working, here and on every site that has them.
+ *
+ * Deliberately GENERIC: it triggers on "this widgetType is a registered
+ * element type", so the next such conversion needs no code change.
+ */
+export function migrateLegacyWidgetShape(model) {
+  if (!model || typeof model !== 'object') {
+    return model;
+  }
+
+  const elementsConfig = window.elementor?.config?.elements;
+  const config = elementsConfig && model.elType === 'widget' && model.widgetType
+    ? elementsConfig[model.widgetType]
+    : null;
+
+  if (config) {
+    model.elType = model.widgetType;
+    delete model.widgetType;
+
+    // Seed the container's CURRENT default children rather than leaving
+    // `elements: []` for Elementor to fill: doing it here is what lets the old
+    // leaf's `text` survive as the label. An empty array would work too, but
+    // the preset's own wording ("Send Message") would be silently replaced by
+    // the default "Submit".
+    if (!Array.isArray(model.elements) || model.elements.length === 0) {
+      const seeded = JSON.parse(JSON.stringify(config.default_children || []));
+      const label = model.settings && model.settings.text;
+
+      if (label) {
+        const target = seeded.find((child) => TEXT_PROP_BY_TYPE[child.widgetType]);
+        if (target) {
+          target.settings = target.settings || {};
+          target.settings[TEXT_PROP_BY_TYPE[target.widgetType]] = label;
+        }
+        // The container has no `text` prop, so leaving it would be a setting
+        // no schema declares — Props_Parser::validate() drops it on save.
+        delete model.settings.text;
+      }
+
+      model.elements = seeded;
+    }
+  }
+
+  (Array.isArray(model.elements) ? model.elements : []).forEach(migrateLegacyWidgetShape);
+
+  return model;
+}
+
+/**
  * Prop types sharing Elementor's image-source XOR shape: an attachment `id`
  * OR a `url`, but NOT both. `svg-src` (the `e-svg` widget's `svg` prop) is
  * structurally identical to `image-src` and enforces the same rule.
@@ -508,6 +591,9 @@ export function applyPresetModel(presetModel, elementId, targetType, meta = {}) 
   const elementsToCreate = models.map((child, i) => {
     const model = JSON.parse(JSON.stringify(child));
     delete model.id;
+    // Before anything else: a stale leaf-shaped node throws inside Elementor's
+    // own model constructor, so there is no later point to catch it.
+    migrateLegacyWidgetShape(model);
     regenerateModelStyleIds(model);
     sanitizeImageSrc(model);
     return {

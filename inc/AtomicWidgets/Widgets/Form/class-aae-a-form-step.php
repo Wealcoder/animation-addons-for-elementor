@@ -86,8 +86,20 @@ class AAE_A_Form_Step extends Atomic_Element_Base {
 		return 'eicon-single-page';
 	}
 
+	/**
+	 * Listed in the AAE Form panel category — a multi-step form is BUILT by
+	 * dragging steps into a form, so this one is not merely a seeded child.
+	 *
+	 * Container pair (Atomic_Element_Base): should_show_in_panel() +
+	 * define_panel_categories(). The classic show_in_panel()/get_categories()
+	 * pair is silently never consulted here — see class-aae-a-form-next.php.
+	 */
 	public function should_show_in_panel() {
-		return false;
+		return true;
+	}
+
+	protected function define_panel_categories(): array {
+		return [ 'aae-atomic-form' ];
 	}
 
 	public function get_keywords() {
