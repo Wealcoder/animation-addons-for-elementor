@@ -17,6 +17,10 @@
 #}
 {% set wrapper_classes = ['aae-a-video-popup-panel', 'aae-a-video-popup-source', 'e-con', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') | trim %}
 {% set poster_src = (settings.poster_auto_fetch and settings.resolved_poster_url is defined and settings.resolved_poster_url is not empty) ? settings.resolved_poster_url : settings.poster_image.src %}
+{# 'external' has no oEmbed-style thumbnail API, so when Auto-fetch Thumbnail
+   is on and it comes up empty, fall back to the video file's own first
+   frame — same mechanism as AAE Video's own wrapper twig. #}
+{% set use_frame_poster = (settings.video_type | default('youtube')) == 'external' and settings.poster_auto_fetch and (settings.resolved_poster_url is not defined or settings.resolved_poster_url is empty) %}
 
 <div
 	class="{{ wrapper_classes }} {{ editor_classes | default('') }}"
@@ -44,6 +48,9 @@
 	{% if settings.attributes is defined and settings.attributes is not empty %}{{ settings.attributes | raw }}{% endif %}
 	{{ editor_attributes | default('') | raw }}
 >
-	{% if settings.poster_enabled %}<img class="aae-a-video-popup-poster" src="{{ poster_src | e('full_url') }}" alt="" />{% endif %}
+	{% if settings.poster_enabled %}
+		{% if use_frame_poster %}<video class="aae-a-video-popup-poster aae-a-video-popup-poster-frame" muted playsinline preload="metadata" src="{{ settings.video_external_url | default('') | e('html_attr') }}"></video>
+		{% else %}<img class="aae-a-video-popup-poster" src="{{ poster_src | e('full_url') }}" alt="" />{% endif %}
+	{% endif %}
 	{{ children_placeholder | raw }}
 </div>

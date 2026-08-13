@@ -749,9 +749,29 @@ const bindEngineOnce = ( el, mountEl, engine, cfg, signal ) => {
 	}
 };
 
+// The 'external' source's poster falls back to the video file's own first
+// frame (see aae-a-video.html.twig's `use_frame_poster`) — a plain <video>
+// with no `poster` attribute, `preload="metadata"`. Some browsers (notably
+// Safari) leave that black until something forces a frame to decode; a tiny
+// nudge past 0 right after the first frame of data lands is the standard,
+// non-fancy fix — no canvas capture, no server-side extraction.
+const primeFramePoster = ( videoEl ) => {
+	if ( videoEl.dataset.aaeFramePrimed ) return;
+	videoEl.dataset.aaeFramePrimed = 'true';
+
+	videoEl.addEventListener( 'loadeddata', () => {
+		if ( videoEl.currentTime === 0 ) {
+			try { videoEl.currentTime = 0.1; } catch ( e ) {}
+		}
+	}, { once: true } );
+};
+
 const initVideo = ( el, signal ) => {
 	const mountEl = el.querySelector( '.aae-a-video-mount' );
 	if ( ! mountEl ) return;
+
+	const framePoster = el.querySelector( '.aae-a-video-poster-frame' );
+	if ( framePoster ) primeFramePoster( framePoster );
 
 	const cfg = readConfig( el );
 	const engine = getOrCreateEngine( el, mountEl, cfg );

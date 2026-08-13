@@ -138,6 +138,35 @@ class AAE_A_Video_Popup_Panel extends Atomic_Element_Base {
 			] )
 			->get();
 
+		// True when poster_enabled ("Use Thumbnail") is on.
+		$poster_on = Dependency_Manager::make()
+			->where( [
+				'operator' => 'eq',
+				'path'     => [ 'poster_enabled' ],
+				'value'    => true,
+				'effect'   => 'hide',
+			] )
+			->get();
+
+		// Auto-fetch Thumbnail additionally needs poster_enabled on AND the
+		// source to not be 'hosted' — see AAE Video's identical dependency
+		// for why 'external' stays eligible (no oEmbed API, but the twig
+		// falls back to the video's own first frame).
+		$poster_auto_fetch_deps = Dependency_Manager::make( Dependency_Manager::RELATION_AND )
+			->where( [
+				'operator' => 'eq',
+				'path'     => [ 'poster_enabled' ],
+				'value'    => true,
+				'effect'   => 'hide',
+			] )
+			->where( [
+				'operator' => 'nin',
+				'path'     => [ 'video_type' ],
+				'value'    => [ 'hosted' ],
+				'effect'   => 'hide',
+			] )
+			->get();
+
 		return [
 			'classes'    => Classes_Prop_Type::make()->default( [] ),
 			'attributes' => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
@@ -191,10 +220,11 @@ class AAE_A_Video_Popup_Panel extends Atomic_Element_Base {
 			'vimeo_dnt'       => Boolean_Prop_Type::make()->default( false )->set_dependencies( $when( 'vimeo' ) ),
 
 			'poster_enabled'    => Boolean_Prop_Type::make()->default( true ),
-			'poster_auto_fetch' => Boolean_Prop_Type::make()->default( true )->set_dependencies( $not_hosted ),
+			'poster_auto_fetch' => Boolean_Prop_Type::make()->default( true )->set_dependencies( $poster_auto_fetch_deps ),
 			'poster_image' => Image_Prop_Type::make()
 				->default_size( 'large' )
-				->default_url( \Elementor\Utils::get_placeholder_image_src() ),
+				->default_url( \Elementor\Utils::get_placeholder_image_src() )
+				->set_dependencies( $poster_on ),
 			'resolved_poster_url' => String_Prop_Type::make()->default( '' ),
 
 			'controls_enabled'  => Boolean_Prop_Type::make()->default( true ),

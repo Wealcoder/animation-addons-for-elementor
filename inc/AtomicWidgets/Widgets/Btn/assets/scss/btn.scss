@@ -211,20 +211,27 @@
 // Pixel-for-pixel port of V3's `.btn-rollover-cross` (two ::before/::after
 // boxes with only 2 adjacent borders each, sliding in from opposite
 // off-screen corners) — retargeted onto the real e-divider instead of a
-// pseudo on the <a>, same as every other variant. The one thing that can't
-// carry over as a literal port: V3 hardcoded `border-color: #1C1D20`, but
-// here the color has to be whatever the DIVIDER's own Style-panel background
-// is — and `border-color` has no CSS-only way to read another element's
-// `background-color`. `btn.js`'s borderColorSync() bridges that gap: it
-// reads the divider's computed background-color and writes it to
-// --aae-btn-rollover-cross-color once per sync (mount, preset apply, and a
-// light interval so a live Style-panel color edit — which changes no DOM
-// node, just a CSS rule, so the MutationObserver below never sees it — still
-// reaches this variable). Same --aae-btn-* custom-property bridge this file
-// already uses for --aae-btn-mask-img / --aae-btn-hover-color.
+// pseudo on the <a>, same as every other variant. Two things can't carry
+// over as a literal port: V3 hardcoded `border-color: #1C1D20` and a plain
+// `1px` border-width, but here BOTH have to be whatever the DIVIDER's own
+// Style-panel background/height are — and border-color/border-width have no
+// CSS-only way to read another property's value. `btn.js`'s
+// borderVarsSync() bridges that gap: it reads the divider's computed
+// background-color + height and writes them to --aae-btn-rollover-cross-color
+// / --aae-btn-rollover-cross-width once per sync (mount, preset apply, and a
+// light interval so a live Style-panel edit — which changes no DOM node,
+// just a CSS rule, so the MutationObserver below never sees it — still
+// reaches these variables). Same --aae-btn-* custom-property bridge this
+// file already uses for --aae-btn-mask-img / --aae-btn-hover-color.
+//
+// `width: 0` + `visibility: hidden` (not `height: 0`, not `opacity: 0`) —
+// see `.aae-btn-parallal-border .e-divider-base`'s comment further down for
+// why: height must stay unclobbered for borderVarsSync() to read the real
+// value, and opacity would zero out the pseudos below too (it compounds
+// through them; visibility doesn't, since a descendant can opt back in).
 .e-aae-a-btn-base.aae-btn-rollover-cross .e-divider-base {
   width: 0;
-  height: 0;
+  visibility: hidden;
 }
 .e-aae-a-btn-base.aae-btn-rollover-cross .e-divider-base::before {
   position: absolute;
@@ -234,8 +241,9 @@
   inset-block-end: 100%;
   inset-inline-start: 100%;
   opacity: 0;
-  border-block-end: 1px solid var(--aae-btn-rollover-cross-color, #000);
-  border-inline-start: 1px solid var(--aae-btn-rollover-cross-color, #000);
+  visibility: visible;
+  border-block-end: var(--aae-btn-rollover-cross-width, 1px) solid var(--aae-btn-rollover-cross-color, #000);
+  border-inline-start: var(--aae-btn-rollover-cross-width, 1px) solid var(--aae-btn-rollover-cross-color, #000);
   transition: all 0.75s;
 }
 .e-aae-a-btn-base.aae-btn-rollover-cross .e-divider-base::after {
@@ -246,8 +254,9 @@
   inset-block-start: 100%;
   inset-inline-end: 100%;
   opacity: 0;
-  border-block-start: 1px solid var(--aae-btn-rollover-cross-color, #000);
-  border-inline-end: 1px solid var(--aae-btn-rollover-cross-color, #000);
+  visibility: visible;
+  border-block-start: var(--aae-btn-rollover-cross-width, 1px) solid var(--aae-btn-rollover-cross-color, #000);
+  border-inline-end: var(--aae-btn-rollover-cross-width, 1px) solid var(--aae-btn-rollover-cross-color, #000);
   transition: all 0.75s;
 }
 .e-aae-a-btn-base.aae-btn-rollover-cross:hover .e-divider-base::before {
@@ -265,15 +274,36 @@
 // boxes with only 2 adjacent borders each, growing from 0 AT a corner rather
 // than sliding in from off-screen — the one thing distinguishing it from
 // Rollover Cross) — same --aae-btn-parallal-border-color bridge as Rollover
-// Cross's --aae-btn-rollover-cross-color; see that block's comment and
-// btn.js's borderColorSync() for why a custom property is involved at all.
-// `scale()` from a corner-anchored `transform-origin`, not literal
-// width/height percentages, for the same reason every other variant in this
-// file avoids animating width/height directly (see the comment above
-// `.aae-btn-rollover-left` further up).
+// Cross's --aae-btn-rollover-cross-color, PLUS a --aae-btn-parallal-border-width
+// one so the border's thickness is the divider's own Style-panel Height
+// (its native "thickness" control) instead of a hardcoded 1px; see that
+// block's comment and btn.js's borderVarsSync() for why custom properties
+// are involved at all. `scale()` from a corner-anchored `transform-origin`,
+// not literal width/height percentages, for the same reason every other
+// variant in this file avoids animating width/height directly (see the
+// comment above `.aae-btn-rollover-left` further up).
+//
+// The real divider is hidden via `width: 0` ONLY — every other variant
+// forces BOTH width and height to 0, but that would force ITS OWN height to
+// 0 too, and borderVarsSync() reads whatever that resolves to, so the
+// border thickness above would always read back 0. A zero-width box paints
+// nothing regardless of its height, so leaving height alone here still
+// hides the real divider while letting the Style panel's real value survive
+// to be read. (`opacity: 0` looks like an equally valid way to hide it and
+// was tried first, but doesn't work: opacity on an element ALSO applies to
+// its own ::before/::after — parent-opacity(0) × pseudo-opacity(1) is still
+// 0, so the hover reveal below could never become visible no matter what.)
+// `visibility: hidden` (not opacity — see comment above) hides the real
+// divider's OWN border/background from ever being painted, regardless of
+// whatever the user sets in the Style panel — those values are only meant
+// to be READ (as the color/thickness source), never displayed directly.
+// `visibility` inherits, but a descendant can opt back OUT of the inherited
+// `hidden` by declaring its own `visibility: visible` — unlike opacity,
+// which compounds and can't be overridden — so the pseudo-elements below
+// stay independently visible.
 .e-aae-a-btn-base.aae-btn-parallal-border .e-divider-base {
   width: 0;
-  height: 0;
+  visibility: hidden;
 }
 .e-aae-a-btn-base.aae-btn-parallal-border .e-divider-base::before {
   position: absolute;
@@ -283,8 +313,9 @@
   inset-block-end: 0;
   inset-inline-start: 0;
   opacity: 0;
-  border-block-end: 1px solid var(--aae-btn-parallal-border-color, #000);
-  border-inline-start: 1px solid var(--aae-btn-parallal-border-color, #000);
+  visibility: visible;
+  border-block-end: var(--aae-btn-parallal-border-width, 1px) solid var(--aae-btn-parallal-border-color, #000);
+  border-inline-start: var(--aae-btn-parallal-border-width, 1px) solid var(--aae-btn-parallal-border-color, #000);
   transform: scale(0);
   transform-origin: bottom left;
   transition: all 0.75s;
@@ -297,8 +328,9 @@
   inset-block-start: 0;
   inset-inline-end: 0;
   opacity: 0;
-  border-block-start: 1px solid var(--aae-btn-parallal-border-color, #000);
-  border-inline-end: 1px solid var(--aae-btn-parallal-border-color, #000);
+  visibility: visible;
+  border-block-start: var(--aae-btn-parallal-border-width, 1px) solid var(--aae-btn-parallal-border-color, #000);
+  border-inline-end: var(--aae-btn-parallal-border-width, 1px) solid var(--aae-btn-parallal-border-color, #000);
   transform: scale(0);
   transform-origin: top right;
   transition: all 0.75s;

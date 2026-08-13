@@ -159,6 +159,37 @@ class AAE_A_Video extends Atomic_Element_Base {
 			] )
 			->get();
 
+		// True when poster_enabled ("Use Thumbnail") is on — everything else
+		// in the Poster & Play Button section only means something once the
+		// poster itself is switched on.
+		$poster_on = Dependency_Manager::make()
+			->where( [
+				'operator' => 'eq',
+				'path'     => [ 'poster_enabled' ],
+				'value'    => true,
+				'effect'   => 'hide',
+			] )
+			->get();
+
+		// Auto-fetch Thumbnail additionally needs poster_enabled on AND the
+		// source to not be 'hosted' — RELATION_AND means the control stays
+		// visible only while BOTH terms hold, i.e. it hides the moment either
+		// one fails.
+		$poster_auto_fetch_deps = Dependency_Manager::make( Dependency_Manager::RELATION_AND )
+			->where( [
+				'operator' => 'eq',
+				'path'     => [ 'poster_enabled' ],
+				'value'    => true,
+				'effect'   => 'hide',
+			] )
+			->where( [
+				'operator' => 'nin',
+				'path'     => [ 'video_type' ],
+				'value'    => [ 'hosted' ],
+				'effect'   => 'hide',
+			] )
+			->get();
+
 		return [
 			'classes'    => Classes_Prop_Type::make()->default( [] ),
 			'attributes' => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
@@ -217,13 +248,16 @@ class AAE_A_Video extends Atomic_Element_Base {
 			'vimeo_dnt'       => Boolean_Prop_Type::make()->default( false )->set_dependencies( $when( 'vimeo' ) ),
 
 			// Poster/play-button overlay. Master on/off switch — when off,
-			// aae-a-video.html.twig skips the poster <img> entirely (no
+			// aae-a-video.html.twig skips the poster entirely (no
 			// placeholder, no auto-fetched thumbnail, nothing behind the
-			// play button). Auto-fetch only has somewhere to fetch FROM for
-			// YouTube (deterministic thumbnail URL) and Vimeo (oEmbed) — a
-			// hosted file has no thumbnail API at all.
+			// play button). Auto-fetch has a real API to hit for YouTube
+			// (deterministic thumbnail URL) and Vimeo/Dailymotion/VideoPress
+			// (oEmbed); for 'external' there is no such API, so it falls back
+			// to the video file's own first frame instead (see the twig's
+			// `use_frame_poster` + video.js's primeFramePoster()) — only a
+			// Media Library upload ('hosted') has genuinely nothing to fetch.
 			'poster_enabled'    => Boolean_Prop_Type::make()->default( true ),
-			'poster_auto_fetch' => Boolean_Prop_Type::make()->default( true )->set_dependencies( $not_hosted ),
+			'poster_auto_fetch' => Boolean_Prop_Type::make()->default( true )->set_dependencies( $poster_auto_fetch_deps ),
 			// User-picked fallback/override — wins whenever auto-fetch is off
 			// or comes up empty (private video, failed oEmbed lookup, hosted
 			// source). Rendered straight from THIS wrapper's own twig now
@@ -231,7 +265,8 @@ class AAE_A_Video extends Atomic_Element_Base {
 			// define_default_children()'s docblock for why.
 			'poster_image' => Image_Prop_Type::make()
 				->default_size( 'large' )
-				->default_url( \Elementor\Utils::get_placeholder_image_src() ),
+				->default_url( \Elementor\Utils::get_placeholder_image_src() )
+				->set_dependencies( $poster_on ),
 			// Computed server-side in get_atomic_settings() — no panel control.
 			'resolved_poster_url' => String_Prop_Type::make()->default( '' ),
 

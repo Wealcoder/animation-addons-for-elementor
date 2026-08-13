@@ -619,9 +619,26 @@ const bindEngineOnce = ( el, mountEl, engine, cfg ) => {
 	}
 };
 
+// The 'external' source's poster falls back to the video file's own first
+// frame (see aae-a-video-popup-panel.html.twig's `use_frame_poster`) — same
+// nudge-past-0 fix AAE Video's own video.js uses for the identical case.
+const primeFramePoster = ( videoEl ) => {
+	if ( videoEl.dataset.aaeFramePrimed ) return;
+	videoEl.dataset.aaeFramePrimed = 'true';
+
+	videoEl.addEventListener( 'loadeddata', () => {
+		if ( videoEl.currentTime === 0 ) {
+			try { videoEl.currentTime = 0.1; } catch ( e ) {}
+		}
+	}, { once: true } );
+};
+
 const initVideoInPanel = ( panel ) => {
 	const mountEl = panel.querySelector( '.aae-a-video-popup-mount' );
 	if ( ! mountEl ) return;
+
+	const framePoster = panel.querySelector( '.aae-a-video-popup-poster-frame' );
+	if ( framePoster ) primeFramePoster( framePoster );
 
 	const cfg = readVideoConfig( panel );
 	const engine = getOrCreateEngine( panel, mountEl, cfg );
@@ -728,6 +745,13 @@ const initVideoPopup = ( root ) => {
 		|| root.querySelector( '[data-element_type="e-aae-a-video-popup-panel"]' );
 
 	if ( ! trigger || ! panel ) return;
+
+	// Prime the frame-fallback poster (if any) right away rather than
+	// waiting for the panel's first open — `preload="metadata"` already
+	// fetches regardless of the panel's hidden/teleported state, so there's
+	// no reason to leave it black until the visitor's first click.
+	const framePosterEl = panel.querySelector( '.aae-a-video-popup-poster-frame' );
+	if ( framePosterEl ) primeFramePoster( framePosterEl );
 
 	// EDITOR: never teleport or drive the popup here — see initVideoPopupEditor().
 	if ( typeof elementorFrontend !== 'undefined' && elementorFrontend.isEditMode() ) return;

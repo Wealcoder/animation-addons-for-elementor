@@ -72,31 +72,60 @@ function maskBtn(container) {
   }
 }
 
-// Border-color-from-divider-background bridge — shared by every "Default
-// preset" hover style whose btn.scss rule reads a --aae-btn-<name>-color
-// custom property as its border-color fallback chain (Rollover Cross,
-// Parallel Border). Those effects' border color has to equal the DIVIDER's
-// own Style-panel background, and CSS has no cross-property way for
-// border-color to read another property's value, so this reads it in JS and
-// republishes it under the name that variant's CSS expects.
-const BORDER_COLOR_VARS = {
-  'aae-btn-rollover-cross': '--aae-btn-rollover-cross-color',
-  'aae-btn-parallal-border': '--aae-btn-parallal-border-color',
+// Border color/thickness bridge — shared by every "Default preset" hover
+// style whose btn.scss rule reads --aae-btn-<name>-color and/or
+// --aae-btn-<name>-width custom properties (Rollover Cross, Parallel
+// Border). Those effects' border color has to equal the DIVIDER's own
+// Style-panel BACKGROUND, and their border thickness likewise has to equal
+// the divider's own Style-panel HEIGHT (its native, already-existing
+// "thickness" control) — CSS has no cross-property way for
+// border-color/border-width to read another property's value, so this
+// reads both in JS and republishes them under the names each variant's CSS
+// expects. See btn.scss's `.aae-btn-parallal-border .e-divider-base`
+// comment for why each real divider is hidden via `width:0;visibility:hidden`
+// instead of also zeroing height: that would mean reading 0px back here,
+// not whatever the user actually set.
+const BORDER_VARS = {
+  'aae-btn-rollover-cross': {
+    color: '--aae-btn-rollover-cross-color',
+    width: '--aae-btn-rollover-cross-width',
+  },
+  'aae-btn-parallal-border': {
+    color: '--aae-btn-parallal-border-color',
+    width: '--aae-btn-parallal-border-width',
+  },
 };
-const BORDER_COLOR_SELECTOR = Object.keys(BORDER_COLOR_VARS)
+const BORDER_VARS_SELECTOR = Object.keys(BORDER_VARS)
   .map((cls) => `.${cls}`)
   .join(', ');
 
-function borderColorSync(container) {
+function borderVarsSync(container) {
   const divider = container.querySelector('.e-divider-base');
   if (!divider) return;
 
-  const varName = Object.keys(BORDER_COLOR_VARS).find((cls) => container.classList.contains(cls));
-  if (!varName) return;
+  const cls = Object.keys(BORDER_VARS).find((c) => container.classList.contains(c));
+  if (!cls) return;
 
-  const color = window.getComputedStyle(divider).backgroundColor;
-  if (color) {
-    divider.style.setProperty(BORDER_COLOR_VARS[varName], color);
+  const vars = BORDER_VARS[cls];
+  const computed = window.getComputedStyle(divider);
+
+  if (vars.color) {
+    const color = computed.backgroundColor;
+    if (color) {
+      divider.style.setProperty(vars.color, color);
+    }
+  }
+  if (vars.width) {
+    // Rounded to a whole px, floored at 1 — getComputedStyle(el).height can
+    // come back as an arbitrary fraction (e.g. "0.995049px" from a zoomed
+    // or fractionally-scaled page), and a border thinner than 1 device
+    // pixel can render as nothing at all rather than a hairline in some
+    // browsers. A bare `1px` divider (untouched Height field) must still
+    // read back as a visible 1px border, not vanish.
+    const parsed = parseFloat(computed.height);
+    if (!Number.isNaN(parsed)) {
+      divider.style.setProperty(vars.width, `${Math.max(1, Math.round(parsed))}px`);
+    }
   }
 }
 
@@ -104,25 +133,25 @@ function initFreeButtonEffects() {
   document.querySelectorAll('.aae-btn-txtflip').forEach(textFlipSync);
   document.querySelectorAll('.aae-btn-borderdivide').forEach(borderDivideSetup);
   document.querySelectorAll('.aae-btn-mask').forEach(maskBtn);
-  document.querySelectorAll(BORDER_COLOR_SELECTOR).forEach(borderColorSync);
+  document.querySelectorAll(BORDER_VARS_SELECTOR).forEach(borderVarsSync);
 }
 
 // Run once for whatever is already in the DOM…
 initFreeButtonEffects();
 
-// A Style-panel background-color edit changes a CSS rule, not the DOM tree,
-// so the MutationObserver below (childList only) never sees it — without
-// this, the --aae-btn-*-color vars would go stale until something else (a
-// preset re-apply, a full reload) happened to trigger a resync. Cheap enough
-// to run unconditionally: getComputedStyle on however many matching buttons
-// exist on the page, a handful at most.
+// A Style-panel edit (background color OR height) changes a CSS rule, not
+// the DOM tree, so the MutationObserver below (childList only) never sees
+// it — without this, the --aae-btn-*-color/-width vars would go stale until
+// something else (a preset re-apply, a full reload) happened to trigger a
+// resync. Cheap enough to run unconditionally: getComputedStyle on however
+// many matching buttons exist on the page, a handful at most.
 setInterval(() => {
-  document.querySelectorAll(BORDER_COLOR_SELECTOR).forEach(borderColorSync);
+  document.querySelectorAll(BORDER_VARS_SELECTOR).forEach(borderVarsSync);
 }, 500);
 
 // Relevant classes only — matches initFreeButtonEffects()'s own selectors.
 const FREE_BUTTON_SELECTOR =
-  `.aae-btn-txtflip, .aae-btn-borderdivide, .aae-btn-mask, ${BORDER_COLOR_SELECTOR}`;
+  `.aae-btn-txtflip, .aae-btn-borderdivide, .aae-btn-mask, ${BORDER_VARS_SELECTOR}`;
 
 // True if this mutation batch actually added a node we care about, OR added
 // content inside an already-existing button (Elementor frequently mounts a
