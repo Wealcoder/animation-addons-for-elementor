@@ -55,6 +55,7 @@ const readVideoConfig = ( el ) => ( {
 	type: el.getAttribute( 'data-aae-video-type' ) || 'youtube',
 	youtubeUrl: el.getAttribute( 'data-aae-video-youtube-url' ) || '',
 	hostedUrl: el.getAttribute( 'data-aae-video-hosted-url' ) || '',
+	externalUrl: el.getAttribute( 'data-aae-video-external-url' ) || '',
 	vimeoUrl: el.getAttribute( 'data-aae-video-vimeo-url' ) || '',
 	dailymotionUrl: el.getAttribute( 'data-aae-video-dailymotion-url' ) || '',
 	videopressUrl: el.getAttribute( 'data-aae-video-videopress-url' ) || '',
@@ -104,6 +105,8 @@ const loadVimeoApi = () => {
 	return vimeoApiPromise;
 };
 
+// Shared by 'hosted' and 'external' — both are a real <video> tag, only the
+// source attribute differs (see AAE Video's video.js for the same split).
 const createNativeAdapter = ( mountEl, cfg ) => {
 	const videoEl = document.createElement( 'video' );
 	videoEl.className = 'aae-a-video-popup-native';
@@ -111,7 +114,7 @@ const createNativeAdapter = ( mountEl, cfg ) => {
 	videoEl.loop = cfg.loop;
 	videoEl.playsInline = true;
 	videoEl.muted = cfg.mute || cfg.autoplay;
-	videoEl.src = cfg.hostedUrl;
+	videoEl.src = 'external' === cfg.type ? cfg.externalUrl : cfg.hostedUrl;
 	mountEl.insertBefore( videoEl, mountEl.firstChild );
 
 	const listeners = {};
@@ -429,6 +432,7 @@ const createVideoPressAdapter = ( mountEl, cfg ) => createPostMessageAdapter( mo
 
 const ADAPTERS = {
 	hosted: createNativeAdapter,
+	external: createNativeAdapter,
 	youtube: createYoutubeAdapter,
 	vimeo: createVimeoAdapter,
 	dailymotion: createDailymotionAdapter,

@@ -39,6 +39,10 @@ import { useBoundProp } from '@elementor/editor-controls';
 import { stringPropTypeUtil } from '@elementor/editor-props';
 import { MenuItem, Select, Stack, Typography } from '@elementor/ui';
 
+// Parallel Border / Rollover Cross removed for now — neither's V3 look
+// (two ::before/::after boxes with only 2 adjacent borders each) ported
+// satisfactorily onto a real e-divider child. Re-add here (and in
+// btn.scss/btn.js) if that gets revisited.
 const OPTIONS = [
 	[ 'hover-none', 'None' ],
 	[ 'hover-divide', 'Divided' ],
@@ -46,8 +50,6 @@ const OPTIONS = [
 	[ 'hover-cropping', 'Cropping' ],
 	[ 'rollover-top', 'Rollover Top' ],
 	[ 'rollover-left', 'Rollover Left' ],
-	[ 'parallal-border', 'Parallel Border' ],
-	[ 'rollover-cross', 'Rollover Cross' ],
 ];
 
 /** Live read of the sibling `aae_btn_hover_effect` marker off the V1 model. */
