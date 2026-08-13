@@ -44,9 +44,17 @@
         or '<figure' in html or '<hr' in html %}
 {% if has_block %}{% set tag = 'div' %}{% endif %}
 
+{# `base_styles.base` carries define_base_styles()'s `margin: 0` (matching core
+   e-heading). It MUST be in this list — an atomic base style compiles to
+   `.elementor .e-aae-a-advanced-heading-base`, so leaving the class off the
+   markup makes the whole definition dead CSS with nothing to report it.
+   `default('')` because this template is also rendered client-side by twig.js in
+   the canvas, where the variable is not guaranteed; the empty entry is harmless
+   in a class attribute and `trim` tidies the ends. #}
 {% set classes = [
         'aae-a-advanced-heading',
-        'e-atomic-element'
+        'e-atomic-element',
+        base_styles.base | default('')
     ] | merge(settings.classes | default([])) | join(' ') | trim %}
 
 <{{ tag | e('html_tag') }}
