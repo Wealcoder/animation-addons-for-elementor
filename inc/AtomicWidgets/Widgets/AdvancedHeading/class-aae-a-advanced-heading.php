@@ -71,6 +71,9 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Number_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
+use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
+use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
 class AAE_A_Advanced_Heading extends Atomic_Widget_Base {
@@ -217,9 +220,40 @@ class AAE_A_Advanced_Heading extends Atomic_Widget_Base {
 		];
 	}
 
-	// No define_base_styles() override → inherits the empty default: the plugin
-	// ships ZERO CSS for this widget. Style everything via the panel / your own
-	// classes.
+	/**
+	 * One prop only: `margin: 0`, exactly what Elementor's own e-heading ships
+	 * (Atomic_Heading::define_base_styles()).
+	 *
+	 * This widget deliberately carried NO base styles at all, on the principle
+	 * that the plugin ships zero CSS for it. That reads well until you drop one:
+	 * the element renders as a real h1-h6, so it inherits the THEME's heading
+	 * margin, and an Advanced Heading sat with a margin a core Heading next to it
+	 * did not have — same panel, same tag, different spacing, and the Margin
+	 * fields showed empty rather than the `0` a core heading shows. Matching core
+	 * is what makes the two interchangeable.
+	 *
+	 * Same shape as core: the `margin` schema key is a Union of Dimensions and
+	 * Size, and core passes the Size shorthand, which is also what populates all
+	 * four Margin placeholders in the panel with `0`.
+	 *
+	 * A base style is the right home for this rather than the twig or a
+	 * stylesheet: it stays fully overridable from the Style tab, and it needs the
+	 * `base` key specifically because the twig renders `base_styles.base` onto the
+	 * root — without that class in the markup this definition would compile to CSS
+	 * that matches nothing.
+	 */
+	protected function define_base_styles(): array {
+		return [
+			'base' => Style_Definition::make()
+				->add_variant(
+					Style_Variant::make()
+						->add_prop( 'margin', Size_Prop_Type::generate( [
+							'unit' => 'px',
+							'size' => 0,
+						] ) )
+				),
+		];
+	}
 
 	protected function get_templates(): array {
 		return [

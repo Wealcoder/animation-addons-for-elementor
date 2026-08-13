@@ -69,22 +69,44 @@ const format = ( value, info ) => {
 };
 
 /**
+ * The node that actually HOLDS the text, given an element or its editor wrapper.
+ *
+ * In the editor canvas every atomic child is mounted inside a wrapper
+ *   <div class="elementor-element … elementor-widget-e-paragraph">
+ * and the real node is the <span class="e-paragraph-base …"> inside it. That
+ * span is what carries the base-style class AND the local style class the Style
+ * tab writes — i.e. the font-family/size the builder picked. The frontend has no
+ * wrapper at all; the span is a direct child of the counter.
+ *
+ * This matters because play()'s write() assigns textContent. Assigning it to the
+ * WRAPPER deletes the styled span outright and leaves a bare text node behind,
+ * so the number loses its font on every re-render — in the editor only, which is
+ * exactly how the bug presented (verified in the v4 canvas: after a settings
+ * change the wrapper's innerHTML went from
+ * `<span class="e-paragraph-base …">50</span>` to plain `46`).
+ */
+const TEXT_NODE_SELECTOR = '.e-paragraph-base, .e-heading-base, [data-interaction-id]';
+
+const resolveTextEl = ( el ) => ( el && el.querySelector( TEXT_NODE_SELECTOR ) ) || el;
+
+/**
  * Locate the animated Number child.
  *
- * `.aae-a-counter-number` is the normal path, but the v4 editor canvas
- * renders atomic CHILD elements with only `.elementor-element` — custom
- * classes are stripped whenever the element or an ancestor is in edit-mode.
- * So in the editor the class lookup returns null and the counter is dead.
- * Fall back to the first direct child whose text reads as a number (the
- * Prefix child is empty and the Suffix child is "+" by default).
+ * `.aae-a-counter-number` is the normal path. It is NOT reliable on its own: the
+ * class lives in the child's `classes` prop, and the panel's "Some classes are
+ * missing" notice can unapply it (its ✕ calls unapplyClasses on exactly those
+ * ids), after which the lookup returns null on a perfectly healthy counter.
+ * So the fallback has to be correct, not just a safety net — it picks the first
+ * direct child whose text reads as a number (the Prefix child is empty and the
+ * Suffix child is "+" by default), then resolves it to the real text node.
  */
 const findNumberEl = ( parent ) => {
 	const byClass = parent.querySelector( '.aae-a-counter-number' );
-	if ( byClass ) return byClass;
+	if ( byClass ) return resolveTextEl( byClass );
 
 	for ( const child of parent.children ) {
 		if ( child.classList.contains( 'elementor-element-overlay' ) ) continue;
-		if ( parseTarget( child.textContent ) ) return child;
+		if ( parseTarget( child.textContent ) ) return resolveTextEl( child );
 	}
 
 	return null;

@@ -671,20 +671,44 @@ const showRuntimeMessage = ( form, message, tone ) => {
 	}
 };
 
+/**
+ * The element holding a submit button's visible label.
+ *
+ * The Submit button is a container (Flexbox › Heading + SVG), so the label is
+ * a descendant element, not the button's own text. Matched by TAG rather than
+ * a hook class on purpose: a class would have to be seeded into the child's
+ * `classes` prop, where the panel's "Some classes are missing" ✕ can unapply
+ * it — and losing the loading state to a stray click is not a trade worth
+ * making. Falls back to the button itself for the plain-text buttons
+ * multi-step.js injects.
+ */
+const labelElOf = ( button ) =>
+	button.querySelector( 'h1, h2, h3, h4, h5, h6, p, span' ) || button;
+
+/**
+ * Swap the button into its loading state.
+ *
+ * The label element is replaced, NOT the whole button: writing
+ * `button.textContent` would delete the icon child for the duration of the
+ * request — a visible flicker on every submit.
+ */
 const setLoading = ( form, button, loading ) => {
 	if ( ! button ) {
 		return;
 	}
+
+	const label = labelElOf( button );
+
 	if ( loading ) {
-		button.dataset.originalHtml = button.innerHTML;
+		button.dataset.originalHtml = label.innerHTML;
 		button.disabled = true;
 		button.setAttribute( 'aria-busy', 'true' );
-		button.textContent = button.dataset.loadingLabel || t( 'sending', 'Sending…' );
+		label.textContent = button.dataset.loadingLabel || t( 'sending', 'Sending…' );
 	} else {
 		button.disabled = false;
 		button.removeAttribute( 'aria-busy' );
 		if ( button.dataset.originalHtml ) {
-			button.innerHTML = button.dataset.originalHtml;
+			label.innerHTML = button.dataset.originalHtml;
 			delete button.dataset.originalHtml;
 		}
 	}

@@ -130,6 +130,23 @@ class AAE_A_Offcanvas_Panel extends Atomic_Element_Base {
 							'overflow-y'     => String_Prop_Type::generate( 'auto' ),
 							'max-width'      => Size_Prop_Type::generate( [ 'size' => 90, 'unit' => 'vw' ] ),
 							'height'         => Size_Prop_Type::generate( [ 'size' => 100, 'unit' => 'vh' ] ),
+							// The bound that makes `overflow-y: auto` above actually DO
+							// something. A top/bottom drawer is pinned by offcanvas.js's POS
+							// table with `bottom:auto` (resp. `top:auto`) and an INLINE
+							// `height:auto`, so it has no height bound at all — the inline
+							// value also outranks the `height:100vh` on the line above. An
+							// unbounded box never scrolls, so a drawer whose content grew
+							// past the viewport simply kept growing and the PAGE scrolled
+							// instead of the drawer (measured on a real top drawer: content
+							// 2000px, panel clientHeight unbounded, page scrolled).
+							//
+							// 100vh, not the 90vh cap that POS used to apply inline. Two
+							// things follow from that number: it is a no-op for left/right
+							// drawers, which are already exactly 100vh, so this single shared
+							// prop is safe for all four edges — the reason the old cap could
+							// not live here; and living in a base style it stays overridable
+							// from the Style tab, which the inline version never was.
+							'max-height'     => Size_Prop_Type::generate( [ 'size' => 100, 'unit' => 'vh' ] ),
 							'background'     => Background_Prop_Type::generate( [
 								'color' => Color_Prop_Type::generate( '#ffffff' ),
 							] ),
