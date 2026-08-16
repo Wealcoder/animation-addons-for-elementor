@@ -1,23 +1,3 @@
-// AAE Video Popup — the CSS a Style-tab prop genuinely can't express:
-// `@keyframes`, cross-element hover/state reveals (an atomic Style_Variant
-// only ever targets a widget's own root), elements video-popup.js creates
-// at runtime with no twig behind them, and `pointer-events`/`white-space`
-// (not in the atomic style schema at all — see atomic-style-schema-
-// reference.md's "not in the schema" list). Everything else — the Trigger
-// circle/rotator/icon, the Overlay backdrop, the Panel box, the Close
-// button, the Player mount/controls/progress/time/buttons — lives in each
-// Part's own `define_base_styles()`.
-
-// The `--image` suffix class is the Trigger twig's hide-selector
-// discriminator for the Rotator Image child (see class-aae-a-video-popup-
-// trigger.php's docblock) — the rotator's shared look (fill/size/
-// object-fit, for BOTH the curved-text SVG and the Image child) is the
-// `.e-aae-a-video-popup-trigger-rotator` class's own atomic 'rotator'
-// Style_Definition key (that class IS `get_element_type() . '-rotator'` —
-// the same string `generate_base_style_id()` uses, which is why it carries
-// the `e-` prefix and NOT the `aae-` prefix every other selector in this
-// file uses — a mismatch here silently kills the spin animation, it has
-// happened once already).
 .e-aae-a-video-popup-trigger-rotator {
 	animation-name: aae-vp-spin;
 	animation-duration: var(--aae-vp-rot-duration, 8s);
@@ -26,12 +6,7 @@
 	animation-iteration-count: infinite;
 }
 
-// Curved text: the `<textPath>` circle radius/font-size are rendered as
-// literal SVG geometry/presentation-attribute values in the twig (their own
-// Number controls on Trigger), so they always win regardless of CSS
-// specificity. `fill: currentColor` keeps the text themeable from the
-// Trigger's own Style-tab text colour. `overflow: visible` lets the glyphs
-// spill past the SVG's own 0..100 viewBox edge without clipping.
+// Curved text: the `<textPath>` circle radius/font-size
 .aae-a-video-popup-trigger-rotator--text {
 	overflow: visible;
 	fill: currentColor;
@@ -67,10 +42,7 @@
 }
 
 // Plain color tint, always on top of the poster/video and always below the
-// play button/controls (z-index 2/3) — see the Panel's own twig
-// `overlay_enabled` branch. `pointer-events: none` is required, not
-// decorative: without it this layer would swallow every click meant to
-// toggle playback.
+// play button/controls (z-index 2/3) 
 .aae-a-video-popup-overlay {
 	position: absolute;
 	inset: 0;
@@ -141,13 +113,6 @@
 }
 
 // The track's own :hover height bump lives on Player's `progress`
-// Style_Definition key (a plain self-hover, no residual CSS needed for it —
-// see class-aae-a-video-popup-player.php). Just the transition TIMING stays
-// here: `transition` is technically a valid atomic key, but its shape needs
-// a Key_Value_Prop_Type "selection" entry whose exact expected value isn't
-// verified against the installed schema, and one wrongly-shaped value voids
-// the entire `progress` Style_Definition silently — not worth the risk for
-// one cosmetic timing value.
 .aae-a-video-popup-progress {
 	transition: height 0.15s ease;
 }

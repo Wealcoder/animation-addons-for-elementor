@@ -297,6 +297,40 @@ export function sanitizeImageSrc(node) {
   });
 }
 
+/**
+ * Presets are exported from whatever Elementor build authored them, and the
+ * `$$type` string for the border-width object prop has differed across
+ * builds — some register it as `border-width-v2`, this codebase's installed
+ * core (Border_Width_Prop_Type::get_key()) as plain `border-width`. Prop
+ * validation requires an EXACT match against the registered key (see
+ * Has_Transformable_Validation::is_transformable() in elementor core), so a
+ * preset carrying the other build's tag fails save-time validation with
+ * "...border-width: invalid_value" even though the shape itself
+ * (block-start/block-end/inline-start/inline-end) is unchanged — it renders
+ * fine in the editor (validation is publish-time only) then blocks
+ * save/publish. Rewrite the known alias to the key this install registers.
+ */
+export function sanitizeBorderWidthType(node) {
+  if (Array.isArray(node)) {
+    node.forEach(sanitizeBorderWidthType);
+    return;
+  }
+  if (!node || typeof node !== 'object') {
+    return;
+  }
+
+  if (node.$$type === 'border-width-v2') {
+    node.$$type = 'border-width';
+  }
+
+  Object.keys(node).forEach((key) => {
+    const child = node[key];
+    if (child && typeof child === 'object') {
+      sanitizeBorderWidthType(child);
+    }
+  });
+}
+
 /** Fresh, collision-resistant local style id (mirrors Elementor's shape). */
 function randomStyleId() {
   const rand = () => Math.random().toString(36).slice(2, 9);
@@ -596,6 +630,7 @@ export function applyPresetModel(presetModel, elementId, targetType, meta = {}) 
     migrateLegacyWidgetShape(model);
     regenerateModelStyleIds(model);
     sanitizeImageSrc(model);
+    sanitizeBorderWidthType(model);
     return {
       container: parent,
       model,
