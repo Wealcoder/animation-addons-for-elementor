@@ -1,27 +1,6 @@
 import { register } from '@elementor/frontend-handlers';
 
-/* AAE Video Popup — frontend runtime.
- *
- * Self-contained: this file does NOT import or share code with the AAE
- * Video widget's own video.js. The video engine below (adapters, controls
- * wiring, delegated clicks) is a deliberate, renamed copy — every hook
- * class here is `aae-a-video-popup-*` / `aae-video-popup-*`, never the
- * plain `aae-a-video-*` names AAE Video's video.js already claims via its
- * OWN document-level delegated click listener. Reusing those names would
- * let two independent scripts fight over the same clicks on any page that
- * has both widgets.
- *
- * Two concerns live in this one file:
- *   1. The video engine (adapters + controls bar), bound to the Panel
- *      (`.aae-a-video-popup-source`) — functionally identical to AAE
- *      Video's engine, just under renamed selectors.
- *   2. Popup mechanics: teleporting the Overlay + Panel to a body-level
- *      portal, open/close CSS animation, close-on-overlay/Esc, scroll lock,
- *      and the editor-preview toggle — mirrors AAE Offcanvas's own
- *      offcanvas.js (see that file's comments for the full teleport
- *      reasoning), but CSS-only (no GSAP) to match this widget having no
- *      GSAP dependency at all.
- */
+/* AAE Video Popup — frontend runtime */
 
 // ───────────────────────── Video engine (renamed copy) ─────────────────────
 
@@ -957,7 +936,7 @@ const readEditorOpen = ( id ) => {
 	}
 };
 
-const EDITOR_PANEL_RESET = [ 'position', 'z-index', 'top', 'left', 'transform', 'visibility' ];
+const EDITOR_PANEL_RESET = [ 'position', 'z-index', 'top', 'left', 'transform', 'visibility', 'opacity', 'pointer-events' ];
 
 const initVideoPopupEditor = ( container ) => {
 	const id = container.getAttribute( 'data-id' );
@@ -977,6 +956,8 @@ const initVideoPopupEditor = ( container ) => {
 				panel.style.setProperty( 'transform', 'translate(-50%, -50%)', 'important' );
 				panel.style.setProperty( 'z-index', '10000', 'important' );
 				panel.style.setProperty( 'visibility', 'visible', 'important' );
+				panel.style.setProperty( 'opacity', '1', 'important' );
+				panel.style.setProperty( 'pointer-events', 'auto', 'important' );
 				initVideoInPanel( panel );
 			} else if ( ! open && ( isFloating || 'none' !== panel.style.display ) ) {
 				EDITOR_PANEL_RESET.forEach( ( p ) => panel.style.removeProperty( p ) );
