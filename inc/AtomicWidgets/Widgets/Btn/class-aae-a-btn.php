@@ -198,7 +198,7 @@ class AAE_A_Btn extends Atomic_Element_Base
 	protected function define_base_styles(): array
 	{
 		$button_styles = [
-			'width'    => Size_Prop_Type::generate(['size' => 'max-content', 'unit' => 'custom']),
+			'width'    => Size_Prop_Type::generate(['size' => 'auto', 'unit' => 'auto']),
 			'height'   => Size_Prop_Type::generate(['size' => 'auto', 'unit' => 'auto']),
 			'overflow' => String_Prop_Type::generate('hidden'),
 			'position' => String_Prop_Type::generate('relative'),
