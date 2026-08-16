@@ -453,6 +453,23 @@
 	overflow-x: hidden;
 }
 
+/* A transformed ancestor becomes the containing block for `position: fixed`,
+ * so on a page running GSAP ScrollSmoother (#smooth-content carries a
+ * transform) the drawer's `inset-block: 0` resolves against the WHOLE
+ * document instead of the viewport — measured 13473px tall on a 785px
+ * viewport. The `height: 100dvh` above cannot save it: it sits in a
+ * zero-specificity `:where()`, and Elementor's own `.e-con { height:
+ * var(--height) }` (0,1,0) always wins with `--height: auto`, which then
+ * stretches between the two insets. A viewport unit is the fix because dvh
+ * is resolved against the viewport regardless of the containing block.
+ * `max-block-size`, not `block-size`, so a drawer height set in the Style
+ * tab still applies — this only caps the auto-stretch. Same reasoning the
+ * v3 nav-menu uses (`height: 100dvh; max-height: 100dvh`). */
+.aae-a-mobile-nav.is-mobile .aae-mobile-nav-drawer,
+.aae-a-mobile-nav.is-mobile .aae-mobile-nav-overlay {
+	max-block-size: 100dvh;
+}
+
 :where(.aae-a-mobile-nav.is-mobile) :where(.aae-mobile-nav-header) {
 	width: 100%;
 	display: flex;

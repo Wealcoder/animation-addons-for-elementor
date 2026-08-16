@@ -290,13 +290,15 @@ class AAE_A_Accordion_Item extends Atomic_Element_Base {
 			'border-color' => Color_Prop_Type::generate(''),
 			'border-width' => Size_Prop_Type::generate([]),
 			'border-radius' => Dimensions_Prop_Type::generate([]),
-			// Tighter vertical padding — a shorter resting row height.
-			'padding' => Dimensions_Prop_Type::generate( [
-				'block-start'  => Size_Prop_Type::generate( [ 'size' => 10, 'unit' => 'px' ] ),
-				'inline-end'   => Size_Prop_Type::generate( [ 'size' => 16, 'unit' => 'px' ] ),
-				'block-end'    => Size_Prop_Type::generate( [ 'size' => 10, 'unit' => 'px' ] ),
-				'inline-start' => Size_Prop_Type::generate( [ 'size' => 16, 'unit' => 'px' ] ),
-			] ),
+			// Header padding lives on the Header div block ($header_element_styles
+			// below), NOT here. The <button> is rendered by this element's twig, so
+			// it is not selectable and nothing in the Style panel can reach it —
+			// padding declared here was unreachable by design. Worse, it did not
+			// merely resist editing: the Header div block IS selectable, so a
+			// builder setting padding there got it ADDED to this button's 10/16
+			// and could never go below it. One owner, and it is the one the
+			// builder can actually select.
+			'padding' => Dimensions_Prop_Type::generate([]),
 			'margin' => Dimensions_Prop_Type::generate([]),
 		];
 
@@ -355,10 +357,25 @@ class AAE_A_Accordion_Item extends Atomic_Element_Base {
 		// styles, per-element local styles (user edits) still override them.
 		// Icon `display` stays scss-owned (state-driven show/hide), and
 		// flex-shrink/svg-fill live in accordion.scss (no style-schema keys).
+		//
+		// This div block is the header's PADDING OWNER. It fills the <button>
+		// edge to edge (`flex: 1` inside `.aae-header-content`, itself `flex: 1`
+		// in a `width: 100%` button — see accordion.scss), so padding here is
+		// visually identical to padding on the button, and the button's
+		// background and hover tint still paint the whole row. The difference is
+		// that this element is selectable, so Padding in the Style panel — with
+		// its breakpoints and states — now actually governs the row height.
 		$header_element_styles = [
 			'display' => String_Prop_Type::generate( 'flex' ),
 			'flex-direction' => String_Prop_Type::generate( 'row' ),
 			'justify-content' => String_Prop_Type::generate( 'space-between' ),
+			// Tighter vertical padding — a shorter resting row height.
+			'padding' => Dimensions_Prop_Type::generate( [
+				'block-start'  => Size_Prop_Type::generate( [ 'size' => 10, 'unit' => 'px' ] ),
+				'inline-end'   => Size_Prop_Type::generate( [ 'size' => 16, 'unit' => 'px' ] ),
+				'block-end'    => Size_Prop_Type::generate( [ 'size' => 10, 'unit' => 'px' ] ),
+				'inline-start' => Size_Prop_Type::generate( [ 'size' => 16, 'unit' => 'px' ] ),
+			] ),
 		];
 
 		// A small muted arrow (see open.svg/close.svg — a chevron-down that

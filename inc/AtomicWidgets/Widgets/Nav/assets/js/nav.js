@@ -1102,6 +1102,34 @@ register( {
 	},
 } );
 
+/**
+ * Nearest ancestor that makes `position: fixed` resolve against IT instead of
+ * the viewport. transform / perspective / filter (and a will-change promising
+ * any of them) all do this. GSAP ScrollSmoother is the common case: it puts a
+ * transform on #smooth-content and translates it as you scroll, so a fixed
+ * drawer inside it is not viewport-fixed at all — it sits at the top of the
+ * DOCUMENT and scrolls away. Measured on a ScrollSmoother page: opened at
+ * scrollY 4000 the drawer landed at y=-4000, entirely above the viewport.
+ *
+ * Returns the offending element, or null when `position: fixed` behaves
+ * normally — which is every ordinary page, and why the relocation below is
+ * conditional rather than unconditional.
+ */
+function fixedContainingBlockAncestor( el ) {
+	for ( let p = el?.parentElement; p && p !== document.body; p = p.parentElement ) {
+		const cs = getComputedStyle( p );
+		if (
+			cs.transform !== 'none' ||
+			cs.perspective !== 'none' ||
+			cs.filter !== 'none' ||
+			/transform|perspective|filter/.test( cs.willChange || '' )
+		) {
+			return p;
+		}
+	}
+	return null;
+}
+
 /* Mobile companion: moves the existing Nav DOM at the configured breakpoint,
  * then restores the exact node to its original position on desktop. */
 register( {
@@ -1159,6 +1187,58 @@ register( {
 		companion.classList.toggle( 'position-left', mobileCfg( companion, nav, 'mobilePosition', 'position', 'right' ) === 'left' );
 		const lockScroll = mobileCfg( companion, nav, 'mobileLockScroll', 'lockScroll', 'true' ) === 'true';
 		const closeOnLink = mobileCfg( companion, nav, 'mobileCloseOnLink', 'closeOnLink', 'true' ) === 'true';
+
+		/* Overlay + drawer are `position: fixed` chrome, so on a page with a
+		 * transformed ancestor (ScrollSmoother) they are not viewport-fixed and
+		 * open off-screen — see fixedContainingBlockAncestor(). Moving just
+		 * those two to a body-level host puts them back in the viewport's
+		 * coordinate space. The hamburger TOGGLE deliberately stays put: it is
+		 * in-flow header content and moving it would break the header layout.
+		 *
+		 * The host must carry BOTH the Elementor document scope and the
+		 * companion's own classes:
+		 *   - `.elementor` because atomic styles compile as
+		 *     `.elementor .e-<id>-<hash>` — without that ancestor the user's
+		 *     Style-tab values silently stop applying (measured: a 300px drawer
+		 *     rendered 1029px wide, falling back to `--width: 100%`).
+		 *   - `.aae-a-mobile-nav.is-mobile` etc. because every rule in nav.scss
+		 *     is a DESCENDANT of the companion. Carrying the class list means
+		 *     not one selector has to change.
+		 * A computed-style diff over 23 properties before/after the move showed
+		 * height as the only difference — the bug being fixed. */
+		let detachedHost = null;
+		const overlayAnchor = document.createComment( `aae-mobile-overlay-${ id }` );
+		const drawerAnchor = document.createComment( `aae-mobile-drawer-${ id }` );
+
+		const syncDetachedHost = () => {
+			if ( ! detachedHost ) return;
+			const scope = companion.closest( '.elementor' );
+			detachedHost.className = ( scope ? scope.className + ' ' : '' ) + companion.className;
+		};
+
+		const detachChrome = () => {
+			if ( detachedHost || ! fixedContainingBlockAncestor( companion ) ) return;
+			detachedHost = document.createElement( 'div' );
+			detachedHost.setAttribute( 'data-aae-mobile-nav-detached', id || '' );
+			syncDetachedHost();
+			document.body.appendChild( detachedHost );
+			/* Anchors restore the authored order on the way back, exactly like
+			 * the nav's own mount anchor above. */
+			overlay.parentNode?.insertBefore( overlayAnchor, overlay );
+			drawer.parentNode?.insertBefore( drawerAnchor, drawer );
+			detachedHost.appendChild( overlay );
+			detachedHost.appendChild( drawer );
+		};
+
+		const reattachChrome = () => {
+			if ( ! detachedHost ) return;
+			overlayAnchor.parentNode?.insertBefore( overlay, overlayAnchor );
+			drawerAnchor.parentNode?.insertBefore( drawer, drawerAnchor );
+			overlayAnchor.remove();
+			drawerAnchor.remove();
+			detachedHost.remove();
+			detachedHost = null;
+		};
 	drawer.id = `aae-mobile-nav-drawer-${ id }`;
 	toggle.setAttribute( 'role', 'button' );
 	toggle.setAttribute( 'tabindex', '0' );
@@ -1279,6 +1359,7 @@ register( {
 
 		const closeDrawer = ( restoreFocus = true ) => {
 			companion.classList.remove( 'is-open' );
+			syncDetachedHost();
 			toggle.setAttribute( 'aria-expanded', 'false' );
 			drawer.setAttribute( 'aria-hidden', 'true' );
 			resetDrill();
@@ -1289,10 +1370,18 @@ register( {
 		const openDrawer = () => {
 			lastFocus = document.activeElement;
 			companion.classList.add( 'is-open' );
+			syncDetachedHost();
 			toggle.setAttribute( 'aria-expanded', 'true' );
 			drawer.setAttribute( 'aria-hidden', 'false' );
 			if ( lockScroll ) document.body.classList.add( 'aae-mobile-nav-scroll-lock' );
-			window.requestAnimationFrame( () => close.focus?.() );
+			/* preventScroll: this runs one frame after `is-open`, while the
+			 * drawer is still mid-slide and physically off-screen, so a plain
+			 * focus() makes the browser scroll the nearest scrollable ancestor
+			 * to reveal it. Under GSAP ScrollSmoother that ancestor is
+			 * #smooth-wrapper, and the whole page stays shifted sideways after
+			 * the transition finishes (measured: scrollLeft 261 on a 1024
+			 * viewport). Focus still lands on the close button. */
+			window.requestAnimationFrame( () => close.focus?.( { preventScroll: true } ) );
 		};
 
 		const enterMobile = () => {
@@ -1301,6 +1390,7 @@ register( {
 			mount.appendChild( nav );
 			nav.classList.add( 'aae-nav-mobile-mounted' );
 			companion.classList.add( 'is-mobile' );
+			detachChrome();
 			addArrows();
 			drillPanelRecords = flattenDrillPanels( nav );
 			resetDrill();
@@ -1317,6 +1407,7 @@ register( {
 			anchor.parentNode?.insertBefore( nav, anchor );
 			anchor.remove();
 			companion.classList.remove( 'is-mobile' );
+			reattachChrome();
 			mounted = false;
 		};
 
