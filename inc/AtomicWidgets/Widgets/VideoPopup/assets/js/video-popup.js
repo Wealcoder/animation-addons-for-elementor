@@ -957,7 +957,7 @@ const readEditorOpen = ( id ) => {
 	}
 };
 
-const EDITOR_PANEL_RESET = [ 'position', 'z-index', 'top', 'left', 'transform', 'visibility' ];
+const EDITOR_PANEL_RESET = [ 'position', 'z-index', 'top', 'left', 'transform', 'visibility', 'opacity', 'pointer-events' ];
 
 const initVideoPopupEditor = ( container ) => {
 	const id = container.getAttribute( 'data-id' );
@@ -977,6 +977,8 @@ const initVideoPopupEditor = ( container ) => {
 				panel.style.setProperty( 'transform', 'translate(-50%, -50%)', 'important' );
 				panel.style.setProperty( 'z-index', '10000', 'important' );
 				panel.style.setProperty( 'visibility', 'visible', 'important' );
+				panel.style.setProperty( 'opacity', '1', 'important' );
+				panel.style.setProperty( 'pointer-events', 'auto', 'important' );
 				initVideoInPanel( panel );
 			} else if ( ! open && ( isFloating || 'none' !== panel.style.display ) ) {
 				EDITOR_PANEL_RESET.forEach( ( p ) => panel.style.removeProperty( p ) );
