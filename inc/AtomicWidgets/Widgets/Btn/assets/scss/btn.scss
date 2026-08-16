@@ -2,6 +2,30 @@
 	cursor: pointer;
 }
 
+// The widget's own base default is `width: auto` (class-aae-a-btn.php's
+// define_base_styles()) — identical to `max-content` whenever there's room
+// (both settle on the same shrink-to-fit width), but unlike max-content it
+// also correctly clamps to a narrower ancestor's available width instead of
+// forcing the label onto one unbroken line that bursts straight through it.
+// Matches Elementor's own native Button widget (`.e-button-base` is a bare
+// `display: inline-block`, no width override, so it already wraps this way).
+
+// Let a button's label wrap onto extra lines instead of overflowing past a
+// narrower ancestor as one unbroken line. A flex item's default
+// `min-width: auto` floors its shrink at the label's full unwrapped width —
+// this lifts that floor — and `flex: 1 1 auto` lets the label claim the
+// row's remaining space so it actually has somewhere to wrap within. A
+// preset that already sets its own explicit paragraph width (e.g. Divide's
+// `width: 100%`) is unaffected by this — these are just the missing
+// defaults for presets that never set one of their own (Text Flip, Mask, …).
+.e-aae-a-btn-base > .e-paragraph-base {
+	flex: 1 1 auto;
+	min-width: 0;
+	white-space: normal;
+	overflow-wrap: break-word;
+	word-break: break-word;
+}
+
 .aae-btn-divide:hover .e-divider-base {
 	width: 120%;
 }
@@ -59,6 +83,11 @@
   transform: rotateX(-90deg);
   transform-origin: 50% 0;
   text-align: inherit;
+  // Mirror the real text's wrapping so the flipped duplicate wraps the
+  // same way, line for line.
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 .aae-btn-txtflip:hover .e-paragraph-base {
   transform: rotateX(90deg) translateY(-100%);
@@ -208,6 +237,135 @@
   transform: scaleX(1);
 }
 
-// Rollover Cross / Parallel Border removed — see BtnHoverStyleControl.jsx's
-// OPTIONS comment. If revisited, both need the --aae-btn-*-color bridge that
-// used to live in btn.js's borderColorSync()/BORDER_COLOR_VARS.
+// Pixel-for-pixel port of V3's `.btn-rollover-cross` (two ::before/::after
+// boxes with only 2 adjacent borders each, sliding in from opposite
+// off-screen corners) — retargeted onto the real e-divider instead of a
+// pseudo on the <a>, same as every other variant. Two things can't carry
+// over as a literal port: V3 hardcoded `border-color: #1C1D20` and a plain
+// `1px` border-width, but here BOTH have to be whatever the DIVIDER's own
+// Style-panel background/height are — and border-color/border-width have no
+// CSS-only way to read another property's value. `btn.js`'s
+// borderVarsSync() bridges that gap: it reads the divider's computed
+// background-color + height and writes them to --aae-btn-rollover-cross-color
+// / --aae-btn-rollover-cross-width once per sync (mount, preset apply, and a
+// light interval so a live Style-panel edit — which changes no DOM node,
+// just a CSS rule, so the MutationObserver below never sees it — still
+// reaches these variables). Same --aae-btn-* custom-property bridge this
+// file already uses for --aae-btn-mask-img / --aae-btn-hover-color.
+//
+// `width: 0` + `visibility: hidden` (not `height: 0`, not `opacity: 0`) —
+// see `.aae-btn-parallal-border .e-divider-base`'s comment further down for
+// why: height must stay unclobbered for borderVarsSync() to read the real
+// value, and opacity would zero out the pseudos below too (it compounds
+// through them; visibility doesn't, since a descendant can opt back in).
+.e-aae-a-btn-base.aae-btn-rollover-cross .e-divider-base {
+  width: 0;
+  visibility: hidden;
+}
+.e-aae-a-btn-base.aae-btn-rollover-cross .e-divider-base::before {
+  position: absolute;
+  content: "";
+  width: 100%;
+  height: 100%;
+  inset-block-end: 100%;
+  inset-inline-start: 100%;
+  opacity: 0;
+  visibility: visible;
+  border-block-end: var(--aae-btn-rollover-cross-width, 1px) solid var(--aae-btn-rollover-cross-color, #000);
+  border-inline-start: var(--aae-btn-rollover-cross-width, 1px) solid var(--aae-btn-rollover-cross-color, #000);
+  transition: all 0.75s;
+}
+.e-aae-a-btn-base.aae-btn-rollover-cross .e-divider-base::after {
+  position: absolute;
+  content: "";
+  width: 100%;
+  height: 100%;
+  inset-block-start: 100%;
+  inset-inline-end: 100%;
+  opacity: 0;
+  visibility: visible;
+  border-block-start: var(--aae-btn-rollover-cross-width, 1px) solid var(--aae-btn-rollover-cross-color, #000);
+  border-inline-end: var(--aae-btn-rollover-cross-width, 1px) solid var(--aae-btn-rollover-cross-color, #000);
+  transition: all 0.75s;
+}
+.e-aae-a-btn-base.aae-btn-rollover-cross:hover .e-divider-base::before {
+  inset-block-end: 0;
+  inset-inline-start: 0;
+  opacity: 1;
+}
+.e-aae-a-btn-base.aae-btn-rollover-cross:hover .e-divider-base::after {
+  inset-block-start: 0;
+  inset-inline-end: 0;
+  opacity: 1;
+}
+
+// Pixel-for-pixel port of V3's `.btn-parallal-border` (two ::before/::after
+// boxes with only 2 adjacent borders each, growing from 0 AT a corner rather
+// than sliding in from off-screen — the one thing distinguishing it from
+// Rollover Cross) — same --aae-btn-parallal-border-color bridge as Rollover
+// Cross's --aae-btn-rollover-cross-color, PLUS a --aae-btn-parallal-border-width
+// one so the border's thickness is the divider's own Style-panel Height
+// (its native "thickness" control) instead of a hardcoded 1px; see that
+// block's comment and btn.js's borderVarsSync() for why custom properties
+// are involved at all. `scale()` from a corner-anchored `transform-origin`,
+// not literal width/height percentages, for the same reason every other
+// variant in this file avoids animating width/height directly (see the
+// comment above `.aae-btn-rollover-left` further up).
+//
+// The real divider is hidden via `width: 0` ONLY — every other variant
+// forces BOTH width and height to 0, but that would force ITS OWN height to
+// 0 too, and borderVarsSync() reads whatever that resolves to, so the
+// border thickness above would always read back 0. A zero-width box paints
+// nothing regardless of its height, so leaving height alone here still
+// hides the real divider while letting the Style panel's real value survive
+// to be read. (`opacity: 0` looks like an equally valid way to hide it and
+// was tried first, but doesn't work: opacity on an element ALSO applies to
+// its own ::before/::after — parent-opacity(0) × pseudo-opacity(1) is still
+// 0, so the hover reveal below could never become visible no matter what.)
+// `visibility: hidden` (not opacity — see comment above) hides the real
+// divider's OWN border/background from ever being painted, regardless of
+// whatever the user sets in the Style panel — those values are only meant
+// to be READ (as the color/thickness source), never displayed directly.
+// `visibility` inherits, but a descendant can opt back OUT of the inherited
+// `hidden` by declaring its own `visibility: visible` — unlike opacity,
+// which compounds and can't be overridden — so the pseudo-elements below
+// stay independently visible.
+.e-aae-a-btn-base.aae-btn-parallal-border .e-divider-base {
+  width: 0;
+  visibility: hidden;
+}
+.e-aae-a-btn-base.aae-btn-parallal-border .e-divider-base::before {
+  position: absolute;
+  content: "";
+  width: 100%;
+  height: 100%;
+  inset-block-end: 0;
+  inset-inline-start: 0;
+  opacity: 0;
+  visibility: visible;
+  border-block-end: var(--aae-btn-parallal-border-width, 1px) solid var(--aae-btn-parallal-border-color, #000);
+  border-inline-start: var(--aae-btn-parallal-border-width, 1px) solid var(--aae-btn-parallal-border-color, #000);
+  transform: scale(0);
+  transform-origin: bottom left;
+  transition: all 0.75s;
+}
+.e-aae-a-btn-base.aae-btn-parallal-border .e-divider-base::after {
+  position: absolute;
+  content: "";
+  width: 100%;
+  height: 100%;
+  inset-block-start: 0;
+  inset-inline-end: 0;
+  opacity: 0;
+  visibility: visible;
+  border-block-start: var(--aae-btn-parallal-border-width, 1px) solid var(--aae-btn-parallal-border-color, #000);
+  border-inline-end: var(--aae-btn-parallal-border-width, 1px) solid var(--aae-btn-parallal-border-color, #000);
+  transform: scale(0);
+  transform-origin: top right;
+  transition: all 0.75s;
+}
+.e-aae-a-btn-base.aae-btn-parallal-border:hover .e-divider-base::before,
+.e-aae-a-btn-base.aae-btn-parallal-border:hover .e-divider-base::after {
+  opacity: 1;
+  transform: scale(1);
+}

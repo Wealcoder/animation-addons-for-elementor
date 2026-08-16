@@ -977,8 +977,15 @@ const initVideoPopupEditor = ( container ) => {
 				panel.style.setProperty( 'transform', 'translate(-50%, -50%)', 'important' );
 				panel.style.setProperty( 'z-index', '10000', 'important' );
 				panel.style.setProperty( 'visibility', 'visible', 'important' );
-				initVideoInPanel( panel );
+				const video = initVideoInPanel( panel );
+				// Editor mirror of the frontend's playIfAutoplay() — without
+				// this, opening the popup here only wired up click delegation;
+				// nothing ever called requestPlay(), so a panel with the
+				// (default-on) Autoplay setting just sat on the Player's own
+				// plain black background with no adapter ever created.
+				if ( video?.cfg.autoplay ) video.engine.requestPlay();
 			} else if ( ! open && ( isFloating || 'none' !== panel.style.display ) ) {
+				panel.querySelector( '.aae-a-video-popup-mount' )?.__aaeVideoPopupEngine?.getController()?.pause();
 				EDITOR_PANEL_RESET.forEach( ( p ) => panel.style.removeProperty( p ) );
 				panel.style.setProperty( 'display', 'none', 'important' );
 			}
