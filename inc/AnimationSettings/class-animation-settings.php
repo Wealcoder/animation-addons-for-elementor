@@ -109,6 +109,54 @@ class Animation_Settings {
 		// Showing the legacy UI is not enough: imported v3 content renders
 		// nothing until those widgets are actually registered.
 		add_action( 'admin_init', [ __CLASS__, 'maybe_enable_used_v3_widgets' ], 12 );
+
+		// Let a new page CHANGE the answer. See the method's docblock — without
+		// this, everything downstream of has_v3_usage() is up to an hour late.
+		add_action( 'save_post', [ __CLASS__, 'maybe_invalidate_v3_usage' ], 10, 2 );
+	}
+
+	/**
+	 * Drop the cached "does this site use v3?" answer when it may have changed.
+	 *
+	 * `has_v3_usage()` caches for an hour, and NOTHING used to clear it. That was
+	 * survivable while it only fed background ratchets on admin_init, but it now
+	 * also decides whether the dashboard shows the V3 tab at all — so importing a
+	 * page built from `wcf--*` widgets left the dashboard insisting this was a
+	 * V4-only site for up to an hour, with the imported pages rendering nothing
+	 * and no way to reach the screen that fixes it. That reads as "the feature
+	 * does not work", and the hour is exactly the window in which someone tests.
+	 *
+	 * Only the NEGATIVE answer is busted, which is what keeps this cheap on a
+	 * hook as hot as `save_post`:
+	 *
+	 * - cached '0' → a save could make it '1', so re-ask on the next call.
+	 * - cached '1' → v3 is already known, and the ratchet never turns itself off
+	 *   (Rule 5), so re-asking inside the hour can only cost a query.
+	 * - nothing cached → nothing to delete.
+	 *
+	 * This is deliberately NOT the `updated_post_meta` / `added_post_meta` pair
+	 * the Loop Grid count cache was killed for: those fire many times per save,
+	 * whereas `save_post` fires once and the guards above make all but the first
+	 * one a single `get_transient()` read.
+	 *
+	 * @param int      $post_id Saved post.
+	 * @param \WP_Post $post    Saved post object.
+	 */
+	public static function maybe_invalidate_v3_usage( $post_id, $post = null ): void {
+		if ( wp_is_post_revision( $post_id ) || wp_is_post_autosave( $post_id ) ) {
+			return;
+		}
+
+		// An auto-draft holds no content yet; the real save follows.
+		if ( $post instanceof \WP_Post && 'auto-draft' === $post->post_status ) {
+			return;
+		}
+
+		if ( '0' !== get_transient( 'aae_v3_usage' ) ) {
+			return;
+		}
+
+		delete_transient( 'aae_v3_usage' );
 	}
 
 	/**

@@ -593,6 +593,228 @@ a genuinely new install has no v3 content, so it enables nothing.
 
 ---
 
+## Which ERA the dashboard offers — V3 / V4 tab visibility (2026-08-17)
+
+A site that only uses one of the two eras is shown only that one. A new user
+landing on a 102-widget V3 list has no idea what they are looking at, and a
+long-time V3 user does not want an Atomic tab they will never open — the two
+tabs were the confusion, not the cure.
+
+One module owns every rule: `src/modules/dashboard/lib/systemVisibility.js`,
+consumed by `pages/Widgets.jsx`, `pages/Extensions.jsx` and
+`config/nav/main-nav.jsx`. Do not re-derive any of this at a call site.
+
+> **The menu item is LABELLED "Settings"** (2026-08-17), matching the heading
+> that screen's own sidebar always carried. Everything else still says
+> `animation-settings` — the route, the `tab=` value, the payload key, the PHP
+> class, and every reference in this file. Grep for the route, not the label.
+
+**Two different questions, two different signals — do not merge them.** The
+widget/extension tabs ask "is V3 PRESENT" (toggles *or* content); the Settings
+menu item asks only "are the v3 toggles off".
+
+| V3 toggles | v3 content | V4 active | Widgets + Extensions | Settings menu |
+|---|---|---|---|---|
+| on | — | yes | both tabs | hidden |
+| on | — | no | V3 only, **no switcher** | hidden |
+| off | no | yes | V4 only, **no switcher** | shown |
+| off | no | no | **V4 only**, no switcher | shown |
+| off | **yes** | yes | both tabs | **shown** |
+| off | **yes** | no | V3 only, no switcher | **shown** |
+| atomic registry absent | | | V3 only, no switcher | per the toggles |
+
+The two rows in bold are why the signals are kept apart. The content ratchet
+exists to stop a site LOSING the V3 list while pages still depend on it — an
+argument about the widget list, not about which screen this site configures its
+chrome from. A site whose v3 switches are all off has moved to v4 whatever its
+old pages still contain, so it gets the v4 screen and does not have to keep
+both.
+
+**"V3 present" is two signals ORed, and the second one is the important one:**
+
+```
+V3_PRESENT = V3_HAS_ACTIVE || V3_IN_USE
+```
+
+- `V3_HAS_ACTIVE` — widgets **OR** extensions switched on. Reading only the
+  widget count is the easy way to get this wrong; a site running nothing but
+  the GSAP extensions is a real shape.
+- `V3_IN_USE` — the site's CONTENT uses v3 widgets, whatever the toggles say
+  (`Animation_Settings::has_v3_usage()`, shipped as `v3_in_use` in the
+  dashboard payload). **The count alone is the wrong question:** a site can
+  hold 34 pages built from `wcf--*` widgets while `wcf_save_widgets` is empty —
+  that is exactly the shape `maybe_enable_used_v3_widgets()` exists to heal,
+  and it deliberately bails once the option has been written by hand. Deciding
+  "V4-only site" from the count would hide V3 from the one person who needs it
+  most: their pages are already rendering nothing, and the screen that could
+  switch the widgets back on would be gone too. Same ratchet as `legacy_v3`
+  (Rule 5) — evidence of v3 only ever turns V3 back ON.
+
+Read it as `!!payload.v3_in_use`, never `=== true`: `wp_localize_script`
+stringifies scalars, so the PHP boolean arrives as `"1"` / `""` and an identity
+check is false on both — failing in the silent direction, with the ratchet
+simply never firing.
+
+### DANGER — `aae_v3_usage` cached for an hour and NOTHING cleared it
+
+`has_v3_usage()` writes a one-hour transient and, until 2026-08-17, no code
+path ever deleted it. Survivable while it only fed background ratchets on
+`admin_init`; not survivable now that it also decides whether the dashboard
+offers V3 at all. **Importing a page built from `wcf--*` widgets left the
+dashboard insisting this was a V4-only site for up to an hour** — the imported
+pages rendering nothing (the widgets are unregistered), the V3 tab gone, and
+the screen that fixes it off the menu. That hour is precisely the window in
+which someone imports a demo and checks whether it worked, so the bug's whole
+lifetime is spent looking like "the feature is broken".
+
+`maybe_invalidate_v3_usage()` on `save_post` closes it, and **only busts the
+NEGATIVE**:
+
+| cached | on save | why |
+|---|---|---|
+| `'0'` | deleted | a save could make it `'1'` |
+| `'1'` | kept | v3 is already known and the ratchet never turns itself off |
+| absent | nothing | nothing to delete |
+
+That guard is what makes it safe on a hook as hot as `save_post`: after the
+first bust every later call is a single `get_transient()` read. Revisions,
+autosaves and `auto-draft` are skipped. It is deliberately **not** the
+`updated_post_meta` / `added_post_meta` pair — those fire many times per save
+and are what got the Loop Grid count cache deleted.
+
+Test: `E:\Local Testing\verify-v3-usage-invalidation.php` (9 checks). It runs in
+CLI on purpose: `admin_init` never fires there, so
+`maybe_enable_used_v3_widgets()` cannot see the fixture page and write
+`wcf_save_widgets` on the real site between insert and cleanup. It snapshots and
+restores both the transient and that option, including the "was absent" case —
+writing an empty `wcf_save_widgets` is how `set-v3-state.php` destroyed a site's
+v3 enablement.
+
+Four decisions worth not re-litigating:
+
+- **The switcher disappears when one era is on offer.** A tab strip with one
+  tab is the confusion restated, not removed.
+- **Both-off resolves to V4**, the one asymmetric row. That is a fresh install
+  (config.php ships no `is_active => true` and neither atomic option exists
+  until the wizard writes one), and a brand new user is exactly who this
+  feature is for — the wizard already offers them the atomic registry only.
+- **It is a SNAPSHOT of the saved state, never live reducer state.** Every
+  value is read once at module load from the `WCF_ADDONS_ADMIN` payload PHP
+  shipped with the page. Reading `app.context.jsx` instead would make the tab
+  the user is standing on vanish the moment they toggled the last widget off —
+  mid-gesture, before they had saved anything. The new layout appears on the
+  next page load, which is when the saved state is what the booleans claim.
+- **Hiding is never a one-way door.** An explicit `?system=v3` / `?system=atomic`
+  REVEALS its tab whatever the rules say (`resolveSystems()`), and
+  `?tab=animation-settings` still routes — the menu item is hidden, the screen
+  is not. **Do not delete that route thinking the screen is unreachable.**
+
+### The two links on the V4 tab row
+
+Both sit right-aligned on the Widgets/Extensions tab row, **V4 view only**, both
+low emphasis (12px muted text, dotted underline, no button). They do opposite
+jobs and must not be conflated:
+
+| Link | Component | Does |
+|---|---|---|
+| **Legacy (V3)** | `LegacyRevealLink.jsx` | reveals + selects the hidden V3 list |
+| **Settings** | `SettingsQuickLink.jsx` | routes to `?tab=animation-settings` |
+
+### The Legacy (V3) reveal link
+
+`?system=v3` only helps someone who already knows it exists. The discoverable
+version is a **"Legacy (V3)" link** (`components/shared/LegacyRevealLink.jsx`)
+that reveals and selects the V3 tab.
+
+- **It lives on the V4 view**, right-aligned on the tab row — that is where
+  someone is standing when they cannot find V3.
+- **Only while V3 is hidden** (`isAtomic && !v3TabVisible`). Once the tab is on
+  screen the link has nothing left to do and disappears.
+- **It rewrites the URL to `system=v3`** as well as setting state, so a reload
+  does not silently undo the reveal.
+- **Deliberately LOW EMPHASIS** — 12px muted text, dotted underline, no button,
+  no card. Styled up it would re-advertise the era this site has already moved
+  off, which is the opposite of why the tab was hidden.
+
+**It does NOT open the Settings screen.** It shipped that way for one revision,
+labelled "Legacy settings", and was wrong twice over: `?tab=animation-settings`
+is the **V4** settings home (Preloader, Cursor, Performance, Library — it merely
+also carries the `legacy_v3` switch), and what someone hunting for their old
+widgets wants is the V3 list, not a settings page. Do not re-point it there.
+
+### The Settings shortcut
+
+`SettingsQuickLink.jsx`, always present on the V4 view. Two reasons, and the
+second is the load-bearing one:
+
+- It is the natural next stop after switching atomic widgets on — the site-wide
+  V4 chrome, Performance and GSAP Library all live there.
+- **It is the only in-dashboard route to that screen on a site with v3 switches
+  ON**, where the menu item is hidden. That was a real gap for one revision.
+
+> **REMAINING GAP.** A site with v3 switches on **and no V4 tab at all** (every
+> atomic widget and extension off) has no V4 view to hang the shortcut on, so
+> the screen is `?tab=animation-settings`-only there. That is why the route must
+> stay registered in `showFullContent.jsx`.
+
+`ATOMIC_AVAILABLE` is its own gate: `class-atomic.php::init_hooks()` bails on
+`meets_requirements()`, so on Elementor <4 BOTH atomic keys are absent from the
+payload and the V4 tab must never appear however the V3 counts read — an empty
+tab is worse than no tab.
+
+`data-aae-system` on each page's root carries the resolved era. With the
+switcher hidden nothing else in the markup says which list rendered, and "the
+right list rendered" is the assertion that matters — tab presence alone cannot
+tell "V3 only" from "V4 only".
+
+### Turning ALL v3 widgets off asks first
+
+`DisableAllV3Dialog.jsx`, wired into the master **Enable All** switch on the V3
+view of both top bars (`WidgetTopBar` / `ExtensionTopBar`). Off direction only —
+switching things ON needs no ceremony, and the atomic lists are never gated.
+
+This is not politeness. Turning the master switch off unregisters the widgets,
+and **an unregistered widget renders nothing** — no error, no notice, not even
+a wrapper — so pages built from them go blank with nothing to explain it. It is
+the one dashboard action that can destroy a live page's output in one click, and
+`maybe_enable_used_v3_widgets()` will NOT heal it (that only helps a site whose
+option was never written; an explicit all-off is a written choice).
+
+The copy names the consequence rather than the action, and differs by kind: an
+unregistered WIDGET empties the page, an extension merely stops its saved
+effects running. When `V3_IN_USE` it adds the line that makes it concrete —
+"This site has pages that use V3 widgets right now."
+
+`ui/button.jsx` has no `destructive` variant and this was not the place to add
+one — a shared variant is a design-system decision, not a side effect of one
+dialog — so the red is inline.
+
+### The V4 info line
+
+`V3InUseNotice.jsx`, one quiet line under the atomic widget top bar, shown only
+when `V3_IN_USE`. Someone working entirely in the atomic list has no way to know
+their pages still depend on v3, and that is exactly the fact that makes the V3
+switches dangerous — so the dialog above lands as a confirmation of something
+already known rather than a surprise. One line, no card, no dismiss: nothing is
+wrong and nothing needs doing, and an alert-styled notice would claim otherwise
+on every visit. It gates itself on `V3_IN_USE` internally, so callers do not
+have to stay in step with the rule.
+
+Test: `E:\Local Testing\verify-system-visibility.mjs` (32 checks). It fakes the
+state in the BROWSER — a property setter that intercepts the `WCF_ADDONS_ADMIN`
+assignment, since `wp_localize_script` prints it *after* `addInitScript` runs —
+and never writes an option. Writing `wcf_save_widgets` for real is how
+`set-v3-state.php` destroyed a site's v3 enablement; a suite that cannot write
+cannot repeat it.
+
+**GOTCHA when adding a case that drives the master switch:** the V3 "Enable All"
+toggle reads `addons_config.<section>.is_active`, a SEPARATE value from the
+active COUNT — config.php ships it and the DB merge only ever flips leaf nodes.
+Fake the count alone and the switch is already off, so the click turns it ON and
+no confirmation ever appears. Pass `v3MasterOn: true`.
+
+---
+
 ## Animation Settings (v4 dashboard) vs. the v3 legacy surface
 
 AAE's five site-wide chrome features — **Preloader, Cursor, Scroll to Top,
@@ -3315,6 +3537,58 @@ Output goes to `assets/build/`. Each entry produces:
 - `<name>.asset.php` (deps + version, generated by @wordpress/scripts)
 - `<name>.js.map` (in dev)
 
+### Packaging / SVN — `vendor/` is HALF required (audited 2026-08-12)
+
+`vendor/` is not one thing. Split it before deciding what ships:
+
+| Part | Ships to .org SVN? | Why |
+|---|---|---|
+| `vendor/autoload.php` + `vendor/composer/**` (~90 KB) | **YES — mandatory** | The PSR-4 map `WCF_ADDONS\ → inc/` lives ONLY here. |
+| `vendor/squizlabs`, `wp-coding-standards`, `phpcsstandards`, `dealerdirect`, `bin` (~255 MB, 3 964 files) | **NO** | Pure `require-dev` (PHPCS/WPCS). Zero runtime code. |
+
+**Why the autoloader is not optional.** `composer.json`'s `require` block is
+`ext-simplexml/json/dom/xmlreader` only — no runtime PHP packages at all — so
+it *looks* like `vendor/` is disposable. It isn't: **337 files under `inc/`
+declare `namespace WCF_ADDONS…` and there is not a single
+`spl_autoload_register` anywhere in the plugin's own code.** Composer's
+`ClassLoader` is the only autoloader. `class-plugin.php::include_files()`
+hand-requires perhaps two dozen of those files; everything else resolves
+through the PSR-4 map in `vendor/composer/autoload_psr4.php`.
+
+Worse, the bootstrap guards it:
+
+```php
+// animation-addons-for-elementor.php:72
+if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
+	require __DIR__ . '/vendor/autoload.php';
+}
+```
+
+so a vendor-less build does **not** fail loudly at line 72 — it boots, then
+fatals later with `Class "WCF_ADDONS\…" not found` on whichever namespaced
+class is touched first. Never conclude "vendor isn't needed" from the plugin
+activating.
+
+**The bug in the current release script.** `gulp zip` (`gulpfile.js:175`)
+excludes `node_modules/`, `src/`, `public/`, `dist/`, maps and configs — but
+has **no `!vendor/**` line**. As written, `npm run release` packs the entire
+255 MB PHPCS/WPCS tree into the shipped zip. `composer.json` does define
+`"build": "@composer install --no-dev"`, but nothing calls it —
+`release = build-win + production = gulp build + gulp zip`.
+
+**Correct release sequence** (`--no-dev` prunes the dev packages while keeping
+the root package's own autoloader, so the PSR-4 map survives):
+
+```bash
+composer install --no-dev --optimize-autoloader   # vendor/ → ~90 KB
+npm run release                                    # gulp build + gulp zip
+composer install                                   # restore phpcs for local dev
+```
+
+Do **not** "fix" this by adding a blanket `!vendor/**` to the zip task — that
+drops the autoloader too and ships a plugin that fatals. If you exclude, you
+must exclude the packages and keep `vendor/autoload.php` + `vendor/composer/**`.
+
 ### `assets/atomic/js/` belongs to WEBPACK — never raw-copy sources into it
 
 Atomic widget frontend JS (`inc/AtomicWidgets/Widgets/*/assets/js/*.js`) is
@@ -3360,6 +3634,7 @@ JS.** Diagnose this class of failure fast: `head` the served file in
 
 | Symptom | Likely cause |
 |---|---|
+| The "Elementor V3" or "Elementor V4 (Atomic)" tab is missing from Widgets/Extensions, or "Animation Settings" is gone from the menu | Working as designed — the dashboard hides the era this site does not use, and drops the switcher entirely when only one is on offer. See [Which ERA the dashboard offers](#which-era-the-dashboard-offers--v3--v4-tab-visibility-2026-08-17) for the table. Reach a hidden V3 with the **"Legacy (V3)" link** on the V4 tab row (or `&system=v3`), a hidden V4 with `&system=atomic`, and the Settings screen with `?tab=animation-settings`. Note it reads the SAVED state at page load, so toggling switches does not move the tabs until you reload — and that a site whose CONTENT uses `wcf--*` widgets keeps V3 regardless of the toggles, via the `aae_v3_usage` transient. |
 | Widget/extension missing from the dashboard entirely | A registration list is out of sync — see [Registering a new widget or extension](#registering-a-new-widget-or-extension--what-must-stay-in-sync). Most likely no `$widgets_registry` entry (widget unreachable), or the slug is in the JS `INTERNAL_WIDGET_SLUGS` / `DEMO_ONLY_SLUGS` / `-main` hide list. |
 | Dashboard toggle does nothing | Either the slug is in `ALWAYS_ACTIVE_WIDGETS` (force-active, switch inert), or nothing in the codebase actually calls `is_extension_active()` for it — audit both directions with the grep in that section. |
 | Card shows "off" but the widget still works | `get_dashboard_config()` reports `is_active` from the raw saved option, not `is_widget_active()`. A force-active slug that was never saved reads as off. |
@@ -3370,6 +3645,7 @@ JS.** Diagnose this class of failure fast: `head` the served file in
 | A widget drops into the canvas looking broken/unstyled, but picking a preset by hand fixes it | It has no layout of its own — all of it lives in the presets — and no [auto-preset](#auto-preset--giving-a-widget-a-default-preset-on-drop) rule. Add an `AUTO_PRESETS` entry. Don't be misled by a `*-default` marker class on the children or a docblock claiming the watcher is wired: grep the JS, the marker may be read by nobody (Image Compare shipped exactly that way). |
 | Panel shows "Some classes are missing" on a widget's own parts | A functional hook class is sitting in the `classes` prop. Render it from the element's twig instead — and never tell the user to dismiss the alert, its ✕ unapplies the class. See [Never put a functional hook class in the `classes` prop](#never-put-a-functional-hook-class-in-the-classes-prop). |
 | A freshly-dropped widget keeps getting re-presetted, spawning copies forever | The auto-preset rule's freshness test can't tell "untouched" from "just applied" — the preset seeds the same child widget types as `define_default_children()`, so `defaultChildren` (shape) always reads as fresh. Use `defaultMarker` instead and put that class on every default child. `handled` can't save you: each apply mints a new element id. |
+| Fatal `Class "WCF_ADDONS\…" not found` on a fresh install / from the released zip, even though the plugin activated fine | `vendor/autoload.php` is missing from the build. It carries the ONLY PSR-4 map for `WCF_ADDONS\ → inc/`, and the bootstrap's `file_exists()` guard swallows its absence — see [Packaging / SVN](#packaging--svn--vendor-is-half-required-audited-2026-08-12). |
 | Effect controls not appearing | `Controls::inject_controls()` not adding the section for that widget type |
 | Settings don't save | Prop not in Schema, or wrong $$type wrapper |
 | `Settings validation failed … invalid_value` on publish (after a programmatic settings write) | Wrote a prop value RAW instead of in its `$$type` envelope. Responsive_JSON props need `{ $$type: 'aae-rj', value: { desktop: N } }`, not `{ desktop: N }`. See [Writing atomic settings from the editor](#writing-atomic-settings-from-the-editor-the-aae-rj-prop-shape). |

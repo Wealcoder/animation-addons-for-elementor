@@ -12,7 +12,11 @@ import { useEffect, useState } from "react";
 
 const MainNav = () => {
   const [currentPath, setCurrentPath] = useState("");
-  const navItems = MainNavData;
+  // `visible: false` entries are filtered out entirely rather than hidden with
+  // a class the way the role check below does it — a menu item withheld because
+  // of what this site uses should not sit in the DOM for a stylesheet to bring
+  // back. Items with no `visible` key are always shown.
+  const navItems = MainNavData.filter((item) => item.visible !== false);
   const role = WCF_ADDONS_ADMIN.user_role;
 
   const { setTabKey } = useTNavigation();

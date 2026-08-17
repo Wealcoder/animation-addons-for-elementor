@@ -6,6 +6,7 @@ import {
   RiShareBoxLine,
   RiVipCrown2Line,
 } from "react-icons/ri";
+import { SHOW_ANIMATION_SETTINGS } from "@/lib/systemVisibility";
 
 export const MainNavData = [
   {
@@ -26,11 +27,27 @@ export const MainNavData = [
     role: ["administrator", "editor"],
     icon: <RiApps2AddLine size={20} />,
   },
+  /*
+   * Animation Settings is the V4 home for the five site-wide chrome features
+   * (Preloader, Cursor, Scroll to Top, Scroll Indicator, Popup) that a v3 site
+   * configures from Elementor's own Site Settings instead — so it is offered
+   * only to a site with no v3 widgets or extensions left switched on.
+   *
+   * `visible: false` hides the MENU ITEM, nothing else: showFullContent.jsx
+   * still routes `?tab=animation-settings`, which is what keeps the
+   * `legacy_v3` switch on that screen reachable for the v3 users it exists
+   * for. Same arrangement `performance` and `integrations` already have.
+   */
   {
-    name: "Animation Settings",
+    // Labelled "Settings", which is what the screen's own sidebar heading has
+    // always said. The route, the payload key and the feature's name in the
+    // code stay `animation-settings` — renaming those would break bookmarks
+    // and every reference in CLAUDE.md for a label change.
+    name: "Settings",
     path: "animation-settings",
     role: ["administrator"],
     icon: <RiMagicLine size={20} />,
+    visible: SHOW_ANIMATION_SETTINGS,
   },
   {
     name: "Free vs Pro",
