@@ -10,6 +10,9 @@ import { resolveSystems } from "@/lib/systemVisibility";
 import LegacyRevealLink from "@/components/shared/LegacyRevealLink";
 import SettingsQuickLink from "@/components/shared/SettingsQuickLink";
 import V3InUseNotice from "@/components/shared/V3InUseNotice";
+import UsageScanButton from "@/components/shared/UsageScanButton";
+import { fetchWidgetUsage } from "@/lib/widgetUsage";
+import { toast } from "sonner";
 
 const Widgets = () => {
   const urlParams = new URLSearchParams(window.location.search);
@@ -70,6 +73,31 @@ const Widgets = () => {
     // rendered rather than hidden by the visibility rules.
   }, [urlParams]);
 
+  /*
+   * Usage counts. Held here rather than in either list because ONE scan
+   * answers for both eras — the server walks `_elementor_data` once and returns
+   * both maps, so scanning from the V3 tab fills the atomic tab too. null means
+   * "never scanned", which the cards must not confuse with zero.
+   */
+  const [usage, setUsage] = useState(null);
+  const [usageScanning, setUsageScanning] = useState(false);
+
+  const scanUsage = async () => {
+    setUsageScanning(true);
+    try {
+      setUsage(await fetchWidgetUsage());
+    } catch (error) {
+      // Leave any previous result on screen — a failed rescan should not wipe
+      // numbers the user is reading.
+      toast.error(
+        __("Could not scan widget usage.", "animation-addons-for-elementor"),
+        { position: "top-right" }
+      );
+    } finally {
+      setUsageScanning(false);
+    }
+  };
+
   const isAtomic = widgetSystem === "atomic";
 
   // Only on the V4 view, and only while V3 is actually hidden — once the tab is
@@ -86,40 +114,44 @@ const Widgets = () => {
     >
       <div className="pb-6 border-b flex flex-col gap-4">
         {/*
-          The row exists only when it has something in it — an empty div would
-          still spend the parent's `gap-4` and push the top bar down.
+          Always rendered — Usage lives here and is offered on both eras, so
+          unlike before there is no state in which this row is empty.
         */}
-        {(showTabs || isAtomic) && (
-          <div className="flex items-center gap-4">
-            {showTabs && (
-              <Tabs value={widgetSystem} onValueChange={setWidgetSystem}>
-                <TabsList className="h-10 w-fit">
-                  {showV4 && (
-                    <TabsTrigger value="atomic" className="px-4">
-                      {__(
-                        "Elementor V4 (Atomic)",
-                        "animation-addons-for-elementor"
-                      )}
-                    </TabsTrigger>
-                  )}
-                  {v3TabVisible && (
-                    <TabsTrigger value="v3" className="px-4">
-                      {__("Elementor V3", "animation-addons-for-elementor")}
-                    </TabsTrigger>
-                  )}
-                </TabsList>
-              </Tabs>
-            )}
+        <div className="flex items-center gap-4">
+          {showTabs && (
+            <Tabs value={widgetSystem} onValueChange={setWidgetSystem}>
+              <TabsList className="h-10 w-fit">
+                {showV4 && (
+                  <TabsTrigger value="atomic" className="px-4">
+                    {__(
+                      "Elementor V4 (Atomic)",
+                      "animation-addons-for-elementor"
+                    )}
+                  </TabsTrigger>
+                )}
+                {v3TabVisible && (
+                  <TabsTrigger value="v3" className="px-4">
+                    {__("Elementor V3", "animation-addons-for-elementor")}
+                  </TabsTrigger>
+                )}
+              </TabsList>
+            </Tabs>
+          )}
 
-            {/* V4 view only: reveal V3 (while it is hidden) and jump to Settings. */}
-            {isAtomic && (
-              <div className="ms-auto flex items-center gap-4">
-                {showRevealLink && <LegacyRevealLink onReveal={revealV3} />}
-                <SettingsQuickLink />
-              </div>
-            )}
+          <div className="ms-auto flex items-center gap-3">
+            {/* V4 view only — nothing to reveal from the V3 list itself. */}
+            {showRevealLink && <LegacyRevealLink onReveal={revealV3} />}
+
+            {/* Both eras: the scan answers for v3 and atomic in one pass. */}
+            <UsageScanButton
+              onScan={scanUsage}
+              scanning={usageScanning}
+              hasResult={!!usage}
+            />
+
+            {isAtomic && <SettingsQuickLink />}
           </div>
-        )}
+        </div>
 
         {isAtomic ? (
           <>
@@ -153,6 +185,7 @@ const Widgets = () => {
             filterKey={atomicFilterKey}
             searchKey={atomicSearchKey}
             setWidgetCount={setAtomicWidgetCount}
+            usage={usage?.atomic || null}
           />
         ) : (
           <ShowWidgets
@@ -162,6 +195,7 @@ const Widgets = () => {
             urlParams={urlParams}
             setWidgetCount={setWidgetCount}
             settingOpen={settingOpen}
+            usage={usage?.v3 || null}
           />
         )}
       </div>

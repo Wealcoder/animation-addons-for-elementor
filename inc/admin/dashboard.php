@@ -552,6 +552,21 @@ class WCF_Admin_Init
 			 * locked upsell state.
 			 */
 			'performance' => apply_filters('aae/performance/dashboard_payload', array()),
+
+			/*
+			 * Widget usage counts. Free ships the button and the per-card
+			 * count line; the scan that produces the numbers is Pro
+			 * (pro/inc/Usage/), so capability arrives through a filter Pro
+			 * answers rather than a direct class reference.
+			 *
+			 * An empty array is the correct free-only value: the widgets
+			 * screen reads it as "Pro is not here" and renders the button as
+			 * an upsell instead of firing a request at an endpoint nobody
+			 * registered. Note this only ever carries CAPABILITY — shipping
+			 * counts with the page would re-introduce exactly the cost the
+			 * on-demand design exists to avoid.
+			 */
+			'usage' => apply_filters('aae/usage/dashboard_payload', array()),
 		);
 
 		wp_localize_script('wcf-admin', 'WCF_ADDONS_ADMIN', $localize_data);

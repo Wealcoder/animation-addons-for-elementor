@@ -330,8 +330,15 @@ class Animation_Settings {
 	 * slug, find `widgets/<slug>.php` or `widgets/<slug>/<slug>.php` in either
 	 * plugin and pull the string `get_name()` returns. Cheap enough for a
 	 * one-time, option-absent path, and it cannot drift from the source.
+	 *
+	 * PUBLIC because Pro's `Usage\Widget_Usage` needs the same answer to turn
+	 * the widget names it finds in `_elementor_data` back into dashboard slugs.
+	 * A second copy over there would be a second thing to keep in step with the
+	 * widget files, and the whole reason this reads `get_name()` is that no
+	 * hand-maintained list survives contact with a new widget. Pro must guard
+	 * the call with `class_exists()` — an older free plugin will not have it.
 	 */
-	private static function widget_name_to_slug_map(): array {
+	public static function widget_name_to_slug_map(): array {
 		if ( ! function_exists( 'wcf_get_config' ) ) {
 			return [];
 		}

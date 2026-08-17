@@ -789,6 +789,73 @@ effects running. When `V3_IN_USE` it adds the line that makes it concrete —
 one — a shared variant is a design-system decision, not a side effect of one
 dialog — so the red is inline.
 
+### Widget usage counts (2026-08-17)
+
+"How many pages is this widget on?" — a **Usage** button on the Widgets tab row
+next to the Settings link, and a low-emphasis count on each card once it has run.
+
+| | |
+|---|---|
+| UI | `shared/UsageScanButton.jsx`, the `usage` prop on `WidgetCard` — **FREE** |
+| Scan + AJAX | `pro/inc/Usage/class-widget-usage.php` — **PRO** |
+| Payload seam | `apply_filters('aae/usage/dashboard_payload', array())` in free's `inc/admin/dashboard.php` |
+
+Same split, and the same reason, as Performance: free ships the screen, Pro
+ships what is behind it. With Pro absent the payload is `[]`, `USAGE_AVAILABLE`
+is false and the button becomes an upsell instead of firing a request at an
+endpoint nobody registered. Pro-only is safe here specifically because nothing
+DEPENDS on the count — a lapsed licence loses a number and breaks no page.
+
+**Two things the scan must get right, both silent when wrong:**
+
+1. **`elType` counts as well as `widgetType`.** Measured: `e-aae-a-advanced-heading`
+   saves as a `widgetType`, but `e-aae-a-slider`, `e-aae-a-counter`, `e-aae-a-btn`
+   and every offcanvas part save as their own `elType` — atomic container-style
+   elements are not "widgets" in the data at all. Match `widgetType` alone and
+   they all report 0, which reads as "safe to switch off".
+2. **DISTINCT per post**, because the answer is a PAGE count. One heading used
+   267 times across the site must not make one page count 267.
+
+The v3 side goes through `Animation_Settings::widget_name_to_slug_map()` (made
+public for exactly this) — `wcf--title` lives under `animated-title`, so
+trimming the prefix silently misses a third of the catalogue.
+
+**On demand, and NOT cached — in either direction.** The server stores nothing
+and the client memoises nothing. This is the number someone consults before
+switching a widget off, and a stale one is worse than none; the button IS the
+freshness guarantee, so pressing it again genuinely re-asks. Equally it must
+never run on page load: it walks every `_elementor_data` row on the site.
+
+**The Used tab** appears in the category strip only after a scan and lists the
+widgets with a count above zero. It renders **no group Enable All** — that
+switch acts on the whole category, not on the cards a filtered view is showing,
+and offering it above four used widgets where it would quietly switch on the
+other thirty is a control that lies about its own scope. If a rescan empties the
+tab, the screen falls back to All rather than leaving someone on a blank filter.
+
+`shared/WidgetCategoryGrid.jsx` exists because ShowWidgets and ShowAtomicWidgets
+each carried the category-heading-plus-card-grid markup TWICE already; the Used
+tab would have made six copies across the two files. One pre-existing asymmetry
+was preserved rather than quietly fixed while extracting it: `settingOpen` is
+passed on the All tab and not on the per-category tabs.
+
+Tests: `E:\Local Testing\verify-widget-usage.php` (22 checks). Beyond the
+counting rules it drives the AJAX handler for real — bad nonce, subscriber with
+a VALID nonce, admin with a valid nonce — because a `current_user_can()` whose
+result is discarded greps identically to one that is honoured. Two CLI traps it
+documents: `wp_die()` uses `wp_die_handler`, not the AJAX one, unless
+`DOING_AJAX` is defined (WP-CLI's handler EXITS, killing the suite mid-run with
+a bare `-1`), and `get_current_user_id()` is 0 under WP-CLI, so using it for the
+positive case tests a logged-out visitor and reports the endpoint as broken.
+
+**Extensions have no usage count yet, deliberately.** A widget writes its own
+name into `_elementor_data`; an extension only leaves control keys inside some
+other widget's settings (`wcf_advanced_tooltip_content`, `wcf-animation`,
+`aae_ns_*`), and nothing declares which key belongs to which extension — the
+naming is not even consistent (`wcf_` vs `wcf-`, slug ≠ key). A hand-maintained
+map would work today and silently report 0 for every extension added after
+someone forgot to update it. Decide the signal before building the UI.
+
 ### The V4 info line
 
 `V3InUseNotice.jsx`, one quiet line under the atomic widget top bar, shown only

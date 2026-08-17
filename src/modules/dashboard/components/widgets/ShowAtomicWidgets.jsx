@@ -13,8 +13,16 @@ import {
 import { useActiveItem, useAtomicWidgets } from "@/hooks/app.hooks";
 import { toast } from "sonner";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
+import WidgetCategoryGrid from "../shared/WidgetCategoryGrid";
+import { filterUsedWidgets } from "@/lib/usedWidgets";
 
-const ShowAtomicWidgets = ({ searchKey, filterKey, setWidgetCount }) => {
+const ShowAtomicWidgets = ({
+  searchKey,
+  filterKey,
+  setWidgetCount,
+  // { slug: pages }, or null until the Usage scan has run.
+  usage = null,
+}) => {
   const { allAtomicWidgets } = useAtomicWidgets();
   const { updateActiveAtomicWidget, updateActiveAtomicGroupWidget } =
     useActiveItem();
@@ -87,6 +95,15 @@ const ShowAtomicWidgets = ({ searchKey, filterKey, setWidgetCount }) => {
     updateActiveAtomicGroupWidget(data);
   };
 
+  // Mirrors ShowWidgets — see the notes there.
+  const usedWidgets = filterUsedWidgets(catWidgets, usage);
+
+  useEffect(() => {
+    if (tabValue === "used" && (!usage || !Object.keys(usedWidgets).length)) {
+      setTabValue("all");
+    }
+  }, [usage, tabValue, usedWidgets]);
+
   const saveWidget = async () => {
     const fields = flattenAtomicWidgets(allAtomicWidgets);
 
@@ -132,6 +149,13 @@ const ShowAtomicWidgets = ({ searchKey, filterKey, setWidgetCount }) => {
                 {tab.title}
               </TabsTrigger>
             ))}
+
+            {/* Appears only after a Usage scan — see usedWidgets above. */}
+            {usage && (
+              <TabsTrigger key="used-widgets_tab" value="used" data-aae-used-tab>
+                {__("Used", "animation-addons-for-elementor")}
+              </TabsTrigger>
+            )}
           </TabsList>
           <ScrollBar orientation="horizontal" />
         </ScrollArea>
@@ -151,97 +175,61 @@ const ShowAtomicWidgets = ({ searchKey, filterKey, setWidgetCount }) => {
           </div>
         ) : (
           Object.keys(catWidgets)?.map((tab) => (
-            <div className="mt-3 first:mt-0" key={`all_group-${tab}`}>
-              <div className="bg-background flex justify-between items-center p-5 rounded">
-                <h3 className="text-base font-medium">
-                  {catWidgets[tab].title}
-                </h3>
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id={tab}
-                    checked={catWidgets[tab].is_active}
-                    onCheckedChange={(value) => setCheck({ value, slug: tab })}
-                  />
-                  <Label htmlFor={tab}>{__("Enable All", "animation-addons-for-elementor")}</Label>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 xl:grid-cols-3 gap-1 mt-1">
-                {Object.keys(catWidgets[tab].elements)?.map((content, i) => (
-                  <React.Fragment key={`tab_content-${i}`}>
-                    <WidgetCard
-                      widget={catWidgets[tab].elements[content]}
-                      slug={content}
-                      updateActiveItem={updateActiveAtomicWidget}
-                      className="rounded p-5"
-                    />
-                  </React.Fragment>
-                ))}
-                {Array.from({
-                  length:
-                    deviceMediaMatch() -
-                    (Object.keys(catWidgets[tab].elements)?.length %
-                      deviceMediaMatch() ===
-                    0
-                      ? deviceMediaMatch()
-                      : Object.keys(catWidgets[tab].elements)?.length %
-                        deviceMediaMatch()),
-                }).map((_, index) => (
-                  <WidgetCard
-                    key={`tab_content_empty-${index}`}
-                    className="rounded"
-                  />
-                ))}
-              </div>
-            </div>
+            <WidgetCategoryGrid
+              key={`all_group-${tab}`}
+              category={catWidgets[tab]}
+              categorySlug={tab}
+              onToggleCategory={(value) => setCheck({ value, slug: tab })}
+              updateActiveItem={updateActiveAtomicWidget}
+              usage={usage}
+            />
           ))
         )}
       </TabsContent>
+
+      {/* Used — see the note in ShowWidgets. */}
+      {usage && (
+        <TabsContent
+          key="used-atomic-widgets_content"
+          value="used"
+          className="bg-background-secondary p-3 rounded-lg"
+        >
+          {Object.keys(usedWidgets).length ? (
+            Object.keys(usedWidgets).map((tab) => (
+              <WidgetCategoryGrid
+                key={`used_group-${tab}`}
+                category={usedWidgets[tab]}
+                categorySlug={`used-${tab}`}
+                showGroupToggle={false}
+                updateActiveItem={updateActiveAtomicWidget}
+                usage={usage}
+              />
+            ))
+          ) : (
+            <div className="bg-background flex justify-center items-center p-5 rounded">
+              <h3 className="text-base font-medium">
+                {__(
+                  "No widgets are used on any page.",
+                  "animation-addons-for-elementor"
+                )}
+              </h3>
+            </div>
+          )}
+        </TabsContent>
+      )}
       {Object.keys(catWidgets)?.map((tab) => (
         <TabsContent
           key={tab}
           value={tab}
           className="bg-background-secondary p-3 rounded-lg"
         >
-          <div>
-            <div className="bg-background flex justify-between items-center p-5 rounded">
-              <h3 className="text-base font-medium">{catWidgets[tab].title}</h3>
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id={tab}
-                  checked={catWidgets[tab].is_active}
-                  onCheckedChange={(value) => setCheck({ value, slug: tab })}
-                />
-                <Label htmlFor={tab}>{__("Enable All", "animation-addons-for-elementor")}</Label>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 xl:grid-cols-3 gap-1 mt-1">
-              {Object.keys(catWidgets[tab].elements)?.map((content, i) => (
-                <React.Fragment key={`tab_content-${i}`}>
-                  <WidgetCard
-                    widget={catWidgets[tab].elements[content]}
-                    slug={content}
-                    updateActiveItem={updateActiveAtomicWidget}
-                    className="rounded p-5"
-                  />
-                </React.Fragment>
-              ))}
-              {Array.from({
-                length:
-                  deviceMediaMatch() -
-                  (Object.keys(catWidgets[tab].elements)?.length %
-                    deviceMediaMatch() ===
-                  0
-                    ? deviceMediaMatch()
-                    : Object.keys(catWidgets[tab].elements)?.length %
-                      deviceMediaMatch()),
-              }).map((_, index) => (
-                <WidgetCard
-                  key={`tab_content_empty-${index}`}
-                  className="rounded"
-                />
-              ))}
-            </div>
-          </div>
+          <WidgetCategoryGrid
+            category={catWidgets[tab]}
+            categorySlug={tab}
+            onToggleCategory={(value) => setCheck({ value, slug: tab })}
+            updateActiveItem={updateActiveAtomicWidget}
+            usage={usage}
+          />
         </TabsContent>
       ))}
     </Tabs>
