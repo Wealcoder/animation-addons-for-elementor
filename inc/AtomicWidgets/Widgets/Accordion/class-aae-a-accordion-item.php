@@ -337,6 +337,14 @@ class AAE_A_Accordion_Item extends Atomic_Element_Base {
 			'background' => Background_Prop_Type::generate([]),
 		];
 
+		// The content inset lives HERE, not in accordion.scss. The stylesheet
+		// used to hardcode it at (0,3,0) — above the (0,2,0) of a builder's own
+		// saved padding — so the Style panel's Padding could never take effect.
+		// As a base style it renders identically and stays overridable.
+		//
+		// Safe to own from here, unlike the header row: this element carries no
+		// `e-div-block-base`, and a bare `.e-con` only DECLARES `--padding-*`
+		// without applying them, so nothing else on it sets padding.
 		$content_styles = [
 			'background' => Background_Prop_Type::generate([]),
 			'color' => Color_Prop_Type::generate( '#4b5563' ),
@@ -346,7 +354,19 @@ class AAE_A_Accordion_Item extends Atomic_Element_Base {
 			'border-color' => Color_Prop_Type::generate(''),
 			'border-width' => Size_Prop_Type::generate([]),
 			'border-radius' => Dimensions_Prop_Type::generate([]),
-			'padding' => Dimensions_Prop_Type::generate([]),
+			// Zero, so the body text lines up with the header title rather than
+			// sitting 16px inside it. It also keeps the frontend matching the
+			// editor: accordion.js's distributeChildren() does not nest the
+			// content child inside .aae-accordion-content in the editor canvas
+			// (Elementor mounts child views on the item root, bypassing the
+			// twig's children_placeholder), so any inset declared here is
+			// invisible there and appears only on the frontend.
+			'padding' => Dimensions_Prop_Type::generate( [
+				'block-start'  => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+				'inline-end'   => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+				'block-end'    => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+				'inline-start' => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+			] ),
 			'margin' => Dimensions_Prop_Type::generate([]),
 		];
 
@@ -365,16 +385,22 @@ class AAE_A_Accordion_Item extends Atomic_Element_Base {
 		// background and hover tint still paint the whole row. The difference is
 		// that this element is selectable, so Padding in the Style panel — with
 		// its breakpoints and states — now actually governs the row height.
+		//
+		// Zero is declared EXPLICITLY, and an empty Dimensions_Prop_Type is not a
+		// substitute for it. This element also carries Elementor's own
+		// `e-div-block-base`, which ships `padding: 10px` at the same (0,2,0)
+		// specificity — so emitting no padding key here does not produce a flush
+		// row, it silently hands the row back to that 10px. Only an explicit 0
+		// wins the tie. Per-element local styles still override this, as before.
 		$header_element_styles = [
 			'display' => String_Prop_Type::generate( 'flex' ),
 			'flex-direction' => String_Prop_Type::generate( 'row' ),
 			'justify-content' => String_Prop_Type::generate( 'space-between' ),
-			// Tighter vertical padding — a shorter resting row height.
 			'padding' => Dimensions_Prop_Type::generate( [
-				'block-start'  => Size_Prop_Type::generate( [ 'size' => 10, 'unit' => 'px' ] ),
-				'inline-end'   => Size_Prop_Type::generate( [ 'size' => 16, 'unit' => 'px' ] ),
-				'block-end'    => Size_Prop_Type::generate( [ 'size' => 10, 'unit' => 'px' ] ),
-				'inline-start' => Size_Prop_Type::generate( [ 'size' => 16, 'unit' => 'px' ] ),
+				'block-start'  => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+				'inline-end'   => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+				'block-end'    => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+				'inline-start' => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
 			] ),
 		];
 
