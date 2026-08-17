@@ -1,0 +1,48 @@
+.e-aae-a-curved-text-rotator {
+	animation-name: aae-ct-spin;
+	animation-duration: var(--aae-ct-rot-duration, 8s);
+	animation-direction: var(--aae-ct-rot-direction, normal);
+	animation-timing-function: linear;
+	animation-iteration-count: infinite;
+}
+
+// Curved text: the `<textPath>` circle radius/font-size
+.aae-a-curved-text-rotator--text {
+	overflow: visible;
+	fill: currentColor;
+
+	text {
+		font-weight: 700;
+		letter-spacing: 0.5px;
+		text-transform: uppercase;
+	}
+}
+
+@keyframes aae-ct-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.e-aae-a-curved-text-rotator {
+		animation: none;
+	}
+}
+
+// Elementor's own native e-svg element carries `e-svg-base` on every
+// instance (a hardcoded 65px width/height default), on the SAME node as our
+// own `icon` Style_Definition class from class-aae-a-curved-text.php. Both
+// compile to `.elementor .<class>` — an equal-specificity (0,2,0) tie — and
+// `e-svg-base` consistently prints LATER in Elementor's generated
+// base-styles file (native element types are compiled after third-party
+// ones), so it always wins the tie regardless of cache state. A plain
+// `.e-aae-a-curved-text-icon { width: 1em }` can therefore never reliably
+// override it. This compound selector matches the SAME node (both classes
+// are always present together — see define_default_children()) at
+// specificity (0,3,0), which beats the tie unconditionally, independent of
+// stylesheet load order.
+.elementor .e-aae-a-curved-text-icon.e-svg-base {
+	width: 1em;
+	height: 1em;
+}

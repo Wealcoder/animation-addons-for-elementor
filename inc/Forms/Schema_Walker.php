@@ -149,8 +149,11 @@ final class Schema_Walker {
 					$labels[ $for ] = Prop::read_html_text( $settings, 'text', '' );
 				}
 			} elseif ( 'e-aae-a-form-submit' === $type && null === $submit ) {
+				// The label is the Paragraph child, not a `text` prop — the Submit
+				// button is a container (Paragraph + SVG) so the label and icon
+				// can be real, styleable elements.
 				$submit = [
-					'text'          => Prop::read_html_text( $settings, 'text', 'Submit' ),
+					'text'          => self::first_label_text( $element ),
 					'loading_label' => (string) Prop::read( $settings, 'loading_label', '' ),
 				];
 			} elseif ( 'e-aae-a-form-success-message' === $type ) {
@@ -287,6 +290,45 @@ final class Schema_Walker {
 		}
 
 		return $prefix . ( '' !== $css_id ? $css_id : $element_id );
+	}
+
+	/**
+	 * Label text of a Submit button — the first heading/paragraph anywhere
+	 * underneath it.
+	 *
+	 * RECURSIVE, unlike first_paragraph_text() below: the default children are
+	 * Paragraph + SVG directly under the button, but a builder is free to nest
+	 * the label inside a flexbox — and buttons saved before the wrapper row was
+	 * dropped still have it one level down. Heading stores its text under
+	 * `title`, Paragraph under `paragraph` — both are accepted so swapping one
+	 * for the other on the canvas doesn't blank the schema's submit label.
+	 */
+	private static function first_label_text( array $element ): string {
+		foreach ( $element['elements'] ?? [] as $child ) {
+			if ( ! is_array( $child ) ) {
+				continue;
+			}
+
+			$type = ( 'widget' === ( $child['elType'] ?? '' ) ) ? ( $child['widgetType'] ?? '' ) : ( $child['elType'] ?? '' );
+			$key  = [
+				'e-heading'   => 'title',
+				'e-paragraph' => 'paragraph',
+			][ $type ] ?? null;
+
+			if ( $key ) {
+				$text = Prop::read_html_text( $child['settings'] ?? [], $key, '' );
+				if ( '' !== $text ) {
+					return $text;
+				}
+			}
+
+			$nested = self::first_label_text( $child );
+			if ( '' !== $nested ) {
+				return $nested;
+			}
+		}
+
+		return '';
 	}
 
 	/** Text of the first e-paragraph child (status-message body). */

@@ -5,9 +5,11 @@ import { register } from '@elementor/frontend-handlers';
  * One frontend handler bound to the PARENT element (e-aae-a-video), which
  * owns every source/playback setting as data-aae-video-* attributes. It
  * reaches into its own rendered subtree for:
- *   - .aae-a-video-poster — the native Image child (hook class seeded via
- *     its `classes` prop, since a native widget emits no data-element_type
- *     of its own to key off instead).
+ *   - .aae-a-video-poster — plain `<img>` markup this element's OWN twig
+ *     renders directly from its `poster_image` setting (not a child element
+ *     at all), so its hook class is hardcoded there — nothing for this file
+ *     to swap or protect at runtime; the PHP/twig side already picked
+ *     between the auto-fetched thumbnail and the user's own image.
  *   - .aae-a-video-playbtn — our own Parts\AAE_A_Video_PlayBtn, whose hook
  *     class is hardcoded in ITS OWN twig instead (see that class's docblock
  *     for why it isn't a reused native e-button).
@@ -55,6 +57,7 @@ const readConfig = ( el ) => ( {
 	type: el.getAttribute( 'data-aae-video-type' ) || 'youtube',
 	youtubeUrl: el.getAttribute( 'data-aae-video-youtube-url' ) || '',
 	hostedUrl: el.getAttribute( 'data-aae-video-hosted-url' ) || '',
+	externalUrl: el.getAttribute( 'data-aae-video-external-url' ) || '',
 	vimeoUrl: el.getAttribute( 'data-aae-video-vimeo-url' ) || '',
 	dailymotionUrl: el.getAttribute( 'data-aae-video-dailymotion-url' ) || '',
 	videopressUrl: el.getAttribute( 'data-aae-video-videopress-url' ) || '',
@@ -65,8 +68,6 @@ const readConfig = ( el ) => ( {
 	lazyload: el.getAttribute( 'data-aae-video-lazyload' ) === 'true',
 	youtubePrivacy: el.getAttribute( 'data-aae-video-youtube-privacy' ) === 'true',
 	vimeoDnt: el.getAttribute( 'data-aae-video-vimeo-dnt' ) === 'true',
-	poster: el.getAttribute( 'data-aae-video-poster' ) || '',
-	placeholder: el.getAttribute( 'data-aae-video-placeholder' ) || '',
 	controlsEnabled: el.getAttribute( 'data-aae-video-controls-enabled' ) === 'true',
 	autohide: el.getAttribute( 'data-aae-video-controls-autohide' ) === 'true',
 } );
@@ -115,6 +116,9 @@ const loadVimeoApi = () => {
 // it's driving. To add another provider: write one more createXAdapter() and
 // a matching branch in pickAdapter() below. ---
 
+// Shared by 'hosted' (Media Library / pasted URL) AND 'external' (a plain
+// URL to a video file on another site) — both are a real <video> tag with
+// no provider SDK, so only the source attribute differs between the two.
 const createNativeAdapter = ( mountEl, cfg ) => {
 	const videoEl = document.createElement( 'video' );
 	videoEl.className = 'aae-a-video-native';
@@ -122,7 +126,7 @@ const createNativeAdapter = ( mountEl, cfg ) => {
 	videoEl.loop = cfg.loop;
 	videoEl.playsInline = true;
 	videoEl.muted = cfg.mute || cfg.autoplay;
-	videoEl.src = cfg.hostedUrl;
+	videoEl.src = 'external' === cfg.type ? cfg.externalUrl : cfg.hostedUrl;
 	mountEl.insertBefore( videoEl, mountEl.firstChild );
 
 	const listeners = {};
@@ -484,6 +488,7 @@ const createVideoPressAdapter = ( mountEl, cfg ) => createPostMessageAdapter( mo
 
 const ADAPTERS = {
 	hosted: createNativeAdapter,
+	external: createNativeAdapter,
 	youtube: createYoutubeAdapter,
 	vimeo: createVimeoAdapter,
 	dailymotion: createDailymotionAdapter,
@@ -542,21 +547,6 @@ const toggleFullscreen = ( fsTarget ) => {
 	}
 
 	fallbackToVideo();
-};
-
-// Swap the poster <img> for the auto-fetched thumbnail, but ONLY while it's
-// still showing Elementor's own placeholder — a user-picked image on the
-// native Image child must never be overridden.
-const applyAutoPoster = ( el, cfg ) => {
-	if ( ! cfg.poster ) return;
-	// Not `:scope >` — the editor wraps a materialized child widget in its
-	// own container for drag/selection purposes, so the poster <img> is a
-	// descendant here even though the frontend's server-rendered HTML (which
-	// has no such wrapper) makes it a direct child. See installDelegatedClicks().
-	const img = el.querySelector( '.aae-a-video-poster' );
-	if ( ! img ) return;
-	if ( cfg.placeholder && img.getAttribute( 'src' ) !== cfg.placeholder ) return;
-	img.src = cfg.poster;
 };
 
 // --- Wiring ---
@@ -693,8 +683,6 @@ const bindEngineOnce = ( el, mountEl, engine, cfg, signal ) => {
 	if ( mountEl.dataset.aaeVideoBound ) return;
 	mountEl.dataset.aaeVideoBound = 'true';
 
-	applyAutoPoster( el, cfg );
-
 	const controlsBar = mountEl.querySelector( '.aae-a-video-controls' );
 	if ( controlsBar ) {
 		if ( ! cfg.controlsEnabled ) {
@@ -746,7 +734,7 @@ const bindEngineOnce = ( el, mountEl, engine, cfg, signal ) => {
 	// audible autoplay), and skip it entirely in the editor so builders
 	// don't get sound while designing the page.
 	if ( cfg.autoplay && ! isEditMode() ) {
-		if ( cfg.lazyload && 'hosted' !== cfg.type ) {
+		if ( cfg.lazyload && 'hosted' !== cfg.type && 'external' !== cfg.type ) {
 			const observer = new IntersectionObserver( ( entries ) => {
 				if ( entries.some( ( entry ) => entry.isIntersecting ) ) {
 					engine.requestPlay();
@@ -761,9 +749,29 @@ const bindEngineOnce = ( el, mountEl, engine, cfg, signal ) => {
 	}
 };
 
+// The 'external' source's poster falls back to the video file's own first
+// frame (see aae-a-video.html.twig's `use_frame_poster`) — a plain <video>
+// with no `poster` attribute, `preload="metadata"`. Some browsers (notably
+// Safari) leave that black until something forces a frame to decode; a tiny
+// nudge past 0 right after the first frame of data lands is the standard,
+// non-fancy fix — no canvas capture, no server-side extraction.
+const primeFramePoster = ( videoEl ) => {
+	if ( videoEl.dataset.aaeFramePrimed ) return;
+	videoEl.dataset.aaeFramePrimed = 'true';
+
+	videoEl.addEventListener( 'loadeddata', () => {
+		if ( videoEl.currentTime === 0 ) {
+			try { videoEl.currentTime = 0.1; } catch ( e ) {}
+		}
+	}, { once: true } );
+};
+
 const initVideo = ( el, signal ) => {
 	const mountEl = el.querySelector( '.aae-a-video-mount' );
 	if ( ! mountEl ) return;
+
+	const framePoster = el.querySelector( '.aae-a-video-poster-frame' );
+	if ( framePoster ) primeFramePoster( framePoster );
 
 	const cfg = readConfig( el );
 	const engine = getOrCreateEngine( el, mountEl, cfg );

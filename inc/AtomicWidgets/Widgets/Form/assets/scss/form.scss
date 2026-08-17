@@ -11,6 +11,29 @@
     box-sizing: border-box;
 }
 
+// LEGACY-ONLY. The Submit button seeds Paragraph + SVG as DIRECT children now,
+// so nothing new carries `-row`. Buttons SAVED before that change still hold an
+// e-flexbox row, and e-flexbox's own base style sets `padding: 10px`, which
+// lands INSIDE the button's padding and visibly inflates it — so this reset
+// stays until those are migrated. Keep it in step with the `row` key in
+// class-aae-a-form-submit.php::define_base_styles().
+//
+// This cannot be fixed from define_base_styles(): our `row` key compiles to
+// `.elementor .e-aae-a-form-submit-row` and Elementor's to
+// `.elementor .e-flexbox-base` — both (0,2,0), so source order decides, and the
+// atomic module registers its elements after ours on the shared
+// `elementor/elements/elements_registered` hook (measured: ours at ~11.9k in
+// the generated sheet, e-flexbox-base at ~17.4k). Hence (0,3,0) here, which
+// beats it deterministically whatever the file order turns out to be.
+//
+// Cost, accepted: a per-element style from the Style panel is also (0,2,0), so
+// this wins over that too — the row's own Padding control is inert. Everything
+// else on the row (direction, gap, alignment, background) still works, and the
+// button's own Padding control is what anyone would reach for anyway.
+.elementor .aae-a-form-submit > .e-aae-a-form-submit-row {
+    padding: 0;
+}
+
 // Next/Previous step buttons: text + icon (uploaded SVG or built-in chevron
 // fallback — see aae-a-form-next/prev.html.twig), centered with a small gap.
 // Icon size follows font-size (1em in the twig) so the Style panel's Font

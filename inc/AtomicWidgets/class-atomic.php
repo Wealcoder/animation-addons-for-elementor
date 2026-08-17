@@ -480,6 +480,7 @@ final class Atomic
 		'aae-a-video-player'           => 'aae-a-video',
 		'aae-a-video-playbtn'          => 'aae-a-video',
 		'aae-a-flip-box-front'         => 'aae-a-flip-box',
+
 		'aae-a-flip-box-back'          => 'aae-a-flip-box',
 		'aae-a-flip-box-title'         => 'aae-a-flip-box',
 		'aae-a-flip-box-text'          => 'aae-a-flip-box',
@@ -3189,6 +3190,32 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			'aae-a-curved-text' => [
+				'label'        => 'Curved Text',
+				'description'  => 'A spinning circular badge — curved rotating text or a rotating image, with a static icon on top. Purely decorative, no JS runtime.',
+				'icon'         => 'eicon-dot-circle-o',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'curved',
+					'text',
+					'rotate',
+					'rotating',
+					'spin',
+					'spinner',
+					'circle',
+					'circular',
+					'badge',
+					'atomic',
+				],
+				'category'     => 'general',
+				'order'        => 22,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
 		];
 	}
 
@@ -5153,6 +5180,14 @@ final class Atomic
 			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Video\AAE_A_Video_PlayBtn',
 			'file'       => 'Widgets/Video/Parts/class-aae-a-video-playbtn.php',
 			'has_script' => false,
+		],
+
+		'aae-a-curved-text' => [
+			'class'        => '\WCF_ADDONS\AtomicWidgets\Widgets\CurvedText\AAE_A_Curved_Text',
+			'file'         => 'Widgets/CurvedText/class-aae-a-curved-text.php',
+			'has_script'   => false,
+			'style_handle' => 'aae-a-curved-text-css',
+			'style_path'   => '/assets/atomic/css/curved-text.css',
 		],
 
 		// Add new atomic widgets below...

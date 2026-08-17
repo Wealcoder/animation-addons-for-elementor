@@ -204,8 +204,40 @@ final class Bootstrap {
 		( new \WCF_ADDONS\Atomic\Presets\Rest() )->register();
 	}
 
+	/**
+	 * Every element type the shared extensions (Regular Animation, Parallax,
+	 * Tilt, Scroll To, Mouse Move, Cursor Hover, Advance Tooltip, Image Hover,
+	 * Custom CSS) offer their panel section on.
+	 *
+	 * PARENT WIDGETS ONLY, deliberately. Composite widgets register their
+	 * structural children as separate element types (`e-aae-a-slider-dot`,
+	 * `e-aae-a-form-input`, `e-aae-a-timeline-year`, …) — 100+ of them, all
+	 * flagged `is_internal => true` in `AtomicWidgets\Atomic`'s registry and
+	 * mapped to their parent in `WIDGET_PARENT_MAP`. Listing those here would
+	 * put nine extension sections on every internal part a user can select,
+	 * for no gain: animating the part is what animating the parent already
+	 * does, and the panel noise is proportional to the part count.
+	 *
+	 * `e-aae-a-icon-list-item` is the one internal child kept in the list. It
+	 * predates this rule and saved pages already carry `aae_*` props on it —
+	 * removing it would strip them on the next save (Props_Parser::validate()
+	 * erases any prop the schema does not declare). Do not "tidy" it out.
+	 *
+	 * Pro-owned types (`e-aae-a-nav`, `e-aae-a-btn-pro`, `e-aae-a-lottie`, …)
+	 * belong here too — atomic element types can only be REGISTERED from the
+	 * free plugin, and this list is matched by type string, so it is the same
+	 * seam either way.
+	 *
+	 * Adding a type here is not enough on its own: the matching editor-bridge
+	 * list in `src/modules/atomic/editor-bridge/features.js` decides which
+	 * types mirror LIVE into the canvas, and a type present here but missing
+	 * there reads as "works on the frontend, never updates in the editor".
+	 *
+	 * @return string[]
+	 */
 	public static function target_element_types(): array {
 		return [
+			// Elementor core atomic elements.
 			'e-heading',
 			'e-paragraph',
 			'e-button',
@@ -214,12 +246,55 @@ final class Bootstrap {
 			'e-flexbox',
 			'e-div-block',
 			'e-grid',
+
+			// Content / dynamic.
 			'e-aae-a-post-title',
 			'e-aae-a-post-image',
-			'e-aae-a-icon-list',
-			'e-aae-a-icon-list-item',
+			'e-aae-a-post-content',
+			'e-aae-a-posts',
+			'e-aae-a-post-pagination',
+			'e-aae-a-loop-grid',
+			'e-aae-a-loop-grid-slider',
+			'e-aae-a-search-form',
+			'e-aae-a-search-query',
+			'e-aae-a-toc',
+			'e-aae-a-site-logo',
+
+			// Navigation.
+			'e-aae-a-nav',
+			'e-aae-a-menu',
+			'e-aae-a-offcanvas',
+
+			// Interactive / composite.
+			'e-aae-a-accordion',
+			'e-aae-a-toggle-switcher',
+			'e-aae-a-slider',
+			'e-aae-a-stack-cards',
+			'e-aae-a-timeline',
+			'e-aae-a-flip-box',
+			'e-aae-a-image-compare',
+			'e-aae-a-image-hotspot',
+			'e-aae-a-form',
+
+			// Media.
+			'e-aae-a-video',
+			'e-aae-a-video-mask',
+			'e-aae-a-lottie',
+			'e-aae-a-draw-svg',
+
+			// Basic.
 			'e-aae-a-advanced-heading',
-			'e-aae-a-offcanvas'
+			'e-aae-a-btn',
+			'e-aae-a-btn-pro',
+			'e-aae-a-counter',
+			'e-aae-a-countdown',
+			'e-aae-a-progressbar',
+			'e-aae-a-social-share',
+			'e-aae-a-icon-list',
+			'e-aae-a-curved-text',
+
+			// Internal child — kept for back-compat only, see the docblock.
+			'e-aae-a-icon-list-item',
 		];
 	}
 }

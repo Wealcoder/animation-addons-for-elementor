@@ -11,6 +11,15 @@
         justify-content: space-between;
         width: 100%;
         margin: 0;
+        // Part of the chrome reset, and not optional: themes style bare
+        // `button` (hello-elementor's reset.css ships `padding: 8px 16px`).
+        // That default was invisible for as long as the twig hardcoded an
+        // inline padding onto this button, so dropping the inline padding is
+        // what exposes it — the row keeps an inset that comes from the theme,
+        // not from this widget, and it changes per theme. Zeroing it here at
+        // (0,2,0) still leaves a builder's own Padding winning: local styles
+        // are printed in local-<post>-frontend-*.css, after this bundle.
+        padding: 0;
         background: transparent;
         border: none;
         outline: none;
@@ -83,6 +92,24 @@
     }
 
 
+    // Zero the header row's inset. This CANNOT be done from the 'header_element'
+    // base style, and the attempt looks like it works: that element also carries
+    // Elementor's own `e-div-block-base`, which ships `padding: 10px` at the
+    // SAME (0,2,0) specificity and is printed LATER in base-desktop.css — so the
+    // base style always lost, and the 10px/16px this once declared never
+    // rendered at all. Same document-order trap as the `font: inherit` note on
+    // .aae-accordion-header above.
+    //
+    // The selector below is deliberately (0,2,0) and deliberately NOT nested
+    // inside .aae-accordion-header — that would make it (0,3,0) and beat the
+    // per-element local styles a builder saves from the Style panel, which are
+    // themselves (0,2,0). At (0,2,0) it wins on file order alone: this bundle
+    // loads after base-desktop.css and before local-<post>-frontend-*.css, so it
+    // overrides Elementor's default while a builder's own Padding still wins.
+    .aae-header-element {
+        padding: 0;
+    }
+
     .aae-a-accordion-item .aae-header-icon-element.aae-header-icon-close {
         display: none !important;
     }
@@ -109,19 +136,22 @@
     // "close" are the only state cues. A subtle hover tint still comes from
     // the 'header' base style's HOVER variant.
 
+    // The content inset is NOT set here. It lives in the 'content' base style
+    // (define_base_styles() in class-aae-a-accordion-item.php) so the Style
+    // panel's Padding actually governs it.
+    //
+    // It used to be a `&.e-con { --padding-*: …; padding: var(…) }` block whose
+    // comment claimed it "can be overridden by Elementor". It could not: two
+    // classes on the same element plus the ancestor made it (0,3,0), while a
+    // builder's saved padding is (0,2,0), so the panel value was always dead —
+    // and the `--padding-*` vars it set are inert on a bare `.e-con` anyway
+    // (Elementor only consumes them on `.e-con-full` / `.e-con > .e-con-inner`),
+    // so the hardcoded shorthand was doing all the work.
     .aae-accordion-content {
+        // Kept: this is the open/close easing, not an inset. Harmless when the
+        // padding is static, and it keeps a builder's value animating in step
+        // with the reveal if they set one.
         transition: padding var(--aae-accordion-speed, 400ms) ease;
-
-        /* Inner container padding can be overridden by Elementor */
-        &.e-con {
-            --padding-top: 0px;
-            --padding-bottom: 12px;
-            --padding-left: 16px;
-            --padding-right: 16px;
-            padding: var(--padding-top) var(--padding-right) var(--padding-bottom) var(--padding-left);
-            transition: padding var(--aae-accordion-speed, 400ms) ease;
-        }
-
     }
 }
 

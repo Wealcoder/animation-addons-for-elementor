@@ -199,8 +199,21 @@ class AAE_A_Form_Input extends Atomic_Widget_Base {
 		return 'eicon-form-horizontal';
 	}
 
+	/**
+	 * Listed in the AAE Form panel category so a builder can drag this field
+	 * into a form instead of only getting what a preset seeded.
+	 *
+	 * Leaf form widgets extend Atomic_Widget_Base (→ classic Widget_Base), so the
+	 * panel reads THIS pair — show_in_panel() + get_categories(). The
+	 * Atomic_Element_Base pair (should_show_in_panel() + define_panel_categories())
+	 * is silently never called here; see class-atomic.php::register_atomic_categories().
+	 */
 	public function show_in_panel() {
-		return false;
+		return true;
+	}
+
+	public function get_categories(): array {
+		return [ 'aae-atomic-form' ];
 	}
 
 	public function get_keywords() {

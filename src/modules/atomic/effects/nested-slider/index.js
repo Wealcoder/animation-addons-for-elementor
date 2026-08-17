@@ -136,10 +136,12 @@ function bind(container, config) {
 	sliderDiv.setAttribute('tabindex', '0');
 	// The slider is focusable (for keyboard arrows), but the browser's default
 	// focus outline shows as a black border across the top on CLICK. That is
-	// suppressed in nestedslider.scss via `:focus:not(:focus-visible)`, which
-	// hides it for pointer focus only — an unconditional inline `outline: none`
-	// (what this used to do) removes it for KEYBOARD focus too and fails
-	// WCAG 2.4.7, leaving a tab stop with no visible indicator.
+	// suppressed in nestedslider.scss, keyed off the data-aae-pointer-focus
+	// marker this file sets on the pointerdown path (see the keyboard-controls
+	// block below for why a bare `:focus:not(:focus-visible)` cannot do it).
+	// An unconditional inline `outline: none` (what this used to do) removes it
+	// for KEYBOARD focus too and fails WCAG 2.4.7, leaving a tab stop with no
+	// visible indicator.
 
 	// Every slider used to get the same hardcoded label, so two sliders on one
 	// page became two same-named `region` landmarks — indistinguishable in a
@@ -989,11 +991,33 @@ function bind(container, config) {
 	// doesn't also scroll. To make "click then use arrows" reliable, a pointerdown
 	// on the slider focuses the root if focus isn't already inside it (clicking a
 	// plain slide area otherwise leaves nothing focused, so no keydown arrives).
+	// The focus() below is SCRIPTED focus, and Chrome sets the focus-visible flag
+	// for scripted focus on a non-text element — so a plain mouse click makes the
+	// slider match :focus-visible and the UA paints its ring. Modern Chrome draws
+	// that ring ONLY for :focus-visible, never for bare :focus, which is why the
+	// `:focus:not(:focus-visible)` rule in nestedslider.scss can never suppress
+	// it: while the ring is up the element matches :focus-visible by definition,
+	// so the `:not()` excludes exactly the case it was written for.
+	// Mark the pointer case instead and let the stylesheet key off the marker.
+	// `focusVisible: false` handles it natively where supported (Firefox); Chrome
+	// ignores the option, so the marker is what actually bites there.
 	sliderDiv.addEventListener('pointerdown', () => {
 		const active = sliderDiv.ownerDocument.activeElement;
 		if (!sliderDiv.contains(active)) {
-			try { sliderDiv.focus({ preventScroll: true }); } catch (_) { sliderDiv.focus(); }
+			sliderDiv.setAttribute('data-aae-pointer-focus', '');
+			try { sliderDiv.focus({ preventScroll: true, focusVisible: false }); } catch (_) { sliderDiv.focus(); }
 		}
+	}, evtOpts);
+
+	// Any key press means the visitor is driving by keyboard now, so the ring has
+	// to come back — dropping the marker restores the normal :focus-visible
+	// behaviour (WCAG 2.4.7). Cleared on blur too so the next focus starts clean.
+	sliderDiv.addEventListener('keydown', () => {
+		sliderDiv.removeAttribute('data-aae-pointer-focus');
+	}, evtOpts);
+
+	sliderDiv.addEventListener('blur', () => {
+		sliderDiv.removeAttribute('data-aae-pointer-focus');
 	}, evtOpts);
 
 	sliderDiv.addEventListener('keydown', (e) => {

@@ -1299,10 +1299,62 @@ function buildSliderConfig(settings) {
 	return cfg;
 }
 
+/**
+ * The shared extension target set — the JS mirror of
+ * Atomic\Bootstrap::target_element_types().
+ *
+ * That PHP list decides which widgets get the panel section and the frontend
+ * config; this one decides which get mirrored LIVE into the canvas. A type
+ * present there and missing here reads as "the effect works on the frontend
+ * but never updates in the editor", with no error anywhere: featuresForType()
+ * below filters on widgetTypes, so an absent type gets zero features and the
+ * bridge never writes the map at all.
+ *
+ * It is ONE constant rather than a copy per feature because it used to be
+ * eight hand-maintained copies and they had already drifted — e-aae-a-posts
+ * was in every JS copy and in none of the PHP, while advanced-heading and
+ * offcanvas were in the PHP and in only some of the JS.
+ *
+ * Features with a deliberately NARROWER set (text-animation, image-animation,
+ * sticky, horizontal, nested-slider) keep their own literal list — they are
+ * not mirrors of the PHP list and must not be folded in here.
+ */
+const SHARED_TARGET_TYPES = [
+	// Elementor core atomic elements.
+	'e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg',
+	'e-flexbox', 'e-div-block', 'e-grid',
+
+	// Content / dynamic.
+	'e-aae-a-post-title', 'e-aae-a-post-image', 'e-aae-a-post-content',
+	'e-aae-a-posts', 'e-aae-a-post-pagination', 'e-aae-a-loop-grid',
+	'e-aae-a-loop-grid-slider', 'e-aae-a-search-form', 'e-aae-a-search-query',
+	'e-aae-a-toc', 'e-aae-a-site-logo',
+
+	// Navigation.
+	'e-aae-a-nav', 'e-aae-a-menu', 'e-aae-a-offcanvas',
+
+	// Interactive / composite.
+	'e-aae-a-accordion', 'e-aae-a-toggle-switcher', 'e-aae-a-slider',
+	'e-aae-a-stack-cards', 'e-aae-a-timeline', 'e-aae-a-flip-box',
+	'e-aae-a-image-compare', 'e-aae-a-image-hotspot', 'e-aae-a-form',
+
+	// Media.
+	'e-aae-a-video', 'e-aae-a-video-mask',
+	'e-aae-a-lottie', 'e-aae-a-draw-svg',
+
+	// Basic.
+	'e-aae-a-advanced-heading', 'e-aae-a-btn', 'e-aae-a-btn-pro',
+	'e-aae-a-counter', 'e-aae-a-countdown', 'e-aae-a-progressbar',
+	'e-aae-a-social-share', 'e-aae-a-icon-list', 'e-aae-a-curved-text',
+
+	// Internal child — back-compat only, see the PHP docblock.
+	'e-aae-a-icon-list-item',
+];
+
 export const FEATURES = [
 	{
 		name: 'mouse-move-effect',
-		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid', 'e-aae-a-post-title', 'e-aae-a-post-image', 'e-aae-a-posts', 'e-aae-a-icon-list', 'e-aae-a-icon-list-item','e-aae-a-advanced-heading'],
+		widgetTypes: SHARED_TARGET_TYPES,
 		enableSetting: 'aae_mouse_move_effect_enable',
 		autoReplaySetting: 'aae_mouse_move_effect_enable_editor',
 		mapName: 'AAE_INTERACTIONS_MOUSE_MOVE_EFFECT',
@@ -1320,7 +1372,7 @@ export const FEATURES = [
 	},
 	{
 		name: 'regular-animation',
-		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid', 'e-aae-a-post-title', 'e-aae-a-post-image', 'e-aae-a-posts', 'e-aae-a-icon-list', 'e-aae-a-icon-list-item','e-aae-a-advanced-heading'],
+		widgetTypes: SHARED_TARGET_TYPES,
 		enableSetting: 'aae_anim_interactions',
 		autoReplaySetting: 'aae_anim_enable_editor',
 		mapName: 'AAE_INTERACTIONS_ANIM',
@@ -1338,7 +1390,7 @@ export const FEATURES = [
 	},
 	{
 		name: 'image-hover',
-		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid', 'e-aae-a-post-title', 'e-aae-a-post-image', 'e-aae-a-posts', 'e-aae-a-icon-list', 'e-aae-a-icon-list-item'],
+		widgetTypes: SHARED_TARGET_TYPES,
 		enableSetting: 'aae_ih_enable',
 		autoReplaySetting: 'aae_ih_enable_editor',
 		mapName: 'AAE_INTERACTIONS_IMGHOVER',
@@ -1347,7 +1399,7 @@ export const FEATURES = [
 	},
 	{
 		name: 'cursor-hover-effect',
-		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid', 'e-aae-a-post-title', 'e-aae-a-post-image', 'e-aae-a-posts', 'e-aae-a-icon-list', 'e-aae-a-icon-list-item'],
+		widgetTypes: SHARED_TARGET_TYPES,
 		enableSetting: 'aae_cursor_hover_enable',
 		autoReplaySetting: 'aae_cursor_hover_enable_editor',
 		mapName: 'AAE_INTERACTIONS_CURSOR_HOVER_EFFECT',
@@ -1365,7 +1417,7 @@ export const FEATURES = [
 	},
 	{
 		name: 'parallax',
-		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid', 'e-aae-a-post-title', 'e-aae-a-post-image', 'e-aae-a-posts', 'e-aae-a-icon-list', 'e-aae-a-icon-list-item'],
+		widgetTypes: SHARED_TARGET_TYPES,
 		enableSetting: 'aae_plx_enable',
 		autoReplaySetting: 'aae_plx_enable_editor',
 		mapName: 'AAE_INTERACTIONS_PLX',
@@ -1383,7 +1435,7 @@ export const FEATURES = [
 	},
 	{
 		name: 'advance-tooltip',
-		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid', 'e-aae-a-post-title', 'e-aae-a-post-image', 'e-aae-a-posts', 'e-aae-a-icon-list', 'e-aae-a-icon-list-item'],
+		widgetTypes: SHARED_TARGET_TYPES,
 		enableSetting: 'aae_advance_tooltip_enable',
 		autoReplaySetting: 'aae_advance_tooltip_enable_editor',
 		mapName: 'AAE_INTERACTIONS_ADVANCE_TOOLTIP',
@@ -1392,7 +1444,7 @@ export const FEATURES = [
 	},
 	{
 		name: 'tilt',
-		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid', 'e-aae-a-post-title', 'e-aae-a-post-image', 'e-aae-a-posts', 'e-aae-a-icon-list', 'e-aae-a-icon-list-item'],
+		widgetTypes: SHARED_TARGET_TYPES,
 		enableSetting: 'aae_tilt_enable',
 		autoReplaySetting: 'aae_tilt_enable_editor',
 		mapName: 'AAE_INTERACTIONS_TILT',
@@ -1401,14 +1453,7 @@ export const FEATURES = [
 	},
 	{
 		name: 'custom-css',
-		// Must stay in step with Atomic\Bootstrap::target_element_types() — that
-		// PHP list decides which widgets get the panel section and the frontend
-		// config, this one decides which get mirrored LIVE into the canvas. A
-		// type present there and missing here reads as "custom CSS works on the
-		// frontend but never updates in the editor", with no error anywhere:
-		// featuresForType() below filters on widgetTypes, so an absent type gets
-		// zero features and the bridge never writes the map at all.
-		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg', 'e-flexbox', 'e-div-block', 'e-grid', 'e-aae-a-post-title', 'e-aae-a-post-image', 'e-aae-a-posts', 'e-aae-a-icon-list', 'e-aae-a-icon-list-item', 'e-aae-a-advanced-heading', 'e-aae-a-offcanvas'],
+		widgetTypes: SHARED_TARGET_TYPES,
 		enableSetting: 'aae_custom_css_enable',
 		autoReplaySetting: 'aae_custom_css_enable_editor',
 		mapName: 'AAE_INTERACTIONS_CUSTOM_CSS',

@@ -19,6 +19,7 @@ import { SlidesControl } from './SlidesControl';
 import { AccordionItemsControl } from './AccordionItemsControl';
 import { TimelineItemsControl } from './TimelineItemsControl';
 import { SocialShareItemsControl } from './SocialShareItemsControl';
+import { IconListItemsControl } from './IconListItemsControl';
 import { PresetPickerControl } from './PresetPickerControl';
 import { FormActionsControl } from './FormActionsControl';
 import { FormConditionsControl } from './FormConditionsControl';
@@ -30,6 +31,7 @@ import { MediaUrlControl } from './MediaUrlControl';
 import { InlineTextControl } from './InlineTextControl';
 import { StackCardsControl } from './StackCardsControl';
 import { StackPreviewControl } from './StackPreviewControl';
+import { BtnHoverStyleControl } from './BtnHoverStyleControl';
 
 const ELEMENT_CONTROLS = [
 	{ type: 'aae-slides', component: SlidesControl, layout: 'full' },
@@ -37,6 +39,7 @@ const ELEMENT_CONTROLS = [
 	{ type: 'aae-items', component: AccordionItemsControl, layout: 'full' },
 	{ type: 'aae-timeline-items', component: TimelineItemsControl, layout: 'full' },
 	{ type: 'aae-social-share-items', component: SocialShareItemsControl, layout: 'full' },
+	{ type: 'aae-icon-list-items', component: IconListItemsControl, layout: 'full' },
 	{ type: 'aae-nav-items', component: NavItemsControl, layout: 'full' },
 	{ type: 'aae-nav-sub-items', component: NavSubItemsControl, layout: 'full' },
 	{ type: 'aae-mobile-nav-lifecycle', component: MobileNavLifecycleControl, layout: 'full' },
@@ -57,6 +60,10 @@ const ELEMENT_CONTROLS = [
 	// would bind the same value but renders no toolbar — its buttons live on
 	// the canvas, which is closed to third-party types. See InlineTextControl.
 	{ type: 'aae-inline-text', component: InlineTextControl, layout: 'full', propTypeUtil: htmlV3PropTypeUtil },
+	// Also prop-bound, to a plain String: the Btn widget's "Hover Style"
+	// picker, which additionally hides its own row unless a sibling boolean
+	// prop is set — see BtnHoverStyleControl.jsx.
+	{ type: 'aae-btn-hover-style', component: BtnHoverStyleControl, layout: 'full', propTypeUtil: stringPropTypeUtil },
 ];
 
 let registered = false;

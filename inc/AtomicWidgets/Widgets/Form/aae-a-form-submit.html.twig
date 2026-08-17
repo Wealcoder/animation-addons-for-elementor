@@ -1,13 +1,31 @@
 {#
-  AAE Form Submit — renders <button type="submit"> directly (no wrapper),
-  mirroring Elementor's native e-form-submit-button. `text` is an Html_V3
-  prop resolved to a string; allow only inline formatting tags.
-  loading_label is stored as a data attribute for the Milestone-5 runtime.
-#}
-{% set classes = ['aae-a-form-submit', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') | trim %}
-{% set allowed_tags = '<b><strong><sup><sub><s><em><i><u><del><span><br>' %}
+  AAE Form Submit — a CONTAINER that renders <button type="submit"> and drops
+  its children inside it. The label and the icon are real atomic elements
+  (Paragraph + SVG, seeded by define_default_children() as DIRECT children —
+  there is no wrapper row), so both are selectable in the Structure panel and
+  fully styleable. The button's own base style supplies the flex row and gap.
 
+  The tag is hardcoded rather than read from settings: a form that cannot be
+  submitted is not a layout choice, so <button> is not negotiable here. The
+  only tag-ish control is button_type (submit vs reset).
+
+  loading_label rides as a data attribute; setLoading() in form.js swaps it
+  into the label child (labelElOf() matches h1-h6, p, span — so the Paragraph
+  is found either way), leaving the icon in place for the request's duration.
+
+  NOTE: <button> takes phrasing content, so a <p> inside it is technically
+  invalid nesting. Every browser renders it — the parser treats `button` as a
+  scope boundary, so the paragraph is not hoisted out — and the label's own
+  Settings offer tag=span for anyone who wants it strictly valid.
+#}
+{# Deliberately NOT `e-con`, though every other atomic container carries it:
+   Elementor's `.e-con` rule sets `width: var(--width)` with `--width: 100%`,
+   which would stretch the submit button across the whole form. The leaf
+   version of this button never had the class and rendered correctly, so this
+   stays the known-good class list. #}
+{% set classes = ['aae-a-form-submit', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') | trim %}
 {% set btn_type = settings.button_type | default('submit') %}
+
 <button
     class="{{ classes }} {{ editor_classes | default('') }}"
     type="{{ btn_type == 'reset' ? 'reset' : 'submit' }}"
@@ -19,4 +37,4 @@
     {% if settings._cssid is defined and settings._cssid is not empty %}id="{{ settings._cssid | e('html_attr') }}"{% endif %}
     {% if settings.attributes is defined and settings.attributes is not empty %}{{ settings.attributes | raw }}{% endif %}
     {{ editor_attributes | default('') | raw }}
->{{ settings.text | striptags(allowed_tags) | raw }}</button>
+>{{ children_placeholder | raw }}</button>

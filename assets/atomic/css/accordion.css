@@ -7,6 +7,7 @@
   justify-content: space-between;
   width: 100%;
   margin: 0;
+  padding: 0;
   background: transparent;
   border: none;
   outline: none;
@@ -53,6 +54,9 @@
   width: 100% !important;
   height: 100% !important;
 }
+.aae-a-accordion .aae-header-element {
+  padding: 0;
+}
 .aae-a-accordion .aae-a-accordion-item .aae-header-icon-element.aae-header-icon-close {
   display: none !important;
 }
@@ -68,14 +72,5 @@
   display: inline-flex !important;
 }
 .aae-a-accordion .aae-accordion-content {
-  transition: padding var(--aae-accordion-speed, 400ms) ease;
-  /* Inner container padding can be overridden by Elementor */
-}
-.aae-a-accordion .aae-accordion-content.e-con {
-  --padding-top: 0px;
-  --padding-bottom: 12px;
-  --padding-left: 16px;
-  --padding-right: 16px;
-  padding: var(--padding-top) var(--padding-right) var(--padding-bottom) var(--padding-left);
   transition: padding var(--aae-accordion-speed, 400ms) ease;
 }
