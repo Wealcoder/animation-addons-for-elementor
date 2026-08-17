@@ -698,6 +698,64 @@ final class Atomic
 	}
 
 	/**
+	 * Which saved prop proves an extension is used on a page.
+	 *
+	 * An extension writes nothing of its own into `_elementor_data` — unlike a
+	 * widget, which saves its own type there. All it leaves behind is a prop
+	 * inside some OTHER element's settings, and the prop name cannot be derived
+	 * from the slug: `parallax` writes `aae_plx_*`, `image-hover` writes
+	 * `aae_ih_*`, `regular-animation` writes `aae_anim_*`, Pro's `popup` writes
+	 * `aae_v4_popup_*`. Nor can it be read off the Schema class by convention —
+	 * the constant is called `ENABLE` in some, `PARALLAX_ENABLE` /
+	 * `IH_ENABLE` / `STICKY_ENABLE` / `TOOLTIP_ENABLE` in others, and two
+	 * extensions have no enable prop at all. So it is DECLARED, here, in the
+	 * same array where the extension itself is defined.
+	 *
+	 * `usage_prop` is REQUIRED on every entry — `false` for the ones that
+	 * genuinely have no per-page answer, never simply absent. Absent would mean
+	 * both "not countable" and "someone forgot", and the second one fails
+	 * silently as a permanent zero.
+	 * `E:\Local Testing\verify-extension-usage.php` refuses an entry without it.
+	 *
+	 * Shape: `array( <prop>|<prop[]>, <kind> )`.
+	 *
+	 * | kind      | used on page when                                        |
+	 * |-----------|----------------------------------------------------------|
+	 * | `boolean` | the prop's value is exactly `true`                       |
+	 * | `filled`  | the prop holds anything that is not null/''/[]/{}         |
+	 * | `present` | the key exists at all (style props, which have no toggle) |
+	 *
+	 * `boolean` is not "the key is there": both `aae_bgv_enable` and
+	 * `aae_v4_popup_enabled` appear on this dev site with `"value":false` as
+	 * often as with `true`, because switching a section off leaves the prop
+	 * behind. Counting presence would report those pages as users of an
+	 * extension they explicitly turned off.
+	 *
+	 * @return array<string,array{prop:string[],kind:string}> Keyed by slug;
+	 *                                                        uncountable
+	 *                                                        extensions omitted.
+	 */
+	public function get_extension_usage_props(): array
+	{
+		$props = [];
+
+		foreach ($this->extensions_registry as $slug => $def) {
+			if (empty($def['usage_prop'])) {
+				continue;
+			}
+
+			[$keys, $kind] = $def['usage_prop'];
+
+			$props[$slug] = [
+				'prop' => (array) $keys,
+				'kind' => $kind,
+			];
+		}
+
+		return $props;
+	}
+
+	/**
 	 * Get the saved extension option value (associative: slug => true).
 	 *
 	 * @return array
@@ -3225,6 +3283,7 @@ final class Atomic
 
 			'regular-animation' => [
 				'label'        => 'Regular Animation',
+				'usage_prop'   => array( 'aae_anim_interactions', 'filled' ),
 				'description'  => 'Preset-based entrance/exit animations applied to every atomic widget.',
 				'icon'         => 'wcf-icon-Animation',
 				'is_pro'       => true,
@@ -3239,6 +3298,7 @@ final class Atomic
 
 			'parallax' => [
 				'label'        => 'Parallax',
+				'usage_prop'   => array( 'aae_plx_enable', 'boolean' ),
 				'description'  => 'ScrollSmoother-powered parallax depth effect on scroll.',
 				'icon'         => 'wcf-icon-Animation-Builder',
 				'is_pro'       => true,
@@ -3253,6 +3313,7 @@ final class Atomic
 
 			'text-animation' => [
 				'label'        => 'Text Animation',
+				'usage_prop'   => array( 'aae_text_interactions', 'filled' ),
 				'description'  => 'Character/word/line reveal animations for heading-class widgets.',
 				'icon'         => 'wcf-icon-Text-Animation',
 				'is_pro'       => true,
@@ -3267,6 +3328,7 @@ final class Atomic
 
 			'image-animation' => [
 				'label'        => 'Image Animation',
+				'usage_prop'   => array( 'aae_img_interactions', 'filled' ),
 				'description'  => 'Reveal/scale/stretch animations for image and SVG widgets.',
 				'icon'         => 'wcf-icon-Image-Animation',
 				'is_pro'       => true,
@@ -3281,6 +3343,7 @@ final class Atomic
 
 			'image-hover' => [
 				'label'        => 'Image Hover',
+				'usage_prop'   => array( 'aae_ih_enable', 'boolean' ),
 				'description'  => 'Cursor-following floating image overlay on any atomic widget.',
 				'icon'         => 'wcf-icon-Image-Hover-Effect',
 				'is_pro'       => true,
@@ -3295,6 +3358,7 @@ final class Atomic
 
 			'sticky' => [
 				'label'        => 'Sticky',
+				'usage_prop'   => array( 'aae_sticky_enable', 'boolean' ),
 				'description'  => 'Pin elements to viewport on scroll with configurable offsets.',
 				'icon'         => 'wcf-icon-Pin-Elements',
 				'is_pro'       => true,
@@ -3309,6 +3373,7 @@ final class Atomic
 
 			'horizontal-scroll-anim' => [
 				'label'        => 'Horizontal Scroll Animation',
+				'usage_prop'   => array( 'aae_horizontal_enable', 'boolean' ),
 				'description'  => 'GSAP-powered horizontal scroll-triggered animation.',
 				'icon'         => 'wcf-icon-Horizontal',
 				'is_pro'       => true,
@@ -3323,6 +3388,7 @@ final class Atomic
 
 			'cursor-hover-effect' => [
 				'label'        => 'Cursor Hover Effect',
+				'usage_prop'   => array( 'aae_cursor_hover_enable', 'boolean' ),
 				'description'  => 'Cursor-following floating element effect on any atomic widget.',
 				'icon'         => 'wcf-icon-Cursor-Hover-Effect',
 				'is_pro'       => true,
@@ -3337,6 +3403,7 @@ final class Atomic
 
 			'mouse-move-effect' => [
 				'label'        => 'Mouse Move Effect',
+				'usage_prop'   => array( 'aae_mouse_move_effect_enable', 'boolean' ),
 				'description'  => 'Element moves/rotates based on mouse position.',
 				'icon'         => 'wcf-icon-Cursor-Move-Effect',
 				'is_pro'       => true,
@@ -3351,6 +3418,7 @@ final class Atomic
 
 			'advance-tooltip' => [
 				'label'        => 'Advance Tooltip',
+				'usage_prop'   => array( 'aae_advance_tooltip_enable', 'boolean' ),
 				'description'  => 'Rich content tooltips on hover for any atomic widget.',
 				'icon'         => 'wcf-icon-Advanced-Tooltip',
 				'is_pro'       => true,
@@ -3365,6 +3433,7 @@ final class Atomic
 
 			'tilt' => [
 				'label'        => 'Tilt',
+				'usage_prop'   => array( 'aae_tilt_enable', 'boolean' ),
 				'description'  => '3D tilt perspective effect on hover.',
 				'icon'         => 'wcf-icon-Tilt-Effect',
 				'is_pro'       => true,
@@ -3379,6 +3448,7 @@ final class Atomic
 
 			'scroll-to' => [
 				'label'        => 'Scroll To',
+				'usage_prop'   => array( 'aae_scroll_to_enable', 'boolean' ),
 				'description'  => 'Smooth scroll-to-target anchor navigation.',
 				'icon'         => 'wcf-icon-Horizontal',
 				'is_pro'       => true,
@@ -3398,6 +3468,7 @@ final class Atomic
 			// it from this toggle as well — see WCFAddonsPro\Plugin::register_extensions().
 			'dynamic-tags' => [
 				'label'        => 'Dynamic Tags',
+				'usage_prop'   => false,
 				'description'  => 'Bind atomic widget content to dynamic sources: post, author, site, archive, comments and ACF fields.',
 				// Capitalised on purpose: this is the glyph name that actually
 				// exists in the icon font. The lower-case names the other atomic
@@ -3415,6 +3486,7 @@ final class Atomic
 
 			'mask' => [
 				'label'        => 'Mask',
+				'usage_prop'   => array( 'mask-image', 'present' ),
 				'description'  => 'Clip a Flexbox, Div Block or Grid to a shape — 20 built-in shapes or your own SVG, with responsive and hover variants.',
 				'icon'         => 'wcf-icon-Custom-CSS',
 				'is_pro'       => false,
@@ -3428,6 +3500,7 @@ final class Atomic
 
 			'background-video' => [
 				'label'        => 'Background Video',
+				'usage_prop'   => array( 'aae_bgv_enable', 'boolean' ),
 				'description'  => 'Play a looping video behind a Flexbox, Div Block or Grid — the option the atomic Background control is missing.',
 				'icon'         => 'wcf-icon-Custom-CSS',
 				'is_pro'       => false,
@@ -3441,6 +3514,7 @@ final class Atomic
 
 			'custom-css' => [
 				'label'        => 'Custom CSS',
+				'usage_prop'   => array( 'aae_custom_css_enable', 'boolean' ),
 				'description'  => 'Add custom CSS rules per-element in the atomic editor.',
 				'icon'         => 'wcf-icon-Custom-CSS',
 				'is_pro'       => false,
@@ -3470,6 +3544,7 @@ final class Atomic
 			// keywords carry both namings so search finds it either way.
 			'flexbox-child-hover' => [
 				'label'        => 'Parent Child Hover',
+				'usage_prop'   => array( array( 'aae_v4_fch_source', 'aae_v4_fch_target' ), 'boolean' ),
 				'description'  => 'Hover a container to trigger a "Parent Hover" style state on its child elements.',
 				'icon'         => 'wcf-icon-Grid-Hover-Posts',
 				'is_pro'       => true,
@@ -3484,6 +3559,7 @@ final class Atomic
 
 			'form-conditions' => [
 				'label'        => 'Conditional Display',
+				'usage_prop'   => array( 'aae_cond_enable', 'boolean' ),
 				'description'  => 'Show or hide AAE Form fields/containers based on the value of other fields.',
 				'icon'         => 'wcf-icon-Toggle-Switch',
 				'is_pro'       => true,
@@ -3499,6 +3575,7 @@ final class Atomic
 
 			'form-validation' => [
 				'label'        => 'Validation Pro',
+				'usage_prop'   => array( 'aae_regex_pattern', 'filled' ),
 				'description'  => 'Regex validation rules with custom messages on form inputs and textareas.',
 				// There is no `wcf-icon-Form` in the icon font — it rendered as
 				// an empty circle on the dashboard card.
@@ -3516,6 +3593,7 @@ final class Atomic
 
 			'form-user' => [
 				'label'        => 'Create User',
+				'usage_prop'   => false,
 				'description'  => 'Turn a form submission into a real WordPress account, with role and alias mapping.',
 				// See the note on Validation Pro above — `wcf-icon-Form` does
 				// not exist in the icon font.
@@ -3533,6 +3611,7 @@ final class Atomic
 
 			'popup' => [
 				'label'        => 'Popup',
+				'usage_prop'   => array( 'aae_v4_popup_enabled', 'boolean' ),
 				'description'  => 'Site-wide popup system for atomic elements, triggered from AAE Builder templates.',
 				'icon'         => 'wcf-icon-Popup',
 				'is_pro'       => true,
@@ -3569,6 +3648,7 @@ final class Atomic
 			 */
 			'template-library' => [
 				'label'        => 'Template Library',
+				'usage_prop'   => false,
 				'description'  => 'Ready-made AAE layouts, importable from a library modal inside the Elementor editor.',
 				// Capitalised to match the glyph that actually exists in the icon
 				// font (\e957) — see the Dynamic Tags note above for why the
@@ -3613,6 +3693,7 @@ final class Atomic
 			 */
 			'custom-fonts' => [
 				'label'        => 'Custom Fonts',
+				'usage_prop'   => false,
 				'description'  => 'Upload and manage your own font families, selectable from the Elementor typography controls.',
 				'icon'         => 'wcf-icon-Custom-Fonts',
 				'is_pro'       => false,
@@ -3628,6 +3709,7 @@ final class Atomic
 
 			'custom-cpt' => [
 				'label'        => 'Post Type Builder',
+				'usage_prop'   => false,
 				'description'  => 'Create custom post types and taxonomies without code, ready to query from a Loop Grid.',
 				'icon'         => 'wcf-icon-Custom-Post-Type',
 				'is_pro'       => false,
@@ -3643,6 +3725,7 @@ final class Atomic
 
 			'custom-icon' => [
 				'label'        => 'Custom Icon',
+				'usage_prop'   => false,
 				'description'  => 'Upload icon-font sets (IcoMoon/Fontello zips) and use them anywhere Elementor offers an icon picker.',
 				'icon'         => 'wcf-icon-Custom-Icons',
 				'is_pro'       => false,
@@ -3658,6 +3741,7 @@ final class Atomic
 
 			'code-snippet' => [
 				'label'        => 'Code Snippet',
+				'usage_prop'   => false,
 				'description'  => 'Add PHP, CSS, JS or HTML snippets from wp-admin, with per-snippet placement and activation.',
 				// There is no `wcf-icon-Code-Snippet` glyph in the icon font —
 				// this is the same one the v3 card uses. See the Dynamic Tags

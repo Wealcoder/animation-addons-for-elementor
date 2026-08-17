@@ -20,6 +20,14 @@ import { __ } from "@wordpress/i18n";
  * @param {boolean}  showGroupToggle  See the note below — false on filtered views.
  * @param {Function} updateActiveItem Per-card toggle handler.
  * @param {Object}   usage           `{ slug: pages }` or null (never scanned).
+ *                                   A slug MISSING from a non-null map means
+ *                                   the scan cannot answer for it — the
+ *                                   site-level extensions (Custom Fonts, Code
+ *                                   Snippet, …) write nothing into a page — so
+ *                                   it gets no count line rather than a "Not
+ *                                   used" that would be false. Everything the
+ *                                   scan can answer for is seeded to 0 server
+ *                                   side, so absent never means zero.
  * @param {string}   settingOpen     Slug whose settings panel opens on load.
  * @param {Array}    widgetSettings  V3 per-widget settings components; atomic
  *                                   has none and passes nothing.
@@ -73,7 +81,7 @@ const WidgetCategoryGrid = ({
             <WidgetCard
               widget={category.elements[slug]}
               slug={slug}
-              usage={usage ? usage[slug] ?? 0 : undefined}
+              usage={usage ? usage[slug] : undefined}
               updateActiveItem={updateActiveItem}
               className="rounded p-5"
               settingOpen={settingOpen}

@@ -382,6 +382,12 @@ regex — check there before concluding the PHP side is broken.
 3. Add the `$this->extensions_registry` entry in **the free plugin** —
    the registry lives there even for Pro-only modules, and Pro reads it back
    through `is_extension_active()`.
+4. Give that entry a **`usage_prop`** — the prop that proves the extension is
+   in use on a page, or `false` if it is a site-level feature with no such
+   thing. It is REQUIRED, and `verify-extension-usage.php` fails without it,
+   because absent and `false` are indistinguishable at runtime and the first
+   one means a permanent silent zero on the card. See
+   [Extension usage counts](#extension-usage-counts--v4-atomic-only-2026-08-17).
 
 Nothing verifies steps 2 and 3 against each other. Audit both directions with:
 
@@ -848,13 +854,94 @@ documents: `wp_die()` uses `wp_die_handler`, not the AJAX one, unless
 a bare `-1`), and `get_current_user_id()` is 0 under WP-CLI, so using it for the
 positive case tests a logged-out visitor and reports the endpoint as broken.
 
-**Extensions have no usage count yet, deliberately.** A widget writes its own
-name into `_elementor_data`; an extension only leaves control keys inside some
-other widget's settings (`wcf_advanced_tooltip_content`, `wcf-animation`,
-`aae_ns_*`), and nothing declares which key belongs to which extension — the
-naming is not even consistent (`wcf_` vs `wcf-`, slug ≠ key). A hand-maintained
-map would work today and silently report 0 for every extension added after
-someone forgot to update it. Decide the signal before building the UI.
+### Extension usage counts — V4 atomic only (2026-08-17)
+
+Same button, same scan, same cards, on the Extensions screen's **V4 view**.
+`Extensions.jsx` holds the state; `ShowAtomicExtensions` was collapsed onto
+`shared/WidgetCategoryGrid` in the process, so its two hand-copied card grids
+became one and the Used tab came with it.
+
+**A widget writes its own name into `_elementor_data`; an extension writes
+nothing.** All it leaves is a prop inside some OTHER element's settings, so the
+signal has to be declared. It is declared in `class-atomic.php`'s
+`extensions_registry`, as `'usage_prop' => array( <prop>|<prop[]>, <kind> )` —
+read `get_extension_usage_props()`'s docblock before adding one.
+
+Three reasons it cannot be derived, all measured:
+
+| | |
+|---|---|
+| slug ≠ prefix | `parallax` → `aae_plx_`, `image-hover` → `aae_ih_`, `regular-animation` → `aae_anim_`, Pro's `popup` → `aae_v4_popup_` |
+| constant name varies | `ENABLE`, `PARALLAX_ENABLE`, `IH_ENABLE`, `STICKY_ENABLE`, `TOOLTIP_ENABLE` — and Regular/Text Animation have no enable prop at all, only an interactions list |
+| folder ≠ extension | `inc/Atomic/` also holds widget support modules. `aae_ns_*` (Nested Slider) is on 20 posts here and is not an extension; only registry slugs count |
+
+**`usage_prop` is REQUIRED on every entry, `false` for the seven site-level
+features** (Custom Fonts, Post Type Builder, Custom Icon, Code Snippet,
+Template Library, Dynamic Tags, Create User). Absent would mean both "not
+countable" and "someone forgot", and the second fails as a permanent silent
+zero. `verify-extension-usage.php` refuses an entry without the key, and also
+checks every declared prop still exists in a `Schema.php` — which is what
+catches a rename.
+
+**Present ≠ enabled.** Switching a panel section off leaves the prop behind:
+`aae_bgv_enable` and `aae_v4_popup_enabled` each appear on this dev site with
+`"value":false` as often as with `true`. `boolean` therefore tests the value.
+`filled` (interaction lists, the regex string) rejects `null`/`''`/`[]` and
+trees of empty arrays — the schema default for Text Animation is literally
+`['desktop' => []]`. `present` is only for Mask, a style prop with no toggle.
+
+**Values are DECODED, not pattern-matched.** A responsive-JSON prop nests
+arbitrarily, and "is there anything in here" is not a question a regex answers
+honestly across that. `json_value_at()` scans the balanced substring at each hit
+— tracking strings, so a `}` inside someone's Custom CSS cannot truncate it —
+and only that fragment is decoded.
+
+**Absent now means "unanswerable", not zero.** The scan seeds a 0 for every slug
+it CAN answer for, so `WidgetCategoryGrid` renders a count line only for slugs
+present in the map. Without that, a site-level card reads "Not used" about a
+font manager that is working perfectly. `usage.extensions` carries `atomic`
+only — no empty `v3` key, because empty would read as "scanned, none found".
+
+**V3 extensions are still not counted, and the button is not offered there.**
+Their control keys have no declared owner and no consistent naming (`wcf_` vs
+`aae_` vs unprefixed — `restrict-content` uses a bare `enable_protection`), and
+the predicate differs per extension: `wcf_text_animation` is a SELECT whose
+value is the effect name, so the obvious `":"yes"` test reports 0 on the two
+pages here that genuinely use it. Declaring ~15 keys by hand in `config.php` is
+the shape that would work; decide it deliberately rather than by analogy.
+
+Tests: `verify-extension-usage.php` (29 — declarations, matching rules, value
+scanning, payload shape, and a real fixture pair differing only in the toggle's
+value) and `verify-extension-usage-ui.mjs` (20 — runs a real scan, asserts every
+rendered line matches the payload and that the site-level cards show none).
+
+### DANGER — `widget_name_to_slug_map()` only sees `wcf--` widgets
+
+Found 2026-08-17 while wiring the above; **pre-existing, not yet fixed.** The
+map's regex hardcodes `return 'wcf--…'`, but only **74 of 101** v3 widgets use
+that prefix. Measured on this site: 19 return `aae--*` (`aae--weather`,
+`aae--advanced-button`, …) and 8 use other shapes entirely
+(`wcf-gsap-drawsvg`, `grid-hover-posts`, `aaeaddon-post-reactions`,
+`aae-pro-youtube-videos`, `aae-nested-mega-menu`, `aae-nested-motion-card`,
+`category-showcase`). All 27 are invisible to it.
+
+Three things read that map or the same assumption, in rising order of harm:
+
+1. **Usage counts** — those 27 cards used to show "Not used", which was a
+   fabrication. They now show no line at all (see "absent means unanswerable"
+   above), so the gap is visible rather than confidently wrong.
+2. **`maybe_enable_used_v3_widgets()`** — the data-loss guard. A demo built on
+   `aae--*` widgets is not auto-enabled after import, so those widgets stay
+   unregistered and their pages render nothing.
+3. **`has_v3_usage()`** — its `LIKE` is `"widgetType":"wcf--%'`. A site built
+   entirely from `aae--*` v3 widgets reads as having **no v3 content at all**,
+   so `V3_IN_USE` is false, the era rules hide the V3 tab, and the `legacy_v3`
+   ratchet never fires.
+
+Fix all three together or none: widening the map alone leaves `has_v3_usage()`
+blind, which is a more confusing state than the current one. Both writers touch
+`wcf_save_widgets`, so anything here needs the snapshot/restore discipline the
+`set-v3-state.php` incident established.
 
 ### The V4 info line
 
@@ -3702,6 +3789,8 @@ JS.** Diagnose this class of failure fast: `head` the served file in
 | Symptom | Likely cause |
 |---|---|
 | The "Elementor V3" or "Elementor V4 (Atomic)" tab is missing from Widgets/Extensions, or "Animation Settings" is gone from the menu | Working as designed — the dashboard hides the era this site does not use, and drops the switcher entirely when only one is on offer. See [Which ERA the dashboard offers](#which-era-the-dashboard-offers--v3--v4-tab-visibility-2026-08-17) for the table. Reach a hidden V3 with the **"Legacy (V3)" link** on the V4 tab row (or `&system=v3`), a hidden V4 with `&system=atomic`, and the Settings screen with `?tab=animation-settings`. Note it reads the SAVED state at page load, so toggling switches does not move the tabs until you reload — and that a site whose CONTENT uses `wcf--*` widgets keeps V3 regardless of the toggles, via the `aae_v3_usage` transient. |
+| A card shows no usage count after a scan, while its neighbours do | Working as designed for a **site-level extension** — Custom Fonts, Post Type Builder, Custom Icon, Code Snippet, Template Library, Dynamic Tags, Create User write nothing into a page, so `usage_prop` is `false` and they get no line rather than a false "Not used". For a **v3 widget** it is the `wcf--` prefix gap instead — see [the DANGER box](#danger--widget_name_to_slug_map-only-sees-wcf--widgets); 27 of 101 v3 widgets are invisible to the map. |
+| A brand-new atomic extension always reports 0 pages | Its `usage_prop` is wrong or points at a renamed Schema constant. `verify-extension-usage.php` checks every declared prop still exists in a `Schema.php` — run it. Remember the prop is NOT derivable from the slug (`parallax` → `aae_plx_enable`). |
 | Widget/extension missing from the dashboard entirely | A registration list is out of sync — see [Registering a new widget or extension](#registering-a-new-widget-or-extension--what-must-stay-in-sync). Most likely no `$widgets_registry` entry (widget unreachable), or the slug is in the JS `INTERNAL_WIDGET_SLUGS` / `DEMO_ONLY_SLUGS` / `-main` hide list. |
 | Dashboard toggle does nothing | Either the slug is in `ALWAYS_ACTIVE_WIDGETS` (force-active, switch inert), or nothing in the codebase actually calls `is_extension_active()` for it — audit both directions with the grep in that section. |
 | Card shows "off" but the widget still works | `get_dashboard_config()` reports `is_active` from the raw saved option, not `is_widget_active()`. A force-active slug that was never saved reads as off. |

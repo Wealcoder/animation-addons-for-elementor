@@ -9,6 +9,9 @@ import { countAtomicExtensions } from "@/lib/atomicExtensionService";
 import { resolveSystems } from "@/lib/systemVisibility";
 import LegacyRevealLink from "@/components/shared/LegacyRevealLink";
 import SettingsQuickLink from "@/components/shared/SettingsQuickLink";
+import UsageScanButton from "@/components/shared/UsageScanButton";
+import { fetchWidgetUsage } from "@/lib/widgetUsage";
+import { toast } from "sonner";
 
 const Extensions = () => {
   const urlParams = new URLSearchParams(window.location.search);
@@ -47,6 +50,37 @@ const Extensions = () => {
     countAtomicExtensions(allAtomicExtensions)
   );
 
+  /*
+   * Usage counts. Same scan the Widgets page runs — one request answers for
+   * widgets and extensions, both eras — so pressing Usage here is the same
+   * work, not extra work. Held per page rather than shared because each screen
+   * is mounted on its own.
+   *
+   * V4 ONLY. A v3 extension leaves no signal a page can be counted by: it
+   * writes control keys into some other widget's settings with no declared
+   * owner, and the naming does not survive derivation. Rather than a count that
+   * silently reads 0 for anything added after someone forgot a map entry, the
+   * V3 view offers no button at all.
+   */
+  const [usage, setUsage] = useState(null);
+  const [usageScanning, setUsageScanning] = useState(false);
+
+  const scanUsage = async () => {
+    setUsageScanning(true);
+    try {
+      setUsage(await fetchWidgetUsage());
+    } catch (error) {
+      // Leave any previous result on screen — a failed rescan should not wipe
+      // numbers the user is reading.
+      toast.error(
+        __("Could not scan extension usage.", "animation-addons-for-elementor"),
+        { position: "top-right" }
+      );
+    } finally {
+      setUsageScanning(false);
+    }
+  };
+
   const isAtomic = extensionSystem === "atomic";
   const showRevealLink = isAtomic && !v3TabVisible;
 
@@ -81,8 +115,13 @@ const Extensions = () => {
             )}
 
             {isAtomic && (
-              <div className="ms-auto flex items-center gap-4">
+              <div className="ms-auto flex items-center gap-3">
                 {showRevealLink && <LegacyRevealLink onReveal={revealV3} />}
+                <UsageScanButton
+                  onScan={scanUsage}
+                  scanning={usageScanning}
+                  hasResult={!!usage}
+                />
                 <SettingsQuickLink />
               </div>
             )}
@@ -109,6 +148,7 @@ const Extensions = () => {
           <ShowAtomicExtensions
             filterKey={atomicFilterKey}
             setExtensionCount={setAtomicExtensionCount}
+            usage={usage?.extensions?.atomic || null}
           />
         ) : (
           <ShowExtensions
