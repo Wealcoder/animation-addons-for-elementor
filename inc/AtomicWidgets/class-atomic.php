@@ -551,6 +551,8 @@ final class Atomic
 
 		// Search Form
 		'aae-a-search-toggle'          => 'aae-a-search-form',
+		'aae-a-search-toggle-open'     => 'aae-a-search-form',
+		'aae-a-search-toggle-close'    => 'aae-a-search-form',
 		'aae-a-search-panel'           => 'aae-a-search-form',
 		'aae-a-search-field'           => 'aae-a-search-form',
 		'aae-a-search-input'           => 'aae-a-search-form',
@@ -1120,6 +1122,22 @@ final class Atomic
 				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Toggle',
 				'icon'         => 'eicon-search',
 				'keywords'     => [ 'search', 'toggle' ],
+				'hide_from_panel' => true,
+			],
+			'aae-a-search-toggle-open' => [
+				'is_internal'  => true,
+				'label'        => 'Open Icon',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Toggle_Open',
+				'icon'         => 'eicon-search',
+				'keywords'     => [ 'search', 'toggle', 'icon' ],
+				'hide_from_panel' => true,
+			],
+			'aae-a-search-toggle-close' => [
+				'is_internal'  => true,
+				'label'        => 'Close Icon',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Toggle_Close',
+				'icon'         => 'eicon-close',
+				'keywords'     => [ 'search', 'toggle', 'icon', 'close' ],
 				'hide_from_panel' => true,
 			],
 			'aae-a-search-panel' => [
@@ -4437,6 +4455,16 @@ final class Atomic
 			'aae-a-search-toggle' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Toggle',
 				'file' => 'Widgets/SearchForm/class-aae-a-search-toggle.php',
+				'has_script' => false,
+			],
+			'aae-a-search-toggle-open' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Toggle_Open',
+				'file' => 'Widgets/SearchForm/class-aae-a-search-toggle-open.php',
+				'has_script' => false,
+			],
+			'aae-a-search-toggle-close' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Toggle_Close',
+				'file' => 'Widgets/SearchForm/class-aae-a-search-toggle-close.php',
 				'has_script' => false,
 			],
 			'aae-a-search-panel' => [
