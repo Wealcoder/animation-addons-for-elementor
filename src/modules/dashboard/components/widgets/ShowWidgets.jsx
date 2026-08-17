@@ -10,6 +10,8 @@ import { useActiveItem, useNotification, useWidgets } from "@/hooks/app.hooks";
 import { toast } from "sonner";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import { WidgetSettingConfig } from "@/config/widgetSettingConfig";
+import WidgetCategoryGrid from "../shared/WidgetCategoryGrid";
+import { filterUsedWidgets } from "@/lib/usedWidgets";
 
 const ShowWidgets = ({
   searchKey,
@@ -18,6 +20,8 @@ const ShowWidgets = ({
   urlParams,
   setWidgetCount,
   settingOpen,
+  // { slug: pages }, or null until the Usage scan has run.
+  usage = null,
 }) => {
   const widgetSettings = WidgetSettingConfig;
   const { allWidgets } = useWidgets();
@@ -98,6 +102,19 @@ const ShowWidgets = ({
     updateActiveGroupWidget(data);
   };
 
+  // The Used tab exists only once a scan has run — before that the dashboard
+  // has no idea what is used, and a tab that silently means "nothing" would be
+  // a claim it has not checked.
+  const usedWidgets = filterUsedWidgets(catWidgets, usage);
+
+  // Leaving the user staring at an empty filtered view after a rescan is worse
+  // than moving them; if their tab just lost its last card, fall back to All.
+  useEffect(() => {
+    if (tabValue === "used" && (!usage || !Object.keys(usedWidgets).length)) {
+      setTabValue("all");
+    }
+  }, [usage, tabValue, usedWidgets]);
+
   const saveWidget = async () => {
     const isChanged = isEqual(
       allWidgets,
@@ -158,6 +175,13 @@ const ShowWidgets = ({
                 {tab.title}
               </TabsTrigger>
             ))}
+
+            {/* Appears only after a Usage scan — see usedWidgets above. */}
+            {usage && (
+              <TabsTrigger key="used-widgets_tab" value="used" data-aae-used-tab>
+                {__("Used", "animation-addons-for-elementor")}
+              </TabsTrigger>
+            )}
           </TabsList>
           <ScrollBar orientation="horizontal" />
         </ScrollArea>
@@ -178,106 +202,76 @@ const ShowWidgets = ({
           </div>
         ) : (
           Object.keys(catWidgets)?.map((tab) => (
-            <div className="mt-3 first:mt-0">
-              <div className="bg-background flex justify-between items-center p-5 rounded">
-                <h3 className="text-base font-medium">
-                  {catWidgets[tab].title}
-                </h3>
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id={tab}
-                    checked={catWidgets[tab].is_active}
-                    onCheckedChange={(value) => setCheck({ value, slug: tab })}
-                  />
-                  <Label htmlFor={tab}>{__("Enable All", "animation-addons-for-elementor")}</Label>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 xl:grid-cols-3 gap-1 mt-1">
-                {Object.keys(catWidgets[tab].elements)?.map((content, i) => (
-                  <React.Fragment key={`tab_content-${i}`}>
-                    <WidgetCard
-                      widget={catWidgets[tab].elements[content]}
-                      slug={content}
-                      updateActiveItem={updateActiveWidget}
-                      className="rounded p-5"
-                      settingOpen={settingOpen}
-                      exSettings={
-                        widgetSettings?.find((item) => item.key === content)
-                          ?.component
-                      }
-                    />
-                  </React.Fragment>
-                ))}
-                {Array.from({
-                  length:
-                    deviceMediaMatch() -
-                    (Object.keys(catWidgets[tab].elements)?.length %
-                      deviceMediaMatch() ===
-                    0
-                      ? deviceMediaMatch()
-                      : Object.keys(catWidgets[tab].elements)?.length %
-                        deviceMediaMatch()),
-                }).map((_, index) => (
-                  <WidgetCard
-                    key={`tab_content_empty-${index}`}
-                    className="rounded"
-                  />
-                ))}
-              </div>
-            </div>
+            <WidgetCategoryGrid
+              key={`all_group-${tab}`}
+              category={catWidgets[tab]}
+              categorySlug={tab}
+              onToggleCategory={(value) => setCheck({ value, slug: tab })}
+              updateActiveItem={updateActiveWidget}
+              usage={usage}
+              settingOpen={settingOpen}
+              widgetSettings={widgetSettings}
+            />
           ))
         )}
       </TabsContent>
+
+      {/*
+        Used — every widget the scan found on at least one page. No group
+        Enable All here: it would act on the whole category, not on the four
+        cards this view is showing.
+      */}
+      {usage && (
+        <TabsContent
+          key="used-widgets_content"
+          value="used"
+          className="bg-background-secondary p-3 rounded-lg"
+        >
+          {Object.keys(usedWidgets).length ? (
+            Object.keys(usedWidgets).map((tab) => (
+              <WidgetCategoryGrid
+                key={`used_group-${tab}`}
+                category={usedWidgets[tab]}
+                categorySlug={`used-${tab}`}
+                showGroupToggle={false}
+                updateActiveItem={updateActiveWidget}
+                usage={usage}
+                settingOpen={settingOpen}
+                widgetSettings={widgetSettings}
+              />
+            ))
+          ) : (
+            <div className="bg-background flex justify-center items-center p-5 rounded">
+              <h3 className="text-base font-medium">
+                {__(
+                  "No widgets are used on any page.",
+                  "animation-addons-for-elementor"
+                )}
+              </h3>
+            </div>
+          )}
+        </TabsContent>
+      )}
       {Object.keys(catWidgets)?.map((tab) => (
         <TabsContent
           key={tab}
           value={tab}
           className="bg-background-secondary p-3 rounded-lg"
         >
-          <div>
-            <div className="bg-background flex justify-between items-center p-5 rounded">
-              <h3 className="text-base font-medium">{catWidgets[tab].title}</h3>
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id={tab}
-                  checked={catWidgets[tab].is_active}
-                  onCheckedChange={(value) => setCheck({ value, slug: tab })}
-                />
-                <Label htmlFor={tab}>{__("Enable All", "animation-addons-for-elementor")}</Label>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 xl:grid-cols-3 gap-1 mt-1">
-              {Object.keys(catWidgets[tab].elements)?.map((content, i) => (
-                <React.Fragment key={`tab_content-${i}`}>
-                  <WidgetCard
-                    widget={catWidgets[tab].elements[content]}
-                    slug={content}
-                    updateActiveItem={updateActiveWidget}
-                    className="rounded p-5"
-                    exSettings={
-                      widgetSettings?.find((item) => item.key === content)
-                        ?.component
-                    }
-                  />
-                </React.Fragment>
-              ))}
-              {Array.from({
-                length:
-                  deviceMediaMatch() -
-                  (Object.keys(catWidgets[tab].elements)?.length %
-                    deviceMediaMatch() ===
-                  0
-                    ? deviceMediaMatch()
-                    : Object.keys(catWidgets[tab].elements)?.length %
-                      deviceMediaMatch()),
-              }).map((_, index) => (
-                <WidgetCard
-                  key={`tab_content_empty-${index}`}
-                  className="rounded"
-                />
-              ))}
-            </div>
-          </div>
+          {/*
+            `settingOpen` is deliberately NOT passed here — it never was. The
+            per-widget settings panel auto-opens from `?wiz_setting=` on the All
+            tab only. Pre-existing asymmetry, preserved rather than quietly
+            changed while extracting this grid.
+          */}
+          <WidgetCategoryGrid
+            category={catWidgets[tab]}
+            categorySlug={tab}
+            onToggleCategory={(value) => setCheck({ value, slug: tab })}
+            updateActiveItem={updateActiveWidget}
+            usage={usage}
+            widgetSettings={widgetSettings}
+          />
         </TabsContent>
       ))}
     </Tabs>

@@ -17,6 +17,8 @@ import {
   useAtomicExtensions,
   useExtensions,
 } from "@/hooks/app.hooks";
+import { useState } from "react";
+import DisableAllV3Dialog from "../shared/DisableAllV3Dialog";
 
 const ExtensionTopBar = ({
   filterKey,
@@ -32,6 +34,8 @@ const ExtensionTopBar = ({
   const isAtomic = system === "atomic";
   const activeExtensions = isAtomic ? allAtomicExtensions : allExtensions;
 
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
   const setCheck = (data) => {
     if (isAtomic) {
       updateActiveAtomicFullExtension(data);
@@ -40,7 +44,19 @@ const ExtensionTopBar = ({
     }
   };
 
+  // Mirrors WidgetTopBar — see the note there. Milder consequence for
+  // extensions (saved effects stop running rather than content disappearing),
+  // but still not something to discover after the fact.
+  const onToggleAll = (value) => {
+    if (!isAtomic && value === false) {
+      setConfirmOpen(true);
+      return;
+    }
+    setCheck({ value });
+  };
+
   return (
+    <>
     <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 xl:gap-11 justify-between items-center">
       <div className="flex items-center gap-3">
         <div className="border rounded-full h-[52px] w-[52px] flex justify-center items-center shadow-common">
@@ -70,7 +86,7 @@ const ExtensionTopBar = ({
           <Switch
             id="global-enable-all"
             checked={activeExtensions?.is_active}
-            onCheckedChange={(value) => setCheck({ value })}
+            onCheckedChange={onToggleAll}
             reverse
           />
           <Label htmlFor="global-enable-all">{__("Enable All", "animation-addons-for-elementor")}</Label>
@@ -92,6 +108,15 @@ const ExtensionTopBar = ({
         </div>
       </div>
     </div>
+
+    <DisableAllV3Dialog
+      open={confirmOpen}
+      setOpen={setConfirmOpen}
+      kind="extensions"
+      activeCount={extensionCount?.active || 0}
+      onConfirm={() => setCheck({ value: false })}
+    />
+    </>
   );
 };
 
