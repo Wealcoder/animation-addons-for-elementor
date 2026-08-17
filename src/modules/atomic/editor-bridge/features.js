@@ -1339,13 +1339,13 @@ const SHARED_TARGET_TYPES = [
 	'e-aae-a-image-compare', 'e-aae-a-image-hotspot', 'e-aae-a-form',
 
 	// Media.
-	'e-aae-a-video', 'e-aae-a-video-mask', 'e-aae-a-video-popup',
+	'e-aae-a-video', 'e-aae-a-video-mask',
 	'e-aae-a-lottie', 'e-aae-a-draw-svg',
 
 	// Basic.
 	'e-aae-a-advanced-heading', 'e-aae-a-btn', 'e-aae-a-btn-pro',
 	'e-aae-a-counter', 'e-aae-a-countdown', 'e-aae-a-progressbar',
-	'e-aae-a-social-share', 'e-aae-a-icon-list',
+	'e-aae-a-social-share', 'e-aae-a-icon-list', 'e-aae-a-curved-text',
 
 	// Internal child — back-compat only, see the PHP docblock.
 	'e-aae-a-icon-list-item',

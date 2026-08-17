@@ -1,0 +1,61 @@
+{#
+  AAE Curved Text — renders a plain <div>, purely decorative (no click
+  behavior, no JS at all — see class-aae-a-curved-text.php's docblock).
+
+  Two ways to render the rotator, chosen by `rotator_type`:
+    - text: a curved SVG <textPath> rendered directly below, own font-size/
+      radius controls.
+    - image: the Rotator Image child (a real, locked e-image, always
+      present in the tree via children_placeholder) is shown; hidden by the
+      scoped selector below when text mode is active instead, so switching
+      back and forth never loses the uploaded image.
+  The Icon child (a real, locked e-svg) always renders on top of either;
+  `show_icon` toggles its visibility the same way — a scoped selector below,
+  never removing the child — so a hidden Icon keeps its uploaded SVG/settings
+  if it's shown again later.
+
+  Duration/direction ride as CSS custom properties set HERE, on the root
+  element, rather than on the SVG/Image individually — custom properties
+  inherit through the DOM, so curved-text.scss's single keyframe — reading
+  `var(--aae-ct-rot-duration, ...)` off whichever rotator is currently
+  spinning — gets the right value from this one ancestor declaration either
+  way.
+
+  The circular path's id is salted with this element's own `id` so multiple
+  Curved Text instances on one page never collide on the same `<path id>`.
+#}
+{% set classes = ['aae-a-curved-text', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') | trim %}
+{% set rotator_type = settings.rotator_type | default('image') %}
+{% set duration = settings.rotation_duration | default(8) %}
+{% set direction = (settings.rotation_direction | default('cw') == 'ccw') ? 'reverse' : 'normal' %}
+{% set text_font_size = settings.rotator_text_font_size | default(10) %}
+{% set text_radius = 50 - (settings.rotator_text_padding | default(8)) %}
+{% set rotator_class = type ~ '-rotator' %}
+{% set icon_class = type ~ '-icon' %}
+{% set show_icon = settings.show_icon is not defined or settings.show_icon %}
+
+<div
+    class="{{ classes }} {{ editor_classes | default('') }}"
+    data-id="{{ id }}"
+    data-element_type="{{ type }}"
+    data-e-type="{{ type }}"
+    data-interaction-id="{{ interaction_id | default(id) }}"
+    style="--aae-ct-rot-duration:{{ duration }}s;--aae-ct-rot-direction:{{ direction }};"
+    {% if settings._cssid is defined and settings._cssid is not empty %}id="{{ settings._cssid | e('html_attr') }}"{% endif %}
+    {% if settings.attributes is defined and settings.attributes is not empty %}{{ settings.attributes | raw }}{% endif %}
+    {{ editor_attributes | default('') | raw }}
+>
+    {% if rotator_type == 'text' %}
+        <style>[data-id="{{ id }}"] .{{ rotator_class }}--image { display: none; }</style>
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="aae-a-curved-text-rotator--text {{ base_styles.rotator }}"
+            aria-hidden="true"
+            viewBox="0 0 100 100"
+        ><defs><path id="aae-ct-circle-{{ id }}" d="M 50,50 m -{{ text_radius }},0 a {{ text_radius }},{{ text_radius }} 0 1,1 {{ text_radius * 2 }},0 a {{ text_radius }},{{ text_radius }} 0 1,1 -{{ text_radius * 2 }},0" /></defs><text style="font-size:{{ text_font_size }}px;"><textPath href="#aae-ct-circle-{{ id }}" startOffset="0%">{{ settings.rotator_text | default('') }}</textPath></text></svg>
+    {% endif %}
+    {% if not show_icon %}
+        <style>[data-id="{{ id }}"] .{{ icon_class }} { display: none; }</style>
+    {% endif %}
+    {{ children_placeholder | raw }}
+</div>

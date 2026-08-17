@@ -279,7 +279,6 @@ final class Bootstrap {
 			// Media.
 			'e-aae-a-video',
 			'e-aae-a-video-mask',
-			'e-aae-a-video-popup',
 			'e-aae-a-lottie',
 			'e-aae-a-draw-svg',
 
@@ -292,6 +291,7 @@ final class Bootstrap {
 			'e-aae-a-progressbar',
 			'e-aae-a-social-share',
 			'e-aae-a-icon-list',
+			'e-aae-a-curved-text',
 
 			// Internal child — kept for back-compat only, see the docblock.
 			'e-aae-a-icon-list-item',
