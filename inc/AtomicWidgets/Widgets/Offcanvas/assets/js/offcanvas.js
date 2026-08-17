@@ -282,10 +282,17 @@ const initOffcanvas = ( root ) => {
 	// Style tab). Writing them inline would beat BOTH and silently pin every
 	// panel to a flex column — only the fixed-position geometry belongs inline,
 	// because that is runtime state, not a design choice.
+	//
+	// `overflowY` is gone for the same reason. It used to live here as the
+	// drawer's only scroll rule, because the base style asked for the
+	// non-existent `overflow-y` key and rendered nothing (see
+	// define_base_styles()). That hid the bug on the frontend and left the
+	// EDITOR — which bails out above, before this line — showing a long menu
+	// spilling out of the panel. The base style now sets a real `overflow`,
+	// so scrolling works in both, and the Style tab can override it.
 	Object.assign( panel.style, {
 		position:      'fixed',
 		zIndex:        '9999',
-		overflowY:     'auto',
 		visibility:    'hidden',
 		pointerEvents: 'none',
 		transition:    'none',

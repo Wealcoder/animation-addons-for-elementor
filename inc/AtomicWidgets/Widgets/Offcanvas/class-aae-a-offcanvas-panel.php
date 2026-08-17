@@ -127,10 +127,21 @@ class AAE_A_Offcanvas_Panel extends Atomic_Element_Base {
 							//
 							// `flex-direction` is gone with it — inert on a block box.
 							'display'        => String_Prop_Type::generate( 'block' ),
-							'overflow-y'     => String_Prop_Type::generate( 'auto' ),
+							// `overflow`, NOT `overflow-y`. The atomic style schema has no
+							// `overflow-y` key at all — Style_Schema ships a single
+							// `overflow` enum (visible|hidden|auto) — and
+							// Render_Props_Resolver::resolve() iterates the SCHEMA, so an
+							// unknown key is dropped with no warning and no CSS. The panel
+							// therefore shipped with NO overflow rule: a drawer whose menu
+							// grew past the viewport spilled its items outside the panel
+							// box instead of scrolling. The frontend hid the bug because
+							// offcanvas.js used to write an inline `overflowY:auto`; the
+							// editor bails out before that code, which is exactly where the
+							// broken state showed up (a WP Menu with many items).
+							'overflow'       => String_Prop_Type::generate( 'auto' ),
 							'max-width'      => Size_Prop_Type::generate( [ 'size' => 90, 'unit' => 'vw' ] ),
 							'height'         => Size_Prop_Type::generate( [ 'size' => 100, 'unit' => 'vh' ] ),
-							// The bound that makes `overflow-y: auto` above actually DO
+							// The bound that makes `overflow: auto` above actually DO
 							// something. A top/bottom drawer is pinned by offcanvas.js's POS
 							// table with `bottom:auto` (resp. `top:auto`) and an INLINE
 							// `height:auto`, so it has no height bound at all — the inline

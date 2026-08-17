@@ -354,11 +354,18 @@ class AAE_A_Accordion_Item extends Atomic_Element_Base {
 			'border-color' => Color_Prop_Type::generate(''),
 			'border-width' => Size_Prop_Type::generate([]),
 			'border-radius' => Dimensions_Prop_Type::generate([]),
+			// Zero, so the body text lines up with the header title rather than
+			// sitting 16px inside it. It also keeps the frontend matching the
+			// editor: accordion.js's distributeChildren() does not nest the
+			// content child inside .aae-accordion-content in the editor canvas
+			// (Elementor mounts child views on the item root, bypassing the
+			// twig's children_placeholder), so any inset declared here is
+			// invisible there and appears only on the frontend.
 			'padding' => Dimensions_Prop_Type::generate( [
 				'block-start'  => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
-				'inline-end'   => Size_Prop_Type::generate( [ 'size' => 16, 'unit' => 'px' ] ),
-				'block-end'    => Size_Prop_Type::generate( [ 'size' => 12, 'unit' => 'px' ] ),
-				'inline-start' => Size_Prop_Type::generate( [ 'size' => 16, 'unit' => 'px' ] ),
+				'inline-end'   => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+				'block-end'    => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+				'inline-start' => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
 			] ),
 			'margin' => Dimensions_Prop_Type::generate([]),
 		];
