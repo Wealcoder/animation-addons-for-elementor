@@ -3840,6 +3840,8 @@ final class Atomic
 		// "Invalid template type"). See inc/AtomicWidgets/Library/.
 		add_action('elementor/documents/register', [$this, 'register_library_documents']);
 		add_action('elementor/atomic-widgets/frontend/loader/scripts/register', [$this, 'register_atomic_scripts'], 16);
+		// Menu breakpoint gate, printed early — see print_menu_breakpoint_bootstrap().
+		add_action('wp_head', [$this, 'print_menu_breakpoint_bootstrap'], 1);
 		add_action('elementor/frontend/before_render', [$this, 'maybe_enqueue_widget_script'], 10, 1);
 		add_action('elementor/preview/enqueue_scripts', [$this, 'enqueue_widget_scripts_in_preview']);
 		add_action('elementor/atomic-widgets/styles/register', [$this, 'register_atomic_styles'], 10, 2);
@@ -6243,6 +6245,87 @@ final class Atomic
 			'path'    => $path,
 			'version' => file_exists($file_path) ? filemtime($file_path) : WCF_ADDONS_VERSION,
 		];
+	}
+
+	/**
+	 * Print the menu breakpoint gate as an inline <head> script.
+	 *
+	 * `.aae-a-menu--mobile` is the ONLY switch between the desktop bar and the
+	 * mobile drawer: the stylesheet carries no `max-width` media query, because a
+	 * media query cannot read the PER-WIDGET "Mobile Breakpoint" value. That makes
+	 * the class load-bearing, and menu.js — a footer module that additionally
+	 * depends on `elementor-v2-frontend-handlers` — is far too late to be its only
+	 * source:
+	 *
+	 *   - Until the module runs, a phone paints the full desktop nav and then
+	 *     snaps to the hamburger. That flash is the visible half of the bug.
+	 *   - If the module never runs for an instance — a JS error earlier in the
+	 *     footer, a deferring/combining optimiser, a header fragment served from a
+	 *     full-page cache — the menu stays in desktop layout for good. That is the
+	 *     "works on some page loads, not others" half.
+	 *
+	 * This runs at `wp_head` priority 1, before any menu markup exists, so it
+	 * installs a MutationObserver and classes each root the moment it is parsed —
+	 * i.e. before that node's first paint. menu.js still does its own sync; the two
+	 * are idempotent and agree on the rule (`innerWidth <= breakpoint`, unparseable
+	 * falls back to 768, and 0 legitimately means "never go mobile").
+	 *
+	 * Deliberately not gated on "does this page use the widget": the check is not
+	 * reliable at wp_head time for theme-builder headers, and the payload is a few
+	 * hundred bytes that no-ops when it finds no menus.
+	 */
+	public function print_menu_breakpoint_bootstrap(): void {
+		if ( ! $this->is_widget_active( 'aae-a-menu' ) ) {
+			return;
+		}
+
+		// Editor preview excluded: menu.js owns the class there, and the panel
+		// re-render churn would fight an observer it does not know about.
+		if ( \Elementor\Plugin::$instance->preview->is_preview_mode() ) {
+			return;
+		}
+
+		$js = <<<'JS'
+(function(){
+var S='.aae-a-menu[data-breakpoint]';
+function sync(el){
+	var bp=parseInt(el.getAttribute('data-breakpoint'),10);
+	if(!isFinite(bp)){bp=768;}
+	el.classList.toggle('aae-a-menu--mobile',window.innerWidth<=bp);
+}
+function all(){
+	var n=document.querySelectorAll(S),i=0;
+	for(;i<n.length;i++){sync(n[i]);}
+}
+var f=0;
+function schedule(){
+	if(f){return;}
+	f=requestAnimationFrame(function(){f=0;all();});
+}
+if(typeof MutationObserver!=='undefined'){
+	new MutationObserver(function(recs){
+		for(var i=0;i<recs.length;i++){
+			var a=recs[i].addedNodes;
+			for(var j=0;j<a.length;j++){
+				var el=a[j];
+				if(el.nodeType!==1){continue;}
+				if(el.matches&&el.matches(S)){sync(el);}
+				if(el.querySelectorAll){
+					var d=el.querySelectorAll(S),k=0;
+					for(;k<d.length;k++){sync(d[k]);}
+				}
+			}
+		}
+	}).observe(document.documentElement,{childList:true,subtree:true});
+}
+window.addEventListener('resize',schedule);
+window.addEventListener('orientationchange',schedule);
+document.addEventListener('DOMContentLoaded',all);
+window.addEventListener('load',all);
+})();
+JS;
+
+		echo "<script id=\"aae-a-menu-breakpoint-bootstrap\">{$js}</script>\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static literal, no dynamic data.
 	}
 
 	public function register_atomic_scripts($loader)

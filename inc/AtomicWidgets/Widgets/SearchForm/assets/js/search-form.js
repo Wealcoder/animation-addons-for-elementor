@@ -232,11 +232,43 @@
 		if (c) { c.style.display = open ? 'inline-flex' : 'none'; }
 	}
 
+	/**
+	 * Write a mode DEFAULT only if nothing else has set the property.
+	 *
+	 * Inline styles beat every Style-panel value, so an unconditional write silently
+	 * overrides whatever the user chose in the panel — that is exactly how the
+	 * Panel's own Height ended up struck through in devtools. Comparing against the
+	 * property's INITIAL value is what separates "nobody set this" from "the author
+	 * picked something", since a base style or a Style-tab value both resolve to
+	 * something other than the initial.
+	 */
+	function setIfUnset(el, prop, value, initial) {
+		if (window.getComputedStyle(el)[prop] === initial) {
+			el.style[prop] = value;
+		}
+	}
+
+	/**
+	 * Open the panel, writing ONLY what the mode structurally needs.
+	 *
+	 * Fullscreen used to write width/height 100% here. Both were redundant — a fixed
+	 * element with `inset: 0` already fills the viewport — and both clobbered the
+	 * Panel's own Width/Height from the Style tab. Dropping them changes nothing when
+	 * the user has set no size, and lets their size win when they have.
+	 *
+	 * `display` and `flex-direction` are gone for the same reason: clearing display
+	 * reverts to the panel's own value instead of forcing flex, and the panel's base
+	 * style already sets flex-direction: column.
+	 */
 	function openPanel(ctx) {
 		var panel = ctx.panel;
 		if (!panel) {
 			return;
 		}
+		// Clear closePanel()'s display:none FIRST, so the panel falls back to its own
+		// base / Style-panel display and the setIfUnset() reads resolve against it.
+		panel.style.display = '';
+
 		if (ctx.mode === 'fullscreen') {
 			Object.assign(panel.style, {
 				position: 'fixed',
@@ -244,14 +276,11 @@
 				left: '0',
 				right: '0',
 				bottom: '0',
-				width: '100%',
-				height: '100%',
-				display: 'flex',
-				flexDirection: 'column',
-				alignItems: 'center',
-				justifyContent: 'center',
 				zIndex: '99999',
 			});
+			// Centring the overlay content is a default, not a requirement.
+			setIfUnset(panel, 'alignItems', 'center', 'normal');
+			setIfUnset(panel, 'justifyContent', 'center', 'normal');
 			if (ctx.toggle) {
 				Object.assign(ctx.toggle.style, {
 					position: 'fixed',
@@ -264,11 +293,12 @@
 			Object.assign(panel.style, {
 				position: 'absolute',
 				top: '100%',
-				display: 'flex',
 				zIndex: '99',
-				minWidth: '300px',
 			});
 			panel.style[ctx.cfg.position === 'right' ? 'right' : 'left'] = '0';
+			// A floating panel shrinks to its content without this, but a Min Width
+			// set in the panel must still win.
+			setIfUnset(panel, 'minWidth', '300px', '0px');
 		}
 		ctx.wrapper.classList.add('is-open');
 		iconState(ctx, true);

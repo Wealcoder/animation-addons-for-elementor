@@ -188,70 +188,122 @@ const closeDescendants = (item) => {
 	});
 };
 
+/* ============================ BREAKPOINT GATE ============================
+
+   `.aae-a-menu--mobile` is the ONLY thing that switches the widget between the
+   desktop bar and the mobile drawer — the stylesheet has no `max-width` media
+   query left, because a media query cannot read a PER-WIDGET breakpoint. That
+   makes this class the load-bearing part of the whole widget, so it is
+   deliberately kept OUT of initMenu()'s one-shot path:
+
+     - syncMobileClass() is idempotent and runs on EVERY initMenu() call, even
+       for a root that is already initialised.
+     - the resize listener is GLOBAL and walks the live DOM, instead of one
+       listener closing over one root. A root that never reached initMenu() —
+       or that appeared after it ran — is still tracked, because the sweep
+       queries for it rather than relying on having been handed it.
+
+   Both were per-root before, which is what made the frontend intermittent:
+   any instance that missed init was frozen in desktop layout forever. */
+
+/** Resolve one root's breakpoint. 0 is legitimate ("never go mobile") and is
+ *  falsy, so this cannot use `|| 768`; only an unparseable value falls back. */
+const menuBreakpoint = (root) => {
+	const bp = parseInt(root.getAttribute('data-breakpoint'), 10);
+	return Number.isFinite(bp) ? bp : 768;
+};
+
+/** Re-read the attribute every time rather than closing over a value: the
+ *  editor rewrites data-breakpoint in place, and a captured number would pin
+ *  whichever value was current when the listener was bound. */
+const syncMobileClass = (root) => {
+	root.classList.toggle('aae-a-menu--mobile', window.innerWidth <= menuBreakpoint(root));
+};
+
+/* Sweep EVERY menu on the page, not a retained list. A retained list holds
+   detached nodes alive and — worse — misses nodes that were never added to it,
+   which is precisely the failure being fixed. */
+const syncAllMenus = () => {
+	document.querySelectorAll('.aae-a-menu[data-breakpoint]').forEach(syncMobileClass);
+};
+
+/* One listener for the document, bound once per window. rAF-coalesced so a
+   drag-resize does one class write per frame instead of one per event. */
+if (typeof window !== 'undefined' && !window.__aaeMenuBpBound) {
+	window.__aaeMenuBpBound = true;
+
+	let frame = 0;
+	const schedule = () => {
+		if (frame) return;
+		frame = requestAnimationFrame(() => { frame = 0; syncAllMenus(); });
+	};
+
+	window.addEventListener('resize', schedule);
+	// Fires on phones where the rotation does not always emit a `resize`.
+	window.addEventListener('orientationchange', schedule);
+	// The address bar collapsing on mobile changes the visual viewport without
+	// a window `resize` in some browsers.
+	if (window.visualViewport) window.visualViewport.addEventListener('resize', schedule);
+	// The module is a footer script: anything that renders after it (lazy
+	// headers, AJAX content) is caught by these rather than being left stale.
+	document.addEventListener('DOMContentLoaded', syncAllMenus);
+	window.addEventListener('load', syncAllMenus);
+}
+
+/* Clone-safe init guard.
+ *
+ * This used to be `root.dataset.aaeMenuInit`, i.e. a real `data-` ATTRIBUTE —
+ * and cloneNode() copies attributes while copying neither expandos nor event
+ * listeners. So any duplicated header markup (a sticky-header clone, a slider
+ * clone, a cached fragment re-inserted by the theme) arrived already stamped
+ * `data-aae-menu-init="1"` and initMenu() bailed on the first line: no
+ * `--mobile` class, no arrows, no drawer handlers, permanently stuck in desktop
+ * layout — while the original instance on the same page worked fine. That is
+ * the "works sometimes" frontend bug. A WeakSet keys on node IDENTITY, which a
+ * clone does not share, so the copy initialises like the fresh node it is. */
+const initialised = new WeakSet();
+
 const initMenu = (root) => {
 	normalizeEditorWrapper(root);
 
-	if (root.dataset.aaeMenuInit === '1') return;
-	root.dataset.aaeMenuInit = '1';
+	// Runs BEFORE the init guard and on every call: the breakpoint class is the
+	// widget's entire layout switch, so it must be correct even for a root that
+	// is already initialised and returns below.
+	syncMobileClass(root);
+
+	if (initialised.has(root)) return;
 
 	const nav      = root.querySelector('.aae-a-menu-nav');
 	const toggle   = root.querySelector('.aae-a-menu-toggle');
 	const overlay  = root.querySelector('.aae-a-menu-overlay');
 	const closeBtn = root.querySelector('.aae-a-menu-close');
+	// Bail BEFORE claiming the root. Marking first meant a call that arrived
+	// while the nav was still missing burned the one-shot slot, and every later
+	// call — the one that would have found a complete tree — returned at the
+	// guard. Leaving the root unclaimed costs four cheap querySelectors on the
+	// retry and keeps the instance recoverable.
 	if (!nav) return;
 
-	// NOT `parseInt(...) || 768`: 0 is a legitimate value meaning "never switch
-	// to mobile", and it is falsy, so the old form silently replaced it with the
-	// 768 default. Only a genuinely unparseable attribute falls back now.
-	const parsedBp       = parseInt(root.getAttribute('data-breakpoint'), 10);
-	const breakpoint     = Number.isFinite(parsedBp) ? parsedBp : 768;
-	const isHamburger    = root.getAttribute('data-hamburger') === 'true';
-	const isMobile       = () => window.innerWidth <= breakpoint;
+	initialised.add(root);
+
+	// Reads the attribute on every call instead of caching a number: the editor
+	// rewrites data-breakpoint in place, and initMenu() no longer re-runs its
+	// body for an already-initialised root, so a cached value would be stale for
+	// the rest of the session.
+	const isMobile = () => window.innerWidth <= menuBreakpoint(root);
 
 	/**
 	 * "Sub-menus expand INLINE instead of flying out" — true for the mobile drawer
 	 * AND for Layout = Vertical, which is the same interaction. Mirrors the
 	 * `$stacked` gate in menu.scss; the two must agree.
 	 *
-	 * Both attributes are read LIVE rather than closed over: `isHamburger` above is
-	 * captured once and goes stale the moment the builder toggles Mobile Hamburger
-	 * in the editor, and `data-layout` can change the same way.
+	 * Attributes are read LIVE rather than closed over, so toggling Mobile
+	 * Hamburger or Layout in the editor takes effect without a re-init.
 	 */
 	const isStacked = () =>
 		root.getAttribute('data-layout') === 'vertical'
 		|| (root.getAttribute('data-hamburger') === 'true' && isMobile());
 
-	/**
-	 * Mirror isMobile() onto a class on the root.
-	 *
-	 * The stylesheet used to switch layouts with hardcoded
-	 * `@media (max-width: 768px)` / `(min-width: 769px)` blocks, which the
-	 * Mobile Breakpoint setting could never reach — it only ever fed this JS.
-	 * So the hamburger and the drawer appeared at 768px no matter what the
-	 * builder typed, and the field looked broken because it WAS inert for
-	 * everything visual. A media query cannot read a per-widget value, so the
-	 * gate is now `.aae-a-menu--mobile` and this is what sets it. One source of
-	 * truth: the same isMobile() that already drove the behaviour.
-	 */
-	const syncMobileClass = () => {
-		// Re-reads the attribute instead of closing over `breakpoint`. initMenu()
-		// re-runs on every editor re-render, so a closure would pin the value
-		// from whichever run bound the listener and go stale the moment the
-		// builder edits the field. Stateless like this, one binding stays
-		// correct forever — which is what makes the bind-once guard safe.
-		const bp = parseInt(root.getAttribute('data-breakpoint'), 10);
-		root.classList.toggle(
-			'aae-a-menu--mobile',
-			window.innerWidth <= (Number.isFinite(bp) ? bp : 768)
-		);
-	};
-
-	syncMobileClass();
-
-	if (!root.__aaeBpBound) {
-		root.__aaeBpBound = true;
-		window.addEventListener('resize', syncMobileClass);
-	}
 	let   dropdownEffect = root.getAttribute('data-dropdown-effect') || 'slide';
 	const transitionMs   = (parseInt(root.style.getPropertyValue('--aae-menu-transition'), 10) || 250);
 
@@ -262,7 +314,16 @@ const initMenu = (root) => {
 		new MutationObserver(() => {
 			applyDrawerEffect(root, nav, root.getAttribute('data-drawer-effect') || 'slide-left');
 			dropdownEffect = root.getAttribute('data-dropdown-effect') || 'slide';
-		}).observe(root, { attributes: true, attributeFilter: ['data-drawer-effect', 'data-dropdown-effect'] });
+			// data-breakpoint is in the filter so typing a new value in the panel
+			// re-evaluates the gate immediately. Without it the class only moved on
+			// a window resize, so the editor kept the OLD breakpoint's layout until
+			// the canvas happened to be resized — which is what made the field look
+			// like it did nothing.
+			syncMobileClass(root);
+		}).observe(root, {
+			attributes: true,
+			attributeFilter: ['data-drawer-effect', 'data-dropdown-effect', 'data-breakpoint'],
+		});
 	}
 
 	/* ---------- Dropdown arrows + click-to-toggle ---------- */
@@ -447,8 +508,15 @@ const initMenu = (root) => {
 		}
 	});
 
-	/* ---------- Mobile drawer ---------- */
-	if (!isHamburger || !toggle) return;
+	/* ---------- Mobile drawer ----------
+	   Gated on the BUTTON existing, not on a data-hamburger snapshot. The old
+	   `!isHamburger` check read the attribute once at init, so a root that
+	   initialised while Mobile Hamburger was off never bound the toggle, close
+	   or overlay handlers — and turning the setting on afterwards could not
+	   re-bind them, because the init guard now blocks a second pass. The button
+	   is always in the markup and CSS decides whether it is visible, so binding
+	   unconditionally is both correct and cheap. */
+	if (!toggle) return;
 
 	const openDrawer = () => {
 		root.classList.add('aae-a-menu--open');
