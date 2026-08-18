@@ -283,15 +283,27 @@ class Animation_Settings {
 		$rows = $wpdb->get_col(
 			"SELECT meta_value FROM {$wpdb->postmeta}
 			  WHERE meta_key = '_elementor_data'
-			    AND meta_value LIKE '%\"widgetType\":\"wcf--%'"
+			    AND " . self::v3_widget_name_sql()
 		);
 
+		$map  = self::widget_name_to_slug_map();
 		$used = [];
 
+		/*
+		 * Extract EVERY widget name, then keep the ones the map knows.
+		 *
+		 * Broad on purpose: a third party's widget name simply is not a key in
+		 * the map, so it is dropped a line later. Narrowing the pattern instead
+		 * is what produced the `wcf--` bug — it silently excluded 26 of our own
+		 * widgets, and an excluded widget here is not "not enabled", it is a
+		 * page that renders nothing after an import.
+		 */
 		foreach ( (array) $rows as $row ) {
-			if ( preg_match_all( '/"widgetType":"(wcf--[a-z0-9-]+)"/', (string) $row, $matches ) ) {
+			if ( preg_match_all( '/"widgetType":"([a-zA-Z0-9_-]+)"/', (string) $row, $matches ) ) {
 				foreach ( $matches[1] as $name ) {
-					$used[ $name ] = true;
+					if ( isset( $map[ $name ] ) ) {
+						$used[ $name ] = true;
+					}
 				}
 			}
 		}
@@ -300,13 +312,10 @@ class Animation_Settings {
 			return;
 		}
 
-		$map   = self::widget_name_to_slug_map();
 		$slugs = [];
 
 		foreach ( array_keys( $used ) as $name ) {
-			if ( isset( $map[ $name ] ) ) {
-				$slugs[ $map[ $name ] ] = true;
-			}
+			$slugs[ $map[ $name ] ] = true;
 		}
 
 		if ( empty( $slugs ) ) {
@@ -362,7 +371,31 @@ class Animation_Settings {
 
 						$source = (string) file_get_contents( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 
-						if ( preg_match( '/function\s+get_name\s*\(\s*\)[^{]*\{[^}]*return\s+[\'"](wcf--[a-z0-9-]+)[\'"]/s', $source, $m ) ) {
+						/*
+						 * Whatever the widget returns IS its name — do not
+						 * filter by prefix.
+						 *
+						 * This used to require `wcf--`, and only 75 of the 101
+						 * configured widgets that have a file use it. Measured
+						 * on the dev site: 19 return `aae--*` (`aae--weather`,
+						 * `aae--advanced-button`, …) and 7 use neither prefix
+						 * at all (`wcf-gsap-drawsvg`, `grid-hover-posts`,
+						 * `category-showcase`, `aaeaddon-post-reactions`, …).
+						 * All 26 were silently absent from the map, which made
+						 * them invisible to both the import guard below and the
+						 * usage scan.
+						 *
+						 * No widget name and no dashboard slug changed to fix
+						 * this — both are baked into saved pages and saved
+						 * options respectively. Only this read widened.
+						 *
+						 * A prefix test buys nothing: the file being read is the
+						 * one this configured slug points at, so the name it
+						 * returns cannot belong to anything else. A junk capture
+						 * would simply never appear in `_elementor_data` and so
+						 * never match.
+						 */
+						if ( preg_match( '/function\s+get_name\s*\(\s*\)[^{]*\{[^}]*return\s+[\'"]([a-zA-Z0-9_-]+)[\'"]/s', $source, $m ) ) {
 							$map[ $m[1] ] = $slug;
 						}
 
@@ -373,6 +406,59 @@ class Animation_Settings {
 		}
 
 		return $map;
+	}
+
+	/**
+	 * A prepared `WHERE` fragment matching any row that holds an AAE v3 widget.
+	 *
+	 * There is no prefix that covers them all — `grid-hover-posts` and
+	 * `category-showcase` have none at all — so the test is built from the
+	 * MAP's own names rather than from a pattern. That also means the two
+	 * callers below cannot drift apart from each other or from the map, which
+	 * is exactly how the `wcf--` assumption survived: it was written out three
+	 * times and widening one would have left the others blind.
+	 *
+	 * Falls back to the historic `wcf--` LIKE when the map is unavailable
+	 * (`wcf_get_config()` missing this early). That is no worse than the
+	 * behaviour this replaced, and failing to the OLD answer is the only safe
+	 * direction — an empty alternation would match every row or none, and both
+	 * are silently wrong.
+	 *
+	 * COST: a ~2 KB alternation over ~100 names, and a full scan — like the
+	 * `LIKE '%…%'` it replaces, which cannot use an index either. Measured on
+	 * this dev site at roughly 40 ms against 26 ms for the old one-prefix LIKE,
+	 * on a small row set. `has_v3_usage()` caches for an hour and only busts a
+	 * NEGATIVE, so that is paid about once an hour, and `maybe_enable_used_v3_widgets()`
+	 * runs only while the option has never been written.
+	 *
+	 * If it ever needs to be cheaper, note that BOTH callers tolerate a false
+	 * positive: the ratchet only ever turns V3 back ON, and the import guard
+	 * intersects with the map in PHP anyway. A broader, cheaper prefix test
+	 * would therefore be safe — but it must still be DERIVED from the map, or
+	 * it re-creates exactly the `wcf--` assumption this replaced.
+	 *
+	 * @return string SQL fragment, already escaped, testing `meta_value`.
+	 */
+	private static function v3_widget_name_sql(): string {
+		global $wpdb;
+
+		// A real Elementor widget name is `[a-zA-Z0-9_-]`. Anything else could
+		// not have come from get_name(), and must not reach a regex.
+		$names = array_filter(
+			array_keys( self::widget_name_to_slug_map() ),
+			static function ( $name ) {
+				return (bool) preg_match( '/^[a-zA-Z0-9_-]+$/', (string) $name );
+			}
+		);
+
+		if ( empty( $names ) ) {
+			return "meta_value LIKE '%\"widgetType\":\"wcf--%'";
+		}
+
+		return $wpdb->prepare(
+			'meta_value REGEXP %s',
+			'"widgetType":"(' . implode( '|', $names ) . ')"'
+		);
 	}
 
 	/**
@@ -398,8 +484,8 @@ class Animation_Settings {
 		$found = (bool) $wpdb->get_var(
 			"SELECT 1 FROM {$wpdb->postmeta}
 			 WHERE meta_key = '_elementor_data'
-			   AND meta_value LIKE '%\"widgetType\":\"wcf--%'
-			 LIMIT 1"
+			   AND " . self::v3_widget_name_sql() . '
+			 LIMIT 1'
 		);
 
 		// The Kit counts as usage too — someone configured v3 chrome by hand.

@@ -915,33 +915,67 @@ scanning, payload shape, and a real fixture pair differing only in the toggle's
 value) and `verify-extension-usage-ui.mjs` (20 — runs a real scan, asserts every
 rendered line matches the payload and that the site-level cards show none).
 
-### DANGER — `widget_name_to_slug_map()` only sees `wcf--` widgets
+### A v3 widget has TWO ids — and neither may ever change (fixed 2026-08-17)
 
-Found 2026-08-17 while wiring the above; **pre-existing, not yet fixed.** The
-map's regex hardcodes `return 'wcf--…'`, but only **74 of 101** v3 widgets use
-that prefix. Measured on this site: 19 return `aae--*` (`aae--weather`,
-`aae--advanced-button`, …) and 8 use other shapes entirely
-(`wcf-gsap-drawsvg`, `grid-hover-posts`, `aaeaddon-post-reactions`,
-`aae-pro-youtube-videos`, `aae-nested-mega-menu`, `aae-nested-motion-card`,
-`category-showcase`). All 27 are invisible to it.
+| | example | lives in | changeable |
+|---|---|---|---|
+| **name** — `get_name()` | `wcf--title` | every saved page, as `"widgetType"` | **never** |
+| **dashboard slug** | `animated-title` | `config.php` + the `wcf_save_widgets` option | **never** |
 
-Three things read that map or the same assumption, in rising order of harm:
+`widget_name_to_slug_map()` turns the first into the second by reading each
+configured slug's own widget file. Its regex used to require `return 'wcf--…'`,
+and **only 75 of the 101 configured widgets that have a file use that prefix.**
+Measured: 19 return `aae--*` (`aae--weather`, `aae--advanced-button`, …) and 7
+share no prefix at all — `wcf-gsap-drawsvg`, `grid-hover-posts`,
+`category-showcase`, `aaeaddon-post-reactions`, `aae-pro-youtube-videos`,
+`aae-nested-mega-menu`, `aae-nested-motion-card`. All 26 were silently absent.
 
-1. **Usage counts** — those 27 cards used to show "Not used", which was a
-   fabrication. They now show no line at all (see "absent means unanswerable"
-   above), so the gap is visible rather than confidently wrong.
-2. **`maybe_enable_used_v3_widgets()`** — the data-loss guard. A demo built on
-   `aae--*` widgets is not auto-enabled after import, so those widgets stay
-   unregistered and their pages render nothing.
-3. **`has_v3_usage()`** — its `LIKE` is `"widgetType":"wcf--%'`. A site built
-   entirely from `aae--*` v3 widgets reads as having **no v3 content at all**,
-   so `V3_IN_USE` is false, the era rules hide the V3 tab, and the `legacy_v3`
-   ratchet never fires.
+**The fix was in the READER, not in any identifier.** No widget name and no
+slug moved — both are customer data. The regex now accepts whatever the file
+returns, because the file being read is the one the configured slug points at,
+so its `get_name()` cannot belong to anything else; a prefix test bought
+nothing and excluded 26. Coverage went 75 → 101 of 102 (`cube-scroll-reveal`
+has no file in either plugin and is genuinely unresolvable).
 
-Fix all three together or none: widening the map alone leaves `has_v3_usage()`
-blind, which is a more confusing state than the current one. Both writers touch
-`wcf_save_widgets`, so anything here needs the snapshot/restore discipline the
-`set-v3-state.php` incident established.
+Three readers shared the assumption, in rising order of harm — all three fixed
+together, because widening one and not the others is a *more* confusing state
+than the original:
+
+1. **Usage counts** — those 26 cards showed "Not used", a fabrication. 25 of
+   them now carry real numbers.
+2. **`maybe_enable_used_v3_widgets()`** — the import data-loss guard. A demo
+   built on `aae--*` widgets enabled NOTHING, so every one of its pages
+   rendered blank, with no error anywhere.
+3. **`has_v3_usage()`** — its `LIKE '%"widgetType":"wcf--%'` meant a site built
+   entirely from `aae--*` v3 widgets read as having **no v3 content**, so
+   `V3_IN_USE` was false, the era rules hid the V3 tab, and the `legacy_v3`
+   ratchet never fired.
+
+**`v3_widget_name_sql()` is now the single source for 2 and 3.** There is no
+prefix that covers every name, so the SQL is built from the map's own names
+(`REGEXP`, ~2 KB alternation) rather than from a pattern — which is precisely
+what stops the three drifting apart again. It falls back to the historic
+`wcf--` LIKE if the map is unavailable: failing to the OLD answer is the only
+safe direction, since an empty alternation matches everything or nothing.
+
+`maybe_enable_used_v3_widgets()` now extracts EVERY `widgetType` and keeps what
+the map knows, rather than pattern-matching the name. A third party's widget is
+simply not a key in the map. Narrowing the pattern is what caused this bug.
+
+Costs a full scan, like the LIKE it replaces — measured 40 ms vs 26 ms on this
+site's small row set. `has_v3_usage()` caches for an hour and only busts a
+negative, so that is paid about once an hour. If it ever needs to be cheaper,
+note both callers tolerate a FALSE POSITIVE (the ratchet only turns V3 on; the
+import guard intersects with the map in PHP), but any cheaper test must still
+be DERIVED from the map or it re-creates this bug.
+
+Test: `E:\Local Testing\verify-v3-widget-name-map.php` (29 checks). Half of it
+is the no-regression half — `wcf--title → animated-title`, `wcf--site-logo →
+site-logo` and friends must resolve to the identical slug, because a moved pair
+is silent corruption of a customer's saved settings. It also asserts no two
+names collide onto one slug, that a foreign widget whose name merely CONTAINS
+ours does not match, and it snapshots/restores `wcf_save_widgets` including the
+"was never set" case.
 
 ### The V4 info line
 
@@ -3789,7 +3823,7 @@ JS.** Diagnose this class of failure fast: `head` the served file in
 | Symptom | Likely cause |
 |---|---|
 | The "Elementor V3" or "Elementor V4 (Atomic)" tab is missing from Widgets/Extensions, or "Animation Settings" is gone from the menu | Working as designed — the dashboard hides the era this site does not use, and drops the switcher entirely when only one is on offer. See [Which ERA the dashboard offers](#which-era-the-dashboard-offers--v3--v4-tab-visibility-2026-08-17) for the table. Reach a hidden V3 with the **"Legacy (V3)" link** on the V4 tab row (or `&system=v3`), a hidden V4 with `&system=atomic`, and the Settings screen with `?tab=animation-settings`. Note it reads the SAVED state at page load, so toggling switches does not move the tabs until you reload — and that a site whose CONTENT uses `wcf--*` widgets keeps V3 regardless of the toggles, via the `aae_v3_usage` transient. |
-| A card shows no usage count after a scan, while its neighbours do | Working as designed for a **site-level extension** — Custom Fonts, Post Type Builder, Custom Icon, Code Snippet, Template Library, Dynamic Tags, Create User write nothing into a page, so `usage_prop` is `false` and they get no line rather than a false "Not used". For a **v3 widget** it is the `wcf--` prefix gap instead — see [the DANGER box](#danger--widget_name_to_slug_map-only-sees-wcf--widgets); 27 of 101 v3 widgets are invisible to the map. |
+| A card shows no usage count after a scan, while its neighbours do | Working as designed for a **site-level extension** — Custom Fonts, Post Type Builder, Custom Icon, Code Snippet, Template Library, Dynamic Tags, Create User write nothing into a page, so `usage_prop` is `false` and they get no line rather than a false "Not used". For a **v3 widget** it means the map cannot resolve its slug: today that is only `cube-scroll-reveal`, which has no file in either plugin. See [A v3 widget has TWO ids](#a-v3-widget-has-two-ids--and-neither-may-ever-change-fixed-2026-08-17). |
 | A brand-new atomic extension always reports 0 pages | Its `usage_prop` is wrong or points at a renamed Schema constant. `verify-extension-usage.php` checks every declared prop still exists in a `Schema.php` — run it. Remember the prop is NOT derivable from the slug (`parallax` → `aae_plx_enable`). |
 | Widget/extension missing from the dashboard entirely | A registration list is out of sync — see [Registering a new widget or extension](#registering-a-new-widget-or-extension--what-must-stay-in-sync). Most likely no `$widgets_registry` entry (widget unreachable), or the slug is in the JS `INTERNAL_WIDGET_SLUGS` / `DEMO_ONLY_SLUGS` / `-main` hide list. |
 | Dashboard toggle does nothing | Either the slug is in `ALWAYS_ACTIVE_WIDGETS` (force-active, switch inert), or nothing in the codebase actually calls `is_extension_active()` for it — audit both directions with the grep in that section. |
