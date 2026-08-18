@@ -27,6 +27,7 @@ use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Switch_Control;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
+use Elementor\Modules\AtomicWidgets\Styles\Style_States;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -90,6 +91,13 @@ class AAE_A_Search_Input extends Atomic_Widget_Base {
 					] ) )
 					->add_prop( 'min-width', Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ) )
 					->add_prop( 'min-height', Size_Prop_Type::generate( [ 'size' => 44, 'unit' => 'px' ] ) )
+			)
+			// Kill the browser's default focus ring (Chrome paints a black
+			// double outline on :focus). Same treatment as AAE_A_Form_Input.
+			->add_variant(
+				Style_Variant::make()
+					->set_state( Style_States::FOCUS )
+					->add_prop( 'outline-style', String_Prop_Type::generate( 'none' ) )
 			),
 		];
 	}

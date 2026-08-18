@@ -13,7 +13,9 @@ import { useTNavigation } from "@/hooks/app.hooks";
 
 const MobileNav = () => {
   const [currentPath, setCurrentPath] = useState("");
-  const navItems = MainNavData;
+  // Mirrors MainNav — see the note there on why `visible: false` is filtered
+  // out rather than class-hidden.
+  const navItems = MainNavData.filter((item) => item.visible !== false);
   const role = WCF_ADDONS_ADMIN.user_role;
 
   const { setTabKey } = useTNavigation();

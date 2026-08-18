@@ -496,6 +496,25 @@ class WCF_Admin_Init
 				'active' => is_array($active_widgets) ? count($active_widgets) : 0,
 			),
 
+			/*
+			 * Does this site's CONTENT use v3 widgets, regardless of what the
+			 * toggles say? `_elementor_data LIKE '%"widgetType":"wcf--%'` plus
+			 * the Kit's chrome keys, cached an hour (aae_v3_usage transient).
+			 *
+			 * The dashboard hides the era a site does not use, and the active
+			 * COUNT is not enough to decide that: a site can hold 34 pages
+			 * built from wcf--* widgets while `wcf_save_widgets` is empty —
+			 * that is the exact shape maybe_enable_used_v3_widgets() exists to
+			 * heal, and it deliberately bails once the option has been written
+			 * by hand. Hiding V3 from that user would take away the only screen
+			 * that could bring their pages back.
+			 *
+			 * Same ratchet as `legacy_v3` (Rule 5 in CLAUDE.md): evidence of v3
+			 * can only ever switch V3 back ON.
+			 */
+			'v3_in_use' => class_exists('\WCF_ADDONS\AnimationSettings\Animation_Settings')
+				&& \WCF_ADDONS\AnimationSettings\Animation_Settings::has_v3_usage(),
+
 			'global_settings_url' => $this->get_elementor_active_edit_url(),
 			'theme_builder_url'   => admin_url('edit.php?post_type=wcf-addons-template'),
 			'user_role'           => wcfaddon_get_current_user_roles(),
@@ -533,6 +552,21 @@ class WCF_Admin_Init
 			 * locked upsell state.
 			 */
 			'performance' => apply_filters('aae/performance/dashboard_payload', array()),
+
+			/*
+			 * Widget usage counts. Free ships the button and the per-card
+			 * count line; the scan that produces the numbers is Pro
+			 * (pro/inc/Usage/), so capability arrives through a filter Pro
+			 * answers rather than a direct class reference.
+			 *
+			 * An empty array is the correct free-only value: the widgets
+			 * screen reads it as "Pro is not here" and renders the button as
+			 * an upsell instead of firing a request at an endpoint nobody
+			 * registered. Note this only ever carries CAPABILITY — shipping
+			 * counts with the page would re-introduce exactly the cost the
+			 * on-demand design exists to avoid.
+			 */
+			'usage' => apply_filters('aae/usage/dashboard_payload', array()),
 		);
 
 		wp_localize_script('wcf-admin', 'WCF_ADDONS_ADMIN', $localize_data);
