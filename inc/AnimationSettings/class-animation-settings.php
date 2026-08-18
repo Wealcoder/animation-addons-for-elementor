@@ -106,6 +106,11 @@ class Animation_Settings {
 		// …and let it come BACK on if v3 turns up later. Runs after bootstrap.
 		add_action( 'admin_init', [ __CLASS__, 'maybe_reactivate_legacy' ], 11 );
 
+		// A site that finished maybe_bootstrap() before the `icon` field
+		// existed needs this one field's v3 value copied in on its own —
+		// import_from_kit() only runs again from scratch on a fresh install.
+		add_action( 'admin_init', [ __CLASS__, 'maybe_backfill_scroll_to_top_icon' ], 11 );
+
 		// Showing the legacy UI is not enough: imported v3 content renders
 		// nothing until those widgets are actually registered.
 		add_action( 'admin_init', [ __CLASS__, 'maybe_enable_used_v3_widgets' ], 12 );
@@ -242,6 +247,58 @@ class Animation_Settings {
 		$settings = self::import_from_kit( $settings );
 
 		update_option( self::OPTION_NAME, self::sanitize( $settings ) );
+	}
+
+	/**
+	 * Copy an existing v3 icon choice into the `icon` field, once, for a site
+	 * that already finished maybe_bootstrap() before this field existed.
+	 *
+	 * Every OTHER scroll_to_top field went through import_from_kit() the
+	 * moment the feature was first claimed; `icon` did not, because it was
+	 * only ever a `kit_defaults` fallback back then. Bridge::apply_feature()
+	 * now owns `icon` unconditionally once the feature is claimed — without
+	 * this, the first render after upgrading would silently overwrite that
+	 * site's real Kit icon with the schema default, because get()'s own
+	 * sanitize-on-read always backfills a missing field with something.
+	 *
+	 * Self-limiting with no separate marker: it only acts while the RAW
+	 * stored option has no `icon` key at all, and it always writes one
+	 * (copied, or the default when the Kit has nothing) — so the very act of
+	 * running once removes the condition that lets it run again.
+	 */
+	public static function maybe_backfill_scroll_to_top_icon(): void {
+		$raw = get_option( self::OPTION_NAME, false );
+
+		if ( ! is_array( $raw ) || isset( $raw['scroll_to_top']['icon'] ) ) {
+			return;
+		}
+
+		// Same gate import_from_kit() itself uses: only a feature the user
+		// actually switched on is worth carrying a value across for.
+		if ( empty( $raw['scroll_to_top']['enable'] ) ) {
+			return;
+		}
+
+		$fallback = [ 'value' => 'fas fa-arrow-up', 'library' => 'fa-solid' ];
+		$kit_icon = null;
+
+		if ( class_exists( '\Elementor\Plugin' ) && \Elementor\Plugin::$instance->kits_manager ) {
+			$kit = \Elementor\Plugin::$instance->kits_manager->get_active_kit();
+
+			if ( $kit && $kit->get_id() ) {
+				$saved = get_post_meta( $kit->get_id(), '_elementor_page_settings', true );
+				$kit_icon = is_array( $saved ) && isset( $saved['scroll_to_icon'] ) ? $saved['scroll_to_icon'] : null;
+			}
+		}
+
+		$raw['scroll_to_top']['icon'] = ( is_array( $kit_icon ) && isset( $kit_icon['value'] ) )
+			? [
+				'value'   => (string) $kit_icon['value'],
+				'library' => isset( $kit_icon['library'] ) ? (string) $kit_icon['library'] : 'fa-solid',
+			]
+			: $fallback;
+
+		update_option( self::OPTION_NAME, $raw );
 	}
 
 	/**
@@ -648,6 +705,15 @@ class Animation_Settings {
 						}
 						break;
 
+					case 'icon':
+						if ( is_array( $value ) && isset( $value['value'] ) && is_string( $value['value'] ) ) {
+							$settings[ $feature ][ $key ] = [
+								'value'   => $value['value'],
+								'library' => isset( $value['library'] ) ? (string) $value['library'] : 'fa-solid',
+							];
+						}
+						break;
+
 					case 'enum':
 						$options = self::options( (string) ( $field['options'] ?? '' ) );
 						if ( is_scalar( $value ) && array_key_exists( (string) $value, $options ) ) {
@@ -949,14 +1015,15 @@ class Animation_Settings {
 				'label'  => __( 'Scroll to Top', 'animation-addons-for-elementor' ),
 
 				/*
-				 * Kit keys the v3 renderer READS but the v4 panel does not
-				 * offer. Written only when this feature is claimed and the Kit
-				 * has nothing there.
+				 * Kit key the v3 renderer READS. Written only when this feature
+				 * is claimed and the Kit has nothing there at all — i.e. a site
+				 * that has never saved this panel's `icon` field, v3 tab
+				 * included.
 				 *
 				 * Needed because global-elements.php reads the Kit through
 				 * `$kit->get_settings()` — RAW, so Elementor's own control
 				 * defaults are never merged in. A v4 user enables scroll-to-top
-				 * without ever opening the v3 tab, so `scroll_to_icon` is
+				 * without ever saving an icon choice, so `scroll_to_icon` is
 				 * guaranteed absent and the button renders with no icon at all
 				 * (plus an undefined-key warning on every page load). The value
 				 * mirrors the v3 control's declared default.
@@ -969,12 +1036,38 @@ class Animation_Settings {
 					'enable'           => [ 'type' => 'bool',  'kit' => 'wcf_enable_scroll_to_top', 'default' => false, 'label' => __( 'Scroll to Top', 'animation-addons-for-elementor' ) ],
 					'layout'           => [ 'type' => 'enum',  'kit' => 'wcf_scroll_to_top_layout', 'default' => '', 'options' => 'scroll_to_top_layouts', 'label' => __( 'Layout', 'animation-addons-for-elementor' ) ],
 					'position'         => [ 'type' => 'enum',  'kit' => 'wcf_scroll_to_top_position', 'default' => 'bottom-right', 'options' => 'corner_positions', 'label' => __( 'Position', 'animation-addons-for-elementor' ) ],
+					// Percent, not px: `bottom`/`left`/`right` on a `position: fixed`
+					// element resolve against the VIEWPORT, so a percentage keeps the
+					// same visual gap-from-edge proportion on a phone as on a desktop,
+					// where a fixed px offset either hugs the corner too tightly on a
+					// small screen or floats oddly far from it on a large one. Side is
+					// ONE field in the UI — only the key matching the current Position
+					// is shown — but two separate Kit keys underneath, because that is
+					// what the v3 renderer already reads (scroll_to_top_global_css()
+					// picks whichever one matches `wcf_scroll_to_top_position`).
+					'position_bottom'  => [ 'type' => 'size',  'kit' => 'wcf_scroll_to_top_position_bottom', 'default' => 2, 'unit' => '%', 'min' => 0, 'max' => 100, 'step' => 0.5, 'label' => __( 'Distance from Bottom', 'animation-addons-for-elementor' ) ],
+					'position_left'    => [ 'type' => 'size',  'kit' => 'wcf_scroll_to_top_position_left', 'default' => 2, 'unit' => '%', 'min' => 0, 'max' => 100, 'step' => 0.5, 'label' => __( 'Distance from Side', 'animation-addons-for-elementor' ), 'dep' => [ 'field' => 'position', 'value' => 'bottom-left' ] ],
+					'position_right'   => [ 'type' => 'size',  'kit' => 'wcf_scroll_to_top_position_right', 'default' => 2, 'unit' => '%', 'min' => 0, 'max' => 100, 'step' => 0.5, 'label' => __( 'Distance from Side', 'animation-addons-for-elementor' ), 'dep' => [ 'field' => 'position', 'value' => 'bottom-right' ] ],
+					// A curated shortlist, not a full icon-library browser — this
+					// is a React dashboard, not the Elementor editor, so there is
+					// nowhere to host Elementor's own FA search UI. sanitize_icon()
+					// validates by SHAPE rather than against this list, so a v3
+					// site whose Kit already holds a different Font Awesome icon
+					// (chosen through Elementor's unrestricted picker) keeps it —
+					// it just cannot be RE-picked here unless it's one of these.
+					'icon'             => [ 'type' => 'icon',  'kit' => 'scroll_to_icon', 'default' => [ 'value' => 'fas fa-arrow-up', 'library' => 'fa-solid' ], 'options' => 'scroll_to_top_icons', 'label' => __( 'Icon', 'animation-addons-for-elementor' ) ],
 					'icon_size'        => [ 'type' => 'size',  'kit' => 'wcf_scroll_to_top_icon_size', 'default' => 16, 'unit' => 'px', 'min' => 0, 'max' => 100, 'label' => __( 'Icon Size', 'animation-addons-for-elementor' ) ],
+					// Circle layout forces a square box and a fully round corner (see
+					// scroll_to_top_global_css() — the `.scroll-to-circle` rule
+					// mirrors width into height and Elementor's own v3 tab hid these
+					// two controls under the same condition). Height/Border Radius are
+					// meaningless there; Progress Color is meaningless everywhere else,
+					// since only the circle layout has a progress ring to colour.
 					'width'            => [ 'type' => 'size',  'kit' => 'wcf_scroll_to_top_width', 'default' => 45, 'unit' => 'px', 'min' => 0, 'max' => 300, 'label' => __( 'Width', 'animation-addons-for-elementor' ) ],
-					'height'           => [ 'type' => 'size',  'kit' => 'wcf_scroll_to_top_height', 'default' => 45, 'unit' => 'px', 'min' => 0, 'max' => 300, 'label' => __( 'Height', 'animation-addons-for-elementor' ) ],
-					'border_radius'    => [ 'type' => 'size',  'kit' => 'wcf_scroll_to_top_border_radius', 'default' => 50, 'unit' => '%', 'min' => 0, 'max' => 100, 'label' => __( 'Border Radius', 'animation-addons-for-elementor' ) ],
+					'height'           => [ 'type' => 'size',  'kit' => 'wcf_scroll_to_top_height', 'default' => 45, 'unit' => 'px', 'min' => 0, 'max' => 300, 'label' => __( 'Height', 'animation-addons-for-elementor' ), 'dep' => [ 'field' => 'layout', 'value' => '' ] ],
+					'border_radius'    => [ 'type' => 'size',  'kit' => 'wcf_scroll_to_top_border_radius', 'default' => 50, 'unit' => '%', 'min' => 0, 'max' => 100, 'label' => __( 'Border Radius', 'animation-addons-for-elementor' ), 'dep' => [ 'field' => 'layout', 'value' => '' ] ],
 					'z_index'          => [ 'type' => 'size',  'kit' => 'wcf_scroll_to_top_z_index', 'default' => 99, 'unit' => 'px', 'min' => 0, 'max' => 99999, 'label' => __( 'Z Index', 'animation-addons-for-elementor' ) ],
-					'progress_color'   => [ 'type' => 'color', 'kit' => 'wcf_scroll_to_top_progress_color', 'default' => '#000000', 'label' => __( 'Progress Color', 'animation-addons-for-elementor' ) ],
+					'progress_color'   => [ 'type' => 'color', 'kit' => 'wcf_scroll_to_top_progress_color', 'default' => '#000000', 'label' => __( 'Progress Color', 'animation-addons-for-elementor' ), 'dep' => [ 'field' => 'layout', 'value' => 'circle' ] ],
 					'icon_color'       => [ 'type' => 'color', 'kit' => 'wcf_scroll_to_top_icon_color', 'default' => '#ffffff', 'label' => __( 'Icon Color', 'animation-addons-for-elementor' ) ],
 					'bg_color'         => [ 'type' => 'color', 'kit' => 'wcf_scroll_to_top_bg_color', 'default' => '#000000', 'label' => __( 'Background Color', 'animation-addons-for-elementor' ) ],
 					'icon_hover_color' => [ 'type' => 'color', 'kit' => 'wcf_scroll_to_top_icon_hover_color', 'default' => '#ffffff', 'label' => __( 'Icon Color (Hover)', 'animation-addons-for-elementor' ) ],
@@ -1021,7 +1114,7 @@ class Animation_Settings {
 				// `kit` is a server-side mapping detail; the UI has no use for it.
 				unset( $field['kit'] );
 
-				if ( 'enum' === $field['type'] ) {
+				if ( in_array( $field['type'], [ 'enum', 'icon' ], true ) ) {
 					$field['options'] = self::options( (string) ( $field['options'] ?? '' ) );
 				}
 
@@ -1084,6 +1177,22 @@ class Animation_Settings {
 				return [
 					''       => __( 'Default', 'animation-addons-for-elementor' ),
 					'circle' => __( 'Progress Circle', 'animation-addons-for-elementor' ),
+				];
+
+			// A shortlist of Font Awesome Solid classes, not the whole library —
+			// see the `icon` field's own comment for why. Every value must match
+			// sanitize_icon()'s shape check (`fa[a-z]? fa-...`).
+			case 'scroll_to_top_icons':
+				return [
+					'fas fa-arrow-up'          => __( 'Arrow Up', 'animation-addons-for-elementor' ),
+					'fas fa-angle-up'          => __( 'Angle Up', 'animation-addons-for-elementor' ),
+					'fas fa-angle-double-up'   => __( 'Angle Double Up', 'animation-addons-for-elementor' ),
+					'fas fa-chevron-up'        => __( 'Chevron Up', 'animation-addons-for-elementor' ),
+					'fas fa-chevron-circle-up' => __( 'Chevron Circle Up', 'animation-addons-for-elementor' ),
+					'fas fa-caret-up'          => __( 'Caret Up', 'animation-addons-for-elementor' ),
+					'fas fa-arrow-circle-up'   => __( 'Arrow Circle Up', 'animation-addons-for-elementor' ),
+					'fas fa-long-arrow-alt-up' => __( 'Long Arrow Up', 'animation-addons-for-elementor' ),
+					'fas fa-level-up-alt'      => __( 'Level Up', 'animation-addons-for-elementor' ),
 				];
 
 			case 'corner_positions':
@@ -1700,6 +1809,30 @@ JS;
 		];
 	}
 
+	/**
+	 * An Elementor icon-control value: { value, library }. Validated by SHAPE
+	 * (Font Awesome's own "prefix class + glyph class" convention), not against
+	 * the field's curated `options` list — the panel only OFFERS a shortlist,
+	 * but a site whose Kit already holds a different icon (set through
+	 * Elementor's own unrestricted icon browser) must not lose it just because
+	 * some OTHER field on this panel gets saved. onSave() always posts the
+	 * whole feature object, so a whitelist check here would silently revert an
+	 * icon nobody touched.
+	 */
+	private static function sanitize_icon( $raw, array $fallback ): array {
+		$value   = is_array( $raw ) && isset( $raw['value'] ) ? sanitize_text_field( (string) $raw['value'] ) : '';
+		$library = is_array( $raw ) && isset( $raw['library'] ) ? sanitize_key( (string) $raw['library'] ) : '';
+
+		if ( ! preg_match( '/^fa[a-z]?\s+fa-[a-z0-9-]+$/', $value ) ) {
+			return $fallback;
+		}
+
+		return [
+			'value'   => $value,
+			'library' => '' !== $library ? $library : 'fa-solid',
+		];
+	}
+
 	/** A slider value: {size, unit}, clamped to the schema's own min/max. */
 	private static function sanitize_size( $raw, array $field, array $fallback ): array {
 		$size = is_array( $raw ) && isset( $raw['size'] ) ? $raw['size'] : null;
@@ -1860,6 +1993,10 @@ JS;
 
 					case 'size':
 						$clean[ $feature ][ $key ] = self::sanitize_size( $value, $field, $fallback );
+						break;
+
+					case 'icon':
+						$clean[ $feature ][ $key ] = self::sanitize_icon( $value, $fallback );
 						break;
 
 					case 'number':

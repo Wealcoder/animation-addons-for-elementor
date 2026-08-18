@@ -14,6 +14,35 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { __ } from "@wordpress/i18n";
 import { useEffect, useState } from "react";
+import {
+  FaAngleDoubleUp,
+  FaAngleUp,
+  FaArrowCircleUp,
+  FaArrowUp,
+  FaCaretUp,
+  FaChevronCircleUp,
+  FaChevronUp,
+  FaLevelUpAlt,
+  FaLongArrowAltUp,
+} from "react-icons/fa";
+
+// One preview glyph per choice `scroll_to_top_icons` (PHP) offers. Rendered
+// via react-icons rather than the raw `fa …` class + Font Awesome's webfont —
+// that font isn't loaded on this admin screen, so the class alone would draw
+// nothing. Keyed by the exact value the field stores, so a class this map
+// doesn't know (e.g. imported from a v3 site's own, unrestricted icon pick)
+// simply renders no preview instead of guessing.
+const ICON_PREVIEWS = {
+  "fas fa-arrow-up": FaArrowUp,
+  "fas fa-angle-up": FaAngleUp,
+  "fas fa-angle-double-up": FaAngleDoubleUp,
+  "fas fa-chevron-up": FaChevronUp,
+  "fas fa-chevron-circle-up": FaChevronCircleUp,
+  "fas fa-caret-up": FaCaretUp,
+  "fas fa-arrow-circle-up": FaArrowCircleUp,
+  "fas fa-long-arrow-alt-up": FaLongArrowAltUp,
+  "fas fa-level-up-alt": FaLevelUpAlt,
+};
 
 /**
  * One settings panel, rendered entirely from the schema the server ships in
@@ -65,7 +94,25 @@ const FeaturePanel = ({
 
   // The enable switch gets the header row; everything else stacks below it.
   const enableField = fields.find(([key]) => key === "enable");
-  const rest = fields.filter(([key]) => key !== "enable");
+
+  // A field can declare `dep: { field, value }` — shown only while another
+  // field in this same panel currently holds one of `value`'s options. E.g.
+  // Scroll to Top's Height/Border Radius only mean something for the Default
+  // layout, and Progress Color only for Progress Circle. The value is still
+  // stored and saved even while hidden — this hides the CONTROL, not the data,
+  // same as flipping a device off in the `devices` field above.
+  const depSatisfied = (dep) => {
+    if (!dep) return true;
+
+    const current = draft?.[dep.field] ?? "";
+    const allowed = Array.isArray(dep.value) ? dep.value : [dep.value];
+
+    return allowed.includes(current);
+  };
+
+  const rest = fields.filter(
+    ([key, field]) => key !== "enable" && depSatisfied(field.dep),
+  );
 
   const renderField = ([key, field]) => {
     const current = draft?.[key];
@@ -135,6 +182,56 @@ const FeaturePanel = ({
               ))}
             </SelectContent>
           </Select>
+        </div>
+      );
+    }
+
+    if (field.type === "icon") {
+      const options = field.options || {};
+      const currentValue = current?.value || "";
+      // A value the shortlist doesn't know (a v3 import from Elementor's own,
+      // unrestricted icon browser) still needs a row of its own, or the
+      // select would silently show nothing selected while the setting is
+      // still very much in effect on the front end.
+      const knownCurrent = currentValue !== "" && currentValue in options;
+      const Preview = ICON_PREVIEWS[currentValue];
+
+      return (
+        <div className="mt-5" key={key}>
+          <p className="text-[12px] text-[var(--600,#525866)] mb-2">
+            {field.label}
+          </p>
+          <div className="flex items-center gap-2.5">
+            <span className="flex items-center justify-center w-10 h-10 shrink-0 rounded-md border border-[#E1E4EA] text-[var(--900,#181B25)]">
+              {Preview ? <Preview size={16} /> : null}
+            </span>
+            <Select
+              value={currentValue}
+              disabled={locked}
+              onValueChange={(next) =>
+                set(key, { value: next, library: "fa-solid" })
+              }
+            >
+              <SelectTrigger
+                className="h-10 flex-1"
+                data-aae-field={`${feature}.${key}`}
+              >
+                <SelectValue
+                  placeholder={__("Select an icon", "animation-addons-for-elementor")}
+                />
+              </SelectTrigger>
+              <SelectContent>
+                {!knownCurrent && currentValue && (
+                  <SelectItem value={currentValue}>{currentValue}</SelectItem>
+                )}
+                {Object.entries(options).map(([optKey, label]) => (
+                  <SelectItem key={optKey} value={optKey}>
+                    {label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       );
     }
@@ -257,6 +354,7 @@ const FeaturePanel = ({
             type="number"
             min={field.min}
             max={field.max}
+            step={field.step}
             disabled={locked}
             value={current?.size ?? ""}
             data-aae-field={`${feature}.${key}`}
