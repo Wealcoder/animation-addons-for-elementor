@@ -2,29 +2,14 @@
 	cursor: pointer;
 }
 
-// The widget's own base default is `width: fit-content` (class-aae-a-btn.php's
-// define_base_styles()) — identical to `max-content` whenever there's room
-// (both settle on the same shrink-to-fit width), but unlike max-content it
-// also correctly clamps to a narrower ancestor's available width instead of
-// forcing the label onto one unbroken line that bursts straight through it.
-// Matches Elementor's own native Button widget (`.e-button-base` is a bare
-// `display: inline-block`, no width override, so it already wraps this way).
-
-// Let a button's label wrap onto extra lines instead of overflowing past a
-// narrower ancestor as one unbroken line. A flex item's default
-// `min-width: auto` floors its shrink at the label's full unwrapped width —
-// this lifts that floor — and `flex: 1 1 auto` lets the label claim the
-// row's remaining space so it actually has somewhere to wrap within. A
-// preset that already sets its own explicit paragraph width (e.g. Divide's
-// `width: 100%`) is unaffected by this — these are just the missing
-// defaults for presets that never set one of their own (Text Flip, Mask, …).
-.e-aae-a-btn-base > .e-paragraph-base {
-	flex: 1 1 auto;
-	min-width: 0;
-	white-space: normal;
-	overflow-wrap: break-word;
-	word-break: break-word;
-}
+// Disabled: made the label wrap instead of overflowing a narrower ancestor.
+// .e-aae-a-btn-base > .e-paragraph-base {
+// 	flex: 1 1 auto;
+// 	min-width: 0;
+// 	white-space: normal;
+// 	overflow-wrap: break-word;
+// 	word-break: break-word;
+// }
 
 .aae-btn-divide:hover .e-divider-base {
 	width: 120%;
