@@ -1,6 +1,6 @@
 <?php
 /**
- * AAE Video — atomic container WIDGET.
+ * Video — atomic container WIDGET.
  *
  * A single video widget for every source — YouTube, Vimeo, a hosted URL, or
  * a Media Library upload — built entirely on our own engine (Parts\
@@ -86,7 +86,7 @@ class AAE_A_Video extends Atomic_Element_Base {
 	}
 
 	public function get_title() {
-		return esc_html__( 'AAE Video', 'animation-addons-for-elementor' );
+		return esc_html__( 'Video', 'animation-addons-for-elementor' );
 	}
 
 	public function get_icon() {
@@ -176,6 +176,17 @@ class AAE_A_Video extends Atomic_Element_Base {
 			->where( [
 				'operator' => 'eq',
 				'path'     => [ 'poster_enabled' ],
+				'value'    => true,
+				'effect'   => 'hide',
+			] )
+			->get();
+
+		// True when playbtn_enabled is on — the Pulse Effect only means
+		// something while the button itself is visible.
+		$playbtn_on = Dependency_Manager::make()
+			->where( [
+				'operator' => 'eq',
+				'path'     => [ 'playbtn_enabled' ],
 				'value'    => true,
 				'effect'   => 'hide',
 			] )
@@ -279,6 +290,13 @@ class AAE_A_Video extends Atomic_Element_Base {
 				->set_dependencies( $poster_on ),
 			// Computed server-side in get_atomic_settings() — no panel control.
 			'resolved_poster_url' => String_Prop_Type::make()->default( '' ),
+
+			// Play button visibility + attention effect. The button itself is
+			// a fixed child (Parts\AAE_A_Video_PlayBtn), not a setting-driven
+			// twig block, so these ride as data-attrs on THIS wrapper and are
+			// applied in video.scss purely via CSS — no twig conditional needed.
+			'playbtn_enabled' => Boolean_Prop_Type::make()->default( true ),
+			'playbtn_pulse'   => Boolean_Prop_Type::make()->default( false )->set_dependencies( $playbtn_on ),
 
 			// Custom controls bar.
 			'controls_enabled'  => Boolean_Prop_Type::make()->default( true ),
@@ -385,7 +403,7 @@ class AAE_A_Video extends Atomic_Element_Base {
 
 			Section::make()
 				->set_id( 'poster' )
-				->set_label( __( 'Poster & Play Button', 'animation-addons-for-elementor' ) )
+				->set_label( __( 'Thumbnail', 'animation-addons-for-elementor' ) )
 				->set_items( [
 					Switch_Control::bind_to( 'poster_enabled' )
 						->set_label( __( 'Use Thumbnail', 'animation-addons-for-elementor' ) ),
@@ -395,6 +413,17 @@ class AAE_A_Video extends Atomic_Element_Base {
 
 					Image_Control::bind_to( 'poster_image' )
 						->set_label( __( 'Thumbnail', 'animation-addons-for-elementor' ) ),
+				] ),
+
+			Section::make()
+				->set_id( 'playbtn' )
+				->set_label( __( 'Play Button', 'animation-addons-for-elementor' ) )
+				->set_items( [
+					Switch_Control::bind_to( 'playbtn_enabled' )
+						->set_label( __( 'Show Play Button', 'animation-addons-for-elementor' ) ),
+
+					Switch_Control::bind_to( 'playbtn_pulse' )
+						->set_label( __( 'Pulse Effect', 'animation-addons-for-elementor' ) ),
 				] ),
 
 			Section::make()

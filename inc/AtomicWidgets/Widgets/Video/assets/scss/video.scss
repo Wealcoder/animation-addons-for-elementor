@@ -64,12 +64,59 @@
 	// never reach, and `pointer-events`/`opacity`-as-a-transition aren't in
 	// the atomic style schema at all (see that class's own docblock).
 	.aae-a-video-playbtn {
-		transition: opacity 0.2s ease;
+		transition: opacity 0.2s ease, transform 0.2s ease;
 	}
 
 	&.is-playing .aae-a-video-playbtn {
 		opacity: 0;
 		pointer-events: none;
+	}
+
+	// "Show Play Button" switch — the button itself is a fixed child
+	// element (Parts\AAE_A_Video_PlayBtn), never a twig conditional, so
+	// visibility is purely this CSS rule driven by the wrapper's own
+	// data-attr (see class-aae-a-video.php's playbtn_enabled prop). The
+	// poster/clickzone remain clickable to toggle playback either way.
+	&[data-aae-video-playbtn-enabled="false"] .aae-a-video-playbtn {
+		display: none;
+	}
+
+	// Hover/active feedback — always on, independent of the Pulse Effect
+	// switch below.
+	.aae-a-video-playbtn:hover,
+	.aae-a-video-playbtn:focus-visible {
+		transform: scale(1.08);
+	}
+
+	.aae-a-video-playbtn:active {
+		transform: scale(0.94);
+	}
+
+	// "Pulse Effect" switch — an expanding ring drawing attention to the
+	// button. The button's own base style is `position: absolute`, which is
+	// what gives this ::after a positioning context to expand from.
+	&[data-aae-video-playbtn-pulse="true"] .aae-a-video-playbtn::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+		box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.55);
+		animation: aae-a-video-playbtn-pulse 2s ease-out infinite;
+		pointer-events: none;
+	}
+}
+
+@keyframes aae-a-video-playbtn-pulse {
+	0% {
+		box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.55);
+	}
+
+	70% {
+		box-shadow: 0 0 0 18px rgba(255, 255, 255, 0);
+	}
+
+	100% {
+		box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
 	}
 }
 
@@ -198,5 +245,9 @@
 	.aae-a-video-controls,
 	.aae-a-video-progress {
 		transition: none;
+	}
+
+	.aae-a-video-playbtn::after {
+		animation: none;
 	}
 }

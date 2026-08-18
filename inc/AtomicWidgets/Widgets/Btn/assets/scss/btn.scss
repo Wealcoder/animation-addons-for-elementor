@@ -2,7 +2,7 @@
 	cursor: pointer;
 }
 
-// The widget's own base default is `width: auto` (class-aae-a-btn.php's
+// The widget's own base default is `width: fit-content` (class-aae-a-btn.php's
 // define_base_styles()) — identical to `max-content` whenever there's room
 // (both settle on the same shrink-to-fit width), but unlike max-content it
 // also correctly clamps to a narrower ancestor's available width instead of

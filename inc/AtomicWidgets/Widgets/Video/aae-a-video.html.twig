@@ -44,6 +44,8 @@
 	data-aae-video-vimeo-dnt="{{ settings.vimeo_dnt ? 'true' : 'false' }}"
 	data-aae-video-controls-enabled="{{ settings.controls_enabled ? 'true' : 'false' }}"
 	data-aae-video-controls-autohide="{{ settings.controls_autohide ? 'true' : 'false' }}"
+	data-aae-video-playbtn-enabled="{{ settings.playbtn_enabled ? 'true' : 'false' }}"
+	data-aae-video-playbtn-pulse="{{ settings.playbtn_pulse ? 'true' : 'false' }}"
 	{% if settings._cssid is defined and settings._cssid is not empty %}id="{{ settings._cssid | e('html_attr') }}"{% endif %}
 	{% if settings.attributes is defined and settings.attributes is not empty %}{{ settings.attributes | raw }}{% endif %}
 	{{ editor_attributes | default('') | raw }}
