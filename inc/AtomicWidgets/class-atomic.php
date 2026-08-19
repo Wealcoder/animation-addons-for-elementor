@@ -35,6 +35,72 @@ final class Atomic
 	const EXTENSIONS_OPTION_NAME = 'aae_atomic_extensions';
 
 	/**
+	 * The user's answer to the "Elementor V4 is switched on — want AAE's atomic
+	 * set?" notice. See atomic_optin_signal() for the whole feature.
+	 *
+	 * Shape: `[ 'state' => 'accepted'|'dismissed', 'signal' => 'usage'|'experiment'|'none' ]`.
+	 * ABSENT means UNDECIDED, which is not the same as dismissed — the notice
+	 * shows for the first and never for the second at the same signal strength.
+	 *
+	 * `signal` records how strong the evidence was when they answered, so a
+	 * dismissal made while V4 was merely switched ON does not also silence the
+	 * notice later, once the site actually has V4 elements saved on a page.
+	 * That is a different and far more concrete claim, and it earns being made
+	 * once. Never the reverse: a dismissal at 'usage' silences 'experiment' too.
+	 */
+	const OPTIN_OPTION_NAME = 'aae_atomic_optin';
+
+	/**
+	 * Cached answer to "does this site's CONTENT use Elementor V4 elements?".
+	 * One hour, negative-only invalidation — see maybe_invalidate_atomic_usage().
+	 */
+	const USAGE_TRANSIENT = 'aae_atomic_usage';
+
+	/**
+	 * Cached answer to "HOW MANY posts use Elementor V4 elements?".
+	 *
+	 * Deliberately a SECOND transient rather than widening USAGE_TRANSIENT to
+	 * hold the count. The boolean's query stops at the first row (LIMIT 1) and
+	 * runs on every undecided site; counting cannot stop early and has to join
+	 * the posts table to keep revisions out. Keeping them apart means the
+	 * expensive one is only ever paid for when a notice is actually going on
+	 * screen -- see atomic_optin_signal(), which asks for it last and only when
+	 * the notice will show.
+	 */
+	const USAGE_COUNT_TRANSIENT = 'aae_atomic_usage_count';
+
+	/**
+	 * The exact atomic state this site had immediately BEFORE it accepted the
+	 * opt-in notice — the return path out of an accidental "Enable".
+	 *
+	 * Shape: `[ widgets, widgets_absent, extensions, extensions_absent, offered,
+	 * offered_absent, signal, time ]`. See capture_atomic_undo().
+	 *
+	 * ABSENT IS NOT EMPTY, and this is the reason each value has a companion
+	 * boolean rather than a null. `aae_atomic_extensions` missing means "fresh
+	 * install, the wizard decides" to migrate_newly_offered_extensions(), which
+	 * bails only while the option has NEVER been written — restoring an empty
+	 * array where there had been no row would end that state permanently and
+	 * let the migration switch newly-offered extensions on by itself. An undo
+	 * that leaves the site subtly different from where it started is not an undo.
+	 */
+	const UNDO_OPTION_NAME = 'aae_atomic_optin_undo';
+
+	/**
+	 * How long the undo stays on offer.
+	 *
+	 * A backstop, not the main rule: the offer is really ended by the user
+	 * SAVING either atomic list by hand (see write_widget_option()'s callers),
+	 * because from that moment the stored state is their own choice and
+	 * restoring a snapshot over it would destroy real work. The window exists
+	 * for the site that accepts the offer and then never opens the dashboard
+	 * again while quietly building pages with the widgets — after a week,
+	 * "switch off the ones you do not want" is the honest answer and a bulk
+	 * restore is not.
+	 */
+	const UNDO_WINDOW = 7 * DAY_IN_SECONDS;
+
+	/**
 	 * Slugs that have ever been PRESENTED in the Atomic Extensions dashboard.
 	 *
 	 * The settings option only records what is enabled, so on its own it cannot
@@ -3840,7 +3906,16 @@ final class Atomic
 			add_action('wp_ajax_aae_get_atomic_widgets', [$this, 'ajax_get_settings']);
 			add_action('wp_ajax_aae_save_atomic_extensions', [$this, 'ajax_save_extension_settings']);
 			add_action('wp_ajax_aae_get_atomic_extensions', [$this, 'ajax_get_extension_settings']);
+			add_action('wp_ajax_aae_atomic_optin', [$this, 'ajax_atomic_optin']);
+			add_action('wp_ajax_aae_atomic_optin_undo', [$this, 'ajax_atomic_optin_undo']);
 		}
+
+		// Let a new page CHANGE the answer to has_atomic_usage(). Registered
+		// OUTSIDE the is_admin() block on purpose: a page can be saved over the
+		// REST API or by an importer running somewhere that is not wp-admin, and
+		// the stale hour that leaves behind is spent showing the dashboard the
+		// wrong answer. Exact twin of Animation_Settings::maybe_invalidate_v3_usage().
+		add_action('save_post', [__CLASS__, 'maybe_invalidate_atomic_usage'], 10, 2);
 
 		add_action('elementor/widgets/register', [$this, 'register_widgets']);
 		add_action('elementor/elements/elements_registered', [$this, 'register_elements']);
@@ -6792,36 +6867,177 @@ JS;
 	}
 
 	/**
+	 * Memoised answer to is_dev_environment().
+	 *
+	 * SAFE TO MEMOISE, unlike count_active_atomic() — and the difference is the
+	 * whole point. Every input here is fixed for the life of the request: two
+	 * constants, the SAPI-populated $_SERVER entries, and the site's own
+	 * home_url(). Nothing in a normal request can change any of them, so a cached
+	 * answer cannot go stale. count_active_atomic() reads OPTIONS, which three
+	 * migrations rewrite mid-request, which is exactly why its memo was reverted.
+	 *
+	 * @var bool|null
+	 */
+	private $dev_environment = null;
+
+	/**
 	 * Return true when running in a dev / local environment.
 	 *
-	 * Minified assets are skipped when ANY of the following is true:
-	 *   - WordPress SCRIPT_DEBUG constant is set to true.
-	 *   - The HTTP_HOST header is 127.0.0.1, localhost, or a *.local / *.test domain.
-	 *   - The server's own IP address (SERVER_ADDR / LOCAL_ADDR) is 127.0.0.1.
+	 * Decides whether minified assets are served, whether the remote preset cache
+	 * is bypassed, and — through wcf_asset_version() — whether admin assets are
+	 * cacheable at all. A FALSE NEGATIVE makes a developer's edits appear not to
+	 * take; a false positive costs a production site its asset caching.
 	 *
 	 * @return bool
 	 */
 	private function is_dev_environment(): bool
 	{
-		if (defined('SCRIPT_DEBUG') && SCRIPT_DEBUG) {
-			return true;
+		if (null === $this->dev_environment) {
+			$this->dev_environment = self::detect_dev_environment();
 		}
 
-		$host = strtolower($_SERVER['HTTP_HOST'] ?? '');
+		return $this->dev_environment;
+	}
 
-		if (
-			$host === '127.0.0.1' ||
-			$host === 'localhost' ||
-			str_ends_with($host, '.local') ||
-			str_ends_with($host, '.test')
+	/**
+	 * The detection itself — pure, static, and deliberately NOT memoised.
+	 *
+	 * Split out from is_dev_environment() so the rule can be exercised for every
+	 * host shape in one process. A memoised method can only be measured once, so
+	 * a suite covering seven cases against it would really cover the first one
+	 * seven times.
+	 *
+	 * WP_DEBUG IS THE MASTER SWITCH. With it off this is a production site
+	 * whatever else says, and nothing below is consulted. Worth knowing it
+	 * outranks SCRIPT_DEBUG, which WordPress itself treats as independent — a
+	 * site running SCRIPT_DEBUG on with WP_DEBUG off gets minified assets here.
+	 * That is a deliberate local choice, not WordPress convention.
+	 *
+	 * Past that gate, any of these means dev:
+	 *
+	 *   - `wp_get_environment_type()` says `local` or `development` — WordPress's
+	 *     own declared answer, set by whoever built the site, so it is asked
+	 *     first. It defaults to `production` when nothing is set, which is why
+	 *     `production` is NOT treated as authoritative: doing so would turn every
+	 *     unconfigured local site into a production one.
+	 *   - `SCRIPT_DEBUG` is on.
+	 *   - The request host, or the site's own home_url() host, is loopback or a
+	 *     development TLD.
+	 *   - The server's own IP is loopback.
+	 *
+	 * THE PORT IS STRIPPED FIRST, and its absence was a real bug. `HTTP_HOST`
+	 * carries `host:port`, so `localhost:8080`, `127.0.0.1:8000` and
+	 * `mysite.local:8888` matched nothing and reported PRODUCTION — that is MAMP,
+	 * `wp server`, Docker and Local's localhost router mode, all served minified
+	 * assets and told their edits had not taken. Measured before the fix: 4 of 8
+	 * real dev host shapes wrong.
+	 *
+	 * IPv6 loopback (`::1`) is included for the same reason — nginx and Apache
+	 * both report it on a modern dual-stack box, and only `127.0.0.1` was tested.
+	 *
+	 * KNOWN LIMIT: `HTTP_HOST` comes from a request header, so a crafted
+	 * `Host: something.local` can force dev mode on. It is still checked, because
+	 * it is what catches a production database copied to a local machine, where
+	 * home_url() still names the live domain. The cost of being wrong is bounded
+	 * — unminified assets, a bypassed preset cache and an uncacheable asset
+	 * version, for that one request, with no data exposed — so the detection is
+	 * worth more than the hardening. Revisit that trade before widening what this
+	 * gates.
+	 *
+	 * @return bool
+	 */
+	public static function detect_dev_environment(): bool
+	{
+		// One test, not two: the short-circuit means !WP_DEBUG is never evaluated
+		// against an undefined constant.
+		if (! defined('WP_DEBUG') || ! WP_DEBUG) {
+			return false;
+		}
+
+		if (function_exists('wp_get_environment_type')
+			&& in_array(wp_get_environment_type(), ['local', 'development'], true)
 		) {
 			return true;
 		}
 
-		// Windows IIS uses LOCAL_ADDR; Apache/Nginx use SERVER_ADDR.
-		$server_ip = $_SERVER['SERVER_ADDR'] ?? $_SERVER['LOCAL_ADDR'] ?? '';
+		if (defined('SCRIPT_DEBUG') && SCRIPT_DEBUG) {
+			return true;
+		}
 
-		return $server_ip === '127.0.0.1';
+		$hosts = [self::request_host()];
+
+		if (function_exists('home_url')) {
+			$hosts[] = strtolower((string) wp_parse_url(home_url(), PHP_URL_HOST));
+		}
+
+		foreach (array_filter(array_unique($hosts)) as $host) {
+			if (self::is_local_host($host)) {
+				return true;
+			}
+		}
+
+		// Windows IIS uses LOCAL_ADDR; Apache/Nginx use SERVER_ADDR.
+		$server_ip = strtolower((string) ($_SERVER['SERVER_ADDR'] ?? $_SERVER['LOCAL_ADDR'] ?? ''));
+
+		return in_array($server_ip, ['127.0.0.1', '::1'], true);
+	}
+
+	/**
+	 * The request's host, lower-cased, with any port removed.
+	 *
+	 * IPv6 arrives bracketed per RFC 3986 (`[::1]:8080`), so the bracketed form is
+	 * unwrapped rather than port-stripped — a naive `:\d+$` trim would turn a bare
+	 * `::1` into `::`. Exactly one colon means `host:port`; more than one and
+	 * unbracketed is a raw IPv6 literal and is left alone.
+	 *
+	 * @return string
+	 */
+	private static function request_host(): string
+	{
+		$host = strtolower(trim((string) ($_SERVER['HTTP_HOST'] ?? '')));
+
+		if ('' === $host) {
+			return '';
+		}
+
+		if ('[' === $host[0]) {
+			$close = strpos($host, ']');
+
+			return false === $close ? $host : substr($host, 1, $close - 1);
+		}
+
+		if (1 === substr_count($host, ':')) {
+			return (string) strstr($host, ':', true);
+		}
+
+		return $host;
+	}
+
+	/**
+	 * Is this hostname a local one?
+	 *
+	 * `.local` is mDNS/Bonjour; `.test` and `.localhost` are reserved for exactly
+	 * this purpose by RFC 6761 and can never be registered, so none of the three
+	 * can collide with a real production domain. Deliberately NOT `.dev` — that
+	 * is a real gTLD with enforced HSTS and live sites on it.
+	 *
+	 * @param string $host Already lower-cased and port-stripped.
+	 *
+	 * @return bool
+	 */
+	private static function is_local_host(string $host): bool
+	{
+		if (in_array($host, ['127.0.0.1', '::1', 'localhost'], true)) {
+			return true;
+		}
+
+		foreach (['.local', '.test', '.localhost'] as $tld) {
+			if (str_ends_with($host, $tld)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -6866,6 +7082,15 @@ JS;
 		$configs['atomic_widgets']    = $dashboard['atomic_widgets'];
 		$configs['atomic_extensions'] = $dashboard['atomic_extensions'];
 
+		// Whether this site has moved to Elementor V4, and what the user has
+		// already said about it. Read by lib/systemVisibility.js — which is the
+		// ONLY place allowed to turn any of it into a visibility rule.
+		$configs['atomic_optin'] = $this->atomic_optin_signal();
+
+		// The return path out of an accidental "Enable" — see the block above
+		// capture_atomic_undo(). `available => false` most of the time.
+		$configs['atomic_undo'] = $this->atomic_undo_offer();
+
 		return $configs;
 	}
 
@@ -6884,13 +7109,51 @@ JS;
 			wp_send_json_error(esc_html__('Missing fields.', 'animation-addons-for-elementor'));
 		}
 
-		$raw      = sanitize_text_field(wp_unslash($_POST['fields']));
-		$settings = json_decode($raw, true);
+		$settings = self::decode_slug_map(wp_unslash($_POST['fields']));
 
-		if (! is_array($settings)) {
+		if (null === $settings) {
 			wp_send_json_error(esc_html__('Invalid data.', 'animation-addons-for-elementor'));
 		}
 
+		$result = $this->write_widget_option($settings);
+
+		// A hand save is the user's own choice, and it ENDS the undo offer:
+		// restoring a snapshot over a list somebody has since curated would
+		// destroy real work, which is the one thing an undo must never do.
+		$this->forget_atomic_undo();
+
+		wp_send_json($result);
+	}
+
+	/**
+	 * Decode a `{ slug: bool }` map posted by the dashboard.
+	 *
+	 * @param string $raw Raw, already-unslashed request value.
+	 *
+	 * @return array|null Null when the payload is not a map.
+	 */
+	private static function decode_slug_map($raw): ?array
+	{
+		$decoded = json_decode(sanitize_text_field((string) $raw), true);
+
+		return is_array($decoded) ? $decoded : null;
+	}
+
+	/**
+	 * Write the atomic WIDGET option, sanitised, and drop the derived caches.
+	 *
+	 * Extracted from ajax_save_settings() so the opt-in notice's "Enable" can
+	 * reuse it in the SAME request as its undo snapshot. Going back through the
+	 * AJAX handler would mean the snapshot and the write land in two separate
+	 * requests, with the handler's own forget_atomic_undo() deleting the
+	 * snapshot the notice had just taken.
+	 *
+	 * @param array $settings Raw slug => state map.
+	 *
+	 * @return array{status:bool,total:int}
+	 */
+	private function write_widget_option(array $settings): array
+	{
 		// Build a clean associative array: slug => true for enabled.
 		$clean = [];
 		foreach ($settings as $slug => $state) {
@@ -6909,10 +7172,10 @@ JS;
 		$this->registerable_classes = null;
 		$this->widget_active_cache  = [];
 
-		wp_send_json([
+		return [
 			'status' => $updated,
 			'total'  => count($clean),
-		]);
+		];
 	}
 
 	/**
@@ -7036,13 +7299,32 @@ JS;
 			wp_send_json_error(esc_html__('Missing fields.', 'animation-addons-for-elementor'));
 		}
 
-		$raw      = sanitize_text_field(wp_unslash($_POST['fields']));
-		$settings = json_decode($raw, true);
+		$settings = self::decode_slug_map(wp_unslash($_POST['fields']));
 
-		if (! is_array($settings)) {
+		if (null === $settings) {
 			wp_send_json_error(esc_html__('Invalid data.', 'animation-addons-for-elementor'));
 		}
 
+		$result = $this->write_extension_option($settings);
+
+		// See the twin comment in ajax_save_settings().
+		$this->forget_atomic_undo();
+
+		wp_send_json($result);
+	}
+
+	/**
+	 * Write the atomic EXTENSION option, sanitised, plus the "offered" baseline.
+	 *
+	 * Extracted from ajax_save_extension_settings() for the same reason as
+	 * write_widget_option() — see its docblock.
+	 *
+	 * @param array $settings Raw slug => state map.
+	 *
+	 * @return array{status:bool,total:int}
+	 */
+	private function write_extension_option(array $settings): array
+	{
 		$clean = [];
 		foreach ($settings as $slug => $state) {
 			$slug = sanitize_key($slug);
@@ -7072,10 +7354,10 @@ JS;
 		// Reset cache.
 		$this->active_extensions = null;
 
-		wp_send_json([
+		return [
 			'status' => $updated,
 			'total'  => count($clean),
-		]);
+		];
 	}
 
 	/**
@@ -7111,6 +7393,754 @@ JS;
 		}
 
 		return version_compare(ELEMENTOR_VERSION, self::MIN_ELEMENTOR_VERSION, '>=');
+	}
+
+	/* =====================================================================
+	 *  "This site has moved to V4" — detection, and the one-time offer it feeds
+	 *
+	 *  The dashboard hides the era a site does not use (see
+	 *  src/modules/dashboard/lib/systemVisibility.js). That is right for a
+	 *  settled site and wrong for the moment one MOVES: a long-time v3 user who
+	 *  switches Elementor's V4 on has no way to discover that AAE ships an
+	 *  atomic registry at all, because the tab that would tell them is hidden
+	 *  precisely BECAUSE they have nothing atomic switched on yet — and
+	 *  "nothing atomic switched on" is exactly what someone who just arrived
+	 *  looks like.
+	 *
+	 *  So the notice is the discovery path, and it is the ONLY thing these
+	 *  methods add. Nothing here registers, unregisters or renders anything;
+	 *  every pre-existing rule keeps its pre-existing answer until the user
+	 *  presses the button, which does no more than switching the atomic widgets
+	 *  on by hand already does.
+	 * =================================================================== */
+
+	/**
+	 * Is Elementor's own V4 (Atomic) element system switched on for this site?
+	 *
+	 * `e_atomic_elements` ships hidden and INACTIVE; Elementor defaults it on
+	 * only for sites first installed on 4.0+. On every upgraded site it is
+	 * therefore a deliberate act by the user — which is the moment AAE has
+	 * something worth saying.
+	 *
+	 * Deliberately NOT folded into meets_requirements(). That gate decides
+	 * whether AAE's atomic registry loads AT ALL, and it has to keep saying yes
+	 * while the experiment is off: the Schemas must stay registered or Elementor
+	 * strips every saved `aae_*` prop out of `_elementor_data` on the next save
+	 * (see the docblock on Bootstrap::init()). Toggling the experiment off may
+	 * cost the user their editor panel; it must never cost them their saved work.
+	 */
+	public static function is_elementor_atomic_active(): bool
+	{
+		if (! did_action('elementor/loaded') || ! class_exists('\\Elementor\\Plugin')) {
+			return false;
+		}
+
+		$elementor = \Elementor\Plugin::$instance;
+
+		if (! isset($elementor->experiments) || ! method_exists($elementor->experiments, 'is_feature_active')) {
+			return false;
+		}
+
+		return (bool) $elementor->experiments->is_feature_active('e_atomic_elements');
+	}
+
+	/**
+	 * Does this site's CONTENT already use Elementor V4 elements?
+	 *
+	 * The honest signal, and the stronger of the two: the experiment switch says
+	 * what someone INTENDED, a saved `e-flexbox` says what they actually built.
+	 *
+	 * Every atomic type Elementor ships is `e-`-prefixed and lands in
+	 * `_elementor_data` under one of two keys — a container saves as
+	 * `"elType":"e-flexbox"`, a leaf as `"elType":"widget","widgetType":"e-heading"`
+	 * — so one alternation covers both, and covers types added in later Elementor
+	 * releases without this having to be kept in sync with a list. Its v3 twin
+	 * (`Animation_Settings::v3_widget_name_sql()`) has to enumerate names only
+	 * because v3 widget names share no prefix at all.
+	 *
+	 * A false positive is harmless here by construction: the worst it can do is
+	 * offer the atomic set to someone who does not want it, and the notice has a
+	 * dismiss button. Nothing on this path enables anything on its own.
+	 *
+	 * Cached for an hour, same as has_v3_usage(), with the same negative-only
+	 * bust on save_post — see maybe_invalidate_atomic_usage().
+	 */
+	public static function has_atomic_usage(): bool
+	{
+		$cached = get_transient(self::USAGE_TRANSIENT);
+
+		if (false !== $cached) {
+			return '1' === $cached;
+		}
+
+		global $wpdb;
+
+		$found = (bool) $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT 1 FROM {$wpdb->postmeta}
+				 WHERE meta_key = '_elementor_data'
+				   AND meta_value REGEXP %s
+				 LIMIT 1",
+				'"(elType|widgetType)":"e-'
+			)
+		);
+
+		set_transient(self::USAGE_TRANSIENT, $found ? '1' : '0', HOUR_IN_SECONDS);
+
+		return $found;
+	}
+
+	/**
+	 * How many of this site's posts are built with Elementor V4 elements?
+	 *
+	 * "Pages on this site are built with V4" is true of a site with one test
+	 * page and of a site that has moved wholesale, and those two people want
+	 * opposite things. The number is the difference, so the notice states it.
+	 *
+	 * MUST EXCLUDE REVISIONS, which the boolean never had to care about.
+	 * _elementor_data is copied onto every revision, so a single page edited
+	 * forty times owns forty-one rows carrying atomic markup -- counting
+	 * postmeta alone would announce "41 pages" to someone who built one. Hence
+	 * the join, and hence auto-drafts and trashed posts are dropped too: they
+	 * are not pages the user thinks of as part of their site.
+	 *
+	 * Same hour-long cache and the same negative-only bust as the boolean; an
+	 * hour-stale count is the right trade for one sentence in a notice that
+	 * disappears the moment it is answered.
+	 */
+	public static function count_atomic_usage(): int
+	{
+		$cached = get_transient(self::USAGE_COUNT_TRANSIENT);
+
+		if (false !== $cached) {
+			return (int) $cached;
+		}
+
+		global $wpdb;
+
+		$count = (int) $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(DISTINCT pm.post_id)
+				 FROM {$wpdb->postmeta} pm
+				 INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+				 WHERE pm.meta_key = '_elementor_data'
+				   AND p.post_type != 'revision'
+				   AND p.post_status NOT IN ('auto-draft', 'trash')
+				   AND pm.meta_value REGEXP %s",
+				'"(elType|widgetType)":"e-'
+			)
+		);
+
+		set_transient(self::USAGE_COUNT_TRANSIENT, (string) $count, HOUR_IN_SECONDS);
+
+		return $count;
+	}
+
+	/**
+	 * Drop the cached usage answer when a save may have changed it.
+	 *
+	 * Only the NEGATIVE is busted, which is what keeps this affordable on a hook
+	 * as hot as save_post: after the first bust every later call is one
+	 * get_transient() read.
+	 *
+	 *  - cached '0' → a save could make it '1', so re-ask next time.
+	 *  - cached '1' → already known, and nothing downstream needs it to go back
+	 *    to '0' in a hurry; by then the notice has already been answered.
+	 *  - nothing cached → nothing to delete.
+	 *
+	 * Deliberately NOT `updated_post_meta`/`added_post_meta`: those fire many
+	 * times per save and are what got the Loop Grid count cache deleted.
+	 *
+	 * @param int           $post_id Saved post.
+	 * @param \WP_Post|null $post    Saved post object.
+	 */
+	public static function maybe_invalidate_atomic_usage($post_id, $post = null): void
+	{
+		if (wp_is_post_revision($post_id) || wp_is_post_autosave($post_id)) {
+			return;
+		}
+
+		// An auto-draft holds no content yet; the real save follows.
+		if ($post instanceof \WP_Post && 'auto-draft' === $post->post_status) {
+			return;
+		}
+
+		if ('0' !== get_transient(self::USAGE_TRANSIENT)) {
+			return;
+		}
+
+		delete_transient(self::USAGE_TRANSIENT);
+
+		// The two answer the same question at different resolutions, so a bust
+		// that left the count behind would have the notice reporting "0 pages"
+		// on a site the boolean had just decided does use V4.
+		delete_transient(self::USAGE_COUNT_TRANSIENT);
+	}
+
+	/**
+	 * Is anything in AAE's atomic registry switched on right now?
+	 *
+	 * Mirrors the JS `V4_HAS_ACTIVE` exactly — raw saved option, intersected
+	 * with the registry, `is_internal` entries skipped — because the two decide
+	 * the same thing from opposite ends. If they disagree the site lands in the
+	 * one state neither was designed for: PHP calls it settled and sends no
+	 * notice, JS calls it empty and shows no V4 tab, and the atomic registry
+	 * becomes unreachable from the dashboard.
+	 */
+	/**
+	 * PUBLIC because the editor-bridge enqueue asks it too.
+	 *
+	 * `Atomic\Assets::enqueue_editor_bridge()` ships ~700 KB of editor JS whose
+	 * only job is to power panel controls for AAE's atomic widgets and
+	 * extensions. With none of them switched on there are no controls to power,
+	 * so the honest precondition is this exact question — and asking it through
+	 * this method rather than re-reading the option keeps one answer, intersected
+	 * with the registry and skipping `is_internal`, in one place.
+	 */
+	public function has_active_atomic(): bool
+	{
+		$counts = $this->count_active_atomic();
+
+		return $counts['widgets'] > 0 || $counts['extensions'] > 0;
+	}
+
+	/**
+	 * How many atomic widgets and extensions are switched on.
+	 *
+	 * The undo notice names both numbers — "37 widgets and 20 extensions will be
+	 * switched back off" is a sentence somebody can check against the list in
+	 * front of them, where "your atomic set" is not.
+	 *
+	 * @return array{widgets:int,extensions:int}
+	 */
+	/*
+	 * NOT MEMOISED, and that was tried and reverted (2026-08-19).
+	 *
+	 * A per-request memo looks free here — three callers ask on one dashboard
+	 * load. It is not: THREE OTHER PLACES write these options directly rather
+	 * than through write_widget_option()/write_extension_option() —
+	 * backfill_formerly_forced_widgets(), migrate_newly_offered_extensions() and
+	 * backfill_v3_admin_extensions(), all on admin_init — so a memo filled before
+	 * one of them runs answers from before the write, order-dependently. Five
+	 * assertions in verify-atomic-optin.php caught exactly that.
+	 *
+	 * What it bought was one walk of ~56 in-memory array entries. Not worth an
+	 * order-dependent staleness bug, and not worth a rule that every future
+	 * writer must remember to reset something.
+	 */
+	private function count_active_atomic(): array
+	{
+		$saved   = $this->get_saved_options();
+		$widgets = 0;
+
+		foreach ($this->get_widgets_registry() as $slug => $def) {
+			if (! empty($def['is_internal'])) {
+				continue;
+			}
+
+			if (isset($saved[$slug])) {
+				$widgets++;
+			}
+		}
+
+		$ext_saved  = $this->get_saved_extension_options();
+		$extensions = 0;
+
+		foreach ($this->extensions_registry as $slug => $def) {
+			if (isset($ext_saved[$slug])) {
+				$extensions++;
+			}
+		}
+
+		return [
+			'widgets'    => $widgets,
+			'extensions' => $extensions,
+		];
+	}
+
+	/* =====================================================================
+	 *  The return path
+	 *
+	 *  "Enable atomic features" switches on everything this site can register
+	 *  in one click. That is the right shape for the offer — and it is exactly
+	 *  the shape that needs a way back, because a click that changes a hundred
+	 *  things is a click somebody can make by mistake.
+	 *
+	 *  Getting back is not the same as switching everything off. The site had a
+	 *  STATE before the click — usually no rows at all, sometimes a half-built
+	 *  one from an abandoned wizard run — and only restoring that exact state
+	 *  puts the user where they were. So the enable snapshots first, and the
+	 *  undo restores; nothing here computes what the state "should" be.
+	 *
+	 *  Note what did NOT need saving: the v3 options. Accepting the offer never
+	 *  touched them, so an accidental accept never cost the user their V3 site
+	 *  in the first place — which is why this is an undo of one option pair
+	 *  rather than a migration rollback.
+	 * =================================================================== */
+
+	/**
+	 * Record the atomic state as it is right now, before the offer writes over it.
+	 *
+	 * Stores the "offered" baseline too: write_extension_option() rewrites it,
+	 * and leaving the new value behind after an undo would change what
+	 * migrate_newly_offered_extensions() does on the next admin_init — a
+	 * difference nobody would connect to a button they pressed a week ago.
+	 *
+	 * @param string $signal Signal strength at the moment of the accept.
+	 */
+	private function capture_atomic_undo(string $signal): void
+	{
+		$missing = '__aae_option_absent__';
+
+		$widgets    = get_option(self::OPTION_NAME, $missing);
+		$extensions = get_option(self::EXTENSIONS_OPTION_NAME, $missing);
+		$offered    = get_option(self::EXTENSIONS_OFFERED_OPTION_NAME, $missing);
+
+		update_option(
+			self::UNDO_OPTION_NAME,
+			[
+				'widgets'           => $missing === $widgets ? [] : $widgets,
+				'widgets_absent'    => $missing === $widgets,
+				'extensions'        => $missing === $extensions ? [] : $extensions,
+				'extensions_absent' => $missing === $extensions,
+				'offered'           => $missing === $offered ? [] : $offered,
+				'offered_absent'    => $missing === $offered,
+				'signal'            => $signal,
+				'time'              => time(),
+			],
+			false
+		);
+	}
+
+	/**
+	 * Put the three options back exactly as capture_atomic_undo() found them.
+	 *
+	 * delete_option() where the row was absent — see UNDO_OPTION_NAME's docblock
+	 * for why an empty array is a different site state, not a tidier one.
+	 *
+	 * @param array $undo A stored snapshot.
+	 */
+	private function restore_atomic_undo(array $undo): void
+	{
+		$map = [
+			self::OPTION_NAME                    => ['widgets', 'widgets_absent'],
+			self::EXTENSIONS_OPTION_NAME         => ['extensions', 'extensions_absent'],
+			self::EXTENSIONS_OFFERED_OPTION_NAME => ['offered', 'offered_absent'],
+		];
+
+		foreach ($map as $name => $keys) {
+			list($value_key, $absent_key) = $keys;
+
+			if (! empty($undo[$absent_key])) {
+				delete_option($name);
+
+				continue;
+			}
+
+			$value = is_array($undo[$value_key] ?? null) ? $undo[$value_key] : [];
+
+			// SANITISED ON THE WAY BACK IN, even though we wrote the snapshot
+			// ourselves. What it captured is whatever the option held BEFORE the
+			// opt-in, which is not necessarily something this plugin wrote — an
+			// import, an older release, or another plugin could have left any shape
+			// there, and restoring it verbatim would put it back unchecked.
+			//
+			// Not a privilege boundary (writing that option already needs database
+			// access) so much as refusing to be the path that launders unvalidated
+			// data into a live option. Anything the two writers produced passes
+			// through unchanged, so the exact-restore promise is intact.
+			$value = self::EXTENSIONS_OFFERED_OPTION_NAME === $name
+				? self::sanitize_slug_list($value)
+				: self::sanitize_slug_map($value);
+
+			update_option($name, $value);
+		}
+
+		// Every derived cache the two writers reset, reset again — this wrote
+		// the same options they do.
+		$this->active_widgets       = null;
+		$this->registerable_classes = null;
+		$this->widget_active_cache  = [];
+		$this->active_extensions    = null;
+	}
+
+	/**
+	 * End the undo offer. Called on an accepted "keep", on a completed undo, and
+	 * on any hand save of either atomic list.
+	 */
+	/**
+	 * `slug => true` for every key that survives sanitize_key().
+	 *
+	 * The shape both atomic settings options are stored in. Values are discarded
+	 * rather than preserved: the writers only ever store `true`, so anything else
+	 * arrived from outside and "on" is the only state the readers understand.
+	 *
+	 * @param array $value Raw map.
+	 *
+	 * @return array
+	 */
+	private static function sanitize_slug_map(array $value): array
+	{
+		$clean = [];
+
+		foreach ($value as $slug => $state) {
+			$slug = sanitize_key($slug);
+
+			if ('' !== $slug && ! empty($state)) {
+				$clean[$slug] = true;
+			}
+		}
+
+		return $clean;
+	}
+
+	/**
+	 * A LIST of slugs — the shape EXTENSIONS_OFFERED_OPTION_NAME uses.
+	 *
+	 * Deliberately separate from sanitize_slug_map(): that option is written as
+	 * `array_keys( $registry )`, so running it through the map sanitiser would
+	 * turn a list into `0 => true, 1 => true` and quietly destroy the record of
+	 * what the user has been shown — which is the one thing standing between
+	 * migrate_newly_offered_extensions() and switching extensions back on by
+	 * itself.
+	 *
+	 * @param array $value Raw list.
+	 *
+	 * @return array
+	 */
+	private static function sanitize_slug_list(array $value): array
+	{
+		$clean = [];
+
+		foreach ($value as $slug) {
+			if (! is_scalar($slug)) {
+				continue;
+			}
+
+			$slug = sanitize_key((string) $slug);
+
+			if ('' !== $slug) {
+				$clean[] = $slug;
+			}
+		}
+
+		return array_values(array_unique($clean));
+	}
+
+	private function forget_atomic_undo(): void
+	{
+		delete_option(self::UNDO_OPTION_NAME);
+	}
+
+	/**
+	 * The undo offer, for the dashboard payload.
+	 *
+	 * Reports `available => false` rather than omitting itself, so the React
+	 * side reads one shape whatever the state.
+	 *
+	 * @return array{available:bool,widgets?:int,extensions?:int,expires?:int}
+	 */
+	public function atomic_undo_offer(): array
+	{
+		$undo = get_option(self::UNDO_OPTION_NAME);
+
+		if (! is_array($undo) || empty($undo['time'])) {
+			return ['available' => false];
+		}
+
+		if ((time() - (int) $undo['time']) > self::UNDO_WINDOW) {
+			return ['available' => false];
+		}
+
+		$counts = $this->count_active_atomic();
+
+		// A snapshot with NOTHING switched on is not an undo, it is a leftover.
+		// The enable takes its snapshot before the first write, so a request that
+		// dies in between (closed tab, PHP timeout) leaves one behind describing
+		// a state nothing ever moved away from. Offering it would put a bar on
+		// screen reading "0 atomic widgets and 0 atomic extensions are active",
+		// whose Undo button restores what is already there.
+		if (0 === $counts['widgets'] && 0 === $counts['extensions']) {
+			return ['available' => false];
+		}
+
+		return [
+			'available'  => true,
+			'widgets'    => $counts['widgets'],
+			'extensions' => $counts['extensions'],
+			'expires'    => (int) $undo['time'] + self::UNDO_WINDOW,
+		];
+	}
+
+	/**
+	 * Rank a signal so a past dismissal can be compared against today's
+	 * evidence. usage > experiment > none.
+	 */
+	private static function signal_rank(string $signal): int
+	{
+		$ranks = [
+			'none'       => 0,
+			'experiment' => 1,
+			'usage'      => 2,
+		];
+
+		return $ranks[$signal] ?? 0;
+	}
+
+	/**
+	 * The strongest evidence available that this site is on Elementor V4.
+	 *
+	 * Reads the CONTENT check first because it is the stronger claim, and the
+	 * two are not nested: a site can hold V4 pages with the experiment since
+	 * switched back off, and that is still a site whose pages want the atomic set.
+	 */
+	private static function atomic_signal_strength(): string
+	{
+		if (self::has_atomic_usage()) {
+			return 'usage';
+		}
+
+		return self::is_elementor_atomic_active() ? 'experiment' : 'none';
+	}
+
+	/**
+	 * Everything the dashboard notice needs, in one payload.
+	 *
+	 * Shipped nested under `addons_config`, NOT at the top level of the localize
+	 * data — nested values keep their real JSON types, whereas wp_localize_script
+	 * stringifies top-level scalars (which is why `v3_in_use` arrives as "1"/""
+	 * and has to be read with `!!`).
+	 *
+	 * `in_use` is `null`, not `false`, when the question was never asked: the
+	 * postmeta scan is skipped entirely once its answer cannot change what is on
+	 * screen, and reporting an unasked question as "no" is how a cheap guard
+	 * turns into a wrong fact somewhere downstream.
+	 *
+	 * @return array{
+	 *     experiment:bool, in_use:bool|null, signal:string, state:string,
+	 *     dismissed_signal:string, has_active:bool, show_notice:bool
+	 * }
+	 */
+	public function atomic_optin_signal(): array
+	{
+		$stored = get_option(self::OPTIN_OPTION_NAME);
+		$stored = is_array($stored) ? $stored : [];
+
+		$state            = isset($stored['state']) ? (string) $stored['state'] : 'undecided';
+		$dismissed_signal = isset($stored['signal']) ? (string) $stored['signal'] : 'none';
+
+		$has_active = $this->has_active_atomic();
+
+		// Nothing below can put a notice on screen once the user has accepted or
+		// already has atomic switched on, so do not pay for the evidence.
+		if ($has_active || 'accepted' === $state) {
+			return [
+				'experiment'       => false,
+				'in_use'           => null,
+				'in_use_count'     => null,
+				'signal'           => 'none',
+				'state'            => $state,
+				'dismissed_signal' => $dismissed_signal,
+				'has_active'       => $has_active,
+				'show_notice'      => false,
+			];
+		}
+
+		$in_use     = self::has_atomic_usage();
+		$experiment = self::is_elementor_atomic_active();
+		$signal     = $in_use ? 'usage' : ($experiment ? 'experiment' : 'none');
+
+		$show = 'none' !== $signal
+			&& (
+				'dismissed' !== $state
+				// A dismissal only covers evidence as strong as what was on the
+				// table when it was made. Real pages built in V4 outrank a
+				// switch, and are worth saying once even to someone who already
+				// said no to the switch.
+				|| self::signal_rank($dismissed_signal) < self::signal_rank($signal)
+			);
+
+		return [
+			'experiment'       => $experiment,
+			'in_use'           => $in_use,
+			// LAST, and only when a notice is actually going on screen: this is
+			// the one query on this path that cannot stop at the first row, and
+			// a dismissed site would otherwise pay for a sentence nobody reads.
+			'in_use_count'     => ($show && 'usage' === $signal) ? self::count_atomic_usage() : null,
+			'signal'           => $signal,
+			'state'            => $state,
+			'dismissed_signal' => $dismissed_signal,
+			'has_active'       => $has_active,
+			'show_notice'      => $show,
+		];
+	}
+
+	/**
+	 * AJAX — record the user's answer to the atomic opt-in notice.
+	 *
+	 * Records the decision, and — when `fields` and `ext_fields` are posted with
+	 * it — performs the enable itself.
+	 *
+	 * ONE REQUEST, deliberately. The first version called the two existing save
+	 * endpoints from the browser and recorded the decision in a third call,
+	 * which reads better and cannot support an undo: those handlers END the undo
+	 * offer (a hand save is a deliberate choice), so a snapshot taken here would
+	 * be deleted by the very writes it was taken for. Doing all three in one
+	 * request also means an accept can never half-land — widgets on, extensions
+	 * off, no decision recorded — from a closed tab.
+	 *
+	 * The SELECTION is still the browser's, and still comes from
+	 * `src/modules/dashboard/lib/setupPresets.js`: this only sanitises and
+	 * stores the map it is handed, exactly as the save handlers do, so "what a
+	 * recommended setup enables" is never restated in PHP.
+	 *
+	 * The signal strength is re-read server-side and never taken from the
+	 * request: it decides how long a dismissal lasts, and the transient makes
+	 * re-reading it free.
+	 */
+	public function ajax_atomic_optin(): void
+	{
+		check_ajax_referer('wcf_admin_nonce', 'nonce');
+
+		if (! current_user_can('manage_options')) {
+			wp_send_json_error(__('Permission denied.', 'animation-addons-for-elementor'));
+		}
+
+		$state = isset($_POST['state']) ? sanitize_key(wp_unslash($_POST['state'])) : '';
+
+		if (! in_array($state, ['accepted', 'dismissed'], true)) {
+			wp_send_json_error(__('Invalid state.', 'animation-addons-for-elementor'));
+		}
+
+		$signal  = self::atomic_signal_strength();
+		$enabled = null;
+
+		// Both maps or neither: an accept that enabled only the widgets would
+		// leave the site in a state the user never chose and the undo snapshot
+		// would describe honestly but uselessly.
+		if ('accepted' === $state && isset($_POST['fields'], $_POST['ext_fields'])) {
+			$widgets    = self::decode_slug_map(wp_unslash($_POST['fields']));
+			$extensions = self::decode_slug_map(wp_unslash($_POST['ext_fields']));
+
+			if (null === $widgets || null === $extensions) {
+				wp_send_json_error(__('Invalid data.', 'animation-addons-for-elementor'));
+			}
+
+			// BEFORE the first write. This is the whole return path.
+			$this->capture_atomic_undo($signal);
+
+			$enabled = [
+				'widgets'    => $this->write_widget_option($widgets)['total'],
+				'extensions' => $this->write_extension_option($extensions)['total'],
+			];
+		}
+
+		update_option(
+			self::OPTIN_OPTION_NAME,
+			[
+				'state'  => $state,
+				'signal' => $signal,
+			]
+		);
+
+		wp_send_json_success(
+			[
+				'state'   => $state,
+				'signal'  => $signal,
+				'enabled' => $enabled,
+			]
+		);
+	}
+
+	/**
+	 * AJAX — go back.
+	 *
+	 * Three decisions, and the difference between the first two is the whole
+	 * reason there are three:
+	 *
+	 *  - `undo` — replay the snapshot. EXACT: the site ends up byte-for-byte
+	 *    where it was, including option rows that had never existed. Needs a
+	 *    snapshot, so it is only offered while one is on file.
+	 *  - `off`  — switch both atomic options to an empty array. Available
+	 *    ALWAYS, and it is what the permanent "Back to V3" escape hatch uses.
+	 *    Not an exact restore and does not pretend to be: nothing is deleted,
+	 *    because an absent row and an empty one mean different things here (see
+	 *    UNDO_OPTION_NAME) and guessing which one this site had before would be
+	 *    inventing history. An empty array is the same definite "off" the
+	 *    master Enable All switch writes, and it can never re-arm
+	 *    migrate_newly_offered_extensions() behind the user's back.
+	 *
+	 *    It writes NOTHING when nothing is switched on. That is the "Choose
+	 *    manually" shape — the offer accepted, the tab revealed, no widget ever
+	 *    enabled — and there the options are usually ABSENT. Writing empty rows
+	 *    over no rows would not be reversing anything; it would be making the
+	 *    one change this request exists to take back, and it would end the
+	 *    "fresh install, the wizard decides" state permanently.
+	 *  - `keep` — end the offer, change nothing.
+	 *
+	 * ALL THREE RECORD A DISMISSAL rather than clearing the answer. Going back
+	 * to "undecided" would put the original notice on screen again at the next
+	 * page load, so going back would look like it had not worked — and
+	 * re-offering something somebody just took back is how a helpful prompt
+	 * becomes a nag. Where a snapshot exists the dismissal is recorded at the
+	 * SNAPSHOT's signal rather than today's, so the ranked rule still holds: if
+	 * this site later grows real V4 pages, that stronger signal is still allowed
+	 * to speak once.
+	 */
+	public function ajax_atomic_optin_undo(): void
+	{
+		check_ajax_referer('wcf_admin_nonce', 'nonce');
+
+		if (! current_user_can('manage_options')) {
+			wp_send_json_error(__('Permission denied.', 'animation-addons-for-elementor'));
+		}
+
+		$decision = isset($_POST['decision']) ? sanitize_key(wp_unslash($_POST['decision'])) : '';
+
+		if (! in_array($decision, ['undo', 'keep', 'off'], true)) {
+			wp_send_json_error(__('Invalid decision.', 'animation-addons-for-elementor'));
+		}
+
+		$undo         = get_option(self::UNDO_OPTION_NAME);
+		$has_snapshot = is_array($undo) && ! empty($undo['time']);
+
+		if ('keep' === $decision) {
+			$this->forget_atomic_undo();
+
+			wp_send_json_success(['decision' => 'keep']);
+		}
+
+		// Only `undo` needs a snapshot. `off` deliberately does not — it is the
+		// escape hatch for a site whose snapshot has expired, been ended by a
+		// hand save, or never existed because the accept predates this feature.
+		if ('undo' === $decision && ! $has_snapshot) {
+			wp_send_json_error(esc_html__('There is nothing left to undo.', 'animation-addons-for-elementor'));
+		}
+
+		if ('undo' === $decision) {
+			$this->restore_atomic_undo($undo);
+		} elseif ($this->has_active_atomic()) {
+			$this->write_widget_option([]);
+			$this->write_extension_option([]);
+		}
+
+		// With nothing active there is deliberately no write above: clearing the
+		// stored answer below is the entire reversal, and it is enough — the V4
+		// tab is offered by ATOMIC_OPTED_IN, so a dismissal takes it away again.
+
+		update_option(
+			self::OPTIN_OPTION_NAME,
+			[
+				'state'  => 'dismissed',
+				'signal' => $has_snapshot && isset($undo['signal'])
+					? (string) $undo['signal']
+					: self::atomic_signal_strength(),
+			]
+		);
+
+		$this->forget_atomic_undo();
+
+		wp_send_json_success(['decision' => $decision]);
 	}
 
 	/**

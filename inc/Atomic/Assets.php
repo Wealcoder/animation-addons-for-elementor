@@ -248,32 +248,137 @@ final class Assets
 	 * Elementor's editor packages are loaded before our bundle runs and the
 	 * `window.elementorV2.editorControls` global is available for the webpack
 	 * externals mapping to resolve at runtime.
+	 *
+	 * SPLIT IN TWO, because Elementor registers the halves under different
+	 * conditions and only one half decides whether this bundle can work at all.
+	 * Verified against Elementor 4.x's own source rather than assumed:
+	 *
+	 *  - The six below come from `Atomic_Widgets\Module::PACKAGES`, added to the
+	 *    `elementor/editor/v2/packages` filter by a constructor that returns early
+	 *    unless `Module::is_active()`. No atomic editor, no handles.
+	 *  - The five in the next constant are in `Editor_V2_Loader::LIBS`, which is
+	 *    unconditional — they exist in every Elementor editor.
+	 *
+	 * That split is exactly what the reported notice listed as unregistered, which
+	 * is the confirmation that this is the real boundary and not a guess.
 	 */
-	const EDITOR_BRIDGE_ELEMENTOR_DEPS = [
+	const EDITOR_BRIDGE_ATOMIC_DEPS = [
 		'elementor-v2-editor-canvas',
 		'elementor-v2-editor-controls',
 		'elementor-v2-editor-editing-panel',
 		'elementor-v2-editor-elements',
 		'elementor-v2-editor-props',
-		'elementor-v2-editor-responsive',
 		'elementor-v2-editor-styles',
+	];
+
+	/**
+	 * The always-present half — Elementor's `Editor_V2_Loader::LIBS`.
+	 *
+	 * Still tested rather than trusted: "unconditional today" is a fact about one
+	 * release, and a handle that quietly moves out of LIBS should cost us a
+	 * feature and a debug line, not a notice across the top of every editor load.
+	 */
+	const EDITOR_BRIDGE_CORE_DEPS = [
+		'elementor-v2-editor-responsive',
 		'elementor-v2-editor-ui',
 		'elementor-v2-editor-v1-adapters',
 		'elementor-v2-schema',
 		'elementor-v2-ui',
 	];
 
-	/** Editor-only: enqueues the live-edit bridge that mirrors settings to the preview iframe. */
+	/**
+	 * Editor-only: enqueues the live-edit bridge that mirrors settings to the
+	 * preview iframe.
+	 *
+	 * DOES NOTHING WHEN THE EDITOR HAS NO ATOMIC LAYER, which is every V3-era
+	 * site. This hook fires on EVERY editor load, so the bundle was being
+	 * enqueued against six handles Elementor had never registered, and WordPress
+	 * printed this across the top of the editor each time:
+	 *
+	 *   Function WP_Scripts::add was called incorrectly. The script with the
+	 *   handle "aae-atomic-common-editor-bridge" was enqueued with dependencies
+	 *   that are not registered: elementor-v2-editor-canvas, …
+	 *
+	 * The notice was the visible half. The real problem is that the bundle exists
+	 * solely to bridge to `window.elementorV2.editorControls` and friends, which
+	 * are not there either — so ~700 KB was being shipped into an editor that had
+	 * nothing for it to attach to.
+	 *
+	 * TESTED BY ASKING WORDPRESS, not by asking whether OUR atomic registry is on.
+	 * Those are different questions: a site can have AAE's atomic widgets switched
+	 * off while Elementor's atomic editor is loaded, and vice versa. The literal
+	 * precondition is "do the handles this script declares exist", and
+	 * `wp_script_is()` answers exactly that — so a future Elementor that renames a
+	 * package degrades to a missing feature with a debug line rather than to a
+	 * notice on every editor load. Priority 100 on
+	 * `elementor/editor/after_enqueue_scripts` is late enough for Elementor to
+	 * have registered them if it is going to.
+	 */
 	public function enqueue_editor_bridge(): void
 	{
+		// GATE ONE — is there anything of OURS for it to drive?
+		//
+		// The bundle powers panel controls, the preset picker, the mask picker and
+		// the responsive rows for AAE's atomic widgets and extensions. With every
+		// one of them switched off in the dashboard there is nothing on screen it
+		// could attach to, so shipping it is pure weight — and on a V3-era site
+		// that is the normal state, not an edge case.
+		//
+		// Extensions count as well as widgets: an extension adds sections to
+		// Elementor's OWN atomic widgets, so a site with every AAE atomic widget
+		// off but one extension on still needs the bridge.
+		if (! class_exists('\\WCF_ADDONS\\AtomicWidgets\\Atomic')) {
+			return;
+		}
+
+		$atomic = \WCF_ADDONS\AtomicWidgets\Atomic::instance();
+
+		if (! method_exists($atomic, 'has_active_atomic') || ! $atomic->has_active_atomic()) {
+			return;
+		}
+
+		// GATE TWO — does the editor it bridges TO exist?
+		$missing_atomic = array_values(array_filter(
+			self::EDITOR_BRIDGE_ATOMIC_DEPS,
+			static fn($handle) => ! wp_script_is($handle, 'registered')
+		));
+
+		// ANY of the atomic packages missing and the bridge cannot function: its
+		// webpack externals resolve against globals those packages define, so it
+		// would load and then do nothing. Enqueue nothing at all.
+		if ($missing_atomic) {
+			return;
+		}
+
+		// The core half is present in every Elementor editor today, so anything
+		// missing here is a rename rather than a switched-off feature. Drop it from
+		// the list — a stale handle must not cost the whole bridge — and say so
+		// where a developer will see it, because the symptom otherwise is one panel
+		// section quietly absent with nothing on screen to explain it.
+		$core = array_values(array_filter(
+			self::EDITOR_BRIDGE_CORE_DEPS,
+			static fn($handle) => wp_script_is($handle, 'registered')
+		));
+
+		$missing_core = array_diff(self::EDITOR_BRIDGE_CORE_DEPS, $core);
+
+		if ($missing_core && defined('WP_DEBUG') && WP_DEBUG) {
+			error_log(sprintf(
+				'AAE: editor-bridge enqueued without %d unregistered Elementor package(s): %s',
+				count($missing_core),
+				implode(', ', $missing_core)
+			));
+		}
+
 		$asset = $this->load_asset('editor-bridge');
 
-		// Merge the auto-detected deps (@wordpress/*) with the manually-listed
-		// Elementor packages. dedup just in case future @wordpress/scripts
+		// Merge the auto-detected deps (@wordpress/*) with the Elementor packages
+		// that are actually REGISTERED. dedup just in case future @wordpress/scripts
 		// versions start auto-detecting @elementor/* too.
 		$deps = array_values(array_unique(array_merge(
 			$asset['dependencies'],
-			self::EDITOR_BRIDGE_ELEMENTOR_DEPS
+			self::EDITOR_BRIDGE_ATOMIC_DEPS,
+			$core
 		)));
 
 		wp_enqueue_script(
