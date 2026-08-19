@@ -44,3 +44,21 @@ node_modules/
 
 # ─── Local data ──────────────────────────────────────────────────────
 templates.json
+
+# ─── Claude Code ─────────────────────────────────────────────────────
+# A MIXED directory, so it follows the same rule as the build output
+# above rather than being ignored wholesale: skills/ is shared team
+# content and stays tracked, everything else is per-machine.
+#
+# worktrees/ is why this section exists. Agent worktrees are full copies
+# of the plugin — 36 MB in two of them — living inside the plugin
+# directory. Git registers them as worktrees, so they never appear in
+# `git status` and were invisible while still being large enough to land
+# in a release ZIP built by copying the directory.
+#
+# settings.json and settings.local.json are permission allow-lists full
+# of absolute paths from one developer's machine (C:/Users/…, D:/programs/…).
+# They grow with every session, conflict on every merge, and mean nothing
+# on anyone else's machine.
+.claude/*
+!.claude/skills/
