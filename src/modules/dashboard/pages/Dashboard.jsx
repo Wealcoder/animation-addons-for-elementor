@@ -8,6 +8,8 @@ import Tutorial from "@/components/dashboard/Tutorial";
 import { Badge } from "@/components/ui/badge";
 import HeroBanner from "../../../../public/images/hero-banner.jpg";
 import QuickAccess from "@/components/dashboard/QuickAccess";
+import AtomicOptInNotice from "@/components/shared/AtomicOptInNotice";
+import AtomicUndoNotice from "@/components/shared/AtomicUndoNotice";
 import { RiH2 } from "react-icons/ri";
 
 function isInOfferPeriod() {
@@ -24,6 +26,15 @@ function isInOfferPeriod() {
 const Dashboard = () => {
   return (
     <div className="flex flex-col gap-6">
+      {/*
+       * Above the hero on purpose, and only ever while this site is mid-move to
+       * Elementor V4 — see the components. Both render null the rest of the
+       * time, so this changes nothing for every other site. Everything below
+       * them is untouched.
+       */}
+      <AtomicOptInNotice />
+      <AtomicUndoNotice />
+
       {WCF_ADDONS_ADMIN.hero !== "no" ? (
         <div className="relative">
           <img
