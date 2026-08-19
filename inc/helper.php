@@ -839,3 +839,51 @@ function wcf_get_config() {
 }
 
 
+
+/**
+ * Version string for this plugin's own admin assets.
+ *
+ * DEV: a timestamp, so an edited bundle is picked up without a hard refresh.
+ * PRODUCTION: the plugin version, so the browser can actually cache the file.
+ *
+ * Seven enqueues used to pass a bare `time()` with no condition at all, which
+ * meant every visitor to the dashboard, the importer or the plugins screen
+ * re-downloaded the bundle on EVERY page load — the dashboard's is ~620 KB of
+ * JS plus its CSS — and no `Cache-Control` could ever help, because the URL
+ * changed each second. It defeated browser and CDN caching alike, on live
+ * sites, permanently.
+ *
+ * Dev is decided by `Atomic::is_dev_environment()` — SCRIPT_DEBUG, a
+ * localhost/127.0.0.1 host, a `.local`/`.test` domain, or a loopback SERVER_ADDR
+ * — reusing the existing rule rather than inventing a second one that could
+ * disagree with it. Deliberately NOT WP_DEBUG: that is about error reporting,
+ * and plenty of live sites run with it on.
+ *
+ * The timestamp is resolved ONCE per request, so every asset on a page shares
+ * one version rather than straddling a second boundary.
+ *
+ * @return string
+ */
+function wcf_asset_version() {
+	static $version = null;
+
+	if ( null !== $version ) {
+		return $version;
+	}
+
+	$is_dev = false;
+
+	// Guarded: the atomic registry is a separate subsystem and this helper is
+	// loaded on every request, including ones where that class may not be.
+	if ( class_exists( '\WCF_ADDONS\AtomicWidgets\Atomic' ) ) {
+		$atomic = \WCF_ADDONS\AtomicWidgets\Atomic::instance();
+
+		if ( method_exists( $atomic, 'is_dev_environment_public' ) ) {
+			$is_dev = $atomic->is_dev_environment_public();
+		}
+	}
+
+	$version = $is_dev ? (string) time() : WCF_ADDONS_VERSION;
+
+	return $version;
+}

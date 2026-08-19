@@ -51,7 +51,7 @@ class Editor_Image_Preload {
             self::HANDLE,
             WCF_ADDONS_URL .'assets/js/image-cache.js',
             [],
-            time(),
+            wcf_asset_version(),
             true
         );
 

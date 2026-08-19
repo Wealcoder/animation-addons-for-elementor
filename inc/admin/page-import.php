@@ -157,7 +157,7 @@ final class AAE_Admin_Page_Importer
             self::HANDLE,
             WCF_ADDONS_URL . 'assets/js/aae-admin-actions.min.js',
             ['jquery'],
-            time(),
+            wcf_asset_version(),
             true
         );
 
@@ -192,14 +192,14 @@ final class AAE_Admin_Page_Importer
                 'aae-page-importer-admin',
                 WCF_ADDONS_URL . 'assets/build/modules/page-import/index.css',
                 array(),
-                time()
+                wcf_asset_version()
             );
 
             wp_enqueue_script(
                 'aae-page-importer-admin',
                 WCF_ADDONS_URL . 'assets/build/modules/page-import/index.js',
                 array('wp-element', 'wp-i18n'),
-                time(),
+                wcf_asset_version(),
                 true
             );
 
