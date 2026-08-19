@@ -63,16 +63,6 @@
     data-element_type="{{ type }}"
     data-e-type="{{ type }}"
     data-interaction-id="{{ interaction_id | default(id) }}"
-    {# Line Indent. Emitted only when set, so an untouched heading carries no
-       style attribute at all — text-indent:0 is already the initial value, and
-       printing it would add an attribute that does nothing.
-
-       Plain truthiness, NOT `is not null` / `is not empty`: this template is
-       also rendered client-side by twig.js in the canvas, whose test support is
-       narrower than PHP Twig's, and truthiness behaves the same in both. It
-       drops undefined/null/0 and keeps a NEGATIVE value, which is a real
-       setting here — a hanging indent. #}
-    {% if settings.ah_indent is defined and settings.ah_indent %}style="text-indent:{{ settings.ah_indent }}px"{% endif %}
     {% if settings._cssid is defined and settings._cssid is not empty %}id="{{ settings._cssid | e('html_attr') }}"{% endif %}
     {% if settings.attributes is defined and settings.attributes is not empty %}{{ settings.attributes | raw }}{% endif %}
     {{ editor_attributes | default('') | raw }}

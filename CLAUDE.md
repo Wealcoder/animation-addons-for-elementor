@@ -4690,6 +4690,80 @@ spam log: `wp eval` on `wp_aae_action_logs` shows `bot_shield | blocked |
 too_fast` with timestamps (the `wp db query` CLI path is broken on this
 Local install — no mysql binary in PATH).
 
+### Range Group — composite labelled slider (shipped 2026-08-19)
+
+`e-aae-a-form-range-group`: the "Total area to be cleaned: **250 Sq.**" row —
+caption, live readout and slider. Built the composite way
+(`.claude/skills/aae-v4-complex-widget`), so it is a CONTAINER
+(`Atomic_Element_Base` + `Has_Element_Template`, `is_container`) whose twig is
+a shell plus `{{ children_placeholder }}`, and whose three default children are
+real, separately-selectable elements:
+
+| child | type | why |
+|---|---|---|
+| caption | core `e-heading` (`h6`) | already has a full Style/typography panel and inline editing; `h6` so a field caption doesn't outrank real page headings |
+| readout | `e-aae-a-form-range-value` (NEW leaf) | needs a durable runtime hook — see below |
+| slider | `e-aae-a-form-range` (EXISTING) | reused whole, so submission behaviour is unchanged |
+
+- **The readout had to be its own element type.** Seeding a core Paragraph and
+  finding it by a class means putting that class in the `classes` prop — which
+  the panel reports as "Some classes are missing" and whose ✕ *unapplies* it
+  (see [Never put a functional hook class in the `classes` prop](#never-put-a-functional-hook-class-in-the-classes-prop)).
+  One click would have broken the readout. Its own type means its own twig, so
+  `data-aae-range-value` is rendered markup nothing in the panel can strip. It
+  renders a real `<output>` (the semantic element for a value computed from
+  other controls), so updates are announced without an aria-live hack.
+- **Reusing the Range widget for the slider is what keeps the backend
+  untouched.** `Schema_Walker::FIELD_TYPES` still sees `e-aae-a-form-range`,
+  Validator.php still re-checks min/max server-side, no new field type, no new
+  case. The group itself is NOT a field — an earlier draft mapped
+  `e-aae-a-form-range-group => 'range'`, which was wrong the moment the slider
+  became a child.
+- **No wrapper element for the caption row.** The group is `flex-wrap: wrap` +
+  `justify-content: space-between` and the slider's own base style is
+  `width: 100%`, so the slider wraps to line two and the caption/readout land at
+  the two ends of line one — the same mechanism the Form widget already uses for
+  label+field pairs. One fewer node in the Structure panel than a header
+  flexbox, and zero external CSS for the layout.
+- **The caption becomes the field's schema label.** A Range Group's caption is a
+  heading CHILD, not a Label widget pointing at the field's `_cssid`, so
+  `build()`'s `$labels` map can never resolve it. `collect()` threads a
+  `$group_label` down the recursion (exactly like `$current_step`), read with
+  the same recursive `first_label_text()` the Submit button uses — so a caption
+  nested inside a flexbox still resolves, and an explicit Label widget still
+  wins. Without it, emails and the submissions table show the bare field key.
+- **Its own JS/CSS bundle** (`assets/js/form-range-group.js`,
+  `assets/scss/form-range-group.scss` → `form-range-group.{js,css}`), NOT
+  form.js/form.css: a slider with a live readout is a perfectly good page
+  element with no `<form>` around it, and `form.js` only ever initialises what
+  it finds inside `.aae-a-form`. The shared logic lives in `lib/range.js`
+  (`syncRangeGroup()` / `applyAccentColor()`), imported by both entry points, so
+  the in-form and standalone paths cannot drift.
+- **The input listener is DELEGATED to the group root**, not bound to the
+  slider. In the editor, changing any setting on the slider re-renders that
+  child and replaces the very node a direct listener would sit on; the root
+  survives its children re-rendering, so delegation keeps the readout live with
+  no polling, observer or re-init (compare Nav's editor reconciler, which needs
+  all three for state the DOM doesn't carry).
+- Everything the runtime keys on is a rendered data-attribute
+  (`data-aae-range-group` / `-value` / `data-aae-range`), never a class —
+  edit-mode strips base and custom classes off atomic elements (gotcha §3), so
+  attribute hooks are what make one code path correct in both modes.
+- Verified against the real install (WP-bootstrapped, `php.exe` from Local's
+  `lightning-services` with `-d extension=mysqli` and `DB_HOST` overridden to
+  `localhost:<site mysql port>` BEFORE `wp-load.php`): 44 checks on
+  registration/composition/base-style-key validity/the walker's label bridge,
+  10 more rendering the whole tree through `create_element_instance()` +
+  `print_element()` and asserting on the delivered HTML, plus the twig rendered
+  through Elementor's own vendored Twig for escaping and the `'0'`-is-empty
+  Twig trap.
+
+> **Migration note:** this element started life (same day) as a single leaf
+> WIDGET with `label`/`min`/`max` props. Moving to a container changed its
+> `elType` from `widget` to `e-aae-a-form-range-group`, so any instance placed
+> before the rework must be deleted and re-dropped — an elType change is not
+> backwards compatible, and there were no shipped instances to migrate.
+
 ### Hide Form After Success (shipped 2026-07-20)
 
 Two props on `e-aae-a-form`, next to the existing "Reset After Success":

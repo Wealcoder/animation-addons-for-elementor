@@ -250,6 +250,59 @@ export function migrateLegacyWidgetShape(model) {
 }
 
 /**
+ * Give every node in a preset tree the two keys Elementor's v1 `cloneItem()`
+ * dereferences without a guard.
+ *
+ * `createElements(..., { clone: true })` routes through `addElement()` →
+ * `cloneItem()` (editor.js), which does exactly this on each node and recurses:
+ *
+ *   item.settings._element_id = '';
+ *   item.elements.forEach( ... );
+ *
+ * A node with no `elements` key therefore throws "Cannot read properties of
+ * undefined (reading 'forEach')" inside Elementor, and the half-built element
+ * comes back null from createElements() — which is the second error the user
+ * sees ("Cannot read properties of null (reading 'model')"), again naming
+ * nothing about the real cause.
+ *
+ * Two sources produce such nodes:
+ *
+ * - `config.default_children` seeded by migrateLegacyWidgetShape() above.
+ *   Those come straight from PHP's Widget_Builder::build(), whose payload has
+ *   elType/widgetType/settings/isLocked/editor_settings and NO `elements` —
+ *   widgets hold no children server-side. Elementor never trips on its own
+ *   default_children because its AtomicElementBaseModel.buildElement() applies
+ *   the very same defaulting (`element.elements || []`, `settings ?? {}`)
+ *   before the model is built; we copy the raw config, so we must do it too.
+ *   Real case: the Form presets, whose `e-aae-a-form-submit` nodes get seeded
+ *   with the Paragraph label + SVG icon children.
+ *
+ * - preset JSON exported by a producer that omitted `elements` on leaves.
+ *
+ * Both are fixed by the same pass, so this is deliberately unconditional
+ * rather than keyed to a widget type. `settings` is also coerced when it
+ * arrives as a PHP empty array (`[]` in JSON) — cloneItem would happily write
+ * `_element_id` onto an array and hand Backbone a settings array.
+ */
+export function normalizeElementShape(model) {
+  if (!model || typeof model !== 'object') {
+    return model;
+  }
+
+  if (!model.settings || typeof model.settings !== 'object' || Array.isArray(model.settings)) {
+    model.settings = {};
+  }
+
+  if (!Array.isArray(model.elements)) {
+    model.elements = [];
+  }
+
+  model.elements.forEach(normalizeElementShape);
+
+  return model;
+}
+
+/**
  * Prop types sharing Elementor's image-source XOR shape: an attachment `id`
  * OR a `url`, but NOT both. `svg-src` (the `e-svg` widget's `svg` prop) is
  * structurally identical to `image-src` and enforces the same rule.
@@ -628,6 +681,9 @@ export function applyPresetModel(presetModel, elementId, targetType, meta = {}) 
     // Before anything else: a stale leaf-shaped node throws inside Elementor's
     // own model constructor, so there is no later point to catch it.
     migrateLegacyWidgetShape(model);
+    // Then the shape floor cloneItem() assumes — including on the children
+    // migrateLegacyWidgetShape() just seeded from config.default_children.
+    normalizeElementShape(model);
     regenerateModelStyleIds(model);
     sanitizeImageSrc(model);
     sanitizeBorderWidthType(model);

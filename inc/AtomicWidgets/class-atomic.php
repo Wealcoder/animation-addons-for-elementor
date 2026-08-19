@@ -578,6 +578,8 @@ final class Atomic
 		'aae-a-form-prev'              => 'aae-a-form',
 		'aae-a-form-rating'            => 'aae-a-form',
 		'aae-a-form-range'             => 'aae-a-form',
+		'aae-a-form-range-group'       => 'aae-a-form',
+		'aae-a-form-range-value'       => 'aae-a-form-range-group',
 		'aae-a-form-password'          => 'aae-a-form',
 		'aae-a-form-calculation'       => 'aae-a-form',
 		'aae-a-form-country'           => 'aae-a-form',
@@ -2709,6 +2711,49 @@ final class Atomic
 					'form range',
 					'slider',
 					'range',
+				],
+				'category'     => 'general',
+				'order'        => 18,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-form-range-group' => [
+				'is_internal'  => true,
+				'label'        => 'Form Range Group',
+				'description'  => 'A labelled slider row — heading, live value readout and slider, each a real child you select and style on its own. The slider is the Range field, so it submits and validates like one.',
+				'icon'         => 'eicon-slider-push',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form range group',
+					'slider',
+					'range',
+					'label',
+					'value',
+				],
+				'category'     => 'general',
+				'order'        => 18,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-form-range-value' => [
+				'is_internal'  => true,
+				'label'        => 'Form Range Value',
+				'description'  => 'The live value readout inside a Range Group — prints the slider\'s current value with an optional prefix/suffix.',
+				'icon'         => 'eicon-number-field',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form range value',
+					'readout',
+					'output',
+					'internal',
 				],
 				'category'     => 'general',
 				'order'        => 18,
@@ -5106,6 +5151,24 @@ final class Atomic
 				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Range',
 				'file'       => 'Widgets/Form/class-aae-a-form-range.php',
 				'has_script' => false, // ships inside aae-a-form-js itself (lib/range.js).
+			],
+
+			'aae-a-form-range-group' => [
+				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Range_Group',
+				'file'          => 'Widgets/Form/class-aae-a-form-range-group.php',
+				// Its own bundle, not form.js: the group is a usable page element
+				// on its own, and form.js only initialises what sits inside a form.
+				'has_script'    => true,
+				'script_handle' => 'aae-a-form-range-group-js',
+				'script_path'   => '/assets/atomic/js/form-range-group.js',
+				'style_handle'  => 'aae-a-form-range-group-css',
+				'style_path'    => '/assets/atomic/css/form-range-group.css',
+			],
+
+			'aae-a-form-range-value' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Range_Value',
+				'file'       => 'Widgets/Form/class-aae-a-form-range-value.php',
+				'has_script' => false, // painted by its parent's bundle (form-range-group.js).
 			],
 
 			'aae-a-form-country' => [

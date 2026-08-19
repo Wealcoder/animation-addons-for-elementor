@@ -204,6 +204,10 @@
     box-sizing: border-box;
 }
 
+// Range Group's own rules live in form-range-group.scss — it ships as its own
+// stylesheet because that widget is usable outside a form, where form.css is
+// never enqueued.
+
 // Placeholder colour can't go through base styles (atomic has no
 // pseudo-element support): inherit each control's own Text Color (Style
 // panel) at reduced opacity, so changing Text Color moves the placeholder

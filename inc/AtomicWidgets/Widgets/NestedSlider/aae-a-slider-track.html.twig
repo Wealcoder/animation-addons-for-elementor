@@ -3,6 +3,7 @@
     data-id="{{ id }}"
     data-element_type="{{ type }}"
     data-e-type="{{ type }}"
+    data-interaction-id="{{ interaction_id }}"
     style="display: flex; gap: var(--aae-slide-gap); width: 100%; touch-action: pan-y; perspective: var(--aae-perspective); transform-style: preserve-3d;"
     {{ editor_attributes | default('') | raw }}>
     {{ children_placeholder | raw }}

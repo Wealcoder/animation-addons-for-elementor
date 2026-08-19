@@ -66,11 +66,9 @@ use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Template;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Select_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
-use Elementor\Modules\AtomicWidgets\Controls\Types\Number_Control;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Number_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
@@ -136,13 +134,6 @@ class AAE_A_Advanced_Heading extends Atomic_Widget_Base {
 			// never attach to this type anyway. See the class docblock.
 			'ah_tag'  => String_Prop_Type::make()->default( 'h2' ),
 
-			// First-line indent, in px. A plain number with the unit appended in the
-			// Twig, matching how the Menu widget carries its sizes — `text-indent`
-			// has NO key in Elementor's atomic style schema, so it cannot come from
-			// the Style tab or from define_base_styles() (one unknown key voids the
-			// whole definition), and this is the remaining route.
-			'ah_indent' => Number_Prop_Type::make()->default( 0 ),
-
 			'content' => $content,
 
 			// DERIVED, never edited directly and given no control. Holds the
@@ -203,10 +194,6 @@ class AAE_A_Advanced_Heading extends Atomic_Widget_Base {
 					AAE_Inline_Text_Control::bind_to( 'content' )
 						->set_label( __( 'Content', 'animation-addons-for-elementor' ) )
 						->set_placeholder( __( 'Type your heading here', 'animation-addons-for-elementor' ) ),
-
-					Number_Control::bind_to( 'ah_indent' )
-						->set_label( __( 'Line Indent', 'animation-addons-for-elementor' ) )
-						->set_description( __( 'Indents the FIRST line only, in px, like a paragraph indent. Lives here rather than in the Style tab because text-indent is not part of Elementor\'s atomic style schema. Negative values pull the first line out to the left (a hanging indent).', 'animation-addons-for-elementor' ) ),
 				] ),
 
 			Section::make()

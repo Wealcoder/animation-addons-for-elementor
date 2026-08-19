@@ -117,8 +117,13 @@ final class Schema_Walker {
 	 *   between/outside steps — e.g. a Submit button placed after all steps).
 	 *   Threaded down exactly like the pro Conditional Display engine threads
 	 *   an ancestor accumulator in its own walk (Engine.php's walk_containers).
+	 * @param string $group_label The caption of the e-aae-a-form-range-group
+	 *   we are descending inside, else ''. A Range Group's caption is a real
+	 *   heading CHILD, not a Label widget pointing at the field's CSS id, so
+	 *   build()'s $labels map can never resolve it — it has to be carried in
+	 *   from the ancestor, the same way $current_step is.
 	 */
-	private static function collect( array $elements, array &$fields, &$submit, array &$labels, array &$message, array &$steps, ?string $current_step ): void {
+	private static function collect( array $elements, array &$fields, &$submit, array &$labels, array &$message, array &$steps, ?string $current_step, string $group_label = '' ): void {
 		foreach ( $elements as $element ) {
 			if ( ! is_array( $element ) ) {
 				continue;
@@ -132,8 +137,16 @@ final class Schema_Walker {
 				continue;
 			}
 
-			$settings   = $element['settings'] ?? [];
-			$step_scope = $current_step;
+			$settings    = $element['settings'] ?? [];
+			$step_scope  = $current_step;
+			$label_scope = $group_label;
+
+			// The caption is whatever heading/paragraph the builder left at the top
+			// of the group — first_label_text() is the same recursive reader the
+			// Submit button's label uses, so a caption nested in a flexbox resolves.
+			if ( 'e-aae-a-form-range-group' === $type ) {
+				$label_scope = self::first_label_text( $element );
+			}
 
 			if ( 'e-aae-a-form-step' === $type ) {
 				$step_scope = (string) ( $element['id'] ?? '' );
@@ -142,7 +155,17 @@ final class Schema_Walker {
 					'title' => (string) Prop::read( $settings, 'step_title', '' ),
 				];
 			} elseif ( isset( self::FIELD_TYPES[ $type ] ) ) {
-				$fields[] = self::build_field( self::FIELD_TYPES[ $type ], $element, $settings, $current_step );
+				$field = self::build_field( self::FIELD_TYPES[ $type ], $element, $settings, $current_step );
+
+				// Inside a Range Group the caption above the slider IS this field's
+				// label, so submissions and notification emails read "Total area to be
+				// cleaned" instead of a bare field key. An explicit Label widget still
+				// wins: build() applies the resolved $labels map after this walk.
+				if ( '' !== $group_label && '' === $field['label'] ) {
+					$field['label'] = $group_label;
+				}
+
+				$fields[] = $field;
 			} elseif ( 'e-aae-a-form-label' === $type ) {
 				$for = (string) Prop::read( $settings, 'input-id', '' );
 				if ( '' !== $for && ! isset( $labels[ $for ] ) ) {
@@ -164,7 +187,7 @@ final class Schema_Walker {
 
 			if ( ! empty( $element['elements'] ) && is_array( $element['elements'] )
 				&& ! in_array( $type, [ 'e-aae-a-form-success-message', 'e-aae-a-form-error-message' ], true ) ) {
-				self::collect( $element['elements'], $fields, $submit, $labels, $message, $steps, $step_scope );
+				self::collect( $element['elements'], $fields, $submit, $labels, $message, $steps, $step_scope, $label_scope );
 			}
 		}
 	}

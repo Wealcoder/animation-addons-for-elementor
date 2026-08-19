@@ -1347,6 +1347,17 @@ const SHARED_TARGET_TYPES = [
 	'e-aae-a-counter', 'e-aae-a-countdown', 'e-aae-a-progressbar',
 	'e-aae-a-social-share', 'e-aae-a-icon-list', 'e-aae-a-curved-text',
 
+	// Nested Slider / Loop Grid Slider parts — internal children the slider
+	// generates, which animating the slider root cannot reach. See the PHP
+	// docblock.
+	'e-aae-a-slider-track', 'e-aae-a-slide',
+	'e-aae-a-slider-nav-prev', 'e-aae-a-slider-nav-next',
+	'e-aae-a-slider-pagination', 'e-aae-a-slider-dot',
+	'e-aae-a-slider-indicators', 'e-aae-a-slider-progress',
+	'e-aae-a-slider-progress-fill', 'e-aae-a-slider-percentage',
+	'e-aae-a-slider-counter', 'e-aae-a-slider-current',
+	'e-aae-a-slider-total', 'e-aae-a-slider-divider',
+
 	// Internal child — back-compat only, see the PHP docblock.
 	'e-aae-a-icon-list-item',
 ];
