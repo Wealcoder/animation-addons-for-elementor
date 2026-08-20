@@ -1,0 +1,30 @@
+{#
+  AAE Form Range Value — the live readout of a Range Group.
+
+  A real <output>, so a screen reader announces the new number as the slider
+  moves without an aria-live hack. `data-aae-range-value` is rendered markup,
+  not a `classes` entry, so nothing in the editing panel can strip the hook
+  the runtime finds this node by.
+
+  The prefix/suffix ride along as data-attrs because range-group.js rebuilds
+  the whole string on every input event — it must join them exactly the way
+  this template does (prefix flush, suffix spaced) or the text would shift the
+  moment the visitor drags.
+#}
+{% set classes = ['aae-a-form-range-value', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') | trim %}
+{% set prefix = settings.prefix | default('') %}
+{% set suffix = settings.suffix | default('') %}
+{% set fallback = settings.default_text is defined and settings.default_text is not null ? settings.default_text : '0' %}
+
+<output
+    class="{{ classes }} {{ editor_classes | default('') }}"
+    data-id="{{ id }}"
+    data-element_type="{{ type }}"
+    data-e-type="{{ type }}"
+    data-interaction-id="{{ interaction_id | default(id) }}"
+    data-aae-range-value="true"
+    data-aae-range-prefix="{{ prefix | e('html_attr') }}"
+    data-aae-range-suffix="{{ suffix | e('html_attr') }}"
+    {% if settings._cssid is defined and settings._cssid is not empty %}id="{{ settings._cssid | e('html_attr') }}"{% endif %}
+    {% if settings.attributes is defined and settings.attributes is not empty %}{{ settings.attributes | raw }}{% endif %}
+    {{ editor_attributes | default('') | raw }}>{{ prefix }}{{ fallback }}{% if suffix is not empty %} {{ suffix }}{% endif %}</output>

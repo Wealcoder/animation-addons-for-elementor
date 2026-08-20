@@ -2069,29 +2069,133 @@ class Post_Meta_Info extends Widget_Base {
 		$this->end_controls_section();
 	}
 
+	/**
+	 * Did switch_post() actually switch, i.e. is there something to restore?
+	 *
+	 * Elementor's switched-post stack is SHARED by everything rendering on the
+	 * page. render() used to call restore_current_post() unconditionally, so on
+	 * every post type except `wcf-addons-template` — where switch_post() does
+	 * nothing — this widget popped an entry belonging to whatever had switched
+	 * around it (a Loop Grid item, a theme-builder document). That restores the
+	 * outer loop's post one iteration early and every later item describes the
+	 * wrong post, with nothing in the output to say so.
+	 *
+	 * @var bool
+	 */
+	protected $wcf_switched_post = false;
+
+	/**
+	 * The post this widget is describing, or null when there is not one.
+	 *
+	 * Every renderer below reads post data, and there are real contexts with no
+	 * post at all: an archive or 404 template in the editor, a widget dropped
+	 * outside any loop, or a switch that resolved to nothing (see switch_post()).
+	 * `get_post()` with no argument returns the global, which is exactly what
+	 * those readers use — so this is the same value they see, only checked.
+	 *
+	 * @return \WP_Post|null
+	 */
+	protected function get_meta_post() {
+		$post = get_post();
+
+		return ( $post instanceof \WP_Post ) ? $post : null;
+	}
+
+	/**
+	 * One repeater row, with every key this widget reads guaranteed present.
+	 *
+	 * Repeater rows are stored as they were saved, and controls have been ADDED
+	 * to this list over time — `meta_separator` and `list_title` among them — so
+	 * a row saved by an older release genuinely has no such key and every read
+	 * of it raises "Undefined array key". Normalising the row once, here, is why
+	 * the ten renderers below can go on reading `$meta['list_title']` directly:
+	 * one guard covering forty reads, instead of forty isset() calls that have to
+	 * be kept in step with each other.
+	 *
+	 * `list_type` defaults to '' deliberately — it is the dispatch key, and an
+	 * empty one matches no renderer, so an unreadable row draws nothing rather
+	 * than drawing the first item in the list.
+	 *
+	 * @param mixed $meta Raw repeater row.
+	 *
+	 * @return array
+	 */
+	protected function normalize_meta_row( $meta ) {
+		return wp_parse_args( (array) $meta, [
+			'list_type'         => '',
+			'list_title'        => '',
+			'list_icon'         => '',
+			'meta_separator'    => '',
+			'category_limit'    => '',
+			'multiple_category' => '',
+		] );
+	}
+
+	/**
+	 * The widget settings the renderers read, with the same guarantee.
+	 *
+	 * get_settings_for_display() merges control defaults, so these are normally
+	 * all present — but a control registered behind a condition is not, and
+	 * `layout_style` decides which of two markup branches runs at all.
+	 *
+	 * @param array $settings Raw settings.
+	 *
+	 * @return array
+	 */
+	protected function normalize_meta_settings( $settings ) {
+		return wp_parse_args( (array) $settings, [
+			'layout_style'          => '1',
+			'show_title'            => '',
+			'category_hover_list'   => '',
+			'share_separator_icons' => '',
+		] );
+	}
+
 	protected function switch_post() {
-		if ( 'wcf-addons-template' === get_post_type() ) {
+		$this->wcf_switched_post = false;
 
-			$recent_posts = wp_get_recent_posts( array(
-				'numberposts' => 1,
-				'post_status' => 'publish'
-			) );
-
-			$post_id = get_the_id();
-
-			if ( isset( $recent_posts[0] ) ) {
-				$post_id = $recent_posts[0]['ID'];
-			}
-
-			Plugin::$instance->db->switch_to_post( $post_id );
+		if ( 'wcf-addons-template' !== get_post_type() ) {
+			return;
 		}
+
+		$recent_posts = wp_get_recent_posts( array(
+			'numberposts' => 1,
+			'post_status' => 'publish'
+		) );
+
+		$post_id = get_the_id();
+
+		if ( isset( $recent_posts[0]['ID'] ) ) {
+			$post_id = $recent_posts[0]['ID'];
+		}
+
+		/*
+		 * THE SWITCH IS WHAT NULLED THE GLOBAL POST.
+		 *
+		 * Elementor's switch_to_post() does `$GLOBALS['post'] = get_post( $id )`
+		 * with no check (includes/db.php), so an id that resolves to nothing does
+		 * not fail the switch — it REPLACES the global post with null for the rest
+		 * of the render. Every reader below then warns on a null, and the first one
+		 * to do it was render_author()'s `$post->post_author`. On a site with no
+		 * published posts at all, `get_the_id()` inside the editor is the fallback
+		 * and it can be false, which absint()s to 0 and gets exactly there.
+		 *
+		 * Not switching leaves the template's own post in place, which is a worse
+		 * preview than a real post and a far better one than none.
+		 */
+		if ( ! $post_id || ! get_post( $post_id ) ) {
+			return;
+		}
+
+		Plugin::$instance->db->switch_to_post( $post_id );
+		$this->wcf_switched_post = true;
 	}
 
 	protected function render() {
-		$settings  = $this->get_settings_for_display();
-		$meta_list = $settings['list'];
+		$settings  = $this->normalize_meta_settings( $this->get_settings_for_display() );
+		$meta_list = isset( $settings['list'] ) ? $settings['list'] : [];
 
-		if ( empty( $meta_list ) ) {
+		if ( empty( $meta_list ) || ! is_array( $meta_list ) ) {
 			return;
 		}
 
@@ -2101,6 +2205,10 @@ class Post_Meta_Info extends Widget_Base {
         <ul class="wcf--meta-list style-<?php echo esc_html( $settings['layout_style'] ); ?>">
 			<?php
 			foreach ( $meta_list as $meta ) {
+				// Normalised ONCE, here, so the ten renderers can read their keys
+				// directly — see normalize_meta_row().
+				$meta = $this->normalize_meta_row( $meta );
+
 				$this->render_date( $meta, $settings );
 				$this->render_categories( $meta, $settings );
 				$this->render_author( $meta, $settings );
@@ -2116,7 +2224,11 @@ class Post_Meta_Info extends Widget_Base {
         </ul>
 		<?php
 
-		Plugin::$instance->db->restore_current_post();
+		// Only if WE switched. The stack is shared — see $wcf_switched_post.
+		if ( $this->wcf_switched_post ) {
+			Plugin::$instance->db->restore_current_post();
+			$this->wcf_switched_post = false;
+		}
 	}
 
 	protected function render_date( $meta, $settings ) {
@@ -2243,18 +2355,37 @@ class Post_Meta_Info extends Widget_Base {
 	}
 
 	protected function render_author( $meta, $settings ) {
-		global $post;
-		$author_id = $post->post_author;
+		if ( $meta['list_type'] != 'author' ) {
+			return;
+		}
 
-		if ( $meta['list_type'] == 'author' ) {
-			$get_author = get_the_author_meta( 'display_name', $author_id );
-			$avatar     = get_avatar( $author_id, 55 );
-			$_posts_url = esc_url( get_author_posts_url( $author_id ) );
-			?>
-			<?php if ( '1' == $settings['layout_style'] ): ?>
+		// THE REPORTED WARNING. This read used to run before the list_type check,
+		// so every meta row on the list paid for it and a null global post raised
+		// "Attempt to read property post_author on null" even when no author item
+		// was configured at all.
+		$post = $this->get_meta_post();
+
+		if ( ! $post ) {
+			return;
+		}
+
+		$author_id = (int) $post->post_author;
+
+		// An author id of 0 is a real state — an imported post whose author no
+		// longer exists — and it resolves to an empty name beside a link to the
+		// site's author archive for nobody. Drawing nothing is the honest answer.
+		if ( ! $author_id ) {
+			return;
+		}
+
+		$get_author = get_the_author_meta( 'display_name', $author_id );
+		$avatar     = get_avatar( $author_id, 55 );
+		$_posts_url = esc_url( get_author_posts_url( $author_id ) );
+		?>
+		<?php if ( '1' == $settings['layout_style'] ): ?>
                 <li class="wcf--meta-author wcf-separator"
                     data-separator="<?php echo esc_attr( $meta['meta_separator'] ); ?>">
-					<?php Icons_Manager::render_icon( $meta['list_icon'], [ 'aria-hidden' => 'true' ] ); ?>
+				<?php Icons_Manager::render_icon( $meta['list_icon'], [ 'aria-hidden' => 'true' ] ); ?>
                     <a href="<?php echo esc_url( $_posts_url ); ?>">
                           <?php if($settings['show_title'] == 'yes') { ?>
                             <span><?php echo wp_kses_post( $meta['list_title'] ); ?></span> 
@@ -2262,24 +2393,24 @@ class Post_Meta_Info extends Widget_Base {
                         <?php echo esc_html( $get_author ); ?>
                         </a>
                 </li>
-			<?php endif; ?>
+		<?php endif; ?>
 
-			<?php if ( '2' == $settings['layout_style'] ): ?>
+		<?php if ( '2' == $settings['layout_style'] ): ?>
                 <li class="wcf--author-wrap">
                     <div class="wcf-author-img">
-						<?php echo wp_kses_post( $avatar ); ?>
+					<?php echo wp_kses_post( $avatar ); ?>
                     </div>
                     <div class="wcf--author-info">
                         <div class="wcf--author-title label">
-							<?php echo esc_html( $meta['list_title'] ); ?>
+						<?php echo esc_html( $meta['list_title'] ); ?>
                         </div>
                         <div class="wcf--meta-author">
                             <a href="<?php echo esc_url( $_posts_url ); ?>"><?php echo esc_html( $get_author ); ?></a>
                         </div>
                     </div>
                 </li>
-			<?php endif; ?>
-		<?php }
+		<?php endif; ?>
+		<?php
 	}
 
 	protected function render_view_count( $meta, $settings ) {
@@ -2312,38 +2443,49 @@ class Post_Meta_Info extends Widget_Base {
 	}
 
 	protected function render_reading_time( $meta, $settings ) {
-		$time          = 0;
-		$content       = get_the_content();
-		$clean_content = esc_html( $content );
+		if ( $meta['list_type'] != 'reading_time' ) {
+			return;
+		}
+
+		// INSIDE the type check, not above it. This ran for every row on the list
+		// regardless of type, so a ten-item meta list read and word-counted the
+		// whole post body ten times to use the answer at most once.
+		//
+		// The (string) casts are not decoration: get_the_content() returns null
+		// with no post, and passing null to esc_html()/str_word_count() is
+		// deprecated on PHP 8.1+ — a second warning in the same place as the one
+		// being fixed.
+		$content       = (string) get_the_content();
+		$clean_content = (string) esc_html( $content );
 		$word_count    = str_word_count( $clean_content );
 		$time          = ceil( $word_count / 200 );
 
-		if ( $meta['list_type'] == 'reading_time' ) { ?>
-			<?php if ( '1' == $settings['layout_style'] ): ?>
+		?>
+		<?php if ( '1' == $settings['layout_style'] ): ?>
                 <li class="wcf--meta-view wcf-separator"
                     data-separator="<?php echo esc_attr( $meta['meta_separator'] ); ?>">
                     <?php if($settings['show_title'] == 'yes') { ?>
                     <span><?php echo wp_kses_post( $meta['list_title'] ); ?></span> 
                     <?php } ?>
-					<?php Icons_Manager::render_icon( $meta['list_icon'], [ 'aria-hidden' => 'true' ] ); ?>
-					<?php echo esc_html( $time ); ?>
-					<?php echo $time <= 1 ? esc_html__( 'minute read', 'animation-addons-for-elementor' ) : esc_html__( 'minutes read', 'animation-addons-for-elementor' ); ?>
+				<?php Icons_Manager::render_icon( $meta['list_icon'], [ 'aria-hidden' => 'true' ] ); ?>
+				<?php echo esc_html( $time ); ?>
+				<?php echo $time <= 1 ? esc_html__( 'minute read', 'animation-addons-for-elementor' ) : esc_html__( 'minutes read', 'animation-addons-for-elementor' ); ?>
                 </li>
-			<?php endif; ?>
+		<?php endif; ?>
 
-			<?php if ( '2' == $settings['layout_style'] ): ?>
+		<?php if ( '2' == $settings['layout_style'] ): ?>
                 <li class="wcf--view-wrap">
                     <div class="wcf--view-title label">
-						<?php Icons_Manager::render_icon( $meta['list_icon'], [ 'aria-hidden' => 'true' ] ); ?>
-						<?php echo esc_html( $meta['list_title'] ); ?>
+					<?php Icons_Manager::render_icon( $meta['list_icon'], [ 'aria-hidden' => 'true' ] ); ?>
+					<?php echo esc_html( $meta['list_title'] ); ?>
                     </div>
                     <div class="wcf--meta-view">
-						<?php echo esc_html( $time ); ?>&nbsp;
+					<?php echo esc_html( $time ); ?>&nbsp;
                         <span><?php echo $time <= 1 ? esc_html__( 'minute read', 'animation-addons-for-elementor' ) : esc_html__( 'minutes read', 'animation-addons-for-elementor' ); ?></span>
                     </div>
                 </li>
-			<?php endif; ?>
-		<?php }
+		<?php endif; ?>
+		<?php
 	}
 
 	protected function render_comments( $meta, $settings ) {
@@ -2439,7 +2581,14 @@ class Post_Meta_Info extends Widget_Base {
 				return;
 			}
 
-			$post_id = get_the_ID();
+			// A meta_query for post_id => false matches every rating row on the
+			// site, so with no post this reported the global review count as this
+			// post's. Wrong and expensive, in that order.
+			$post_id = $this->get_meta_post() ? $this->get_meta_post()->ID : 0;
+
+			if ( ! $post_id ) {
+				return;
+			}
 
 			$ratings = get_posts( [
 				'post_type'   => 'aaeaddon_post_rating',
@@ -2484,7 +2633,13 @@ class Post_Meta_Info extends Widget_Base {
 
 	protected function render_read_later( $meta, $settings ) {
 		if ( $meta['list_type'] == 'read-later' ) {
-			$post_id = get_the_ID();
+			// The button posts this id back to save the item, so an empty one gives
+			// the visitor a Save control that cannot save anything.
+			$post_id = $this->get_meta_post() ? $this->get_meta_post()->ID : 0;
+
+			if ( ! $post_id ) {
+				return;
+			}
 			?>
 			<?php if ( '1' == $settings['layout_style'] ): ?>
                 <li class="wcf--meta-view wcf-separator"

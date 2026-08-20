@@ -99,6 +99,23 @@ class AAE_A_Nav extends Atomic_Element_Base {
 			'mobile_position' => String_Prop_Type::make()->default( 'right' ),
 			'mobile_close_on_link' => Boolean_Prop_Type::make()->default( true ),
 			'mobile_lock_scroll' => Boolean_Prop_Type::make()->default( true ),
+			/* EDITOR-ONLY drawer preview switch.
+			 *
+			 * The editor used to open the mobile drawer by itself as soon as the
+			 * device switcher dropped to or below `mobile_breakpoint`. That was
+			 * surprising — previewing tablet popped the menu open over the canvas —
+			 * and the device-mode probe behind it (getEditorDeviceMode) is exactly
+			 * where the intermittent "drawer stuck open, X does nothing" reports came
+			 * from: when the probe answered stale, the preview reopened itself faster
+			 * than the close button could dismiss it.
+			 *
+			 * The breakpoint is now purely a FRONTEND concern (nav.js matchMedia
+			 * against the real viewport); in the editor the builder opens the drawer
+			 * from this switch when they want to fill or style it.
+			 *
+			 * Defaults to false, so opening a page saved before this existed shows a
+			 * closed drawer, and it has NO effect on the frontend at all. */
+			'mobile_editor_open' => Boolean_Prop_Type::make()->default( false ),
 			/* Icon pickers mirrored to the companion's SVG children by the
 			 * NavItemsControl reconciler. Default to the bundled icons so the
 			 * control shows the current icon and swapping is one click. */
@@ -193,6 +210,12 @@ class AAE_A_Nav extends Atomic_Element_Base {
 				->set_items( [
 					Switch_Control::bind_to( 'mobile_enabled' )
 						->set_label( __( 'Enable Mobile Menu', 'animation-addons-for-elementor' ) ),
+					/* Editor-only helper, kept next to Enable Mobile Menu because that is
+					 * the pair a builder reaches for: switch the mobile menu on, then
+					 * open it to style the drawer. Same placement rationale as the
+					 * Offcanvas widget's "Open Panel (Editor)". No frontend effect. */
+					Switch_Control::bind_to( 'mobile_editor_open' )
+						->set_label( __( 'Open Mobile Menu (Editor)', 'animation-addons-for-elementor' ) ),
 					Select_Control::bind_to( 'mobile_breakpoint' )
 						->set_label( __( 'Breakpoint', 'animation-addons-for-elementor' ) )
 						->set_options( self::breakpoint_options() ),

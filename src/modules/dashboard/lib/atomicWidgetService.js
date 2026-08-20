@@ -106,6 +106,7 @@ const INTERNAL_WIDGET_SLUGS = [
   "aae-a-form-checkbox",
   "aae-a-form-radio",
   "aae-a-form-select",
+  "aae-a-form-range-value",
   "aae-a-form-submit",
   "aae-a-form-success-message",
   "aae-a-form-error-message",

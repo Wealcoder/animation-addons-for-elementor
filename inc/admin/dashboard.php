@@ -426,14 +426,14 @@ class WCF_Admin_Init
 			'wcf-admin',
 			WCF_ADDONS_URL . 'assets/build/modules/dashboard/index.css',
 			array(),
-			time()
+			wcf_asset_version()
 		);
 
 		wp_enqueue_script(
 			'wcf-admin',
 			WCF_ADDONS_URL . 'assets/build/modules/dashboard/index.js',
 			array('react', 'react-dom', 'wp-element', 'wp-i18n'),
-			time(),
+			wcf_asset_version(),
 			true
 		);
 

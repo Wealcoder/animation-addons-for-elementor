@@ -82,7 +82,13 @@ class Search_Form extends Widget_Base {
 	 * @access public
 	 */
 	public function get_style_depends() {
-		return [ 'aae--search' ];
+		// Intentionally empty. This widget's stylesheet builds to nothing — its
+		// SCSS source is entirely commented out, the rules having moved into the
+		// inline <style> block this widget prints — so the 'aae--search' STYLE
+		// handle is no longer registered (see Plugin::get_widget_style()).
+		//
+		// The identically named SCRIPT handle is still declared below and is real.
+		return [];
 	}
 
 	public function get_script_depends() {

@@ -56,7 +56,7 @@ function InnerTabsGroup({ fields, settings, activeBp, element, bindPrefix }) {
 							addLabel={field.addLabel}
 							rowDefaults={field.rowDefaults}
 							rowFields={field.rowFields}
-							defaultValue={field.defaultValue}
+							defaultValue={typeof field.defaultValue === 'function' ? field.defaultValue(settings, activeBp) : field.defaultValue}
 							responsive={field.responsive !== false}
 							propValue={fullBind ? (settings[fullBind] ?? null) : null}
 							activeBp={activeBp}
@@ -182,7 +182,7 @@ export function ResponsiveSection({ config }) {
 						addLabel={field.addLabel}
 						rowDefaults={field.rowDefaults}
 						rowFields={field.rowFields}
-						defaultValue={field.defaultValue}
+						defaultValue={typeof field.defaultValue === 'function' ? field.defaultValue(settings, activeBp) : field.defaultValue}
 						responsive={field.responsive !== false}
 						propValue={fullBind ? (settings[fullBind] ?? null) : null}
 						activeBp={activeBp}

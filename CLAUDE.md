@@ -1001,6 +1001,345 @@ active COUNT — config.php ships it and the DB merge only ever flips leaf nodes
 Fake the count alone and the switch is already off, so the click turns it ON and
 no confirmation ever appears. Pass `v3MasterOn: true`.
 
+### Moving TO V4 — the atomic opt-in notice (2026-08-19)
+
+The visibility rules above have one blind spot, and it is the worst one they
+could have: the moment a site MOVES.
+
+A long-time V3 user switches Elementor's V4 on. They have nothing atomic
+enabled yet — because they just arrived — so `V4_HAS_ACTIVE` is false,
+`V3_PRESENT` is true, and `SHOW_V4_SYSTEM` hides the V4 tab. The screen that
+would tell them AAE ships an atomic registry at all is hidden **precisely
+because** they have not used it yet. Nothing is broken and nothing errors; the
+feature simply does not exist as far as that user can tell.
+
+The notice is the way in, and it is the ONLY thing added. **Every row of the
+table above still resolves exactly as it did**, every V3 surface is untouched,
+and nothing is registered or unregistered until the user presses a button.
+
+| | |
+|---|---|
+| Detection + rule | `class-atomic.php::atomic_optin_signal()` |
+| Payload | `addons_config.atomic_optin` (nested — real booleans, unlike `v3_in_use`) |
+| Snapshot | `ATOMIC_OPTED_IN` / `ATOMIC_SIGNAL` / `SHOW_ATOMIC_OPTIN_NOTICE` in `systemVisibility.js` |
+| UI | `components/shared/AtomicOptInNotice.jsx`, on the **Dashboard** page only |
+| Writes | `lib/atomicOptIn.js` — the EXISTING save endpoints, plus `aae_atomic_optin` |
+| Option | `aae_atomic_optin` = `[ 'state' => 'accepted'\|'dismissed', 'signal' => … ]` |
+
+**Two signals, and they are not the same claim.** The notice says a different
+sentence for each, because saying the weaker one while the stronger is true
+reads as though we had not looked:
+
+- **`usage`** — `Atomic::has_atomic_usage()`: this site's pages hold V4
+  elements. A fact about their work. One `REGEXP` for
+  `"(elType|widgetType)":"e-` covers both shapes an atomic element saves as
+  (`"elType":"e-flexbox"` for a container, `"widgetType":"e-heading"` for a
+  leaf) and keeps covering types Elementor adds later — its v3 twin
+  (`v3_widget_name_sql()`) has to enumerate names only because v3 names share
+  no prefix. Cached an hour in `aae_atomic_usage`, negative-only bust on
+  `save_post`, exactly like `aae_v3_usage` — read that DANGER box, it applies
+  here word for word.
+- **`experiment`** — `Atomic::is_elementor_atomic_active()`: Elementor's
+  `e_atomic_elements` is on. A fact about a setting.
+
+**Both can be true, and then the notice says both.** `ATOMIC_SIGNAL` carries only
+the STRONGER one, because that is what the ranked dismissal has to compare
+against — so a separate `ATOMIC_EXPERIMENT_ON` exists purely so the copy can
+name the commonest case (someone switches V4 on, then builds with it) instead of
+collapsing it into the usage half.
+
+**And it says HOW MANY pages** — `Atomic::count_atomic_usage()`, shipped as
+`in_use_count`. "Pages on this site are built with V4" is equally true of one
+abandoned test page and of a site that has moved wholesale, and those two readers
+want opposite things from the notice; the number is the entire difference.
+
+- **A SECOND transient (`aae_atomic_usage_count`), not a wider one.** The
+  boolean's query stops at the first row and runs on every undecided site;
+  counting cannot stop early. Kept apart, the expensive one is only paid for
+  when a notice is actually going on screen AND the signal is `usage` — measured
+  at 117 ms uncached on this dev site, 0.03 ms after.
+- **It MUST join `posts` to exclude revisions**, which the boolean never had to
+  care about. `_elementor_data` is copied onto every revision, so one page edited
+  forty times owns forty-one rows carrying atomic markup — counting postmeta
+  alone announces "41 pages" to someone who built one, plausibly, which is the
+  worst kind of wrong for a number people act on. `auto-draft` and `trash` go
+  too: they are not pages the user thinks of as part of their site. Drafts and
+  private pages DO count.
+- **The negative-only bust drops both rows.** Leaving the count behind would have
+  the notice reporting "0 pages" on a site the boolean had just re-decided.
+- Each count variant is a WHOLE sentence through `_n()`, never a noun phrase
+  interpolated into one — "%s pages … are built" with a stitched-in "1 page"
+  is broken English here and unfixable in a language whose verb agreement
+  differs from ours.
+
+**`is_elementor_atomic_active()` is deliberately NOT part of
+`meets_requirements()`.** That gate decides whether the atomic registry loads
+at all, and it has to keep saying yes while the experiment is off, or Elementor
+strips every saved `aae_*` prop out of `_elementor_data` on the next save (see
+`Bootstrap::init()`). Toggling the experiment off may cost a builder their
+editor panel; it must never cost them their saved work.
+
+**The dismissal is ranked, not a boolean.** `signal` records how strong the
+evidence was when the user answered, so `usage` (real V4 pages) can still speak
+once to someone who already dismissed `experiment` (a switch). Never the
+reverse.
+
+**Both buttons record `accepted`; only the ✕ records `dismissed`.**
+
+- **Enable atomic features** — `applyWizardSetup(…, "advance")` through the
+  same `aae_save_atomic_widgets` / `aae_save_atomic_extensions` endpoints the
+  Widgets list already saves through, so "what a recommended setup enables"
+  stays in `lib/setupPresets.js` and is never restated in PHP. `"advance"`, not
+  `"basic"`: Basic is free-only by design, which is right for a first-run
+  wizard that does not know the site yet, and wrong for someone who has already
+  moved to V4 and asked for the set — a licensed site handed a half-enabled
+  registry reads as the purchase not working. The rule is license-aware on its
+  own, so a free site still lands on the free items.
+- **Choose manually** — enables nothing, records the answer, reveals the tab.
+  "Switch on ~100 widgets for me" is a reasonable thing to decline, and
+  declining it must not also cost you the list.
+
+**`ATOMIC_OPTED_IN` is a fourth OR in `SHOW_V4_SYSTEM`, and it is load-bearing
+for the first visit.** Without it, "Choose manually" reveals a tab that vanishes
+on the next page load, and pressing Enable and then switching one widget back
+off takes the whole list away mid-task.
+
+**Both actions do a FULL page load** (`goToAtomicWidgets()`), not the in-app
+route the other shortcuts use. Every rule in `systemVisibility.js` is a snapshot
+taken once at module load — deliberately, so a tab cannot vanish mid-gesture —
+so the tab this click just earned does not exist until the payload is fetched
+again. `system=atomic` rides along so the list is selected on arrival even
+before the snapshot agrees.
+
+**`in_use` ships as `null`, not `false`, when it was never asked.** PHP skips
+the postmeta scan entirely once its answer cannot change what is on screen
+(something atomic already active, or the user already accepted), and reporting
+an unasked question as "no" is how a cheap guard becomes a wrong fact
+downstream.
+
+**The notice rides all three screens** — Dashboard, Widgets and Extensions.
+The list pages matter most: that is where somebody stands when they go looking
+for atomic widgets and cannot find them, so a notice living only on the
+Dashboard would be missing from the two screens where the question is actually
+being asked. On the list pages the pair sits OUTSIDE the bordered card (the
+offer is about the screen, not about the list's filters), wrapped in an
+`empty:hidden` flex container so the wrapper's own margin disappears along with
+the notices on every site that never sees them.
+
+**`has_active_atomic()` mirrors the JS `V4_HAS_ACTIVE` exactly** — raw saved
+option, intersected with the registry, `is_internal` skipped (both now read
+`count_active_atomic()`, which the undo notice also uses for its numbers). If
+the two disagree the site lands in the state neither was designed for: PHP calls
+it settled and sends no notice, JS calls it empty and shows no tab, and the
+atomic registry becomes unreachable from the dashboard.
+
+### The return path — undoing an accidental "Enable"
+
+One click switching on everything the site can register is the right shape for
+the offer, and exactly the shape somebody can press by mistake. So it is not
+one-way.
+
+| | |
+|---|---|
+| Snapshot | `Atomic::capture_atomic_undo()` → option `aae_atomic_optin_undo` |
+| Restore | `restore_atomic_undo()`, endpoint `aae_atomic_optin_undo` |
+| Payload | `addons_config.atomic_undo` → `ATOMIC_UNDO_AVAILABLE` / `ATOMIC_UNDO_COUNTS` |
+| UI | `components/shared/AtomicUndoNotice.jsx`, beside the opt-in notice on all three screens |
+
+**Back is not "switch everything off".** The site had a STATE before the click —
+usually no option rows at all, sometimes a half-built one from an abandoned
+wizard run — and only restoring that exact state puts the user where they were.
+Nothing here computes what the state "should" be; it replays a snapshot.
+
+**ABSENT IS NOT EMPTY, and this is the sharpest trap in the feature.**
+`aae_atomic_extensions` missing means "fresh install, the wizard decides" to
+`migrate_newly_offered_extensions()`, which bails only while the option has
+NEVER been written. Restoring an empty array where there had been no row would
+end that state permanently and let the migration switch newly-offered
+extensions on by itself — an undo that leaves the site subtly different from
+where it started. Every snapshotted value therefore carries a companion
+`*_absent` boolean and the restore calls `delete_option()`, not
+`update_option( …, [] )`. `aae_atomic_extensions_offered` is snapshotted for the
+same reason: `write_extension_option()` rewrites it.
+
+**The offer ends when the user saves either atomic list BY HAND.** Both AJAX
+save handlers call `forget_atomic_undo()`. From that moment the stored state is
+their own work and restoring over it would destroy it — the one thing an undo
+must never do. Same instinct as `legacy_v3_user_set` and as
+`maybe_enable_used_v3_widgets()` bailing once the option has been written.
+`UNDO_WINDOW` (7 days) is only a backstop for the site that accepts and then
+never opens the dashboard again while quietly building pages with the widgets.
+
+**DANGER — this is why the enable is ONE request.** The first version called
+`aae_save_atomic_widgets` / `aae_save_atomic_extensions` from the browser and
+recorded the decision in a third call. That reads better and cannot support an
+undo: those handlers end the undo offer, so the snapshot would be deleted by the
+very writes it was taken for. `ajax_atomic_optin()` now takes `fields` +
+`ext_fields`, snapshots, and writes both through `write_widget_option()` /
+`write_extension_option()` — extracted from the two handlers so there is still
+exactly one sanitiser per option. Both maps or neither, so an accept can never
+half-land from a tab closed mid-flight. The SELECTION still comes from
+`lib/setupPresets.js`; PHP only sanitises and stores what it is handed.
+
+**Undo records a DISMISSAL, not "undecided."** Clearing the answer would put the
+original notice straight back on screen at the next load, so the undo would look
+like it had not worked — and re-offering something somebody just took back is
+how a helpful prompt becomes a nag. It is recorded at the SNAPSHOT's signal, not
+today's, so the ranked rule still holds: if the site later grows real V4 pages,
+that stronger signal is still allowed to speak once.
+
+**The ✕ is not a hide.** It records `keep`, a real answer, and ends the offer for
+good. A dismissal that only hid the bar until the next page load would make it a
+nag too.
+
+**What was never at risk, and the copy says so.** Accepting the offer does not
+read or write a single v3 option, so an accidental accept never cost anyone
+their V3 site — the widgets stayed registered and the pages kept rendering
+throughout. That is also why this is an undo of one option pair rather than a
+migration rollback, and it is the first question the person pressing Undo is
+asking, so it belongs in the notice rather than only in this file.
+
+Undo lands the user back on `?tab=widgets&system=v3`, on a full page load, for
+the same snapshot reason the accept reloads.
+
+### "Back to V3" — the escape hatch that does NOT expire
+
+The undo bar above is snapshot-based, and therefore temporary: it ends on a hand
+save, it ends after seven days, and it never existed at all for anyone who
+accepted before the snapshot was being taken. **A return path that can expire is
+not a return path** (Rule 6 — always ship the manual escape hatch), so there is a
+permanent one as well.
+
+| | |
+|---|---|
+| Link | `components/shared/BackToV3Link.jsx` — V4 tab row, beside Legacy (V3) and Settings |
+| Dialog | `components/shared/BackToV3Dialog.jsx` |
+| Server | `ajax_atomic_optin_undo`, decision `off` |
+
+**The V3 tab is not this.** The tab changes which list you are LOOKING at; this
+switches the atomic set back OFF and returns you to V3. Somebody who moved by
+mistake wants the second and finds only the first, which reads as "there is no
+way back" — the same distinction Legacy (V3) and Settings already keep from each
+other. Three low-emphasis links on one row, none doing another's job.
+
+**`off` is not `undo`, and the dialog says which one it is about to do.** With a
+snapshot on file it sends `undo` (exact restore, absent rows deleted). Without
+one it sends `off`, which writes an EMPTY ARRAY to both options — deliberately
+not `delete_option()`. An absent row and an empty one mean different things here
+(`migrate_newly_offered_extensions()`), and with no snapshot we do not know
+which one this site had; deleting would be inventing history and could re-arm
+that migration behind the user's back. An empty array is the same definite "off"
+the master Enable All switch already writes.
+
+**Two gates:** `ATOMIC_OPTED_IN` (a site that has always run both eras, from
+the wizard, never asked to move and should not find a new "go back" control
+appearing on it) and `V3_PRESENT` (there is a V3 to go back TO — on a V4-only
+site this would offer to leave the user with no widgets at all).
+
+**DANGER — do NOT gate it on anything being switched on.** The first version
+added `ATOMIC_ACTIVE` and it hid the link from the exact person who needs it.
+"Choose manually" accepts the offer and enables NOTHING, so the V4 tab appears
+with **0 Active Widgets** — a real change to the dashboard, with no snapshot to
+undo (nothing was written) and, under that gate, no way back either. Reported
+from a real screenshot. The thing being reversed is the OPT-IN, not the widget
+count.
+
+That state is also why `off` writes NOTHING when nothing is active: the options
+are usually ABSENT there, so writing empty rows over no rows would not reverse
+anything — it would make the one change the request exists to take back, and
+end the "fresh install, the wizard decides" state permanently. Clearing the
+stored answer is the whole reversal, and it is enough: the V4 tab is offered by
+`ATOMIC_OPTED_IN`, so a dismissal takes it away again.
+
+**Not styled as a warning, unlike `DisableAllV3Dialog`.** That one guards the
+action that can blank a live page — an unregistered v3 widget renders nothing.
+This one cannot: it touches no v3 option, and the V4 pages it does affect are
+the ones the user is saying they never meant to build on. Red would borrow alarm
+it has not earned, and the reassuring fact — their V3 site was never modified —
+is the main thing the dialog exists to say.
+
+### "Try Elementor V4" — the way back IN
+
+Dismissing the notice was a one-way door, and the asymmetry is what made it worth
+fixing: we shipped a visible **Back to V3** and no visible way forward, so the
+feature read as easier to leave than to enter.
+
+`components/shared/TryAtomicLink.jsx`, on the **V3** tab row of Widgets and
+Extensions. The ✕ records a real answer (a dismissal that only hid the bar until
+the next load would be a nag), so the notice never returns for that signal — and
+with the V4 tab still hidden there was then no route into the atomic registry at
+all short of typing `?system=atomic`.
+
+**Four gates, each removing a case where it would be wrong rather than merely
+redundant:** `ATOMIC_AVAILABLE` (the registry loaded), `ATOMIC_DISMISSED` (they
+were asked and said no — while UNDECIDED the notice is on screen doing this job
+better), `!ATOMIC_OPTED_IN`, and `!SHOW_V4_SYSTEM` (once the tab is on screen the
+tab IS the route).
+
+**DANGER — that rule lives in `systemVisibility.js` as `SHOW_TRY_ATOMIC_LINK`,
+not inside the component, and it shipped broken once for exactly that reason.**
+The Extensions page builds its whole tab row only when `(showTabs || isAtomic)`,
+and a dismissed V3-only site is NEITHER — no switcher, not on the V4 view — so a
+link that gated only itself was mounted inside a row that site never rendered
+and silently never appeared. Caught by `verify-atomic-optin-ui.mjs`, whose
+Extensions case failed while the identical Widgets case passed (the Widgets row
+is unconditional). Two callers need the same answer; re-deriving it at a call
+site is what this module exists to prevent.
+
+**One click, no dialog — deliberately unlike `BackToV3Link`.** That one asks
+first because it WRITES, and its dialog exists to say which of three modes is
+about to run. This writes nothing but the stored answer and switches nothing on,
+and it is reversible by the very link it reveals. Ceremony in front of a
+reversible, non-destructive reveal reads as a warning the action has not earned.
+It records `accepted` — the same thing **Choose manually** records, reached from
+the other direction.
+
+On the Extensions page the V3 view owns no link cluster at all (the usage scan
+and the Settings shortcut are both V4-only), so this gets a minimal one of its
+own rather than being folded into a block gated on the era it exists to leave.
+
+### Opting in does NOT change your default tab
+
+`resolveSystems()` falls back to `showV4 && (V4_HAS_ACTIVE || !showV3)`, not to
+`showV4` alone. **"Choose manually" reveals the V4 tab without switching anything
+on**, and defaulting there would land a long-time V3 user on an empty list with
+their whole site behind a tab. `V4_HAS_ACTIVE` is the honest test — the default
+follows the WORK, not the answer to a question. An explicit `?system=atomic`
+still wins, and that is what the accept flow sends, so the celebration still
+lands on V4.
+
+**This changes nothing that predates the opt-in.** Before it, `showV4` without
+`V4_HAS_ACTIVE` required `!V3_PRESENT`, which forces `showV3` false — so "both
+visible AND nothing atomic on" was unreachable. The new clause only decides the
+state the opt-in itself created — and `verify-atomic-optin-ui.mjs` re-asserts
+every pre-opt-in row unchanged rather than taking that argument on trust.
+
+### Testing the opt-in
+
+Three suites, and they cover different halves on purpose:
+
+| Suite | Checks | Covers |
+|---|---|---|
+| `verify-atomic-optin.php` | 55 | signal/dismissal ranking, the undo snapshot, absent-vs-empty restore, the `off` branch |
+| `probe-atomic-usage-count.php` | 17 | the page counter — revisions, statuses, cache, the payload |
+| `verify-atomic-optin-ui.mjs` | 18 | the default tab, Try Elementor V4, Back to V3, on both list screens |
+
+The PHP suites assert through the extracted writers via Reflection, never by
+calling the `ajax_*` handlers: without `DOING_AJAX` their `wp_die` handler EXITS
+and kills the run mid-suite (same trap as `verify-widget-usage.php`). So nonce,
+capability and request-shape validation are still browser-only.
+
+`probe-atomic-usage-count.php` builds its own fixtures — a page with revisions
+carrying the same atomic markup, an auto-draft, a trashed page, a v3-only page —
+and force-deletes them on `shutdown`. It asserts that the naive postmeta count
+WOULD over-count before asserting that the real one does not, so the test cannot
+pass by the bug being absent for some other reason.
+
+`verify-atomic-optin-ui.mjs` fakes `addons_config.atomic_optin` in the BROWSER
+via the same `WCF_ADDONS_ADMIN` property-setter trick as
+`verify-system-visibility.mjs`, and writes nothing — see that suite's note on why
+writing `wcf_save_widgets` for real is forbidden here.
+
 ---
 
 ## Animation Settings (v4 dashboard) vs. the v3 legacy surface
@@ -3836,6 +4175,7 @@ JS.** Diagnose this class of failure fast: `head` the served file in
 | Panel shows "Some classes are missing" on a widget's own parts | A functional hook class is sitting in the `classes` prop. Render it from the element's twig instead — and never tell the user to dismiss the alert, its ✕ unapplies the class. See [Never put a functional hook class in the `classes` prop](#never-put-a-functional-hook-class-in-the-classes-prop). |
 | A freshly-dropped widget keeps getting re-presetted, spawning copies forever | The auto-preset rule's freshness test can't tell "untouched" from "just applied" — the preset seeds the same child widget types as `define_default_children()`, so `defaultChildren` (shape) always reads as fresh. Use `defaultMarker` instead and put that class on every default child. `handled` can't save you: each apply mints a new element id. |
 | Fatal `Class "WCF_ADDONS\…" not found` on a fresh install / from the released zip, even though the plugin activated fine | `vendor/autoload.php` is missing from the build. It carries the ONLY PSR-4 map for `WCF_ADDONS\ → inc/`, and the bootstrap's `file_exists()` guard swallows its absence — see [Packaging / SVN](#packaging--svn--vendor-is-half-required-audited-2026-08-12). |
+| `Attempt to read property "…" on null` from a v3 widget that reads the global post | Something called Elementor's `Db::switch_to_post()` with an id that resolves to nothing — see [switch_to_post() nulls the global post](#switch_to_post-nulls-the-global-post-fixed-2026-08-19). The reader is rarely the bug. |
 | Effect controls not appearing | `Controls::inject_controls()` not adding the section for that widget type |
 | Settings don't save | Prop not in Schema, or wrong $$type wrapper |
 | `Settings validation failed … invalid_value` on publish (after a programmatic settings write) | Wrote a prop value RAW instead of in its `$$type` envelope. Responsive_JSON props need `{ $$type: 'aae-rj', value: { desktop: N } }`, not `{ desktop: N }`. See [Writing atomic settings from the editor](#writing-atomic-settings-from-the-editor-the-aae-rj-prop-shape). |
@@ -3852,6 +4192,144 @@ JS.** Diagnose this class of failure fast: `head` the served file in
 | Two tabs visually selected | Don't fight React on `aria-selected` / `Mui-selected` — use `!important` on the indicator, not class strips |
 | The editor locks up solid — no error, empty console — right after clicking the **eye** (Show/hide Element) in the Structure panel | The preview-removal `MutationObserver` in `editor-bridge.js` read `removedNodes` as "deleted". Elementor HIDES an atomic element by `$el.wrap('<div data-type="hide-atomic-widget" style="display:none">')` (`views/base.js::toggleVisibilityClass`), and jQuery's `.wrap()` detaches + re-inserts — so a hide arrived as a removal and reset every `[data-interaction-id]` under it (387 from one click on the `aae-v4-widgets` fixture). Each reset re-parents more nodes, which feeds the same callback: measured gain ~5×, so capping real resets at 500 still produced 2990 calls and uncapped it never terminated. A MutationObserver callback is a microtask, so the queue never drains — hence no paint, no console output. Fixed with three guards (`isConnected` = re-parented not deleted, a `seen` set for overlapping subtrees, a `sweeping` re-entry flag) plus one-observer-per-preview-window. **A removal record is not proof of a deletion — always test `isConnected`.** Repro/regression: `E:\Local Testing\verify-eye-toggle-hang.mjs` (10 checks), `probe-eye-stack.mjs` (CDP stack of the hung thread), `probe-eye-proof.mjs`. |
 | Console floods with `Cannot use import statement outside a module` + `Identifier 'register' has already been declared` across many widget scripts at once | RAW widget sources got copied over webpack's bundles in `assets/atomic/js/` — see [`assets/atomic/js/` belongs to WEBPACK](#assetsatomicjs-belongs-to-webpack--never-raw-copy-sources-into-it). Recover with `npm run build`. |
+
+---
+
+## The editor-bridge must not load on a V3 site (fixed 2026-08-19)
+
+Every Elementor editor load on a V3-era site printed this across the top of the
+screen:
+
+> Function `WP_Scripts::add` was called incorrectly. The script with the handle
+> "aae-atomic-common-editor-bridge" was enqueued with dependencies that are not
+> registered: `elementor-v2-editor-canvas`, `elementor-v2-editor-controls`,
+> `elementor-v2-editor-editing-panel`, `elementor-v2-editor-elements`,
+> `elementor-v2-editor-props`, `elementor-v2-editor-styles`
+
+The notice was the visible half. The real problem is that ~700 KB of editor JS
+was being shipped into an editor that had nothing for it to attach to.
+
+**The six named handles are not arbitrary — they are exactly one list.** From
+Elementor's own source:
+
+| Handles | Where | Registered when |
+|---|---|---|
+| `editor-canvas`, `editor-controls`, `editor-editing-panel`, `editor-elements`, `editor-props`, `editor-styles` | `Atomic_Widgets\Module::PACKAGES` | only if that module is active — its constructor returns early otherwise |
+| `editor-responsive`, `editor-ui`, `editor-v1-adapters`, `schema`, `ui` | `Editor_V2_Loader::LIBS` | always |
+
+Both reach `wp_register_script()` through the `elementor/editor/v2/packages`
+filter. That split matches the notice's list exactly, which is the confirmation
+it is the real boundary and not a guess — so `Assets::EDITOR_BRIDGE_ELEMENTOR_DEPS`
+was split into `EDITOR_BRIDGE_ATOMIC_DEPS` and `EDITOR_BRIDGE_CORE_DEPS`.
+
+**Two gates, and the first one is the one that matters most.**
+
+1. **Is there anything of OURS to drive?** `Atomic::has_active_atomic()` (made
+   public for this). The bundle powers panel controls, the preset picker, the
+   mask picker and the responsive rows for AAE's atomic widgets and extensions;
+   with every one switched off in the dashboard there is nothing on screen it
+   could attach to. **Extensions count as well as widgets** — an extension adds
+   sections to Elementor's OWN atomic widgets, so a site with every AAE atomic
+   widget off but one extension on still needs the bridge.
+2. **Does the editor it bridges TO exist?** Every handle in
+   `EDITOR_BRIDGE_ATOMIC_DEPS` must be registered. One missing is enough to skip
+   entirely: the webpack externals resolve against globals those packages
+   define, so the bundle would load and then silently do nothing.
+
+**Ask WordPress, not our own experiment flag.** Those are different questions —
+a site can have AAE's atomic widgets off while Elementor's atomic editor is
+loaded, and the reverse. The literal precondition is "do the handles this script
+declares exist", and `wp_script_is()` answers exactly that, so a future
+Elementor that renames a package degrades to a missing feature rather than a
+notice on every editor load. Priority 100 on
+`elementor/editor/after_enqueue_scripts` is late enough for Elementor to have
+registered them if it is going to.
+
+**A missing CORE package is treated differently from a missing atomic one.** It
+is dropped from the declared list and logged under `WP_DEBUG` rather than
+killing the bridge — those five are unconditional today, so anything missing
+there is a rename, and losing the whole bridge over one renamed package costs
+more than it saves. The symptom otherwise is one panel section quietly absent
+with nothing on screen to explain it, which is why it logs.
+
+**The rest of the plugin was audited and is clean.** Two other handles look like
+the same bug in a static scan and are not: `codemirror-core`
+(`CodeSnippet.php`) is enqueued one line before its dependents, and
+`ScrollSmoother` (`global-elements.php`) goes through `ensure_lib()`, which
+registers it first. Note the audit trap — scanning for `wp_register_script`
+alone misses handles created by `wp_enqueue_script`, and reports both as
+unregistered.
+
+Test: `verify-atomic-editor-deps.php` in `E:/Local Testing` (18 checks). WP-CLI
+is itself a no-atomic-editor environment, which is the state being tested — but
+the suite asserts that BEFORE relying on it, or a future environment that does
+register those packages would make every case vacuous. It stands in fake
+registrations for the other direction, and restores `aae_atomic_widgets`
+through `write_widget_option()` on a shutdown handler, ABSENT vs empty included.
+
+**GOTCHA for anything testing enqueues:** `wp_deregister_script()` removes the
+registration but leaves the handle in the QUEUE, so `wp_script_is( …,
+'enqueued' )` keeps answering true and the next case reads a stale enqueue as
+its own result. Dequeue as well as deregister between cases.
+
+---
+
+## `switch_to_post()` nulls the global post (fixed 2026-08-19)
+
+Reported as `Attempt to read property "post_author" on null` in
+`widgets/post-meta-info.php`, from the Elementor editor. The named line was a
+symptom; the cause was two rooms away.
+
+**Elementor's `Db::switch_to_post()` does not validate.** `includes/db.php`:
+
+```php
+$GLOBALS['post'] = get_post( $post_id );
+setup_postdata( $GLOBALS['post'] );
+```
+
+No check on either line. Hand it an id that resolves to nothing — `0`, a trashed
+post, `get_the_ID()` returning `false` inside an editor preview — and the switch
+does not fail. It **replaces the global post with `null`** for the rest of the
+render, and every reader downstream warns on a null in turn. Post Meta Info's
+`render_author()` was simply the first of ten readers to touch it.
+
+**So guard the SWITCH, not the reader.** `Post_Meta_Info::switch_post()` now
+refuses to switch unless `get_post( $id )` returns something. Declining leaves
+the template's own post in place — a worse preview than a real post, and a far
+better one than none.
+
+**A widget must only restore a post it actually switched.** `switched_post_data`
+is a stack SHARED by everything rendering on the page. `render()` called
+`restore_current_post()` unconditionally while `switch_post()` only switched on
+`wcf-addons-template`, so on every other post type this widget popped an entry
+belonging to whatever had switched around it — a Loop Grid item, a theme-builder
+document — restoring the outer loop's post an iteration early, so every later
+item described the wrong post with nothing in the output to say so. A
+`$wcf_switched_post` flag now pairs the two.
+
+**Normalise a repeater row ONCE, at dispatch.** Controls get ADDED to a repeater
+over time and rows are stored as they were saved, so a row written by an older
+release genuinely lacks the newer keys and every read raises "Undefined array
+key". `normalize_meta_row()` runs `wp_parse_args()` in `render()` before
+dispatch, which is why ten renderers can go on reading `$meta['list_title']`
+directly — one guard covering forty reads, rather than forty `isset()` calls
+that have to be kept in step with each other. The dispatch key defaults to `''`
+deliberately: an empty `list_type` matches no renderer, so an unreadable row
+draws nothing rather than drawing the first item in the list.
+
+**Do the work INSIDE the type check.** `render_reading_time()` called
+`get_the_content()` and `str_word_count()` *before* testing `list_type`, so a
+ten-item meta list read and word-counted the whole post body ten times to use
+the answer at most once — and passed `null` to both on PHP 8.1+, a second
+deprecation in the same place as the warning being fixed.
+
+Test: `verify-post-meta-info-guards.php` in `E:/Local Testing` (17 checks). It
+drives all ten renderers through Reflection **with no post at all** and fails on
+any diagnostic PHP emits, not only the reported one — a warning nobody asserted
+on is how the next one ships. Its harness normalises the row and the settings
+exactly as `render()` does, because a renderer never receives a raw row in
+production and a harness that passed one would report the normaliser's own job
+as a missing guard.
 
 ---
 
@@ -4689,6 +5167,80 @@ fetching a token nobody may use). Diagnose this class of block via the
 spam log: `wp eval` on `wp_aae_action_logs` shows `bot_shield | blocked |
 too_fast` with timestamps (the `wp db query` CLI path is broken on this
 Local install — no mysql binary in PATH).
+
+### Range Group — composite labelled slider (shipped 2026-08-19)
+
+`e-aae-a-form-range-group`: the "Total area to be cleaned: **250 Sq.**" row —
+caption, live readout and slider. Built the composite way
+(`.claude/skills/aae-v4-complex-widget`), so it is a CONTAINER
+(`Atomic_Element_Base` + `Has_Element_Template`, `is_container`) whose twig is
+a shell plus `{{ children_placeholder }}`, and whose three default children are
+real, separately-selectable elements:
+
+| child | type | why |
+|---|---|---|
+| caption | core `e-heading` (`h6`) | already has a full Style/typography panel and inline editing; `h6` so a field caption doesn't outrank real page headings |
+| readout | `e-aae-a-form-range-value` (NEW leaf) | needs a durable runtime hook — see below |
+| slider | `e-aae-a-form-range` (EXISTING) | reused whole, so submission behaviour is unchanged |
+
+- **The readout had to be its own element type.** Seeding a core Paragraph and
+  finding it by a class means putting that class in the `classes` prop — which
+  the panel reports as "Some classes are missing" and whose ✕ *unapplies* it
+  (see [Never put a functional hook class in the `classes` prop](#never-put-a-functional-hook-class-in-the-classes-prop)).
+  One click would have broken the readout. Its own type means its own twig, so
+  `data-aae-range-value` is rendered markup nothing in the panel can strip. It
+  renders a real `<output>` (the semantic element for a value computed from
+  other controls), so updates are announced without an aria-live hack.
+- **Reusing the Range widget for the slider is what keeps the backend
+  untouched.** `Schema_Walker::FIELD_TYPES` still sees `e-aae-a-form-range`,
+  Validator.php still re-checks min/max server-side, no new field type, no new
+  case. The group itself is NOT a field — an earlier draft mapped
+  `e-aae-a-form-range-group => 'range'`, which was wrong the moment the slider
+  became a child.
+- **No wrapper element for the caption row.** The group is `flex-wrap: wrap` +
+  `justify-content: space-between` and the slider's own base style is
+  `width: 100%`, so the slider wraps to line two and the caption/readout land at
+  the two ends of line one — the same mechanism the Form widget already uses for
+  label+field pairs. One fewer node in the Structure panel than a header
+  flexbox, and zero external CSS for the layout.
+- **The caption becomes the field's schema label.** A Range Group's caption is a
+  heading CHILD, not a Label widget pointing at the field's `_cssid`, so
+  `build()`'s `$labels` map can never resolve it. `collect()` threads a
+  `$group_label` down the recursion (exactly like `$current_step`), read with
+  the same recursive `first_label_text()` the Submit button uses — so a caption
+  nested inside a flexbox still resolves, and an explicit Label widget still
+  wins. Without it, emails and the submissions table show the bare field key.
+- **Its own JS/CSS bundle** (`assets/js/form-range-group.js`,
+  `assets/scss/form-range-group.scss` → `form-range-group.{js,css}`), NOT
+  form.js/form.css: a slider with a live readout is a perfectly good page
+  element with no `<form>` around it, and `form.js` only ever initialises what
+  it finds inside `.aae-a-form`. The shared logic lives in `lib/range.js`
+  (`syncRangeGroup()` / `applyAccentColor()`), imported by both entry points, so
+  the in-form and standalone paths cannot drift.
+- **The input listener is DELEGATED to the group root**, not bound to the
+  slider. In the editor, changing any setting on the slider re-renders that
+  child and replaces the very node a direct listener would sit on; the root
+  survives its children re-rendering, so delegation keeps the readout live with
+  no polling, observer or re-init (compare Nav's editor reconciler, which needs
+  all three for state the DOM doesn't carry).
+- Everything the runtime keys on is a rendered data-attribute
+  (`data-aae-range-group` / `-value` / `data-aae-range`), never a class —
+  edit-mode strips base and custom classes off atomic elements (gotcha §3), so
+  attribute hooks are what make one code path correct in both modes.
+- Verified against the real install (WP-bootstrapped, `php.exe` from Local's
+  `lightning-services` with `-d extension=mysqli` and `DB_HOST` overridden to
+  `localhost:<site mysql port>` BEFORE `wp-load.php`): 44 checks on
+  registration/composition/base-style-key validity/the walker's label bridge,
+  10 more rendering the whole tree through `create_element_instance()` +
+  `print_element()` and asserting on the delivered HTML, plus the twig rendered
+  through Elementor's own vendored Twig for escaping and the `'0'`-is-empty
+  Twig trap.
+
+> **Migration note:** this element started life (same day) as a single leaf
+> WIDGET with `label`/`min`/`max` props. Moving to a container changed its
+> `elType` from `widget` to `e-aae-a-form-range-group`, so any instance placed
+> before the rework must be deleted and re-dropped — an elType change is not
+> backwards compatible, and there were no shipped instances to migrate.
 
 ### Hide Form After Success (shipped 2026-07-20)
 

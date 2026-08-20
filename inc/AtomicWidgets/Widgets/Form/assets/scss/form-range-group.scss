@@ -1,0 +1,41 @@
+// AAE Form Range Group — the ONLY rules that a base style physically cannot
+// express. Everything else (layout, spacing, typography, colour) lives in
+// define_base_styles() or, better, in the builder's own Style tab.
+//
+// Two reasons a rule is allowed to be here:
+//   1. the property has no key in Elementor's atomic style schema
+//      (`white-space`, `font-variant-numeric` — verified against
+//      modules/atomic-widgets/styles/style-schema.php);
+//   2. it is an editor-only, ancestor-scoped or :has() selector, which the
+//      schema has no way to express at all.
+//
+// Both cosmetic defaults ship at ZERO specificity via :where(), so any Style-
+// tab choice the builder makes wins without needing !important.
+
+// The readout sits opposite the caption and its text changes on every drag.
+// Wrapping mid-value ("250 / Sq.") or reflowing the row because "1" is
+// narrower than "8" both read as jitter, not as design.
+:where(.aae-a-form-range-value) {
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+// The slider child normally gets this from form.css, which only loads where
+// the Form widget does — a Range Group dropped on its own page still deserves
+// a grab cursor.
+:where(.aae-a-form-range-group) input[type="range"] {
+    cursor: pointer;
+}
+
+// Editor only: core ships `.e-atomic-element:has(.elementor-empty-view){min-height:120px}`,
+// and `:has()` reaches any depth — so an empty child anywhere in this widget's
+// subtree balloons every ancestor container to 120px on the canvas. Matching
+// core's qualifier plus our own class wins on specificity (0,3,0 vs 0,2,0)
+// without !important, so a real min-height the builder sets still applies.
+.elementor-editor-active,
+.elementor-edit-mode {
+    .e-atomic-element:has(.aae-a-form-range-group) {
+        min-height: 0;
+        min-block-size: 0;
+    }
+}
