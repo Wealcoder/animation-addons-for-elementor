@@ -44,19 +44,22 @@
         height: var(--aae-slide-height, auto);
     }
 
-    // Contain the nav arrow's SVG to the fixed 44px badge. The nav button is a
-    // constant round badge (see AAE_A_Slider_Nav_{Prev,Next}::define_base_styles()),
-    // but its SVG child can be a huge 65px (an element saved before the `aae-a-svg`
-    // 20px utility existed) — which would overflow the badge and break the circle.
-    // Cap it to the badge's inner box (44px − 8px padding × 2 ≈ 24px) so old-saved
-    // and freshly-dropped arrows look identical. The SVG carries inline
-    // width/height:100%, so constraining its `e-svg-base` wrapper is what bites.
+    // Contain the nav arrow's SVG to the badge's own content box (44px badge
+    // minus 8px padding on each side) rather than a fixed pixel cap. A fixed
+    // 24px cap used to sit here and silently overrode the SVG's own Size
+    // control in the Style tab — increasing the icon's width/height there had
+    // no visible effect, because this rule always won regardless of what the
+    // user asked for. A relative cap still stops a legacy element (saved
+    // before the `aae-a-svg` 20px utility existed, so its SVG defaults to
+    // Atomic_Svg's 65px) from overflowing the round badge, but a size the
+    // user explicitly sets — up to the available ~28px — now actually takes
+    // effect.
     .aae-a-navigator-prev,
     .aae-a-navigator-next {
         .e-svg-base,
         svg {
-            max-width: 24px;
-            max-height: 24px;
+            max-width: 100%;
+            max-height: 100%;
         }
     }
 }
