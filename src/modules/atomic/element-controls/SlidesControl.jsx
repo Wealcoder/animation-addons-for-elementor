@@ -291,7 +291,7 @@ export function SlidesControl({ label }) {
                   variant="body2"
                   sx={{ flex: 1, fontWeight: isExpanded ? 600 : 400 }}
                 >
-                  {row.title}
+                  <RowTitle elementId={row.id} fallback={row.title} />
                 </Typography>
                 <Tooltip title="Duplicate">
                   <IconButton
@@ -332,6 +332,20 @@ export function SlidesControl({ label }) {
       </Stack>
     </Stack>
   );
+}
+
+/**
+ * Row label, read live off the element's own editor_settings instead of off
+ * the `useElementChildren` snapshot. That hook only recomputes on element-tree
+ * changes, not on an editor_settings rename (which is a bare Backbone
+ * model.set with no accompanying document/elements/* command), so typing in
+ * the rename field below updated the field itself (which already reads this
+ * same live hook) but left the row title stuck. Subscribing here directly
+ * sidesteps that dependency entirely.
+ */
+function RowTitle({ elementId, fallback }) {
+  const editorSettings = useElementEditorSettings(elementId);
+  return editorSettings?.title || fallback;
 }
 
 function SlideNameField({ elementId }) {
