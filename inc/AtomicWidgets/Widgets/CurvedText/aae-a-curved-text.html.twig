@@ -9,10 +9,11 @@
       present in the tree via children_placeholder) is shown; hidden by the
       scoped selector below when text mode is active instead, so switching
       back and forth never loses the uploaded image.
-  The Icon child (a real, locked e-svg) always renders on top of either;
-  `show_icon` toggles its visibility the same way — a scoped selector below,
-  never removing the child — so a hidden Icon keeps its uploaded SVG/settings
-  if it's shown again later.
+  The Center box (a real, locked e-div-block, always present) renders on top
+  of either and always holds BOTH the Icon (e-svg) and the Text (e-paragraph)
+  children; `center_content` chooses which one is visible the same way — a
+  scoped selector below, never removing either child — so switching back and
+  forth never loses the hidden one's settings/content.
 
   Duration/direction ride as CSS custom properties set HERE, on the root
   element, rather than on the SVG/Image individually — custom properties
@@ -32,7 +33,8 @@
 {% set text_radius = 50 - (settings.rotator_text_padding | default(8)) %}
 {% set rotator_class = type ~ '-rotator' %}
 {% set icon_class = type ~ '-icon' %}
-{% set show_icon = settings.show_icon is not defined or settings.show_icon %}
+{% set text_class = type ~ '-text' %}
+{% set center_content = settings.center_content | default('icon') %}
 
 <div
     class="{{ classes }} {{ editor_classes | default('') }}"
@@ -54,8 +56,10 @@
             viewBox="0 0 100 100"
         ><defs><path id="aae-ct-circle-{{ id }}" d="M 50,50 m -{{ text_radius }},0 a {{ text_radius }},{{ text_radius }} 0 1,1 {{ text_radius * 2 }},0 a {{ text_radius }},{{ text_radius }} 0 1,1 -{{ text_radius * 2 }},0" /></defs><text style="font-size:{{ text_font_size }}px;"><textPath href="#aae-ct-circle-{{ id }}" startOffset="0%">{{ settings.rotator_text | default('') }}</textPath></text></svg>
     {% endif %}
-    {% if not show_icon %}
+    {% if center_content == 'text' %}
         <style>[data-id="{{ id }}"] .{{ icon_class }} { display: none; }</style>
+    {% else %}
+        <style>[data-id="{{ id }}"] .{{ text_class }} { display: none; }</style>
     {% endif %}
     {{ children_placeholder | raw }}
 </div>

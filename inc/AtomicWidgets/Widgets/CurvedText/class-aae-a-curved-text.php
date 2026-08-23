@@ -3,9 +3,9 @@
  * AAE Curved Text — atomic WIDGET.
  *
  * A spinning circular badge: a rotating curved text (SVG `<textPath>`) or a
- * rotating image, with a static icon layered on top. Purely decorative — no
- * click behavior, no JS runtime at all, driven entirely by a CSS `@keyframes`
- * animation.
+ * rotating image, with a static center overlay on top. Purely decorative —
+ * no click behavior, no JS runtime at all, driven entirely by a CSS
+ * `@keyframes` animation.
  *
  * This widget is what remains of the old "Video Popup" family after the
  * video engine and the popup mechanics (Overlay/Panel/Close/PlayBtn/Player)
@@ -17,16 +17,25 @@
  * Structure:
  *   AAE_A_Curved_Text (this class, a container)
  *     ├─ (twig-rendered SVG) — curved text, when rotator_type='text'
- *     ├─ e-image (locked)    — rotator image, shown when rotator_type='image'
- *     └─ e-svg   (locked)    — the static icon on top
+ *     ├─ e-image   (locked)  — rotator image, shown when rotator_type='image'
+ *     └─ e-div-block (locked) — the static "Center" box, never spins
+ *          ├─ e-svg       (locked) — Icon, shown when center_content='icon'
+ *          └─ e-paragraph (locked) — Text, shown when center_content='text'
  *
- * Rotator Image and Icon are real, native Elementor elements (Image/Svg)
- * instead of markup this class renders itself; text mode is this class's own
- * inline curved SVG `<textPath>` — a native Paragraph can't bend text along a
- * circle (tried twice on the original Video Popup Trigger — see git history),
- * so text mode trades away native Style-tab text editing for the curved
- * look. DO NOT re-introduce a Paragraph child for text mode without an
- * explicit, repeated ask.
+ * The Center box always holds BOTH Icon and Text; `center_content` only
+ * toggles which one is visible (a scoped CSS rule in the twig, same
+ * never-remove convention as `rotator_type`/the old `show_icon`) — so
+ * switching back and forth never loses either one's settings.
+ *
+ * Rotator Image, Icon and Text are real, native Elementor elements
+ * (Image/Svg/Paragraph) instead of markup this class renders itself; text
+ * ROTATOR mode is this class's own inline curved SVG `<textPath>` — a native
+ * Paragraph can't bend text along a circle (tried twice on the original
+ * Video Popup Trigger — see git history), so rotator text mode trades away
+ * native Style-tab text editing for the curved look. DO NOT re-introduce a
+ * Paragraph child for ROTATOR text mode without an explicit, repeated ask —
+ * this restriction does not apply to the static Center Text added above,
+ * which never curves and is a plain, fully-editable Paragraph.
  *
  * @package AnimationAddonsForElementor
  */
@@ -43,22 +52,23 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Elem
 
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Image\Atomic_Image;
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Svg\Atomic_Svg;
+use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
+use Elementor\Modules\AtomicWidgets\Elements\Div_Block\Div_Block;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Select_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Number_Control;
-use Elementor\Modules\AtomicWidgets\Controls\Types\Switch_Control;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Svg_Src_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Image_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Image_Src_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Url_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Number_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Color_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Background_Prop_Type;
@@ -71,7 +81,7 @@ class AAE_A_Curved_Text extends Atomic_Element_Base {
 
 	use Has_Element_Template;
 
-	public static $widget_description = 'A spinning circular badge with curved rotating text or a rotating image, plus a static icon on top. Fully styleable via the Style tab. Its Rotator Image and Icon children are real Image and Svg elements — edit them directly.';
+	public static $widget_description = 'A spinning circular badge with curved rotating text or a rotating image, plus a static icon or text on top — pick which one to show under Center Content. Fully styleable via the Style tab. Its Rotator Image, Icon and Text children are real Image, Svg and Paragraph elements — edit them directly.';
 
 	public function __construct( $data = [], $args = null ) {
 		parent::__construct( $data, $args );
@@ -156,12 +166,15 @@ class AAE_A_Curved_Text extends Atomic_Element_Base {
 				->enum( [ 'cw', 'ccw' ] )
 				->default( 'cw' ),
 
-			// The Icon child (see define_default_children()) always stays in
-			// the tree — locked, non-deletable — so this only toggles its
-			// visibility (a scoped CSS rule in the twig), the same way
-			// `rotator_type` hides the Rotator Image without ever removing
-			// it.
-			'show_icon' => Boolean_Prop_Type::make()->default( true ),
+			// The Center box (see define_default_children()) always holds
+			// BOTH the Icon and the Text child — locked, non-deletable —
+			// so this only chooses which one is visible (a scoped CSS rule
+			// in the twig), the same way `rotator_type` hides the Rotator
+			// Image without ever removing it. Never a boolean: "icon or
+			// text" is a choice between two things, not a single on/off.
+			'center_content' => String_Prop_Type::make()
+				->enum( [ 'icon', 'text' ] )
+				->default( 'icon' ),
 		];
 	}
 
@@ -190,8 +203,12 @@ class AAE_A_Curved_Text extends Atomic_Element_Base {
 							[ 'value' => 'cw',  'label' => __( 'Clockwise', 'animation-addons-for-elementor' ) ],
 							[ 'value' => 'ccw', 'label' => __( 'Counter-clockwise', 'animation-addons-for-elementor' ) ],
 						] ),
-					Switch_Control::bind_to( 'show_icon' )
-						->set_label( __( 'Show Icon', 'animation-addons-for-elementor' ) ),
+					Select_Control::bind_to( 'center_content' )
+						->set_label( __( 'Center Content', 'animation-addons-for-elementor' ) )
+						->set_options( [
+							[ 'value' => 'icon', 'label' => __( 'Icon', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'text', 'label' => __( 'Text', 'animation-addons-for-elementor' ) ],
+						] ),
 				] ),
 
 			Section::make()
@@ -209,6 +226,21 @@ class AAE_A_Curved_Text extends Atomic_Element_Base {
 	 * Neutral circle default — every value below is fully Style-tab
 	 * overridable. `overflow: hidden` clips a non-square uploaded rotator
 	 * image to the circle.
+	 *
+	 * Every key here — including the two pure-hook ones with no visual
+	 * purpose of their own (`rotator--image`, `text`) — MUST live in this
+	 * dictionary rather than only as a per-instance `styles` override on a
+	 * default child. The panel's "Some classes are missing" check reads
+	 * TWO providers: `documentElementsStylesProvider` (per element
+	 * INSTANCE) and `elementBaseStylesProvider`, which reads
+	 * `widgetsCache[<every widget type>].base_styles` — i.e. exactly this
+	 * dictionary, compiled once per WIDGET TYPE and applied unconditionally
+	 * to every check, regardless of which element is selected. A per-child
+	 * local `styles` entry (see define_default_children()) is NOT a
+	 * reliable substitute — measured: `rotator--image` and `text` still
+	 * reported missing with one. Only a real key here fixes it, which is
+	 * exactly why `rotator`/`center`/`icon` were never flagged despite
+	 * carrying no such per-instance override of their own.
 	 */
 	protected function define_base_styles(): array {
 		$zero = Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] );
@@ -256,28 +288,65 @@ class AAE_A_Curved_Text extends Atomic_Element_Base {
 					'object-fit'         => String_Prop_Type::generate( 'cover' ),
 				] ) ),
 
-			// The static icon layer — `1em` on both axes rather than a fixed
-			// px size so the Icon child's own Typography > Font Size control
-			// (the native e-svg widget inherits/accepts font-size like any
-			// other atomic element) is what resizes it — set the font-size
-			// on the Icon child itself to scale the icon.
+			// The Rotator Image's hide-in-text-mode hook (toggled by the
+			// twig's scoped `<style>` rule) — no CSS of its own beyond a
+			// no-op `display: block` (matches what the 'rotator' key above
+			// already sets on the same node). See the class-level docblock
+			// above: this key existing here, not just as a per-instance
+			// override, is what keeps the panel from flagging it.
+			'rotator--image' => Style_Definition::make()
+				->set_label( __( 'Rotator (Image)', 'animation-addons-for-elementor' ) )
+				->add_variant( Style_Variant::make()->add_props( [
+					'display' => String_Prop_Type::generate( 'block' ),
+				] ) ),
+
+			// The static "Center" box — holds the Icon and Text children
+			// (see define_default_children()), never spins.
 			//
 			// `position: relative` + `z-index: 1` are load-bearing, not just
 			// "look": the rotator layer is `position: absolute` (see the
 			// 'rotator' key above), and CSS always paints a positioned
 			// element above a non-positioned sibling regardless of DOM
-			// order — so without these two the icon renders BEHIND the
+			// order — so without these two the box renders BEHIND the
 			// rotator and is invisible, even though it comes later in the
-			// tree. `display: block` is likewise required for width/height
-			// to apply at all on the Svg child's own wrapper.
+			// tree. `display: flex` + centering is what stacks Icon and
+			// Text on top of one another in the same spot, so switching
+			// `center_content` swaps which one is visible without either
+			// one jumping position.
+			'center' => Style_Definition::make()
+				->set_label( __( 'Center', 'animation-addons-for-elementor' ) )
+				->add_variant( Style_Variant::make()->add_props( [
+					'position'        => String_Prop_Type::generate( 'relative' ),
+					'z-index'         => Number_Prop_Type::generate( 1 ),
+					'display'         => String_Prop_Type::generate( 'flex' ),
+					'align-items'     => String_Prop_Type::generate( 'center' ),
+					'justify-content' => String_Prop_Type::generate( 'center' ),
+				] ) ),
+
+			// The icon itself — `1em` on both axes rather than a fixed px
+			// size so the Icon child's own Typography > Font Size control
+			// (the native e-svg widget inherits/accepts font-size like any
+			// other atomic element) is what resizes it — set the font-size
+			// on the Icon child itself to scale the icon. `display: block`
+			// is required for width/height to apply at all on the Svg
+			// child's own wrapper. Positioning/stacking now live on the
+			// 'center' box above, not here.
 			'icon' => Style_Definition::make()
 				->set_label( __( 'Icon', 'animation-addons-for-elementor' ) )
 				->add_variant( Style_Variant::make()->add_props( [
-					'position' => String_Prop_Type::generate( 'relative' ),
-					'z-index'  => Number_Prop_Type::generate( 1 ),
-					'display'  => String_Prop_Type::generate( 'block' ),
-					'width'    => Size_Prop_Type::generate( [ 'size' => 1, 'unit' => 'em' ] ),
-					'height'   => Size_Prop_Type::generate( [ 'size' => 1, 'unit' => 'em' ] ),
+					'display' => String_Prop_Type::generate( 'block' ),
+					'width'   => Size_Prop_Type::generate( [ 'size' => 1, 'unit' => 'em' ] ),
+					'height'  => Size_Prop_Type::generate( [ 'size' => 1, 'unit' => 'em' ] ),
+				] ) ),
+
+			// The Center box's Text hook (hidden when `center_content` is
+			// 'icon') — same reasoning as `rotator--image` above. `display:
+			// inline` is a no-op: the Text child's own `tag` is `span`,
+			// whose UA default is already inline.
+			'text' => Style_Definition::make()
+				->set_label( __( 'Text', 'animation-addons-for-elementor' ) )
+				->add_variant( Style_Variant::make()->add_props( [
+					'display' => String_Prop_Type::generate( 'inline' ),
 				] ) ),
 		];
 	}
@@ -286,9 +355,13 @@ class AAE_A_Curved_Text extends Atomic_Element_Base {
 	 * The Rotator Image is always present (locked, non-deletable) even in
 	 * text mode — the twig hides it by class rather than this class ever
 	 * removing/re-adding it, so switching `rotator_type` back and forth
-	 * never loses the uploaded image. The Icon is likewise locked: there is
-	 * no fallback glyph any more, so losing it would leave the badge with
-	 * nothing on top of the rotator.
+	 * never loses the uploaded image.
+	 *
+	 * The Center box is likewise always present, and always holds BOTH the
+	 * Icon and the Text child — locked, non-deletable. `center_content`
+	 * only toggles which of the two is visible (twig, scoped CSS), so
+	 * switching back and forth never loses either one's settings, and the
+	 * badge never ends up with nothing on top of the rotator.
 	 */
 	protected function define_default_children() {
 		$rotator_class = static::get_element_type() . '-rotator';
@@ -311,27 +384,26 @@ class AAE_A_Curved_Text extends Atomic_Element_Base {
 			->build();
 
 		/**
-		 * Backs both hook classes above with a REAL local style entry on
-		 * THIS element, so Elementor's panel recognizes them as known
-		 * styles instead of flagging "Some classes are missing" — see
-		 * "Never put a functional hook class in the classes prop" in
-		 * CLAUDE.md. The panel's check (`useMissingClassesIds`) only
-		 * audits an element's `classes` prop against styles the STYLE
-		 * REPOSITORY knows about for THAT element; a class whose only CSS
-		 * comes from the PARENT's `define_base_styles()` dictionary (as
-		 * `$rotator_class` did before) is invisible to that check no
-		 * matter how real its CSS is.
+		 * Backs `$rotator_class` with a REAL local style entry on THIS
+		 * element too, so Elementor's panel recognizes it as a known style
+		 * instead of flagging "Some classes are missing" — see "Never put
+		 * a functional hook class in the classes prop" in CLAUDE.md. Its
+		 * props exactly mirror `define_base_styles()`'s 'rotator' key
+		 * below (kept there too, unchanged, since the text-mode inline
+		 * `<svg>` still reads it via `base_styles.rotator` and is never a
+		 * separately-selectable element) — this is a second, real copy of
+		 * the same values, not a replacement, so nothing about the
+		 * compiled CSS or cascade changes: the Rotator Image simply now
+		 * legitimately OWNS the class it already carried.
 		 *
-		 * `$rotator_class`'s props exactly mirror `define_base_styles()`'s
-		 * 'rotator' key below (kept there too, unchanged, since the
-		 * text-mode inline `<svg>` still reads it via `base_styles.rotator`
-		 * and is never a separately-selectable element) — this is a
-		 * second, real copy of the same values, not a replacement, so
-		 * nothing about the compiled CSS or cascade changes: the Rotator
-		 * Image simply now legitimately OWNS the class it already carried.
-		 * `$rotator_class . '--image'` carries no CSS of its own (it's
-		 * purely the hide-in-text-mode hook the twig toggles), so its
-		 * entry is intentionally empty — presence is all the panel checks.
+		 * `$rotator_class . '--image'` (the hide-in-text-mode hook the twig
+		 * toggles) deliberately has NO entry here — a per-instance local
+		 * `styles` override on a default child is not what the panel's
+		 * missing-classes check actually reads for it (measured: it still
+		 * reported missing with one, empty or not). It's instead a REAL
+		 * key in `define_base_styles()` below ('rotator--image'), which is
+		 * what `elementBaseStylesProvider` reads unconditionally for every
+		 * instance of this widget type — see that method's docblock.
 		 */
 		$rotator_image['styles'] = [
 			$rotator_class => Style_Definition::make()
@@ -348,31 +420,94 @@ class AAE_A_Curved_Text extends Atomic_Element_Base {
 					'object-fit'         => String_Prop_Type::generate( 'cover' ),
 				] ) )
 				->build( $rotator_class ),
+		];
 
-			$rotator_class . '--image' => Style_Definition::make()
+		$center_class = static::get_element_type() . '-center';
+		$text_class   = static::get_element_type() . '-text';
+
+		$icon = Atomic_Svg::generate()
+			->settings( [
+				'classes' => Classes_Prop_Type::generate( [ $icon_class ] ),
+				'svg'     => Svg_Src_Prop_Type::generate( [
+					'id'  => null,
+					'url' => Url_Prop_Type::generate( WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/CurvedText/assets/icons/icon.svg' ),
+				] ),
+			] )
+			->is_locked( true )
+			->editor_settings( [ 'title' => 'Icon' ] )
+			->build();
+
+		// Same "real local style" duplication as the Rotator Image above —
+		// `icon_class`'s props mirror `define_base_styles()`'s 'icon' key
+		// so the panel recognizes it as a known style of THIS element
+		// instead of flagging "Some classes are missing".
+		$icon['styles'] = [
+			$icon_class => Style_Definition::make()
 				->set_label( 'local' )
-				->build( $rotator_class . '--image' ),
+				->add_variant( Style_Variant::make()->add_props( [
+					'display' => String_Prop_Type::generate( 'block' ),
+					'width'   => Size_Prop_Type::generate( [ 'size' => 1, 'unit' => 'em' ] ),
+					'height'  => Size_Prop_Type::generate( [ 'size' => 1, 'unit' => 'em' ] ),
+				] ) )
+				->build( $icon_class ),
+		];
+
+		$text = Atomic_Paragraph::generate()
+			->settings( [
+				'classes'   => Classes_Prop_Type::generate( [ $text_class ] ),
+				'paragraph' => Html_V3_Prop_Type::generate( [
+					'content'  => String_Prop_Type::generate( __( 'Text', 'animation-addons-for-elementor' ) ),
+					'children' => [],
+				] ),
+				'tag'       => String_Prop_Type::generate( 'span' ),
+			] )
+			->is_locked( true )
+			->editor_settings( [ 'title' => 'Text' ] )
+			->build();
+
+		// `text_class` (the hide-when-icon-is-shown hook the twig toggles)
+		// deliberately has NO per-instance local `styles` entry — same
+		// reason as `$rotator_class . '--image'` above. It's a real key in
+		// `define_base_styles()` below ('text') instead.
+
+		$center_box = Div_Block::generate()
+			->settings( [
+				'classes' => Classes_Prop_Type::generate( [ $center_class ] ),
+			] )
+			->children( [ $icon, $text ] )
+			->is_locked( true )
+			->editor_settings( [ 'title' => 'Center' ] )
+			->build();
+
+		// `center_class`'s props mirror `define_base_styles()`'s 'center'
+		// key, for the same "missing classes" reason as above.
+		$center_box['styles'] = [
+			$center_class => Style_Definition::make()
+				->set_label( 'local' )
+				->add_variant( Style_Variant::make()->add_props( [
+					'position'        => String_Prop_Type::generate( 'relative' ),
+					'z-index'         => Number_Prop_Type::generate( 1 ),
+					'display'         => String_Prop_Type::generate( 'flex' ),
+					'align-items'     => String_Prop_Type::generate( 'center' ),
+					'justify-content' => String_Prop_Type::generate( 'center' ),
+				] ) )
+				->build( $center_class ),
 		];
 
 		return [
 			$rotator_image,
-
-			Atomic_Svg::generate()
-				->settings( [
-					'classes' => Classes_Prop_Type::generate( [ $icon_class ] ),
-					'svg'     => Svg_Src_Prop_Type::generate( [
-						'id'  => null,
-						'url' => Url_Prop_Type::generate( WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/CurvedText/assets/icons/icon.svg' ),
-					] ),
-				] )
-				->is_locked( true )
-				->editor_settings( [ 'title' => 'Icon' ] )
-				->build(),
+			$center_box,
 		];
 	}
 
+	/**
+	 * Only the Rotator Image and the Center box are allowed as DIRECT
+	 * children of the root — Icon and Text live one level down, inside the
+	 * Center box (a plain `e-div-block`), which accepts whatever it
+	 * natively allows.
+	 */
 	protected function define_allowed_child_types() {
-		return [ 'e-image', 'e-svg' ];
+		return [ 'e-image', 'e-div-block' ];
 	}
 
 	protected function define_default_html_tag() {
