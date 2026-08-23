@@ -293,22 +293,69 @@ class AAE_A_Curved_Text extends Atomic_Element_Base {
 	protected function define_default_children() {
 		$rotator_class = static::get_element_type() . '-rotator';
 		$icon_class    = static::get_element_type() . '-icon';
+		$zero          = Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] );
+
+		$rotator_image = Atomic_Image::generate()
+			->settings( [
+				'classes' => Classes_Prop_Type::generate( [ $rotator_class, $rotator_class . '--image' ] ),
+				'image'   => Image_Prop_Type::generate( [
+					'src'  => Image_Src_Prop_Type::generate( [
+						'id'  => null,
+						'url' => Url_Prop_Type::generate( \Elementor\Utils::get_placeholder_image_src() ),
+					] ),
+					'size' => String_Prop_Type::generate( 'full' ),
+				] ),
+			] )
+			->is_locked( true )
+			->editor_settings( [ 'title' => 'Rotator Image' ] )
+			->build();
+
+		/**
+		 * Backs both hook classes above with a REAL local style entry on
+		 * THIS element, so Elementor's panel recognizes them as known
+		 * styles instead of flagging "Some classes are missing" — see
+		 * "Never put a functional hook class in the classes prop" in
+		 * CLAUDE.md. The panel's check (`useMissingClassesIds`) only
+		 * audits an element's `classes` prop against styles the STYLE
+		 * REPOSITORY knows about for THAT element; a class whose only CSS
+		 * comes from the PARENT's `define_base_styles()` dictionary (as
+		 * `$rotator_class` did before) is invisible to that check no
+		 * matter how real its CSS is.
+		 *
+		 * `$rotator_class`'s props exactly mirror `define_base_styles()`'s
+		 * 'rotator' key below (kept there too, unchanged, since the
+		 * text-mode inline `<svg>` still reads it via `base_styles.rotator`
+		 * and is never a separately-selectable element) — this is a
+		 * second, real copy of the same values, not a replacement, so
+		 * nothing about the compiled CSS or cascade changes: the Rotator
+		 * Image simply now legitimately OWNS the class it already carried.
+		 * `$rotator_class . '--image'` carries no CSS of its own (it's
+		 * purely the hide-in-text-mode hook the twig toggles), so its
+		 * entry is intentionally empty — presence is all the panel checks.
+		 */
+		$rotator_image['styles'] = [
+			$rotator_class => Style_Definition::make()
+				->set_label( 'local' )
+				->add_variant( Style_Variant::make()->add_props( [
+					'position'           => String_Prop_Type::generate( 'absolute' ),
+					'inset-block-start'  => $zero,
+					'inset-inline-end'   => $zero,
+					'inset-block-end'    => $zero,
+					'inset-inline-start' => $zero,
+					'width'              => Size_Prop_Type::generate( [ 'size' => 100, 'unit' => '%' ] ),
+					'height'             => Size_Prop_Type::generate( [ 'size' => 100, 'unit' => '%' ] ),
+					'display'            => String_Prop_Type::generate( 'block' ),
+					'object-fit'         => String_Prop_Type::generate( 'cover' ),
+				] ) )
+				->build( $rotator_class ),
+
+			$rotator_class . '--image' => Style_Definition::make()
+				->set_label( 'local' )
+				->build( $rotator_class . '--image' ),
+		];
 
 		return [
-			Atomic_Image::generate()
-				->settings( [
-					'classes' => Classes_Prop_Type::generate( [ $rotator_class, $rotator_class . '--image' ] ),
-					'image'   => Image_Prop_Type::generate( [
-						'src'  => Image_Src_Prop_Type::generate( [
-							'id'  => null,
-							'url' => Url_Prop_Type::generate( \Elementor\Utils::get_placeholder_image_src() ),
-						] ),
-						'size' => String_Prop_Type::generate( 'full' ),
-					] ),
-				] )
-				->is_locked( true )
-				->editor_settings( [ 'title' => 'Rotator Image' ] )
-				->build(),
+			$rotator_image,
 
 			Atomic_Svg::generate()
 				->settings( [
