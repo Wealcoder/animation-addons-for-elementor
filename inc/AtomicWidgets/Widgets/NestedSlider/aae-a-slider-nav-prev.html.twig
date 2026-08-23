@@ -10,7 +10,6 @@
     {% if settings.attributes is defined and settings.attributes is not empty %}
         {{ settings.attributes | raw }}
     {% endif %}
-    {{ editor_attributes | default('') | raw }}
-    style="box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+    {{ editor_attributes | default('') | raw }}>
     {{ children_placeholder | raw }}
 </div>
