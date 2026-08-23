@@ -72,6 +72,9 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Number_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Color_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Background_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Transform\Transform_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Transform\Transform_Functions_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Transform\Functions\Transform_Move_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\AtomicWidgets\PropDependencies\Manager as Dependency_Manager;
@@ -245,6 +248,21 @@ class AAE_A_Curved_Text extends Atomic_Element_Base {
 	protected function define_base_styles(): array {
 		$zero = Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] );
 
+		// `translate(-50%, -50%)`, shared by the Icon and the Text hook —
+		// see the 'icon'/'text' keys below for why. Verified shape against
+		// `AAE_A_Hotspot_Content::define_base_styles()`, the only other
+		// place in this plugin building a `Transform_Prop_Type` by hand:
+		// one `Transform_Move_Prop_Type` entry with `x`/`y` set (its own
+		// `z` defaults to 0px).
+		$center_xy = Transform_Prop_Type::generate( [
+			'transform-functions' => Transform_Functions_Prop_Type::generate( [
+				Transform_Move_Prop_Type::generate( [
+					'x' => Size_Prop_Type::generate( [ 'size' => -50, 'unit' => '%' ] ),
+					'y' => Size_Prop_Type::generate( [ 'size' => -50, 'unit' => '%' ] ),
+				] ),
+			] ),
+		] );
+
 		return [
 			'base' => Style_Definition::make()
 				->add_variant(
@@ -301,52 +319,77 @@ class AAE_A_Curved_Text extends Atomic_Element_Base {
 				] ) ),
 
 			// The static "Center" box — holds the Icon and Text children
-			// (see define_default_children()), never spins.
+			// (see define_default_children()), never spins. Same
+			// full-fill-the-circle shape as 'rotator' above (position:
+			// absolute + inset 0 on every side + 100%/100%) rather than a
+			// flex row: Icon and Text now each self-center via their OWN
+			// absolute positioning (see 'icon'/'text' below), so this box
+			// no longer needs to lay them out — it only needs to be a
+			// correctly-sized positioning CONTEXT for them to center
+			// against. `z-index: 1` is load-bearing, not just "look": the
+			// rotator layer is `position: absolute` too, and CSS always
+			// paints a positioned element above a non-positioned sibling
+			// regardless of DOM order — so without it the box renders
+			// BEHIND the rotator and is invisible, even though it comes
+			// later in the tree.
 			//
-			// `position: relative` + `z-index: 1` are load-bearing, not just
-			// "look": the rotator layer is `position: absolute` (see the
-			// 'rotator' key above), and CSS always paints a positioned
-			// element above a non-positioned sibling regardless of DOM
-			// order — so without these two the box renders BEHIND the
-			// rotator and is invisible, even though it comes later in the
-			// tree. `display: flex` + centering is what stacks Icon and
-			// Text on top of one another in the same spot, so switching
-			// `center_content` swaps which one is visible without either
-			// one jumping position.
+			// Deliberately NOT a flex row centering its children, which is
+			// what this used to be: with two flex-item children, hiding
+			// one via `display: none` to show the other left it laid out
+			// exactly where you'd want — but hiding one via `visibility:
+			// hidden` instead (required below, see the twig) keeps a
+			// hidden flex item's OWN slot in the row, which would visibly
+			// push/misalign its sibling. Absolute + self-centering sidesteps
+			// that entirely: neither child's box depends on the other's
+			// presence or visibility, hidden or shown.
 			'center' => Style_Definition::make()
 				->set_label( __( 'Center', 'animation-addons-for-elementor' ) )
 				->add_variant( Style_Variant::make()->add_props( [
-					'position'        => String_Prop_Type::generate( 'relative' ),
-					'z-index'         => Number_Prop_Type::generate( 1 ),
-					'display'         => String_Prop_Type::generate( 'flex' ),
-					'align-items'     => String_Prop_Type::generate( 'center' ),
-					'justify-content' => String_Prop_Type::generate( 'center' ),
+					'position'           => String_Prop_Type::generate( 'absolute' ),
+					'inset-block-start'  => $zero,
+					'inset-inline-end'   => $zero,
+					'inset-block-end'    => $zero,
+					'inset-inline-start' => $zero,
+					'width'              => Size_Prop_Type::generate( [ 'size' => 100, 'unit' => '%' ] ),
+					'height'             => Size_Prop_Type::generate( [ 'size' => 100, 'unit' => '%' ] ),
+					'z-index'            => Number_Prop_Type::generate( 1 ),
 				] ) ),
 
-			// The icon itself — `1em` on both axes rather than a fixed px
-			// size so the Icon child's own Typography > Font Size control
-			// (the native e-svg widget inherits/accepts font-size like any
-			// other atomic element) is what resizes it — set the font-size
-			// on the Icon child itself to scale the icon. `display: block`
-			// is required for width/height to apply at all on the Svg
-			// child's own wrapper. Positioning/stacking now live on the
-			// 'center' box above, not here.
+			// The icon itself, centered in the Center box via the classic
+			// "absolute + inset-*-start: 50% + translate(-50%, -50%)"
+			// trick — NOT `display: flex` on the parent, because that
+			// would tie this child's on-screen position to whether its
+			// Text sibling is also occupying flex-row space (see the
+			// 'center' key above). `1em` on both axes rather than a fixed
+			// px size so the Icon child's own Typography > Font Size
+			// control (the native e-svg widget inherits/accepts font-size
+			// like any other atomic element) is what resizes it — set the
+			// font-size on the Icon child itself to scale the icon.
+			// `display: block` is required for width/height to apply at
+			// all on the Svg child's own wrapper.
 			'icon' => Style_Definition::make()
 				->set_label( __( 'Icon', 'animation-addons-for-elementor' ) )
 				->add_variant( Style_Variant::make()->add_props( [
-					'display' => String_Prop_Type::generate( 'block' ),
-					'width'   => Size_Prop_Type::generate( [ 'size' => 1, 'unit' => 'em' ] ),
-					'height'  => Size_Prop_Type::generate( [ 'size' => 1, 'unit' => 'em' ] ),
+					'position'           => String_Prop_Type::generate( 'absolute' ),
+					'inset-block-start'  => Size_Prop_Type::generate( [ 'size' => 50, 'unit' => '%' ] ),
+					'inset-inline-start' => Size_Prop_Type::generate( [ 'size' => 50, 'unit' => '%' ] ),
+					'transform'          => $center_xy,
+					'display'            => String_Prop_Type::generate( 'block' ),
+					'width'              => Size_Prop_Type::generate( [ 'size' => 1, 'unit' => 'em' ] ),
+					'height'             => Size_Prop_Type::generate( [ 'size' => 1, 'unit' => 'em' ] ),
 				] ) ),
 
-			// The Center box's Text hook (hidden when `center_content` is
-			// 'icon') — same reasoning as `rotator--image` above. `display:
-			// inline` is a no-op: the Text child's own `tag` is `span`,
-			// whose UA default is already inline.
+			// The Center box's Text hook (hidden — via `visibility`, see
+			// the twig — when `center_content` is 'icon'). Same
+			// self-centering trick as 'icon' above, sized to its own
+			// content rather than a fixed box.
 			'text' => Style_Definition::make()
 				->set_label( __( 'Text', 'animation-addons-for-elementor' ) )
 				->add_variant( Style_Variant::make()->add_props( [
-					'display' => String_Prop_Type::generate( 'inline' ),
+					'position'           => String_Prop_Type::generate( 'absolute' ),
+					'inset-block-start'  => Size_Prop_Type::generate( [ 'size' => 50, 'unit' => '%' ] ),
+					'inset-inline-start' => Size_Prop_Type::generate( [ 'size' => 50, 'unit' => '%' ] ),
+					'transform'          => $center_xy,
 				] ) ),
 		];
 	}
@@ -367,6 +410,18 @@ class AAE_A_Curved_Text extends Atomic_Element_Base {
 		$rotator_class = static::get_element_type() . '-rotator';
 		$icon_class    = static::get_element_type() . '-icon';
 		$zero          = Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] );
+
+		// Same `translate(-50%, -50%)` shape as `define_base_styles()`'s
+		// `$center_xy` — see that method for why. Duplicated rather than
+		// shared, same convention as `$zero` above.
+		$center_xy = Transform_Prop_Type::generate( [
+			'transform-functions' => Transform_Functions_Prop_Type::generate( [
+				Transform_Move_Prop_Type::generate( [
+					'x' => Size_Prop_Type::generate( [ 'size' => -50, 'unit' => '%' ] ),
+					'y' => Size_Prop_Type::generate( [ 'size' => -50, 'unit' => '%' ] ),
+				] ),
+			] ),
+		] );
 
 		$rotator_image = Atomic_Image::generate()
 			->settings( [
@@ -445,9 +500,13 @@ class AAE_A_Curved_Text extends Atomic_Element_Base {
 			$icon_class => Style_Definition::make()
 				->set_label( 'local' )
 				->add_variant( Style_Variant::make()->add_props( [
-					'display' => String_Prop_Type::generate( 'block' ),
-					'width'   => Size_Prop_Type::generate( [ 'size' => 1, 'unit' => 'em' ] ),
-					'height'  => Size_Prop_Type::generate( [ 'size' => 1, 'unit' => 'em' ] ),
+					'position'           => String_Prop_Type::generate( 'absolute' ),
+					'inset-block-start'  => Size_Prop_Type::generate( [ 'size' => 50, 'unit' => '%' ] ),
+					'inset-inline-start' => Size_Prop_Type::generate( [ 'size' => 50, 'unit' => '%' ] ),
+					'transform'          => $center_xy,
+					'display'            => String_Prop_Type::generate( 'block' ),
+					'width'              => Size_Prop_Type::generate( [ 'size' => 1, 'unit' => 'em' ] ),
+					'height'             => Size_Prop_Type::generate( [ 'size' => 1, 'unit' => 'em' ] ),
 				] ) )
 				->build( $icon_class ),
 		];
@@ -485,11 +544,14 @@ class AAE_A_Curved_Text extends Atomic_Element_Base {
 			$center_class => Style_Definition::make()
 				->set_label( 'local' )
 				->add_variant( Style_Variant::make()->add_props( [
-					'position'        => String_Prop_Type::generate( 'relative' ),
-					'z-index'         => Number_Prop_Type::generate( 1 ),
-					'display'         => String_Prop_Type::generate( 'flex' ),
-					'align-items'     => String_Prop_Type::generate( 'center' ),
-					'justify-content' => String_Prop_Type::generate( 'center' ),
+					'position'           => String_Prop_Type::generate( 'absolute' ),
+					'inset-block-start'  => $zero,
+					'inset-inline-end'   => $zero,
+					'inset-block-end'    => $zero,
+					'inset-inline-start' => $zero,
+					'width'              => Size_Prop_Type::generate( [ 'size' => 100, 'unit' => '%' ] ),
+					'height'             => Size_Prop_Type::generate( [ 'size' => 100, 'unit' => '%' ] ),
+					'z-index'            => Number_Prop_Type::generate( 1 ),
 				] ) )
 				->build( $center_class ),
 		];
