@@ -35,6 +35,7 @@ import {
 	__privateUseListenTo as useListenTo,
 	commandEndEvent,
 	v1ReadyEvent,
+	windowEvent,
 } from '@elementor/editor-v1-adapters';
 import { useElement } from '@elementor/editor-editing-panel';
 import {
@@ -76,6 +77,12 @@ function useIconListItems( iconListId ) {
 			commandEndEvent( 'document/elements/set-settings' ),
 			commandEndEvent( 'document/elements/duplicate' ),
 			commandEndEvent( 'document/elements/move' ),
+			// updateElementEditorSettings() (the rename field below) only does
+			// a Backbone model.set('editor_settings', …) — it never runs a
+			// document/elements/* command, so without this the row label here
+			// goes stale after a rename until add/remove/reorder forces a
+			// recompute.
+			windowEvent( 'elementor/element/update_editor_settings' ),
 		],
 		() => {
 			const children = getContainer( iconListId )?.model?.get?.( 'elements' );
@@ -253,7 +260,7 @@ export function IconListItemsControl( { label } ) {
 									⠿
 								</Box>
 								<Typography variant="body2" sx={ { flex: 1, fontWeight: isExpanded ? 600 : 400 } }>
-									{ row.title }
+									<RowTitle elementId={ row.id } fallback={ row.title } />
 								</Typography>
 								<Tooltip title="Duplicate">
 									<IconButton
@@ -294,6 +301,21 @@ export function IconListItemsControl( { label } ) {
 			</Stack>
 		</Stack>
 	);
+}
+
+/**
+ * Row label, read live off the element's own editor_settings rather than off
+ * `useIconListItems`'s cached projection. The projection only recomputes on a
+ * fixed set of document/elements/* commands and a window event that Elementor
+ * only dispatches when some OTHER view (e.g. the Navigator row for this
+ * element) happens to be listening for the model change — so typing in the
+ * rename field below updated the field itself (which already reads this same
+ * live hook) but left the row title stuck until something else forced a
+ * re-render. Subscribing here directly sidesteps that dependency entirely.
+ */
+function RowTitle( { elementId, fallback } ) {
+	const editorSettings = useElementEditorSettings( elementId );
+	return editorSettings?.title || fallback;
 }
 
 function ItemNameField( { elementId } ) {

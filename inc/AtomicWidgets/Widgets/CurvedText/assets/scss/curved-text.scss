@@ -46,3 +46,20 @@
 	width: 1em;
 	height: 1em;
 }
+
+// Same tie, different property, for the Center box: Elementor's native
+// e-div-block element carries `e-div-block-base` on every instance (10px
+// padding by default — see div-block.php), on the SAME node as our own
+// `center` Style_Definition class. `center` doesn't itself declare
+// `display` or `padding` (native's `display: block` is harmless on a
+// `position: absolute` box regardless), so THAT tie doesn't matter — but
+// the padding does: `center` is `inset: 0` on every side AND `width/height:
+// 100%` at once, which only resolves consistently when its OWN padding is
+// zero (see class-aae-a-curved-text.php's 'center' key docblock). Left
+// uncontested, the native 10px padding would inflate/over-constrain that
+// box and shift the Icon/Text's `translate(-50%, -50%)` centering off by
+// 10px. Same fix as the Icon rule above: match both classes on the same
+// node to reach (0,3,0), beating the native (0,2,0) tie unconditionally.
+.elementor .e-aae-a-curved-text-center.e-div-block-base {
+	padding: 0;
+}

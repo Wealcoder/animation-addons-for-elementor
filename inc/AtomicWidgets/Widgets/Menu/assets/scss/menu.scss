@@ -259,7 +259,10 @@ $stacked: '.aae-a-menu:is(:where(.aae-a-menu--mobile)[data-hamburger="true"], [d
 .aae-a-menu-list .current-menu-parent > a,
 .aae-a-menu-list .current-menu-ancestor > a {
 	color: var(--active);
-	font-weight: 600;
+	/* Active rows have always rendered one step bolder than their siblings.
+	   600 stays the default, so the field only ever changes a menu the builder
+	   deliberately edits. */
+	font-weight: var(--aae-menu-active-weight, 600);
 }
 
 /* ============== CHEVRON ARROW (toggle) ============== */

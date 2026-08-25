@@ -158,6 +158,7 @@ final class AAE_A_Menu_Responsive {
 				'hover_color'       => [ 'var' => '--aae-menu-hover-color',       'kind' => 'color' ],
 				'item_hover_bg'     => [ 'var' => '--aae-menu-item-hover-bg',     'kind' => 'color' ],
 				'active_color'      => [ 'var' => '--aae-menu-active-color',      'kind' => 'color' ],
+				'active_weight'     => [ 'var' => '--aae-menu-active-weight',     'kind' => 'enum', 'allowed' => self::FONT_WEIGHTS ],
 				'padding_x'         => [ 'var' => '--aae-menu-item-padding-x',    'kind' => 'px' ],
 				'padding_y'         => [ 'var' => '--aae-menu-item-padding-y',    'kind' => 'px' ],
 				'item_gap'          => [ 'var' => '--aae-menu-item-gap',          'kind' => 'px' ],
