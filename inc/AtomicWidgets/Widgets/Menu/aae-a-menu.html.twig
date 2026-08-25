@@ -56,6 +56,7 @@
 {% if hover_color   %}--aae-menu-hover-color: {{ hover_color }};{% endif %}
 {% if item_hover_bg %}--aae-menu-item-hover-bg: {{ item_hover_bg }};{% endif %}
 {% if active_color  %}--aae-menu-active-color: {{ active_color }};{% endif %}
+--aae-menu-active-weight: {{ settings.active_weight | default('600') }};
 {% if dd_bg         %}--aae-menu-dropdown-bg: {{ dd_bg }};{% endif %}
 {% if dd_text       %}--aae-menu-dropdown-text-color: {{ dd_text }};{% endif %}
 {% if dd_item_bg    %}--aae-menu-dropdown-item-bg: {{ dd_item_bg }};{% endif %}

@@ -104,6 +104,12 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 			'hover_color'   => String_Prop_Type::make()->default( '' ),
 			'item_hover_bg' => String_Prop_Type::make()->default( '' ),
 			'active_color'  => String_Prop_Type::make()->default( '' ),
+			// Active items have always rendered at 600 — the weight was hardcoded in
+			// menu.scss with no way to reach it from the panel. Same value as the
+			// default here, so no existing menu shifts. Unlike font_size/font_weight
+			// this one belongs to the widget rather than the Style tab: Typography
+			// there paints the whole list and cannot single out .current-menu-item.
+			'active_weight' => String_Prop_Type::make()->enum( AAE_A_Menu_Responsive::FONT_WEIGHTS )->default( '600' ),
 			// No font_size / font_weight: typography is the Style tab's job. A
 			// widget-level copy fought it and won — our stylesheet is printed
 			// AFTER Elementor's per-document CSS on purpose (see

@@ -58,6 +58,11 @@ export const MENU_SECTIONS = [
 			{ bind: 'hover_color',   cssVar: '--aae-menu-hover-color',    kind: 'color', legacy: 'hover_color',   legacyDefault: null, label: 'Hover Text Color',  placeholder: '#2563eb' },
 			{ bind: 'item_hover_bg', cssVar: '--aae-menu-item-hover-bg',  kind: 'color', legacy: 'item_hover_bg', legacyDefault: null, label: 'Hover Background',  placeholder: 'rgba(0,0,0,0.05)' },
 			{ bind: 'active_color',  cssVar: '--aae-menu-active-color',   kind: 'color', legacy: 'active_color',  legacyDefault: null, label: 'Active Color',      placeholder: '#2563eb' },
+			// The active row's weight, previously a hardcoded 600 in menu.scss. Sits
+			// next to Active Color because the two describe the same state, and it is
+			// the only typography row on the widget — everything else is the Style
+			// tab's, which cannot target .current-menu-item on its own.
+			{ bind: 'active_weight', cssVar: '--aae-menu-active-weight',  kind: 'enum',  allowed: FONT_WEIGHT_OPTIONS, legacy: 'active_weight', legacyDefault: '600', label: 'Active Font Weight' },
 			{ bind: 'padding_x',     cssVar: '--aae-menu-item-padding-x', kind: 'px',    legacy: 'padding_x',     legacyDefault: 14,   label: 'Item Padding X (px)' },
 			{ bind: 'padding_y',     cssVar: '--aae-menu-item-padding-y', kind: 'px',    legacy: 'padding_y',     legacyDefault: 10,   label: 'Item Padding Y (px)' },
 			{ bind: 'item_gap',      cssVar: '--aae-menu-item-gap',       kind: 'px',    legacy: 'item_gap',      legacyDefault: 4,    label: 'Item Gap (px)' },
