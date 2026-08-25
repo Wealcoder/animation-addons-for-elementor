@@ -84,6 +84,7 @@ function isFeatureInPlayGroup(featureName, playGroup) {
 	if (group === 'aae_tilt_' && featureName === 'tilt') return true;
 	if (group === 'aae_custom_css_' && featureName === 'custom-css') return true;
 	if (group === 'aae_ns_' && featureName === 'nested-slider') return true;
+	if (group === 'aae_img_ovl_' && featureName === 'image-overlay') return true;
 	return false;
 }
 

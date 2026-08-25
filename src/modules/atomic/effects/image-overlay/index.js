@@ -242,7 +242,6 @@ export function playImageOverlay(el, cfg) {
 		// Bare, unwrapped <img> — see file header. Neither a child node nor
 		// a ::before/::after pseudo-element renders on a replaced element,
 		// so the overlay is a sibling inside the image's own parent.
-		removeOverlayLayer(el);
 		const overlay = ensureImgOverlay(el);
 		if (overlay) {
 			paintOverlay(overlay, type, gradientImage, solidColor, blendMode);
@@ -251,7 +250,6 @@ export function playImageOverlay(el, cfg) {
 		// el WRAPS real content (a Linked image's <a>, or e-svg's element
 		// holding raw SVG markup) — paint a positioned overlay CHILD
 		// instead, see file header for why.
-		removeImgOverlay(el);
 		const layer = ensureOverlayLayer(el);
 		paintOverlay(layer, type, gradientImage, solidColor, blendMode);
 	}
@@ -263,14 +261,27 @@ export function bindImageOverlay(el, cfg) {
 	playImageOverlay(el, cfg);
 }
 
+// `el`'s shape (a bare <img> vs. a wrapper) never changes across a rebind,
+// so reset() always tears down the SAME mechanism play() set up — never
+// both. Calling the other removal fn too (an earlier version did) is not
+// merely redundant: ensureOverlayLayer/ensureImgOverlay share one storage
+// key, and removeOverlayLayer unconditionally clears it, so calling it
+// AFTER removeImgOverlay (or vice versa) blanks the reference before the
+// right remover can use it — the sibling overlay for a bare <img> was then
+// never actually removed, just orphaned, with a fresh one stacking on top
+// of it (and its mix-blend-mode) on every single settings change. That is
+// what made color/opacity edits look like they weren't taking effect live.
 export function resetImageOverlay(el) {
 	if (!el[APPLIED_KEY]) return;
 	el.style.boxShadow = '';
 	el.style.backgroundImage = '';
 	el.style.backgroundColor = '';
 	el.style.mixBlendMode = '';
-	removeOverlayLayer(el);
-	removeImgOverlay(el);
+	if (el.tagName === 'IMG') {
+		removeImgOverlay(el);
+	} else {
+		removeOverlayLayer(el);
+	}
 	delete el[APPLIED_KEY];
 }
 
