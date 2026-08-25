@@ -577,8 +577,8 @@ class Plugin
 				),
 				'post-rating'          => array(
 					'handler' => 'aae-post-rating',
-					'src'     => 'widgets/post-rating.js',
-					'dep'     => array(),
+					'src'     => 'widgets/post-rating.min.js',
+					'dep'     => array( 'jquery' ),
 					'version' => WCF_ADDONS_VERSION,
 					'arg'     => true,
 				),

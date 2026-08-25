@@ -5,14 +5,10 @@ namespace WCF_ADDONS\Widgets;
 // phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 use Elementor\Controls_Manager;
-use Elementor\Core\Kits\Documents\Tabs\Global_Colors;
-use Elementor\Core\Kits\Documents\Tabs\Global_Typography;
 use Elementor\Group_Control_Background;
 use Elementor\Group_Control_Border;
-use Elementor\Group_Control_Box_Shadow;
 use Elementor\Group_Control_Typography;
 use Elementor\Icons_Manager;
-use Elementor\Plugin;
 use Elementor\Utils;
 use Elementor\Widget_Base;
 
@@ -81,18 +77,6 @@ class Post_Rating_Form extends Widget_Base {
 			'section_rating_settings',
 			array(
 				'label' => esc_html__( 'Settings', 'animation-addons-for-elementor' ),
-			)
-		);
-
-		$this->add_control(
-			'only_logged_in',
-			array(
-				'label'        => esc_html__( 'Only Logged-in Users?', 'animation-addons-for-elementor' ),
-				'type'         => Controls_Manager::SWITCHER,
-				'label_on'     => esc_html__( 'Yes', 'animation-addons-for-elementor' ),
-				'label_off'    => esc_html__( 'No', 'animation-addons-for-elementor' ),
-				'return_value' => 'yes',
-				'default'      => 'no',
 			)
 		);
 
@@ -218,36 +202,6 @@ class Post_Rating_Form extends Widget_Base {
 		);
 
 		$this->add_control(
-			'name_plh_text',
-			array(
-				'label'       => esc_html__( 'Name Placeholder Text', 'animation-addons-for-elementor' ),
-				'type'        => Controls_Manager::TEXT,
-				'dynamic'     => array(
-					'active' => true,
-				),
-				'label_block' => true,
-				'default'     => esc_html__( 'Name', 'animation-addons-for-elementor' ),
-				'placeholder' => esc_html__( 'Type your placeholder here', 'animation-addons-for-elementor' ),
-				'condition'   => array( 'only_logged_in!' => 'yes' ),
-			)
-		);
-
-		$this->add_control(
-			'email_plh_text',
-			array(
-				'label'       => esc_html__( 'Email Placeholder Text', 'animation-addons-for-elementor' ),
-				'type'        => Controls_Manager::TEXT,
-				'dynamic'     => array(
-					'active' => true,
-				),
-				'label_block' => true,
-				'default'     => esc_html__( 'Email', 'animation-addons-for-elementor' ),
-				'placeholder' => esc_html__( 'Type your placeholder here', 'animation-addons-for-elementor' ),
-				'condition'   => array( 'only_logged_in!' => 'yes' ),
-			)
-		);
-
-		$this->add_control(
 			'review_placeholder',
 			array(
 				'label'       => esc_html__( 'Review Placeholder Text', 'animation-addons-for-elementor' ),
@@ -271,6 +225,20 @@ class Post_Rating_Form extends Widget_Base {
 				),
 				'label_block' => false,
 				'default'     => esc_html__( 'Submit', 'animation-addons-for-elementor' ),
+				'placeholder' => esc_html__( 'Type your button text here', 'animation-addons-for-elementor' ),
+			)
+		);
+
+		$this->add_control(
+			'login_btn_text',
+			array(
+				'label'       => esc_html__( 'Login Button Text', 'animation-addons-for-elementor' ),
+				'type'        => Controls_Manager::TEXT,
+				'dynamic'     => array(
+					'active' => true,
+				),
+				'label_block' => false,
+				'default'     => esc_html__( 'Log In to Rate', 'animation-addons-for-elementor' ),
 				'placeholder' => esc_html__( 'Type your button text here', 'animation-addons-for-elementor' ),
 			)
 		);
@@ -449,152 +417,13 @@ class Post_Rating_Form extends Widget_Base {
 		$this->end_controls_section();
 	}
 
-	// Input
+	// Textarea / Review Input
 	protected function style_rating_input() {
-		// Style Review
 		$this->start_controls_section(
 			'style_input_fields',
 			array(
-				'label' => esc_html__( 'Input', 'animation-addons-for-elementor' ),
+				'label' => esc_html__( 'Textarea', 'animation-addons-for-elementor' ),
 				'tab'   => Controls_Manager::TAB_STYLE,
-			)
-		);
-
-		$this->add_control(
-			'input_color',
-			array(
-				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::COLOR,
-				'selectors' => array(
-					'{{WRAPPER}} .review, {{WRAPPER}} .anon-fields input' => 'color: {{VALUE}}',
-				),
-			)
-		);
-
-		$this->add_control(
-			'input_plh_color',
-			array(
-				'label'     => esc_html__( 'Placeholder Color', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::COLOR,
-				'selectors' => array(
-					'{{WRAPPER}} .review::placeholder, {{WRAPPER}} .anon-fields input::placeholder' => 'color: {{VALUE}}',
-				),
-			)
-		);
-
-		$this->add_group_control(
-			Group_Control_Typography::get_type(),
-			array(
-				'name'     => 'input_typo',
-				'selector' => '{{WRAPPER}} .review, {{WRAPPER}} .anon-fields input',
-			)
-		);
-
-		$this->add_group_control(
-			Group_Control_Border::get_type(),
-			array(
-				'name'     => 'input_border',
-				'selector' => '{{WRAPPER}} .review, {{WRAPPER}} .anon-fields input',
-			)
-		);
-
-		$this->add_responsive_control(
-			'input_b_radius',
-			array(
-				'label'      => esc_html__( 'Border Radius', 'animation-addons-for-elementor' ),
-				'type'       => Controls_Manager::DIMENSIONS,
-				'size_units' => array( 'px', '%', 'em', 'rem', 'custom' ),
-				'selectors'  => array(
-					'{{WRAPPER}} .review, {{WRAPPER}} .anon-fields input' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-				),
-			)
-		);
-
-		$this->add_responsive_control(
-			'input_padding',
-			array(
-				'label'      => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
-				'type'       => Controls_Manager::DIMENSIONS,
-				'size_units' => array( 'px', '%', 'em', 'rem', 'custom' ),
-				'selectors'  => array(
-					'{{WRAPPER}} .review, {{WRAPPER}} .anon-fields input' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
-				),
-			)
-		);
-
-		$this->add_responsive_control(
-			'input_width',
-			array(
-				'label'      => esc_html__( 'Width', 'animation-addons-for-elementor' ),
-				'type'       => Controls_Manager::SLIDER,
-				'size_units' => array( 'px', '%', 'em', 'rem', 'custom' ),
-				'range'      => array(
-					'px' => array(
-						'min' => 0,
-						'max' => 1000,
-					),
-					'%'  => array(
-						'min' => 0,
-						'max' => 100,
-					),
-				),
-				'selectors'  => array(
-					'{{WRAPPER}} .anon-fields input' => 'width: {{SIZE}}{{UNIT}};',
-				),
-			)
-		);
-
-		// Name and Email
-		$this->add_control(
-			'name_email_heading',
-			array(
-				'label'     => esc_html__( 'Name & Email', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::HEADING,
-				'separator' => 'before',
-			)
-		);
-
-		$this->add_responsive_control(
-			'name_email_dir',
-			array(
-				'label'     => esc_html__( 'Direction', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::SELECT,
-				'default'   => 'row',
-				'options'   => array(
-					'row'    => esc_html__( 'Row', 'animation-addons-for-elementor' ),
-					'column' => esc_html__( 'Column', 'animation-addons-for-elementor' ),
-				),
-				'selectors' => array(
-					'{{WRAPPER}} .anon-fields' => 'flex-direction: {{VALUE}};',
-				),
-			)
-		);
-
-		$this->add_responsive_control(
-			'name_email_gap',
-			array(
-				'label'      => esc_html__( 'Gap', 'animation-addons-for-elementor' ),
-				'type'       => Controls_Manager::SLIDER,
-				'size_units' => array( 'px' ),
-				'range'      => array(
-					'px' => array(
-						'min' => 0,
-						'max' => 100,
-					),
-				),
-				'selectors'  => array(
-					'{{WRAPPER}} .anon-fields' => 'gap: {{SIZE}}{{UNIT}};',
-				),
-			)
-		);
-
-		// Textarea
-		$this->add_control(
-			'textarea_heading',
-			array(
-				'label'     => esc_html__( 'Textarea', 'animation-addons-for-elementor' ),
-				'type'      => Controls_Manager::HEADING,
-				'separator' => 'before',
 			)
 		);
 
@@ -606,11 +435,11 @@ class Post_Rating_Form extends Widget_Base {
 				'size_units' => array( 'px', '%', 'em', 'rem', 'custom' ),
 				'range'      => array(
 					'px' => array(
-						'min' => 0,
-						'max' => 1000,
+						'min' => 50,
+						'max' => 1200,
 					),
 					'%'  => array(
-						'min' => 0,
+						'min' => 10,
 						'max' => 100,
 					),
 				),
@@ -621,19 +450,113 @@ class Post_Rating_Form extends Widget_Base {
 		);
 
 		$this->add_responsive_control(
+			'review_max_width',
+			array(
+				'label'      => esc_html__( 'Max Width', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => array( 'px', '%', 'em', 'rem', 'custom' ),
+				'range'      => array(
+					'px' => array(
+						'min' => 50,
+						'max' => 1200,
+					),
+					'%'  => array(
+						'min' => 10,
+						'max' => 100,
+					),
+				),
+				'selectors'  => array(
+					'{{WRAPPER}} .review' => 'max-width: {{SIZE}}{{UNIT}};',
+				),
+			)
+		);
+
+		$this->add_responsive_control(
 			'review_height',
 			array(
 				'label'      => esc_html__( 'Height', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::SLIDER,
-				'size_units' => array( 'px' ),
+				'size_units' => array( 'px', 'vh', 'em' ),
 				'range'      => array(
 					'px' => array(
-						'min' => 0,
-						'max' => 500,
+						'min' => 40,
+						'max' => 600,
 					),
 				),
 				'selectors'  => array(
-					'{{WRAPPER}} .review' => 'height: {{SIZE}}{{UNIT}};',
+					'{{WRAPPER}} .review' => 'height: {{SIZE}}{{UNIT}}; min-height: {{SIZE}}{{UNIT}};',
+				),
+			)
+		);
+
+		$this->add_control(
+			'input_color',
+			array(
+				'label'     => esc_html__( 'Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => array(
+					'{{WRAPPER}} .review' => 'color: {{VALUE}}',
+				),
+				'separator' => 'before',
+			)
+		);
+
+		$this->add_control(
+			'input_plh_color',
+			array(
+				'label'     => esc_html__( 'Placeholder Color', 'animation-addons-for-elementor' ),
+				'type'      => Controls_Manager::COLOR,
+				'selectors' => array(
+					'{{WRAPPER}} .review::placeholder' => 'color: {{VALUE}}',
+				),
+			)
+		);
+
+		$this->add_group_control(
+			Group_Control_Typography::get_type(),
+			array(
+				'name'     => 'input_typo',
+				'selector' => '{{WRAPPER}} .review',
+			)
+		);
+
+		$this->add_group_control(
+			Group_Control_Background::get_type(),
+			array(
+				'name'     => 'input_bg',
+				'types'    => array( 'classic', 'gradient' ),
+				'selector' => '{{WRAPPER}} .review',
+			)
+		);
+
+		$this->add_group_control(
+			Group_Control_Border::get_type(),
+			array(
+				'name'     => 'input_border',
+				'selector' => '{{WRAPPER}} .review',
+			)
+		);
+
+		$this->add_responsive_control(
+			'input_b_radius',
+			array(
+				'label'      => esc_html__( 'Border Radius', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => array( 'px', '%', 'em', 'rem', 'custom' ),
+				'selectors'  => array(
+					'{{WRAPPER}} .review' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				),
+			)
+		);
+
+		$this->add_responsive_control(
+			'input_padding',
+			array(
+				'label'      => esc_html__( 'Padding', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => array( 'px', '%', 'em', 'rem', 'custom' ),
+				'selectors'  => array(
+					'{{WRAPPER}} .review' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
 				),
 			)
 		);
@@ -671,12 +594,25 @@ class Post_Rating_Form extends Widget_Base {
 			)
 		);
 
-		$this->add_group_control(
-			Group_Control_Background::get_type(),
+		$this->add_responsive_control(
+			'btn_width',
 			array(
-				'name'     => 'btn_bg',
-				'types'    => array( 'classic', 'gradient' ),
-				'selector' => '{{WRAPPER}} .submit-btn',
+				'label'      => esc_html__( 'Width', 'animation-addons-for-elementor' ),
+				'type'       => Controls_Manager::SLIDER,
+				'size_units' => array( 'px', '%', 'em', 'rem', 'custom' ),
+				'range'      => array(
+					'px' => array(
+						'min' => 50,
+						'max' => 500,
+					),
+					'%'  => array(
+						'min' => 10,
+						'max' => 100,
+					),
+				),
+				'selectors'  => array(
+					'{{WRAPPER}} .submit-btn' => 'width: {{SIZE}}{{UNIT}};',
+				),
 			)
 		);
 
@@ -733,6 +669,15 @@ class Post_Rating_Form extends Widget_Base {
 				'selectors' => array(
 					'{{WRAPPER}} .submit-btn' => 'color: {{VALUE}}',
 				),
+			)
+		);
+
+		$this->add_group_control(
+			Group_Control_Background::get_type(),
+			array(
+				'name'     => 'btn_bg',
+				'types'    => array( 'classic', 'gradient' ),
+				'selector' => '{{WRAPPER}} .submit-btn',
 			)
 		);
 
@@ -886,23 +831,12 @@ class Post_Rating_Form extends Widget_Base {
 
 	// Render
 	protected function render() {
-		$settings = $this->get_settings_for_display();
-		$post_id  = get_the_ID();
-
-		// Only logged-in users can submit
-		$only_logged_in = isset( $settings['only_logged_in'] ) && $settings['only_logged_in'] === 'yes';
-
-		if ( $only_logged_in && ! is_user_logged_in() ) {
-			?>
-			<div class="aae--post-rating-form">
-				<p class="login-required-message">Only logged-in users can submit a review.</p>
-			</div>
-			<?php
-			return;
-		}
+		$settings     = $this->get_settings_for_display();
+		$post_id      = get_the_ID();
+		$is_logged_in = is_user_logged_in();
 		?>
 
-		<div class="aae--post-rating-form" data-require-approval=<?php echo esc_attr( $settings['require_approval'] ); ?>>
+		<div class="aae--post-rating-form <?php echo ! $is_logged_in ? 'aae-logged-out' : 'aae-logged-in'; ?>" data-is-logged-in="<?php echo $is_logged_in ? 'true' : 'false'; ?>" data-element-id="<?php echo esc_attr( $this->get_id() ); ?>" data-require-approval="<?php echo esc_attr( $settings['require_approval'] ); ?>">
 			<<?php Utils::print_validated_html_tag( $settings['title_tag'] ); ?> class="title">
 				<?php echo esc_html( $settings['title'] ); ?>
 			</<?php Utils::print_validated_html_tag( $settings['title_tag'] ); ?>>
@@ -911,6 +845,7 @@ class Post_Rating_Form extends Widget_Base {
 
 			<div class="rating-form">
 				<input type="hidden" id="post_id" value="<?php echo esc_attr( $post_id ); ?>">
+				<input type="hidden" id="element_id" value="<?php echo esc_attr( $this->get_id() ); ?>">
 
 				<div class="rating">
 					<?php for ( $i = 5; $i >= 1; $i-- ) : ?>
@@ -922,31 +857,56 @@ class Post_Rating_Form extends Widget_Base {
 					<?php endfor; ?>
 				</div>
 
+				<?php if ( $is_logged_in ) : ?>
+					<div class="review-message">
+						<input type="hidden" id="selected_rating" value="">
+						<label for="review_text"><textarea name="review" id="review_text" class="review" placeholder="<?php echo esc_attr( $settings['review_placeholder'] ); ?>"></textarea></label>
+					</div>
+				<?php endif; ?>
+
 				<?php
-				if ( 'yes' !== $settings['only_logged_in'] ) {
-					if ( Plugin::$instance->editor->is_edit_mode() || ! is_user_logged_in() ) {
-						?>
-						<div class="anon-fields">
-							<label for="reviewer_name"><input type="text" id="reviewer_name" placeholder="<?php echo esc_attr( $settings['name_plh_text'] ); ?>" required></label>
-							<label for="reviewer_email"><input type="email" id="reviewer_email" placeholder="<?php echo esc_attr( $settings['email_plh_text'] ); ?>" required></label>
-						</div>
-						<?php
-					}
-				}
+				$button_text = ! $is_logged_in
+					? ( ! empty( $settings['login_btn_text'] ) ? $settings['login_btn_text'] : esc_html__( 'Log In to Rate', 'animation-addons-for-elementor' ) )
+					: $settings['btn_text'];
 				?>
-
-				<div class="review-message">
-					<input type="hidden" id="selected_rating" value="">
-					<label for="review_text"><textarea name="review" id="review_text" class="review" placeholder="<?php echo esc_attr( $settings['review_placeholder'] ); ?>"></textarea></label>
-				</div>
-
-				<button type="submit" id="aae-post-rating-btn" class="submit-btn">
-					<?php echo esc_html( $settings['btn_text'] ); ?>
+				<button type="submit" id="aae-post-rating-btn" class="submit-btn <?php echo ! $is_logged_in ? 'aae-login-trigger-btn' : ''; ?>">
+					<?php echo esc_html( $button_text ); ?>
 				</button>
 			</div>
 
 			<div id="aae-review-success-message"></div>
 			<div id="aae-review-error-message"></div>
+
+			<?php if ( ! $is_logged_in ) : ?>
+				<div class="aae-rating-login-modal" style="display: none;">
+					<div class="aae-rating-modal-backdrop"></div>
+					<div class="aae-rating-modal-content">
+						<button type="button" class="aae-rating-modal-close" aria-label="<?php echo esc_attr__( 'Close', 'animation-addons-for-elementor' ); ?>">&times;</button>
+						<div class="aae-rating-modal-body">
+							<h3><?php echo esc_html__( 'Login to Submit Review', 'animation-addons-for-elementor' ); ?></h3>
+							<p><?php echo esc_html__( 'Please sign in to rate and review this post.', 'animation-addons-for-elementor' ); ?></p>
+							<?php
+							wp_login_form( array(
+								'echo'           => true,
+								'redirect'       => get_permalink( $post_id ),
+								'form_id'        => 'aae-rating-loginform-' . esc_attr( $post_id ),
+								'label_username' => esc_html__( 'Username or Email', 'animation-addons-for-elementor' ),
+								'label_password' => esc_html__( 'Password', 'animation-addons-for-elementor' ),
+								'label_remember' => esc_html__( 'Remember Me', 'animation-addons-for-elementor' ),
+								'label_log_in'   => esc_html__( 'Log In', 'animation-addons-for-elementor' ),
+								'remember'       => true,
+							) );
+							?>
+							<p class="aae-login-register-link">
+								<?php if ( get_option( 'users_can_register' ) ) : ?>
+									<a href="<?php echo esc_url( wp_registration_url() ); ?>"><?php echo esc_html__( 'Register', 'animation-addons-for-elementor' ); ?></a> | 
+								<?php endif; ?>
+								<a href="<?php echo esc_url( wp_lostpassword_url() ); ?>"><?php echo esc_html__( 'Lost your password?', 'animation-addons-for-elementor' ); ?></a>
+							</p>
+						</div>
+					</div>
+				</div>
+			<?php endif; ?>
 		</div>
 		<?php
 	}
