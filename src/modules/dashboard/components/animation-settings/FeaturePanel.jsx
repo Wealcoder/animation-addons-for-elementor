@@ -379,28 +379,52 @@ const FeaturePanel = ({
 
   return (
     <div className={`bg-background rounded-lg p-6 ${width}`}>
-      <h3 className="flex items-center gap-2">
-        <span className="text-[16px] font-medium text-[var(--900,#181B25)]">
-          {schema?.label}
-        </span>
-        {isPro && (
-          <Badge
-            className="bg-[linear-gradient(109deg,#ffab472e_0%,#ffab472e_100%)] text-[#717784]"
-            variant="pro"
+      <div className="flex items-center justify-between gap-4">
+        <h3 className="flex items-center gap-2">
+          <span className="text-[16px] font-medium text-[var(--900,#181B25)]">
+            {schema?.label}
+          </span>
+          {isPro && (
+            <Badge
+              className="bg-[linear-gradient(109deg,#ffab472e_0%,#ffab472e_100%)] text-[#717784]"
+              variant="pro"
+            >
+              {__("PRO", "animation-addons-for-elementor")}
+            </Badge>
+          )}
+          {note && (
+            <InfoToggle
+              open={noteOpen}
+              onToggle={setNoteOpen}
+              controls={`aae-note-${feature}`}
+              name={schema?.label || feature}
+              testid={`${feature}.note`}
+            />
+          )}
+        </h3>
+
+        {/* Top save bar — always visible at the top-right. */}
+        <div className="flex gap-2.5 items-center">
+          <Button
+            className="p-[20px] rounded-[8px]"
+            variant="secondary"
+            disabled={!dirty || saving}
+            onClick={() => setDraft(value)}
           >
-            {__("PRO", "animation-addons-for-elementor")}
-          </Badge>
-        )}
-        {note && (
-          <InfoToggle
-            open={noteOpen}
-            onToggle={setNoteOpen}
-            controls={`aae-note-${feature}`}
-            name={schema?.label || feature}
-            testid={`${feature}.note`}
-          />
-        )}
-      </h3>
+            {__("Cancel", "animation-addons-for-elementor")}
+          </Button>
+          <Button
+            className="p-[20px] rounded-[8px]"
+            disabled={saving}
+            onClick={() => onSave({ [feature]: draft })}
+            data-aae-save-top={feature}
+          >
+            {saving
+              ? __("Saving…", "animation-addons-for-elementor")
+              : __("Save Settings", "animation-addons-for-elementor")}
+          </Button>
+        </div>
+      </div>
 
       {/* w-0 min-w-full — see InfoToggle: the note must wrap to the panel's
           width, not decide it. */}
