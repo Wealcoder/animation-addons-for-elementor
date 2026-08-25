@@ -575,8 +575,10 @@ class Post_Rating extends Widget_Base
 		$post_id = get_the_ID();
 
 		$ratings = get_posts([
-			'post_type'  => 'aaeaddon_post_rating',
-			'meta_query' => [  // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+			'post_type'   => 'aaeaddon_post_rating',
+			'post_status' => 'publish',
+			'numberposts' => -1,
+			'meta_query'  => [  // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 				[
 					'key'   => 'post_id',
 					'value' => $post_id,

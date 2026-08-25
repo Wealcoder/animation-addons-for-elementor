@@ -62,26 +62,21 @@ if (! function_exists('aae_public_counter_throttled')) {
 
 function aae_handle_aae_post_shares_count()
 {
+    $nonce = isset($_REQUEST['nonce']) ? sanitize_text_field(wp_unslash($_REQUEST['nonce'])) : '';
 
-    if (!isset($_POST['nonce'])) {
-        exit('No naughty business please . Provide Security Code');
-    }
-
-    $nonce =  sanitize_text_field(wp_unslash($_POST['nonce']));
-
-    if (! wp_verify_nonce($nonce, 'wcf-addons-frontend')) {
-        exit('No naughty business please');
+    if (! $nonce || ! wp_verify_nonce($nonce, 'wcf-addons-frontend')) {
+        wp_send_json_error(['message' => esc_html__('Security check failed.', 'animation-addons-for-elementor')], 403);
     }
 
     if (isset($_POST['post_id']) && isset($_POST['social'])) {
-        $post_id = intval(sanitize_text_field(wp_unslash($_POST['post_id'])));
-        $social = sanitize_text_field(wp_unslash($_POST['social']));
+        $post_id = absint(sanitize_text_field(wp_unslash($_POST['post_id'])));
+        $social  = sanitize_key(wp_unslash($_POST['social']));
 
         // The target must be a real, published post — otherwise this writes
         // share meta onto arbitrary or non-existent ids.
         $post = get_post($post_id);
         if (! $post || 'publish' !== $post->post_status) {
-            wp_send_json_error('Invalid post ID');
+            wp_send_json_error(['message' => esc_html__('Invalid post ID.', 'animation-addons-for-elementor')]);
         }
 
         // Retrieve current share count, increment it, or set it if it doesn't exist
@@ -124,7 +119,7 @@ function aae_handle_aae_post_shares_count()
         ));
 
     } else {
-        wp_send_json_error('Invalid post ID');
+        wp_send_json_error(['message' => esc_html__('Invalid post ID.', 'animation-addons-for-elementor')]);
     }
 
 }
@@ -136,28 +131,6 @@ function aaeaddon_disable_comments_for_custom_post_type()
     remove_post_type_support('wcf-addons-template', 'comments');
 }
 add_action('init', 'aaeaddon_disable_comments_for_custom_post_type', 100);
-
-function aaeaddon_custom_hide_admin_notices_for_specific_page()
-{
-    $screen = get_current_screen();
-    // ist of admin pages where you want to disable notices
-    $pages_to_hide_notices = array(
-        'wcf-custom-fonts',
-        'wcf-custom-icons',
-        'animation-addon_page_wcf-cpt-builder',
-        'edit-wcf-addons-template',
-        'animation-addon_page_wcf_addons_settings',
-        'animation-addon_page_wcf_addons_setup_page'
-    );
-
-    // Check if current screen ID matches any in the list
-    if (in_array($screen->id, $pages_to_hide_notices)) {
-        // Remove core and plugin notices
-        remove_all_actions('admin_notices');
-        remove_all_actions('all_admin_notices');
-    }
-}
-add_action('admin_head', 'aaeaddon_custom_hide_admin_notices_for_specific_page');
 
 // Btn / BtnPro / Social Share preset interactions used to load unconditionally
 // on every page via a shared "global preset" bundle. They're now registered

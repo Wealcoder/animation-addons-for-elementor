@@ -65,6 +65,10 @@ class Ajax_Handler {
 	public function ajax_get_posts() {
 		$this->verify_nonce();
 
+		if ( ! current_user_can( 'edit_posts' ) ) {
+			wp_send_json_error( array( 'message' => esc_html__( 'Unauthorized user.', 'animation-addons-for-elementor' ) ), 403 );
+		}
+
 		$search    = isset( $_GET['q'] ) ? sanitize_text_field( wp_unslash( $_GET['q'] ) ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended
 		$post_type = isset( $_GET['post_type'] ) ? sanitize_text_field( wp_unslash( $_GET['post_type'] ) ) : 'post'; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended
 
@@ -82,6 +86,10 @@ class Ajax_Handler {
 	 */
 	public function ajax_get_terms() {
 		$this->verify_nonce();
+
+		if ( ! current_user_can( 'edit_posts' ) ) {
+			wp_send_json_error( array( 'message' => esc_html__( 'Unauthorized user.', 'animation-addons-for-elementor' ) ), 403 );
+		}
 
 		$search   = isset( $_GET['q'] ) ? sanitize_text_field( wp_unslash( $_GET['q'] ) ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended
 		$taxonomy = isset( $_GET['taxonomy'] ) ? sanitize_text_field( wp_unslash( $_GET['taxonomy'] ) ) : 'category'; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended
@@ -101,6 +109,10 @@ class Ajax_Handler {
 	public function ajax_get_authors() {
 		$this->verify_nonce();
 
+		if ( ! current_user_can( 'edit_posts' ) ) {
+			wp_send_json_error( array( 'message' => esc_html__( 'Unauthorized user.', 'animation-addons-for-elementor' ) ), 403 );
+		}
+
 		$search = isset( $_GET['q'] ) ? sanitize_text_field( wp_unslash( $_GET['q'] ) ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended
 
 		$query_manager = Query_Manager::instance();
@@ -117,6 +129,10 @@ class Ajax_Handler {
 	 */
 	public function ajax_get_templates() {
 		$this->verify_nonce();
+
+		if ( ! current_user_can( 'edit_posts' ) ) {
+			wp_send_json_error( array( 'message' => esc_html__( 'Unauthorized user.', 'animation-addons-for-elementor' ) ), 403 );
+		}
 
 		$search      = isset( $_GET['q'] ) ? sanitize_text_field( wp_unslash( $_GET['q'] ) ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended
 		$source_type = isset( $_GET['source_type'] ) ? sanitize_text_field( wp_unslash( $_GET['source_type'] ) ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended
@@ -261,11 +277,17 @@ class Ajax_Handler {
 	 * @return void
 	 */
 	private function verify_nonce() {
-		if ( isset( $_REQUEST['nonce'] ) || isset( $_GET['nonce'] ) || isset( $_POST['nonce'] ) ) {
-			$nonce = sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ) ?? sanitize_text_field( wp_unslash( $_GET['nonce'] ) ) ?? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) ?? '';
-			if ( ! wp_verify_nonce( $nonce, 'aae_loop_builder_nonce' ) ) {
-				wp_send_json_error( 'Security check failed' );
-			}
+		$nonce = '';
+		if ( isset( $_REQUEST['nonce'] ) ) {
+			$nonce = sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) );
+		} elseif ( isset( $_GET['nonce'] ) ) {
+			$nonce = sanitize_text_field( wp_unslash( $_GET['nonce'] ) );
+		} elseif ( isset( $_POST['nonce'] ) ) {
+			$nonce = sanitize_text_field( wp_unslash( $_POST['nonce'] ) );
+		}
+
+		if ( ! $nonce || ! wp_verify_nonce( $nonce, 'aae_loop_builder_nonce' ) ) {
+			wp_send_json_error( array( 'message' => esc_html__( 'Security check failed.', 'animation-addons-for-elementor' ) ), 403 );
 		}
 	}
 
@@ -396,6 +418,10 @@ class Ajax_Handler {
 	 */
 	public function ajax_get_taxonomies() {
 		$this->verify_nonce();
+
+		if ( ! current_user_can( 'edit_posts' ) ) {
+			wp_send_json_error( array( 'message' => esc_html__( 'Unauthorized user.', 'animation-addons-for-elementor' ) ), 403 );
+		}
 
 		$post_type  = isset( $_GET['post_type'] ) ? sanitize_text_field( wp_unslash( $_GET['post_type'] ) ) : 'post'; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended
 		$taxonomies = $this->get_taxonomies( $post_type );
