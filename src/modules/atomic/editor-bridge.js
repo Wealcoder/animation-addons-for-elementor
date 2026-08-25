@@ -23,6 +23,7 @@ import backgroundVideoSection from './extensions/background-video/config';
 import customCssSection from './extensions/custom-css/config';
 import nestedSliderSection from './extensions/nested-slider/config';
 import menuSections from './extensions/menu-sections/config';
+import imageOverlaySection from './extensions/image-overlay/config';
 
 /* ---------------------------------------------------------------------------
  * Editor-only crash guard for Elementor v4's colour-picker (MUI Popover).
@@ -95,6 +96,7 @@ registerResponsiveSection( scrollTo );
 registerResponsiveSection( backgroundVideoSection );
 registerResponsiveSection( customCssSection );
 registerResponsiveSection( nestedSliderSection );
+registerResponsiveSection( imageOverlaySection );
 // WP Menu widget sections (not extensions) — one per CSS-variable-driven
 // panel section, each attaching by anchor key to e-aae-a-menu only, the same
 // way the Nested Slider panel does.

@@ -3706,6 +3706,20 @@ final class Atomic
 				'order'        => 14,
 			],
 
+			'image-overlay' => [
+				'label'        => 'Image Overlay',
+				'usage_prop'   => array( 'aae_img_ovl_enable', 'boolean' ),
+				'description'  => 'Color/gradient tint overlay on Image and SVG widgets.',
+				'icon'         => 'wcf-icon-Image-Animation',
+				'is_pro'       => false,
+				'is_extension' => true,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => ['image overlay', 'overlay', 'tint', 'color overlay', 'gradient overlay'],
+				'category'     => 'utility',
+				'order'        => 16,
+			],
+
 			/*
 			 * Pro AtomicV4 modules (animation-addons-for-elementor-pro/inc/AtomicV4/).
 			 * They used to load unconditionally from AtomicV4\Bootstrap, so they never

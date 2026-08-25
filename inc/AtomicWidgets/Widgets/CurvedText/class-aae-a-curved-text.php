@@ -31,11 +31,48 @@
  * (Image/Svg/Paragraph) instead of markup this class renders itself; text
  * ROTATOR mode is this class's own inline curved SVG `<textPath>` — a native
  * Paragraph can't bend text along a circle (tried twice on the original
- * Video Popup Trigger — see git history), so rotator text mode trades away
- * native Style-tab text editing for the curved look. DO NOT re-introduce a
- * Paragraph child for ROTATOR text mode without an explicit, repeated ask —
- * this restriction does not apply to the static Center Text added above,
- * which never curves and is a plain, fully-editable Paragraph.
+ * Video Popup Trigger — see git history). DO NOT re-introduce a Paragraph
+ * child for ROTATOR text mode without an explicit, repeated ask — this
+ * restriction does not apply to the static Center Text added above, which
+ * never curves and is a plain, fully-editable Paragraph.
+ *
+ * Rotator text mode has NO isolated Style-tab section of its own, and this
+ * is architectural, not a gap to close later: Elementor's Style tab only
+ * ever edits a real element's own per-instance style (keyed by that
+ * element's `elementId`, via the editor's `documentElementsStylesProvider`).
+ * `define_base_styles()` keys like `rotator`/`center`/`icon` only ever LOOK
+ * independently editable because those class names also happen to sit on
+ * real children (Rotator Image / Center box / Icon) — the class itself,
+ * read by `elementBaseStylesProvider`, is a static per-WIDGET-TYPE default
+ * with no write path at all. There is no API to give one isolated piece of
+ * a widget's own twig-rendered markup (like this SVG `<text>`) its own
+ * separate, genuinely editable Style-tab section. (Confirmed 2026-08-25 —
+ * a first attempt at exactly that, giving `rotator_text` a label in
+ * `define_base_styles()`, shipped and did nothing; every Typography field
+ * silently failed to apply. A second attempt, plain explicit props written
+ * as inline styles, DID work but wasn't "Style tab" and was explicitly
+ * rejected.)
+ *
+ * So — an explicit, repeated decision (2026-08-25, after both alternatives
+ * above): Rotator Text's typography rides THIS WIDGET'S OWN root Style tab
+ * instead, via ordinary CSS inheritance. `define_base_styles()`'s `base` key
+ * carries `color` and `font-size` (both real, per-instance editable via the
+ * root element's genuine Style tab, since the root IS a real, separately
+ * selectable element), and the twig's `<text>` sets nothing of its own
+ * beyond `fill: currentColor` — the one fixed, non-editable bridge SVG needs
+ * to turn CSS `color` into visible paint (SVG text is colored via `fill`,
+ * not `color`). Any Typography property inherits down normally: set
+ * font-family/font-weight/line-height/letter-spacing on the ROOT's own
+ * Style tab and the curved text picks it up.
+ *
+ * KNOWN, ACCEPTED trade-off: this is NOT isolated to the rotator text alone.
+ * The Icon child sizes itself at `1em` (see `define_base_styles()`'s `icon`
+ * key), relative to whatever font-size it inherits — which, absent an
+ * explicit font-size of its own, is this SAME root value. Changing the
+ * root's Font Size to restyle the curved text also resizes the Icon. This
+ * was weighed and accepted rather than reverted to inline-style props,
+ * because a real Style tab (even a shared one) was worth more than an
+ * isolated one that isn't actually a Style tab.
  *
  * @package AnimationAddonsForElementor
  */
@@ -144,22 +181,17 @@ class AAE_A_Curved_Text extends Atomic_Element_Base {
 				->default( 'EXPLORE MORE • EXPLORE MORE •' )
 				->set_dependencies( $is_text ),
 
-			// The curved text lives inside an SVG <textPath> (see the twig),
-			// so it's outside the atomic Style tab's normal CSS vocabulary —
-			// there's no "SVG path radius" style key, and a generic Style-tab
-			// font-size would only ever reach it by CSS inheritance, which an
-			// explicit rule on the <text> element always wins over regardless
-			// of specificity. Both need their own dedicated controls instead.
-			'rotator_text_font_size' => Number_Prop_Type::make()
-				->default( 10 )
-				->set_dependencies( $is_text ),
-
 			// How far the text sits IN from the circle's outer edge. The
 			// path radius used in the twig is `50 - this value` (the SVG
 			// viewBox is a fixed 0..100 box), so a bigger number pulls the
 			// text closer to the center — "distance from the border" in the
 			// same sense as padding, just expressed as a radius offset
-			// rather than a box inset.
+			// rather than a box inset. Kept as its own Number control,
+			// because it's geometry, not a CSS style property — there's no
+			// "SVG path radius" style key. Typography (color/font-family/
+			// font-weight/font-size) is NOT a prop at all — see the class
+			// docblock: it rides the widget's own root Style tab via CSS
+			// inheritance instead.
 			'rotator_text_padding' => Number_Prop_Type::make()
 				->default( 8 )
 				->set_dependencies( $is_text ),
@@ -194,8 +226,6 @@ class AAE_A_Curved_Text extends Atomic_Element_Base {
 						] ),
 					Text_Control::bind_to( 'rotator_text' )
 						->set_label( __( 'Rotator Text', 'animation-addons-for-elementor' ) ),
-					Number_Control::bind_to( 'rotator_text_font_size' )
-						->set_label( __( 'Text Font Size', 'animation-addons-for-elementor' ) ),
 					Number_Control::bind_to( 'rotator_text_padding' )
 						->set_label( __( 'Text Distance from Edge', 'animation-addons-for-elementor' ) ),
 					Number_Control::bind_to( 'rotation_duration' )
@@ -276,6 +306,15 @@ class AAE_A_Curved_Text extends Atomic_Element_Base {
 						'border-radius'   => Size_Prop_Type::generate( [ 'size' => 50, 'unit' => '%' ] ),
 						'overflow'        => String_Prop_Type::generate( 'hidden' ),
 						'color'           => Color_Prop_Type::generate( '#ffffff' ),
+						// Rotator Text's only sizing/coloring hook — see the
+						// class docblock's "explicit, repeated decision" note.
+						// The curved SVG `<text>` sets nothing of its own but
+						// `fill: currentColor`, so both of these reach it by
+						// ordinary CSS inheritance from THIS real, per-instance
+						// editable root style. Also inherited by the Icon
+						// child's own `1em` sizing — a known, accepted
+						// trade-off, not a bug.
+						'font-size'       => Size_Prop_Type::generate( [ 'size' => 10, 'unit' => 'px' ] ),
 						'background'      => Background_Prop_Type::generate( [
 							'color' => Color_Prop_Type::generate( 'rgba(0, 0, 0, 0.4)' ),
 						] ),

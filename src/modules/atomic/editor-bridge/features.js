@@ -1017,6 +1017,49 @@ function buildTiltConfig(settings) {
 }
 
 /* =====================================================================
+ * Image Overlay feature — mirrors ImageOverlay/Render.php
+ * =================================================================== */
+
+const IMAGE_OVERLAY_RESPONSIVE = {
+	aae_img_ovl_enable: { configKey: 'enabled', default: false },
+	aae_img_ovl_type: { configKey: 'type', default: 'color' },
+	aae_img_ovl_color: { configKey: 'color', default: '#000000' },
+	aae_img_ovl_gradient_color_1: { configKey: 'gradientColor1', default: '#000000' },
+	aae_img_ovl_gradient_color_2: { configKey: 'gradientColor2', default: '#ffffff' },
+	aae_img_ovl_gradient_angle: { configKey: 'gradientAngle', default: 180 },
+	aae_img_ovl_opacity: { configKey: 'opacity', default: 50 },
+	aae_img_ovl_blend_mode: { configKey: 'blendMode', default: 'multiply' },
+};
+
+function buildImageOverlayConfig(settings) {
+	const enabled = readAt(settings, 'aae_img_ovl_enable', 'desktop', false);
+	const resolvedEnable = resolveAllBreakpoints(settings, 'aae_img_ovl_enable', false);
+
+	const anyActive = enabled || BPS.some((bp) => resolvedEnable[bp]);
+	if (!anyActive) return null;
+
+	const cfg = {};
+	const disabledBps = new Set();
+	for (const bp of BPS) {
+		if (!resolvedEnable[bp]) {
+			disabledBps.add(bp);
+		}
+	}
+
+	emitResponsive(cfg, settings, IMAGE_OVERLAY_RESPONSIVE, disabledBps);
+
+	if (!('enabled' in cfg)) {
+		cfg.enabled = enabled;
+	}
+
+	if (plain(settings, 'aae_img_ovl_enable_editor')) {
+		cfg.enableEditor = true;
+	}
+
+	return cfg;
+}
+
+/* =====================================================================
  * Registry
  * =================================================================== */
 
@@ -1469,6 +1512,15 @@ export const FEATURES = [
 		autoReplaySetting: 'aae_custom_css_enable_editor',
 		mapName: 'AAE_INTERACTIONS_CUSTOM_CSS',
 		buildConfig: buildCustomCssConfig,
+		findTarget: findByInteractionId,
+	},
+	{
+		name: 'image-overlay',
+		widgetTypes: ['e-image', 'e-svg'],
+		enableSetting: 'aae_img_ovl_enable',
+		autoReplaySetting: 'aae_img_ovl_enable_editor',
+		mapName: 'AAE_INTERACTIONS_IMG_OVL',
+		buildConfig: buildImageOverlayConfig,
 		findTarget: findByInteractionId,
 	},
 	{

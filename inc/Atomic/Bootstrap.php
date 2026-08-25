@@ -123,6 +123,16 @@ final class Bootstrap {
 			( new \WCF_ADDONS\Atomic\ScrollTo\Controls() )->register();
 		}
 
+		// Image Overlay — static color/gradient tint on e-image / e-svg.
+		// Fully free (Schema+Controls+Render), unlike the twelve GSAP-driven
+		// shared extensions above: it needs no JS animation runtime, just a
+		// plain background + mix-blend-mode application. See Render.php.
+		if ( $extensions->is_extension_active( 'image-overlay' ) ) {
+			( new \WCF_ADDONS\Atomic\ImageOverlay\Schema() )->register();
+			( new \WCF_ADDONS\Atomic\ImageOverlay\Controls() )->register();
+			( new \WCF_ADDONS\Atomic\ImageOverlay\Render() )->register();
+		}
+
 		// Mask — clips an element to a shape. Registered as real atomic STYLE
 		// props (`mask-image` & friends on the styles schema), NOT settings
 		// props, so responsive values, :hover variants and global classes come

@@ -36,6 +36,9 @@ final class Assets
 		// No GSAP dependency — a muted looping <video> needs none, so this one
 		// costs only its own ~2KB on pages that use it.
 		'aae-effect-background-video' => 'effects/background-video.js',
+		// No GSAP dependency either — a plain background + mix-blend-mode
+		// application, not an animation. See ImageOverlay/Render.php.
+		'aae-effect-image-overlay'    => 'effects/image-overlay.js',
 	];
 
 	public function register(): void

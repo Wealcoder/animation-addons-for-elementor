@@ -3,8 +3,18 @@
   behavior, no JS at all — see class-aae-a-curved-text.php's docblock).
 
   Two ways to render the rotator, chosen by `rotator_type`:
-    - text: a curved SVG <textPath> rendered directly below, own font-size/
-      radius controls.
+    - text: a curved SVG <textPath> rendered directly below. Its typography
+      (color/font family/font weight/font size) is NOT its own prop or
+      control at all — see the class docblock's "explicit, repeated
+      decision" note. It rides THIS WIDGET'S OWN root Style tab via ordinary
+      CSS inheritance instead: the root's real `base` style (a genuinely
+      editable per-instance style, since the root is a real selectable
+      element) carries `color`/`font-size`, and any Typography property set
+      there (font-family, font-weight, line-height, letter-spacing too)
+      cascades down into this <text> normally. The only thing set here is
+      `fill: currentColor` — fixed, not user-editable — which is the one
+      bridge SVG needs to turn inherited CSS `color` into visible paint
+      (SVG text paints via `fill`, not `color`).
     - image: the Rotator Image child (a real, locked e-image, always
       present in the tree via children_placeholder) is shown; hidden by the
       scoped selector below when text mode is active instead, so switching
@@ -41,7 +51,6 @@
 {% set rotator_type = settings.rotator_type | default('image') %}
 {% set duration = settings.rotation_duration | default(8) %}
 {% set direction = (settings.rotation_direction | default('cw') == 'ccw') ? 'reverse' : 'normal' %}
-{% set text_font_size = settings.rotator_text_font_size | default(10) %}
 {% set text_radius = 50 - (settings.rotator_text_padding | default(8)) %}
 {% set rotator_class = type ~ '-rotator' %}
 {% set icon_class = type ~ '-icon' %}
@@ -66,7 +75,7 @@
             class="aae-a-curved-text-rotator--text {{ base_styles.rotator }}"
             aria-hidden="true"
             viewBox="0 0 100 100"
-        ><defs><path id="aae-ct-circle-{{ id }}" d="M 50,50 m -{{ text_radius }},0 a {{ text_radius }},{{ text_radius }} 0 1,1 {{ text_radius * 2 }},0 a {{ text_radius }},{{ text_radius }} 0 1,1 -{{ text_radius * 2 }},0" /></defs><text style="font-size:{{ text_font_size }}px;"><textPath href="#aae-ct-circle-{{ id }}" startOffset="0%">{{ settings.rotator_text | default('') }}</textPath></text></svg>
+        ><defs><path id="aae-ct-circle-{{ id }}" d="M 50,50 m -{{ text_radius }},0 a {{ text_radius }},{{ text_radius }} 0 1,1 {{ text_radius * 2 }},0 a {{ text_radius }},{{ text_radius }} 0 1,1 -{{ text_radius * 2 }},0" /></defs><text style="fill:currentColor;"><textPath href="#aae-ct-circle-{{ id }}" startOffset="0%">{{ settings.rotator_text | default('') }}</textPath></text></svg>
     {% endif %}
     {% if center_content == 'text' %}
         <style>[data-id="{{ id }}"] .{{ icon_class }} { visibility: hidden; }</style>
