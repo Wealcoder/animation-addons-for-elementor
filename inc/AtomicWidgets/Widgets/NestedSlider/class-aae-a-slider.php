@@ -129,10 +129,9 @@ class AAE_A_Slider extends Atomic_Element_Base {
 	protected function define_base_styles(): array {
 		// We apply base flex styles. Notice we don't bind dynamic gap here, we do it in twig variables.
 		$wrapper_styles = [
-			'display' => String_Prop_Type::generate( 'block' ),
-			'overflow' => String_Prop_Type::generate( 'hidden' ),
+			'display'  => String_Prop_Type::generate( 'block' ),
 			'position' => String_Prop_Type::generate( 'relative' ),
-			'width' => String_Prop_Type::generate( '100%' ),
+			'width'    => String_Prop_Type::generate( '100%' ),
 		];
 
 		return [

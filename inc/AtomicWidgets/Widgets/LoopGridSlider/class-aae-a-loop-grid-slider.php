@@ -140,7 +140,6 @@ class AAE_A_Loop_Grid_Slider extends AAE_A_Loop_Grid {
 	protected function define_base_styles(): array {
 		$wrapper_styles = [
 			'display'  => String_Prop_Type::generate( 'block' ),
-			'overflow' => String_Prop_Type::generate( 'hidden' ),
 			'position' => String_Prop_Type::generate( 'relative' ),
 			'width'    => String_Prop_Type::generate( '100%' ),
 			// Default the slider wrapper to zero padding. It carries `e-con`, whose
