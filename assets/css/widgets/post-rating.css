@@ -7,7 +7,7 @@
   flex-direction: row-reverse;
   color: #ddd;
   fill: #ddd;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   margin-top: 15px;
 }
 .aae--post-rating-form .rating input {
@@ -26,27 +26,21 @@
 }
 .aae--post-rating-form .review-message {
   margin-top: 15px;
-  margin-bottom: 20px;
 }
 .aae--post-rating-form .review {
   width: 100%;
   padding: 15px;
   border: 1px solid #ddd;
   border-radius: 5px;
-  box-sizing: border-box;
 }
 .aae--post-rating-form .submit-btn {
   color: #fff;
   background: #121212;
-  padding: 10px 22px;
+  padding: 10px 15px;
   border-radius: 5px;
   font-size: 16px;
   cursor: pointer;
   transition: all 0.3s;
-  display: inline-block;
-}
-.aae--post-rating-form.aae-logged-out .submit-btn {
-  margin-top: 5px;
 }
 .aae--post-rating-form .anon-fields {
   gap: 15px;
@@ -132,134 +126,4 @@
     align-items: flex-end;
   }
 }
-
-/* Rating Login Modal */
-.aae-rating-login-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 999999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  box-sizing: border-box;
-}
-.aae-rating-login-modal[style*="display: block"] {
-  display: flex !important;
-}
-.aae-rating-modal-backdrop {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
-}
-.aae-rating-modal-content {
-  position: relative;
-  background: #fff;
-  border-radius: 12px;
-  max-width: 400px;
-  width: 100%;
-  padding: 28px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
-  z-index: 2;
-  box-sizing: border-box;
-  animation: aaeModalFadeIn 0.25s ease-out;
-}
-@keyframes aaeModalFadeIn {
-  from { opacity: 0; transform: translateY(-12px) scale(0.96); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-.aae-rating-modal-close {
-  position: absolute;
-  top: 10px;
-  right: 14px;
-  background: none;
-  border: none;
-  font-size: 26px;
-  line-height: 1;
-  color: #888;
-  cursor: pointer;
-  padding: 2px 6px;
-  border-radius: 4px;
-  transition: color 0.2s;
-}
-.aae-rating-modal-close:hover {
-  color: #111;
-}
-.aae-rating-modal-body h3 {
-  margin: 0 0 6px;
-  font-size: 20px;
-  font-weight: 600;
-  color: #111;
-  text-align: center;
-}
-.aae-rating-modal-body p {
-  margin: 0 0 16px;
-  font-size: 14px;
-  color: #666;
-  text-align: center;
-}
-.aae-rating-modal-body form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.aae-rating-modal-body form p {
-  margin: 0;
-  text-align: left;
-}
-.aae-rating-modal-body form label {
-  display: block;
-  font-size: 13px;
-  font-weight: 500;
-  color: #333;
-  margin-bottom: 3px;
-}
-.aae-rating-modal-body form input[type="text"],
-.aae-rating-modal-body form input[type="password"] {
-  width: 100%;
-  padding: 9px 12px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 14px;
-  box-sizing: border-box;
-}
-.aae-rating-modal-body form input[type="submit"] {
-  width: 100%;
-  padding: 11px;
-  background: #111;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
-  margin-top: 4px;
-}
-.aae-rating-modal-body form input[type="submit"]:hover {
-  background: #333;
-}
-.aae-rating-modal-body .login-remember {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  color: #666;
-}
-.aae-rating-modal-body .aae-login-register-link {
-  margin-top: 14px;
-  margin-bottom: 0;
-  font-size: 13px;
-  text-align: center;
-}
-.aae-rating-modal-body .aae-login-register-link a {
-  color: #555;
-  text-decoration: underline;
-}
+/*# sourceMappingURL=post-rating.css.map */

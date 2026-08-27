@@ -344,6 +344,7 @@ function isKindInPlayGroup(kindName, playGroup) {
 		'aae_tilt_': 'tilt',
 		'aae_custom_css_': 'custom-css',
 		'aae_ns_': 'nested-slider',
+		'aae_img_ovl_': 'image-overlay',
 	};
 	return groupMap[group] === kindName;
 }
