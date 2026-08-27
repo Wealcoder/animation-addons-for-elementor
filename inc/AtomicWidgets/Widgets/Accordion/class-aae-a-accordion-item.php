@@ -27,6 +27,7 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Svg_Src_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Url_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
+use Elementor\Modules\AtomicWidgets\Elements\Atomic_Heading\Atomic_Heading;
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Svg\Atomic_Svg;
 use Elementor\Modules\AtomicWidgets\Elements\Div_Block\Div_Block;
 
@@ -130,16 +131,28 @@ class AAE_A_Accordion_Item extends Atomic_Element_Base {
 		$header_class = static::get_element_type() . '-header_element';
 		$icon_class   = static::get_element_type() . '-header_icon';
 
-		// Header children: Title (Paragraph) + Icon (SVG)
-		$header_title = Atomic_Paragraph::generate()
+		// Header children: Title (Heading) + Icon (SVG)
+		//
+		// The title is an Atomic_Heading, not an Atomic_Paragraph. A paragraph's
+		// Tag control only offers p/span, so an accordion title could never be a
+		// real heading — bad for document outline and for SEO, and the reason the
+		// item's own (commented-out) `title_html_tag` prop existed as a
+		// workaround. As a Heading the builder gets Elementor's own H1–H6 Tag
+		// select on the element they actually select in the Structure panel.
+		//
+		// Default is h3: an accordion normally sits under a section heading (h2),
+		// so h3 is the level that keeps the outline intact. Elementor's own
+		// Atomic_Heading defaults to h2, which would compete with that section
+		// heading out of the box.
+		$header_title = Atomic_Heading::generate()
 			->editor_settings( [ 'title' => 'Header Title' ] )
 			->settings( [
-				'classes'   => Classes_Prop_Type::generate( [ 'aae-header-title-element' ] ),
-				'paragraph' => Html_V3_Prop_Type::generate( [
+				'classes' => Classes_Prop_Type::generate( [ 'aae-header-title-element' ] ),
+				'title'   => Html_V3_Prop_Type::generate( [
 					'content'  => String_Prop_Type::generate( 'Accordion Title' ),
 					'children' => [],
 				] ),
-				'tag'       => String_Prop_Type::generate( 'span' ),
+				'tag'     => String_Prop_Type::generate( 'h3' ),
 			] )
 			->build();
 

@@ -110,6 +110,29 @@
         padding: 0;
     }
 
+    // The Header Title is an Atomic_Heading (see define_default_children() in
+    // class-aae-a-accordion-item.php), so it arrives carrying the UA's own
+    // h1–h6 typography — 1.17em/bold for an h3 — plus whatever the theme puts
+    // on bare heading elements. Its predecessor was a <span>, which has no such
+    // defaults and simply inherited the row's font from the 'header' base
+    // style; without this reset, changing the Tag from H3 to H2 would silently
+    // resize the accordion row.
+    //
+    // `inherit` keeps the 'header' base style as the SINGLE owner of the row's
+    // typography, exactly as before — the tag now decides only the semantics.
+    // Same (0,2,0)/document-order reasoning as the padding rule above: it beats
+    // the UA and a theme's bare-element rules, ties with a builder's own local
+    // styles on the Heading, and loses to them on file order (this bundle loads
+    // before local-<post>-frontend-*.css), so styling the title from the Style
+    // panel still works.
+    .aae-header-title-element {
+        font-family: inherit;
+        font-size: inherit;
+        font-weight: inherit;
+        line-height: inherit;
+        color: inherit;
+    }
+
     .aae-a-accordion-item .aae-header-icon-element.aae-header-icon-close {
         display: none !important;
     }
