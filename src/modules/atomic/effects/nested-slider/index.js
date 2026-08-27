@@ -1165,6 +1165,11 @@ function bind(container, config) {
 	const onPointerDown = (e) => {
 		if (e.type === 'mousedown') {
 			e.preventDefault();
+			window.addEventListener('mousemove', onPointerMove, evtOpts);
+			window.addEventListener('mouseup', onPointerUp, evtOpts);
+		} else {
+			window.addEventListener('touchmove', onPointerMove, touchOpts);
+			window.addEventListener('touchend', onPointerUp, touchOpts);
 		}
 
 		isDragging = true;
@@ -1266,6 +1271,10 @@ function bind(container, config) {
 			cancelAnimationFrame(dragRafId);
 			dragRafId = null;
 		}
+		window.removeEventListener('mousemove', onPointerMove, evtOpts);
+		window.removeEventListener('mouseup', onPointerUp, evtOpts);
+		window.removeEventListener('touchmove', onPointerMove, touchOpts);
+		window.removeEventListener('touchend', onPointerUp, touchOpts);
 		const diff = currentDragX - startDragX;
 
 		if (getEffect() === 'marquee') {
@@ -1295,8 +1304,6 @@ function bind(container, config) {
 	};
 
 	track.addEventListener('mousedown', onPointerDown, evtOpts);
-	track.addEventListener('mousemove', onPointerMove, evtOpts);
-	window.addEventListener('mouseup', onPointerUp, evtOpts);
 
 	// Prevent accidental clicks on child links/buttons during drag
 	track.addEventListener('click', (e) => {
@@ -1309,13 +1316,14 @@ function bind(container, config) {
 
 	const touchOpts = { signal: localController.signal, passive: true };
 	track.addEventListener('touchstart', onPointerDown, touchOpts);
-	track.addEventListener('touchmove', onPointerMove, touchOpts);
-	window.addEventListener('touchend', onPointerUp, touchOpts);
 
-	// Window resize handler
-	window.addEventListener(
-		'resize',
-		() => {
+	// Throttled window resize handler using rAF
+	let resizeRafId = null;
+	const handleResize = () => {
+		if (resizeRafId) return;
+		resizeRafId = requestAnimationFrame(() => {
+			resizeRafId = null;
+			if (!container.isConnected) return;
 			applyLayout();
 			const newSlidesPerView = getSlidesPerView();
 			if (newSlidesPerView !== currentSlidesPerView) {
@@ -1324,26 +1332,34 @@ function bind(container, config) {
 				return;
 			}
 			goToSlide(currentIndex, false);
-		},
-		evtOpts
-	);
+		});
+	};
+	window.addEventListener('resize', handleResize, evtOpts);
 
-	// Re-center when the track's box actually changes size. Elementor can apply
-	// the slide/.e-con padding and final width a tick or two after render, which
-	// would otherwise leave the first paint off-center until the user navigates.
-	// Transform changes don't alter size, so re-centering here can't loop.
+	// Re-center when the track's box actually changes size.
+	// Uses rAF throttling and disconnect cleanup to prevent memory leaks and layout thrashing.
 	if (typeof ResizeObserver !== 'undefined' && getEffect() !== 'marquee') {
 		let lastTrackW = track.clientWidth;
+		let roRafId = null;
 		const ro = new ResizeObserver(() => {
-			if (isDragging) return;
+			if (isDragging || !container.isConnected) return;
 			const w = track.clientWidth;
 			if (w !== lastTrackW) {
 				lastTrackW = w;
-				goToSlide(currentIndex, false);
+				if (roRafId) cancelAnimationFrame(roRafId);
+				roRafId = requestAnimationFrame(() => {
+					roRafId = null;
+					if (container.isConnected) {
+						goToSlide(currentIndex, false);
+					}
+				});
 			}
 		});
 		ro.observe(track);
-		sliderDiv._aaeSliderResizeCleanup = () => ro.disconnect();
+		sliderDiv._aaeSliderResizeCleanup = () => {
+			if (roRafId) cancelAnimationFrame(roRafId);
+			ro.disconnect();
+		};
 	}
 
 	// Mutation Observer for added/removed slides in Editor
@@ -1442,8 +1458,11 @@ function bind(container, config) {
 }
 
 function unbind(el) {
-	// Disconnect the MutationObserver FIRST so clone removal in _aaeSliderCleanup
-	// doesn't fire reInit on the outgoing observer before it is torn down.
+	// Disconnect observers FIRST so DOM removal doesn't re-trigger callbacks
+	if (el._aaeSliderResizeCleanup) {
+		el._aaeSliderResizeCleanup();
+		delete el._aaeSliderResizeCleanup;
+	}
 	if (el._aaeSliderObserverCleanup) {
 		el._aaeSliderObserverCleanup();
 		delete el._aaeSliderObserverCleanup;
@@ -1473,7 +1492,6 @@ const refreshSliderById = (id, reason = 'manual') => {
 	const element = getSliderElementById(id);
 
 	if (!element) {
-		console.warn('AAE slider refresh failed: element not found', { id, reason });
 		return;
 	}
 
@@ -1486,13 +1504,16 @@ const refreshSliderById = (id, reason = 'manual') => {
 };
 
 /**
- * Custom bridge event from parent editor window.
+ * Custom bridge event from parent editor window (attached once per window lifecycle).
  */
-window.addEventListener('aae:slider:refresh', (event) => {
-	const id = event.detail?.id;
-	const reason = event.detail?.reason || 'custom-event';
-	refreshSliderById(id, reason);
-});
+if (!window._aaeSliderRefreshListenerAttached) {
+	window._aaeSliderRefreshListenerAttached = true;
+	window.addEventListener('aae:slider:refresh', (event) => {
+		const id = event.detail?.id;
+		const reason = event.detail?.reason || 'custom-event';
+		refreshSliderById(id, reason);
+	});
+}
 
 window.AAEADDON.register({
 	name: 'nested-slider',

@@ -420,7 +420,6 @@ register({
 	id: 'aae-a-slider-handler',
 	callback: ({ element, signal }) => {
 		const id = getElementId(element);
-		console.log("Slider run");
 		if (id) {
 			sliderRegistry.set(id, {
 				element,
@@ -440,17 +439,12 @@ register({
 
 		let debounceTimer = null;
 
-		const reInit = (reason = 'observer') => {
+		const reInit = () => {
 			clearTimeout(debounceTimer);
 
 			debounceTimer = setTimeout(() => {
 				initSlider(element, signal);
 			}, 150);
-
-			console.log('AAE slider reinit queued from iframe', {
-				id,				
-				element
-			});
 		};
 
 		/**
