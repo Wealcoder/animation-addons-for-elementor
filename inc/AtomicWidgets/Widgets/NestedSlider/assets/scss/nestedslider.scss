@@ -41,10 +41,15 @@
         width: 100%;
         position: relative;
         box-sizing: border-box;
+        contain: layout paint;
     }
 
     .aae-slider-track {
         overflow: visible !important;
+        will-change: transform;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        transform: translateZ(0);
 
         > * {
             flex: 0 0 calc((100% - (var(--aae-slide-gap) * (var(--aae-slides-per-view) - 1))) / var(--aae-slides-per-view));
@@ -53,6 +58,9 @@
             transform-style: preserve-3d;
             transition: transform 0.5s ease-out;
             height: var(--aae-slide-height, auto);
+            will-change: transform, opacity;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
         }
     }
 

@@ -128,14 +128,14 @@ function bind(container, config) {
 
 	const easingsMap = {
 		power1: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-		power2: 'cubic-bezier(0.25, 1, 0.5, 1)',
-		power3: 'cubic-bezier(0.165, 0.84, 0.44, 1)',
+		power2: 'cubic-bezier(0.16, 1, 0.3, 1)', // Apple/iOS ultra-smooth deceleration
+		power3: 'cubic-bezier(0.19, 1, 0.22, 1)',
 		power4: 'cubic-bezier(0.23, 1, 0.32, 1)',
-		power: 'cubic-bezier(0.25, 1, 0.5, 1)',
+		power: 'cubic-bezier(0.16, 1, 0.3, 1)',
 		elastic: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-		snappy: 'cubic-bezier(0.23, 1, 0.32, 1)',
+		snappy: 'cubic-bezier(0.2, 0.9, 0.2, 1)',
 		cinematic: 'cubic-bezier(0.16, 1, 0.3, 1)',
-		smooth: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+		smooth: 'cubic-bezier(0.25, 1, 0.5, 1)',
 		back: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
 		bounce: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
 		expo: 'cubic-bezier(0.16, 1, 0.3, 1)',
@@ -1127,21 +1127,29 @@ function bind(container, config) {
 		}, evtOpts);
 	}
 
-	// Pointer Drag Gestures
+	// Pointer Drag Gestures with Velocity & rAF Optimization
 	let isDragging = false;
 	let startDragX = 0;
 	let currentDragX = 0;
-	const dragThreshold = 50;
+	let lastDragX = 0;
+	let lastDragTime = 0;
+	let dragVelocityX = 0;
+	let wasDragged = false;
+	let dragRafId = null;
+	const dragThreshold = 40;
 
 	const onPointerDown = (e) => {
-		// Prevent native HTML drag-and-drop / selection from hijacking the event
 		if (e.type === 'mousedown') {
 			e.preventDefault();
 		}
 
 		isDragging = true;
+		wasDragged = false;
 		startDragX = e.clientX || e.touches?.[0]?.clientX || 0;
 		currentDragX = startDragX;
+		lastDragX = startDragX;
+		lastDragTime = Date.now();
+		dragVelocityX = 0;
 
 		if (getEffect() === 'marquee') {
 			stopMarquee();
@@ -1153,9 +1161,10 @@ function bind(container, config) {
 		}
 	};
 
-	const onPointerMove = (e) => {
+	const renderDragPosition = () => {
+		dragRafId = null;
 		if (!isDragging) return;
-		currentDragX = e.clientX || e.touches?.[0]?.clientX || 0;
+
 		const diff = currentDragX - startDragX;
 
 		if (getEffect() === 'marquee') {
@@ -1170,8 +1179,6 @@ function bind(container, config) {
 			}
 			track.style.transform = `translate3d(${newX}px, 0, 0)`;
 		} else if (['slide', 'coverflow', 'card', 'perspective'].includes(getEffect())) {
-			// Drag bounds come from the SAME canonical positioner as the snapped
-			// layout, so dragging never jumps relative to where slides settle.
 			let baseTargetX = computeTargetX(currentIndex);
 			const minScrollX = computeTargetX(0);
 			const maxScrollX = computeTargetX(maxIndex);
@@ -1179,7 +1186,6 @@ function bind(container, config) {
 			let newX = baseTargetX + diff;
 
 			if (hasSeamlessLoop) {
-				// One full clone set is N equal-width slides — an exact step delta.
 				const singleSetWidth = originalSlidesCount * (getSlideWidth() + getActualGap());
 				const middleMinScrollX = computeTargetX(middleSetStart);
 				const middleMaxScrollX = computeTargetX(middleSetStart + originalSlidesCount - 1);
@@ -1192,16 +1198,16 @@ function bind(container, config) {
 					newX -= singleSetWidth;
 				} else if (newX < middleMaxScrollX) {
 					currentIndex -= originalSlidesCount;
-					startDragX -= singleSetWidth;
+					startDragX += singleSetWidth;
 					applyTransitions(currentIndex, false);
 					baseTargetX += singleSetWidth;
 					newX += singleSetWidth;
 				}
 			} else if (!getLoop()) {
 				if (newX > minScrollX) {
-					newX = minScrollX + (newX - minScrollX) * 0.2;
+					newX = minScrollX + (newX - minScrollX) * 0.25;
 				} else if (newX < maxScrollX) {
-					newX = maxScrollX + (newX - maxScrollX) * 0.2;
+					newX = maxScrollX + (newX - maxScrollX) * 0.25;
 				}
 			}
 
@@ -1209,9 +1215,33 @@ function bind(container, config) {
 		}
 	};
 
+	const onPointerMove = (e) => {
+		if (!isDragging) return;
+		currentDragX = e.clientX || e.touches?.[0]?.clientX || 0;
+		const now = Date.now();
+		const dt = now - lastDragTime;
+		if (dt > 8) {
+			dragVelocityX = (currentDragX - lastDragX) / dt;
+			lastDragTime = now;
+			lastDragX = currentDragX;
+		}
+
+		if (Math.abs(currentDragX - startDragX) > 6) {
+			wasDragged = true;
+		}
+
+		if (!dragRafId) {
+			dragRafId = requestAnimationFrame(renderDragPosition);
+		}
+	};
+
 	const onPointerUp = () => {
 		if (!isDragging) return;
 		isDragging = false;
+		if (dragRafId) {
+			cancelAnimationFrame(dragRafId);
+			dragRafId = null;
+		}
 		const diff = currentDragX - startDragX;
 
 		if (getEffect() === 'marquee') {
@@ -1226,8 +1256,9 @@ function bind(container, config) {
 			}
 			resumeSlider();
 		} else {
-			if (Math.abs(diff) > dragThreshold) {
-				if (diff > 0) {
+			const isFlick = Math.abs(dragVelocityX) > 0.35 && Math.abs(diff) > 15;
+			if (isFlick || Math.abs(diff) > dragThreshold) {
+				if (diff > 0 || dragVelocityX > 0.35) {
 					goToSlide(currentIndex - 1);
 				} else {
 					goToSlide(currentIndex + 1);
@@ -1243,10 +1274,15 @@ function bind(container, config) {
 	track.addEventListener('mousemove', onPointerMove, evtOpts);
 	window.addEventListener('mouseup', onPointerUp, evtOpts);
 
-	// Touch handlers never call preventDefault (the mouse path guards with
-	// e.type === 'mousedown'), so they're safe to register as passive. This
-	// clears Chrome's "non-passive scroll-blocking touchstart/touchmove" console
-	// violation and lets the browser scroll without waiting on our handler.
+	// Prevent accidental clicks on child links/buttons during drag
+	track.addEventListener('click', (e) => {
+		if (wasDragged) {
+			e.preventDefault();
+			e.stopPropagation();
+			wasDragged = false;
+		}
+	}, { capture: true, ...evtOpts });
+
 	const touchOpts = { signal: localController.signal, passive: true };
 	track.addEventListener('touchstart', onPointerDown, touchOpts);
 	track.addEventListener('touchmove', onPointerMove, touchOpts);
