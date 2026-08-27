@@ -355,11 +355,17 @@ class CustomIcons_Lite
 		if (! isset($_POST['post_id'])) {
 			return;
 		}
-		$process_id = sanitize_text_field(wp_unslash($_POST['post_id']));
-		$option_value = sanitize_text_field(wp_unslash($_POST['option_value']));
-		$option_name = sanitize_text_field(wp_unslash($_POST['option_name']));
-		update_post_meta($process_id, $option_name, $option_value);
-		wp_send_json(esc_html__('Update Settings', 'animation-addons-for-elementor'));
+		$process_id   = absint( sanitize_text_field( wp_unslash( $_POST['post_id'] ) ) );
+		$option_value = sanitize_text_field( wp_unslash( $_POST['option_value'] ) );
+		$option_name  = sanitize_key( wp_unslash( $_POST['option_name'] ) );
+
+		$allowed_options = array( 'aae_gl_load', 'wcf_addon_custom_icontype', 'wcf_addon_custom_icon_active' );
+		if ( ! in_array( $option_name, $allowed_options, true ) ) {
+			wp_send_json_error( esc_html__( 'Invalid option name.', 'animation-addons-for-elementor' ) );
+		}
+
+		update_post_meta( $process_id, $option_name, $option_value );
+		wp_send_json_success( esc_html__( 'Update Settings', 'animation-addons-for-elementor' ) );
 	}
 
 	/**

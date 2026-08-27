@@ -379,6 +379,10 @@ class CodeSnippet {
 
 			$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
 
+			if ( ! current_user_can( 'manage_options' ) ) {
+				wp_send_json_error( array( 'message' => esc_html__( 'You do not have permission to perform this action.', 'animation-addons-for-elementor' ) ) );
+			}
+
 			if ( ! wp_verify_nonce( $nonce, 'wcf_custom_code_security' ) ) {
 				$errormessage = array(
 					'message' => esc_html__( 'Nonce Varification Failed!', 'animation-addons-for-elementor' ),
@@ -535,7 +539,7 @@ class CodeSnippet {
 		}
 
 		// Check permissions.
-		if ( ! current_user_can( 'edit_posts' ) ) {
+		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => __( 'You do not have permission to perform this action.', 'animation-addons-for-elementor' ) ) );
 		}
 
