@@ -2221,11 +2221,18 @@ class WCF_Theme_Builder
 
 		if (isset($_POST)) {
 
+			if (! (current_user_can('manage_options') || current_user_can('edit_others_posts') || current_user_can('edit_posts'))) {
+				$errormessage = array(
+					'message' => esc_html__('You are unauthorized to perform this action!', 'animation-addons-for-elementor'),
+				);
+				wp_send_json_error($errormessage);
+			}
+
 			$nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
 
 			if (! wp_verify_nonce($nonce, 'wcf_tmp_nonce')) {
 				$errormessage = array(
-					'message' => esc_html__('Nonce Varification Faild !', 'animation-addons-for-elementor'),
+					'message' => esc_html__('Nonce Verification Failed!', 'animation-addons-for-elementor'),
 				);
 				wp_send_json_error($errormessage);
 			}

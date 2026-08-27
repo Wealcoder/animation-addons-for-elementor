@@ -9,6 +9,7 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\PropTypes\Dimensions_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 
@@ -96,7 +97,9 @@ class AAE_A_Slider_Track extends Atomic_Element_Base {
 		return [
 			'base' => Style_Definition::make()
 				->add_variant(
-					Style_Variant::make()->add_prop( 'padding', $zero )
+					Style_Variant::make()
+						->add_prop( 'padding', $zero )
+						->add_prop( 'overflow', String_Prop_Type::generate( 'visible' ) )
 				),
 		];
 	}

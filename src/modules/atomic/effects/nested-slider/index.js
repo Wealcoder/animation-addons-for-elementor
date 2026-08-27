@@ -26,6 +26,17 @@ function bind(container, config) {
 	const track = container.querySelector('.aae-slider-track');
 	if (!track) return;
 
+	// Ensure the track is enclosed in a dedicated viewport wrapper.
+	// This separates the slides clipping box (overflow: hidden) from the parent slider (.aae-a-slider),
+	// allowing external navigation buttons/pagination to remain fully visible without getting clipped.
+	let viewport = track.parentElement;
+	if (!viewport || !viewport.classList.contains('aae-slider__viewport')) {
+		viewport = document.createElement('div');
+		viewport.className = 'aae-slider__viewport';
+		track.parentNode.insertBefore(viewport, track);
+		viewport.appendChild(track);
+	}
+
 	// Real slides only. Match the slide class positively (rather than excluding
 	// known noise) so editor artifacts — element overlays, the empty-view
 	// placeholder, drag placeholders, injected <style>/<script> — are never
@@ -113,17 +124,18 @@ function bind(container, config) {
 	const getAutoplayDelay = () => Math.max(0, parseInt(r('autoplayDelay', 0)) || 0);
 	const getAutoplayDirection = () => r('autoplayDirection', 'right') === 'left' ? -1 : 1;
 	const getPauseOnHover = () => r('pauseOnHover', true) !== false && String(r('pauseOnHover', true)) !== 'false';
+	const getOverflow = () => r('overflow', 'visible');
 
 	const easingsMap = {
 		power1: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-		power2: 'cubic-bezier(0.25, 1, 0.5, 1)',
-		power3: 'cubic-bezier(0.165, 0.84, 0.44, 1)',
+		power2: 'cubic-bezier(0.16, 1, 0.3, 1)', // Apple/iOS ultra-smooth deceleration
+		power3: 'cubic-bezier(0.19, 1, 0.22, 1)',
 		power4: 'cubic-bezier(0.23, 1, 0.32, 1)',
-		power: 'cubic-bezier(0.25, 1, 0.5, 1)',
+		power: 'cubic-bezier(0.16, 1, 0.3, 1)',
 		elastic: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-		snappy: 'cubic-bezier(0.23, 1, 0.32, 1)',
+		snappy: 'cubic-bezier(0.2, 0.9, 0.2, 1)',
 		cinematic: 'cubic-bezier(0.16, 1, 0.3, 1)',
-		smooth: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+		smooth: 'cubic-bezier(0.25, 1, 0.5, 1)',
 		back: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
 		bounce: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
 		expo: 'cubic-bezier(0.16, 1, 0.3, 1)',
@@ -191,9 +203,17 @@ function bind(container, config) {
 		}
 		track.style.perspective = 'none';
 		track.style.transformStyle = 'preserve-3d';
+		track.style.overflow = 'visible';
 
-		// Dynamic overflow control to prevent 3D flattening
-		sliderDiv.style.overflow = '';
+		// Outer slider container stays visible for external navigation buttons/pagination
+		sliderDiv.style.overflow = 'visible';
+
+		// Viewport wrapper handles the clipping of slides according to the effect and overflow setting
+		if (viewport) {
+			const is3D = ['coverflow', 'card', 'perspective'].includes(getEffect());
+			const overflowSetting = getOverflow();
+			viewport.style.overflow = (is3D && overflowSetting === 'visible') ? 'visible' : (overflowSetting === 'hidden' ? 'hidden' : (is3D ? 'visible' : 'hidden'));
+		}
 	};
 
 	applyLayout();
@@ -254,6 +274,8 @@ function bind(container, config) {
 		sliderDiv.style.overflow = '';
 		track.style.perspective = '';
 		track.style.transformOrigin = '';
+		track.style.transformStyle = '';
+		track.style.overflow = '';
 		track.style.height = '';
 		track.style.width = '';
 		track.style.position = '';
@@ -615,6 +637,35 @@ function bind(container, config) {
 			const left = displayMaxIndex > 0 ? (displayIndex / displayMaxIndex) * (totalWidth - dragWidth) : 0;
 			scrollbarDrag.style.transform = `translateX(${left}px)`;
 		}
+
+		// Update Prev & Next button Disabled states (.e--disabled, .is-disabled, aria-disabled)
+		const isLoop = getLoop();
+		const isPrevDisabled = !isLoop && !hasSeamlessLoop && displayIndex <= 0;
+		const isNextDisabled = !isLoop && !hasSeamlessLoop && displayIndex >= displayMaxIndex;
+
+		prevBtns.forEach(btn => {
+			btn.classList.toggle('e--disabled', isPrevDisabled);
+			btn.classList.toggle('is-disabled', isPrevDisabled);
+			if (isPrevDisabled) {
+				btn.setAttribute('aria-disabled', 'true');
+				btn.setAttribute('tabindex', '-1');
+			} else {
+				btn.removeAttribute('aria-disabled');
+				btn.removeAttribute('tabindex');
+			}
+		});
+
+		nextBtns.forEach(btn => {
+			btn.classList.toggle('e--disabled', isNextDisabled);
+			btn.classList.toggle('is-disabled', isNextDisabled);
+			if (isNextDisabled) {
+				btn.setAttribute('aria-disabled', 'true');
+				btn.setAttribute('tabindex', '-1');
+			} else {
+				btn.removeAttribute('aria-disabled');
+				btn.removeAttribute('tabindex');
+			}
+		});
 	};
 
 	// 3D & Transition Math Engines
@@ -1067,14 +1118,22 @@ function bind(container, config) {
 
 	// Navigation click binds
 	prevBtns.forEach(btn => {
-		btn.addEventListener('click', () => {
+		btn.addEventListener('click', (e) => {
+			if (btn.classList.contains('e--disabled') || btn.getAttribute('aria-disabled') === 'true') {
+				e.preventDefault();
+				return;
+			}
 			goToSlide(currentIndex - 1);
 			resumeSlider();
 		}, evtOpts);
 	});
 
 	nextBtns.forEach(btn => {
-		btn.addEventListener('click', () => {
+		btn.addEventListener('click', (e) => {
+			if (btn.classList.contains('e--disabled') || btn.getAttribute('aria-disabled') === 'true') {
+				e.preventDefault();
+				return;
+			}
 			goToSlide(currentIndex + 1);
 			resumeSlider();
 		}, evtOpts);
@@ -1092,21 +1151,34 @@ function bind(container, config) {
 		}, evtOpts);
 	}
 
-	// Pointer Drag Gestures
+	// Pointer Drag Gestures with Velocity & rAF Optimization
 	let isDragging = false;
 	let startDragX = 0;
 	let currentDragX = 0;
-	const dragThreshold = 50;
+	let lastDragX = 0;
+	let lastDragTime = 0;
+	let dragVelocityX = 0;
+	let wasDragged = false;
+	let dragRafId = null;
+	const dragThreshold = 40;
 
 	const onPointerDown = (e) => {
-		// Prevent native HTML drag-and-drop / selection from hijacking the event
 		if (e.type === 'mousedown') {
 			e.preventDefault();
+			window.addEventListener('mousemove', onPointerMove, evtOpts);
+			window.addEventListener('mouseup', onPointerUp, evtOpts);
+		} else {
+			window.addEventListener('touchmove', onPointerMove, touchOpts);
+			window.addEventListener('touchend', onPointerUp, touchOpts);
 		}
 
 		isDragging = true;
+		wasDragged = false;
 		startDragX = e.clientX || e.touches?.[0]?.clientX || 0;
 		currentDragX = startDragX;
+		lastDragX = startDragX;
+		lastDragTime = Date.now();
+		dragVelocityX = 0;
 
 		if (getEffect() === 'marquee') {
 			stopMarquee();
@@ -1118,9 +1190,10 @@ function bind(container, config) {
 		}
 	};
 
-	const onPointerMove = (e) => {
+	const renderDragPosition = () => {
+		dragRafId = null;
 		if (!isDragging) return;
-		currentDragX = e.clientX || e.touches?.[0]?.clientX || 0;
+
 		const diff = currentDragX - startDragX;
 
 		if (getEffect() === 'marquee') {
@@ -1135,8 +1208,6 @@ function bind(container, config) {
 			}
 			track.style.transform = `translate3d(${newX}px, 0, 0)`;
 		} else if (['slide', 'coverflow', 'card', 'perspective'].includes(getEffect())) {
-			// Drag bounds come from the SAME canonical positioner as the snapped
-			// layout, so dragging never jumps relative to where slides settle.
 			let baseTargetX = computeTargetX(currentIndex);
 			const minScrollX = computeTargetX(0);
 			const maxScrollX = computeTargetX(maxIndex);
@@ -1144,7 +1215,6 @@ function bind(container, config) {
 			let newX = baseTargetX + diff;
 
 			if (hasSeamlessLoop) {
-				// One full clone set is N equal-width slides — an exact step delta.
 				const singleSetWidth = originalSlidesCount * (getSlideWidth() + getActualGap());
 				const middleMinScrollX = computeTargetX(middleSetStart);
 				const middleMaxScrollX = computeTargetX(middleSetStart + originalSlidesCount - 1);
@@ -1157,16 +1227,16 @@ function bind(container, config) {
 					newX -= singleSetWidth;
 				} else if (newX < middleMaxScrollX) {
 					currentIndex -= originalSlidesCount;
-					startDragX -= singleSetWidth;
+					startDragX += singleSetWidth;
 					applyTransitions(currentIndex, false);
 					baseTargetX += singleSetWidth;
 					newX += singleSetWidth;
 				}
 			} else if (!getLoop()) {
 				if (newX > minScrollX) {
-					newX = minScrollX + (newX - minScrollX) * 0.2;
+					newX = minScrollX + (newX - minScrollX) * 0.25;
 				} else if (newX < maxScrollX) {
-					newX = maxScrollX + (newX - maxScrollX) * 0.2;
+					newX = maxScrollX + (newX - maxScrollX) * 0.25;
 				}
 			}
 
@@ -1174,9 +1244,37 @@ function bind(container, config) {
 		}
 	};
 
+	const onPointerMove = (e) => {
+		if (!isDragging) return;
+		currentDragX = e.clientX || e.touches?.[0]?.clientX || 0;
+		const now = Date.now();
+		const dt = now - lastDragTime;
+		if (dt > 8) {
+			dragVelocityX = (currentDragX - lastDragX) / dt;
+			lastDragTime = now;
+			lastDragX = currentDragX;
+		}
+
+		if (Math.abs(currentDragX - startDragX) > 6) {
+			wasDragged = true;
+		}
+
+		if (!dragRafId) {
+			dragRafId = requestAnimationFrame(renderDragPosition);
+		}
+	};
+
 	const onPointerUp = () => {
 		if (!isDragging) return;
 		isDragging = false;
+		if (dragRafId) {
+			cancelAnimationFrame(dragRafId);
+			dragRafId = null;
+		}
+		window.removeEventListener('mousemove', onPointerMove, evtOpts);
+		window.removeEventListener('mouseup', onPointerUp, evtOpts);
+		window.removeEventListener('touchmove', onPointerMove, touchOpts);
+		window.removeEventListener('touchend', onPointerUp, touchOpts);
 		const diff = currentDragX - startDragX;
 
 		if (getEffect() === 'marquee') {
@@ -1191,8 +1289,9 @@ function bind(container, config) {
 			}
 			resumeSlider();
 		} else {
-			if (Math.abs(diff) > dragThreshold) {
-				if (diff > 0) {
+			const isFlick = Math.abs(dragVelocityX) > 0.35 && Math.abs(diff) > 15;
+			if (isFlick || Math.abs(diff) > dragThreshold) {
+				if (diff > 0 || dragVelocityX > 0.35) {
 					goToSlide(currentIndex - 1);
 				} else {
 					goToSlide(currentIndex + 1);
@@ -1205,22 +1304,26 @@ function bind(container, config) {
 	};
 
 	track.addEventListener('mousedown', onPointerDown, evtOpts);
-	track.addEventListener('mousemove', onPointerMove, evtOpts);
-	window.addEventListener('mouseup', onPointerUp, evtOpts);
 
-	// Touch handlers never call preventDefault (the mouse path guards with
-	// e.type === 'mousedown'), so they're safe to register as passive. This
-	// clears Chrome's "non-passive scroll-blocking touchstart/touchmove" console
-	// violation and lets the browser scroll without waiting on our handler.
+	// Prevent accidental clicks on child links/buttons during drag
+	track.addEventListener('click', (e) => {
+		if (wasDragged) {
+			e.preventDefault();
+			e.stopPropagation();
+			wasDragged = false;
+		}
+	}, { capture: true, ...evtOpts });
+
 	const touchOpts = { signal: localController.signal, passive: true };
 	track.addEventListener('touchstart', onPointerDown, touchOpts);
-	track.addEventListener('touchmove', onPointerMove, touchOpts);
-	window.addEventListener('touchend', onPointerUp, touchOpts);
 
-	// Window resize handler
-	window.addEventListener(
-		'resize',
-		() => {
+	// Throttled window resize handler using rAF
+	let resizeRafId = null;
+	const handleResize = () => {
+		if (resizeRafId) return;
+		resizeRafId = requestAnimationFrame(() => {
+			resizeRafId = null;
+			if (!container.isConnected) return;
 			applyLayout();
 			const newSlidesPerView = getSlidesPerView();
 			if (newSlidesPerView !== currentSlidesPerView) {
@@ -1229,26 +1332,34 @@ function bind(container, config) {
 				return;
 			}
 			goToSlide(currentIndex, false);
-		},
-		evtOpts
-	);
+		});
+	};
+	window.addEventListener('resize', handleResize, evtOpts);
 
-	// Re-center when the track's box actually changes size. Elementor can apply
-	// the slide/.e-con padding and final width a tick or two after render, which
-	// would otherwise leave the first paint off-center until the user navigates.
-	// Transform changes don't alter size, so re-centering here can't loop.
+	// Re-center when the track's box actually changes size.
+	// Uses rAF throttling and disconnect cleanup to prevent memory leaks and layout thrashing.
 	if (typeof ResizeObserver !== 'undefined' && getEffect() !== 'marquee') {
 		let lastTrackW = track.clientWidth;
+		let roRafId = null;
 		const ro = new ResizeObserver(() => {
-			if (isDragging) return;
+			if (isDragging || !container.isConnected) return;
 			const w = track.clientWidth;
 			if (w !== lastTrackW) {
 				lastTrackW = w;
-				goToSlide(currentIndex, false);
+				if (roRafId) cancelAnimationFrame(roRafId);
+				roRafId = requestAnimationFrame(() => {
+					roRafId = null;
+					if (container.isConnected) {
+						goToSlide(currentIndex, false);
+					}
+				});
 			}
 		});
 		ro.observe(track);
-		sliderDiv._aaeSliderResizeCleanup = () => ro.disconnect();
+		sliderDiv._aaeSliderResizeCleanup = () => {
+			if (roRafId) cancelAnimationFrame(roRafId);
+			ro.disconnect();
+		};
 	}
 
 	// Mutation Observer for added/removed slides in Editor
@@ -1310,38 +1421,6 @@ function bind(container, config) {
 	};
 	window.addEventListener('aae/slider/edit-slide', onEditSlide, evtOpts);
 
-	// Editor affordance: clicking a slide's content on the canvas (its text/widget,
-	// or selecting it via Elementor's element handle/context menu — both land a
-	// pointer event inside the slide) should bring that slide into view, same as
-	// clicking its row in the panel's "Slides" list. Without this, selecting a
-	// widget in a not-currently-visible slide leaves it off-screen and unreachable.
-	// Delegated from the slider root so it survives slide re-renders. A movement
-	// guard skips drags (the drag gesture owns those) so a swipe doesn't also snap.
-	if (isEditMode) {
-		let downX = 0, downY = 0, downIdx = -1;
-		const slideIndexOf = (target) => {
-			const slide = target && target.closest && target.closest('.aae-a-slide');
-			if (!slide || !track.contains(slide)) return -1;
-			return getSlides().indexOf(slide);
-		};
-		const onCanvasDown = (e) => {
-			downX = e.clientX || 0;
-			downY = e.clientY || 0;
-			downIdx = slideIndexOf(e.target);
-		};
-		const onCanvasUp = (e) => {
-			if (downIdx < 0) return;
-			const dx = Math.abs((e.clientX || 0) - downX);
-			const dy = Math.abs((e.clientY || 0) - downY);
-			// Treat as a click only if the pointer barely moved (not a drag/swipe).
-			if (dx <= 6 && dy <= 6 && downIdx !== currentIndex) {
-				revealSlide(downIdx);
-			}
-			downIdx = -1;
-		};
-		sliderDiv.addEventListener('pointerdown', onCanvasDown, { capture: true, signal: localController.signal });
-		sliderDiv.addEventListener('pointerup', onCanvasUp, { capture: true, signal: localController.signal });
-	}
 	const prevEditCleanup = sliderDiv._aaeSliderEditCleanup;
 	sliderDiv._aaeSliderEditCleanup = () => {
 		window.removeEventListener('aae/slider/edit-slide', onEditSlide, evtOpts);
@@ -1379,8 +1458,11 @@ function bind(container, config) {
 }
 
 function unbind(el) {
-	// Disconnect the MutationObserver FIRST so clone removal in _aaeSliderCleanup
-	// doesn't fire reInit on the outgoing observer before it is torn down.
+	// Disconnect observers FIRST so DOM removal doesn't re-trigger callbacks
+	if (el._aaeSliderResizeCleanup) {
+		el._aaeSliderResizeCleanup();
+		delete el._aaeSliderResizeCleanup;
+	}
 	if (el._aaeSliderObserverCleanup) {
 		el._aaeSliderObserverCleanup();
 		delete el._aaeSliderObserverCleanup;
@@ -1410,7 +1492,6 @@ const refreshSliderById = (id, reason = 'manual') => {
 	const element = getSliderElementById(id);
 
 	if (!element) {
-		console.warn('AAE slider refresh failed: element not found', { id, reason });
 		return;
 	}
 
@@ -1423,13 +1504,16 @@ const refreshSliderById = (id, reason = 'manual') => {
 };
 
 /**
- * Custom bridge event from parent editor window.
+ * Custom bridge event from parent editor window (attached once per window lifecycle).
  */
-window.addEventListener('aae:slider:refresh', (event) => {
-	const id = event.detail?.id;
-	const reason = event.detail?.reason || 'custom-event';
-	refreshSliderById(id, reason);
-});
+if (!window._aaeSliderRefreshListenerAttached) {
+	window._aaeSliderRefreshListenerAttached = true;
+	window.addEventListener('aae:slider:refresh', (event) => {
+		const id = event.detail?.id;
+		const reason = event.detail?.reason || 'custom-event';
+		refreshSliderById(id, reason);
+	});
+}
 
 window.AAEADDON.register({
 	name: 'nested-slider',

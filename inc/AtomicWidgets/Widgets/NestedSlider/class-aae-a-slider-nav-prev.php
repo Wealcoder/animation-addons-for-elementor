@@ -25,6 +25,7 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Dimensions_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Number_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Box_Shadow_Prop_Type;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
+use Elementor\Modules\AtomicWidgets\Styles\Style_States;
 
 class AAE_A_Slider_Nav_Prev extends Atomic_Element_Base {
 	use Has_Element_Template;
@@ -35,6 +36,12 @@ class AAE_A_Slider_Nav_Prev extends Atomic_Element_Base {
 
 	public function should_show_in_panel() {
 		return false; 
+	}
+
+	protected function define_atomic_style_states(): array {
+		return [
+			Style_States::get_class_states_map()['disabled'],
+		];
 	}
 
 	protected function define_default_children() {
@@ -103,8 +110,6 @@ class AAE_A_Slider_Nav_Prev extends Atomic_Element_Base {
 	protected function define_base_styles(): array {
 		$styles = [
 			'position' => String_Prop_Type::generate( 'absolute' ),
-			'inset-block-start' => Size_Prop_Type::generate([ 'size' => 50, 'unit' => '%' ]),
-			'inset-inline-start' => Size_Prop_Type::generate([ 'size' => 20, 'unit' => 'px' ]),
 			'z-index' => Number_Prop_Type::generate( 10 ),
 			// FIXED round badge — NOT icon-driven. The nav's SVG child renders at
 			// different sizes depending on the element's age: a fresh drop carries the
@@ -133,12 +138,18 @@ class AAE_A_Slider_Nav_Prev extends Atomic_Element_Base {
 			'display' => String_Prop_Type::generate( 'flex' ),
 			'align-items' => String_Prop_Type::generate( 'center' ),
 			'justify-content' => String_Prop_Type::generate( 'center' ),
-			'cursor' => String_Prop_Type::generate( 'pointer' ),
 		];
 
 		return [
 			self::BASE_STYLE_KEY => Style_Definition::make()
-				->add_variant( Style_Variant::make()->add_props($styles) ),
+				->add_variant( Style_Variant::make()->add_props($styles) )
+				->add_variant(
+					Style_Variant::make()
+						->set_state( Style_States::DISABLED )
+						->add_props( [
+							'opacity' => Size_Prop_Type::generate( [ 'size' => 40, 'unit' => '%' ] ),
+						] )
+				),
 		];
 	}
 
