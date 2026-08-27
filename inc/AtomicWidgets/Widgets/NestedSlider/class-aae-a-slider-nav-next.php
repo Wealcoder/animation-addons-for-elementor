@@ -103,8 +103,6 @@ class AAE_A_Slider_Nav_Next extends Atomic_Element_Base {
 	protected function define_base_styles(): array {
 		$styles = [
 			'position' => String_Prop_Type::generate( 'absolute' ),
-			'inset-block-start' => Size_Prop_Type::generate([ 'size' => 50, 'unit' => '%' ]),
-			'inset-inline-end' => Size_Prop_Type::generate([ 'size' => 20, 'unit' => 'px' ]),
 			'z-index' => Number_Prop_Type::generate( 10 ),
 			// FIXED round badge — NOT icon-driven. The nav's SVG child renders at
 			// different sizes depending on the element's age: a fresh drop carries the

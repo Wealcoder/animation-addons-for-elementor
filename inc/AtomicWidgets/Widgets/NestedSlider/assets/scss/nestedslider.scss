@@ -66,6 +66,18 @@
     // Atomic_Svg's 65px) from overflowing the round badge, but a size the
     // user explicitly sets — up to the available ~28px — now actually takes
     // effect.
+    .aae-a-navigator-prev {
+        inset-block-start: 50%;
+        inset-inline-start: 20px;
+        transform: translateY(-50%);
+    }
+
+    .aae-a-navigator-next {
+        inset-block-start: 50%;
+        inset-inline-end: 20px;
+        transform: translateY(-50%);
+    }
+
     .aae-a-navigator-prev,
     .aae-a-navigator-next {
         .e-svg-base,
