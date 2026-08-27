@@ -37,7 +37,17 @@ function applyTsState(wrapper, checked) {
   after?.classList.toggle('active', checked);
   after?.classList.toggle('e--selected', checked);
   after?.setAttribute('aria-selected', String(checked));
-  wrapper.querySelectorAll('.aae-ts-switch').forEach((el) => el.classList.toggle('active', checked));
+  // `active` still drives the transform-based slide (both the classic
+  // Knob's fixed 20px travel and the Pill Knob's 100% travel — see
+  // toggle-switcher.scss); `e--selected` is the same Style-panel state as
+  // the labels above, now also exposed on Track and Knob so their own
+  // background/border/color can be edited per-instance for the "on" look,
+  // replacing the old hardcoded `var(--aae-ts-switcher-active-bg)` rule.
+  wrapper.querySelectorAll('.aae-ts-switch').forEach((el) => {
+    el.classList.toggle('active', checked);
+    el.classList.toggle('e--selected', checked);
+  });
+  wrapper.querySelectorAll('.aae-ts-knob').forEach((el) => el.classList.toggle('e--selected', checked));
 }
 
 function syncInitialState(wrapper) {

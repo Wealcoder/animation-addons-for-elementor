@@ -7,10 +7,14 @@
 		transform: translate(20px, -50%);
 	}
 
-	.aae-ts-switch.active {
-		background-color: var(--aae-ts-switcher-active-bg, #000000);
-		border-color: var(--aae-ts-switcher-active-bg, #000000);
-	}
+	// The Track/Knob "on" look (background/border color) used to be this
+	// hardcoded rule, keyed to an undefined custom property
+	// (`--aae-ts-switcher-active-bg`, always resolving to its #000000
+	// fallback) — never editable from the panel. Track and Knob now both
+	// expose a real Style-panel "Selected" state (toggle-switcher.js toggles
+	// `e--selected` on them alongside `active`), so that per-instance local
+	// style is the only thing controlling the "on" color now — no shared
+	// hardcoded fallback needed or wanted here.
 
 	.aae-ts-label-before.active .aae-ts-highlight,
 	.aae-ts-label-after.active .aae-ts-highlight {
@@ -29,16 +33,42 @@
 		transform: translateX(100%);
 	}
 
-	// Track must stay fully invisible in the Pill look — Knob alone supplies
-	// the visible highlight. Without this, the classic Switch preset's own
-	// "on" color above (`.aae-ts-switch.active`) would paint a black fill
-	// through Track's local transparent background whenever Yearly is
-	// selected, since that 3-class rule beats a 1-class local-style
-	// override. Scoped to `aae-ts-switch--pill` (one extra class = higher
-	// specificity) so the classic preset's actual switch-pill color is
-	// untouched.
-	.aae-ts-switch.aae-ts-switch--pill.active {
-		background-color: transparent;
-		border-color: transparent;
+	// Elementor's editor briefly renders every widget through a "remote
+	// render" placeholder pass (WidgetView.handleEmptyWidget() in Elementor
+	// core's editor.js) that stamps `.elementor-widget-empty` + a large
+	// centered `.elementor-widget-empty-icon` onto the wrapper — styled by
+	// Elementor's own editor-preview.css with a grey background and 22px
+	// icon padding. For this leaf widget the placeholder never gets cleaned
+	// back off once the real `.aae-ts-knob` content mounts alongside it, so
+	// both render together: the actual tiny dot underneath a much larger
+	// grey "add content" placeholder. Knob is an internal, non-draggable,
+	// content-less decorative dot (`show_in_panel(): false` — never meant to
+	// be dropped/filled by a builder), so that affordance is meaningless
+	// here; neutralize it. Editor-only — these classes never render on the
+	// frontend, so this is a no-op there.
+	.elementor-element.elementor-widget-e-aae-a-toggle-switcher-knob.elementor-widget-empty {
+		background: none !important;
+
+		.elementor-widget-empty-icon,
+		.ui-resizable-handle {
+			display: none !important;
+		}
+	}
+
+	// The SAME "remote render" placeholder pass also runs Knob's wrapper
+	// through jQuery UI's resizable() (hence `.ui-resizable` above), which
+	// sets `position: relative` on it (as an inline style, so it survives
+	// the rule above and needs !important here too) so its own resize
+	// handles can be absolutely positioned inside it. That wrapper sits
+	// BETWEEN Track and this widget's own `.aae-ts-knob` div — so once it
+	// becomes positioned, it (not Track) becomes `.aae-ts-knob`'s CSS
+	// containing block, and `.aae-ts-knob`'s own inset/percentage sizing
+	// resolves against ITS collapsed/empty box instead of Track's, computing
+	// to zero size (invisible) rather than the intended half-Track pill.
+	// Force it back to a non-positioning static box so `.aae-ts-knob`
+	// anchors to Track as intended — its resize handles are already hidden
+	// above, so this loses nothing. Editor-only, no-op on the frontend.
+	.elementor-widget-e-aae-a-toggle-switcher-knob {
+		position: static !important;
 	}
 }

@@ -1,30 +1,30 @@
 {
-    "name": "toggle-switcher-sliding-pill",
+    "name": "toggle-switcher-style-switch",
     "model": {
-        "id": "psw000",
-        "settings": [],
+        "id": "730519f1",
+        "settings": {
+            "classes": { "$$type": "classes", "value": ["e-730519f1-8249938"] }
+        },
         "elements": [
             {
-                "id": "psw001",
-                "settings": {
-                    "classes": { "$$type": "classes", "value": [] }
-                },
+                "id": "22a5ad9f",
+                "settings": [],
                 "elements": [
                     {
-                        "id": "psw010",
+                        "id": "345b9818",
                         "settings": {
-                            "classes": { "$$type": "classes", "value": ["e-psw010-row"] }
+                            "classes": { "$$type": "classes", "value": ["e-345b9818-bc56781"] }
                         },
                         "elements": [
                             {
-                                "id": "psw011",
+                                "id": "11a7b74a",
                                 "settings": {
-                                    "is_after": { "$$type": "boolean", "value": false },
-                                    "classes": { "$$type": "classes", "value": ["e-psw011-label"] }
+                                    "classes": { "$$type": "classes", "value": ["e-11a7b74a-764afb2"] },
+                                    "is_after": { "$$type": "boolean", "value": false }
                                 },
                                 "elements": [
                                     {
-                                        "id": "psw0111",
+                                        "id": "64fd2232",
                                         "settings": {
                                             "paragraph": {
                                                 "$$type": "html-v3",
@@ -44,54 +44,16 @@
                                 "isInner": false,
                                 "elType": "e-aae-a-toggle-switcher-label",
                                 "styles": {
-                                    "e-psw011-label": {
-                                        "id": "e-psw011-label",
+                                    "e-11a7b74a-764afb2": {
+                                        "id": "e-11a7b74a-764afb2",
                                         "label": "local",
                                         "type": "class",
                                         "variants": [
                                             {
                                                 "meta": { "breakpoint": "desktop", "state": null },
-                                "props": {
-                                                    "flex": {
-                                                        "$$type": "flex",
-                                                        "value": {
-                                                            "flexGrow": { "$$type": "number", "value": 1 },
-                                                            "flexShrink": { "$$type": "number", "value": 1 },
-                                                            "flexBasis": { "$$type": "size", "value": { "unit": "%", "size": 0 } }
-                                                        }
-                                                    },
-                                                    "position": { "$$type": "string", "value": "relative" },
-                                                    "z-index": { "$$type": "number", "value": 1 },
-                                                    "justify-content": { "$$type": "string", "value": "center" },
-                                                    "align-items": { "$$type": "string", "value": "center" },
-                                                    "color": { "$$type": "color", "value": "#6b7280" },
-                                                    "transition": {
-                                                        "$$type": "transition",
-                                                        "value": [
-                                                            {
-                                                                "$$type": "selection-size",
-                                                                "value": {
-                                                                    "selection": {
-                                                                        "$$type": "key-value",
-                                                                        "value": {
-                                                                            "key": { "$$type": "string", "value": "All properties" },
-                                                                            "value": { "$$type": "string", "value": "all" }
-                                                                        }
-                                                                    },
-                                                                    "size": { "$$type": "size", "value": { "unit": "ms", "size": 250 } }
-                                                                }
-                                                            }
-                                                        ]
-                                                    },
-                                                    "padding": {
-                                                        "$$type": "dimensions",
-                                                        "value": {
-                                                            "block-start": { "$$type": "size", "value": { "unit": "px", "size": 8 } },
-                                                            "inline-end": { "$$type": "size", "value": { "unit": "px", "size": 16 } },
-                                                            "block-end": { "$$type": "size", "value": { "unit": "px", "size": 8 } },
-                                                            "inline-start": { "$$type": "size", "value": { "unit": "px", "size": 16 } }
-                                                        }
-                                                    }
+                                                "props": {
+                                                    "width": { "$$type": "size", "value": { "unit": "auto", "size": "" } },
+                                                    "cursor": { "$$type": "string", "value": "pointer" }
                                                 },
                                                 "custom_css": null
                                             },
@@ -111,41 +73,40 @@
                                 "version": "0.0"
                             },
                             {
-                                "id": "psw012",
+                                "id": "64374d32",
                                 "settings": {
-                                    "is_pill": { "$$type": "boolean", "value": true },
-                                    "classes": { "$$type": "classes", "value": ["e-psw012-switch"] }
+                                    "classes": { "$$type": "classes", "value": ["e-64374d32-34f24b9"] }
                                 },
                                 "elements": [
                                     {
-                                        "id": "psw0121",
+                                        "id": "2ecdd4a8",
                                         "settings": {
-                                            "is_pill": { "$$type": "boolean", "value": true },
-                                            "classes": { "$$type": "classes", "value": ["e-psw0121-knob"] }
+                                            "classes": { "$$type": "classes", "value": ["e-2ecdd4a8-4925883"] }
                                         },
                                         "elements": [],
                                         "isInner": false,
                                         "widgetType": "e-aae-a-toggle-switcher-knob",
                                         "elType": "widget",
                                         "styles": {
-                                            "e-psw0121-knob": {
-                                                "id": "e-psw0121-knob",
+                                            "e-2ecdd4a8-4925883": {
+                                                "id": "e-2ecdd4a8-4925883",
                                                 "label": "local",
                                                 "type": "class",
                                                 "variants": [
                                                     {
                                                         "meta": { "breakpoint": "desktop", "state": null },
                                                         "props": {
-                                                            "position": { "$$type": "string", "value": "absolute" },
-                                                            "width": { "$$type": "size", "value": { "unit": "%", "size": 50 } },
-                                                            "height": { "$$type": "size", "value": { "unit": "%", "size": 100 } },
+                                                            "width": { "$$type": "size", "value": { "unit": "px", "size": 16 } },
+                                                            "height": { "$$type": "size", "value": { "unit": "px", "size": 16 } },
                                                             "min-width": { "$$type": "size", "value": { "unit": "px", "size": 0 } },
-                                                            "inset-block-start": { "$$type": "size", "value": { "unit": "px", "size": 0 } },
+                                                            "position": { "$$type": "string", "value": "absolute" },
+                                                            "inset-block-start": { "$$type": "size", "value": { "unit": "%", "size": 50 } },
                                                             "inset-inline-start": { "$$type": "size", "value": { "unit": "px", "size": 0 } },
-                                                            "border-radius": { "$$type": "size", "value": { "unit": "px", "size": 999 } },
+                                                            "padding": { "$$type": "size", "value": { "unit": "px", "size": 0 } },
+                                                            "border-radius": { "$$type": "size", "value": { "unit": "%", "size": 50 } },
                                                             "background": {
                                                                 "$$type": "background",
-                                                                "value": { "color": { "$$type": "color", "value": "#f5d949" } }
+                                                                "value": { "color": { "$$type": "color", "value": "#ffffff" } }
                                                             },
                                                             "transform": {
                                                                 "$$type": "transform",
@@ -157,7 +118,7 @@
                                                                                 "$$type": "transform-move",
                                                                                 "value": {
                                                                                     "x": { "$$type": "size", "value": { "unit": "px", "size": 0 } },
-                                                                                    "y": { "$$type": "size", "value": { "unit": "px", "size": 0 } },
+                                                                                    "y": { "$$type": "size", "value": { "unit": "%", "size": -50 } },
                                                                                     "z": { "$$type": "size", "value": { "unit": "px", "size": 0 } }
                                                                                 }
                                                                             }
@@ -178,11 +139,12 @@
                                                                                     "value": { "$$type": "string", "value": "all" }
                                                                                 }
                                                                             },
-                                                                            "size": { "$$type": "size", "value": { "unit": "ms", "size": 350 } }
+                                                                            "size": { "$$type": "size", "value": { "unit": "ms", "size": 400 } }
                                                                         }
                                                                     }
                                                                 ]
-                                                            }
+                                                            },
+                                                            "display": { "$$type": "string", "value": "inline-block" }
                                                         },
                                                         "custom_css": null
                                                     }
@@ -190,36 +152,48 @@
                                             }
                                         },
                                         "interactions": [],
-                                        "editor_settings": { "title": "Sliding Pill" },
+                                        "editor_settings": [],
                                         "version": "0.0"
                                     }
                                 ],
                                 "isInner": false,
-                                "widgetType": "e-aae-a-toggle-switcher-track",
-                                "elType": "widget",
+                                "elType": "e-aae-a-toggle-switcher-track",
                                 "styles": {
-                                    "e-psw012-switch": {
-                                        "id": "e-psw012-switch",
+                                    "e-64374d32-34f24b9": {
+                                        "id": "e-64374d32-34f24b9",
                                         "label": "local",
                                         "type": "class",
                                         "variants": [
                                             {
                                                 "meta": { "breakpoint": "desktop", "state": null },
                                                 "props": {
-                                                    "position": { "$$type": "string", "value": "absolute" },
-                                                    "width": { "$$type": "size", "value": { "unit": "auto", "size": "" } },
-                                                    "height": { "$$type": "size", "value": { "unit": "auto", "size": "" } },
+                                                    "width": { "$$type": "size", "value": { "unit": "px", "size": 40 } },
+                                                    "height": { "$$type": "size", "value": { "unit": "px", "size": 20 } },
                                                     "min-width": { "$$type": "size", "value": { "unit": "px", "size": 0 } },
-                                                    "inset-block-start": { "$$type": "size", "value": { "unit": "px", "size": 4 } },
-                                                    "inset-block-end": { "$$type": "size", "value": { "unit": "px", "size": 4 } },
-                                                    "inset-inline-start": { "$$type": "size", "value": { "unit": "px", "size": 4 } },
-                                                    "inset-inline-end": { "$$type": "size", "value": { "unit": "px", "size": 4 } },
-                                                    "border-width": { "$$type": "size", "value": { "unit": "px", "size": 0 } },
+                                                    "min-height": { "$$type": "size", "value": { "unit": "px", "size": 0 } },
+                                                    "position": { "$$type": "string", "value": "relative" },
+                                                    "cursor": { "$$type": "string", "value": "pointer" },
+                                                    "padding": { "$$type": "size", "value": { "unit": "px", "size": 0 } },
+                                                    "border-radius": { "$$type": "size", "value": { "unit": "px", "size": 10 } },
+                                                    "border-width": { "$$type": "size", "value": { "unit": "px", "size": 2 } },
+                                                    "border-color": { "$$type": "color", "value": "#999999" },
+                                                    "border-style": { "$$type": "string", "value": "solid" },
                                                     "background": {
                                                         "$$type": "background",
-                                                        "value": { "color": { "$$type": "color", "value": "transparent" } }
+                                                        "value": { "color": { "$$type": "color", "value": "#999999" } }
                                                     },
-                                                    "z-index": { "$$type": "number", "value": 0 }
+                                                    "display": { "$$type": "string", "value": "inline-block" }
+                                                },
+                                                "custom_css": null
+                                            },
+                                            {
+                                                "meta": { "breakpoint": "desktop", "state": "e--selected" },
+                                                "props": {
+                                                    "background": {
+                                                        "$$type": "background",
+                                                        "value": { "color": { "$$type": "color", "value": "#000000" } }
+                                                    },
+                                                    "border-color": { "$$type": "color", "value": "#000000" }
                                                 },
                                                 "custom_css": null
                                             }
@@ -231,14 +205,14 @@
                                 "version": "0.0"
                             },
                             {
-                                "id": "psw013",
+                                "id": "4a93174e",
                                 "settings": {
-                                    "is_after": { "$$type": "boolean", "value": true },
-                                    "classes": { "$$type": "classes", "value": ["e-psw013-label"] }
+                                    "classes": { "$$type": "classes", "value": ["e-4a93174e-8b5b59b"] },
+                                    "is_after": { "$$type": "boolean", "value": true }
                                 },
                                 "elements": [
                                     {
-                                        "id": "psw0131",
+                                        "id": "45a8d2f4",
                                         "settings": {
                                             "paragraph": {
                                                 "$$type": "html-v3",
@@ -258,54 +232,16 @@
                                 "isInner": false,
                                 "elType": "e-aae-a-toggle-switcher-label",
                                 "styles": {
-                                    "e-psw013-label": {
-                                        "id": "e-psw013-label",
+                                    "e-4a93174e-8b5b59b": {
+                                        "id": "e-4a93174e-8b5b59b",
                                         "label": "local",
                                         "type": "class",
                                         "variants": [
                                             {
                                                 "meta": { "breakpoint": "desktop", "state": null },
-                                "props": {
-                                                    "flex": {
-                                                        "$$type": "flex",
-                                                        "value": {
-                                                            "flexGrow": { "$$type": "number", "value": 1 },
-                                                            "flexShrink": { "$$type": "number", "value": 1 },
-                                                            "flexBasis": { "$$type": "size", "value": { "unit": "%", "size": 0 } }
-                                                        }
-                                                    },
-                                                    "position": { "$$type": "string", "value": "relative" },
-                                                    "z-index": { "$$type": "number", "value": 1 },
-                                                    "justify-content": { "$$type": "string", "value": "center" },
-                                                    "align-items": { "$$type": "string", "value": "center" },
-                                                    "color": { "$$type": "color", "value": "#6b7280" },
-                                                    "transition": {
-                                                        "$$type": "transition",
-                                                        "value": [
-                                                            {
-                                                                "$$type": "selection-size",
-                                                                "value": {
-                                                                    "selection": {
-                                                                        "$$type": "key-value",
-                                                                        "value": {
-                                                                            "key": { "$$type": "string", "value": "All properties" },
-                                                                            "value": { "$$type": "string", "value": "all" }
-                                                                        }
-                                                                    },
-                                                                    "size": { "$$type": "size", "value": { "unit": "ms", "size": 250 } }
-                                                                }
-                                                            }
-                                                        ]
-                                                    },
-                                                    "padding": {
-                                                        "$$type": "dimensions",
-                                                        "value": {
-                                                            "block-start": { "$$type": "size", "value": { "unit": "px", "size": 8 } },
-                                                            "inline-end": { "$$type": "size", "value": { "unit": "px", "size": 16 } },
-                                                            "block-end": { "$$type": "size", "value": { "unit": "px", "size": 8 } },
-                                                            "inline-start": { "$$type": "size", "value": { "unit": "px", "size": 16 } }
-                                                        }
-                                                    }
+                                                "props": {
+                                                    "width": { "$$type": "size", "value": { "unit": "auto", "size": "" } },
+                                                    "cursor": { "$$type": "string", "value": "pointer" }
                                                 },
                                                 "custom_css": null
                                             },
@@ -328,32 +264,43 @@
                         "isInner": false,
                         "elType": "e-flexbox",
                         "styles": {
-                            "e-psw010-row": {
-                                "id": "e-psw010-row",
+                            "e-345b9818-0604e57": {
+                                "id": "e-345b9818-0604e57",
                                 "label": "local",
                                 "type": "class",
                                 "variants": [
                                     {
                                         "meta": { "breakpoint": "desktop", "state": null },
                                         "props": {
-                                            "display": { "$$type": "string", "value": "inline-flex" },
-                                            "position": { "$$type": "string", "value": "relative" },
-                                            "align-items": { "$$type": "string", "value": "center" },
-                                            "gap": { "$$type": "size", "value": { "unit": "px", "size": 0 } },
-                                            "background": {
-                                                "$$type": "background",
-                                                "value": { "color": { "$$type": "color", "value": "#eff1f4" } }
-                                            },
-                                            "border-radius": { "$$type": "size", "value": { "unit": "px", "size": 999 } },
-                                            "padding": {
+                                            "width": { "$$type": "size", "value": { "unit": "%", "size": 100 } },
+                                            "margin": {
                                                 "$$type": "dimensions",
                                                 "value": {
-                                                    "block-start": { "$$type": "size", "value": { "unit": "px", "size": 4 } },
-                                                    "inline-end": { "$$type": "size", "value": { "unit": "px", "size": 4 } },
-                                                    "block-end": { "$$type": "size", "value": { "unit": "px", "size": 4 } },
-                                                    "inline-start": { "$$type": "size", "value": { "unit": "px", "size": 4 } }
+                                                    "block-start": { "$$type": "size", "value": { "unit": "px", "size": 0 } },
+                                                    "inline-end": { "$$type": "size", "value": { "unit": "px", "size": 0 } },
+                                                    "block-end": { "$$type": "size", "value": { "unit": "px", "size": 20 } },
+                                                    "inline-start": { "$$type": "size", "value": { "unit": "px", "size": 0 } }
                                                 }
-                                            }
+                                            },
+                                            "flex-direction": { "$$type": "string", "value": "row" },
+                                            "gap": { "$$type": "size", "value": { "unit": "px", "size": 10 } },
+                                            "justify-content": { "$$type": "string", "value": "center" },
+                                            "align-items": { "$$type": "string", "value": "center" }
+                                        },
+                                        "custom_css": null
+                                    }
+                                ]
+                            },
+                            "e-345b9818-bc56781": {
+                                "id": "e-345b9818-bc56781",
+                                "label": "local",
+                                "type": "class",
+                                "variants": [
+                                    {
+                                        "meta": { "breakpoint": "desktop", "state": null },
+                                        "props": {
+                                            "justify-content": { "$$type": "string", "value": "center" },
+                                            "align-items": { "$$type": "string", "value": "center" }
                                         },
                                         "custom_css": null
                                     }
@@ -361,15 +308,15 @@
                             }
                         },
                         "interactions": [],
-                        "editor_settings": { "title": "Pill Row" },
+                        "editor_settings": { "title": "Switch Row" },
                         "version": "0.0"
                     },
                     {
-                        "id": "psw020",
+                        "id": "5be45259",
                         "settings": [],
                         "elements": [
                             {
-                                "id": "psw021",
+                                "id": "50c62993",
                                 "settings": {
                                     "tag": { "$$type": "string", "value": "h3" },
                                     "title": {
@@ -387,12 +334,12 @@
                                 "version": "0.0"
                             },
                             {
-                                "id": "psw022",
+                                "id": "47f02d0b",
                                 "settings": {
                                     "paragraph": {
                                         "$$type": "html-v3",
                                         "value": {
-                                            "content": { "$$type": "string", "value": "Add your monthly-plan content here." },
+                                            "content": { "$$type": "string", "value": "$9/month — billed monthly." },
                                             "children": []
                                         }
                                     },
@@ -412,15 +359,15 @@
                         "elType": "e-aae-a-toggle-pane",
                         "styles": [],
                         "interactions": [],
-                        "editor_settings": { "title": "Pane - Monthly" },
+                        "editor_settings": { "title": "Pane 1" },
                         "version": "0.0"
                     },
                     {
-                        "id": "psw030",
+                        "id": "7323a7c7",
                         "settings": [],
                         "elements": [
                             {
-                                "id": "psw031",
+                                "id": "97b9bae",
                                 "settings": {
                                     "tag": { "$$type": "string", "value": "h3" },
                                     "title": {
@@ -438,12 +385,12 @@
                                 "version": "0.0"
                             },
                             {
-                                "id": "psw032",
+                                "id": "2f845469",
                                 "settings": {
                                     "paragraph": {
                                         "$$type": "html-v3",
                                         "value": {
-                                            "content": { "$$type": "string", "value": "Add your yearly-plan content here." },
+                                            "content": { "$$type": "string", "value": "$90/year — save 2 months." },
                                             "children": []
                                         }
                                     },
@@ -463,7 +410,7 @@
                         "elType": "e-aae-a-toggle-pane",
                         "styles": [],
                         "interactions": [],
-                        "editor_settings": { "title": "Pane - Yearly" },
+                        "editor_settings": { "title": "Pane 2" },
                         "version": "0.0"
                     }
                 ],
@@ -471,15 +418,30 @@
                 "elType": "e-aae-a-toggle-switcher",
                 "styles": [],
                 "interactions": [],
-                "editor_settings": { "title": "toggle-switcher-sliding-pill" },
+                "editor_settings": { "title": "toggle-switcher-switch" },
                 "version": "0.0"
             }
         ],
         "isInner": false,
         "elType": "e-flexbox",
-        "styles": [],
+        "styles": {
+            "e-730519f1-8249938": {
+                "id": "e-730519f1-8249938",
+                "label": "local",
+                "type": "class",
+                "variants": [
+                    {
+                        "meta": { "breakpoint": "desktop", "state": null },
+                        "props": {
+                            "flex-direction": { "$$type": "string", "value": "column" }
+                        },
+                        "custom_css": null
+                    }
+                ]
+            }
+        },
         "interactions": [],
-        "editor_settings": { "title": "toggle-switcher-sliding-pill" },
+        "editor_settings": [],
         "version": "0.0"
     }
 }

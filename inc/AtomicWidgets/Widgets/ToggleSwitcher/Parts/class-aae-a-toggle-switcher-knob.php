@@ -29,6 +29,7 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Transform\Transform_Functions_Prop
 use Elementor\Modules\AtomicWidgets\PropTypes\Transform\Functions\Transform_Move_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
+use Elementor\Modules\AtomicWidgets\Styles\Style_States;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
 /**
@@ -71,6 +72,30 @@ class AAE_A_Toggle_Switcher_Knob extends Atomic_Widget_Base {
 	public function show_in_panel() {
 		// Internal sub-element — never draggable from the widget panel.
 		return false;
+	}
+
+	/**
+	 * Exposes "Selected" (Style_States::SELECTED, class `.e--selected`) as a
+	 * real option in this widget's Style-panel state dropdown — the same
+	 * class toggle-switcher.js now toggles on the Knob alongside Track (see
+	 * applyTsState() in toggle-switcher.js), so the knob's own look can also
+	 * change when the switch is on, fully editable per-instance.
+	 *
+	 * A genuine leaf widget (Atomic_Widget_Base), same situation as
+	 * AAE_A_Toggle_Switcher_Tab: Atomic_Widget_Base's own get_initial_config()
+	 * never calls define_atomic_style_states() on its own (only
+	 * Atomic_Element_Base does — see Track's identical override), so it must
+	 * be threaded in manually via the get_initial_config() override below.
+	 */
+	protected function define_atomic_style_states(): array {
+		return [ Style_States::get_class_states_map()['selected'] ];
+	}
+
+	public function get_initial_config() {
+		$config = parent::get_initial_config();
+		$config['atomic_style_states'] = $this->define_atomic_style_states();
+
+		return $config;
 	}
 
 	protected static function define_props_schema(): array {

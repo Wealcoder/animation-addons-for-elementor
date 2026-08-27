@@ -23,6 +23,7 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Color_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Background_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
+use Elementor\Modules\AtomicWidgets\Styles\Style_States;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
 /**
@@ -104,6 +105,22 @@ class AAE_A_Toggle_Switcher_Track extends Atomic_Element_Base {
 						->set_meta( $this->get_css_id_control_meta() ),
 				] ),
 		];
+	}
+
+	/**
+	 * Exposes "Selected" (Style_States::SELECTED, class `.e--selected`) as a
+	 * real option in this widget's Style-panel state dropdown — the same
+	 * class toggle-switcher.js now toggles on the Track alongside `active`
+	 * (see applyTsState() in toggle-switcher.js), replacing the old
+	 * hardcoded `background-color: var(--aae-ts-switcher-active-bg, #000000)`
+	 * SCSS rule (an undefined custom property, always resolving to black,
+	 * never editable from the panel). Atomic_Element_Base's own
+	 * get_initial_config() already calls define_atomic_style_states() on its
+	 * own — see AAE_A_Toggle_Switcher_Label's identical override — so no
+	 * extra config plumbing is needed here.
+	 */
+	protected function define_atomic_style_states(): array {
+		return [ Style_States::get_class_states_map()['selected'] ];
 	}
 
 	protected function define_base_styles(): array {
