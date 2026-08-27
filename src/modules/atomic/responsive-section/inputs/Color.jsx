@@ -18,10 +18,20 @@ export function ColorInput({ value, onChange, disabled, placeholder }) {
   const [color, setColor] = useState(value ?? '#000000');
   const [anchorEl, setAnchorEl] = useState(null);
   const indicatorRef = useRef(null);
+  const isOpen = Boolean(anchorEl);
 
+  // While the picker is open, our own `onChange` writes flow through
+  // Elementor's settings store (runCommandSync) and echo back down as this
+  // `value` prop. That echo doesn't land in the same tick as the drag, so
+  // re-syncing local state from it on every render fights the user's own
+  // pointer movement — react-colorful keeps getting fed a slightly-lagged
+  // color mid-drag, which reads as the swatch/pointer constantly jittering.
+  // Local state is authoritative while open; only resync from the external
+  // value when the picker isn't actively being dragged.
   useEffect(() => {
+    if (isOpen) return;
     setColor(value ?? '#000000');
-  }, [value]);
+  }, [value, isOpen]);
 
   const handleTextFieldChange = (event) => {
     const newColor = event.target.value;

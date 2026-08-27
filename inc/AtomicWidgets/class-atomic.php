@@ -3744,7 +3744,7 @@ final class Atomic
 				'label'        => 'Image Overlay',
 				'usage_prop'   => array( 'aae_img_ovl_enable', 'boolean' ),
 				'description'  => 'Color/gradient tint overlay on Image and SVG widgets.',
-				'icon'         => 'wcf-icon-Image-Animation',
+				'icon'         => 'wcf-icon-Image',
 				'is_pro'       => false,
 				'is_extension' => true,
 				'is_upcoming'  => false,
