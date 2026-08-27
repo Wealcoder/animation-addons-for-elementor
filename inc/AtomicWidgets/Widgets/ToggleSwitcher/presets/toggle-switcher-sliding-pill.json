@@ -7,14 +7,7 @@
             {
                 "id": "psw001",
                 "settings": {
-                    "classes": { "$$type": "classes", "value": [] },
-                    "aae_custom_css_enable": { "$$type": "aae-rj", "value": { "desktop": true } },
-                    "aae_custom_css_css": {
-                        "$$type": "aae-rj",
-                        "value": {
-                            "desktop": "selector .aae-ts-label-before,selector .aae-ts-label-after{color:#6b7280;transition:color .25s ease}\nselector .aae-ts-label-before.active,selector .aae-ts-label-after.active{color:#1a1a1a;font-weight:600}"
-                        }
-                    }
+                    "classes": { "$$type": "classes", "value": [] }
                 },
                 "elements": [
                     {
@@ -71,6 +64,25 @@
                                                     "z-index": { "$$type": "number", "value": 1 },
                                                     "justify-content": { "$$type": "string", "value": "center" },
                                                     "align-items": { "$$type": "string", "value": "center" },
+                                                    "color": { "$$type": "color", "value": "#6b7280" },
+                                                    "transition": {
+                                                        "$$type": "transition",
+                                                        "value": [
+                                                            {
+                                                                "$$type": "selection-size",
+                                                                "value": {
+                                                                    "selection": {
+                                                                        "$$type": "key-value",
+                                                                        "value": {
+                                                                            "key": { "$$type": "string", "value": "All properties" },
+                                                                            "value": { "$$type": "string", "value": "all" }
+                                                                        }
+                                                                    },
+                                                                    "size": { "$$type": "size", "value": { "unit": "ms", "size": 250 } }
+                                                                }
+                                                            }
+                                                        ]
+                                                    },
                                                     "padding": {
                                                         "$$type": "dimensions",
                                                         "value": {
@@ -80,6 +92,14 @@
                                                             "inline-start": { "$$type": "size", "value": { "unit": "px", "size": 16 } }
                                                         }
                                                     }
+                                                },
+                                                "custom_css": null
+                                            },
+                                            {
+                                                "meta": { "breakpoint": "desktop", "state": "e--selected" },
+                                                "props": {
+                                                    "color": { "$$type": "color", "value": "#1a1a1a" },
+                                                    "font-weight": { "$$type": "string", "value": "600" }
                                                 },
                                                 "custom_css": null
                                             }
@@ -260,6 +280,25 @@
                                                     "z-index": { "$$type": "number", "value": 1 },
                                                     "justify-content": { "$$type": "string", "value": "center" },
                                                     "align-items": { "$$type": "string", "value": "center" },
+                                                    "color": { "$$type": "color", "value": "#6b7280" },
+                                                    "transition": {
+                                                        "$$type": "transition",
+                                                        "value": [
+                                                            {
+                                                                "$$type": "selection-size",
+                                                                "value": {
+                                                                    "selection": {
+                                                                        "$$type": "key-value",
+                                                                        "value": {
+                                                                            "key": { "$$type": "string", "value": "All properties" },
+                                                                            "value": { "$$type": "string", "value": "all" }
+                                                                        }
+                                                                    },
+                                                                    "size": { "$$type": "size", "value": { "unit": "ms", "size": 250 } }
+                                                                }
+                                                            }
+                                                        ]
+                                                    },
                                                     "padding": {
                                                         "$$type": "dimensions",
                                                         "value": {
@@ -269,6 +308,14 @@
                                                             "inline-start": { "$$type": "size", "value": { "unit": "px", "size": 16 } }
                                                         }
                                                     }
+                                                },
+                                                "custom_css": null
+                                            },
+                                            {
+                                                "meta": { "breakpoint": "desktop", "state": "e--selected" },
+                                                "props": {
+                                                    "color": { "$$type": "color", "value": "#1a1a1a" },
+                                                    "font-weight": { "$$type": "string", "value": "600" }
                                                 },
                                                 "custom_css": null
                                             }
