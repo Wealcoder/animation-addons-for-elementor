@@ -145,7 +145,6 @@ class AAE_A_Slider_Nav_Prev extends Atomic_Element_Base {
 			'display' => String_Prop_Type::generate( 'flex' ),
 			'align-items' => String_Prop_Type::generate( 'center' ),
 			'justify-content' => String_Prop_Type::generate( 'center' ),
-			'cursor' => String_Prop_Type::generate( 'pointer' ),
 		];
 
 		return [
@@ -156,7 +155,6 @@ class AAE_A_Slider_Nav_Prev extends Atomic_Element_Base {
 						->set_state( Style_States::DISABLED )
 						->add_props( [
 							'opacity' => Size_Prop_Type::generate( [ 'size' => 40, 'unit' => '%' ] ),
-							'cursor'  => String_Prop_Type::generate( 'not-allowed' ),
 						] )
 				),
 		];

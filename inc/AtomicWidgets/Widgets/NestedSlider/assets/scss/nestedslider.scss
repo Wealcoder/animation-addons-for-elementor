@@ -88,6 +88,8 @@
 
     .aae-a-navigator-prev,
     .aae-a-navigator-next {
+        cursor: pointer;
+
         .e-svg-base,
         svg {
             max-width: 100%;
