@@ -80,52 +80,6 @@ const initSlider = (container, signal) => {
 		sliderDiv._aaeSliderCleanup();
 	}
 
-	// Automatically harmonize Top vs Bottom positioning for custom user overrides:
-	const navBtns = [sliderDiv.querySelector('.aae-a-navigator-prev'), sliderDiv.querySelector('.aae-a-navigator-next')];
-	navBtns.forEach((btn) => {
-		if (!btn) return;
-		let customTop = btn.style.top || btn.style.insetBlockStart || '';
-		let customBottom = btn.style.bottom || btn.style.insetBlockEnd || '';
-
-		if (!customTop && !customBottom) {
-			const classList = Array.from(btn.classList || []);
-			for (const sheet of document.styleSheets) {
-				try {
-					const rules = sheet.cssRules || sheet.rules;
-					if (!rules) continue;
-					for (const rule of rules) {
-						if (rule.selectorText) {
-							for (const cls of classList) {
-								if (cls.startsWith('e-') && rule.selectorText.includes(cls)) {
-									if (rule.style.insetBlockStart || rule.style.top) customTop = rule.style.insetBlockStart || rule.style.top;
-									if (rule.style.insetBlockEnd || rule.style.bottom) customBottom = rule.style.insetBlockEnd || rule.style.bottom;
-								}
-							}
-						}
-					}
-				} catch (_) {}
-			}
-		}
-
-		if (customBottom && !customTop) {
-			btn.style.setProperty('inset-block-start', 'auto');
-			btn.style.setProperty('top', 'auto');
-			btn.style.setProperty('transform', 'none');
-		} else if (customTop && !customBottom) {
-			btn.style.setProperty('inset-block-start', '');
-			btn.style.setProperty('top', '');
-			btn.style.setProperty('inset-block-end', 'auto');
-			btn.style.setProperty('bottom', 'auto');
-			btn.style.setProperty('transform', 'none');
-		} else if (!customTop && !customBottom) {
-			btn.style.removeProperty('inset-block-start');
-			btn.style.removeProperty('top');
-			btn.style.removeProperty('inset-block-end');
-			btn.style.removeProperty('bottom');
-			btn.style.removeProperty('transform');
-		}
-	});
-
 	// Configuration getters
 	const getSlidesPerView = () =>
 		parseInt(sliderDiv.getAttribute('data-slides-per-view')) || 2;

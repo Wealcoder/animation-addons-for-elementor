@@ -94,20 +94,6 @@
     }
 }
 
-// Zero-specificity default positioning: allows any Elementor Style -> Position
-// setting (top, bottom, left, right, transform) to override effortlessly without conflict.
-:where(.aae-a-slider .aae-a-navigator-prev, .aae-a-navigator-prev) {
-    inset-block-start: 50%;
-    inset-inline-start: 20px;
-    transform: translateY(-50%);
-}
-
-:where(.aae-a-slider .aae-a-navigator-next, .aae-a-navigator-next) {
-    inset-block-start: 50%;
-    inset-inline-end: 20px;
-    transform: translateY(-50%);
-}
-
 .js-aae-progress-fill {
     transform: scaleX(0);
     transform-origin: left center;
