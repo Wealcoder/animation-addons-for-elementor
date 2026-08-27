@@ -22,6 +22,27 @@
 		transform: translateX(0);
 	}
 
+	// Default Tab's out-of-the-box "Selected" look (dark pill, white text).
+	// Deliberately NOT declared as a `Style_States::SELECTED` variant in
+	// AAE_A_Toggle_Switcher_Tab::define_base_styles() — Elementor's own
+	// atomic-widget base-style compiler and a per-instance LOCAL style
+	// variant for the same state compile to identical specificity
+	// (`.<class>.e--selected`), so the winner is whichever loads later, and
+	// the editor's live style injection was found to inject base AFTER
+	// local for this exact combination — a builder who picks "Selected" in
+	// the Style panel and customizes it sees their color silently
+	// overridden back to this default, ONLY in the editor (frontend's
+	// generated CSS file orders local after base correctly). This rule
+	// lives here instead: a plain hook-class selector in a stylesheet that
+	// loads once, early, via a normal `<link>`, so ANY later per-instance
+	// local `e--selected` override (editor or frontend) reliably wins on
+	// load order — same fix already applied to Track/Knob's own "on" look.
+	.aae-ts-tab.e--selected {
+		background-color: #1a1a1a;
+		color: #ffffff;
+		border-radius: 8px;
+	}
+
 	// "Pill" look: Track is an invisible full-row wrapper (kept non-empty by
 	// its Knob child, so the editor's empty-container "+" affordance never
 	// triggers on it) and the Knob IS the sliding highlight, resized via its

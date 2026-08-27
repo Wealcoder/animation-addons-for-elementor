@@ -56,16 +56,25 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
  * missing the wiring.
  *
  * A default SELECTED-state look (dark pill background, white text, rounded
- * corners) IS baked into define_base_styles() below, by deliberate choice —
- * an earlier revision left it empty specifically to avoid a CSS-specificity
- * tie with a per-instance `:active` override (`.e--selected` and `:active`
- * both match the same element while a visitor presses the currently-selected
- * tab, and both compile to identical specificity, so the winner depends on
- * stylesheet load order rather than anything this widget controls). That
- * tradeoff is superseded now: every fresh tab needs a visible "this is the
- * active one" indicator out of the box, not just via a builder's manual
- * per-instance styling. If a builder later customizes `:active` and it fights
- * this default, that's the accepted cost of shipping a usable default.
+ * corners) ships out of the box — every fresh tab needs a visible "this is
+ * the active one" indicator, not just via a builder's manual per-instance
+ * styling — but it deliberately does NOT live in define_base_styles() below
+ * (an earlier revision put it there). Elementor's atomic-widget BASE style
+ * and a per-instance LOCAL style variant for the SAME state compile to
+ * IDENTICAL specificity (`.<class>.e--selected`), so the winner is whichever
+ * loads later — and the EDITOR's live style injection (unlike the frontend's
+ * generated CSS file, which orders local after base correctly) was found to
+ * inject base AFTER local for this exact combination, so a builder who picks
+ * "Selected" in the Style panel and sets their own color sees it silently
+ * overridden back to this default — ONLY in the editor, never on the
+ * frontend, which is exactly what a base/local ordering bug looks like
+ * rather than a build error. Moving the default into toggle-switcher.scss as
+ * a plain `.aae-ts-tab.e--selected` hook-class rule sidesteps Elementor's own
+ * base-style compiler entirely: that stylesheet loads once, early, via a
+ * normal `<link>`, so any later per-instance local `e--selected` override
+ * (editor or frontend) reliably wins on load order — matching how Track/Knob
+ * already dropped their own competing base-level "on" look for the same
+ * reason (see class-aae-a-toggle-switcher-track.php).
  */
 class AAE_A_Toggle_Switcher_Tab extends Atomic_Widget_Base {
 
@@ -200,15 +209,6 @@ class AAE_A_Toggle_Switcher_Tab extends Atomic_Widget_Base {
 							] ),
 						] ),
 					] )
-				)
-				->add_variant(
-					Style_Variant::make()
-						->set_state( Style_States::SELECTED )
-						->add_props( [
-							'background'    => Background_Prop_Type::generate( [ 'color' => Color_Prop_Type::generate( '#1a1a1a' ) ] ),
-							'color'         => Color_Prop_Type::generate( '#ffffff' ),
-							'border-radius' => Size_Prop_Type::generate( [ 'size' => 8, 'unit' => 'px' ] ),
-						] )
 				),
 		];
 	}
