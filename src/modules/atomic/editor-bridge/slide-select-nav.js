@@ -93,8 +93,38 @@ function navigatePreviewToSlide( sliderId, slideId, index ) {
 	}
 }
 
-/** Check the current selection; if it resolves to a slide, navigate to it. */
+let isFromStructure = false;
+let structureClickTime = 0;
+
+if ( typeof window !== 'undefined' ) {
+	window.addEventListener(
+		'pointerdown',
+		( e ) => {
+			const inNavigator = !!(
+				e.target &&
+				e.target.closest &&
+				( e.target.closest( '#elementor-navigator' ) ||
+					e.target.closest( '.elementor-navigator' ) ||
+					e.target.closest( '[data-elementor-panel="navigator"]' ) ||
+					e.target.closest( '.elementor-navigator-tree' ) )
+			);
+			if ( inNavigator ) {
+				isFromStructure = true;
+				structureClickTime = Date.now();
+			}
+		},
+		{ capture: true }
+	);
+}
+
+/** Check the current selection; if it resolves to a slide and originated from Structure panel, navigate to it. */
 function handleSelectionChange( last ) {
+	const isRecentStructureClick =
+		isFromStructure && Date.now() - structureClickTime < 1500;
+	if ( ! isRecentStructureClick ) {
+		return;
+	}
+
 	let selected = null;
 	try {
 		const els = window.elementor?.selection?.getElements?.();
@@ -123,6 +153,7 @@ function handleSelectionChange( last ) {
 	}
 	last.slideId = pos.slideId;
 	last.t = now;
+	isFromStructure = false;
 
 	navigatePreviewToSlide( pos.sliderId, pos.slideId, pos.index );
 }
