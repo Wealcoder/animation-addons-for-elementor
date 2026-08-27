@@ -44,13 +44,6 @@ class AAE_A_Slider_Nav_Prev extends Atomic_Element_Base {
 		];
 	}
 
-	public function get_initial_config() {
-		$config = parent::get_initial_config();
-		$config['atomic_style_states'] = $this->define_atomic_style_states();
-
-		return $config;
-	}
-
 	protected function define_default_children() {
 		return [
 			\Elementor\Modules\AtomicWidgets\Elements\Atomic_Svg\Atomic_Svg::generate()
