@@ -34,6 +34,7 @@ final class Schema {
 	const NS_PERSPECTIVE_ROTATE = 'aae_ns_perspective_rotate';
 	const NS_PERSPECTIVE_DEPTH = 'aae_ns_perspective_depth';
 	const NS_PERSPECTIVE_OFFSET = 'aae_ns_perspective_offset';
+	const NS_OVERFLOW = 'aae_ns_overflow';
 
 	public function register(): void {
 		add_filter( 'elementor/atomic-widgets/props-schema', [ $this, 'add_props' ] );
@@ -72,6 +73,7 @@ final class Schema {
 		$schema[ self::NS_PERSPECTIVE_ROTATE ] = Responsive_JSON_Prop_Type::make()->default([ 'desktop' => 50 ]);
 		$schema[ self::NS_PERSPECTIVE_DEPTH ] = Responsive_JSON_Prop_Type::make()->default([ 'desktop' => 250 ]);
 		$schema[ self::NS_PERSPECTIVE_OFFSET ] = Responsive_JSON_Prop_Type::make()->default([ 'desktop' => 18 ]);
+		$schema[ self::NS_OVERFLOW ] = Responsive_JSON_Prop_Type::make()->default([ 'desktop' => 'visible' ]);
 
 		return $schema;
 	}

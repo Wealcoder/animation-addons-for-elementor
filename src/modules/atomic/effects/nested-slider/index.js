@@ -113,6 +113,7 @@ function bind(container, config) {
 	const getAutoplayDelay = () => Math.max(0, parseInt(r('autoplayDelay', 0)) || 0);
 	const getAutoplayDirection = () => r('autoplayDirection', 'right') === 'left' ? -1 : 1;
 	const getPauseOnHover = () => r('pauseOnHover', true) !== false && String(r('pauseOnHover', true)) !== 'false';
+	const getOverflow = () => r('overflow', 'visible');
 
 	const easingsMap = {
 		power1: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
@@ -192,8 +193,8 @@ function bind(container, config) {
 		track.style.perspective = 'none';
 		track.style.transformStyle = 'preserve-3d';
 
-		// Dynamic overflow control to prevent 3D flattening
-		sliderDiv.style.overflow = '';
+		// Dynamic overflow control to allow external navigation buttons or 3D view
+		sliderDiv.style.overflow = getOverflow();
 	};
 
 	applyLayout();

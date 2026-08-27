@@ -1,4 +1,5 @@
 .aae-a-slider {
+    overflow: visible;
 
     // The slider carries tabindex="0" so keyboard users can drive it with the
     // arrow keys. Clicking it then also focuses it, and the UA outline reads as
