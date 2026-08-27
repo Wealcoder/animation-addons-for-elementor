@@ -14,7 +14,15 @@
 	// Nav arrows (reused from the Nested Slider) anchor to this positioned box.
 	position: relative;
 
+	.aae-slider__viewport {
+		overflow: hidden;
+		width: 100%;
+		position: relative;
+		box-sizing: border-box;
+	}
+
 	.aae-slider-track {
+		overflow: visible !important;
 		// The runtime writes transform/gap; keep it a single non-wrapping row so
 		// slides line up horizontally before the runtime measures them.
 		flex-wrap: nowrap;

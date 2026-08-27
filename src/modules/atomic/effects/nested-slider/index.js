@@ -26,6 +26,17 @@ function bind(container, config) {
 	const track = container.querySelector('.aae-slider-track');
 	if (!track) return;
 
+	// Ensure the track is enclosed in a dedicated viewport wrapper.
+	// This separates the slides clipping box (overflow: hidden) from the parent slider (.aae-a-slider),
+	// allowing external navigation buttons/pagination to remain fully visible without getting clipped.
+	let viewport = track.parentElement;
+	if (!viewport || !viewport.classList.contains('aae-slider__viewport')) {
+		viewport = document.createElement('div');
+		viewport.className = 'aae-slider__viewport';
+		track.parentNode.insertBefore(viewport, track);
+		viewport.appendChild(track);
+	}
+
 	// Real slides only. Match the slide class positively (rather than excluding
 	// known noise) so editor artifacts — element overlays, the empty-view
 	// placeholder, drag placeholders, injected <style>/<script> — are never
@@ -192,9 +203,17 @@ function bind(container, config) {
 		}
 		track.style.perspective = 'none';
 		track.style.transformStyle = 'preserve-3d';
+		track.style.overflow = 'visible';
 
-		// Dynamic overflow control to allow external navigation buttons or 3D view
-		sliderDiv.style.overflow = getOverflow();
+		// Outer slider container stays visible for external navigation buttons/pagination
+		sliderDiv.style.overflow = 'visible';
+
+		// Viewport wrapper handles the clipping of slides according to the effect and overflow setting
+		if (viewport) {
+			const is3D = ['coverflow', 'card', 'perspective'].includes(getEffect());
+			const overflowSetting = getOverflow();
+			viewport.style.overflow = (is3D && overflowSetting === 'visible') ? 'visible' : (overflowSetting === 'hidden' ? 'hidden' : (is3D ? 'visible' : 'hidden'));
+		}
 	};
 
 	applyLayout();
@@ -255,6 +274,8 @@ function bind(container, config) {
 		sliderDiv.style.overflow = '';
 		track.style.perspective = '';
 		track.style.transformOrigin = '';
+		track.style.transformStyle = '';
+		track.style.overflow = '';
 		track.style.height = '';
 		track.style.width = '';
 		track.style.position = '';

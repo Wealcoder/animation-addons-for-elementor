@@ -38,6 +38,17 @@ const initSlider = (container, signal) => {
 	const track = container.querySelector('.aae-slider-track');
 	if (!track) return;
 
+	let viewport = track.parentElement;
+	if (!viewport || !viewport.classList.contains('aae-slider__viewport')) {
+		viewport = document.createElement('div');
+		viewport.className = 'aae-slider__viewport';
+		viewport.style.overflow = 'hidden';
+		viewport.style.width = '100%';
+		viewport.style.position = 'relative';
+		track.parentNode.insertBefore(viewport, track);
+		viewport.appendChild(track);
+	}
+
 	const getSlides = () =>
 		Array.from(track.children).filter(
 			(el) =>
