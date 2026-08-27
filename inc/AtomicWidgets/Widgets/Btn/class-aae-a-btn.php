@@ -21,8 +21,9 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Background_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Dimensions_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Svg_Src_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Url_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Link_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
-use Elementor\Modules\AtomicWidgets\Controls\Types\Select_Control;
+use Elementor\Modules\AtomicWidgets\Controls\Types\Link_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Switch_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
@@ -114,8 +115,23 @@ class AAE_A_Btn extends Atomic_Element_Base
 			'classes'    => Classes_Prop_Type::make()->default([]),
 			'attributes' => Attributes_Prop_Type::make()->meta(Overridable_Prop_Type::ignore()),
 
-			'btn_url'      => String_Prop_Type::make()->default(''),
-			'btn_target'   => String_Prop_Type::make()->default('_self'),
+			// A single Link_Prop_Type (destination + isTargetBlank + tag), same
+			// shape Elementor's own Flexbox/Div_Block use for their Link control
+			// — NOT a plain Url_Prop_Type behind Text_Control. That combination
+			// looks reasonable but silently breaks: Elementor's dynamic-tag
+			// schema extension wraps every dynamic-eligible scalar prop in a
+			// Union keyed by that prop's OWN type ('url' here), while
+			// Text_Control's React component always resolves its bound value
+			// through a HARDCODED `stringPropTypeUtil` (key 'string'). Union
+			// lookup by 'string' on a union that only has 'url'/'dynamic'
+			// members throws, the control's ErrorBoundary swallows it, and the
+			// panel renders the row's label with no input at all. Link_Control
+			// is the one control built to read/write this object shape (and is
+			// what puts "Site URL" and friends on Flexbox's own Link field in
+			// the first place). `tag` is unused here (Btn always renders `<a>`,
+			// see define_default_html_tag()) but is part of Link_Prop_Type's
+			// fixed shape and can't be stripped.
+			'link'         => Link_Prop_Type::make(),
 			'btn_nofollow' => Boolean_Prop_Type::make()->default(false),
 
 			// Preset-driven only — no panel control. Each drives its matching
@@ -165,15 +181,9 @@ class AAE_A_Btn extends Atomic_Element_Base
 				->set_label(__('Button', 'animation-addons-for-elementor'))
 				->set_id('content')
 				->set_items([
-					Text_Control::bind_to('btn_url')
-						->set_label(__('URL', 'animation-addons-for-elementor')),
-
-					Select_Control::bind_to('btn_target')
-						->set_label(__('Open In', 'animation-addons-for-elementor'))
-						->set_options([
-							['value' => '_self',  'label' => __('Same Window', 'animation-addons-for-elementor')],
-							['value' => '_blank', 'label' => __('New Window',  'animation-addons-for-elementor')],
-						]),
+					Link_Control::bind_to('link')
+						->set_placeholder(__('Type or paste your URL', 'animation-addons-for-elementor'))
+						->set_label(__('Link', 'animation-addons-for-elementor')),
 
 					Switch_Control::bind_to('btn_nofollow')
 						->set_label(__('Add Nofollow', 'animation-addons-for-elementor')),

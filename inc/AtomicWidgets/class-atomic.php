@@ -3993,6 +3993,18 @@ final class Atomic
 		require_once __DIR__ . '/Widgets/AdvancedHeading/class-aae-advanced-heading-migration.php';
 		\WCF_ADDONS\AtomicWidgets\Widgets\AdvancedHeading\AAE_Advanced_Heading_Migration::register();
 
+		// Button's flat `btn_url`/`btn_target` props were merged into one
+		// Link_Prop_Type `link` prop on 2026-08-27, so its URL field gets a
+		// working Link control with URL-category dynamic tags (e.g. Site URL)
+		// — matching Elementor's own Flexbox/Div_Block. Registered
+		// UNCONDITIONALLY, not behind is_widget_active() — same reasoning as
+		// the migration above. See the class docblock: without this, every
+		// already-saved button's href silently disappears on the very next
+		// render, no re-save required (the old props are no longer even in
+		// the schema).
+		require_once __DIR__ . '/Widgets/Btn/class-aae-a-btn-migration.php';
+		\WCF_ADDONS\AtomicWidgets\Widgets\Btn\AAE_A_Btn_Migration::register();
+
 		// A Mobile Nav is a SIBLING of its Nav, so Elementor never cascade-deletes
 		// it. The editor sweeps are best-effort JS; this is the save-time belt that
 		// stops an orphan ever being written to the document. Registered

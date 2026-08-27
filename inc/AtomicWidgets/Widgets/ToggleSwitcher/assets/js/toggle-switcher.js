@@ -67,15 +67,15 @@ document.addEventListener(
 
     e.preventDefault();
 
-    if (trigger.classList.contains('aae-ts-label-before')) {
-      applyTsState(wrapper, false);
-    } else if (trigger.classList.contains('aae-ts-label-after')) {
-      applyTsState(wrapper, true);
-    } else {
-      const id = wrapper.dataset.id || '';
-      const current = id ? (tsState.get(id) ?? false) : false;
-      applyTsState(wrapper, !current);
-    }
+    // Only two states exist, so "select the side you clicked" and "flip to
+    // the other side" are the same thing except when you click the side
+    // that's already active — there, a direct-select model no-ops (you
+    // asked for what's already showing) while a toggle model still flips.
+    // Every trigger (either label, or the switch itself) uses the toggle
+    // model uniformly, so clicking either tab always moves the selection.
+    const id = wrapper.dataset.id || '';
+    const current = id ? (tsState.get(id) ?? false) : false;
+    applyTsState(wrapper, !current);
   },
   true
 );

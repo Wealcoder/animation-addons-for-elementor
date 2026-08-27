@@ -17,4 +17,28 @@
 		opacity: 1;
 		transform: translateX(0);
 	}
+
+	// "Pill" look: Track is an invisible full-row wrapper (kept non-empty by
+	// its Knob child, so the editor's empty-container "+" affordance never
+	// triggers on it) and the Knob IS the sliding highlight, resized via its
+	// own editable local style to one row-slot instead of a small dot.
+	// Scoped to the `aae-ts-knob--pill` marker class (and a selector more
+	// specific than the classic rule below) so it never fights the classic
+	// Switch preset's fixed 20px knob travel.
+	.aae-ts-switch.active .aae-ts-knob.aae-ts-knob--pill {
+		transform: translateX(100%);
+	}
+
+	// Track must stay fully invisible in the Pill look — Knob alone supplies
+	// the visible highlight. Without this, the classic Switch preset's own
+	// "on" color above (`.aae-ts-switch.active`) would paint a black fill
+	// through Track's local transparent background whenever Yearly is
+	// selected, since that 3-class rule beats a 1-class local-style
+	// override. Scoped to `aae-ts-switch--pill` (one extra class = higher
+	// specificity) so the classic preset's actual switch-pill color is
+	// untouched.
+	.aae-ts-switch.aae-ts-switch--pill.active {
+		background-color: transparent;
+		border-color: transparent;
+	}
 }
