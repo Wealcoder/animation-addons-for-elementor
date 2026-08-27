@@ -80,18 +80,6 @@ const initSlider = (container, signal) => {
 		sliderDiv._aaeSliderCleanup();
 	}
 
-	[sliderDiv.querySelector('.aae-a-navigator-prev'), sliderDiv.querySelector('.aae-a-navigator-next')].forEach((btn) => {
-		if (!btn) return;
-		const computed = window.getComputedStyle(btn);
-		if (computed.bottom && computed.bottom !== 'auto' && computed.bottom !== '0px') {
-			if (!btn.style.top && !btn.style.insetBlockStart) {
-				btn.style.setProperty('top', 'auto', 'important');
-				btn.style.setProperty('inset-block-start', 'auto', 'important');
-				btn.style.setProperty('transform', 'none', 'important');
-			}
-		}
-	});
-
 	// Configuration getters
 	const getSlidesPerView = () =>
 		parseInt(sliderDiv.getAttribute('data-slides-per-view')) || 2;

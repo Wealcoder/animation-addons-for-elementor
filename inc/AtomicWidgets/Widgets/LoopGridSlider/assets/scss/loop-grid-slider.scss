@@ -70,38 +70,16 @@
 	// Without it an old-saved 65px SVG (created before the `aae-a-svg` 20px utility
 	// existed) overflows the fixed badge and breaks the circle, making the same
 	// slider look different in the editor vs the frontend.
-	.aae-a-navigator-prev {
+	:where(.aae-a-navigator-prev) {
 		inset-block-start: 50%;
 		inset-inline-start: 20px;
 		transform: translateY(-50%);
-
-		&[style*="inset-block-end"],
-		&[style*="bottom"] {
-			inset-block-start: auto !important;
-			transform: none !important;
-		}
-
-		&[style*="inset-block-start"],
-		&[style*="top"] {
-			transform: none !important;
-		}
 	}
 
-	.aae-a-navigator-next {
+	:where(.aae-a-navigator-next) {
 		inset-block-start: 50%;
 		inset-inline-end: 20px;
 		transform: translateY(-50%);
-
-		&[style*="inset-block-end"],
-		&[style*="bottom"] {
-			inset-block-start: auto !important;
-			transform: none !important;
-		}
-
-		&[style*="inset-block-start"],
-		&[style*="top"] {
-			transform: none !important;
-		}
 	}
 
 	.aae-a-navigator-prev,

@@ -214,19 +214,6 @@ function bind(container, config) {
 			const overflowSetting = getOverflow();
 			viewport.style.overflow = (is3D && overflowSetting === 'visible') ? 'visible' : (overflowSetting === 'hidden' ? 'hidden' : (is3D ? 'visible' : 'hidden'));
 		}
-
-		// Auto-resolve positioning conflicts on navigation buttons when custom bottom is set:
-		[sliderDiv.querySelector('.aae-a-navigator-prev'), sliderDiv.querySelector('.aae-a-navigator-next')].forEach(btn => {
-			if (!btn) return;
-			const computed = window.getComputedStyle(btn);
-			if (computed.bottom && computed.bottom !== 'auto' && computed.bottom !== '0px') {
-				if (!btn.style.top && !btn.style.insetBlockStart) {
-					btn.style.setProperty('top', 'auto', 'important');
-					btn.style.setProperty('inset-block-start', 'auto', 'important');
-					btn.style.setProperty('transform', 'none', 'important');
-				}
-			}
-		});
 	};
 
 	applyLayout();
