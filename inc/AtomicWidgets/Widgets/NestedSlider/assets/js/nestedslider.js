@@ -215,6 +215,33 @@ const initSlider = (container, signal) => {
 				dot.classList.remove('e-state-active');
 			}
 		});
+
+		const prevDisabled = index <= 0;
+		const nextDisabled = index >= maxIndex;
+
+		if (prevBtn) {
+			prevBtn.classList.toggle('e--disabled', prevDisabled);
+			prevBtn.classList.toggle('is-disabled', prevDisabled);
+			if (prevDisabled) {
+				prevBtn.setAttribute('aria-disabled', 'true');
+				prevBtn.setAttribute('tabindex', '-1');
+			} else {
+				prevBtn.removeAttribute('aria-disabled');
+				prevBtn.removeAttribute('tabindex');
+			}
+		}
+
+		if (nextBtn) {
+			nextBtn.classList.toggle('e--disabled', nextDisabled);
+			nextBtn.classList.toggle('is-disabled', nextDisabled);
+			if (nextDisabled) {
+				nextBtn.setAttribute('aria-disabled', 'true');
+				nextBtn.setAttribute('tabindex', '-1');
+			} else {
+				nextBtn.removeAttribute('aria-disabled');
+				nextBtn.removeAttribute('tabindex');
+			}
+		}
 	};
 
 	const applyCenterStyles = () => {
@@ -347,7 +374,11 @@ const initSlider = (container, signal) => {
 	if (prevBtn) {
 		prevBtn.addEventListener(
 			'click',
-			() => {
+			(e) => {
+				if (prevBtn.classList.contains('e--disabled') || prevBtn.getAttribute('aria-disabled') === 'true') {
+					e.preventDefault();
+					return;
+				}
 				goToSlide(currentIndex - 1);
 				startAutoplay();
 			},
@@ -358,7 +389,11 @@ const initSlider = (container, signal) => {
 	if (nextBtn) {
 		nextBtn.addEventListener(
 			'click',
-			() => {
+			(e) => {
+				if (nextBtn.classList.contains('e--disabled') || nextBtn.getAttribute('aria-disabled') === 'true') {
+					e.preventDefault();
+					return;
+				}
 				goToSlide(currentIndex + 1);
 				startAutoplay();
 			},

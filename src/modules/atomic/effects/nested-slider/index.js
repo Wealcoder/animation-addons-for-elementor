@@ -683,6 +683,35 @@ function bind(container, config) {
 			const left = displayMaxIndex > 0 ? (displayIndex / displayMaxIndex) * (totalWidth - dragWidth) : 0;
 			scrollbarDrag.style.transform = `translateX(${left}px)`;
 		}
+
+		// Update Prev & Next button Disabled states (.e--disabled, .is-disabled, aria-disabled)
+		const isLoop = isLoopEnabled();
+		const isPrevDisabled = !isLoop && !hasSeamlessLoop && displayIndex <= 0;
+		const isNextDisabled = !isLoop && !hasSeamlessLoop && displayIndex >= displayMaxIndex;
+
+		prevBtns.forEach(btn => {
+			btn.classList.toggle('e--disabled', isPrevDisabled);
+			btn.classList.toggle('is-disabled', isPrevDisabled);
+			if (isPrevDisabled) {
+				btn.setAttribute('aria-disabled', 'true');
+				btn.setAttribute('tabindex', '-1');
+			} else {
+				btn.removeAttribute('aria-disabled');
+				btn.removeAttribute('tabindex');
+			}
+		});
+
+		nextBtns.forEach(btn => {
+			btn.classList.toggle('e--disabled', isNextDisabled);
+			btn.classList.toggle('is-disabled', isNextDisabled);
+			if (isNextDisabled) {
+				btn.setAttribute('aria-disabled', 'true');
+				btn.setAttribute('tabindex', '-1');
+			} else {
+				btn.removeAttribute('aria-disabled');
+				btn.removeAttribute('tabindex');
+			}
+		});
 	};
 
 	// 3D & Transition Math Engines
@@ -1135,14 +1164,22 @@ function bind(container, config) {
 
 	// Navigation click binds
 	prevBtns.forEach(btn => {
-		btn.addEventListener('click', () => {
+		btn.addEventListener('click', (e) => {
+			if (btn.classList.contains('e--disabled') || btn.getAttribute('aria-disabled') === 'true') {
+				e.preventDefault();
+				return;
+			}
 			goToSlide(currentIndex - 1);
 			resumeSlider();
 		}, evtOpts);
 	});
 
 	nextBtns.forEach(btn => {
-		btn.addEventListener('click', () => {
+		btn.addEventListener('click', (e) => {
+			if (btn.classList.contains('e--disabled') || btn.getAttribute('aria-disabled') === 'true') {
+				e.preventDefault();
+				return;
+			}
 			goToSlide(currentIndex + 1);
 			resumeSlider();
 		}, evtOpts);
