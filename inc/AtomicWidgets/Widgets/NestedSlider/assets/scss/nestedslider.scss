@@ -74,18 +74,6 @@
     // Atomic_Svg's 65px) from overflowing the round badge, but a size the
     // user explicitly sets — up to the available ~28px — now actually takes
     // effect.
-    :where(.aae-a-navigator-prev) {
-        inset-block-start: 50%;
-        inset-inline-start: 20px;
-        transform: translateY(-50%);
-    }
-
-    :where(.aae-a-navigator-next) {
-        inset-block-start: 50%;
-        inset-inline-end: 20px;
-        transform: translateY(-50%);
-    }
-
     .aae-a-navigator-prev,
     .aae-a-navigator-next {
         cursor: pointer;
@@ -104,6 +92,20 @@
             pointer-events: none;
         }
     }
+}
+
+// Zero-specificity default positioning: allows any Elementor Style -> Position
+// setting (top, bottom, left, right, transform) to override effortlessly without conflict.
+:where(.aae-a-slider .aae-a-navigator-prev, .aae-a-navigator-prev) {
+    inset-block-start: 50%;
+    inset-inline-start: 20px;
+    transform: translateY(-50%);
+}
+
+:where(.aae-a-slider .aae-a-navigator-next, .aae-a-navigator-next) {
+    inset-block-start: 50%;
+    inset-inline-end: 20px;
+    transform: translateY(-50%);
 }
 
 .js-aae-progress-fill {

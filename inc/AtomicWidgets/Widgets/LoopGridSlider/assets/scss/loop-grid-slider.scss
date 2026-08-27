@@ -70,18 +70,6 @@
 	// Without it an old-saved 65px SVG (created before the `aae-a-svg` 20px utility
 	// existed) overflows the fixed badge and breaks the circle, making the same
 	// slider look different in the editor vs the frontend.
-	:where(.aae-a-navigator-prev) {
-		inset-block-start: 50%;
-		inset-inline-start: 20px;
-		transform: translateY(-50%);
-	}
-
-	:where(.aae-a-navigator-next) {
-		inset-block-start: 50%;
-		inset-inline-end: 20px;
-		transform: translateY(-50%);
-	}
-
 	.aae-a-navigator-prev,
 	.aae-a-navigator-next {
 		cursor: pointer;
@@ -101,6 +89,20 @@
 		}
 	}
 
+}
+
+// Zero-specificity default positioning: allows any Elementor Style -> Position
+// setting (top, bottom, left, right, transform) to override effortlessly without conflict.
+:where(.aae-a-loop-grid-slider .aae-a-navigator-prev, .aae-a-navigator-prev) {
+	inset-block-start: 50%;
+	inset-inline-start: 20px;
+	transform: translateY(-50%);
+}
+
+:where(.aae-a-loop-grid-slider .aae-a-navigator-next, .aae-a-navigator-next) {
+	inset-block-start: 50%;
+	inset-inline-end: 20px;
+	transform: translateY(-50%);
 }
 
 // Pagination edge-state (mirrors the Loop Grid): hide the inert control on the
