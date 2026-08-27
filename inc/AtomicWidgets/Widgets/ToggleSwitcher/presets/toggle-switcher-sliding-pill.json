@@ -93,13 +93,15 @@
                             {
                                 "id": "psw012",
                                 "settings": {
-                                    "classes": { "$$type": "classes", "value": ["aae-ts-switch--pill", "e-psw012-switch"] }
+                                    "is_pill": { "$$type": "boolean", "value": true },
+                                    "classes": { "$$type": "classes", "value": ["e-psw012-switch"] }
                                 },
                                 "elements": [
                                     {
                                         "id": "psw0121",
                                         "settings": {
-                                            "classes": { "$$type": "classes", "value": ["aae-ts-knob--pill", "e-psw0121-knob"] }
+                                            "is_pill": { "$$type": "boolean", "value": true },
+                                            "classes": { "$$type": "classes", "value": ["e-psw0121-knob"] }
                                         },
                                         "elements": [],
                                         "isInner": false,

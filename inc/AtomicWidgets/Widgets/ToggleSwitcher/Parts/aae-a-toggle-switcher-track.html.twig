@@ -5,8 +5,16 @@
   runtime based on which pane is showing; that class is never part of
   settings.classes so it is never at risk from the panel's "missing classes"
   dismiss.
+
+  `is_pill` is the same "structural identity, not runtime state" pattern as
+  Label/Tab's `is_after`: a real declared prop, not a classes-prop entry, so
+  the Pill-style preset's `aae-ts-switch--pill` marker (which scopes the
+  Pill look's shared CSS away from the classic Switch preset's Track) never
+  shows up in the panel's class list and can never be flagged/stripped as a
+  "missing class".
 #}
-{%- set classes = ['aae-ts-switch', 'e-con', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') | trim -%}
+{%- set is_pill = settings.is_pill | default(false) -%}
+{%- set classes = ['aae-ts-switch', 'e-con', 'e-atomic-element', base_styles.base | default('')] | merge(is_pill ? ['aae-ts-switch--pill'] : []) | merge(settings.classes | default([])) | join(' ') | trim -%}
 <div class="{{ classes }} {{ editor_classes | default('') }}"
     data-id="{{ id }}"
     data-element_type="{{ type }}"

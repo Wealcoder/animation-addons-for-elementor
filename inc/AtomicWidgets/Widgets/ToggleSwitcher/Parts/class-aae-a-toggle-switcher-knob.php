@@ -16,6 +16,7 @@ use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Color_Prop_Type;
@@ -76,6 +77,19 @@ class AAE_A_Toggle_Switcher_Knob extends Atomic_Widget_Base {
 		return [
 			'classes'    => Classes_Prop_Type::make()->default( [] ),
 			'attributes' => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
+
+			/**
+			 * Structural identity, not runtime state — mirrors Label/Tab's own
+			 * `is_after` prop and Track's own `is_pill`. Drives the
+			 * `aae-ts-knob--pill` hook class straight from this widget's own
+			 * twig, deliberately never through the `classes` prop (which the
+			 * panel audits against the style registry and flags/strips as
+			 * "missing" — see "Never put a functional hook class in the
+			 * classes prop" in CLAUDE.md). Lets the Pill-style preset scope its
+			 * shared sliding-transform CSS to its own Knob without touching
+			 * the classic Switch preset's Knob (fixed 20px dot travel).
+			 */
+			'is_pill'    => Boolean_Prop_Type::make()->default( false ),
 		];
 	}
 
