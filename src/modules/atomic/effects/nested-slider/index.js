@@ -685,7 +685,7 @@ function bind(container, config) {
 		}
 
 		// Update Prev & Next button Disabled states (.e--disabled, .is-disabled, aria-disabled)
-		const isLoop = isLoopEnabled();
+		const isLoop = getLoop();
 		const isPrevDisabled = !isLoop && !hasSeamlessLoop && displayIndex <= 0;
 		const isNextDisabled = !isLoop && !hasSeamlessLoop && displayIndex >= displayMaxIndex;
 
