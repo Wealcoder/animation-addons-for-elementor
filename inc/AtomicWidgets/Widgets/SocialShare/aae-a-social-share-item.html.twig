@@ -1,4 +1,7 @@
 {% set item_classes = ['aae-a-social-share-item', 'e-con', 'e-atomic-element', base_styles.base] | merge(settings.classes | default([])) %}
+{% if settings.hover_pulse is defined and settings.hover_pulse %}
+    {% set item_classes = item_classes | merge(['aae-social-pulse']) %}
+{% endif %}
 
 {% if settings.btn_target == '_blank' %}
     {% set rel_attr = 'noopener' ~ (settings.btn_nofollow ? ' nofollow' : '') %}
@@ -8,9 +11,12 @@
     {% set rel_attr = '' %}
 {% endif %}
 
+{% set fallback_href = (settings.share_vendor is defined and settings.share_vendor is not empty) ? settings.share_link : settings.btn_url %}
+{% set href_value = resolved_href is defined ? resolved_href : fallback_href %}
+
 <a class="{{ item_classes | join(' ') }} {{ editor_classes | default('') }}"
-   {% if settings.btn_url is defined and settings.btn_url is not empty and settings.btn_url != '#' %}
-       href="{{ settings.btn_url | e('html_attr') }}"
+   {% if href_value is defined and href_value is not empty and href_value != '#' %}
+       href="{{ href_value | e('html_attr') }}"
    {% else %}
        tabindex="0"
    {% endif %}

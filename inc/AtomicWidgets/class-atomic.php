@@ -611,7 +611,9 @@ final class Atomic
 		'aae-a-progressbar-dot'        => 'aae-a-progressbar',
 
 		// Social Share
-		'aae-a-social-share-item'      => 'aae-a-social-share',
+		'aae-a-social-share-item'       => 'aae-a-social-share',
+		'aae-a-social-share-item-icon'  => 'aae-a-social-share',
+		'aae-a-social-share-item-title' => 'aae-a-social-share',
 
 		// Nav
 		'aae-a-nav-item'               => 'aae-a-nav',
@@ -2070,6 +2072,38 @@ final class Atomic
 				],
 				'category'     => 'general',
 				'order'        => 11,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-social-share-item-icon' => [
+				'is_internal'  => true,
+				'label'        => 'Social Share Item — Icon',
+				'description'  => 'Internal icon sub-element used by the Social Share Item.',
+				'icon'         => 'eicon-svg',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [ 'social', 'share', 'icon', 'atomic' ],
+				'category'     => 'general',
+				'order'        => 12,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-social-share-item-title' => [
+				'is_internal'  => true,
+				'label'        => 'Social Share Item — Title',
+				'description'  => 'Internal title sub-element used by the Social Share Item.',
+				'icon'         => 'eicon-t-letter-bold',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [ 'social', 'share', 'title', 'atomic' ],
+				'category'     => 'general',
+				'order'        => 12,
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
@@ -3993,18 +4027,6 @@ final class Atomic
 		require_once __DIR__ . '/Widgets/AdvancedHeading/class-aae-advanced-heading-migration.php';
 		\WCF_ADDONS\AtomicWidgets\Widgets\AdvancedHeading\AAE_Advanced_Heading_Migration::register();
 
-		// Button's flat `btn_url`/`btn_target` props were merged into one
-		// Link_Prop_Type `link` prop on 2026-08-27, so its URL field gets a
-		// working Link control with URL-category dynamic tags (e.g. Site URL)
-		// — matching Elementor's own Flexbox/Div_Block. Registered
-		// UNCONDITIONALLY, not behind is_widget_active() — same reasoning as
-		// the migration above. See the class docblock: without this, every
-		// already-saved button's href silently disappears on the very next
-		// render, no re-save required (the old props are no longer even in
-		// the schema).
-		require_once __DIR__ . '/Widgets/Btn/class-aae-a-btn-migration.php';
-		\WCF_ADDONS\AtomicWidgets\Widgets\Btn\AAE_A_Btn_Migration::register();
-
 		// A Mobile Nav is a SIBLING of its Nav, so Elementor never cascade-deletes
 		// it. The editor sweeps are best-effort JS; this is the save-time belt that
 		// stops an orphan ever being written to the document. Registered
@@ -5021,6 +5043,16 @@ final class Atomic
 		'aae-a-social-share-item' => [
 			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\SocialShare\AAE_A_Social_Share_Item',
 			'file'       => 'Widgets/SocialShare/class-aae-a-social-share-item.php',
+			'has_script' => false,
+		],
+		'aae-a-social-share-item-icon' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\SocialShare\AAE_A_Social_Share_Item_Icon',
+			'file'       => 'Widgets/SocialShare/Parts/class-aae-a-social-share-item-icon.php',
+			'has_script' => false,
+		],
+		'aae-a-social-share-item-title' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\SocialShare\AAE_A_Social_Share_Item_Title',
+			'file'       => 'Widgets/SocialShare/Parts/class-aae-a-social-share-item-title.php',
 			'has_script' => false,
 		],
 		// SocialShareMain entries removed — see the note in
