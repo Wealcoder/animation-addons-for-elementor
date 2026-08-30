@@ -16,12 +16,14 @@ use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Color_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Background_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
+use Elementor\Modules\AtomicWidgets\Styles\Style_States;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
 /**
@@ -77,6 +79,18 @@ class AAE_A_Toggle_Switcher_Track extends Atomic_Element_Base {
 		return [
 			'classes'    => Classes_Prop_Type::make()->default( [] ),
 			'attributes' => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
+
+			/**
+			 * Structural identity, not runtime state — mirrors Label/Tab's own
+			 * `is_after` prop. Drives the `aae-ts-switch--pill` hook class
+			 * straight from this widget's own twig, deliberately never through
+			 * the `classes` prop (which the panel audits against the style
+			 * registry and flags/strips as "missing" — see "Never put a
+			 * functional hook class in the classes prop" in CLAUDE.md). Lets
+			 * the Pill-style preset scope its shared CSS to its own Track
+			 * without touching the classic Switch preset's Track.
+			 */
+			'is_pill'    => Boolean_Prop_Type::make()->default( false ),
 		];
 	}
 
@@ -91,6 +105,22 @@ class AAE_A_Toggle_Switcher_Track extends Atomic_Element_Base {
 						->set_meta( $this->get_css_id_control_meta() ),
 				] ),
 		];
+	}
+
+	/**
+	 * Exposes "Selected" (Style_States::SELECTED, class `.e--selected`) as a
+	 * real option in this widget's Style-panel state dropdown — the same
+	 * class toggle-switcher.js now toggles on the Track alongside `active`
+	 * (see applyTsState() in toggle-switcher.js), replacing the old
+	 * hardcoded `background-color: var(--aae-ts-switcher-active-bg, #000000)`
+	 * SCSS rule (an undefined custom property, always resolving to black,
+	 * never editable from the panel). Atomic_Element_Base's own
+	 * get_initial_config() already calls define_atomic_style_states() on its
+	 * own — see AAE_A_Toggle_Switcher_Label's identical override — so no
+	 * extra config plumbing is needed here.
+	 */
+	protected function define_atomic_style_states(): array {
+		return [ Style_States::get_class_states_map()['selected'] ];
 	}
 
 	protected function define_base_styles(): array {

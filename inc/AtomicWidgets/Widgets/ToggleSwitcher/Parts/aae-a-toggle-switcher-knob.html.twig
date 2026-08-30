@@ -3,8 +3,16 @@
   unconditionally from its own twig, never from settings.classes — see the
   class docblock. Purely a CSS hook (toggle-switcher.scss moves it via
   `.aae-ts-switch.active .aae-ts-knob`); nothing reads it from JS.
+
+  `is_pill` is the same "structural identity, not runtime state" pattern as
+  Track's own `is_pill`/Label's `is_after`: a real declared prop, not a
+  classes-prop entry, so the Pill-style preset's `aae-ts-knob--pill` marker
+  (which scopes its 100%-travel slide away from the classic Switch preset's
+  fixed 20px dot) never shows up in the panel's class list and can never be
+  flagged/stripped as a "missing class".
 #}
-{%- set classes = ['aae-ts-knob', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') | trim -%}
+{%- set is_pill = settings.is_pill | default(false) -%}
+{%- set classes = ['aae-ts-knob', 'e-atomic-element', base_styles.base | default('')] | merge(is_pill ? ['aae-ts-knob--pill'] : []) | merge(settings.classes | default([])) | join(' ') | trim -%}
 <div class="{{ classes }} {{ editor_classes | default('') }}"
     data-id="{{ id }}"
     data-element_type="{{ type }}"

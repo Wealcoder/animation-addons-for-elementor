@@ -611,7 +611,9 @@ final class Atomic
 		'aae-a-progressbar-dot'        => 'aae-a-progressbar',
 
 		// Social Share
-		'aae-a-social-share-item'      => 'aae-a-social-share',
+		'aae-a-social-share-item'       => 'aae-a-social-share',
+		'aae-a-social-share-item-icon'  => 'aae-a-social-share',
+		'aae-a-social-share-item-title' => 'aae-a-social-share',
 
 		// Nav
 		'aae-a-nav-item'               => 'aae-a-nav',
@@ -2070,6 +2072,38 @@ final class Atomic
 				],
 				'category'     => 'general',
 				'order'        => 11,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-social-share-item-icon' => [
+				'is_internal'  => true,
+				'label'        => 'Social Share Item — Icon',
+				'description'  => 'Internal icon sub-element used by the Social Share Item.',
+				'icon'         => 'eicon-svg',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [ 'social', 'share', 'icon', 'atomic' ],
+				'category'     => 'general',
+				'order'        => 12,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-social-share-item-title' => [
+				'is_internal'  => true,
+				'label'        => 'Social Share Item — Title',
+				'description'  => 'Internal title sub-element used by the Social Share Item.',
+				'icon'         => 'eicon-t-letter-bold',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [ 'social', 'share', 'title', 'atomic' ],
+				'category'     => 'general',
+				'order'        => 12,
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
@@ -3710,7 +3744,7 @@ final class Atomic
 				'label'        => 'Image Overlay',
 				'usage_prop'   => array( 'aae_img_ovl_enable', 'boolean' ),
 				'description'  => 'Color/gradient tint overlay on Image and SVG widgets.',
-				'icon'         => 'wcf-icon-Image-Animation',
+				'icon'         => 'wcf-icon-Image',
 				'is_pro'       => false,
 				'is_extension' => true,
 				'is_upcoming'  => false,
@@ -5009,6 +5043,16 @@ final class Atomic
 		'aae-a-social-share-item' => [
 			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\SocialShare\AAE_A_Social_Share_Item',
 			'file'       => 'Widgets/SocialShare/class-aae-a-social-share-item.php',
+			'has_script' => false,
+		],
+		'aae-a-social-share-item-icon' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\SocialShare\AAE_A_Social_Share_Item_Icon',
+			'file'       => 'Widgets/SocialShare/Parts/class-aae-a-social-share-item-icon.php',
+			'has_script' => false,
+		],
+		'aae-a-social-share-item-title' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\SocialShare\AAE_A_Social_Share_Item_Title',
+			'file'       => 'Widgets/SocialShare/Parts/class-aae-a-social-share-item-title.php',
 			'has_script' => false,
 		],
 		// SocialShareMain entries removed — see the note in
