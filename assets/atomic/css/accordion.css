@@ -62,7 +62,7 @@
   font-size: inherit;
   font-weight: inherit;
   line-height: inherit;
-  color: inherit;
+  color: #1f2937;
 }
 .aae-a-accordion .aae-a-accordion-item .aae-header-icon-element.aae-header-icon-close {
   display: none !important;
@@ -81,4 +81,3 @@
 .aae-a-accordion .aae-accordion-content {
   transition: padding var(--aae-accordion-speed, 400ms) ease;
 }
-/*# sourceMappingURL=accordion.css.map */

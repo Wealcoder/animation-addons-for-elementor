@@ -125,12 +125,43 @@
     // styles on the Heading, and loses to them on file order (this bundle loads
     // before local-<post>-frontend-*.css), so styling the title from the Style
     // panel still works.
+    //
+    // `color` is the ONE property that must NOT be inherited here, and it is
+    // the reason this rule declares a literal value instead. The title sits
+    // inside a bare `button[type="button"]`, and themes style those per-state —
+    // hello-elementor's reset.css ships:
+    //
+    //   [type="button"]:focus, button:focus,
+    //   [type="button"]:hover,  button:hover { color: #fff; background: #e36; }
+    //
+    // `[type="button"]:focus` is (0,2,0), an exact TIE with the 'header' base
+    // style's `.elementor .e-aae-a-accordion-item-header`, and reset.css is
+    // printed after base-desktop.css — so the theme wins the row's colour. A
+    // click leaves the button FOCUSED, so an inheriting title turned #fff and
+    // went invisible on the white card until the visitor clicked elsewhere.
+    // (The background half of that theme rule is already fenced by the
+    // `background: transparent` above; only `color` was missing.) The icons
+    // never showed the bug because their own base style DECLARES a colour —
+    // which is exactly the fix: a declared value beats an inherited one, so
+    // once the title states its own colour the theme cannot reach it.
+    //
+    // Declared HERE rather than as a 'header_title' base style, because a base
+    // style needs its class on the element and define_default_children() only
+    // runs for newly-dropped items — every accordion already saved in a page
+    // would have kept the bug. At (0,2,0) in this bundle it beats inheritance
+    // for saved and new items alike, and still loses on file order to the
+    // (0,2,0) local style the Heading's own Style panel writes into
+    // local-<post>-frontend-*.css, so recolouring the title still works.
+    //
+    // Consequence worth knowing: the 'header' base style's `color` now governs
+    // only the row itself, not the title. The title is a real Heading with its
+    // own colour control, which is the honest owner for it.
     .aae-header-title-element {
         font-family: inherit;
         font-size: inherit;
         font-weight: inherit;
         line-height: inherit;
-        color: inherit;
+        color: #1f2937;
     }
 
     .aae-a-accordion-item .aae-header-icon-element.aae-header-icon-close {
