@@ -1,0 +1,22 @@
+// AAE Google Maps — the ONLY rule that cannot live in define_base_styles().
+//
+// Everything cosmetic/structural for this widget (root box, iframe fill,
+// empty-state placeholder) is a base style in class-aae-a-google-maps.php.
+// What is left here is ancestor-scoped, which the base-style layer cannot
+// express at all (see the complex-widget skill's CAN/CANNOT table).
+//
+// WHY: an <iframe> captures every pointer event inside its own box, so on the
+// editor canvas the map swallows click-to-select, drag-to-move and the resize
+// handles — the widget becomes unselectable the moment it renders. Disabling
+// pointer events on the frame hands those events back to Elementor's overlay.
+// Frontend is untouched, so the map stays fully pannable/zoomable for visitors.
+//
+// Targets the iframe by tag as well as by class: in edit-mode Elementor strips
+// custom classes off re-rendered nodes (gotcha §3), and `iframe` is the one
+// selector guaranteed to survive that.
+.elementor-editor-active,
+.elementor-edit-mode {
+	.aae-a-google-maps iframe {
+		pointer-events: none;
+	}
+}

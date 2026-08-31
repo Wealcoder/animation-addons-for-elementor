@@ -217,6 +217,7 @@ final class AAE_A_Menu_Responsive {
 				'hover_bg'  => [ 'var' => '--aae-menu-toggle-hover-bg',  'kind' => 'color' ],
 				'size'      => [ 'var' => '--aae-menu-toggle-size',      'kind' => 'px' ],
 				'padding'   => [ 'var' => '--aae-menu-toggle-padding',   'kind' => 'px' ],
+				'gap'       => [ 'var' => '--aae-menu-toggle-gap',       'kind' => 'px' ],
 				'icon_size' => [ 'var' => '--aae-menu-toggle-icon-size', 'kind' => 'px' ],
 				'radius'    => [ 'var' => '--aae-menu-toggle-radius',    'kind' => 'px' ],
 			],

@@ -149,6 +149,11 @@ export const MENU_SECTIONS = [
 				legacy: 'toggle_padding', legacyDefault: 0, label: 'Padding (px)',
 				help: 'Insets the glyph inside the button. Button Size still governs the outer box, so this trades icon area for breathing room rather than growing the button.',
 			},
+			{
+				bind: 'gap', cssVar: '--aae-menu-toggle-gap', kind: 'px',
+				legacy: 'toggle_gap', legacyDefault: 10, label: 'Gap (px)',
+				help: 'Distance from the menu label to the toggle button. Measured from the text, so changing Item Padding X no longer drags the icon along with it.',
+			},
 			{ bind: 'icon_size', cssVar: '--aae-menu-toggle-icon-size', kind: 'px', legacy: 'toggle_icon_size', legacyDefault: 10, label: 'Icon Size (px)' },
 			{ bind: 'radius',    cssVar: '--aae-menu-toggle-radius',    kind: 'px', legacy: 'toggle_radius',    legacyDefault: 50, label: 'Border Radius (px)' },
 		],

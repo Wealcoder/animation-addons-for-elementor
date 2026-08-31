@@ -61,8 +61,152 @@ const distributeChildren = (item) => {
     item.dataset.aaeDistributed = 'true';
 };
 
+// Base-style class names, mirroring define_base_styles()'s keys in
+// class-aae-a-accordion-item.php ({element_type}-{key}).
+const ITEM_TYPE = 'e-aae-a-accordion-item';
+const HEADER_CLASS = ITEM_TYPE + '-header_element';
+const ICON_CLASS = ITEM_TYPE + '-header_icon';
+
+// An icon slot is an Atomic_Svg element. `e-svg-base` is that element's OWN
+// base-style class, rendered by Elementor's twig rather than seeded into the
+// `classes` prop, so unlike our hook classes it cannot be unapplied.
+const isIconEl = (el) =>
+    el.classList.contains('e-svg-base') || !!el.querySelector(':scope > svg');
+
+// Re-assert the DOM hooks the widget's CSS keys on.
+//
+// The Header/Content div blocks, the title and the two icons are all
+// ELEMENTOR-owned element types (Div_Block, Atomic_Heading, Atomic_Svg), so
+// their twigs belong to Elementor and we cannot render our hook classes from
+// them the way the item's own twig does — define_default_children() has to
+// seed them into the `classes` prop instead. The editing panel resolves every
+// entry in that prop against the style repository, reports ours under "Some
+// classes are missing" (they are behaviour hooks, not styles), and its ✕
+// calls unapplyClasses() on exactly those ids.
+//
+// One click therefore stripped the classes this widget runs on. The close
+// icon lost `aae-header-icon-close`, its `display: none` rule stopped
+// matching, and BOTH chevrons rendered at once — the reported bug. The header
+// row also lost its layout classes, and the title lost the colour fence that
+// keeps it readable on a focused header (see accordion.scss).
+//
+// Role is recovered from STRUCTURE, never from the classes being restored:
+// `.aae-header-content` / `.aae-accordion-content` come from the item's own
+// twig, and the parts are identified by Elementor's own base-style classes
+// plus the twig's fixed child order (title, open icon, close icon). Classes
+// are then put back, and each icon additionally gets a
+// `data-aae-accordion-icon` attribute — nothing in the panel can reach an
+// attribute, so the visibility rules keyed on it survive a ✕ even before this
+// restoration has run.
+// Write only on a real change, so a steady-state pass produces ZERO mutation
+// records. That is what lets the observer below watch `class` without the
+// re-tagging feeding itself an endless loop.
+const setAttr = (el, name, value) => {
+    if (el.getAttribute(name) !== value) el.setAttribute(name, value);
+};
+
+const ensureHooks = (item) => {
+    // Header-side parts are everything outside the content region. Scoping by
+    // the CONTENT wrapper rather than by the header slot is deliberate: both
+    // wrappers come from the item's own twig, but in the editor Elementor
+    // mounts child views onto the item root and only distributeChildren() moves
+    // them into `.aae-header-content` — so keying off the header slot made this
+    // whole function bail (slot empty) at exactly the moment a re-render had
+    // just dropped the hooks. Working from "not in the content region" tags the
+    // icons whether or not distribution has happened yet.
+    const contentWrap = item.querySelector('.aae-accordion-content-wrapper');
+    const headerSide = (el) => !(contentWrap && contentWrap.contains(el));
+
+    const all = Array.from(item.querySelectorAll('*'));
+    const icons = all.filter((el) => isIconEl(el) && headerSide(el));
+
+    // Prefer whichever hook class survived; fall back to document order, which
+    // define_default_children() fixes as title, open icon, close icon. Only
+    // guess when there are exactly the two icons we seeded — a builder who
+    // added their own SVG to the header must not have it silently re-roled.
+    let open = icons.find((i) => i.classList.contains('aae-header-icon-open'));
+    let close = icons.find((i) => i.classList.contains('aae-header-icon-close'));
+    if (icons.length === 2) {
+        if (!open) open = icons.find((i) => i !== close);
+        if (!close) close = icons.find((i) => i !== open);
+    }
+
+    icons.forEach((i) => {
+        i.classList.add('aae-header-icon-element', ICON_CLASS);
+        // The chevrons duplicate the state the button already announces through
+        // aria-expanded, so letting a screen reader announce them again is noise.
+        setAttr(i, 'aria-hidden', 'true');
+    });
+
+    if (open && close && open !== close) {
+        open.classList.add('aae-header-icon-open');
+        close.classList.add('aae-header-icon-close');
+        setAttr(open, 'data-aae-accordion-icon', 'open');
+        setAttr(close, 'data-aae-accordion-icon', 'close');
+    }
+
+    // The Header div block is the icons' parent; fall back to the slot for a
+    // header that has no icons at all.
+    const headerSlot = item.querySelector('.aae-header-content');
+    const headerDiv = (open && open.parentElement) ||
+        (icons[0] && icons[0].parentElement) ||
+        (headerSlot && headerSlot.firstElementChild);
+
+    if (headerDiv && headerSide(headerDiv) && headerDiv !== headerSlot) {
+        headerDiv.classList.add('aae-header-element', HEADER_CLASS);
+
+        const title = Array.from(headerDiv.children).find((k) => !isIconEl(k));
+        if (title) title.classList.add('aae-header-title-element');
+    }
+
+    const contentSlot = item.querySelector('.aae-accordion-content');
+    const contentDiv = contentSlot && contentSlot.firstElementChild;
+    if (contentDiv) contentDiv.classList.add('aae-content-element');
+};
+
+// Accessible name safety net for the header <button>.
+//
+// The item twig has always rendered `data-aae-fallback-label`, with a comment
+// saying accordion.js promotes it to aria-label when the button would otherwise
+// be nameless — but nothing here ever read it, so the guard did not exist. A
+// header holding only an icon, or one whose title child was deleted, is a
+// <button> with no accessible name at all (WCAG 4.1.2), and it silently takes
+// the panel's `aria-labelledby` down with it, leaving the region unnamed too.
+//
+// Only ever applied when the button is REALLY empty: a visible title must never
+// be overridden by a different spoken name (WCAG 2.5.3, Label in Name). It is
+// also withdrawn again if a title comes back, so the marker records that the
+// label is ours to remove.
+const ensureButtonLabel = (item) => {
+    const btn = item.querySelector('.aae-accordion-header');
+    if (!btn) return;
+
+    const fallback = (btn.getAttribute('data-aae-fallback-label') || '').trim();
+    const named = btn.textContent.trim().length > 0 ||
+        btn.hasAttribute('aria-labelledby');
+
+    if (named || !fallback) {
+        if (btn.getAttribute('data-aae-labelled') === 'fallback') {
+            btn.removeAttribute('aria-label');
+            btn.removeAttribute('data-aae-labelled');
+        }
+        return;
+    }
+
+    setAttr(btn, 'aria-label', fallback);
+    setAttr(btn, 'data-aae-labelled', 'fallback');
+};
+
 const distributeAll = (container) => {
-    container.querySelectorAll('.aae-a-accordion-item').forEach(distributeChildren);
+    container.querySelectorAll('.aae-a-accordion-item').forEach((item) => {
+        distributeChildren(item);
+        // NOT gated by `aaeDistributed`: the panel can strip a class at any
+        // point after distribution, so this has to run on every pass. Adding
+        // classes and attributes does not re-trigger the observer, which
+        // watches `childList` only.
+        ensureHooks(item);
+        ensureButtonLabel(item);
+    });
 };
 
 // Measure the wrapper's natural (fully-expanded) pixel height reliably — even
@@ -93,11 +237,46 @@ const measureNaturalHeight = (wrapper) => {
 // `animate=false` jumps straight to the end state with no transition — used
 // when applying the initial/default state and when healing editor re-renders,
 // so those don't visibly slide.
+// The editor canvas must stay fully clickable: `inert` blocks pointer events and
+// focus, so applying it there would stop a builder selecting anything inside a
+// collapsed item's content from the Structure panel.
+const isEditor = (doc) =>
+    !!(doc && doc.body && doc.body.classList.contains('elementor-editor-active'));
+
+const prefersReducedMotion = (el) => {
+    const win = el.ownerDocument.defaultView || window;
+    return !!(win.matchMedia && win.matchMedia('(prefers-reduced-motion: reduce)').matches);
+};
+
+// A collapsed panel is hidden with `max-height: 0; overflow: hidden` so it can
+// animate — and content hidden THAT way is still in the tab order and still
+// reachable by a screen reader. `display: none` and `visibility: hidden` remove
+// it automatically; a clipped box does not. So a keyboard user tabs into links
+// and buttons they cannot see, inside a panel they never opened. `inert` is the
+// attribute that closes exactly this gap without affecting rendering, so the
+// animation is unchanged.
+const setPanelInert = (wrapper, open) => {
+    if (!wrapper || isEditor(wrapper.ownerDocument)) return;
+    if (open) {
+        wrapper.removeAttribute('inert');
+    } else if (!wrapper.hasAttribute('inert')) {
+        wrapper.setAttribute('inert', '');
+    }
+};
+
 const setWrapperHeight = (wrapper, open, animate = true) => {
     if (!wrapper) return;
     const win = wrapper.ownerDocument.defaultView || window;
 
-    if (!animate) {
+    setPanelInert(wrapper, open);
+
+    // Honour prefers-reduced-motion by taking the instant path. Doing it HERE
+    // rather than only in CSS is what keeps the end state correct: the animated
+    // branch settles an open panel to `max-height: none` from a `transitionend`
+    // listener, and with the transition suppressed that event never fires — the
+    // panel would stay pinned at its measured pixel height and clip any content
+    // that grew later.
+    if (!animate || prefersReducedMotion(wrapper)) {
         wrapper.style.transition = 'none';
         wrapper.style.maxHeight = open ? 'none' : '0px';
         // Flush, then restore the transition for subsequent user toggles.
@@ -206,13 +385,56 @@ const observeContainer = (container) => {
     container.__aaeStateObserved = true;
 
     const win = container.ownerDocument.defaultView || window;
+
+    // childList ONLY — `attributes` is deliberately NOT observed here, and the
+    // attempt is recorded because it looks like the obvious fix and it locks the
+    // tab solid.
+    //
+    // Watching `class` to catch the panel's ✕ (unapplyClasses) makes the heal
+    // observe itself: ensureHooks() writes classes, that delivers new records,
+    // which sweep again. Measured — the accordion page stopped loading entirely
+    // (server responding in 0.7s, `domcontentloaded` never firing), because a
+    // MutationObserver callback is a microtask so the queue never drains and the
+    // page simply stops painting with nothing in the console. Neither a
+    // `sweeping` flag (cleared synchronously, while the records it caused arrive
+    // in a LATER microtask) nor disconnect + takeRecords() around the sweep was
+    // enough. Same failure as the Structure-panel eye-toggle hang.
+    //
+    // It is also unnecessary, which is the real reason it is gone. The ✕ strips
+    // CLASSES; the `data-aae-accordion-icon` attribute ensureHooks() already
+    // wrote is untouched by it, so the visibility rules keyed on that attribute
+    // keep working with no re-run at all. And when the panel re-renders the
+    // element instead of patching it, the replacement IS a childList mutation,
+    // which this observer already catches. Both paths are covered.
+    const OPTS = {
+        childList: true,
+        subtree: true,
+    };
+
+    // DISCONNECT for the duration of the sweep, then DROP whatever it caused
+    // before reconnecting. A plain `sweeping = true/false` flag does NOT work
+    // here and locks the tab solid: the flag is cleared synchronously, while the
+    // records the sweep just generated are delivered in a LATER microtask with
+    // the flag already false — so the heal observes itself forever. A
+    // MutationObserver callback is a microtask, so the queue never drains and
+    // the page simply stops painting, with nothing in the console. (Same failure
+    // and the same cure as the Structure-panel eye-toggle hang.) takeRecords()
+    // is what discards the self-inflicted batch; without it, reconnecting would
+    // deliver it anyway.
     const observer = new win.MutationObserver(() => {
-        // A re-render rebuilds items from the twig and empties the slots, so
-        // re-distribute before restoring open state.
-        distributeAll(container);
-        restoreState(container);
+        observer.disconnect();
+        try {
+            // A re-render rebuilds items from the twig and empties the slots, so
+            // re-distribute before restoring open state.
+            distributeAll(container);
+            restoreState(container);
+        } finally {
+            observer.takeRecords();
+            observer.observe(container, OPTS);
+        }
     });
-    observer.observe(container, { childList: true, subtree: true });
+
+    observer.observe(container, OPTS);
 };
 
 const toggleItem = (item) => {

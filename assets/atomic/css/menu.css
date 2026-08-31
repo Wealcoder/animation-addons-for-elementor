@@ -20,6 +20,9 @@
    flyout (a hover landing there opens an absolute panel), and it would die on every
    Elementor editor re-render. It also means syncMobileClass() — whose bind-once
    __aaeBpBound guard is load-bearing — does not need touching. */
+/* The :is() ARGUMENT LIST from $stacked on its own. The flyout gate below is
+   written by negating it, so "stacked" and "not stacked" are both built
+   from one source and cannot drift apart. */
 .aae-a-menu {
   --c: var(--aae-menu-color, var(--e-global-color-text, #1a1a18));
   --accent: var(--aae-menu-hover-color, var(--e-global-color-accent, #534ab7));
@@ -297,6 +300,34 @@
   font-weight: var(--aae-menu-active-weight, 600);
 }
 
+/* THE GAP BETWEEN A LABEL AND ITS TOGGLE IS MEASURED FROM THE TEXT, NOT THE BOX.
+
+   The arrow is a SIBLING of the <a>, so the link's right padding sits between
+   the label and the button. With a fixed `margin-left: -4px` that padding leaked
+   straight into the visual gap: raising Item Padding X to space the items apart
+   also shoved every chevron the same distance off its label, and there was no
+   field that could pull it back.
+
+   Subtracting the link's own horizontal padding cancels that coupling, so
+   --aae-menu-toggle-gap is the REAL distance from the last glyph of the label to
+   the edge of the toggle button, and Item Padding X no longer moves it.
+
+   --aae-arrow-pad is a per-context indirection because the padding to cancel is
+   not the same at every depth: a top-level row is padded with --aae-px, a
+   dropdown row with --aae-menu-dropdown-padding-x. Each is set on the list that
+   owns those rows and inherits down to the arrows inside it.
+
+   Default 10px is not arbitrary — it is exactly the gap the old hardcoded
+   `-4px` produced against the default 14px padding (14 - 4), so an untouched
+   menu renders pixel-identically. */
+.aae-a-menu-list {
+  --aae-arrow-pad: var(--aae-px);
+}
+
+.aae-a-menu-list .sub-menu {
+  --aae-arrow-pad: var(--aae-menu-dropdown-padding-x, 14px);
+}
+
 /* ============== CHEVRON ARROW (toggle) ============== */
 .aae-a-menu-arrow {
   all: unset;
@@ -312,7 +343,7 @@
      menu renders identically. */
   width: var(--aae-menu-toggle-size, 28px);
   height: var(--aae-menu-toggle-size, 28px);
-  margin-left: -4px;
+  margin-left: calc(var(--aae-menu-toggle-gap, 10px) - var(--aae-arrow-pad, 14px));
   align-items: center;
   justify-content: center;
   cursor: pointer;
@@ -320,6 +351,27 @@
   background: var(--aae-menu-toggle-bg, transparent);
   border-radius: var(--aae-menu-toggle-radius, 50%);
   transition: background var(--t), color var(--t);
+}
+
+/* THE LINK MUST NOT EAT THE SPACE THE NEGATIVE MARGIN FREES.
+
+   `.aae-a-menu-list a` is `flex: 1 1 auto`, and the row is a flex container
+   sized by its content. Pulling the arrow left with a negative margin shrinks
+   the row's content total, which hands the link free space — and a growing link
+   pushes its own right edge, and therefore the arrow, straight back out again.
+   So the gap silently stopped shrinking once the pull passed the arrow's own
+   width: at Item Padding X 60 a requested 10px gap rendered as 32px.
+
+   Scoped as tightly as the problem:
+     - TOP-LEVEL rows only (`> li >`). Dropdown rows deliberately let the link
+       grow so every arrow lines up against the panel's right edge — the panel is
+       min-width 220px, wider than most labels — and taking that away would
+       re-column every existing dropdown.
+     - FLYOUT only. The drawer and Layout = Vertical park the arrow with
+       `margin-left: auto`, which needs that free space to work; they also
+       override the margin below, so the negative pull never applies there. */
+.aae-a-menu:not(:is(:where(.aae-a-menu--mobile)[data-hamburger=true], [data-layout=vertical])) .aae-a-menu-list > li.menu-item-has-children > a {
+  flex-grow: 0;
 }
 
 @media (hover: hover) {
@@ -1031,4 +1083,3 @@
     transition-duration: 0.01ms !important;
   }
 }
-/*# sourceMappingURL=menu.css.map */

@@ -38,13 +38,34 @@
         transition: background-color 0.2s ease;
         -webkit-tap-highlight-color: transparent;
 
-        // Browsers paint their own focus ring on a clicked <button> (Chrome:
-        // a blue outline, Firefox: a dotted one that reads as "black
-        // border"). We already show the open/closed state via the content
-        // reveal and the arrow flip, so no separate focus ring is needed.
-        &:focus,
-        &:focus-visible {
+        // Browsers paint their own focus ring on a CLICKED <button> (Chrome: a
+        // blue outline, Firefox: a dotted one that reads as "black border").
+        // Suppressing that for the pointer is the whole point of this rule —
+        // the open/closed state is already shown by the content reveal and the
+        // arrow flip, so a ring left behind by a mouse click is just noise.
+        &:focus {
             outline: none;
+            box-shadow: none;
+        }
+
+        // …but `:focus-visible` is NOT that case, and it used to be zeroed here
+        // too. That is the browser telling us focus arrived by KEYBOARD, and
+        // removing the ring there leaves someone tabbing through the page with
+        // no way to see where they are — WCAG 2.4.7 (Focus Visible), and the
+        // one state where the ring is doing real work.
+        //
+        // `revert` hands the ring back to the browser rather than painting our
+        // own, deliberately: an explicit colour has to be legible against every
+        // preset (the Midnight preset is dark, Clean List is white) and against
+        // whatever background a builder sets, which no single value achieves.
+        // `currentColor` is worse still — the theme turns the focused button's
+        // colour #fff (see the title colour note below), so the ring would be
+        // white on white. The UA ring is designed for contrast on any backdrop.
+        //
+        // Nothing here affects layout: an outline is painted outside the box
+        // model and never reflows its neighbours.
+        &:focus-visible {
+            outline: revert;
             box-shadow: none;
         }
 
@@ -125,15 +146,62 @@
     // styles on the Heading, and loses to them on file order (this bundle loads
     // before local-<post>-frontend-*.css), so styling the title from the Style
     // panel still works.
+    //
+    // `color` is the ONE property that must NOT be inherited here, and it is
+    // the reason this rule declares a literal value instead. The title sits
+    // inside a bare `button[type="button"]`, and themes style those per-state —
+    // hello-elementor's reset.css ships:
+    //
+    //   [type="button"]:focus, button:focus,
+    //   [type="button"]:hover,  button:hover { color: #fff; background: #e36; }
+    //
+    // `[type="button"]:focus` is (0,2,0), an exact TIE with the 'header' base
+    // style's `.elementor .e-aae-a-accordion-item-header`, and reset.css is
+    // printed after base-desktop.css — so the theme wins the row's colour. A
+    // click leaves the button FOCUSED, so an inheriting title turned #fff and
+    // went invisible on the white card until the visitor clicked elsewhere.
+    // (The background half of that theme rule is already fenced by the
+    // `background: transparent` above; only `color` was missing.) The icons
+    // never showed the bug because their own base style DECLARES a colour —
+    // which is exactly the fix: a declared value beats an inherited one, so
+    // once the title states its own colour the theme cannot reach it.
+    //
+    // Declared HERE rather than as a 'header_title' base style, because a base
+    // style needs its class on the element and define_default_children() only
+    // runs for newly-dropped items — every accordion already saved in a page
+    // would have kept the bug. At (0,2,0) in this bundle it beats inheritance
+    // for saved and new items alike, and still loses on file order to the
+    // (0,2,0) local style the Heading's own Style panel writes into
+    // local-<post>-frontend-*.css, so recolouring the title still works.
+    //
+    // Consequence worth knowing: the 'header' base style's `color` now governs
+    // only the row itself, not the title. The title is a real Heading with its
+    // own colour control, which is the honest owner for it.
     .aae-header-title-element {
         font-family: inherit;
         font-size: inherit;
         font-weight: inherit;
         line-height: inherit;
-        color: inherit;
+        color: #1f2937;
     }
 
     .aae-a-accordion-item .aae-header-icon-element.aae-header-icon-close {
+        display: none !important;
+    }
+
+    // Same three state rules, keyed on the attribute accordion.js writes
+    // instead of on the hook classes.
+    //
+    // Both sets are needed and neither is redundant. The CLASS rules are
+    // correct from the very first paint, because the classes are server
+    // rendered out of the `classes` prop — no flash, and no dependency on JS
+    // in the normal case. The ATTRIBUTE rules are what survive the editing
+    // panel: its "Some classes are missing" ✕ unapplies every hook class in
+    // that prop, which used to leave the close icon with nothing hiding it so
+    // both chevrons showed at once. An attribute is unreachable from the
+    // panel, so once ensureHooks() has run the state cannot be broken from
+    // there again.
+    .aae-a-accordion-item [data-aae-accordion-icon='close'] {
         display: none !important;
     }
 
@@ -150,6 +218,14 @@
     }
 
     .aae-a-accordion-item.active .aae-header-icon-element.aae-header-icon-close {
+        display: inline-flex !important;
+    }
+
+    .aae-a-accordion-item.active [data-aae-accordion-icon='open'] {
+        display: none !important;
+    }
+
+    .aae-a-accordion-item.active [data-aae-accordion-icon='close'] {
         display: inline-flex !important;
     }
 
@@ -175,6 +251,20 @@
         // padding is static, and it keeps a builder's value animating in step
         // with the reveal if they set one.
         transition: padding var(--aae-accordion-speed, 400ms) ease;
+    }
+
+    // Respect the visitor's own motion setting. The height animation is driven
+    // from JS (setWrapperHeight takes the instant path under this same query,
+    // which is what keeps an open panel settling to `max-height: none` instead
+    // of staying pinned at a measured pixel height), so this covers the two
+    // transitions CSS still owns. Declared last inside the same
+    // `.aae-a-accordion` scope, so it wins the (0,2,0) tie on file order
+    // without needing !important.
+    @media (prefers-reduced-motion: reduce) {
+        .aae-accordion-content-wrapper,
+        .aae-accordion-content {
+            transition: none;
+        }
     }
 }
 
