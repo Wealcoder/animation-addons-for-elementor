@@ -713,7 +713,11 @@
                                                 "props": {
                                                     "display": {
                                                         "$$type": "string",
-                                                        "value": "inline-flex"
+                                                        "value": "inline-grid"
+                                                    },
+                                                    "grid-template-columns": {
+                                                        "$$type": "string",
+                                                        "value": "1fr 1fr"
                                                     },
                                                     "position": {
                                                         "$$type": "string",
