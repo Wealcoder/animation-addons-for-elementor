@@ -3488,6 +3488,29 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			'aae-a-google-maps' => [
+				'label'        => 'Google Maps',
+				'description'  => 'An embedded Google map placed by address, with a zoom level. Reuses the API key from Elementor > Settings > Integrations, and falls back to the keyless embed when none is set.',
+				'icon'         => 'eicon-google-maps',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'google',
+					'map',
+					'maps',
+					'embed',
+					'location',
+					'address',
+					'atomic',
+				],
+				'category'     => 'general',
+				'order'        => 23,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
 		];
 	}
 
@@ -5564,6 +5587,17 @@ final class Atomic
 			'has_script'   => false,
 			'style_handle' => 'aae-a-curved-text-css',
 			'style_path'   => '/assets/atomic/css/curved-text.css',
+		],
+
+		'aae-a-google-maps' => [
+			'class'        => '\WCF_ADDONS\AtomicWidgets\Widgets\GoogleMaps\AAE_A_Google_Maps',
+			'file'         => 'Widgets/GoogleMaps/class-aae-a-google-maps.php',
+			// No frontend JS: the embed URL is built in the twig, so the map
+			// works with scripting irrelevant. The only stylesheet rule is the
+			// editor-only pointer-events guard (google-maps.scss).
+			'has_script'   => false,
+			'style_handle' => 'aae-a-google-maps-css',
+			'style_path'   => '/assets/atomic/css/google-maps.css',
 		],
 
 		// Add new atomic widgets below...

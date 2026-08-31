@@ -171,6 +171,10 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 			'toggle_bg'         => String_Prop_Type::make()->default( '' ),
 			'toggle_hover_bg'   => String_Prop_Type::make()->default( '' ),
 			'toggle_padding'    => Number_Prop_Type::make()->default( 0 ),
+			// Distance from the LABEL to the toggle button. 10 is what the old
+			// hardcoded -4px margin produced against the default 14px item padding,
+			// so an untouched menu is unchanged.
+			'toggle_gap'        => Number_Prop_Type::make()->default( 10 ),
 			'toggle_size'       => Number_Prop_Type::make()->default( 28 ),
 			'toggle_icon_size'  => Number_Prop_Type::make()->default( 10 ),
 			'toggle_radius'     => Number_Prop_Type::make()->default( 50 ),

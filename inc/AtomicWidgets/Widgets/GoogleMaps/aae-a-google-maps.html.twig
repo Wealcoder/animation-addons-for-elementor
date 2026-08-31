@@ -1,0 +1,69 @@
+{% import 'elementor/macros' as m %}
+
+{# The embed URL is built HERE, not in get_atomic_settings(), so the editor's
+   client-side Twing render produces the same markup as the server — see the
+   class docblock. `url_encode` is Twig's rawurlencode equivalent and exists in
+   Twing too, so it behaves identically in both contexts. #}
+
+{% set classes = ['aae-a-google-maps', 'e-atomic-element', base_styles.base]
+    | merge(settings.classes | default([])) | join(' ') %}
+
+{% set address = settings.address | default('') | trim %}
+
+{# v3 coerced a zero zoom back to 10 in render(); the panel is clamped 1-20 but
+   an imported/legacy value can still be out of range. #}
+{% set zoom = settings.zoom | default(10) %}
+{% if zoom < 1 or zoom > 20 %}
+    {% set zoom = 10 %}
+{% endif %}
+
+{% set api_key = settings.api_key | default('') %}
+
+{% if api_key is not empty %}
+    {% set map_src = 'https://www.google.com/maps/embed/v1/place?key=' ~ api_key | url_encode
+        ~ '&q=' ~ address | url_encode
+        ~ '&zoom=' ~ zoom %}
+{% else %}
+    {% set map_src = 'https://maps.google.com/maps?q=' ~ address | url_encode
+        ~ '&t=m&z=' ~ zoom
+        ~ '&output=embed&iwloc=near' %}
+{% endif %}
+
+<div class="{{ classes }}" data-interaction-id="{{ interaction_id | default('') }}"{{ m.render_custom_attributes(settings, editor_attributes) }}>
+    {% if address is not empty %}
+        {# v3 returned NOTHING from render() when the address was empty. That is
+           fine for a v3 widget (Elementor still emits its own wrapper) but an
+           atomic widget IS its own root — an empty render leaves nothing to
+           select or drop onto in the editor, so the empty state gets a real
+           placeholder box instead (same convention as AAE_A_Menu's
+           `aae-a-menu-placeholder`). #}
+        <iframe class="aae-a-google-maps-frame"
+                {# Plain autoescape (html strategy, set by Template_Renderer's
+                   'autoescape' => 'name' + the .html.twig extension) — it turns
+                   the query separators into `&amp;`, which is exactly right in
+                   an attribute.
+
+                   Do NOT "improve" this to `| e('full_url')`. Twig only skips
+                   autoescaping when the explicit escaper matches the template's
+                   own strategy, and `full_url` (Elementor's alias for esc_url)
+                   does not — so BOTH run: esc_url turns `&` into `&#038;`, then
+                   autoescape turns that `&` into `&amp;#038;`. The browser
+                   decodes one layer and every parameter ends up literally named
+                   `#038;t`, `#038;z`, ... and the map breaks. Core's own
+                   atomic-image template has the same shape and gets away with
+                   it only because plain image URLs carry no `&`.
+
+                   Nothing is lost by dropping esc_url here: the scheme and host
+                   are literals in this template and every interpolated part
+                   already went through `url_encode`, so there is no protocol or
+                   injection surface for it to sanitize. #}
+                src="{{ map_src }}"
+                title="{{ address | e }}"
+                aria-label="{{ address | e }}"
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                allowfullscreen></iframe>
+    {% else %}
+        <div class="aae-a-google-maps-placeholder">{{ settings.placeholder_text | default('Enter a location to display the map.') }}</div>
+    {% endif %}
+</div>
