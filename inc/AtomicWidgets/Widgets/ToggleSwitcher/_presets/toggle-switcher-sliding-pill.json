@@ -1,0 +1,999 @@
+{
+    "name": "toggle-switcher-sliding-pill",
+    "model": {
+        "id": "psw000",
+        "settings": [],
+        "elements": [
+            {
+                "id": "psw001",
+                "settings": {
+                    "classes": {
+                        "$$type": "classes",
+                        "value": []
+                    }
+                },
+                "elements": [
+                    {
+                        "id": "psw005",
+                        "settings": {
+                            "classes": {
+                                "$$type": "classes",
+                                "value": [
+                                    "e-psw005-wrap"
+                                ]
+                            }
+                        },
+                        "elements": [
+                            {
+                                "id": "psw010",
+                                "settings": {
+                                    "classes": {
+                                        "$$type": "classes",
+                                        "value": [
+                                            "e-psw010-row"
+                                        ]
+                                    }
+                                },
+                                "elements": [
+                                    {
+                                        "id": "psw011",
+                                        "settings": {
+                                            "is_after": {
+                                                "$$type": "boolean",
+                                                "value": false
+                                            },
+                                            "classes": {
+                                                "$$type": "classes",
+                                                "value": [
+                                                    "e-psw011-label"
+                                                ]
+                                            }
+                                        },
+                                        "elements": [
+                                            {
+                                                "id": "psw0111",
+                                                "settings": {
+                                                    "paragraph": {
+                                                        "$$type": "html-v3",
+                                                        "value": {
+                                                            "content": {
+                                                                "$$type": "string",
+                                                                "value": "Monthly"
+                                                            },
+                                                            "children": []
+                                                        }
+                                                    }
+                                                },
+                                                "elements": [],
+                                                "isInner": false,
+                                                "widgetType": "e-paragraph",
+                                                "elType": "widget",
+                                                "styles": [],
+                                                "interactions": [],
+                                                "editor_settings": {
+                                                    "title": "Text"
+                                                },
+                                                "version": "0.0"
+                                            }
+                                        ],
+                                        "isInner": false,
+                                        "elType": "e-aae-a-toggle-switcher-label",
+                                        "styles": {
+                                            "e-psw011-label": {
+                                                "id": "e-psw011-label",
+                                                "label": "local",
+                                                "type": "class",
+                                                "variants": [
+                                                    {
+                                                        "meta": {
+                                                            "breakpoint": "desktop",
+                                                            "state": null
+                                                        },
+                                                        "props": {
+                                                            "flex": {
+                                                                "$$type": "flex",
+                                                                "value": {
+                                                                    "flexGrow": {
+                                                                        "$$type": "number",
+                                                                        "value": 0
+                                                                    },
+                                                                    "flexShrink": {
+                                                                        "$$type": "number",
+                                                                        "value": 0
+                                                                    },
+                                                                    "flexBasis": {
+                                                                        "$$type": "size",
+                                                                        "value": {
+                                                                            "unit": "auto",
+                                                                            "size": ""
+                                                                        }
+                                                                    }
+                                                                }
+                                                            },
+                                                            "position": {
+                                                                "$$type": "string",
+                                                                "value": "relative"
+                                                            },
+                                                            "z-index": {
+                                                                "$$type": "number",
+                                                                "value": 1
+                                                            },
+                                                            "justify-content": {
+                                                                "$$type": "string",
+                                                                "value": "center"
+                                                            },
+                                                            "align-items": {
+                                                                "$$type": "string",
+                                                                "value": "center"
+                                                            },
+                                                            "color": {
+                                                                "$$type": "color",
+                                                                "value": "#6b7280"
+                                                            },
+                                                            "white-space": {
+                                                                "$$type": "string",
+                                                                "value": "nowrap"
+                                                            },
+                                                            "transition": {
+                                                                "$$type": "transition",
+                                                                "value": [
+                                                                    {
+                                                                        "$$type": "selection-size",
+                                                                        "value": {
+                                                                            "selection": {
+                                                                                "$$type": "key-value",
+                                                                                "value": {
+                                                                                    "key": {
+                                                                                        "$$type": "string",
+                                                                                        "value": "All properties"
+                                                                                    },
+                                                                                    "value": {
+                                                                                        "$$type": "string",
+                                                                                        "value": "all"
+                                                                                    }
+                                                                                }
+                                                                            },
+                                                                            "size": {
+                                                                                "$$type": "size",
+                                                                                "value": {
+                                                                                    "unit": "ms",
+                                                                                    "size": 250
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "padding": {
+                                                                "$$type": "dimensions",
+                                                                "value": {
+                                                                    "block-start": {
+                                                                        "$$type": "size",
+                                                                        "value": {
+                                                                            "unit": "px",
+                                                                            "size": 8
+                                                                        }
+                                                                    },
+                                                                    "inline-end": {
+                                                                        "$$type": "size",
+                                                                        "value": {
+                                                                            "unit": "px",
+                                                                            "size": 16
+                                                                        }
+                                                                    },
+                                                                    "block-end": {
+                                                                        "$$type": "size",
+                                                                        "value": {
+                                                                            "unit": "px",
+                                                                            "size": 8
+                                                                        }
+                                                                    },
+                                                                    "inline-start": {
+                                                                        "$$type": "size",
+                                                                        "value": {
+                                                                            "unit": "px",
+                                                                            "size": 16
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        },
+                                                        "custom_css": null
+                                                    },
+                                                    {
+                                                        "meta": {
+                                                            "breakpoint": "desktop",
+                                                            "state": "e--selected"
+                                                        },
+                                                        "props": {
+                                                            "color": {
+                                                                "$$type": "color",
+                                                                "value": "#1a1a1a"
+                                                            },
+                                                            "font-weight": {
+                                                                "$$type": "string",
+                                                                "value": "600"
+                                                            }
+                                                        },
+                                                        "custom_css": null
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "interactions": [],
+                                        "editor_settings": {
+                                            "title": "Label Before"
+                                        },
+                                        "version": "0.0"
+                                    },
+                                    {
+                                        "id": "psw012",
+                                        "settings": {
+                                            "is_pill": {
+                                                "$$type": "boolean",
+                                                "value": true
+                                            },
+                                            "classes": {
+                                                "$$type": "classes",
+                                                "value": [
+                                                    "e-psw012-switch"
+                                                ]
+                                            }
+                                        },
+                                        "elements": [
+                                            {
+                                                "id": "psw0121",
+                                                "settings": {
+                                                    "is_pill": {
+                                                        "$$type": "boolean",
+                                                        "value": true
+                                                    },
+                                                    "classes": {
+                                                        "$$type": "classes",
+                                                        "value": [
+                                                            "e-psw0121-knob"
+                                                        ]
+                                                    }
+                                                },
+                                                "elements": [],
+                                                "isInner": false,
+                                                "widgetType": "e-aae-a-toggle-switcher-knob",
+                                                "elType": "widget",
+                                                "styles": {
+                                                    "e-psw0121-knob": {
+                                                        "id": "e-psw0121-knob",
+                                                        "label": "local",
+                                                        "type": "class",
+                                                        "variants": [
+                                                            {
+                                                                "meta": {
+                                                                    "breakpoint": "desktop",
+                                                                    "state": null
+                                                                },
+                                                                "props": {
+                                                                    "position": {
+                                                                        "$$type": "string",
+                                                                        "value": "absolute"
+                                                                    },
+                                                                    "width": {
+                                                                        "$$type": "size",
+                                                                        "value": {
+                                                                            "unit": "%",
+                                                                            "size": 50
+                                                                        }
+                                                                    },
+                                                                    "height": {
+                                                                        "$$type": "size",
+                                                                        "value": {
+                                                                            "unit": "%",
+                                                                            "size": 100
+                                                                        }
+                                                                    },
+                                                                    "min-width": {
+                                                                        "$$type": "size",
+                                                                        "value": {
+                                                                            "unit": "px",
+                                                                            "size": 0
+                                                                        }
+                                                                    },
+                                                                    "inset-block-start": {
+                                                                        "$$type": "size",
+                                                                        "value": {
+                                                                            "unit": "px",
+                                                                            "size": 0
+                                                                        }
+                                                                    },
+                                                                    "inset-inline-start": {
+                                                                        "$$type": "size",
+                                                                        "value": {
+                                                                            "unit": "px",
+                                                                            "size": 0
+                                                                        }
+                                                                    },
+                                                                    "border-radius": {
+                                                                        "$$type": "size",
+                                                                        "value": {
+                                                                            "unit": "px",
+                                                                            "size": 999
+                                                                        }
+                                                                    },
+                                                                    "background": {
+                                                                        "$$type": "background",
+                                                                        "value": {
+                                                                            "color": {
+                                                                                "$$type": "color",
+                                                                                "value": "#f5d949"
+                                                                            }
+                                                                        }
+                                                                    },
+                                                                    "transform": {
+                                                                        "$$type": "transform",
+                                                                        "value": {
+                                                                            "transform-functions": {
+                                                                                "$$type": "transform-functions",
+                                                                                "value": [
+                                                                                    {
+                                                                                        "$$type": "transform-move",
+                                                                                        "value": {
+                                                                                            "x": {
+                                                                                                "$$type": "size",
+                                                                                                "value": {
+                                                                                                    "unit": "px",
+                                                                                                    "size": 0
+                                                                                                }
+                                                                                            },
+                                                                                            "y": {
+                                                                                                "$$type": "size",
+                                                                                                "value": {
+                                                                                                    "unit": "px",
+                                                                                                    "size": 0
+                                                                                                }
+                                                                                            },
+                                                                                            "z": {
+                                                                                                "$$type": "size",
+                                                                                                "value": {
+                                                                                                    "unit": "px",
+                                                                                                    "size": 0
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                ]
+                                                                            }
+                                                                        }
+                                                                    },
+                                                                    "transition": {
+                                                                        "$$type": "transition",
+                                                                        "value": [
+                                                                            {
+                                                                                "$$type": "selection-size",
+                                                                                "value": {
+                                                                                    "selection": {
+                                                                                        "$$type": "key-value",
+                                                                                        "value": {
+                                                                                            "key": {
+                                                                                                "$$type": "string",
+                                                                                                "value": "All properties"
+                                                                                            },
+                                                                                            "value": {
+                                                                                                "$$type": "string",
+                                                                                                "value": "all"
+                                                                                            }
+                                                                                        }
+                                                                                    },
+                                                                                    "size": {
+                                                                                        "$$type": "size",
+                                                                                        "value": {
+                                                                                            "unit": "ms",
+                                                                                            "size": 350
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        ]
+                                                                    }
+                                                                },
+                                                                "custom_css": null
+                                                            }
+                                                        ]
+                                                    }
+                                                },
+                                                "interactions": [],
+                                                "editor_settings": {
+                                                    "title": "Sliding Pill"
+                                                },
+                                                "version": "0.0"
+                                            }
+                                        ],
+                                        "isInner": false,
+                                        "widgetType": "e-aae-a-toggle-switcher-track",
+                                        "elType": "widget",
+                                        "styles": {
+                                            "e-psw012-switch": {
+                                                "id": "e-psw012-switch",
+                                                "label": "local",
+                                                "type": "class",
+                                                "variants": [
+                                                    {
+                                                        "meta": {
+                                                            "breakpoint": "desktop",
+                                                            "state": null
+                                                        },
+                                                        "props": {
+                                                            "position": {
+                                                                "$$type": "string",
+                                                                "value": "absolute"
+                                                            },
+                                                            "width": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "unit": "auto",
+                                                                    "size": ""
+                                                                }
+                                                            },
+                                                            "height": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "unit": "auto",
+                                                                    "size": ""
+                                                                }
+                                                            },
+                                                            "min-width": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "unit": "px",
+                                                                    "size": 0
+                                                                }
+                                                            },
+                                                            "inset-block-start": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "unit": "px",
+                                                                    "size": 4
+                                                                }
+                                                            },
+                                                            "inset-block-end": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "unit": "px",
+                                                                    "size": 4
+                                                                }
+                                                            },
+                                                            "inset-inline-start": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "unit": "px",
+                                                                    "size": 4
+                                                                }
+                                                            },
+                                                            "inset-inline-end": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "unit": "px",
+                                                                    "size": 4
+                                                                }
+                                                            },
+                                                            "border-width": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "unit": "px",
+                                                                    "size": 0
+                                                                }
+                                                            },
+                                                            "background": {
+                                                                "$$type": "background",
+                                                                "value": {
+                                                                    "color": {
+                                                                        "$$type": "color",
+                                                                        "value": "transparent"
+                                                                    }
+                                                                }
+                                                            },
+                                                            "z-index": {
+                                                                "$$type": "number",
+                                                                "value": 0
+                                                            }
+                                                        },
+                                                        "custom_css": null
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "interactions": [],
+                                        "editor_settings": {
+                                            "title": "Switch"
+                                        },
+                                        "version": "0.0"
+                                    },
+                                    {
+                                        "id": "psw013",
+                                        "settings": {
+                                            "is_after": {
+                                                "$$type": "boolean",
+                                                "value": true
+                                            },
+                                            "classes": {
+                                                "$$type": "classes",
+                                                "value": [
+                                                    "e-psw013-label"
+                                                ]
+                                            }
+                                        },
+                                        "elements": [
+                                            {
+                                                "id": "psw0131",
+                                                "settings": {
+                                                    "paragraph": {
+                                                        "$$type": "html-v3",
+                                                        "value": {
+                                                            "content": {
+                                                                "$$type": "string",
+                                                                "value": "Yearly"
+                                                            },
+                                                            "children": []
+                                                        }
+                                                    }
+                                                },
+                                                "elements": [],
+                                                "isInner": false,
+                                                "widgetType": "e-paragraph",
+                                                "elType": "widget",
+                                                "styles": [],
+                                                "interactions": [],
+                                                "editor_settings": {
+                                                    "title": "Text"
+                                                },
+                                                "version": "0.0"
+                                            }
+                                        ],
+                                        "isInner": false,
+                                        "elType": "e-aae-a-toggle-switcher-label",
+                                        "styles": {
+                                            "e-psw013-label": {
+                                                "id": "e-psw013-label",
+                                                "label": "local",
+                                                "type": "class",
+                                                "variants": [
+                                                    {
+                                                        "meta": {
+                                                            "breakpoint": "desktop",
+                                                            "state": null
+                                                        },
+                                                        "props": {
+                                                            "flex": {
+                                                                "$$type": "flex",
+                                                                "value": {
+                                                                    "flexGrow": {
+                                                                        "$$type": "number",
+                                                                        "value": 0
+                                                                    },
+                                                                    "flexShrink": {
+                                                                        "$$type": "number",
+                                                                        "value": 0
+                                                                    },
+                                                                    "flexBasis": {
+                                                                        "$$type": "size",
+                                                                        "value": {
+                                                                            "unit": "auto",
+                                                                            "size": ""
+                                                                        }
+                                                                    }
+                                                                }
+                                                            },
+                                                            "position": {
+                                                                "$$type": "string",
+                                                                "value": "relative"
+                                                            },
+                                                            "z-index": {
+                                                                "$$type": "number",
+                                                                "value": 1
+                                                            },
+                                                            "justify-content": {
+                                                                "$$type": "string",
+                                                                "value": "center"
+                                                            },
+                                                            "align-items": {
+                                                                "$$type": "string",
+                                                                "value": "center"
+                                                            },
+                                                            "color": {
+                                                                "$$type": "color",
+                                                                "value": "#6b7280"
+                                                            },
+                                                            "white-space": {
+                                                                "$$type": "string",
+                                                                "value": "nowrap"
+                                                            },
+                                                            "transition": {
+                                                                "$$type": "transition",
+                                                                "value": [
+                                                                    {
+                                                                        "$$type": "selection-size",
+                                                                        "value": {
+                                                                            "selection": {
+                                                                                "$$type": "key-value",
+                                                                                "value": {
+                                                                                    "key": {
+                                                                                        "$$type": "string",
+                                                                                        "value": "All properties"
+                                                                                    },
+                                                                                    "value": {
+                                                                                        "$$type": "string",
+                                                                                        "value": "all"
+                                                                                    }
+                                                                                }
+                                                                            },
+                                                                            "size": {
+                                                                                "$$type": "size",
+                                                                                "value": {
+                                                                                    "unit": "ms",
+                                                                                    "size": 250
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "padding": {
+                                                                "$$type": "dimensions",
+                                                                "value": {
+                                                                    "block-start": {
+                                                                        "$$type": "size",
+                                                                        "value": {
+                                                                            "unit": "px",
+                                                                            "size": 8
+                                                                        }
+                                                                    },
+                                                                    "inline-end": {
+                                                                        "$$type": "size",
+                                                                        "value": {
+                                                                            "unit": "px",
+                                                                            "size": 16
+                                                                        }
+                                                                    },
+                                                                    "block-end": {
+                                                                        "$$type": "size",
+                                                                        "value": {
+                                                                            "unit": "px",
+                                                                            "size": 8
+                                                                        }
+                                                                    },
+                                                                    "inline-start": {
+                                                                        "$$type": "size",
+                                                                        "value": {
+                                                                            "unit": "px",
+                                                                            "size": 16
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        },
+                                                        "custom_css": null
+                                                    },
+                                                    {
+                                                        "meta": {
+                                                            "breakpoint": "desktop",
+                                                            "state": "e--selected"
+                                                        },
+                                                        "props": {
+                                                            "color": {
+                                                                "$$type": "color",
+                                                                "value": "#1a1a1a"
+                                                            },
+                                                            "font-weight": {
+                                                                "$$type": "string",
+                                                                "value": "600"
+                                                            }
+                                                        },
+                                                        "custom_css": null
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "interactions": [],
+                                        "editor_settings": {
+                                            "title": "Label After"
+                                        },
+                                        "version": "0.0"
+                                    }
+                                ],
+                                "isInner": false,
+                                "elType": "e-flexbox",
+                                "styles": {
+                                    "e-psw010-row": {
+                                        "id": "e-psw010-row",
+                                        "label": "local",
+                                        "type": "class",
+                                        "variants": [
+                                            {
+                                                "meta": {
+                                                    "breakpoint": "desktop",
+                                                    "state": null
+                                                },
+                                                "props": {
+                                                    "display": {
+                                                        "$$type": "string",
+                                                        "value": "inline-flex"
+                                                    },
+                                                    "position": {
+                                                        "$$type": "string",
+                                                        "value": "relative"
+                                                    },
+                                                    "width": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "unit": "auto",
+                                                            "size": ""
+                                                        }
+                                                    },
+                                                    "align-items": {
+                                                        "$$type": "string",
+                                                        "value": "center"
+                                                    },
+                                                    "gap": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "unit": "px",
+                                                            "size": 0
+                                                        }
+                                                    },
+                                                    "background": {
+                                                        "$$type": "background",
+                                                        "value": {
+                                                            "color": {
+                                                                "$$type": "color",
+                                                                "value": "#eff1f4"
+                                                            }
+                                                        }
+                                                    },
+                                                    "border-radius": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "unit": "px",
+                                                            "size": 999
+                                                        }
+                                                    },
+                                                    "padding": {
+                                                        "$$type": "dimensions",
+                                                        "value": {
+                                                            "block-start": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "unit": "px",
+                                                                    "size": 4
+                                                                }
+                                                            },
+                                                            "inline-end": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "unit": "px",
+                                                                    "size": 4
+                                                                }
+                                                            },
+                                                            "block-end": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "unit": "px",
+                                                                    "size": 4
+                                                                }
+                                                            },
+                                                            "inline-start": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "unit": "px",
+                                                                    "size": 4
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "custom_css": null
+                                            }
+                                        ]
+                                    }
+                                },
+                                "interactions": [],
+                                "editor_settings": {
+                                    "title": "Pill Row"
+                                },
+                                "version": "0.0"
+                            }
+                        ],
+                        "isInner": false,
+                        "elType": "e-div-block",
+                        "styles": {
+                            "e-psw005-wrap": {
+                                "id": "e-psw005-wrap",
+                                "label": "local",
+                                "type": "class",
+                                "variants": [
+                                    {
+                                        "meta": {
+                                            "breakpoint": "desktop",
+                                            "state": null
+                                        },
+                                        "props": {
+                                            "display": {
+                                                "$$type": "string",
+                                                "value": "flex"
+                                            },
+                                            "justify-content": {
+                                                "$$type": "string",
+                                                "value": "center"
+                                            },
+                                            "width": {
+                                                "$$type": "size",
+                                                "value": {
+                                                    "unit": "%",
+                                                    "size": 100
+                                                }
+                                            }
+                                        },
+                                        "custom_css": null
+                                    }
+                                ]
+                            }
+                        },
+                        "interactions": [],
+                        "editor_settings": {
+                            "title": "Pill Row Wrap"
+                        },
+                        "version": "0.0"
+                    },
+                    {
+                        "id": "psw020",
+                        "settings": [],
+                        "elements": [
+                            {
+                                "id": "psw021",
+                                "settings": {
+                                    "tag": {
+                                        "$$type": "string",
+                                        "value": "h3"
+                                    },
+                                    "title": {
+                                        "$$type": "html-v3",
+                                        "value": {
+                                            "content": {
+                                                "$$type": "string",
+                                                "value": "Monthly Plan"
+                                            },
+                                            "children": []
+                                        }
+                                    }
+                                },
+                                "elements": [],
+                                "isInner": false,
+                                "widgetType": "e-heading",
+                                "elType": "widget",
+                                "styles": [],
+                                "interactions": [],
+                                "editor_settings": [],
+                                "version": "0.0"
+                            },
+                            {
+                                "id": "psw022",
+                                "settings": {
+                                    "paragraph": {
+                                        "$$type": "html-v3",
+                                        "value": {
+                                            "content": {
+                                                "$$type": "string",
+                                                "value": "Add your monthly-plan content here."
+                                            },
+                                            "children": []
+                                        }
+                                    },
+                                    "tag": {
+                                        "$$type": "string",
+                                        "value": "p"
+                                    }
+                                },
+                                "elements": [],
+                                "isInner": false,
+                                "widgetType": "e-paragraph",
+                                "elType": "widget",
+                                "styles": [],
+                                "interactions": [],
+                                "editor_settings": [],
+                                "version": "0.0"
+                            }
+                        ],
+                        "isInner": false,
+                        "elType": "e-aae-a-toggle-pane",
+                        "styles": [],
+                        "interactions": [],
+                        "editor_settings": {
+                            "title": "Pane - Monthly"
+                        },
+                        "version": "0.0"
+                    },
+                    {
+                        "id": "psw030",
+                        "settings": [],
+                        "elements": [
+                            {
+                                "id": "psw031",
+                                "settings": {
+                                    "tag": {
+                                        "$$type": "string",
+                                        "value": "h3"
+                                    },
+                                    "title": {
+                                        "$$type": "html-v3",
+                                        "value": {
+                                            "content": {
+                                                "$$type": "string",
+                                                "value": "Yearly Plan"
+                                            },
+                                            "children": []
+                                        }
+                                    }
+                                },
+                                "elements": [],
+                                "isInner": false,
+                                "widgetType": "e-heading",
+                                "elType": "widget",
+                                "styles": [],
+                                "interactions": [],
+                                "editor_settings": [],
+                                "version": "0.0"
+                            },
+                            {
+                                "id": "psw032",
+                                "settings": {
+                                    "paragraph": {
+                                        "$$type": "html-v3",
+                                        "value": {
+                                            "content": {
+                                                "$$type": "string",
+                                                "value": "Add your yearly-plan content here."
+                                            },
+                                            "children": []
+                                        }
+                                    },
+                                    "tag": {
+                                        "$$type": "string",
+                                        "value": "p"
+                                    }
+                                },
+                                "elements": [],
+                                "isInner": false,
+                                "widgetType": "e-paragraph",
+                                "elType": "widget",
+                                "styles": [],
+                                "interactions": [],
+                                "editor_settings": [],
+                                "version": "0.0"
+                            }
+                        ],
+                        "isInner": false,
+                        "elType": "e-aae-a-toggle-pane",
+                        "styles": [],
+                        "interactions": [],
+                        "editor_settings": {
+                            "title": "Pane - Yearly"
+                        },
+                        "version": "0.0"
+                    }
+                ],
+                "isInner": false,
+                "elType": "e-aae-a-toggle-switcher",
+                "styles": [],
+                "interactions": [],
+                "editor_settings": {
+                    "title": "toggle-switcher-sliding-pill"
+                },
+                "version": "0.0"
+            }
+        ],
+        "isInner": false,
+        "elType": "e-flexbox",
+        "styles": [],
+        "interactions": [],
+        "editor_settings": {
+            "title": "toggle-switcher-sliding-pill"
+        },
+        "version": "0.0"
+    }
+}

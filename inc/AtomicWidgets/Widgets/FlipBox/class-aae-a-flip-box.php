@@ -85,6 +85,11 @@ class AAE_A_Flip_Box extends Atomic_Element_Base {
 
 	protected static function define_props_schema(): array {
 		return [
+			// Snapshot of this element's own full model (JSON), captured by the
+			// JS preset-apply engine the first time a preset is applied — see
+			// preset-apply.js's SNAPSHOT_REVERT_TYPES / "Reset to Default".
+			'aae_preset_snapshot' => String_Prop_Type::make()->default( '' ),
+
 			// flip-box-animate-left makes a freshly dropped box actually flip
 			// out of the box, matching the very-basic reference design — a
 			// preset can still swap this for -right/-up/-down/etc.

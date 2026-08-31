@@ -36,6 +36,7 @@ const AAE_SECTION_LABELS = new Set([
 	'Horizontal Scroll',
 	'Custom CSS',
 	'Background Video',
+	'Image Overlay',
 	// Style-tab section (inc/Atomic/Mask/), not a ResponsiveSection like the
 	// rest of this list — branding matches on the header LABEL, so where the
 	// section comes from makes no difference.

@@ -33,6 +33,11 @@
 import * as React from "react";
 import { useElement } from "@elementor/editor-editing-panel";
 import {
+  __privateUseListenTo as useListenTo,
+  commandEndEvent,
+  v1ReadyEvent,
+} from "@elementor/editor-v1-adapters";
+import {
   Box,
   Button,
   Chip,
@@ -47,8 +52,10 @@ import {
 } from "@elementor/ui";
 import {
   applyPresetModel,
+  hasOriginalSnapshot,
   invalidatePresetsForType,
   loadPresetsForType,
+  resetElementToOriginal,
 } from "./preset-apply";
 
 const UPGRADE_URL = "https://animation-addons.com/";
@@ -228,10 +235,35 @@ function PresetCard({ preset, placeholderSrc, locked, onSelect }) {
 }
 /* eslint-enable react/prop-types */
 
+/**
+ * Live read of whether the selected element carries an `aae_preset_snapshot`
+ * — i.e. whether "Reset to Default" has anything to restore. Same
+ * useListenTo pattern BtnHoverStyleControl.jsx uses for its own live marker:
+ * a plain render-time read would already be correct here too (applying or
+ * resetting a preset always replaces the element with a new id, so this
+ * component fully re-mounts whenever the answer could change), but this
+ * keeps it consistent with the rest of this file's undo/redo handling.
+ */
+function useHasOriginalSnapshot(elementId) {
+  return useListenTo(
+    [
+      v1ReadyEvent(),
+      commandEndEvent("document/elements/create"),
+      commandEndEvent("document/elements/delete"),
+      commandEndEvent("document/elements/settings"),
+      commandEndEvent("document/elements/set-settings"),
+    ],
+    () => hasOriginalSnapshot(elementId),
+    [elementId]
+  );
+}
+
 export function PresetPickerControl({ label }) {
   const { element } = useElement();
   const elementId = element.id;
   const type = element.type || element.model?.get?.("elType");
+
+  const hasSnapshot = useHasOriginalSnapshot(elementId);
 
   const [open, setOpen] = React.useState(false);
   const [presets, setPresets] = React.useState(null); // null = loading
@@ -293,8 +325,15 @@ export function PresetPickerControl({ label }) {
     setOpen(false);
   };
 
+  const handleReset = () => {
+    resetElementToOriginal(elementId, {
+      title: "Reset to Default",
+      subtitle: "Reverted to original",
+    });
+  };
+
   // Nothing resolved for this type from either remote or local, once loaded —
-  // hide the trigger entirely, matching the control's original empty
+  // hide the "Apply a preset…" trigger, matching the control's original empty
   // behaviour. This is also the correct end-state once every bundled local
   // .json is eventually removed and a type has no remote presets configured
   // yet either.
@@ -304,7 +343,11 @@ export function PresetPickerControl({ label }) {
   // disappears" bug — one blip removed the control and, since the failure was
   // also cached, nothing re-fetched it for the rest of the session. Now the
   // trigger stays put and the dialog offers a retry.
-  if (presets !== null && !presets.length && !failed) {
+  const showApplyButton = !(presets !== null && !presets.length && !failed);
+
+  // Nothing at all to offer — no presets to apply AND nothing to reset back
+  // to — hide the whole control, same as the original behaviour.
+  if (!showApplyButton && !hasSnapshot) {
     return null;
   }
 
@@ -397,6 +440,36 @@ export function PresetPickerControl({ label }) {
       >
         {loading ? "Loading presets…" : "Apply a preset…"}
       </Button>
+
+      {hasSnapshot ? (
+        <Button
+          size="small"
+          variant="outlined"
+          onClick={handleReset}
+          sx={{
+            alignSelf: "flex-end",
+            minWidth: 0,
+            height: 32,
+            minHeight: 32,
+            px: 1.25,
+            py: 0,
+            borderRadius: 1,
+            textTransform: "none",
+            fontSize: "11px",
+            fontWeight: 600,
+            lineHeight: 1.5,
+            color: "text.secondary",
+            borderColor: "action.disabled",
+            "&:hover": {
+              color: BRAND_DARK,
+              borderColor: BRAND_DARK,
+              background: "transparent",
+            },
+          }}
+        >
+          {"↺ Reset to Default"}
+        </Button>
+      ) : null}
 
       <Dialog
         open={open}
