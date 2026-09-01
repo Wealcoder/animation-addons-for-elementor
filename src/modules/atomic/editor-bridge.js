@@ -23,6 +23,7 @@ import backgroundVideoSection from './extensions/background-video/config';
 import customCssSection from './extensions/custom-css/config';
 import nestedSliderSection from './extensions/nested-slider/config';
 import menuSections from './extensions/menu-sections/config';
+import navSections from './extensions/nav-sections/config';
 import imageOverlaySection from './extensions/image-overlay/config';
 
 /* ---------------------------------------------------------------------------
@@ -101,6 +102,12 @@ registerResponsiveSection( imageOverlaySection );
 // panel section, each attaching by anchor key to e-aae-a-menu only, the same
 // way the Nested Slider panel does.
 menuSections.forEach( registerResponsiveSection );
+
+// Nav element sections — one per injected icon (hamburger, close, back and
+// the two dropdown arrows), attaching by anchor key to e-aae-a-nav only.
+// Same mechanism as the Menu sections above: the framework binds by anchor
+// key, so an Atomic_Element_Base hosts them exactly like a widget does.
+navSections.forEach( registerResponsiveSection );
 
 // Native Elementor element-controls (e.g. the slider's "Slides" list). These
 // register into Elementor's shared controlsRegistry, separate from the
