@@ -24,6 +24,30 @@ import { applySettingsToDoms } from '../editor-bridge/settings-bridge';
 // Container element types whose wrapper is unwrapped on apply.
 export const CONTAINER_TYPES = ['e-flexbox', 'e-div-block', 'e-grid', 'container'];
 
+// Element types that declare the `aae_preset_snapshot` prop in their PHP
+// props schema, and therefore support "Reset to Default" (see
+// applyPresetModel's snapshot-carrying below and resetElementToOriginal()).
+// Deliberately an explicit allowlist rather than a runtime schema check: an
+// undeclared prop is only silently dropped on SAVE (Props_Parser::validate()),
+// not necessarily at create-time, so writing it onto a type that hasn't
+// opted in is a risk with no upside. Add a type here only after its own
+// class's define_props_schema() declares the prop.
+export const SNAPSHOT_REVERT_TYPES = [
+  'e-aae-a-btn',
+  'e-aae-a-btn-pro',
+  'e-aae-a-social-share',
+  'e-aae-a-slider',
+  'e-aae-a-toggle-switcher',
+  'e-aae-a-timeline',
+  'e-aae-a-stack-cards',
+  'e-aae-a-progressbar',
+  'e-aae-a-loop-item',
+  'e-aae-a-image-compare',
+  'e-aae-a-form',
+  'e-aae-a-flip-box',
+  'e-aae-a-accordion',
+];
+
 // Some element types share another type's preset library. The Loop Grid Slider's
 // slide item (`e-aae-a-loop-slide-item`) is a subclass of the Loop Grid item
 // (`e-aae-a-loop-item`) with the same authored-card shape, so it reuses the Loop
@@ -591,6 +615,43 @@ function stampContainerClassesIntoPreview(createdElements) {
 }
 
 /**
+ * Read the current `aae_preset_snapshot` string setting straight off the V1
+ * container model (not a fetch — the value already lives in memory).
+ * Returns '' when the element has none (fresh drop, never presetted, or
+ * already reset).
+ */
+function readSnapshotSetting(elementId) {
+  const settings = getContainer(elementId)?.model?.get?.('settings');
+  const prop = settings?.get?.('aae_preset_snapshot');
+  return typeof prop?.value === 'string' ? prop.value : '';
+}
+
+/**
+ * Full raw model (settings + styles + elements, everything) for an element,
+ * exactly as Elementor's own createElements()/undoable() machinery captures
+ * a pre-change snapshot. Used once, the first time a preset is ever applied
+ * to an element, to remember what "Reset to Default" should restore.
+ */
+function captureFullModelJSON(elementId) {
+  try {
+    const model = getContainer(elementId)?.model;
+    const raw = typeof model?.toJSON === 'function' ? model.toJSON() : null;
+    if (!raw || typeof raw !== 'object') {
+      return null;
+    }
+    // Defensive: a snapshot must never carry itself. A fresh drop won't have
+    // one, but strip it just in case this is ever called on an element that
+    // does (e.g. a future caller reusing this on an already-restored node).
+    if (raw.settings && raw.settings.aae_preset_snapshot) {
+      delete raw.settings.aae_preset_snapshot;
+    }
+    return raw;
+  } catch (_) {
+    return null;
+  }
+}
+
+/**
  * Resolve the target element's parent container + its index within it (V1
  * container model, not the DOM).
  */
@@ -675,6 +736,33 @@ export function applyPresetModel(presetModel, elementId, targetType, meta = {}) 
     return null;
   }
 
+  // "Reset to Default" support: figure out, BEFORE the original element is
+  // touched, what its own snapshot should be — carrying forward whatever it
+  // already has (so stacking preset A then preset B still reverts all the way
+  // back to what existed before A, not merely back to A), or capturing its
+  // current full model for the first time if it has none yet. Scoped to a
+  // single-root, same-type replacement in SNAPSHOT_REVERT_TYPES — see that
+  // allowlist's own comment for why this isn't attempted generically.
+  const canCarrySnapshot =
+    models.length === 1 &&
+    SNAPSHOT_REVERT_TYPES.includes(targetType) &&
+    (models[0].widgetType || models[0].elType) === targetType;
+
+  let snapshotToCarry = '';
+  if (canCarrySnapshot) {
+    snapshotToCarry = readSnapshotSetting(elementId);
+    if (!snapshotToCarry) {
+      const original = captureFullModelJSON(elementId);
+      if (original) {
+        try {
+          snapshotToCarry = JSON.stringify(original);
+        } catch (_) {
+          snapshotToCarry = '';
+        }
+      }
+    }
+  }
+
   const elementsToCreate = models.map((child, i) => {
     const model = JSON.parse(JSON.stringify(child));
     delete model.id;
@@ -687,6 +775,9 @@ export function applyPresetModel(presetModel, elementId, targetType, meta = {}) 
     regenerateModelStyleIds(model);
     sanitizeImageSrc(model);
     sanitizeBorderWidthType(model);
+    if (i === 0 && canCarrySnapshot && snapshotToCarry) {
+      model.settings.aae_preset_snapshot = { $$type: 'string', value: snapshotToCarry };
+    }
     return {
       container: parent,
       model,
@@ -725,4 +816,98 @@ export function applyPresetModel(presetModel, elementId, targetType, meta = {}) 
   }
 
   return firstNewId;
+}
+
+/**
+ * Whether `elementId` currently carries an `aae_preset_snapshot` — i.e.
+ * whether "Reset to Default" has anything to restore. Read straight off the
+ * live V1 model so callers (e.g. a control's visibility check) can use it
+ * reactively without a fetch.
+ */
+export function hasOriginalSnapshot(elementId) {
+  return !!readSnapshotSetting(elementId);
+}
+
+/**
+ * Undo every preset applied to `elementId` so far in one step, restoring it
+ * to exactly what it looked like before the FIRST preset was ever applied —
+ * the snapshot `applyPresetModel()` captured (or carried forward) onto it.
+ *
+ * Same replace-in-place mechanism as applyPresetModel (delete + recreate at
+ * the same parent/index), deliberately NOT Elementor's native undo: a single
+ * "Apply Preset" already produces two independent, unmergeable history
+ * entries (create, then remove — see applyPresetModel), so walking Ctrl+Z
+ * back to "before any preset" would take an unpredictable number of steps and
+ * could leave duplicate elements behind if the user stops partway. This is a
+ * single, explicit, one-way operation instead.
+ *
+ * Returns the restored element's new id, or null if there was no snapshot to
+ * restore (nothing to do) or the restore failed.
+ */
+export function resetElementToOriginal(elementId, meta = {}) {
+  const raw = readSnapshotSetting(elementId);
+  if (!raw) {
+    return null;
+  }
+
+  let original;
+  try {
+    original = JSON.parse(raw);
+  } catch (_) {
+    return null;
+  }
+  if (!original || typeof original !== 'object') {
+    return null;
+  }
+
+  const { parent, index } = getParentAndIndex(elementId);
+  if (!parent) {
+    return null;
+  }
+
+  const model = JSON.parse(JSON.stringify(original));
+  delete model.id;
+  // The restored element must come back with no snapshot of its own — the
+  // element it's replacing already IS "no preset applied", and the Reset
+  // control's own visibility is keyed on this prop being empty.
+  if (model.settings && model.settings.aae_preset_snapshot) {
+    delete model.settings.aae_preset_snapshot;
+  }
+  migrateLegacyWidgetShape(model);
+  normalizeElementShape(model);
+  regenerateModelStyleIds(model);
+  sanitizeImageSrc(model);
+  sanitizeBorderWidthType(model);
+
+  const result = createElements({
+    title: meta.title || 'Reset to Default',
+    subtitle: meta.subtitle || 'Reverted to original',
+    elements: [{ container: parent, model, options: { at: index, clone: true } }],
+  });
+
+  const newId =
+    result && Array.isArray(result.createdElements) && result.createdElements[0]
+      ? result.createdElements[0].containerId
+      : null;
+
+  if (result && Array.isArray(result.createdElements)) {
+    stampContainerClassesIntoPreview(result.createdElements);
+    syncAaeInteractionsToPreview(result.createdElements);
+  }
+
+  removeElements({
+    elementIds: [elementId],
+    title: meta.title || 'Reset to Default',
+    subtitle: 'Removed presetted element',
+  });
+
+  if (newId) {
+    try {
+      selectElement(newId);
+    } catch (_) {
+      /* selection is best-effort */
+    }
+  }
+
+  return newId;
 }

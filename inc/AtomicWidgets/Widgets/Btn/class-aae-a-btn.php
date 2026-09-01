@@ -159,6 +159,15 @@ class AAE_A_Btn extends Atomic_Element_Base
 			// (inc/trait-wcf-button.php) so its CSS could be adapted 1:1 in btn.scss.
 			'aae_btn_hover_effect' => Boolean_Prop_Type::make()->default(false),
 			'aae_btn_hover_style'  => String_Prop_Type::make()->default('hover-cross'),
+
+			// Snapshot of this element's own full model (JSON-encoded), taken by
+			// the JS preset-apply engine the FIRST time a preset is applied to
+			// it — never written by any panel control. Empty string means "no
+			// preset has ever been applied" (or it's just been reset), which is
+			// also what the "Reset to Default" button's visibility is keyed on.
+			// See preset-apply.js's SNAPSHOT_REVERT_TYPES / applyPresetModel /
+			// resetElementToOriginal for the write/read/restore mechanics.
+			'aae_preset_snapshot' => String_Prop_Type::make()->default(''),
 		];
 	}
 
@@ -383,3 +392,8 @@ class AAE_A_Btn extends Atomic_Element_Base
 		);
 	}
 }
+
+/*
+
+
+*/
