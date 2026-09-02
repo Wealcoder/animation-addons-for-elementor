@@ -188,9 +188,77 @@ class AAE_A_Loop_Item extends Atomic_Element_Base {
         // no intermediary wrapper is needed.
         while ( $query->have_posts() ) {
             $query->the_post();
+
+            ob_start();
             $this->render();
+            echo self::ensure_image_alt( ob_get_clean() ); // phpcs:ignore WordPress.Security.EscapeOutput -- re-emitting Elementor's own rendered output, only an alt attribute is added.
         }
         wp_reset_postdata();
+    }
+
+    /**
+     * Fill in `alt` on any `<img>` in $html that has NO alt attribute at all —
+     * e.g. a native e-image widget inside a card design (local or remote
+     * preset) whose src is bound to this post's featured image but whose own
+     * `alt` prop was left empty. AAE_A_Post_Image already resolves a real alt
+     * from attachment meta on every render (see get_atomic_settings()); this
+     * is the safety net for every OTHER image type a design can drop into a
+     * Loop Item, since we do not control what a (possibly remote) preset's
+     * model contains. Falls back to the post title — the one thing true of
+     * every image inside this specific card, whatever the design.
+     *
+     * `alt=""` is left completely alone: an explicitly empty alt is the
+     * correct, deliberate way to mark an image as decorative (and is not
+     * what axe's image-alt rule flags) — only a MISSING attribute is fixed.
+     *
+     * Regex rather than DOMDocument, on purpose: DOMDocument needs a full
+     * parse-and-serialise of a fragment, which normalises markup and mangles
+     * HTML5 void elements — a destructive amount of change for adding one
+     * attribute. Mirrors Skip_Lazy::mark_images() in the Pro plugin, which
+     * solves the identical "add one attribute to every <img> in this
+     * fragment" problem the same way.
+     */
+    private static function ensure_image_alt( string $html ): string {
+        if ( '' === $html || false === stripos( $html, '<img' ) ) {
+            return $html;
+        }
+
+        $title = get_the_title();
+        if ( '' === $title ) {
+            $title = __( 'Post image', 'animation-addons-for-elementor' );
+        }
+        $alt = esc_attr( $title );
+
+        $out = preg_replace_callback(
+            '/<img\b[^>]*>/i',
+            static function ( array $m ) use ( $alt ): string {
+                $tag = $m[0];
+
+                if ( preg_match( '/\balt\s*=/i', $tag ) ) {
+                    return $tag; // Already has one, empty or not — leave it.
+                }
+
+                // Plain string surgery, NOT preg_replace, for this half: $alt
+                // is untrusted (the post title) and preg_replace's REPLACEMENT
+                // argument treats a literal "$1" or a trailing backslash in it
+                // as a backreference/escape — a title like "Save $1 Today"
+                // would silently corrupt the inserted attribute. Detecting the
+                // void-tag `/>` is a plain string check, so no regex is needed
+                // for that part either.
+                $is_void   = '/>' === substr( $tag, -2 );
+                $close_len = $is_void ? 2 : 1;
+                $insert    = ' alt="' . $alt . '"';
+
+                return substr( $tag, 0, -$close_len ) . $insert . substr( $tag, -$close_len );
+            },
+            $html
+        );
+
+        // preg_replace_callback returns null on failure (catastrophic
+        // backtracking, PCRE limits on a very large card). Returning null
+        // here would blank the whole card — emit the original instead. A
+        // missing alt is a11y debt; an empty card is a broken page.
+        return null === $out ? $html : $out;
     }
 }
 ?>

@@ -14,6 +14,7 @@ use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Widget_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Template;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Inline_Editing_Control;
+use Elementor\Modules\AtomicWidgets\Controls\Types\Select_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
@@ -71,7 +72,14 @@ class AAE_A_Flip_Box_Title extends Atomic_Widget_Base {
 					'children' => [],
 				] )
 				->description( 'The face title text.' ),
-			'tag' => String_Prop_Type::make()->default( 'h3' ),
+			// Enumerated (not a bare string) so the panel offers a closed set of
+			// real heading levels — this is what lets a builder resolve a
+			// heading-order violation (e.g. Lighthouse/axe's "Heading order
+			// invalid") by picking the level that actually fits the page, the
+			// same mechanism Elementor's own Atomic_Heading exposes.
+			'tag' => String_Prop_Type::make()
+				->enum( [ 'h1', 'h2', 'h3', 'h4', 'h5', 'h6' ] )
+				->default( 'h3' ),
 		];
 	}
 
@@ -87,6 +95,16 @@ class AAE_A_Flip_Box_Title extends Atomic_Widget_Base {
 				->set_label( __( 'Settings', 'animation-addons-for-elementor' ) )
 				->set_id( 'settings' )
 				->set_items( [
+					Select_Control::bind_to( 'tag' )
+						->set_options( [
+							[ 'value' => 'h1', 'label' => 'H1' ],
+							[ 'value' => 'h2', 'label' => 'H2' ],
+							[ 'value' => 'h3', 'label' => 'H3' ],
+							[ 'value' => 'h4', 'label' => 'H4' ],
+							[ 'value' => 'h5', 'label' => 'H5' ],
+							[ 'value' => 'h6', 'label' => 'H6' ],
+						] )
+						->set_label( __( 'Tag', 'animation-addons-for-elementor' ) ),
 					Text_Control::bind_to( '_cssid' )
 						->set_label( __( 'ID', 'animation-addons-for-elementor' ) )
 						->set_meta( $this->get_css_id_control_meta() ),

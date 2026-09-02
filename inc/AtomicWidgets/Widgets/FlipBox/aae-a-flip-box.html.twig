@@ -5,6 +5,11 @@
      data-element_type="{{ type }}"
      data-e-type="{{ type }}"
      data-interaction-id="{{ interaction_id | default('') }}"
+     {# The flip is otherwise driven by :hover only (see flip-box.scss), which
+        a keyboard-only sighted user has no way to trigger — there is no
+        naturally focusable element on the card by default. tabindex="0" plus
+        the matching :focus-within rules is what makes Tab reach it. #}
+     tabindex="0"
      {% if settings._cssid is defined and settings._cssid is not empty %}
          id="{{ settings._cssid | e('html_attr') }}"
      {% endif %}
