@@ -24,6 +24,7 @@ import customCssSection from './extensions/custom-css/config';
 import nestedSliderSection from './extensions/nested-slider/config';
 import menuSections from './extensions/menu-sections/config';
 import navSections from './extensions/nav-sections/config';
+import { registerHookClassesProvider } from './editor-bridge/hook-classes-provider';
 import imageOverlaySection from './extensions/image-overlay/config';
 
 /* ---------------------------------------------------------------------------
@@ -108,6 +109,11 @@ menuSections.forEach( registerResponsiveSection );
 // Same mechanism as the Menu sections above: the framework binds by anchor
 // key, so an Atomic_Element_Base hosts them exactly like a widget does.
 navSections.forEach( registerResponsiveSection );
+
+// Tell Elementor that our functional hook classes exist, so the panel stops
+// reporting them as "missing" — that alert's dismiss button DELETES the
+// classes our JS runs on. Read-only, so they never reach the class picker.
+registerHookClassesProvider();
 
 // Native Elementor element-controls (e.g. the slider's "Slides" list). These
 // register into Elementor's shared controlsRegistry, separate from the

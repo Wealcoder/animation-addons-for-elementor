@@ -142,7 +142,14 @@ $stacked-inner: ':is(:where(.aae-a-menu--mobile)[data-hamburger="true"], [data-l
 	min-width: 0;
 	align-items: center;
 	gap: 0.4em;
-	padding: var(--aae-py) var(--aae-px);
+	/* Menu Items Style -> Padding / Margin.
+	   The 4-side vars are emitted only when the builder uses the Padding /
+	   Margin controls, so the fallback IS the previous declaration and an
+	   untouched menu renders pixel-identically. Item Padding X / Y are still
+	   live props feeding --aae-px / --aae-py, so a value stored before the
+	   4-side control existed keeps applying until it is overridden. */
+	padding: var(--aae-menu-item-padding, var(--aae-py) var(--aae-px));
+	margin: var(--aae-menu-item-margin, 0);
 	color: inherit;
 	text-decoration: none;
 	line-height: 1.4;
@@ -289,8 +296,11 @@ $stacked-inner: ':is(:where(.aae-a-menu--mobile)[data-hamburger="true"], [data-l
    Default 10px is not arbitrary — it is exactly the gap the old hardcoded
    `-4px` produced against the default 14px padding (14 - 4), so an untouched
    menu renders pixel-identically. */
-.aae-a-menu-list           { --aae-arrow-pad: var(--aae-px); }
-.aae-a-menu-list .sub-menu { --aae-arrow-pad: var(--aae-menu-dropdown-padding-x, 14px); }
+/* The side to cancel is the RIGHT one, and either control can own it: the
+   4-side Padding publishes its right side as its own var precisely so this
+   calc keeps working, and falls back to the X control when it is unset. */
+.aae-a-menu-list           { --aae-arrow-pad: var(--aae-menu-item-padding-right, var(--aae-px)); }
+.aae-a-menu-list .sub-menu { --aae-arrow-pad: var(--aae-menu-dropdown-item-padding-right, var(--aae-menu-dropdown-padding-x, 14px)); }
 
 /* ============== CHEVRON ARROW (toggle) ============== */
 .aae-a-menu-arrow {
@@ -524,7 +534,11 @@ $stacked-inner: ':is(:where(.aae-a-menu--mobile)[data-hamburger="true"], [data-l
 	   --aae-px/--aae-py, because a sub-item is usually tighter than its parent.
 	   The fallbacks are the previous hardcoded values, so nothing moves until the
 	   Item Padding fields in Dropdown Style are used. */
-	padding: var(--aae-menu-dropdown-padding-y, 9px) var(--aae-menu-dropdown-padding-x, 14px);
+	padding: var(--aae-menu-dropdown-item-padding, var(--aae-menu-dropdown-padding-y, 9px) var(--aae-menu-dropdown-padding-x, 14px));
+	/* Its OWN margin var, not the top-level one, for the same reason the padding
+	   above is its own: a sub-item inherits from `.aae-a-menu-list a`, so without
+	   this an Item Margin would silently space the dropdown rows out too. */
+	margin: var(--aae-menu-dropdown-item-margin, 0);
 	font-size: 0.92em;
 	/* Same var as the <li> above, so the link's corners can never disagree with
 	   the painted row behind it. */
@@ -947,7 +961,12 @@ $stacked-inner: ':is(:where(.aae-a-menu--mobile)[data-hamburger="true"], [data-l
 	   indent does not swallow the padding. Order matters inside this block: the
 	   longhand must come after the shorthand or the shorthand resets it. */
 	padding: var(--aae-menu-dropdown-panel-padding, 0px);
-	padding-inline-start: calc(var(--aae-menu-sub-indent, 1.5rem) + var(--aae-menu-dropdown-panel-padding, 0px));
+	/* calc() takes ONE length, so it cannot read the shorthand above once Panel
+	   Padding is a 4-side value — `calc(1.5rem + 6px 6px 6px 6px)` is invalid and
+	   the whole declaration would be dropped, silently losing the indent. The
+	   4-side control therefore also publishes its leading side on its own var;
+	   the fallback chain keeps the single-value and untouched cases identical. */
+	padding-inline-start: calc(var(--aae-menu-sub-indent, 1.5rem) + var(--aae-menu-dropdown-panel-padding-left, var(--aae-menu-dropdown-panel-padding, 0px)));
 }
 
 /* Drawer-only sub-item de-emphasis. The absolute `font-size: 14px` that used to

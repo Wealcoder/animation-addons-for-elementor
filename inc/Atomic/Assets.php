@@ -272,6 +272,10 @@ final class Assets
 		'elementor-v2-editor-elements',
 		'elementor-v2-editor-props',
 		'elementor-v2-editor-styles',
+		// Read by editor-bridge/hook-classes-provider.js. Also an atomic PACKAGE
+		// (Atomic_Widgets Module::PACKAGES), so it belongs in this half of the
+		// deps rather than the always-present one.
+		'elementor-v2-editor-styles-repository',
 	];
 
 	/**

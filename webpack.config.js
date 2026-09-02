@@ -46,6 +46,7 @@ module.exports = {
     "@elementor/editor-props":      ["elementorV2", "editorProps"],
     "@elementor/editor-responsive": ["elementorV2", "editorResponsive"],
     "@elementor/editor-styles":     ["elementorV2", "editorStyles"],
+    "@elementor/editor-styles-repository": ["elementorV2", "editorStylesRepository"],
     "@elementor/editor-ui":         ["elementorV2", "editorUi"],
     "@elementor/schema":            ["elementorV2", "schema"],
     "@elementor/frontend-handlers": ["elementorV2", "frontendHandlers"],
