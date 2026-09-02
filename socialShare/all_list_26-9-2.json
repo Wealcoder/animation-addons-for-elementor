@@ -1,0 +1,2909 @@
+{
+    "presets": [
+        {
+            "id": "remote-11039",
+            "element_type": "e-aae-a-social-share",
+            "category": "social-share",
+            "title": "Social Share &#8211; Minimal",
+            "thumbnail_url": "",
+            "pro": false,
+            "hash": "e79a1a72e5c2",
+            "updated_at": "2026-08-27T11:10:41+00:00",
+            "name": "Social Share - Minimal",
+            "model": {
+                "id": "76501ba1",
+                "settings": [],
+                "elements": [
+                    {
+                        "id": "43040bfc",
+                        "settings": [],
+                        "elements": [
+                            {
+                                "id": "212870f2",
+                                "settings": {
+                                    "classes": {
+                                        "$$type": "classes",
+                                        "value": [
+                                            "e-212870f2-14qsym4"
+                                        ]
+                                    },
+                                    "btn_target": {
+                                        "$$type": "string",
+                                        "value": "_blank"
+                                    },
+                                    "btn_nofollow": {
+                                        "$$type": "boolean",
+                                        "value": false
+                                    },
+                                    "share_vendor": {
+                                        "$$type": "string",
+                                        "value": "facebook"
+                                    }
+                                },
+                                "elements": [
+                                    {
+                                        "id": "66207ee8",
+                                        "settings": {
+                                            "classes": {
+                                                "$$type": "classes",
+                                                "value": [
+                                                    "e-66207ee8-icon50"
+                                                ]
+                                            },
+                                            "svg": {
+                                                "$$type": "svg-src",
+                                                "value": {
+                                                    "id": null,
+                                                    "url": {
+                                                        "$$type": "url",
+                                                        "value": "http:\/\/elementor-v4-animation-addons.test\/wp-content\/plugins\/animation-addons-for-elementor\/inc\/AtomicWidgets\/Widgets\/SocialShare\/assets\/svg\/facebook.svg"
+                                                    }
+                                                }
+                                            },
+                                            "link": {
+                                                "$$type": "link",
+                                                "value": []
+                                            }
+                                        },
+                                        "elements": [],
+                                        "isInner": false,
+                                        "widgetType": "e-aae-a-social-share-item-icon",
+                                        "elType": "widget",
+                                        "styles": {
+                                            "e-66207ee8-icon50": {
+                                                "id": "e-66207ee8-icon50",
+                                                "label": "local",
+                                                "type": "class",
+                                                "variants": [
+                                                    {
+                                                        "meta": {
+                                                            "breakpoint": "desktop",
+                                                            "state": null
+                                                        },
+                                                        "props": {
+                                                            "width": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 50,
+                                                                    "unit": "px"
+                                                                }
+                                                            },
+                                                            "height": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 50,
+                                                                    "unit": "px"
+                                                                }
+                                                            }
+                                                        },
+                                                        "custom_css": null
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "interactions": [],
+                                        "editor_settings": {
+                                            "title": "Icon"
+                                        },
+                                        "version": "0.0"
+                                    },
+                                    {
+                                        "id": "7319ac7",
+                                        "settings": {
+                                            "classes": {
+                                                "$$type": "classes",
+                                                "value": [
+                                                    "e-7319ac7-tf5g1z7"
+                                                ]
+                                            },
+                                            "paragraph": {
+                                                "$$type": "html-v3",
+                                                "value": {
+                                                    "content": {
+                                                        "$$type": "string",
+                                                        "value": "Facebook"
+                                                    },
+                                                    "children": []
+                                                }
+                                            },
+                                            "tag": {
+                                                "$$type": "string",
+                                                "value": "span"
+                                            }
+                                        },
+                                        "elements": [],
+                                        "isInner": false,
+                                        "widgetType": "e-aae-a-social-share-item-title",
+                                        "elType": "widget",
+                                        "styles": {
+                                            "e-7319ac7-tf5g1z7": {
+                                                "id": "e-7319ac7-tf5g1z7",
+                                                "label": "local",
+                                                "type": "class",
+                                                "variants": [
+                                                    {
+                                                        "meta": {
+                                                            "breakpoint": "desktop",
+                                                            "state": null
+                                                        },
+                                                        "props": {
+                                                            "font-size": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 22,
+                                                                    "unit": "px"
+                                                                }
+                                                            }
+                                                        },
+                                                        "custom_css": null
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "interactions": [],
+                                        "editor_settings": [],
+                                        "version": "0.0"
+                                    }
+                                ],
+                                "isInner": false,
+                                "elType": "e-aae-a-social-share-item",
+                                "styles": {
+                                    "e-212870f2-14qsym4": {
+                                        "id": "e-212870f2-14qsym4",
+                                        "label": "local",
+                                        "type": "class",
+                                        "variants": [
+                                            {
+                                                "meta": {
+                                                    "breakpoint": "desktop",
+                                                    "state": "hover"
+                                                },
+                                                "props": {
+                                                    "color": {
+                                                        "$$type": "color",
+                                                        "value": "#6d28d9"
+                                                    }
+                                                },
+                                                "custom_css": null
+                                            }
+                                        ]
+                                    }
+                                },
+                                "interactions": [],
+                                "editor_settings": {
+                                    "title": "Facebook"
+                                },
+                                "version": "0.0"
+                            },
+                            {
+                                "id": "4b671649",
+                                "settings": {
+                                    "classes": {
+                                        "$$type": "classes",
+                                        "value": [
+                                            "e-4b671649-15ptejv"
+                                        ]
+                                    },
+                                    "btn_target": {
+                                        "$$type": "string",
+                                        "value": "_blank"
+                                    },
+                                    "btn_nofollow": {
+                                        "$$type": "boolean",
+                                        "value": false
+                                    },
+                                    "share_vendor": {
+                                        "$$type": "string",
+                                        "value": "twitter"
+                                    }
+                                },
+                                "elements": [
+                                    {
+                                        "id": "61b33acc",
+                                        "settings": {
+                                            "classes": {
+                                                "$$type": "classes",
+                                                "value": [
+                                                    "e-61b33acc-icon50"
+                                                ]
+                                            },
+                                            "svg": {
+                                                "$$type": "svg-src",
+                                                "value": {
+                                                    "id": null,
+                                                    "url": {
+                                                        "$$type": "url",
+                                                        "value": "http:\/\/elementor-v4-animation-addons.test\/wp-content\/plugins\/animation-addons-for-elementor\/inc\/AtomicWidgets\/Widgets\/SocialShare\/assets\/svg\/twitter.svg"
+                                                    }
+                                                }
+                                            },
+                                            "link": {
+                                                "$$type": "link",
+                                                "value": []
+                                            }
+                                        },
+                                        "elements": [],
+                                        "isInner": false,
+                                        "widgetType": "e-aae-a-social-share-item-icon",
+                                        "elType": "widget",
+                                        "styles": {
+                                            "e-61b33acc-icon50": {
+                                                "id": "e-61b33acc-icon50",
+                                                "label": "local",
+                                                "type": "class",
+                                                "variants": [
+                                                    {
+                                                        "meta": {
+                                                            "breakpoint": "desktop",
+                                                            "state": null
+                                                        },
+                                                        "props": {
+                                                            "width": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 50,
+                                                                    "unit": "px"
+                                                                }
+                                                            },
+                                                            "height": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 50,
+                                                                    "unit": "px"
+                                                                }
+                                                            }
+                                                        },
+                                                        "custom_css": null
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "interactions": [],
+                                        "editor_settings": {
+                                            "title": "Icon"
+                                        },
+                                        "version": "0.0"
+                                    },
+                                    {
+                                        "id": "2cd1b3aa",
+                                        "settings": {
+                                            "classes": {
+                                                "$$type": "classes",
+                                                "value": [
+                                                    "e-2cd1b3aa-1prjvl5"
+                                                ]
+                                            },
+                                            "paragraph": {
+                                                "$$type": "html-v3",
+                                                "value": {
+                                                    "content": {
+                                                        "$$type": "string",
+                                                        "value": "Twitter"
+                                                    },
+                                                    "children": []
+                                                }
+                                            },
+                                            "tag": {
+                                                "$$type": "string",
+                                                "value": "span"
+                                            }
+                                        },
+                                        "elements": [],
+                                        "isInner": false,
+                                        "widgetType": "e-aae-a-social-share-item-title",
+                                        "elType": "widget",
+                                        "styles": {
+                                            "e-2cd1b3aa-1prjvl5": {
+                                                "id": "e-2cd1b3aa-1prjvl5",
+                                                "label": "local",
+                                                "type": "class",
+                                                "variants": [
+                                                    {
+                                                        "meta": {
+                                                            "breakpoint": "desktop",
+                                                            "state": null
+                                                        },
+                                                        "props": {
+                                                            "font-size": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 22,
+                                                                    "unit": "px"
+                                                                }
+                                                            }
+                                                        },
+                                                        "custom_css": null
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "interactions": [],
+                                        "editor_settings": [],
+                                        "version": "0.0"
+                                    }
+                                ],
+                                "isInner": false,
+                                "elType": "e-aae-a-social-share-item",
+                                "styles": {
+                                    "e-4b671649-15ptejv": {
+                                        "id": "e-4b671649-15ptejv",
+                                        "label": "local",
+                                        "type": "class",
+                                        "variants": [
+                                            {
+                                                "meta": {
+                                                    "breakpoint": "desktop",
+                                                    "state": "hover"
+                                                },
+                                                "props": {
+                                                    "color": {
+                                                        "$$type": "color",
+                                                        "value": "#6d28d9"
+                                                    }
+                                                },
+                                                "custom_css": null
+                                            }
+                                        ]
+                                    }
+                                },
+                                "interactions": [],
+                                "editor_settings": {
+                                    "title": "Twitter"
+                                },
+                                "version": "0.0"
+                            },
+                            {
+                                "id": "14fb589c",
+                                "settings": {
+                                    "classes": {
+                                        "$$type": "classes",
+                                        "value": [
+                                            "e-14fb589c-ahlr8ew"
+                                        ]
+                                    },
+                                    "btn_target": {
+                                        "$$type": "string",
+                                        "value": "_blank"
+                                    },
+                                    "btn_nofollow": {
+                                        "$$type": "boolean",
+                                        "value": false
+                                    },
+                                    "share_vendor": {
+                                        "$$type": "string",
+                                        "value": "linkedin"
+                                    }
+                                },
+                                "elements": [
+                                    {
+                                        "id": "a4287b3",
+                                        "settings": {
+                                            "classes": {
+                                                "$$type": "classes",
+                                                "value": [
+                                                    "e-a4287b3-icon50"
+                                                ]
+                                            },
+                                            "svg": {
+                                                "$$type": "svg-src",
+                                                "value": {
+                                                    "id": null,
+                                                    "url": {
+                                                        "$$type": "url",
+                                                        "value": "http:\/\/elementor-v4-animation-addons.test\/wp-content\/plugins\/animation-addons-for-elementor\/inc\/AtomicWidgets\/Widgets\/SocialShare\/assets\/svg\/linkedin.svg"
+                                                    }
+                                                }
+                                            },
+                                            "link": {
+                                                "$$type": "link",
+                                                "value": []
+                                            }
+                                        },
+                                        "elements": [],
+                                        "isInner": false,
+                                        "widgetType": "e-aae-a-social-share-item-icon",
+                                        "elType": "widget",
+                                        "styles": {
+                                            "e-a4287b3-icon50": {
+                                                "id": "e-a4287b3-icon50",
+                                                "label": "local",
+                                                "type": "class",
+                                                "variants": [
+                                                    {
+                                                        "meta": {
+                                                            "breakpoint": "desktop",
+                                                            "state": null
+                                                        },
+                                                        "props": {
+                                                            "width": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 50,
+                                                                    "unit": "px"
+                                                                }
+                                                            },
+                                                            "height": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 50,
+                                                                    "unit": "px"
+                                                                }
+                                                            }
+                                                        },
+                                                        "custom_css": null
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "interactions": [],
+                                        "editor_settings": {
+                                            "title": "Icon"
+                                        },
+                                        "version": "0.0"
+                                    },
+                                    {
+                                        "id": "5cda3870",
+                                        "settings": {
+                                            "classes": {
+                                                "$$type": "classes",
+                                                "value": [
+                                                    "e-5cda3870-o578jzp"
+                                                ]
+                                            },
+                                            "paragraph": {
+                                                "$$type": "html-v3",
+                                                "value": {
+                                                    "content": {
+                                                        "$$type": "string",
+                                                        "value": "LinkedIn"
+                                                    },
+                                                    "children": []
+                                                }
+                                            },
+                                            "tag": {
+                                                "$$type": "string",
+                                                "value": "span"
+                                            }
+                                        },
+                                        "elements": [],
+                                        "isInner": false,
+                                        "widgetType": "e-aae-a-social-share-item-title",
+                                        "elType": "widget",
+                                        "styles": {
+                                            "e-5cda3870-o578jzp": {
+                                                "id": "e-5cda3870-o578jzp",
+                                                "label": "local",
+                                                "type": "class",
+                                                "variants": [
+                                                    {
+                                                        "meta": {
+                                                            "breakpoint": "desktop",
+                                                            "state": null
+                                                        },
+                                                        "props": {
+                                                            "font-size": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 22,
+                                                                    "unit": "px"
+                                                                }
+                                                            }
+                                                        },
+                                                        "custom_css": null
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "interactions": [],
+                                        "editor_settings": [],
+                                        "version": "0.0"
+                                    }
+                                ],
+                                "isInner": false,
+                                "elType": "e-aae-a-social-share-item",
+                                "styles": {
+                                    "e-14fb589c-ahlr8ew": {
+                                        "id": "e-14fb589c-ahlr8ew",
+                                        "label": "local",
+                                        "type": "class",
+                                        "variants": [
+                                            {
+                                                "meta": {
+                                                    "breakpoint": "desktop",
+                                                    "state": "hover"
+                                                },
+                                                "props": {
+                                                    "color": {
+                                                        "$$type": "color",
+                                                        "value": "#6d28d9"
+                                                    }
+                                                },
+                                                "custom_css": null
+                                            }
+                                        ]
+                                    }
+                                },
+                                "interactions": [],
+                                "editor_settings": {
+                                    "title": "LinkedIn"
+                                },
+                                "version": "0.0"
+                            },
+                            {
+                                "id": "72c265c8",
+                                "settings": {
+                                    "classes": {
+                                        "$$type": "classes",
+                                        "value": [
+                                            "e-72c265c8-1x49g7k"
+                                        ]
+                                    },
+                                    "btn_target": {
+                                        "$$type": "string",
+                                        "value": "_blank"
+                                    },
+                                    "btn_nofollow": {
+                                        "$$type": "boolean",
+                                        "value": false
+                                    },
+                                    "share_vendor": {
+                                        "$$type": "string",
+                                        "value": "reddit"
+                                    }
+                                },
+                                "elements": [
+                                    {
+                                        "id": "44c80b4d",
+                                        "settings": {
+                                            "classes": {
+                                                "$$type": "classes",
+                                                "value": [
+                                                    "e-44c80b4d-icon50"
+                                                ]
+                                            },
+                                            "svg": {
+                                                "$$type": "svg-src",
+                                                "value": {
+                                                    "id": null,
+                                                    "url": {
+                                                        "$$type": "url",
+                                                        "value": "http:\/\/elementor-v4-animation-addons.test\/wp-content\/plugins\/animation-addons-for-elementor\/inc\/AtomicWidgets\/Widgets\/SocialShare\/assets\/svg\/reddit.svg"
+                                                    }
+                                                }
+                                            },
+                                            "link": {
+                                                "$$type": "link",
+                                                "value": []
+                                            }
+                                        },
+                                        "elements": [],
+                                        "isInner": false,
+                                        "widgetType": "e-aae-a-social-share-item-icon",
+                                        "elType": "widget",
+                                        "styles": {
+                                            "e-44c80b4d-icon50": {
+                                                "id": "e-44c80b4d-icon50",
+                                                "label": "local",
+                                                "type": "class",
+                                                "variants": [
+                                                    {
+                                                        "meta": {
+                                                            "breakpoint": "desktop",
+                                                            "state": null
+                                                        },
+                                                        "props": {
+                                                            "width": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 50,
+                                                                    "unit": "px"
+                                                                }
+                                                            },
+                                                            "height": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 50,
+                                                                    "unit": "px"
+                                                                }
+                                                            }
+                                                        },
+                                                        "custom_css": null
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "interactions": [],
+                                        "editor_settings": {
+                                            "title": "Icon"
+                                        },
+                                        "version": "0.0"
+                                    },
+                                    {
+                                        "id": "5f491acf",
+                                        "settings": {
+                                            "classes": {
+                                                "$$type": "classes",
+                                                "value": [
+                                                    "e-5f491acf-nmmw0fr"
+                                                ]
+                                            },
+                                            "paragraph": {
+                                                "$$type": "html-v3",
+                                                "value": {
+                                                    "content": {
+                                                        "$$type": "string",
+                                                        "value": "Reddit"
+                                                    },
+                                                    "children": []
+                                                }
+                                            },
+                                            "tag": {
+                                                "$$type": "string",
+                                                "value": "span"
+                                            },
+                                            "link": {
+                                                "$$type": "link",
+                                                "value": []
+                                            }
+                                        },
+                                        "elements": [],
+                                        "isInner": false,
+                                        "widgetType": "e-aae-a-social-share-item-title",
+                                        "elType": "widget",
+                                        "styles": {
+                                            "e-5f491acf-nmmw0fr": {
+                                                "id": "e-5f491acf-nmmw0fr",
+                                                "label": "local",
+                                                "type": "class",
+                                                "variants": [
+                                                    {
+                                                        "meta": {
+                                                            "breakpoint": "desktop",
+                                                            "state": null
+                                                        },
+                                                        "props": {
+                                                            "font-size": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 22,
+                                                                    "unit": "px"
+                                                                }
+                                                            }
+                                                        },
+                                                        "custom_css": null
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "interactions": [],
+                                        "editor_settings": [],
+                                        "version": "0.0"
+                                    }
+                                ],
+                                "isInner": false,
+                                "elType": "e-aae-a-social-share-item",
+                                "styles": {
+                                    "e-72c265c8-1x49g7k": {
+                                        "id": "e-72c265c8-1x49g7k",
+                                        "label": "local",
+                                        "type": "class",
+                                        "variants": [
+                                            {
+                                                "meta": {
+                                                    "breakpoint": "desktop",
+                                                    "state": "hover"
+                                                },
+                                                "props": {
+                                                    "color": {
+                                                        "$$type": "color",
+                                                        "value": "#6d28d9"
+                                                    }
+                                                },
+                                                "custom_css": null
+                                            }
+                                        ]
+                                    }
+                                },
+                                "interactions": [],
+                                "editor_settings": {
+                                    "title": "Reddit"
+                                },
+                                "version": "0.0"
+                            }
+                        ],
+                        "isInner": false,
+                        "elType": "e-aae-a-social-share",
+                        "styles": [],
+                        "interactions": [],
+                        "editor_settings": {
+                            "title": "Social Share - Minimal"
+                        },
+                        "version": "0.0"
+                    }
+                ],
+                "isInner": false,
+                "elType": "e-flexbox",
+                "styles": [],
+                "interactions": [],
+                "editor_settings": {
+                    "title": "Social Share - Minimal"
+                },
+                "version": "0.0"
+            },
+            "source": "remote"
+        },
+        {
+            "id": "remote-11040",
+            "element_type": "e-aae-a-social-share",
+            "category": "social-share",
+            "title": "Social Share &#8211; Outlined",
+            "thumbnail_url": "",
+            "pro": false,
+            "hash": "c93168479e2b",
+            "updated_at": "2026-08-27T11:11:01+00:00",
+            "name": "Social Share - Outlined",
+            "model": {
+                "id": "51f236a8",
+                "settings": [],
+                "elements": [
+                    {
+                        "id": "7a62e3e7",
+                        "settings": [],
+                        "elements": [
+                            {
+                                "id": "2ee29562",
+                                "settings": {
+                                    "classes": {
+                                        "$$type": "classes",
+                                        "value": [
+                                            "e-2ee29562-1irlf0m"
+                                        ]
+                                    },
+                                    "btn_target": {
+                                        "$$type": "string",
+                                        "value": "_blank"
+                                    },
+                                    "btn_nofollow": {
+                                        "$$type": "boolean",
+                                        "value": false
+                                    },
+                                    "share_vendor": {
+                                        "$$type": "string",
+                                        "value": "facebook"
+                                    }
+                                },
+                                "elements": [
+                                    {
+                                        "id": "78f1758d",
+                                        "settings": {
+                                            "classes": {
+                                                "$$type": "classes",
+                                                "value": [
+                                                    "e-78f1758d-icon50"
+                                                ]
+                                            },
+                                            "svg": {
+                                                "$$type": "svg-src",
+                                                "value": {
+                                                    "id": null,
+                                                    "url": {
+                                                        "$$type": "url",
+                                                        "value": "http:\/\/elementor-v4-animation-addons.test\/wp-content\/plugins\/animation-addons-for-elementor\/inc\/AtomicWidgets\/Widgets\/SocialShare\/assets\/svg\/facebook.svg"
+                                                    }
+                                                }
+                                            },
+                                            "link": {
+                                                "$$type": "link",
+                                                "value": []
+                                            }
+                                        },
+                                        "elements": [],
+                                        "isInner": false,
+                                        "widgetType": "e-aae-a-social-share-item-icon",
+                                        "elType": "widget",
+                                        "styles": {
+                                            "e-78f1758d-icon50": {
+                                                "id": "e-78f1758d-icon50",
+                                                "label": "local",
+                                                "type": "class",
+                                                "variants": [
+                                                    {
+                                                        "meta": {
+                                                            "breakpoint": "desktop",
+                                                            "state": null
+                                                        },
+                                                        "props": {
+                                                            "width": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 50,
+                                                                    "unit": "px"
+                                                                }
+                                                            },
+                                                            "height": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 50,
+                                                                    "unit": "px"
+                                                                }
+                                                            }
+                                                        },
+                                                        "custom_css": null
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "interactions": [],
+                                        "editor_settings": {
+                                            "title": "Icon"
+                                        },
+                                        "version": "0.0"
+                                    },
+                                    {
+                                        "id": "60bbb5a",
+                                        "settings": {
+                                            "classes": {
+                                                "$$type": "classes",
+                                                "value": [
+                                                    "e-60bbb5a-tcil1ye"
+                                                ]
+                                            },
+                                            "paragraph": {
+                                                "$$type": "html-v3",
+                                                "value": {
+                                                    "content": {
+                                                        "$$type": "string",
+                                                        "value": "Facebook"
+                                                    },
+                                                    "children": []
+                                                }
+                                            },
+                                            "tag": {
+                                                "$$type": "string",
+                                                "value": "span"
+                                            }
+                                        },
+                                        "elements": [],
+                                        "isInner": false,
+                                        "widgetType": "e-aae-a-social-share-item-title",
+                                        "elType": "widget",
+                                        "styles": {
+                                            "e-60bbb5a-tcil1ye": {
+                                                "id": "e-60bbb5a-tcil1ye",
+                                                "label": "local",
+                                                "type": "class",
+                                                "variants": [
+                                                    {
+                                                        "meta": {
+                                                            "breakpoint": "desktop",
+                                                            "state": null
+                                                        },
+                                                        "props": {
+                                                            "font-size": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 22,
+                                                                    "unit": "px"
+                                                                }
+                                                            }
+                                                        },
+                                                        "custom_css": null
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "interactions": [],
+                                        "editor_settings": [],
+                                        "version": "0.0"
+                                    }
+                                ],
+                                "isInner": false,
+                                "elType": "e-aae-a-social-share-item",
+                                "styles": {
+                                    "e-2ee29562-1irlf0m": {
+                                        "id": "e-2ee29562-1irlf0m",
+                                        "label": "local",
+                                        "type": "class",
+                                        "variants": [
+                                            {
+                                                "meta": {
+                                                    "breakpoint": "desktop",
+                                                    "state": null
+                                                },
+                                                "props": {
+                                                    "padding": {
+                                                        "$$type": "dimensions",
+                                                        "value": {
+                                                            "block-start": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 8,
+                                                                    "unit": "px"
+                                                                }
+                                                            },
+                                                            "block-end": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 8,
+                                                                    "unit": "px"
+                                                                }
+                                                            },
+                                                            "inline-start": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 14,
+                                                                    "unit": "px"
+                                                                }
+                                                            },
+                                                            "inline-end": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 14,
+                                                                    "unit": "px"
+                                                                }
+                                                            }
+                                                        }
+                                                    },
+                                                    "border-radius": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "size": 6,
+                                                            "unit": "px"
+                                                        }
+                                                    },
+                                                    "border-width": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "size": 1.5,
+                                                            "unit": "px"
+                                                        }
+                                                    },
+                                                    "border-color": {
+                                                        "$$type": "color",
+                                                        "value": "#1a1a1a"
+                                                    },
+                                                    "border-style": {
+                                                        "$$type": "string",
+                                                        "value": "solid"
+                                                    },
+                                                    "transition": {
+                                                        "$$type": "transition",
+                                                        "value": [
+                                                            {
+                                                                "$$type": "selection-size",
+                                                                "value": {
+                                                                    "selection": {
+                                                                        "$$type": "key-value",
+                                                                        "value": {
+                                                                            "key": {
+                                                                                "$$type": "string",
+                                                                                "value": "All properties"
+                                                                            },
+                                                                            "value": {
+                                                                                "$$type": "string",
+                                                                                "value": "all"
+                                                                            }
+                                                                        }
+                                                                    },
+                                                                    "size": {
+                                                                        "$$type": "size",
+                                                                        "value": {
+                                                                            "size": 200,
+                                                                            "unit": "ms"
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                },
+                                                "custom_css": null
+                                            },
+                                            {
+                                                "meta": {
+                                                    "breakpoint": "desktop",
+                                                    "state": "hover"
+                                                },
+                                                "props": {
+                                                    "color": {
+                                                        "$$type": "color",
+                                                        "value": "#ffffff"
+                                                    },
+                                                    "background": {
+                                                        "$$type": "background",
+                                                        "value": {
+                                                            "color": {
+                                                                "$$type": "color",
+                                                                "value": "#1a1a1a"
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "custom_css": null
+                                            }
+                                        ]
+                                    }
+                                },
+                                "interactions": [],
+                                "editor_settings": {
+                                    "title": "Facebook"
+                                },
+                                "version": "0.0"
+                            },
+                            {
+                                "id": "19d31394",
+                                "settings": {
+                                    "classes": {
+                                        "$$type": "classes",
+                                        "value": [
+                                            "e-19d31394-1utgkci"
+                                        ]
+                                    },
+                                    "btn_target": {
+                                        "$$type": "string",
+                                        "value": "_blank"
+                                    },
+                                    "btn_nofollow": {
+                                        "$$type": "boolean",
+                                        "value": false
+                                    },
+                                    "share_vendor": {
+                                        "$$type": "string",
+                                        "value": "twitter"
+                                    }
+                                },
+                                "elements": [
+                                    {
+                                        "id": "1a87b360",
+                                        "settings": {
+                                            "classes": {
+                                                "$$type": "classes",
+                                                "value": [
+                                                    "e-1a87b360-icon50"
+                                                ]
+                                            },
+                                            "svg": {
+                                                "$$type": "svg-src",
+                                                "value": {
+                                                    "id": null,
+                                                    "url": {
+                                                        "$$type": "url",
+                                                        "value": "http:\/\/elementor-v4-animation-addons.test\/wp-content\/plugins\/animation-addons-for-elementor\/inc\/AtomicWidgets\/Widgets\/SocialShare\/assets\/svg\/twitter.svg"
+                                                    }
+                                                }
+                                            },
+                                            "link": {
+                                                "$$type": "link",
+                                                "value": []
+                                            }
+                                        },
+                                        "elements": [],
+                                        "isInner": false,
+                                        "widgetType": "e-aae-a-social-share-item-icon",
+                                        "elType": "widget",
+                                        "styles": {
+                                            "e-1a87b360-icon50": {
+                                                "id": "e-1a87b360-icon50",
+                                                "label": "local",
+                                                "type": "class",
+                                                "variants": [
+                                                    {
+                                                        "meta": {
+                                                            "breakpoint": "desktop",
+                                                            "state": null
+                                                        },
+                                                        "props": {
+                                                            "width": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 50,
+                                                                    "unit": "px"
+                                                                }
+                                                            },
+                                                            "height": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 50,
+                                                                    "unit": "px"
+                                                                }
+                                                            }
+                                                        },
+                                                        "custom_css": null
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "interactions": [],
+                                        "editor_settings": {
+                                            "title": "Icon"
+                                        },
+                                        "version": "0.0"
+                                    },
+                                    {
+                                        "id": "659bc071",
+                                        "settings": {
+                                            "classes": {
+                                                "$$type": "classes",
+                                                "value": [
+                                                    "e-659bc071-z4cokbs"
+                                                ]
+                                            },
+                                            "paragraph": {
+                                                "$$type": "html-v3",
+                                                "value": {
+                                                    "content": {
+                                                        "$$type": "string",
+                                                        "value": "Twitter"
+                                                    },
+                                                    "children": []
+                                                }
+                                            },
+                                            "tag": {
+                                                "$$type": "string",
+                                                "value": "span"
+                                            }
+                                        },
+                                        "elements": [],
+                                        "isInner": false,
+                                        "widgetType": "e-aae-a-social-share-item-title",
+                                        "elType": "widget",
+                                        "styles": {
+                                            "e-659bc071-z4cokbs": {
+                                                "id": "e-659bc071-z4cokbs",
+                                                "label": "local",
+                                                "type": "class",
+                                                "variants": [
+                                                    {
+                                                        "meta": {
+                                                            "breakpoint": "desktop",
+                                                            "state": null
+                                                        },
+                                                        "props": {
+                                                            "font-size": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 22,
+                                                                    "unit": "px"
+                                                                }
+                                                            }
+                                                        },
+                                                        "custom_css": null
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "interactions": [],
+                                        "editor_settings": [],
+                                        "version": "0.0"
+                                    }
+                                ],
+                                "isInner": false,
+                                "elType": "e-aae-a-social-share-item",
+                                "styles": {
+                                    "e-19d31394-1utgkci": {
+                                        "id": "e-19d31394-1utgkci",
+                                        "label": "local",
+                                        "type": "class",
+                                        "variants": [
+                                            {
+                                                "meta": {
+                                                    "breakpoint": "desktop",
+                                                    "state": null
+                                                },
+                                                "props": {
+                                                    "padding": {
+                                                        "$$type": "dimensions",
+                                                        "value": {
+                                                            "block-start": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 8,
+                                                                    "unit": "px"
+                                                                }
+                                                            },
+                                                            "block-end": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 8,
+                                                                    "unit": "px"
+                                                                }
+                                                            },
+                                                            "inline-start": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 14,
+                                                                    "unit": "px"
+                                                                }
+                                                            },
+                                                            "inline-end": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 14,
+                                                                    "unit": "px"
+                                                                }
+                                                            }
+                                                        }
+                                                    },
+                                                    "border-radius": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "size": 6,
+                                                            "unit": "px"
+                                                        }
+                                                    },
+                                                    "border-width": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "size": 1.5,
+                                                            "unit": "px"
+                                                        }
+                                                    },
+                                                    "border-color": {
+                                                        "$$type": "color",
+                                                        "value": "#1a1a1a"
+                                                    },
+                                                    "border-style": {
+                                                        "$$type": "string",
+                                                        "value": "solid"
+                                                    },
+                                                    "transition": {
+                                                        "$$type": "transition",
+                                                        "value": [
+                                                            {
+                                                                "$$type": "selection-size",
+                                                                "value": {
+                                                                    "selection": {
+                                                                        "$$type": "key-value",
+                                                                        "value": {
+                                                                            "key": {
+                                                                                "$$type": "string",
+                                                                                "value": "All properties"
+                                                                            },
+                                                                            "value": {
+                                                                                "$$type": "string",
+                                                                                "value": "all"
+                                                                            }
+                                                                        }
+                                                                    },
+                                                                    "size": {
+                                                                        "$$type": "size",
+                                                                        "value": {
+                                                                            "size": 200,
+                                                                            "unit": "ms"
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                },
+                                                "custom_css": null
+                                            },
+                                            {
+                                                "meta": {
+                                                    "breakpoint": "desktop",
+                                                    "state": "hover"
+                                                },
+                                                "props": {
+                                                    "color": {
+                                                        "$$type": "color",
+                                                        "value": "#ffffff"
+                                                    },
+                                                    "background": {
+                                                        "$$type": "background",
+                                                        "value": {
+                                                            "color": {
+                                                                "$$type": "color",
+                                                                "value": "#1a1a1a"
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "custom_css": null
+                                            }
+                                        ]
+                                    }
+                                },
+                                "interactions": [],
+                                "editor_settings": {
+                                    "title": "Twitter"
+                                },
+                                "version": "0.0"
+                            },
+                            {
+                                "id": "1c58d3be",
+                                "settings": {
+                                    "classes": {
+                                        "$$type": "classes",
+                                        "value": [
+                                            "e-1c58d3be-hdb2ad1"
+                                        ]
+                                    },
+                                    "btn_target": {
+                                        "$$type": "string",
+                                        "value": "_blank"
+                                    },
+                                    "btn_nofollow": {
+                                        "$$type": "boolean",
+                                        "value": false
+                                    },
+                                    "share_vendor": {
+                                        "$$type": "string",
+                                        "value": "linkedin"
+                                    }
+                                },
+                                "elements": [
+                                    {
+                                        "id": "766505c2",
+                                        "settings": {
+                                            "classes": {
+                                                "$$type": "classes",
+                                                "value": [
+                                                    "e-766505c2-icon50"
+                                                ]
+                                            },
+                                            "svg": {
+                                                "$$type": "svg-src",
+                                                "value": {
+                                                    "id": null,
+                                                    "url": {
+                                                        "$$type": "url",
+                                                        "value": "http:\/\/elementor-v4-animation-addons.test\/wp-content\/plugins\/animation-addons-for-elementor\/inc\/AtomicWidgets\/Widgets\/SocialShare\/assets\/svg\/linkedin.svg"
+                                                    }
+                                                }
+                                            },
+                                            "link": {
+                                                "$$type": "link",
+                                                "value": []
+                                            }
+                                        },
+                                        "elements": [],
+                                        "isInner": false,
+                                        "widgetType": "e-aae-a-social-share-item-icon",
+                                        "elType": "widget",
+                                        "styles": {
+                                            "e-766505c2-icon50": {
+                                                "id": "e-766505c2-icon50",
+                                                "label": "local",
+                                                "type": "class",
+                                                "variants": [
+                                                    {
+                                                        "meta": {
+                                                            "breakpoint": "desktop",
+                                                            "state": null
+                                                        },
+                                                        "props": {
+                                                            "width": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 50,
+                                                                    "unit": "px"
+                                                                }
+                                                            },
+                                                            "height": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 50,
+                                                                    "unit": "px"
+                                                                }
+                                                            }
+                                                        },
+                                                        "custom_css": null
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "interactions": [],
+                                        "editor_settings": {
+                                            "title": "Icon"
+                                        },
+                                        "version": "0.0"
+                                    },
+                                    {
+                                        "id": "3f7211ea",
+                                        "settings": {
+                                            "classes": {
+                                                "$$type": "classes",
+                                                "value": [
+                                                    "e-3f7211ea-1c1stwg"
+                                                ]
+                                            },
+                                            "paragraph": {
+                                                "$$type": "html-v3",
+                                                "value": {
+                                                    "content": {
+                                                        "$$type": "string",
+                                                        "value": "LinkedIn"
+                                                    },
+                                                    "children": []
+                                                }
+                                            },
+                                            "tag": {
+                                                "$$type": "string",
+                                                "value": "span"
+                                            }
+                                        },
+                                        "elements": [],
+                                        "isInner": false,
+                                        "widgetType": "e-aae-a-social-share-item-title",
+                                        "elType": "widget",
+                                        "styles": {
+                                            "e-3f7211ea-1c1stwg": {
+                                                "id": "e-3f7211ea-1c1stwg",
+                                                "label": "local",
+                                                "type": "class",
+                                                "variants": [
+                                                    {
+                                                        "meta": {
+                                                            "breakpoint": "desktop",
+                                                            "state": null
+                                                        },
+                                                        "props": {
+                                                            "font-size": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 22,
+                                                                    "unit": "px"
+                                                                }
+                                                            }
+                                                        },
+                                                        "custom_css": null
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "interactions": [],
+                                        "editor_settings": [],
+                                        "version": "0.0"
+                                    }
+                                ],
+                                "isInner": false,
+                                "elType": "e-aae-a-social-share-item",
+                                "styles": {
+                                    "e-1c58d3be-hdb2ad1": {
+                                        "id": "e-1c58d3be-hdb2ad1",
+                                        "label": "local",
+                                        "type": "class",
+                                        "variants": [
+                                            {
+                                                "meta": {
+                                                    "breakpoint": "desktop",
+                                                    "state": null
+                                                },
+                                                "props": {
+                                                    "padding": {
+                                                        "$$type": "dimensions",
+                                                        "value": {
+                                                            "block-start": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 8,
+                                                                    "unit": "px"
+                                                                }
+                                                            },
+                                                            "block-end": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 8,
+                                                                    "unit": "px"
+                                                                }
+                                                            },
+                                                            "inline-start": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 14,
+                                                                    "unit": "px"
+                                                                }
+                                                            },
+                                                            "inline-end": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 14,
+                                                                    "unit": "px"
+                                                                }
+                                                            }
+                                                        }
+                                                    },
+                                                    "border-radius": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "size": 6,
+                                                            "unit": "px"
+                                                        }
+                                                    },
+                                                    "border-width": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "size": 1.5,
+                                                            "unit": "px"
+                                                        }
+                                                    },
+                                                    "border-color": {
+                                                        "$$type": "color",
+                                                        "value": "#1a1a1a"
+                                                    },
+                                                    "border-style": {
+                                                        "$$type": "string",
+                                                        "value": "solid"
+                                                    },
+                                                    "transition": {
+                                                        "$$type": "transition",
+                                                        "value": [
+                                                            {
+                                                                "$$type": "selection-size",
+                                                                "value": {
+                                                                    "selection": {
+                                                                        "$$type": "key-value",
+                                                                        "value": {
+                                                                            "key": {
+                                                                                "$$type": "string",
+                                                                                "value": "All properties"
+                                                                            },
+                                                                            "value": {
+                                                                                "$$type": "string",
+                                                                                "value": "all"
+                                                                            }
+                                                                        }
+                                                                    },
+                                                                    "size": {
+                                                                        "$$type": "size",
+                                                                        "value": {
+                                                                            "size": 200,
+                                                                            "unit": "ms"
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                },
+                                                "custom_css": null
+                                            },
+                                            {
+                                                "meta": {
+                                                    "breakpoint": "desktop",
+                                                    "state": "hover"
+                                                },
+                                                "props": {
+                                                    "color": {
+                                                        "$$type": "color",
+                                                        "value": "#ffffff"
+                                                    },
+                                                    "background": {
+                                                        "$$type": "background",
+                                                        "value": {
+                                                            "color": {
+                                                                "$$type": "color",
+                                                                "value": "#1a1a1a"
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "custom_css": null
+                                            }
+                                        ]
+                                    }
+                                },
+                                "interactions": [],
+                                "editor_settings": {
+                                    "title": "LinkedIn"
+                                },
+                                "version": "0.0"
+                            },
+                            {
+                                "id": "34306d34",
+                                "settings": {
+                                    "classes": {
+                                        "$$type": "classes",
+                                        "value": [
+                                            "e-34306d34-13icorf"
+                                        ]
+                                    },
+                                    "btn_target": {
+                                        "$$type": "string",
+                                        "value": "_blank"
+                                    },
+                                    "btn_nofollow": {
+                                        "$$type": "boolean",
+                                        "value": false
+                                    },
+                                    "share_vendor": {
+                                        "$$type": "string",
+                                        "value": "reddit"
+                                    }
+                                },
+                                "elements": [
+                                    {
+                                        "id": "1e266123",
+                                        "settings": {
+                                            "classes": {
+                                                "$$type": "classes",
+                                                "value": [
+                                                    "e-1e266123-icon50"
+                                                ]
+                                            },
+                                            "svg": {
+                                                "$$type": "svg-src",
+                                                "value": {
+                                                    "id": null,
+                                                    "url": {
+                                                        "$$type": "url",
+                                                        "value": "http:\/\/elementor-v4-animation-addons.test\/wp-content\/plugins\/animation-addons-for-elementor\/inc\/AtomicWidgets\/Widgets\/SocialShare\/assets\/svg\/reddit.svg"
+                                                    }
+                                                }
+                                            },
+                                            "link": {
+                                                "$$type": "link",
+                                                "value": []
+                                            }
+                                        },
+                                        "elements": [],
+                                        "isInner": false,
+                                        "widgetType": "e-aae-a-social-share-item-icon",
+                                        "elType": "widget",
+                                        "styles": {
+                                            "e-1e266123-icon50": {
+                                                "id": "e-1e266123-icon50",
+                                                "label": "local",
+                                                "type": "class",
+                                                "variants": [
+                                                    {
+                                                        "meta": {
+                                                            "breakpoint": "desktop",
+                                                            "state": null
+                                                        },
+                                                        "props": {
+                                                            "width": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 50,
+                                                                    "unit": "px"
+                                                                }
+                                                            },
+                                                            "height": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 50,
+                                                                    "unit": "px"
+                                                                }
+                                                            }
+                                                        },
+                                                        "custom_css": null
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "interactions": [],
+                                        "editor_settings": {
+                                            "title": "Icon"
+                                        },
+                                        "version": "0.0"
+                                    },
+                                    {
+                                        "id": "3091316f",
+                                        "settings": {
+                                            "classes": {
+                                                "$$type": "classes",
+                                                "value": [
+                                                    "e-3091316f-f6mrfrn"
+                                                ]
+                                            },
+                                            "paragraph": {
+                                                "$$type": "html-v3",
+                                                "value": {
+                                                    "content": {
+                                                        "$$type": "string",
+                                                        "value": "Reddit<br>"
+                                                    },
+                                                    "children": []
+                                                }
+                                            },
+                                            "tag": {
+                                                "$$type": "string",
+                                                "value": "span"
+                                            },
+                                            "link": {
+                                                "$$type": "link",
+                                                "value": []
+                                            }
+                                        },
+                                        "elements": [],
+                                        "isInner": false,
+                                        "widgetType": "e-aae-a-social-share-item-title",
+                                        "elType": "widget",
+                                        "styles": {
+                                            "e-3091316f-f6mrfrn": {
+                                                "id": "e-3091316f-f6mrfrn",
+                                                "label": "local",
+                                                "type": "class",
+                                                "variants": [
+                                                    {
+                                                        "meta": {
+                                                            "breakpoint": "desktop",
+                                                            "state": null
+                                                        },
+                                                        "props": {
+                                                            "font-size": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 22,
+                                                                    "unit": "px"
+                                                                }
+                                                            }
+                                                        },
+                                                        "custom_css": null
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "interactions": [],
+                                        "editor_settings": [],
+                                        "version": "0.0"
+                                    }
+                                ],
+                                "isInner": false,
+                                "elType": "e-aae-a-social-share-item",
+                                "styles": {
+                                    "e-34306d34-13icorf": {
+                                        "id": "e-34306d34-13icorf",
+                                        "label": "local",
+                                        "type": "class",
+                                        "variants": [
+                                            {
+                                                "meta": {
+                                                    "breakpoint": "desktop",
+                                                    "state": null
+                                                },
+                                                "props": {
+                                                    "padding": {
+                                                        "$$type": "dimensions",
+                                                        "value": {
+                                                            "block-start": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 8,
+                                                                    "unit": "px"
+                                                                }
+                                                            },
+                                                            "block-end": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 8,
+                                                                    "unit": "px"
+                                                                }
+                                                            },
+                                                            "inline-start": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 14,
+                                                                    "unit": "px"
+                                                                }
+                                                            },
+                                                            "inline-end": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 14,
+                                                                    "unit": "px"
+                                                                }
+                                                            }
+                                                        }
+                                                    },
+                                                    "border-radius": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "size": 6,
+                                                            "unit": "px"
+                                                        }
+                                                    },
+                                                    "border-width": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "size": 1.5,
+                                                            "unit": "px"
+                                                        }
+                                                    },
+                                                    "border-color": {
+                                                        "$$type": "color",
+                                                        "value": "#1a1a1a"
+                                                    },
+                                                    "border-style": {
+                                                        "$$type": "string",
+                                                        "value": "solid"
+                                                    },
+                                                    "transition": {
+                                                        "$$type": "transition",
+                                                        "value": [
+                                                            {
+                                                                "$$type": "selection-size",
+                                                                "value": {
+                                                                    "selection": {
+                                                                        "$$type": "key-value",
+                                                                        "value": {
+                                                                            "key": {
+                                                                                "$$type": "string",
+                                                                                "value": "All properties"
+                                                                            },
+                                                                            "value": {
+                                                                                "$$type": "string",
+                                                                                "value": "all"
+                                                                            }
+                                                                        }
+                                                                    },
+                                                                    "size": {
+                                                                        "$$type": "size",
+                                                                        "value": {
+                                                                            "size": 200,
+                                                                            "unit": "ms"
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                },
+                                                "custom_css": null
+                                            },
+                                            {
+                                                "meta": {
+                                                    "breakpoint": "desktop",
+                                                    "state": "hover"
+                                                },
+                                                "props": {
+                                                    "color": {
+                                                        "$$type": "color",
+                                                        "value": "#ffffff"
+                                                    },
+                                                    "background": {
+                                                        "$$type": "background",
+                                                        "value": {
+                                                            "color": {
+                                                                "$$type": "color",
+                                                                "value": "#1a1a1a"
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "custom_css": null
+                                            }
+                                        ]
+                                    }
+                                },
+                                "interactions": [],
+                                "editor_settings": {
+                                    "title": "Reddit"
+                                },
+                                "version": "0.0"
+                            }
+                        ],
+                        "isInner": false,
+                        "elType": "e-aae-a-social-share",
+                        "styles": [],
+                        "interactions": [],
+                        "editor_settings": {
+                            "title": "Social Share - Outlined"
+                        },
+                        "version": "0.0"
+                    }
+                ],
+                "isInner": false,
+                "elType": "e-flexbox",
+                "styles": [],
+                "interactions": [],
+                "editor_settings": {
+                    "title": "Social Share - Outlined"
+                },
+                "version": "0.0"
+            },
+            "source": "remote"
+        },
+        {
+            "id": "remote-11041",
+            "element_type": "e-aae-a-social-share",
+            "category": "social-share",
+            "title": "Social Share &#8211; Solid",
+            "thumbnail_url": "",
+            "pro": false,
+            "hash": "3d897d5a59aa",
+            "updated_at": "2026-08-27T11:11:21+00:00",
+            "name": "Social Share - Solid",
+            "model": {
+                "id": "542d9294",
+                "settings": [],
+                "elements": [
+                    {
+                        "id": "71cecf06",
+                        "settings": [],
+                        "elements": [
+                            {
+                                "id": "39e06639",
+                                "settings": {
+                                    "classes": {
+                                        "$$type": "classes",
+                                        "value": [
+                                            "e-39e06639-cbae503"
+                                        ]
+                                    },
+                                    "btn_target": {
+                                        "$$type": "string",
+                                        "value": "_blank"
+                                    },
+                                    "btn_nofollow": {
+                                        "$$type": "boolean",
+                                        "value": false
+                                    },
+                                    "share_vendor": {
+                                        "$$type": "string",
+                                        "value": "facebook"
+                                    },
+                                    "hover_pulse": {
+                                        "$$type": "boolean",
+                                        "value": true
+                                    }
+                                },
+                                "elements": [
+                                    {
+                                        "id": "5f983627",
+                                        "settings": {
+                                            "classes": {
+                                                "$$type": "classes",
+                                                "value": [
+                                                    "e-5f983627-icon50"
+                                                ]
+                                            },
+                                            "svg": {
+                                                "$$type": "svg-src",
+                                                "value": {
+                                                    "id": null,
+                                                    "url": {
+                                                        "$$type": "url",
+                                                        "value": "http:\/\/elementor-v4-animation-addons.test\/wp-content\/plugins\/animation-addons-for-elementor\/inc\/AtomicWidgets\/Widgets\/SocialShare\/assets\/svg\/facebook.svg"
+                                                    }
+                                                }
+                                            },
+                                            "link": {
+                                                "$$type": "link",
+                                                "value": []
+                                            }
+                                        },
+                                        "elements": [],
+                                        "isInner": false,
+                                        "widgetType": "e-aae-a-social-share-item-icon",
+                                        "elType": "widget",
+                                        "styles": {
+                                            "e-5f983627-icon50": {
+                                                "id": "e-5f983627-icon50",
+                                                "label": "local",
+                                                "type": "class",
+                                                "variants": [
+                                                    {
+                                                        "meta": {
+                                                            "breakpoint": "desktop",
+                                                            "state": null
+                                                        },
+                                                        "props": {
+                                                            "width": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 50,
+                                                                    "unit": "px"
+                                                                }
+                                                            },
+                                                            "height": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 50,
+                                                                    "unit": "px"
+                                                                }
+                                                            }
+                                                        },
+                                                        "custom_css": null
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "interactions": [],
+                                        "editor_settings": {
+                                            "title": "Icon"
+                                        },
+                                        "version": "0.0"
+                                    },
+                                    {
+                                        "id": "40a80680",
+                                        "settings": {
+                                            "classes": {
+                                                "$$type": "classes",
+                                                "value": [
+                                                    "e-40a80680-zmunjh9"
+                                                ]
+                                            },
+                                            "paragraph": {
+                                                "$$type": "html-v3",
+                                                "value": {
+                                                    "content": {
+                                                        "$$type": "string",
+                                                        "value": "Facebook"
+                                                    },
+                                                    "children": []
+                                                }
+                                            },
+                                            "tag": {
+                                                "$$type": "string",
+                                                "value": "span"
+                                            }
+                                        },
+                                        "elements": [],
+                                        "isInner": false,
+                                        "widgetType": "e-aae-a-social-share-item-title",
+                                        "elType": "widget",
+                                        "styles": {
+                                            "e-40a80680-zmunjh9": {
+                                                "id": "e-40a80680-zmunjh9",
+                                                "label": "local",
+                                                "type": "class",
+                                                "variants": [
+                                                    {
+                                                        "meta": {
+                                                            "breakpoint": "desktop",
+                                                            "state": null
+                                                        },
+                                                        "props": {
+                                                            "font-size": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 22,
+                                                                    "unit": "px"
+                                                                }
+                                                            }
+                                                        },
+                                                        "custom_css": null
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "interactions": [],
+                                        "editor_settings": [],
+                                        "version": "0.0"
+                                    }
+                                ],
+                                "isInner": false,
+                                "elType": "e-aae-a-social-share-item",
+                                "styles": {
+                                    "e-39e06639-cbae503": {
+                                        "id": "e-39e06639-cbae503",
+                                        "label": "local",
+                                        "type": "class",
+                                        "variants": [
+                                            {
+                                                "meta": {
+                                                    "breakpoint": "desktop",
+                                                    "state": null
+                                                },
+                                                "props": {
+                                                    "color": {
+                                                        "$$type": "color",
+                                                        "value": "#ffffff"
+                                                    },
+                                                    "padding": {
+                                                        "$$type": "dimensions",
+                                                        "value": {
+                                                            "block-start": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 10,
+                                                                    "unit": "px"
+                                                                }
+                                                            },
+                                                            "block-end": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 10,
+                                                                    "unit": "px"
+                                                                }
+                                                            },
+                                                            "inline-start": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 18,
+                                                                    "unit": "px"
+                                                                }
+                                                            },
+                                                            "inline-end": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 18,
+                                                                    "unit": "px"
+                                                                }
+                                                            }
+                                                        }
+                                                    },
+                                                    "border-radius": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "size": 999,
+                                                            "unit": "px"
+                                                        }
+                                                    },
+                                                    "background": {
+                                                        "$$type": "background",
+                                                        "value": {
+                                                            "color": {
+                                                                "$$type": "color",
+                                                                "value": "#1877f2"
+                                                            }
+                                                        }
+                                                    },
+                                                    "gap": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "size": 10,
+                                                            "unit": "px"
+                                                        }
+                                                    }
+                                                },
+                                                "custom_css": null
+                                            }
+                                        ]
+                                    }
+                                },
+                                "interactions": [],
+                                "editor_settings": {
+                                    "title": "Facebook"
+                                },
+                                "version": "0.0"
+                            },
+                            {
+                                "id": "69e2259a",
+                                "settings": {
+                                    "classes": {
+                                        "$$type": "classes",
+                                        "value": [
+                                            "e-69e2259a-ce83eb1"
+                                        ]
+                                    },
+                                    "btn_target": {
+                                        "$$type": "string",
+                                        "value": "_blank"
+                                    },
+                                    "btn_nofollow": {
+                                        "$$type": "boolean",
+                                        "value": false
+                                    },
+                                    "share_vendor": {
+                                        "$$type": "string",
+                                        "value": "twitter"
+                                    },
+                                    "hover_pulse": {
+                                        "$$type": "boolean",
+                                        "value": true
+                                    }
+                                },
+                                "elements": [
+                                    {
+                                        "id": "76affae8",
+                                        "settings": {
+                                            "classes": {
+                                                "$$type": "classes",
+                                                "value": [
+                                                    "e-76affae8-icon50"
+                                                ]
+                                            },
+                                            "svg": {
+                                                "$$type": "svg-src",
+                                                "value": {
+                                                    "id": null,
+                                                    "url": {
+                                                        "$$type": "url",
+                                                        "value": "http:\/\/elementor-v4-animation-addons.test\/wp-content\/plugins\/animation-addons-for-elementor\/inc\/AtomicWidgets\/Widgets\/SocialShare\/assets\/svg\/twitter.svg"
+                                                    }
+                                                }
+                                            },
+                                            "link": {
+                                                "$$type": "link",
+                                                "value": []
+                                            }
+                                        },
+                                        "elements": [],
+                                        "isInner": false,
+                                        "widgetType": "e-aae-a-social-share-item-icon",
+                                        "elType": "widget",
+                                        "styles": {
+                                            "e-76affae8-icon50": {
+                                                "id": "e-76affae8-icon50",
+                                                "label": "local",
+                                                "type": "class",
+                                                "variants": [
+                                                    {
+                                                        "meta": {
+                                                            "breakpoint": "desktop",
+                                                            "state": null
+                                                        },
+                                                        "props": {
+                                                            "width": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 50,
+                                                                    "unit": "px"
+                                                                }
+                                                            },
+                                                            "height": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 50,
+                                                                    "unit": "px"
+                                                                }
+                                                            }
+                                                        },
+                                                        "custom_css": null
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "interactions": [],
+                                        "editor_settings": {
+                                            "title": "Icon"
+                                        },
+                                        "version": "0.0"
+                                    },
+                                    {
+                                        "id": "97b1349",
+                                        "settings": {
+                                            "classes": {
+                                                "$$type": "classes",
+                                                "value": [
+                                                    "e-97b1349-wzh4j71"
+                                                ]
+                                            },
+                                            "paragraph": {
+                                                "$$type": "html-v3",
+                                                "value": {
+                                                    "content": {
+                                                        "$$type": "string",
+                                                        "value": "Twitter"
+                                                    },
+                                                    "children": []
+                                                }
+                                            },
+                                            "tag": {
+                                                "$$type": "string",
+                                                "value": "span"
+                                            }
+                                        },
+                                        "elements": [],
+                                        "isInner": false,
+                                        "widgetType": "e-aae-a-social-share-item-title",
+                                        "elType": "widget",
+                                        "styles": {
+                                            "e-97b1349-wzh4j71": {
+                                                "id": "e-97b1349-wzh4j71",
+                                                "label": "local",
+                                                "type": "class",
+                                                "variants": [
+                                                    {
+                                                        "meta": {
+                                                            "breakpoint": "desktop",
+                                                            "state": null
+                                                        },
+                                                        "props": {
+                                                            "font-size": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 22,
+                                                                    "unit": "px"
+                                                                }
+                                                            }
+                                                        },
+                                                        "custom_css": null
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "interactions": [],
+                                        "editor_settings": [],
+                                        "version": "0.0"
+                                    }
+                                ],
+                                "isInner": false,
+                                "elType": "e-aae-a-social-share-item",
+                                "styles": {
+                                    "e-69e2259a-ce83eb1": {
+                                        "id": "e-69e2259a-ce83eb1",
+                                        "label": "local",
+                                        "type": "class",
+                                        "variants": [
+                                            {
+                                                "meta": {
+                                                    "breakpoint": "desktop",
+                                                    "state": null
+                                                },
+                                                "props": {
+                                                    "color": {
+                                                        "$$type": "color",
+                                                        "value": "#ffffff"
+                                                    },
+                                                    "padding": {
+                                                        "$$type": "dimensions",
+                                                        "value": {
+                                                            "block-start": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 10,
+                                                                    "unit": "px"
+                                                                }
+                                                            },
+                                                            "block-end": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 10,
+                                                                    "unit": "px"
+                                                                }
+                                                            },
+                                                            "inline-start": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 18,
+                                                                    "unit": "px"
+                                                                }
+                                                            },
+                                                            "inline-end": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 18,
+                                                                    "unit": "px"
+                                                                }
+                                                            }
+                                                        }
+                                                    },
+                                                    "border-radius": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "size": 999,
+                                                            "unit": "px"
+                                                        }
+                                                    },
+                                                    "background": {
+                                                        "$$type": "background",
+                                                        "value": {
+                                                            "color": {
+                                                                "$$type": "color",
+                                                                "value": "#000000"
+                                                            }
+                                                        }
+                                                    },
+                                                    "gap": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "size": 10,
+                                                            "unit": "px"
+                                                        }
+                                                    }
+                                                },
+                                                "custom_css": null
+                                            }
+                                        ]
+                                    }
+                                },
+                                "interactions": [],
+                                "editor_settings": {
+                                    "title": "Twitter"
+                                },
+                                "version": "0.0"
+                            },
+                            {
+                                "id": "4195d8f4",
+                                "settings": {
+                                    "classes": {
+                                        "$$type": "classes",
+                                        "value": [
+                                            "e-4195d8f4-7421b19"
+                                        ]
+                                    },
+                                    "btn_target": {
+                                        "$$type": "string",
+                                        "value": "_blank"
+                                    },
+                                    "btn_nofollow": {
+                                        "$$type": "boolean",
+                                        "value": false
+                                    },
+                                    "share_vendor": {
+                                        "$$type": "string",
+                                        "value": "linkedin"
+                                    },
+                                    "hover_pulse": {
+                                        "$$type": "boolean",
+                                        "value": true
+                                    }
+                                },
+                                "elements": [
+                                    {
+                                        "id": "1ee749d0",
+                                        "settings": {
+                                            "classes": {
+                                                "$$type": "classes",
+                                                "value": [
+                                                    "e-1ee749d0-icon50"
+                                                ]
+                                            },
+                                            "svg": {
+                                                "$$type": "svg-src",
+                                                "value": {
+                                                    "id": null,
+                                                    "url": {
+                                                        "$$type": "url",
+                                                        "value": "http:\/\/elementor-v4-animation-addons.test\/wp-content\/plugins\/animation-addons-for-elementor\/inc\/AtomicWidgets\/Widgets\/SocialShare\/assets\/svg\/linkedin.svg"
+                                                    }
+                                                }
+                                            },
+                                            "link": {
+                                                "$$type": "link",
+                                                "value": []
+                                            }
+                                        },
+                                        "elements": [],
+                                        "isInner": false,
+                                        "widgetType": "e-aae-a-social-share-item-icon",
+                                        "elType": "widget",
+                                        "styles": {
+                                            "e-1ee749d0-icon50": {
+                                                "id": "e-1ee749d0-icon50",
+                                                "label": "local",
+                                                "type": "class",
+                                                "variants": [
+                                                    {
+                                                        "meta": {
+                                                            "breakpoint": "desktop",
+                                                            "state": null
+                                                        },
+                                                        "props": {
+                                                            "width": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 50,
+                                                                    "unit": "px"
+                                                                }
+                                                            },
+                                                            "height": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 50,
+                                                                    "unit": "px"
+                                                                }
+                                                            }
+                                                        },
+                                                        "custom_css": null
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "interactions": [],
+                                        "editor_settings": {
+                                            "title": "Icon"
+                                        },
+                                        "version": "0.0"
+                                    },
+                                    {
+                                        "id": "620be2f7",
+                                        "settings": {
+                                            "classes": {
+                                                "$$type": "classes",
+                                                "value": [
+                                                    "e-620be2f7-vk3yz61"
+                                                ]
+                                            },
+                                            "paragraph": {
+                                                "$$type": "html-v3",
+                                                "value": {
+                                                    "content": {
+                                                        "$$type": "string",
+                                                        "value": "LinkedIn"
+                                                    },
+                                                    "children": []
+                                                }
+                                            },
+                                            "tag": {
+                                                "$$type": "string",
+                                                "value": "span"
+                                            }
+                                        },
+                                        "elements": [],
+                                        "isInner": false,
+                                        "widgetType": "e-aae-a-social-share-item-title",
+                                        "elType": "widget",
+                                        "styles": {
+                                            "e-620be2f7-vk3yz61": {
+                                                "id": "e-620be2f7-vk3yz61",
+                                                "label": "local",
+                                                "type": "class",
+                                                "variants": [
+                                                    {
+                                                        "meta": {
+                                                            "breakpoint": "desktop",
+                                                            "state": null
+                                                        },
+                                                        "props": {
+                                                            "font-size": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 22,
+                                                                    "unit": "px"
+                                                                }
+                                                            }
+                                                        },
+                                                        "custom_css": null
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "interactions": [],
+                                        "editor_settings": [],
+                                        "version": "0.0"
+                                    }
+                                ],
+                                "isInner": false,
+                                "elType": "e-aae-a-social-share-item",
+                                "styles": {
+                                    "e-4195d8f4-7421b19": {
+                                        "id": "e-4195d8f4-7421b19",
+                                        "label": "local",
+                                        "type": "class",
+                                        "variants": [
+                                            {
+                                                "meta": {
+                                                    "breakpoint": "desktop",
+                                                    "state": null
+                                                },
+                                                "props": {
+                                                    "color": {
+                                                        "$$type": "color",
+                                                        "value": "#ffffff"
+                                                    },
+                                                    "padding": {
+                                                        "$$type": "dimensions",
+                                                        "value": {
+                                                            "block-start": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 10,
+                                                                    "unit": "px"
+                                                                }
+                                                            },
+                                                            "block-end": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 10,
+                                                                    "unit": "px"
+                                                                }
+                                                            },
+                                                            "inline-start": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 18,
+                                                                    "unit": "px"
+                                                                }
+                                                            },
+                                                            "inline-end": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 18,
+                                                                    "unit": "px"
+                                                                }
+                                                            }
+                                                        }
+                                                    },
+                                                    "border-radius": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "size": 999,
+                                                            "unit": "px"
+                                                        }
+                                                    },
+                                                    "background": {
+                                                        "$$type": "background",
+                                                        "value": {
+                                                            "color": {
+                                                                "$$type": "color",
+                                                                "value": "#0a66c2"
+                                                            }
+                                                        }
+                                                    },
+                                                    "gap": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "size": 10,
+                                                            "unit": "px"
+                                                        }
+                                                    }
+                                                },
+                                                "custom_css": null
+                                            }
+                                        ]
+                                    }
+                                },
+                                "interactions": [],
+                                "editor_settings": {
+                                    "title": "LinkedIn"
+                                },
+                                "version": "0.0"
+                            },
+                            {
+                                "id": "61d79943",
+                                "settings": {
+                                    "classes": {
+                                        "$$type": "classes",
+                                        "value": [
+                                            "e-61d79943-b7b0f7e"
+                                        ]
+                                    },
+                                    "btn_target": {
+                                        "$$type": "string",
+                                        "value": "_blank"
+                                    },
+                                    "btn_nofollow": {
+                                        "$$type": "boolean",
+                                        "value": false
+                                    },
+                                    "share_vendor": {
+                                        "$$type": "string",
+                                        "value": "reddit"
+                                    },
+                                    "hover_pulse": {
+                                        "$$type": "boolean",
+                                        "value": true
+                                    }
+                                },
+                                "elements": [
+                                    {
+                                        "id": "74a7a02b",
+                                        "settings": {
+                                            "classes": {
+                                                "$$type": "classes",
+                                                "value": [
+                                                    "e-74a7a02b-icon50"
+                                                ]
+                                            },
+                                            "svg": {
+                                                "$$type": "svg-src",
+                                                "value": {
+                                                    "id": null,
+                                                    "url": {
+                                                        "$$type": "url",
+                                                        "value": "http:\/\/elementor-v4-animation-addons.test\/wp-content\/plugins\/animation-addons-for-elementor\/inc\/AtomicWidgets\/Widgets\/SocialShare\/assets\/svg\/reddit.svg"
+                                                    }
+                                                }
+                                            },
+                                            "link": {
+                                                "$$type": "link",
+                                                "value": []
+                                            }
+                                        },
+                                        "elements": [],
+                                        "isInner": false,
+                                        "widgetType": "e-aae-a-social-share-item-icon",
+                                        "elType": "widget",
+                                        "styles": {
+                                            "e-74a7a02b-icon50": {
+                                                "id": "e-74a7a02b-icon50",
+                                                "label": "local",
+                                                "type": "class",
+                                                "variants": [
+                                                    {
+                                                        "meta": {
+                                                            "breakpoint": "desktop",
+                                                            "state": null
+                                                        },
+                                                        "props": {
+                                                            "width": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 50,
+                                                                    "unit": "px"
+                                                                }
+                                                            },
+                                                            "height": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 50,
+                                                                    "unit": "px"
+                                                                }
+                                                            }
+                                                        },
+                                                        "custom_css": null
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "interactions": [],
+                                        "editor_settings": {
+                                            "title": "Icon"
+                                        },
+                                        "version": "0.0"
+                                    },
+                                    {
+                                        "id": "257b705c",
+                                        "settings": {
+                                            "classes": {
+                                                "$$type": "classes",
+                                                "value": [
+                                                    "e-257b705c-1oon8a1"
+                                                ]
+                                            },
+                                            "paragraph": {
+                                                "$$type": "html-v3",
+                                                "value": {
+                                                    "content": {
+                                                        "$$type": "string",
+                                                        "value": "Reddit"
+                                                    },
+                                                    "children": []
+                                                }
+                                            },
+                                            "tag": {
+                                                "$$type": "string",
+                                                "value": "span"
+                                            }
+                                        },
+                                        "elements": [],
+                                        "isInner": false,
+                                        "widgetType": "e-aae-a-social-share-item-title",
+                                        "elType": "widget",
+                                        "styles": {
+                                            "e-257b705c-1oon8a1": {
+                                                "id": "e-257b705c-1oon8a1",
+                                                "label": "local",
+                                                "type": "class",
+                                                "variants": [
+                                                    {
+                                                        "meta": {
+                                                            "breakpoint": "desktop",
+                                                            "state": null
+                                                        },
+                                                        "props": {
+                                                            "font-size": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 22,
+                                                                    "unit": "px"
+                                                                }
+                                                            }
+                                                        },
+                                                        "custom_css": null
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "interactions": [],
+                                        "editor_settings": [],
+                                        "version": "0.0"
+                                    }
+                                ],
+                                "isInner": false,
+                                "elType": "e-aae-a-social-share-item",
+                                "styles": {
+                                    "e-61d79943-b7b0f7e": {
+                                        "id": "e-61d79943-b7b0f7e",
+                                        "label": "local",
+                                        "type": "class",
+                                        "variants": [
+                                            {
+                                                "meta": {
+                                                    "breakpoint": "desktop",
+                                                    "state": null
+                                                },
+                                                "props": {
+                                                    "color": {
+                                                        "$$type": "color",
+                                                        "value": "#ffffff"
+                                                    },
+                                                    "padding": {
+                                                        "$$type": "dimensions",
+                                                        "value": {
+                                                            "block-start": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 10,
+                                                                    "unit": "px"
+                                                                }
+                                                            },
+                                                            "block-end": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 10,
+                                                                    "unit": "px"
+                                                                }
+                                                            },
+                                                            "inline-start": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 18,
+                                                                    "unit": "px"
+                                                                }
+                                                            },
+                                                            "inline-end": {
+                                                                "$$type": "size",
+                                                                "value": {
+                                                                    "size": 18,
+                                                                    "unit": "px"
+                                                                }
+                                                            }
+                                                        }
+                                                    },
+                                                    "border-radius": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "size": 999,
+                                                            "unit": "px"
+                                                        }
+                                                    },
+                                                    "background": {
+                                                        "$$type": "background",
+                                                        "value": {
+                                                            "color": {
+                                                                "$$type": "color",
+                                                                "value": "#FF4500"
+                                                            }
+                                                        }
+                                                    },
+                                                    "gap": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "size": 10,
+                                                            "unit": "px"
+                                                        }
+                                                    }
+                                                },
+                                                "custom_css": null
+                                            }
+                                        ]
+                                    }
+                                },
+                                "interactions": [],
+                                "editor_settings": {
+                                    "title": "Reddit"
+                                },
+                                "version": "0.0"
+                            }
+                        ],
+                        "isInner": false,
+                        "elType": "e-aae-a-social-share",
+                        "styles": [],
+                        "interactions": [],
+                        "editor_settings": {
+                            "title": "Social Share - Solid"
+                        },
+                        "version": "0.0"
+                    }
+                ],
+                "isInner": false,
+                "elType": "e-flexbox",
+                "styles": [],
+                "interactions": [],
+                "editor_settings": {
+                    "title": "Social Share - Solid"
+                },
+                "version": "0.0"
+            },
+            "source": "remote"
+        }
+    ],
+    "remote_failed": false
+}
