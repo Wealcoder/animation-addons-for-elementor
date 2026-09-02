@@ -11,6 +11,15 @@
         justify-content: space-between;
         width: 100%;
         margin: 0;
+        // The header is a <button>, and themes reset bare buttons to
+        // `white-space: nowrap` — hello-elementor's reset.css ships exactly
+        // `[type="button"], [type="submit"], button { white-space: nowrap }`.
+        // `white-space` INHERITS, so that lands on the title heading inside and
+        // pinned it to one line: on a narrow screen the title was cut off and
+        // there was no way to read the rest. Fixing it on the title alone does
+        // not work — the value is inherited, not matched, so the title's own
+        // rule never sees it. It has to be reset where it enters the subtree.
+        white-space: normal;
         // Part of the chrome reset, and not optional: themes style bare
         // `button` (hello-elementor's reset.css ships `padding: 8px 16px`).
         // That default was invisible for as long as the twig hardcoded an
@@ -85,14 +94,30 @@
             gap: 10px;
             min-width: 0;
 
-            // Header Title (Paragraph / span)
+            // Header Title (Heading)
+            //
+            // WRAPS, never truncates. This used to be
+            // `overflow:hidden; text-overflow:ellipsis; white-space:nowrap`,
+            // which pinned the title to one line — so on any width where the
+            // title did not fit, the reader got "Accordion Title Accordion
+            // Ti…" and no way to see the rest. An accordion header IS the
+            // label for its panel; a title that cannot be read makes the
+            // control unusable, and it hit hardest on narrow screens where the
+            // titles matter most.
+            //
+            // `min-width: 0` stays and is load-bearing: a flex item defaults to
+            // `min-width: auto`, i.e. it refuses to shrink below its content,
+            // so without this the title would push the icon out of the row
+            // instead of wrapping.
+            //
+            // `overflow-wrap: break-word` only bites on a single unbreakable
+            // run (a long URL pasted as a title); normal text still breaks at
+            // spaces.
             .aae-header-title-element {
                 flex: 1;
                 min-width: 0;
                 margin: 0;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
+                overflow-wrap: break-word;
             }
 
             .aae-header-icon-element {

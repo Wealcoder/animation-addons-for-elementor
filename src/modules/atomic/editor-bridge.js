@@ -113,7 +113,21 @@ navSections.forEach( registerResponsiveSection );
 // Tell Elementor that our functional hook classes exist, so the panel stops
 // reporting them as "missing" — that alert's dismiss button DELETES the
 // classes our JS runs on. Read-only, so they never reach the class picker.
-registerHookClassesProvider();
+//
+// Wrapped because this is the one registration that reads an Elementor package
+// through a bare global: webpack compiles the import to
+// `elementorV2.editorStylesRepository`, so on a build where that package is
+// absent the property access throws at the FIRST use — before the module's own
+// guard can return false. Assets.php already refuses to enqueue this bundle
+// unless the handle is registered, so this should be unreachable; it is here so
+// that if it ever is reached, one optional nicety cannot take the whole editor
+// bridge (panel sections, preset picker, responsive rows) down with it.
+try {
+	registerHookClassesProvider();
+} catch ( e ) {
+	// eslint-disable-next-line no-console
+	console.warn( '[AAE] hook-classes provider unavailable; the panel may report our functional classes as missing.', e );
+}
 
 // Native Elementor element-controls (e.g. the slider's "Slides" list). These
 // register into Elementor's shared controlsRegistry, separate from the
