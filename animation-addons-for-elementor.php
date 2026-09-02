@@ -271,6 +271,33 @@ final class WCF_ADDONS_Plugin {
 			if ( get_option( 'wcf_addons_version' ) !== WCF_ADDONS_VERSION ) {
 				// Update plugin version
 				update_option( 'wcf_addons_version', WCF_ADDONS_VERSION );
+
+				/*
+				 * Drop Elementor's cached ATOMIC BASE STYLES on every version change.
+				 *
+				 * Atomic_Widget_Base_Styles::get_all_base_styles() walks every
+				 * registered atomic element ONCE and caches the combined
+				 * stylesheet under a single 'base' key. Nothing in that pipeline
+				 * notices that a plugin update added a widget or edited a
+				 * define_base_styles() — the cache is only invalidated by
+				 * Elementor's own `elementor/core/files/clear_cache`, which this
+				 * plugin listened to but never fired.
+				 *
+				 * So a new widget shipped with NO base CSS at all until somebody
+				 * happened to press Elementor > Tools > Clear Files & Data. That
+				 * is how the Google Maps widget reached a live page with its
+				 * `position/overflow/width/height` rules missing: the iframe kept
+				 * the browser's default 300x150 inline box, so resizing the
+				 * widget in the Style tab appeared to do nothing.
+				 *
+				 * The version option is written BEFORE this on purpose. If
+				 * clearing ever throws, the site loses one cache clear rather
+				 * than re-running a full cache rebuild on every single request.
+				 */
+				if ( class_exists( '\Elementor\Plugin' )
+					&& isset( \Elementor\Plugin::$instance->files_manager ) ) {
+					\Elementor\Plugin::$instance->files_manager->clear_cache();
+				}
 			}
 		
 			// Sanitize and check the 'page' parameter

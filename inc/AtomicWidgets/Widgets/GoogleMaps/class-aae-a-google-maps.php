@@ -47,6 +47,7 @@ use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Widget_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Template;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Number_Control;
+use Elementor\Modules\AtomicWidgets\Controls\Types\Select_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Background_Prop_Type;
@@ -123,6 +124,35 @@ class AAE_A_Google_Maps extends Atomic_Widget_Base {
 			// step anyway, so the slider bought nothing.
 			'zoom' => Number_Prop_Type::make()->default( self::DEFAULT_ZOOM ),
 
+			/*
+			 * The three remaining parameters the Maps Embed API actually
+			 * accepts. Verified against Google's own reference: the Embed API
+			 * takes q / center / zoom / maptype / language / region and NOTHING
+			 * else — there is no `styles` parameter and no `map_id`, so custom
+			 * map colours are impossible on an embed at any price. That needs
+			 * the Maps JavaScript API, i.e. a different widget. Recolouring an
+			 * embed is a CSS `filter` job, and `filter` is already in
+			 * Elementor's style schema, so the Style tab covers it with no code.
+			 *
+			 * `maptype` is only roadmap|satellite. Google's own list stops there
+			 * for the Embed API — terrain/hybrid exist on the JS API, not here —
+			 * so the enum stays at two rather than offering values that would
+			 * silently fall back to roadmap.
+			 */
+			'map_type' => String_Prop_Type::make()
+				->enum( [ 'roadmap', 'satellite' ] )
+				->default( 'roadmap' ),
+
+			// Empty = let Google decide (it follows the viewer's own browser
+			// language). That is a better default than pinning every visitor to
+			// the site's language, so there is deliberately no fallback here.
+			'language' => String_Prop_Type::make()->default( '' ),
+
+			// Empty = Google's default for the viewer. Changes which names and
+			// borders are shown for disputed regions, so it is a real editorial
+			// choice rather than a formatting one.
+			'region' => String_Prop_Type::make()->default( '' ),
+
 			// No control by design — this is the site-wide key, edited in
 			// Elementor > Settings > Integrations, not per widget. It lives in
 			// the SCHEMA (rather than only in get_atomic_settings()) so the
@@ -170,7 +200,29 @@ class AAE_A_Google_Maps extends Atomic_Widget_Base {
 						->set_min( 1 )
 						->set_max( 20 )
 						->set_step( 1 )
-						->set_should_force_int( true ),
+						->set_should_force_int( true )
+						// 1 is a legal value and shows the whole planet, which
+						// on a wide box leaves Google's own grey bands above and
+						// below the world — it reads as "the map is not filling
+						// its height" when nothing is wrong with the box at all.
+						->set_description( __( '1 shows the whole world; 12–16 is street level.', 'animation-addons-for-elementor' ) ),
+
+					Select_Control::bind_to( 'map_type' )
+						->set_label( __( 'Map Type', 'animation-addons-for-elementor' ) )
+						->set_options( [
+							[ 'value' => 'roadmap',   'label' => __( 'Roadmap', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'satellite', 'label' => __( 'Satellite', 'animation-addons-for-elementor' ) ],
+						] ),
+
+					Text_Control::bind_to( 'language' )
+						->set_label( __( 'Language', 'animation-addons-for-elementor' ) )
+						->set_placeholder( 'en' )
+						->set_description( __( 'Two-letter code for the map labels, e.g. en, bn, ar. Leave empty to follow each visitor’s own browser.', 'animation-addons-for-elementor' ) ),
+
+					Text_Control::bind_to( 'region' )
+						->set_label( __( 'Region', 'animation-addons-for-elementor' ) )
+						->set_placeholder( 'US' )
+						->set_description( __( 'Two-letter country code, e.g. BD, GB. Changes which place names and borders Google shows for disputed areas.', 'animation-addons-for-elementor' ) ),
 				] ),
 
 			Section::make()
