@@ -100,7 +100,7 @@ class AAE_A_Timeline_Number extends Atomic_Widget_Base {
 					Style_Variant::make()
 						->add_prop( 'display',    String_Prop_Type::generate( 'block' ) )
 						->add_prop( 'font-size',   Size_Prop_Type::generate( [ 'size' => 13, 'unit' => 'px' ] ) )
-						->add_prop( 'color',       Color_Prop_Type::generate( '#a8a6a0' ) )
+						->add_prop( 'color',       Color_Prop_Type::generate( '#6d6c68' ) )
 						->add_prop( 'margin', Dimensions_Prop_Type::generate( [
 							'block-start'  => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
 							'inline-end'   => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),

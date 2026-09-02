@@ -1,0 +1,1349 @@
+{
+    "id": "remote-11069",
+    "element_type": "e-aae-a-slider",
+    "category": "nested-slider",
+    "title": "Brand Logo Slider WHITE",
+    "thumbnail_url": "",
+    "pro": false,
+    "hash": "fe8e6e29fe21",
+    "updated_at": "2026-07-20T13:20:32+00:00",
+    "name": "Brand Logo Slider 2",
+    "model": {
+        "id": "bl2slider0",
+        "elType": "e-aae-a-slider",
+        "isInner": false,
+        "settings": {
+            "classes": {
+                "$$type": "classes",
+                "value": [
+                    "e-bl2-slider"
+                ]
+            },
+            "aae_ns_effect": {
+                "$$type": "aae-rj",
+                "value": {
+                    "desktop": "slide"
+                }
+            },
+            "aae_ns_slides_per_view": {
+                "$$type": "aae-rj",
+                "value": {
+                    "desktop": 6,
+                    "tablet": 3,
+                    "mobile": 2
+                }
+            },
+            "aae_ns_peek": {
+                "$$type": "aae-rj",
+                "value": {
+                    "desktop": 0
+                }
+            },
+            "aae_ns_gap": {
+                "$$type": "aae-rj",
+                "value": {
+                    "desktop": 20
+                }
+            },
+            "aae_ns_easing": {
+                "$$type": "aae-rj",
+                "value": {
+                    "desktop": "power2"
+                }
+            },
+            "aae_ns_autoplay": {
+                "$$type": "aae-rj",
+                "value": {
+                    "desktop": true
+                }
+            },
+            "aae_ns_autoplay_delay": {
+                "$$type": "aae-rj",
+                "value": {
+                    "desktop": 0
+                }
+            },
+            "aae_ns_autoplay_speed": {
+                "$$type": "aae-rj",
+                "value": {
+                    "desktop": 5000
+                }
+            },
+            "aae_ns_transition_speed": {
+                "$$type": "aae-rj",
+                "value": {
+                    "desktop": 5000
+                }
+            },
+            "aae_ns_autoplay_direction": {
+                "$$type": "aae-rj",
+                "value": {
+                    "desktop": "right"
+                }
+            },
+            "aae_ns_loop": {
+                "$$type": "aae-rj",
+                "value": {
+                    "desktop": true
+                }
+            },
+            "aae_ns_pause_on_hover": {
+                "$$type": "aae-rj",
+                "value": {
+                    "desktop": true
+                }
+            }
+        },
+        "editor_settings": {
+            "title": "Brand Logo Slider 2"
+        },
+        "version": "0.0",
+        "interactions": [],
+        "styles": {
+            "e-bl2-slider": {
+                "id": "e-bl2-slider",
+                "label": "local",
+                "type": "class",
+                "variants": [
+                    {
+                        "meta": {
+                            "breakpoint": "desktop",
+                            "state": null
+                        },
+                        "props": {
+                            "padding": {
+                                "$$type": "dimensions",
+                                "value": {
+                                    "block-start": {
+                                        "$$type": "size",
+                                        "value": {
+                                            "size": 50,
+                                            "unit": "px"
+                                        }
+                                    },
+                                    "inline-end": {
+                                        "$$type": "size",
+                                        "value": {
+                                            "size": 20,
+                                            "unit": "px"
+                                        }
+                                    },
+                                    "block-end": {
+                                        "$$type": "size",
+                                        "value": {
+                                            "size": 30,
+                                            "unit": "px"
+                                        }
+                                    },
+                                    "inline-start": {
+                                        "$$type": "size",
+                                        "value": {
+                                            "size": 20,
+                                            "unit": "px"
+                                        }
+                                    }
+                                }
+                            },
+                            "background": {
+                                "$$type": "background",
+                                "value": {
+                                    "color": {
+                                        "$$type": "color",
+                                        "value": "#ffffff"
+                                    }
+                                }
+                            }
+                        },
+                        "custom_css": null
+                    }
+                ],
+                "custom_css": null
+            }
+        },
+        "elements": [
+            {
+                "id": "bl2slidereyb",
+                "widgetType": "e-heading",
+                "elType": "widget",
+                "isInner": false,
+                "settings": {
+                    "classes": {
+                        "$$type": "classes",
+                        "value": [
+                            "e-bl2-slider-eyebrow"
+                        ]
+                    },
+                    "tag": {
+                        "$$type": "string",
+                        "value": "h2"
+                    },
+                    "title": {
+                        "$$type": "html-v3",
+                        "value": {
+                            "content": {
+                                "$$type": "string",
+                                "value": "We Worked With The World's Best Companies"
+                            },
+                            "children": []
+                        }
+                    }
+                },
+                "editor_settings": {
+                    "title": "Eyebrow"
+                },
+                "version": "0.0",
+                "interactions": [],
+                "elements": [],
+                "styles": {
+                    "e-bl2-slider-eyebrow": {
+                        "id": "e-bl2-slider-eyebrow",
+                        "label": "local",
+                        "type": "class",
+                        "variants": [
+                            {
+                                "meta": {
+                                    "breakpoint": "desktop",
+                                    "state": null
+                                },
+                                "props": {
+                                    "text-align": {
+                                        "$$type": "string",
+                                        "value": "center"
+                                    },
+                                    "color": {
+                                        "$$type": "color",
+                                        "value": "rgba(20,20,20,0.75)"
+                                    },
+                                    "font-size": {
+                                        "$$type": "size",
+                                        "value": {
+                                            "size": 12,
+                                            "unit": "px"
+                                        }
+                                    },
+                                    "font-weight": {
+                                        "$$type": "string",
+                                        "value": "700"
+                                    },
+                                    "letter-spacing": {
+                                        "$$type": "size",
+                                        "value": {
+                                            "size": 1.5,
+                                            "unit": "px"
+                                        }
+                                    },
+                                    "margin": {
+                                        "$$type": "dimensions",
+                                        "value": {
+                                            "block-start": {
+                                                "$$type": "size",
+                                                "value": {
+                                                    "size": 0,
+                                                    "unit": "px"
+                                                }
+                                            },
+                                            "inline-end": {
+                                                "$$type": "size",
+                                                "value": {
+                                                    "size": 0,
+                                                    "unit": "px"
+                                                }
+                                            },
+                                            "block-end": {
+                                                "$$type": "size",
+                                                "value": {
+                                                    "size": 30,
+                                                    "unit": "px"
+                                                }
+                                            },
+                                            "inline-start": {
+                                                "$$type": "size",
+                                                "value": {
+                                                    "size": 0,
+                                                    "unit": "px"
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                "custom_css": null
+                            }
+                        ],
+                        "custom_css": null
+                    }
+                }
+            },
+            {
+                "id": "bl2slidertrk",
+                "elType": "e-aae-a-slider-track",
+                "isInner": false,
+                "settings": [],
+                "editor_settings": {
+                    "title": "Slider Track"
+                },
+                "version": "0.0",
+                "interactions": [],
+                "styles": [],
+                "elements": [
+                    {
+                        "id": "bl2slidersl01",
+                        "elType": "e-aae-a-slide",
+                        "isInner": false,
+                        "settings": {
+                            "classes": {
+                                "$$type": "classes",
+                                "value": [
+                                    "e-bl2-slider-card"
+                                ]
+                            }
+                        },
+                        "editor_settings": {
+                            "title": "01 — Logo 1"
+                        },
+                        "version": "0.0",
+                        "interactions": [],
+                        "styles": {
+                            "e-bl2-slider-card": {
+                                "id": "e-bl2-slider-card",
+                                "label": "local",
+                                "type": "class",
+                                "variants": [
+                                    {
+                                        "meta": {
+                                            "breakpoint": "desktop",
+                                            "state": null
+                                        },
+                                        "props": {
+                                            "display": {
+                                                "$$type": "string",
+                                                "value": "flex"
+                                            },
+                                            "align-items": {
+                                                "$$type": "string",
+                                                "value": "center"
+                                            },
+                                            "justify-content": {
+                                                "$$type": "string",
+                                                "value": "center"
+                                            },
+                                            "height": {
+                                                "$$type": "size",
+                                                "value": {
+                                                    "size": 90,
+                                                    "unit": "px"
+                                                }
+                                            },
+                                            "padding": {
+                                                "$$type": "dimensions",
+                                                "value": {
+                                                    "block-start": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "size": 10,
+                                                            "unit": "px"
+                                                        }
+                                                    },
+                                                    "inline-end": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "size": 20,
+                                                            "unit": "px"
+                                                        }
+                                                    },
+                                                    "block-end": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "size": 10,
+                                                            "unit": "px"
+                                                        }
+                                                    },
+                                                    "inline-start": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "size": 20,
+                                                            "unit": "px"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "custom_css": null
+                                    }
+                                ],
+                                "custom_css": null
+                            }
+                        },
+                        "elements": [
+                            {
+                                "id": "bl2slidersl01im",
+                                "widgetType": "e-image",
+                                "elType": "widget",
+                                "isInner": false,
+                                "settings": {
+                                    "classes": {
+                                        "$$type": "classes",
+                                        "value": [
+                                            "e-bl2-slider-media"
+                                        ]
+                                    },
+                                    "image": {
+                                        "$$type": "image",
+                                        "value": {
+                                            "src": {
+                                                "$$type": "image-src",
+                                                "value": {
+                                                    "id": null,
+                                                    "url": {
+                                                        "$$type": "url",
+                                                        "value": "https://templates.animation-addons.com/seoly/wp-content/uploads/sites/42/2024/06/logo-1.webp"
+                                                    }
+                                                }
+                                            },
+                                            "size": {
+                                                "$$type": "string",
+                                                "value": "large"
+                                            }
+                                        }
+                                    }
+                                },
+                                "editor_settings": {
+                                    "title": "Logo"
+                                },
+                                "version": "0.0",
+                                "interactions": [],
+                                "elements": [],
+                                "styles": {
+                                    "e-bl2-slider-media": {
+                                        "id": "e-bl2-slider-media",
+                                        "label": "local",
+                                        "type": "class",
+                                        "variants": [
+                                            {
+                                                "meta": {
+                                                    "breakpoint": "desktop",
+                                                    "state": null
+                                                },
+                                                "props": {
+                                                    "width": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "size": 100,
+                                                            "unit": "%"
+                                                        }
+                                                    },
+                                                    "max-width": {
+                                                        "$$type": "size",
+                                                        "value": {
+                                                            "size": 150,
+                                                            "unit": "px"
+                                                        }
+                                                    },
+                                                    "object-fit": {
+                                                        "$$type": "string",
+                                                        "value": "contain"
+                                                    },
+                                                    "filter": {
+                                                        "$$type": "filter",
+                                                        "value": [
+                                                            {
+                                                                "$$type": "css-filter-func",
+                                                                "value": {
+                                                                    "func": {
+                                                                        "$$type": "string",
+                                                                        "value": "grayscale"
+                                                                    },
+                                                                    "args": {
+                                                                        "$$type": "intensity",
+                                                                        "value": {
+                                                                            "size": {
+                                                                                "$$type": "size",
+                                                                                "value": {
+                                                                                    "size": 100,
+                                                                                    "unit": "%"
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        ]
+                                                    },
+                                                    "transition": {
+                                                        "$$type": "transition",
+                                                        "value": [
+                                                            {
+                                                                "$$type": "selection-size",
+                                                                "value": {
+                                                                    "selection": {
+                                                                        "$$type": "key-value",
+                                                                        "value": {
+                                                                            "key": {
+                                                                                "$$type": "string",
+                                                                                "value": "All properties"
+                                                                            },
+                                                                            "value": {
+                                                                                "$$type": "string",
+                                                                                "value": "all"
+                                                                            }
+                                                                        }
+                                                                    },
+                                                                    "size": {
+                                                                        "$$type": "size",
+                                                                        "value": {
+                                                                            "size": 300,
+                                                                            "unit": "ms"
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                },
+                                                "custom_css": null
+                                            }
+                                        ],
+                                        "custom_css": null
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "id": "bl2slidersl02",
+                        "elType": "e-aae-a-slide",
+                        "isInner": false,
+                        "settings": {
+                            "classes": {
+                                "$$type": "classes",
+                                "value": [
+                                    "e-bl2-slider-card"
+                                ]
+                            }
+                        },
+                        "editor_settings": {
+                            "title": "02 — Logo 2"
+                        },
+                        "version": "0.0",
+                        "interactions": [],
+                        "styles": [],
+                        "elements": [
+                            {
+                                "id": "bl2slidersl02im",
+                                "widgetType": "e-image",
+                                "elType": "widget",
+                                "isInner": false,
+                                "settings": {
+                                    "classes": {
+                                        "$$type": "classes",
+                                        "value": [
+                                            "e-bl2-slider-media"
+                                        ]
+                                    },
+                                    "image": {
+                                        "$$type": "image",
+                                        "value": {
+                                            "src": {
+                                                "$$type": "image-src",
+                                                "value": {
+                                                    "id": null,
+                                                    "url": {
+                                                        "$$type": "url",
+                                                        "value": "https://templates.animation-addons.com/seoly/wp-content/uploads/sites/42/2024/06/logo-2.webp"
+                                                    }
+                                                }
+                                            },
+                                            "size": {
+                                                "$$type": "string",
+                                                "value": "large"
+                                            }
+                                        }
+                                    }
+                                },
+                                "editor_settings": {
+                                    "title": "Logo"
+                                },
+                                "version": "0.0",
+                                "interactions": [],
+                                "elements": [],
+                                "styles": []
+                            }
+                        ]
+                    },
+                    {
+                        "id": "bl2slidersl03",
+                        "elType": "e-aae-a-slide",
+                        "isInner": false,
+                        "settings": {
+                            "classes": {
+                                "$$type": "classes",
+                                "value": [
+                                    "e-bl2-slider-card"
+                                ]
+                            }
+                        },
+                        "editor_settings": {
+                            "title": "03 — Logo 3"
+                        },
+                        "version": "0.0",
+                        "interactions": [],
+                        "styles": [],
+                        "elements": [
+                            {
+                                "id": "bl2slidersl03im",
+                                "widgetType": "e-image",
+                                "elType": "widget",
+                                "isInner": false,
+                                "settings": {
+                                    "classes": {
+                                        "$$type": "classes",
+                                        "value": [
+                                            "e-bl2-slider-media"
+                                        ]
+                                    },
+                                    "image": {
+                                        "$$type": "image",
+                                        "value": {
+                                            "src": {
+                                                "$$type": "image-src",
+                                                "value": {
+                                                    "id": null,
+                                                    "url": {
+                                                        "$$type": "url",
+                                                        "value": "https://templates.animation-addons.com/seoly/wp-content/uploads/sites/42/2024/06/logo-3.webp"
+                                                    }
+                                                }
+                                            },
+                                            "size": {
+                                                "$$type": "string",
+                                                "value": "large"
+                                            }
+                                        }
+                                    }
+                                },
+                                "editor_settings": {
+                                    "title": "Logo"
+                                },
+                                "version": "0.0",
+                                "interactions": [],
+                                "elements": [],
+                                "styles": []
+                            }
+                        ]
+                    },
+                    {
+                        "id": "bl2slidersl04",
+                        "elType": "e-aae-a-slide",
+                        "isInner": false,
+                        "settings": {
+                            "classes": {
+                                "$$type": "classes",
+                                "value": [
+                                    "e-bl2-slider-card"
+                                ]
+                            }
+                        },
+                        "editor_settings": {
+                            "title": "04 — Logo 4"
+                        },
+                        "version": "0.0",
+                        "interactions": [],
+                        "styles": [],
+                        "elements": [
+                            {
+                                "id": "bl2slidersl04im",
+                                "widgetType": "e-image",
+                                "elType": "widget",
+                                "isInner": false,
+                                "settings": {
+                                    "classes": {
+                                        "$$type": "classes",
+                                        "value": [
+                                            "e-bl2-slider-media"
+                                        ]
+                                    },
+                                    "image": {
+                                        "$$type": "image",
+                                        "value": {
+                                            "src": {
+                                                "$$type": "image-src",
+                                                "value": {
+                                                    "id": null,
+                                                    "url": {
+                                                        "$$type": "url",
+                                                        "value": "https://templates.animation-addons.com/seoly/wp-content/uploads/sites/42/2024/06/logo-4.webp"
+                                                    }
+                                                }
+                                            },
+                                            "size": {
+                                                "$$type": "string",
+                                                "value": "large"
+                                            }
+                                        }
+                                    }
+                                },
+                                "editor_settings": {
+                                    "title": "Logo"
+                                },
+                                "version": "0.0",
+                                "interactions": [],
+                                "elements": [],
+                                "styles": []
+                            }
+                        ]
+                    },
+                    {
+                        "id": "bl2slidersl05",
+                        "elType": "e-aae-a-slide",
+                        "isInner": false,
+                        "settings": {
+                            "classes": {
+                                "$$type": "classes",
+                                "value": [
+                                    "e-bl2-slider-card"
+                                ]
+                            }
+                        },
+                        "editor_settings": {
+                            "title": "05 — Logo 5"
+                        },
+                        "version": "0.0",
+                        "interactions": [],
+                        "styles": [],
+                        "elements": [
+                            {
+                                "id": "bl2slidersl05im",
+                                "widgetType": "e-image",
+                                "elType": "widget",
+                                "isInner": false,
+                                "settings": {
+                                    "classes": {
+                                        "$$type": "classes",
+                                        "value": [
+                                            "e-bl2-slider-media"
+                                        ]
+                                    },
+                                    "image": {
+                                        "$$type": "image",
+                                        "value": {
+                                            "src": {
+                                                "$$type": "image-src",
+                                                "value": {
+                                                    "id": null,
+                                                    "url": {
+                                                        "$$type": "url",
+                                                        "value": "https://templates.animation-addons.com/seoly/wp-content/uploads/sites/42/2024/06/logo-5.webp"
+                                                    }
+                                                }
+                                            },
+                                            "size": {
+                                                "$$type": "string",
+                                                "value": "large"
+                                            }
+                                        }
+                                    }
+                                },
+                                "editor_settings": {
+                                    "title": "Logo"
+                                },
+                                "version": "0.0",
+                                "interactions": [],
+                                "elements": [],
+                                "styles": []
+                            }
+                        ]
+                    },
+                    {
+                        "id": "bl2slidersl06",
+                        "elType": "e-aae-a-slide",
+                        "isInner": false,
+                        "settings": {
+                            "classes": {
+                                "$$type": "classes",
+                                "value": [
+                                    "e-bl2-slider-card"
+                                ]
+                            }
+                        },
+                        "editor_settings": {
+                            "title": "06 — Logo 6"
+                        },
+                        "version": "0.0",
+                        "interactions": [],
+                        "styles": [],
+                        "elements": [
+                            {
+                                "id": "bl2slidersl06im",
+                                "widgetType": "e-image",
+                                "elType": "widget",
+                                "isInner": false,
+                                "settings": {
+                                    "classes": {
+                                        "$$type": "classes",
+                                        "value": [
+                                            "e-bl2-slider-media"
+                                        ]
+                                    },
+                                    "image": {
+                                        "$$type": "image",
+                                        "value": {
+                                            "src": {
+                                                "$$type": "image-src",
+                                                "value": {
+                                                    "id": null,
+                                                    "url": {
+                                                        "$$type": "url",
+                                                        "value": "https://templates.animation-addons.com/seoly/wp-content/uploads/sites/42/2024/06/logo-6.webp"
+                                                    }
+                                                }
+                                            },
+                                            "size": {
+                                                "$$type": "string",
+                                                "value": "large"
+                                            }
+                                        }
+                                    }
+                                },
+                                "editor_settings": {
+                                    "title": "Logo"
+                                },
+                                "version": "0.0",
+                                "interactions": [],
+                                "elements": [],
+                                "styles": []
+                            }
+                        ]
+                    },
+                    {
+                        "id": "bl2slidersl07",
+                        "elType": "e-aae-a-slide",
+                        "isInner": false,
+                        "settings": {
+                            "classes": {
+                                "$$type": "classes",
+                                "value": [
+                                    "e-bl2-slider-card"
+                                ]
+                            }
+                        },
+                        "editor_settings": {
+                            "title": "07 — Logo 1"
+                        },
+                        "version": "0.0",
+                        "interactions": [],
+                        "styles": [],
+                        "elements": [
+                            {
+                                "id": "bl2slidersl07im",
+                                "widgetType": "e-image",
+                                "elType": "widget",
+                                "isInner": false,
+                                "settings": {
+                                    "classes": {
+                                        "$$type": "classes",
+                                        "value": [
+                                            "e-bl2-slider-media"
+                                        ]
+                                    },
+                                    "image": {
+                                        "$$type": "image",
+                                        "value": {
+                                            "src": {
+                                                "$$type": "image-src",
+                                                "value": {
+                                                    "id": null,
+                                                    "url": {
+                                                        "$$type": "url",
+                                                        "value": "https://templates.animation-addons.com/seoly/wp-content/uploads/sites/42/2024/06/logo-1.webp"
+                                                    }
+                                                }
+                                            },
+                                            "size": {
+                                                "$$type": "string",
+                                                "value": "large"
+                                            }
+                                        }
+                                    }
+                                },
+                                "editor_settings": {
+                                    "title": "Logo"
+                                },
+                                "version": "0.0",
+                                "interactions": [],
+                                "elements": [],
+                                "styles": []
+                            }
+                        ]
+                    },
+                    {
+                        "id": "bl2slidersl08",
+                        "elType": "e-aae-a-slide",
+                        "isInner": false,
+                        "settings": {
+                            "classes": {
+                                "$$type": "classes",
+                                "value": [
+                                    "e-bl2-slider-card"
+                                ]
+                            }
+                        },
+                        "editor_settings": {
+                            "title": "08 — Logo 2"
+                        },
+                        "version": "0.0",
+                        "interactions": [],
+                        "styles": [],
+                        "elements": [
+                            {
+                                "id": "bl2slidersl08im",
+                                "widgetType": "e-image",
+                                "elType": "widget",
+                                "isInner": false,
+                                "settings": {
+                                    "classes": {
+                                        "$$type": "classes",
+                                        "value": [
+                                            "e-bl2-slider-media"
+                                        ]
+                                    },
+                                    "image": {
+                                        "$$type": "image",
+                                        "value": {
+                                            "src": {
+                                                "$$type": "image-src",
+                                                "value": {
+                                                    "id": null,
+                                                    "url": {
+                                                        "$$type": "url",
+                                                        "value": "https://templates.animation-addons.com/seoly/wp-content/uploads/sites/42/2024/06/logo-2.webp"
+                                                    }
+                                                }
+                                            },
+                                            "size": {
+                                                "$$type": "string",
+                                                "value": "large"
+                                            }
+                                        }
+                                    }
+                                },
+                                "editor_settings": {
+                                    "title": "Logo"
+                                },
+                                "version": "0.0",
+                                "interactions": [],
+                                "elements": [],
+                                "styles": []
+                            }
+                        ]
+                    },
+                    {
+                        "id": "bl2slidersl09",
+                        "elType": "e-aae-a-slide",
+                        "isInner": false,
+                        "settings": {
+                            "classes": {
+                                "$$type": "classes",
+                                "value": [
+                                    "e-bl2-slider-card"
+                                ]
+                            }
+                        },
+                        "editor_settings": {
+                            "title": "09 — Logo 3"
+                        },
+                        "version": "0.0",
+                        "interactions": [],
+                        "styles": [],
+                        "elements": [
+                            {
+                                "id": "bl2slidersl09im",
+                                "widgetType": "e-image",
+                                "elType": "widget",
+                                "isInner": false,
+                                "settings": {
+                                    "classes": {
+                                        "$$type": "classes",
+                                        "value": [
+                                            "e-bl2-slider-media"
+                                        ]
+                                    },
+                                    "image": {
+                                        "$$type": "image",
+                                        "value": {
+                                            "src": {
+                                                "$$type": "image-src",
+                                                "value": {
+                                                    "id": null,
+                                                    "url": {
+                                                        "$$type": "url",
+                                                        "value": "https://templates.animation-addons.com/seoly/wp-content/uploads/sites/42/2024/06/logo-3.webp"
+                                                    }
+                                                }
+                                            },
+                                            "size": {
+                                                "$$type": "string",
+                                                "value": "large"
+                                            }
+                                        }
+                                    }
+                                },
+                                "editor_settings": {
+                                    "title": "Logo"
+                                },
+                                "version": "0.0",
+                                "interactions": [],
+                                "elements": [],
+                                "styles": []
+                            }
+                        ]
+                    },
+                    {
+                        "id": "bl2slidersl10",
+                        "elType": "e-aae-a-slide",
+                        "isInner": false,
+                        "settings": {
+                            "classes": {
+                                "$$type": "classes",
+                                "value": [
+                                    "e-bl2-slider-card"
+                                ]
+                            }
+                        },
+                        "editor_settings": {
+                            "title": "10 — Logo 4"
+                        },
+                        "version": "0.0",
+                        "interactions": [],
+                        "styles": [],
+                        "elements": [
+                            {
+                                "id": "bl2slidersl10im",
+                                "widgetType": "e-image",
+                                "elType": "widget",
+                                "isInner": false,
+                                "settings": {
+                                    "classes": {
+                                        "$$type": "classes",
+                                        "value": [
+                                            "e-bl2-slider-media"
+                                        ]
+                                    },
+                                    "image": {
+                                        "$$type": "image",
+                                        "value": {
+                                            "src": {
+                                                "$$type": "image-src",
+                                                "value": {
+                                                    "id": null,
+                                                    "url": {
+                                                        "$$type": "url",
+                                                        "value": "https://templates.animation-addons.com/seoly/wp-content/uploads/sites/42/2024/06/logo-4.webp"
+                                                    }
+                                                }
+                                            },
+                                            "size": {
+                                                "$$type": "string",
+                                                "value": "large"
+                                            }
+                                        }
+                                    }
+                                },
+                                "editor_settings": {
+                                    "title": "Logo"
+                                },
+                                "version": "0.0",
+                                "interactions": [],
+                                "elements": [],
+                                "styles": []
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "id": "bl2slidernavprev",
+                "elType": "e-aae-a-slider-nav-prev",
+                "isInner": false,
+                "settings": {
+                    "classes": {
+                        "$$type": "classes",
+                        "value": [
+                            "e-bl2-slider-nav",
+                            "e-bl2-slider-nav-prev"
+                        ]
+                    }
+                },
+                "editor_settings": {
+                    "title": "Prev Nav"
+                },
+                "version": "0.0",
+                "interactions": [],
+                "elements": [],
+                "styles": {
+                    "e-bl2-slider-nav": {
+                        "id": "e-bl2-slider-nav",
+                        "label": "local",
+                        "type": "class",
+                        "variants": [
+                            {
+                                "meta": {
+                                    "breakpoint": "desktop",
+                                    "state": null
+                                },
+                                "props": {
+                                    "width": {
+                                        "$$type": "size",
+                                        "value": {
+                                            "size": 44,
+                                            "unit": "px"
+                                        }
+                                    },
+                                    "height": {
+                                        "$$type": "size",
+                                        "value": {
+                                            "size": 44,
+                                            "unit": "px"
+                                        }
+                                    },
+                                    "background": {
+                                        "$$type": "background",
+                                        "value": {
+                                            "color": {
+                                                "$$type": "color",
+                                                "value": "#141414"
+                                            }
+                                        }
+                                    },
+                                    "color": {
+                                        "$$type": "color",
+                                        "value": "#ffffff"
+                                    },
+                                    "border-radius": {
+                                        "$$type": "size",
+                                        "value": {
+                                            "size": 50,
+                                            "unit": "%"
+                                        }
+                                    }
+                                },
+                                "custom_css": null
+                            }
+                        ],
+                        "custom_css": null
+                    },
+                    "e-bl2-slider-nav-prev": {
+                        "id": "e-bl2-slider-nav-prev",
+                        "label": "local",
+                        "type": "class",
+                        "variants": [
+                            {
+                                "meta": {
+                                    "breakpoint": "desktop",
+                                    "state": null
+                                },
+                                "props": {
+                                    "inset-inline-start": {
+                                        "$$type": "size",
+                                        "value": {
+                                            "size": 12,
+                                            "unit": "px"
+                                        }
+                                    }
+                                },
+                                "custom_css": null
+                            }
+                        ],
+                        "custom_css": null
+                    }
+                }
+            },
+            {
+                "id": "bl2slidernavnext",
+                "elType": "e-aae-a-slider-nav-next",
+                "isInner": false,
+                "settings": {
+                    "classes": {
+                        "$$type": "classes",
+                        "value": [
+                            "e-bl2-slider-nav",
+                            "e-bl2-slider-nav-next"
+                        ]
+                    }
+                },
+                "editor_settings": {
+                    "title": "Next Nav"
+                },
+                "version": "0.0",
+                "interactions": [],
+                "elements": [],
+                "styles": {
+                    "e-bl2-slider-nav-next": {
+                        "id": "e-bl2-slider-nav-next",
+                        "label": "local",
+                        "type": "class",
+                        "variants": [
+                            {
+                                "meta": {
+                                    "breakpoint": "desktop",
+                                    "state": null
+                                },
+                                "props": {
+                                    "inset-inline-end": {
+                                        "$$type": "size",
+                                        "value": {
+                                            "size": 12,
+                                            "unit": "px"
+                                        }
+                                    }
+                                },
+                                "custom_css": null
+                            }
+                        ],
+                        "custom_css": null
+                    }
+                }
+            },
+            {
+                "id": "bl2sliderpgn",
+                "elType": "e-aae-a-slider-pagination",
+                "isInner": false,
+                "settings": {
+                    "classes": {
+                        "$$type": "classes",
+                        "value": [
+                            "e-bl2-slider-pagination"
+                        ]
+                    }
+                },
+                "editor_settings": {
+                    "title": "Pagination"
+                },
+                "version": "0.0",
+                "interactions": [],
+                "styles": {
+                    "e-bl2-slider-pagination": {
+                        "id": "e-bl2-slider-pagination",
+                        "label": "local",
+                        "type": "class",
+                        "variants": [
+                            {
+                                "meta": {
+                                    "breakpoint": "desktop",
+                                    "state": null
+                                },
+                                "props": {
+                                    "margin": {
+                                        "$$type": "dimensions",
+                                        "value": {
+                                            "block-start": {
+                                                "$$type": "size",
+                                                "value": {
+                                                    "size": 16,
+                                                    "unit": "px"
+                                                }
+                                            },
+                                            "inline-end": {
+                                                "$$type": "size",
+                                                "value": {
+                                                    "size": 0,
+                                                    "unit": "px"
+                                                }
+                                            },
+                                            "block-end": {
+                                                "$$type": "size",
+                                                "value": {
+                                                    "size": 0,
+                                                    "unit": "px"
+                                                }
+                                            },
+                                            "inline-start": {
+                                                "$$type": "size",
+                                                "value": {
+                                                    "size": 0,
+                                                    "unit": "px"
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                "custom_css": null
+                            }
+                        ],
+                        "custom_css": null
+                    }
+                },
+                "elements": [
+                    {
+                        "id": "bl2sliderdot",
+                        "widgetType": "e-aae-a-slider-dot",
+                        "elType": "widget",
+                        "isInner": false,
+                        "settings": {
+                            "classes": {
+                                "$$type": "classes",
+                                "value": [
+                                    "e-bl2-slider-dot"
+                                ]
+                            }
+                        },
+                        "editor_settings": {
+                            "title": "Dot"
+                        },
+                        "version": "0.0",
+                        "interactions": [],
+                        "elements": [],
+                        "styles": {
+                            "e-bl2-slider-dot": {
+                                "id": "e-bl2-slider-dot",
+                                "label": "local",
+                                "type": "class",
+                                "variants": [
+                                    {
+                                        "meta": {
+                                            "breakpoint": "desktop",
+                                            "state": null
+                                        },
+                                        "props": {
+                                            "width": {
+                                                "$$type": "size",
+                                                "value": {
+                                                    "size": 7,
+                                                    "unit": "px"
+                                                }
+                                            },
+                                            "height": {
+                                                "$$type": "size",
+                                                "value": {
+                                                    "size": 7,
+                                                    "unit": "px"
+                                                }
+                                            },
+                                            "background": {
+                                                "$$type": "background",
+                                                "value": {
+                                                    "color": {
+                                                        "$$type": "color",
+                                                        "value": "rgba(20,20,20,0.2)"
+                                                    }
+                                                }
+                                            },
+                                            "border-width": {
+                                                "$$type": "size",
+                                                "value": {
+                                                    "size": 0,
+                                                    "unit": "px"
+                                                }
+                                            }
+                                        },
+                                        "custom_css": null
+                                    }
+                                ],
+                                "custom_css": null
+                            }
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+    "source": "remote"
+}
