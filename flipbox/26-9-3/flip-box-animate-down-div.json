@@ -1,0 +1,381 @@
+{
+ "id": "flip-box-animate-down-div",
+ "name": "Flip Bottom",
+ "model": {
+  "id": "000021d5",
+  "settings": {
+   "classes": {
+    "$$type": "classes",
+    "value": [
+     "e-00002167-000219e"
+    ]
+   }
+  },
+  "elements": [
+   {
+    "id": "00002130",
+    "settings": {
+     "flip_effect": {
+      "$$type": "string",
+      "value": "down"
+     },
+     "classes": {
+      "$$type": "classes",
+      "value": []
+     }
+    },
+    "elements": [
+     {
+      "id": "00001f78",
+      "settings": {
+       "classes": {
+        "$$type": "classes",
+        "value": [
+         "e-00001f0a-0001f41"
+        ]
+       }
+      },
+      "elements": [
+       {
+        "id": "00001faf",
+        "settings": {
+         "title": {
+          "$$type": "html-v3",
+          "value": {
+           "content": {
+            "$$type": "string",
+            "value": "Flip Bottom"
+           },
+           "children": []
+          }
+         },
+         "tag": {
+          "$$type": "string",
+          "value": "h2"
+         }
+        },
+        "elements": [],
+        "isInner": false,
+        "widgetType": "e-heading",
+        "elType": "widget",
+        "styles": [],
+        "interactions": [],
+        "editor_settings": [],
+        "version": "0.0"
+       },
+       {
+        "id": "00001fe6",
+        "settings": {
+         "paragraph": {
+          "$$type": "html-v3",
+          "value": {
+           "content": {
+            "$$type": "string",
+            "value": "Hover to flip the card and reveal the back."
+           },
+           "children": []
+          }
+         }
+        },
+        "elements": [],
+        "isInner": false,
+        "widgetType": "e-paragraph",
+        "elType": "widget",
+        "styles": [],
+        "interactions": [],
+        "editor_settings": [],
+        "version": "0.0"
+       }
+      ],
+      "isInner": false,
+      "elType": "e-aae-a-flip-box-front",
+      "styles": {
+       "e-00001f0a-0001f41": {
+        "id": "e-00001f0a-0001f41",
+        "label": "local",
+        "type": "class",
+        "variants": [
+         {
+          "meta": {
+           "breakpoint": "desktop",
+           "state": null
+          },
+          "props": {
+           "background": {
+            "$$type": "background",
+            "value": {
+             "color": {
+              "$$type": "color",
+              "value": "#f2f1f1"
+             }
+            }
+           },
+           "padding": {
+            "$$type": "size",
+            "value": {
+             "size": 24,
+             "unit": "px"
+            }
+           },
+           "border-radius": {
+            "$$type": "size",
+            "value": {
+             "size": 10,
+             "unit": "px"
+            }
+           },
+           "text-align": {
+            "$$type": "string",
+            "value": "center"
+           },
+           "gap": {
+            "$$type": "size",
+            "value": {
+             "size": 8,
+             "unit": "px"
+            }
+           },
+           "color": {
+            "$$type": "color",
+            "value": "#1a1a1a"
+           }
+          },
+          "custom_css": null
+         }
+        ]
+       }
+      },
+      "interactions": [],
+      "editor_settings": {
+       "title": "Front Face"
+      },
+      "version": "0.0"
+     },
+     {
+      "id": "0000208b",
+      "settings": {
+       "classes": {
+        "$$type": "classes",
+        "value": [
+         "e-0000201d-0002054"
+        ]
+       }
+      },
+      "elements": [
+       {
+        "id": "000020c2",
+        "settings": {
+         "title": {
+          "$$type": "html-v3",
+          "value": {
+           "content": {
+            "$$type": "string",
+            "value": "You found it"
+           },
+           "children": []
+          }
+         },
+         "tag": {
+          "$$type": "string",
+          "value": "h2"
+         },
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-000020c2-color"
+          ]
+         }
+        },
+        "elements": [],
+        "isInner": false,
+        "widgetType": "e-heading",
+        "elType": "widget",
+        "styles": {
+         "e-000020c2-color": {
+          "id": "e-000020c2-color",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "color": {
+              "$$type": "color",
+              "value": "#ffffff"
+             }
+            },
+            "custom_css": null
+           }
+          ],
+          "custom_css": null
+         }
+        },
+        "interactions": [],
+        "editor_settings": [],
+        "version": "0.0"
+       },
+       {
+        "id": "000020f9",
+        "settings": {
+         "paragraph": {
+          "$$type": "html-v3",
+          "value": {
+           "content": {
+            "$$type": "string",
+            "value": "Replace this with your own back-side content."
+           },
+           "children": []
+          }
+         },
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-000020f9-color"
+          ]
+         }
+        },
+        "elements": [],
+        "isInner": false,
+        "widgetType": "e-paragraph",
+        "elType": "widget",
+        "styles": {
+         "e-000020f9-color": {
+          "id": "e-000020f9-color",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "color": {
+              "$$type": "color",
+              "value": "#ffffff"
+             }
+            },
+            "custom_css": null
+           }
+          ],
+          "custom_css": null
+         }
+        },
+        "interactions": [],
+        "editor_settings": [],
+        "version": "0.0"
+       }
+      ],
+      "isInner": false,
+      "elType": "e-aae-a-flip-box-back",
+      "styles": {
+       "e-0000201d-0002054": {
+        "id": "e-0000201d-0002054",
+        "label": "local",
+        "type": "class",
+        "variants": [
+         {
+          "meta": {
+           "breakpoint": "desktop",
+           "state": null
+          },
+          "props": {
+           "background": {
+            "$$type": "background",
+            "value": {
+             "color": {
+              "$$type": "color",
+              "value": "#4b3df0"
+             }
+            }
+           },
+           "padding": {
+            "$$type": "size",
+            "value": {
+             "size": 24,
+             "unit": "px"
+            }
+           },
+           "border-radius": {
+            "$$type": "size",
+            "value": {
+             "size": 10,
+             "unit": "px"
+            }
+           },
+           "text-align": {
+            "$$type": "string",
+            "value": "center"
+           },
+           "gap": {
+            "$$type": "size",
+            "value": {
+             "size": 8,
+             "unit": "px"
+            }
+           },
+           "color": {
+            "$$type": "color",
+            "value": "#ffffff"
+           }
+          },
+          "custom_css": null
+         }
+        ]
+       }
+      },
+      "interactions": [],
+      "editor_settings": {
+       "title": "Back Face"
+      },
+      "version": "0.0"
+     }
+    ],
+    "isInner": false,
+    "elType": "e-aae-a-flip-box",
+    "styles": [],
+    "interactions": [],
+    "editor_settings": {
+     "title": "Flip Bottom"
+    },
+    "version": "0.0"
+   }
+  ],
+  "isInner": false,
+  "elType": "e-flexbox",
+  "styles": {
+   "e-00002167-000219e": {
+    "id": "e-00002167-000219e",
+    "label": "local",
+    "type": "class",
+    "variants": [
+     {
+      "meta": {
+       "breakpoint": "desktop",
+       "state": null
+      },
+      "props": {
+       "flex-direction": {
+        "$$type": "string",
+        "value": "row"
+       }
+      },
+      "custom_css": null
+     }
+    ]
+   }
+  },
+  "interactions": [],
+  "editor_settings": {
+   "title": "Flip Bottom-div"
+  },
+  "version": "0.0"
+ },
+ "source": "local",
+ "category": "Flip Box",
+ "thumbnail_url": "",
+ "pro": false
+}
