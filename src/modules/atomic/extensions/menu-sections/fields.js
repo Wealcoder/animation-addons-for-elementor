@@ -181,6 +181,25 @@ export const MENU_SECTIONS = [
 			},
 			{ bind: 'gap',              cssVar: '--aae-menu-dropdown-item-gap',         kind: 'px',    legacy: 'dropdown_item_gap',         legacyDefault: 2,    label: 'Gap (px)' },
 			{ bind: 'radius',           cssVar: '--aae-menu-dropdown-item-radius',      kind: 'px',    legacy: 'dropdown_item_radius',      legacyDefault: 4,    label: 'Border Radius (px)' },
+			{
+				bind: 'border_width', cssVar: '--aae-menu-dropdown-item-border-width', kind: 'px',
+				legacy: 'dropdown_item_border_width', legacyDefault: 0, label: 'Border Width (px)',
+				help: 'Drawn around each dropdown row, outside its padding — so raising it makes the rows slightly taller. Border Color below shows a hairline grey until you set one.',
+			},
+			{ bind: 'border_style', cssVar: '--aae-menu-dropdown-item-border-style', kind: 'enum',  allowed: BORDER_STYLE_OPTIONS, legacy: 'dropdown_item_border_style', legacyDefault: 'solid', label: 'Border Style' },
+			{ bind: 'border_color', cssVar: '--aae-menu-dropdown-item-border-color', kind: 'color', legacy: 'dropdown_item_border_color', legacyDefault: null, label: 'Border Color', placeholder: 'rgba(0,0,0,0.08)' },
+			// The hover trio opens EMPTY — no legacy default, unlike every other
+			// row on the widget. An empty cell emits no variable, and menu.scss
+			// falls the :hover border back to the resting one facet by facet, so
+			// "Hover Border Color only" recolours the outline without also having
+			// to restate its width and style. The placeholders say so.
+			{
+				bind: 'hover_border_width', cssVar: '--aae-menu-dropdown-item-hover-border-width', kind: 'px',
+				legacyDefault: null, label: 'Hover Border Width (px)', placeholder: 'Same as Border Width',
+				help: 'Leave empty to keep the resting width on hover. Set 0 (or Hover Border Style to None) to drop the border on hover — note that changing the width shifts the row slightly, since the border sits outside the padding.',
+			},
+			{ bind: 'hover_border_style', cssVar: '--aae-menu-dropdown-item-hover-border-style', kind: 'enum',  allowed: BORDER_STYLE_OPTIONS, legacyDefault: null, label: 'Hover Border Style' },
+			{ bind: 'hover_border_color', cssVar: '--aae-menu-dropdown-item-hover-border-color', kind: 'color', legacyDefault: null, label: 'Hover Border Color', placeholder: 'Same as Border Color' },
 		],
 	},
 

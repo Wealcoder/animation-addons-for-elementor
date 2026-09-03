@@ -35,6 +35,10 @@
 {% set ham_border_color   = settings.hamburger_border_color    | default('') %}
 {% set item_border_color  = settings.item_border_color         | default('') %}
 {% set dd_border_color    = settings.dropdown_border_color     | default('') %}
+{% set dd_item_border_color = settings.dropdown_item_border_color | default('') %}
+{% set dd_item_hover_border_color = settings.dropdown_item_hover_border_color | default('') %}
+{% set dd_item_hover_border_width = settings.dropdown_item_hover_border_width %}
+{% set dd_item_hover_border_style = settings.dropdown_item_hover_border_style | default('') %}
 {% set drawer_border_color = settings.drawer_border_color      | default('') %}
 {% set dh_label_color     = settings.drawer_label_color        | default('') %}
 {% set dh_border_color    = settings.drawer_header_border_color | default('') %}
@@ -109,6 +113,22 @@
 --aae-menu-dropdown-padding-y: {{ settings.dropdown_padding_y | default(9) }}px;
 --aae-menu-dropdown-item-gap: {{ settings.dropdown_item_gap | default(2) }}px;
 --aae-menu-dropdown-item-radius: {{ settings.dropdown_item_radius | default(4) }}px;
+{% if dd_item_border_color %}--aae-menu-dropdown-item-border-color: {{ dd_item_border_color }};{% endif %}
+--aae-menu-dropdown-item-border-width: {{ settings.dropdown_item_border_width | default(0) }}px;
+--aae-menu-dropdown-item-border-style: {{ settings.dropdown_item_border_style | default('solid') }};
+{# The three HOVER facets are emitted only when actually set — unlike the
+   resting trio above, which always prints. An absent variable is what lets
+   menu.scss's :hover rule fall back to the resting border, so a row keeps the
+   outline it has and only the facet the builder touched changes.
+
+   Width is guarded on `is not null`, not on truthiness, because 0 is a
+   MEANINGFUL value here (drop the border on hover) and would be swallowed by
+   an `is not empty` test. Style and colour are guarded on truthiness instead:
+   an empty custom property is legal CSS and would win over the var() fallback
+   rather than falling through to it. #}
+{% if dd_item_hover_border_width is not null %}--aae-menu-dropdown-item-hover-border-width: {{ dd_item_hover_border_width }}px;{% endif %}
+{% if dd_item_hover_border_style %}--aae-menu-dropdown-item-hover-border-style: {{ dd_item_hover_border_style }};{% endif %}
+{% if dd_item_hover_border_color %}--aae-menu-dropdown-item-hover-border-color: {{ dd_item_hover_border_color }};{% endif %}
 --aae-menu-dropdown-min-width: {{ settings.dropdown_min_width | default(220) }}px;
 --aae-menu-dropdown-radius: {{ settings.dropdown_radius      | default(8) }}px;
 --aae-menu-drawer-width: {{ settings.drawer_width     | default(320) }}px;

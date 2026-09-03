@@ -221,6 +221,12 @@ final class AAE_A_Menu_Responsive {
 					'side_vars' => [ 'right' => '--aae-menu-dropdown-item-padding-right' ],
 				],
 				'margin'           => [ 'var' => '--aae-menu-dropdown-item-margin',      'kind' => 'dimensions' ],
+				'border_width'     => [ 'var' => '--aae-menu-dropdown-item-border-width', 'kind' => 'px' ],
+				'border_style'     => [ 'var' => '--aae-menu-dropdown-item-border-style', 'kind' => 'enum', 'allowed' => self::BORDER_STYLES ],
+				'border_color'     => [ 'var' => '--aae-menu-dropdown-item-border-color', 'kind' => 'color' ],
+				'hover_border_width' => [ 'var' => '--aae-menu-dropdown-item-hover-border-width', 'kind' => 'px' ],
+				'hover_border_style' => [ 'var' => '--aae-menu-dropdown-item-hover-border-style', 'kind' => 'enum', 'allowed' => self::BORDER_STYLES ],
+				'hover_border_color' => [ 'var' => '--aae-menu-dropdown-item-hover-border-color', 'kind' => 'color' ],
 			],
 		],
 

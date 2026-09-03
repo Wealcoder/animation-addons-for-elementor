@@ -225,6 +225,11 @@ $stacked-inner: ':is(:where(.aae-a-menu--mobile)[data-hamburger="true"], [data-l
 	/* Own control now (Dropdown Items → Border Radius). The fallback is the old
 	   derived value, so a menu saved before the prop existed keeps its shape. */
 	border-radius: var(--aae-menu-dropdown-item-radius, calc(var(--aae-r) - 2px));
+	/* Dropdown Items → Border. On the ROW, not the link, for the same reason the
+	   background above is: the <a> is `flex: 1 1 auto` and stops short of the
+	   sub-menu arrow, so an outline drawn on it would leave the toggle column
+	   hanging outside the box. Width 0 by default, so this is inert until set. */
+	border: var(--aae-menu-dropdown-item-border-width, 0) var(--aae-menu-dropdown-item-border-style, solid) var(--aae-menu-dropdown-item-border-color, rgba(0, 0, 0, 0.08));
 }
 
 /* (0,2,2) — beats the resting rule above on weight, not source order.
@@ -244,6 +249,16 @@ $stacked-inner: ':is(:where(.aae-a-menu--mobile)[data-hamburger="true"], [data-l
 @media (hover: hover) {
 	.aae-a-menu-list .sub-menu li:hover {
 		background: var(--aae-menu-dropdown-hover-bg, transparent);
+		/* Dropdown Items → Hover Border. Each facet falls back to its RESTING
+		   counterpart, not to a constant, so a row that already has an outline
+		   keeps it on hover and setting Hover Border Color alone recolours it
+		   without having to restate width and style. The Twig emits these three
+		   only when set, which is what makes that fallback reachable.
+
+		   Hover-gated like the background above, and for the same reason: a
+		   touch browser leaves :hover stuck on the last-tapped row, which would
+		   strand the hover outline there. */
+		border: var(--aae-menu-dropdown-item-hover-border-width, var(--aae-menu-dropdown-item-border-width, 0)) var(--aae-menu-dropdown-item-hover-border-style, var(--aae-menu-dropdown-item-border-style, solid)) var(--aae-menu-dropdown-item-hover-border-color, var(--aae-menu-dropdown-item-border-color, rgba(0, 0, 0, 0.08)));
 	}
 }
 
@@ -543,6 +558,12 @@ $stacked-inner: ':is(:where(.aae-a-menu--mobile)[data-hamburger="true"], [data-l
 	/* Same var as the <li> above, so the link's corners can never disagree with
 	   the painted row behind it. */
 	border-radius: var(--aae-menu-dropdown-item-radius, calc(var(--aae-r) - 2px));
+	/* Scopes Menu Items Style → Border to the TOP LEVEL. `.aae-a-menu-list a`
+	   sets that border on every link, sub-menu links included, so a top-level
+	   outline used to leak into the dropdown — and now that dropdown rows have a
+	   border control of their own, it would draw a second one just inside the
+	   first. The dropdown's own border lives on the <li> above. */
+	border: 0;
 }
 .aae-a-menu-list .sub-menu .sub-menu {
 	top: -6px;

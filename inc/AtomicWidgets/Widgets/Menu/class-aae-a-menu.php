@@ -141,6 +141,27 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 			// from the top-level Item Radius as calc(6px - 2px). Defaulting to
 			// anything else would silently reshape every existing menu.
 			'dropdown_item_radius'      => Number_Prop_Type::make()->default( 4 ),
+			// Drawn around each dropdown ROW (the <li>, which is what Background and
+			// Border Radius already paint) rather than the link inside it, so the
+			// outline wraps the sub-menu arrow column too instead of stopping short
+			// of it. Width 0 = the current look — dropdown rows have never had an
+			// outline of their own — so nothing gains one until this is raised.
+			'dropdown_item_border_width' => Number_Prop_Type::make()->default( 0 ),
+			'dropdown_item_border_style' => String_Prop_Type::make()->enum( [ 'solid', 'dashed', 'dotted', 'double', 'none' ] )->default( 'solid' ),
+			'dropdown_item_border_color' => String_Prop_Type::make()->default( '' ),
+			// Hover state. NO DEFAULTS on purpose — not even 0 or 'solid'. An unset
+			// prop emits no variable at all, which is what lets menu.scss's :hover
+			// rule fall back to the RESTING border, facet by facet: a row that
+			// already has an outline keeps it on hover, and setting only Hover
+			// Border Color recolours it without disturbing width or style.
+			//
+			// Seeding a default would break exactly that — a 0 here would erase
+			// the resting border the moment the pointer arrived. To remove the
+			// border on hover deliberately, set Hover Border Style to None (or
+			// Hover Border Width to 0); both are expressible, an unset row is not.
+			'dropdown_item_hover_border_width' => Number_Prop_Type::make(),
+			'dropdown_item_hover_border_style' => String_Prop_Type::make()->enum( [ 'solid', 'dashed', 'dotted', 'double', 'none' ] ),
+			'dropdown_item_hover_border_color' => String_Prop_Type::make()->default( '' ),
 			'dropdown_min_width'        => Number_Prop_Type::make()->default( 220 ),
 			'dropdown_radius'           => Number_Prop_Type::make()->default( 8 ),
 			// Width 1 + the rgba fallback below reproduce the hardcoded
