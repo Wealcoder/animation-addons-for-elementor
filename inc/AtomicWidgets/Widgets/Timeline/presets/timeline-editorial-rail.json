@@ -1,0 +1,2025 @@
+{
+ "id": "remote-11043",
+ "element_type": "e-aae-a-timeline",
+ "category": "timeline",
+ "title": "timeline-editorial-rail",
+ "thumbnail_url": "",
+ "pro": false,
+ "hash": "e244c28f4318",
+ "updated_at": "2026-07-20T11:57:46+00:00",
+ "name": "timeline-editorial-rail",
+ "model": {
+  "id": "50f65443",
+  "settings": [],
+  "elements": [
+   {
+    "id": "302b5bf4",
+    "settings": {
+     "classes": {
+      "$$type": "classes",
+      "value": [
+       "e-302b5bf4-b8c9827"
+      ]
+     }
+    },
+    "elements": [
+     {
+      "id": "79922a70",
+      "settings": {
+       "classes": {
+        "$$type": "classes",
+        "value": [
+         "e-79922a70-2ec3811"
+        ]
+       }
+      },
+      "elements": [
+       {
+        "id": "785b1d03",
+        "settings": {
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-785b1d03-77c9d55"
+          ]
+         },
+         "tag": {
+          "$$type": "string",
+          "value": "span"
+         },
+         "text": {
+          "$$type": "html-v3",
+          "value": {
+           "content": {
+            "$$type": "string",
+            "value": "01"
+           },
+           "children": []
+          }
+         }
+        },
+        "elements": [],
+        "isInner": false,
+        "widgetType": "e-aae-a-timeline-number",
+        "elType": "widget",
+        "styles": {
+         "e-785b1d03-77c9d55": {
+          "id": "e-785b1d03-77c9d55",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "width": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 22
+              }
+             },
+             "height": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 22
+              }
+             },
+             "position": {
+              "$$type": "string",
+              "value": "absolute"
+             },
+             "inset-block-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "inset-inline-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": -11
+              }
+             },
+             "z-index": {
+              "$$type": "number",
+              "value": 2
+             },
+             "font-weight": {
+              "$$type": "string",
+              "value": "800"
+             },
+             "font-size": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 10
+              }
+             },
+             "color": {
+              "$$type": "color",
+              "value": "#ffffff"
+             },
+             "line-height": {
+              "$$type": "size",
+              "value": {
+               "unit": "custom",
+               "size": "1"
+              }
+             },
+             "border-radius": {
+              "$$type": "size",
+              "value": {
+               "unit": "%",
+               "size": 50
+              }
+             },
+             "background": {
+              "$$type": "background",
+              "value": {
+               "color": {
+                "$$type": "color",
+                "value": "#117a38"
+               }
+              }
+             },
+             "box-shadow": {
+              "$$type": "box-shadow",
+              "value": [
+               {
+                "$$type": "shadow",
+                "value": {
+                 "hOffset": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 },
+                 "vOffset": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 },
+                 "blur": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 },
+                 "spread": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 4
+                  }
+                 },
+                 "color": {
+                  "$$type": "color",
+                  "value": "#f0fdf4"
+                 }
+                }
+               }
+              ]
+             },
+             "display": {
+              "$$type": "string",
+              "value": "flex"
+             },
+             "justify-content": {
+              "$$type": "string",
+              "value": "center"
+             },
+             "align-items": {
+              "$$type": "string",
+              "value": "center"
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Marker"
+        },
+        "version": "0.0"
+       },
+       {
+        "id": "f1a555f",
+        "settings": {
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-f1a555f-45bc53f"
+          ]
+         },
+         "tag": {
+          "$$type": "string",
+          "value": "span"
+         },
+         "text": {
+          "$$type": "html-v3",
+          "value": {
+           "content": {
+            "$$type": "string",
+            "value": "2022"
+           },
+           "children": []
+          }
+         }
+        },
+        "elements": [],
+        "isInner": false,
+        "widgetType": "e-aae-a-timeline-year",
+        "elType": "widget",
+        "styles": {
+         "e-f1a555f-45bc53f": {
+          "id": "e-f1a555f-45bc53f",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "font-weight": {
+              "$$type": "string",
+              "value": "700"
+             },
+             "font-size": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 12
+              }
+             },
+             "color": {
+              "$$type": "color",
+              "value": "#15803d"
+             },
+             "letter-spacing": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 1
+              }
+             },
+             "text-transform": {
+              "$$type": "string",
+              "value": "uppercase"
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Date"
+        },
+        "version": "0.0"
+       },
+       {
+        "id": "578d63d9",
+        "settings": {
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-578d63d9-fc1b798"
+          ]
+         },
+         "tag": {
+          "$$type": "string",
+          "value": "h3"
+         },
+         "text": {
+          "$$type": "html-v3",
+          "value": {
+           "content": {
+            "$$type": "string",
+            "value": "Getting Started"
+           },
+           "children": []
+          }
+         }
+        },
+        "elements": [],
+        "isInner": false,
+        "widgetType": "e-aae-a-timeline-title",
+        "elType": "widget",
+        "styles": {
+         "e-578d63d9-fc1b798": {
+          "id": "e-578d63d9-fc1b798",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "font-weight": {
+              "$$type": "string",
+              "value": "700"
+             },
+             "font-size": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 20
+              }
+             },
+             "color": {
+              "$$type": "color",
+              "value": "#0f172a"
+             },
+             "line-height": {
+              "$$type": "size",
+              "value": {
+               "unit": "custom",
+               "size": "1.2"
+              }
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Title"
+        },
+        "version": "0.0"
+       },
+       {
+        "id": "75b856e1",
+        "settings": {
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-75b856e1-df8c7cf"
+          ]
+         },
+         "tag": {
+          "$$type": "string",
+          "value": "p"
+         },
+         "text": {
+          "$$type": "html-v3",
+          "value": {
+           "content": {
+            "$$type": "string",
+            "value": "Describe the first milestone of your timeline here."
+           },
+           "children": []
+          }
+         }
+        },
+        "elements": [],
+        "isInner": false,
+        "widgetType": "e-aae-a-timeline-desc",
+        "elType": "widget",
+        "styles": {
+         "e-75b856e1-df8c7cf": {
+          "id": "e-75b856e1-df8c7cf",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "font-size": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 14
+              }
+             },
+             "color": {
+              "$$type": "color",
+              "value": "#475569"
+             },
+             "line-height": {
+              "$$type": "size",
+              "value": {
+               "unit": "custom",
+               "size": "1.6"
+              }
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Description"
+        },
+        "version": "0.0"
+       }
+      ],
+      "isInner": false,
+      "elType": "e-aae-a-timeline-item",
+      "styles": {
+       "e-79922a70-2ec3811": {
+        "id": "e-79922a70-2ec3811",
+        "label": "local",
+        "type": "class",
+        "variants": [
+         {
+          "meta": {
+           "breakpoint": "desktop",
+           "state": null
+          },
+          "props": {
+           "color": {
+            "$$type": "color",
+            "value": "#bbf7d0"
+           },
+           "padding": {
+            "$$type": "dimensions",
+            "value": {
+             "block-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "inline-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "block-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 32
+              }
+             },
+             "inline-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 32
+              }
+             }
+            }
+           }
+          },
+          "custom_css": null
+         }
+        ]
+       }
+      },
+      "interactions": [],
+      "editor_settings": {
+       "title": "Item 1"
+      },
+      "version": "0.0"
+     },
+     {
+      "id": "4da8238c",
+      "settings": {
+       "classes": {
+        "$$type": "classes",
+        "value": [
+         "e-4da8238c-5cfc358"
+        ]
+       }
+      },
+      "elements": [
+       {
+        "id": "beb8de",
+        "settings": {
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-beb8de-5f22e8a"
+          ]
+         },
+         "tag": {
+          "$$type": "string",
+          "value": "span"
+         },
+         "text": {
+          "$$type": "html-v3",
+          "value": {
+           "content": {
+            "$$type": "string",
+            "value": "02"
+           },
+           "children": []
+          }
+         }
+        },
+        "elements": [],
+        "isInner": false,
+        "widgetType": "e-aae-a-timeline-number",
+        "elType": "widget",
+        "styles": {
+         "e-beb8de-5f22e8a": {
+          "id": "e-beb8de-5f22e8a",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "width": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 22
+              }
+             },
+             "height": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 22
+              }
+             },
+             "position": {
+              "$$type": "string",
+              "value": "absolute"
+             },
+             "inset-block-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "inset-inline-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": -11
+              }
+             },
+             "z-index": {
+              "$$type": "number",
+              "value": 2
+             },
+             "font-weight": {
+              "$$type": "string",
+              "value": "800"
+             },
+             "font-size": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 10
+              }
+             },
+             "color": {
+              "$$type": "color",
+              "value": "#ffffff"
+             },
+             "line-height": {
+              "$$type": "size",
+              "value": {
+               "unit": "custom",
+               "size": "1"
+              }
+             },
+             "border-radius": {
+              "$$type": "size",
+              "value": {
+               "unit": "%",
+               "size": 50
+              }
+             },
+             "background": {
+              "$$type": "background",
+              "value": {
+               "color": {
+                "$$type": "color",
+                "value": "#117a38"
+               }
+              }
+             },
+             "box-shadow": {
+              "$$type": "box-shadow",
+              "value": [
+               {
+                "$$type": "shadow",
+                "value": {
+                 "hOffset": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 },
+                 "vOffset": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 },
+                 "blur": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 },
+                 "spread": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 4
+                  }
+                 },
+                 "color": {
+                  "$$type": "color",
+                  "value": "#f0fdf4"
+                 }
+                }
+               }
+              ]
+             },
+             "display": {
+              "$$type": "string",
+              "value": "flex"
+             },
+             "justify-content": {
+              "$$type": "string",
+              "value": "center"
+             },
+             "align-items": {
+              "$$type": "string",
+              "value": "center"
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Marker"
+        },
+        "version": "0.0"
+       },
+       {
+        "id": "4369ef64",
+        "settings": {
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-4369ef64-a109855"
+          ]
+         },
+         "tag": {
+          "$$type": "string",
+          "value": "span"
+         },
+         "text": {
+          "$$type": "html-v3",
+          "value": {
+           "content": {
+            "$$type": "string",
+            "value": "2023"
+           },
+           "children": []
+          }
+         }
+        },
+        "elements": [],
+        "isInner": false,
+        "widgetType": "e-aae-a-timeline-year",
+        "elType": "widget",
+        "styles": {
+         "e-4369ef64-a109855": {
+          "id": "e-4369ef64-a109855",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "font-weight": {
+              "$$type": "string",
+              "value": "700"
+             },
+             "font-size": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 12
+              }
+             },
+             "color": {
+              "$$type": "color",
+              "value": "#15803d"
+             },
+             "letter-spacing": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 1
+              }
+             },
+             "text-transform": {
+              "$$type": "string",
+              "value": "uppercase"
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Date"
+        },
+        "version": "0.0"
+       },
+       {
+        "id": "32eb7fd5",
+        "settings": {
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-32eb7fd5-ae67ae7"
+          ]
+         },
+         "tag": {
+          "$$type": "string",
+          "value": "h3"
+         },
+         "text": {
+          "$$type": "html-v3",
+          "value": {
+           "content": {
+            "$$type": "string",
+            "value": "Building Momentum"
+           },
+           "children": []
+          }
+         }
+        },
+        "elements": [],
+        "isInner": false,
+        "widgetType": "e-aae-a-timeline-title",
+        "elType": "widget",
+        "styles": {
+         "e-32eb7fd5-ae67ae7": {
+          "id": "e-32eb7fd5-ae67ae7",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "font-weight": {
+              "$$type": "string",
+              "value": "700"
+             },
+             "font-size": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 20
+              }
+             },
+             "color": {
+              "$$type": "color",
+              "value": "#0f172a"
+             },
+             "line-height": {
+              "$$type": "size",
+              "value": {
+               "unit": "custom",
+               "size": "1.2"
+              }
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Title"
+        },
+        "version": "0.0"
+       },
+       {
+        "id": "47b37c42",
+        "settings": {
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-47b37c42-507be24"
+          ]
+         },
+         "tag": {
+          "$$type": "string",
+          "value": "p"
+         },
+         "text": {
+          "$$type": "html-v3",
+          "value": {
+           "content": {
+            "$$type": "string",
+            "value": "Describe the second milestone of your timeline here."
+           },
+           "children": []
+          }
+         }
+        },
+        "elements": [],
+        "isInner": false,
+        "widgetType": "e-aae-a-timeline-desc",
+        "elType": "widget",
+        "styles": {
+         "e-47b37c42-507be24": {
+          "id": "e-47b37c42-507be24",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "font-size": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 14
+              }
+             },
+             "color": {
+              "$$type": "color",
+              "value": "#475569"
+             },
+             "line-height": {
+              "$$type": "size",
+              "value": {
+               "unit": "custom",
+               "size": "1.6"
+              }
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Description"
+        },
+        "version": "0.0"
+       }
+      ],
+      "isInner": false,
+      "elType": "e-aae-a-timeline-item",
+      "styles": {
+       "e-4da8238c-5cfc358": {
+        "id": "e-4da8238c-5cfc358",
+        "label": "local",
+        "type": "class",
+        "variants": [
+         {
+          "meta": {
+           "breakpoint": "desktop",
+           "state": null
+          },
+          "props": {
+           "color": {
+            "$$type": "color",
+            "value": "#bbf7d0"
+           },
+           "padding": {
+            "$$type": "dimensions",
+            "value": {
+             "block-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "inline-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "block-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 32
+              }
+             },
+             "inline-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 32
+              }
+             }
+            }
+           }
+          },
+          "custom_css": null
+         }
+        ]
+       }
+      },
+      "interactions": [],
+      "editor_settings": {
+       "title": "Item 2"
+      },
+      "version": "0.0"
+     },
+     {
+      "id": "6ee5d76d",
+      "settings": {
+       "classes": {
+        "$$type": "classes",
+        "value": [
+         "e-6ee5d76d-7308fe3"
+        ]
+       }
+      },
+      "elements": [
+       {
+        "id": "60eb245f",
+        "settings": {
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-60eb245f-cd98e2f"
+          ]
+         },
+         "tag": {
+          "$$type": "string",
+          "value": "span"
+         },
+         "text": {
+          "$$type": "html-v3",
+          "value": {
+           "content": {
+            "$$type": "string",
+            "value": "03"
+           },
+           "children": []
+          }
+         }
+        },
+        "elements": [],
+        "isInner": false,
+        "widgetType": "e-aae-a-timeline-number",
+        "elType": "widget",
+        "styles": {
+         "e-60eb245f-cd98e2f": {
+          "id": "e-60eb245f-cd98e2f",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "width": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 22
+              }
+             },
+             "height": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 22
+              }
+             },
+             "position": {
+              "$$type": "string",
+              "value": "absolute"
+             },
+             "inset-block-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "inset-inline-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": -11
+              }
+             },
+             "z-index": {
+              "$$type": "number",
+              "value": 2
+             },
+             "font-weight": {
+              "$$type": "string",
+              "value": "800"
+             },
+             "font-size": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 10
+              }
+             },
+             "color": {
+              "$$type": "color",
+              "value": "#ffffff"
+             },
+             "line-height": {
+              "$$type": "size",
+              "value": {
+               "unit": "custom",
+               "size": "1"
+              }
+             },
+             "border-radius": {
+              "$$type": "size",
+              "value": {
+               "unit": "%",
+               "size": 50
+              }
+             },
+             "background": {
+              "$$type": "background",
+              "value": {
+               "color": {
+                "$$type": "color",
+                "value": "#117a38"
+               }
+              }
+             },
+             "box-shadow": {
+              "$$type": "box-shadow",
+              "value": [
+               {
+                "$$type": "shadow",
+                "value": {
+                 "hOffset": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 },
+                 "vOffset": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 },
+                 "blur": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 },
+                 "spread": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 4
+                  }
+                 },
+                 "color": {
+                  "$$type": "color",
+                  "value": "#f0fdf4"
+                 }
+                }
+               }
+              ]
+             },
+             "display": {
+              "$$type": "string",
+              "value": "flex"
+             },
+             "justify-content": {
+              "$$type": "string",
+              "value": "center"
+             },
+             "align-items": {
+              "$$type": "string",
+              "value": "center"
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Marker"
+        },
+        "version": "0.0"
+       },
+       {
+        "id": "11fbdfb3",
+        "settings": {
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-11fbdfb3-467afa5"
+          ]
+         },
+         "tag": {
+          "$$type": "string",
+          "value": "span"
+         },
+         "text": {
+          "$$type": "html-v3",
+          "value": {
+           "content": {
+            "$$type": "string",
+            "value": "2024"
+           },
+           "children": []
+          }
+         }
+        },
+        "elements": [],
+        "isInner": false,
+        "widgetType": "e-aae-a-timeline-year",
+        "elType": "widget",
+        "styles": {
+         "e-11fbdfb3-467afa5": {
+          "id": "e-11fbdfb3-467afa5",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "font-weight": {
+              "$$type": "string",
+              "value": "700"
+             },
+             "font-size": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 12
+              }
+             },
+             "color": {
+              "$$type": "color",
+              "value": "#15803d"
+             },
+             "letter-spacing": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 1
+              }
+             },
+             "text-transform": {
+              "$$type": "string",
+              "value": "uppercase"
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Date"
+        },
+        "version": "0.0"
+       },
+       {
+        "id": "5a1d7191",
+        "settings": {
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-5a1d7191-880aafd"
+          ]
+         },
+         "tag": {
+          "$$type": "string",
+          "value": "h3"
+         },
+         "text": {
+          "$$type": "html-v3",
+          "value": {
+           "content": {
+            "$$type": "string",
+            "value": "Major Expansion"
+           },
+           "children": []
+          }
+         }
+        },
+        "elements": [],
+        "isInner": false,
+        "widgetType": "e-aae-a-timeline-title",
+        "elType": "widget",
+        "styles": {
+         "e-5a1d7191-880aafd": {
+          "id": "e-5a1d7191-880aafd",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "font-weight": {
+              "$$type": "string",
+              "value": "700"
+             },
+             "font-size": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 20
+              }
+             },
+             "color": {
+              "$$type": "color",
+              "value": "#0f172a"
+             },
+             "line-height": {
+              "$$type": "size",
+              "value": {
+               "unit": "custom",
+               "size": "1.2"
+              }
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Title"
+        },
+        "version": "0.0"
+       },
+       {
+        "id": "1a342524",
+        "settings": {
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-1a342524-556184f"
+          ]
+         },
+         "tag": {
+          "$$type": "string",
+          "value": "p"
+         },
+         "text": {
+          "$$type": "html-v3",
+          "value": {
+           "content": {
+            "$$type": "string",
+            "value": "Describe the third milestone of your timeline here."
+           },
+           "children": []
+          }
+         }
+        },
+        "elements": [],
+        "isInner": false,
+        "widgetType": "e-aae-a-timeline-desc",
+        "elType": "widget",
+        "styles": {
+         "e-1a342524-556184f": {
+          "id": "e-1a342524-556184f",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "font-size": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 14
+              }
+             },
+             "color": {
+              "$$type": "color",
+              "value": "#475569"
+             },
+             "line-height": {
+              "$$type": "size",
+              "value": {
+               "unit": "custom",
+               "size": "1.6"
+              }
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Description"
+        },
+        "version": "0.0"
+       }
+      ],
+      "isInner": false,
+      "elType": "e-aae-a-timeline-item",
+      "styles": {
+       "e-6ee5d76d-7308fe3": {
+        "id": "e-6ee5d76d-7308fe3",
+        "label": "local",
+        "type": "class",
+        "variants": [
+         {
+          "meta": {
+           "breakpoint": "desktop",
+           "state": null
+          },
+          "props": {
+           "color": {
+            "$$type": "color",
+            "value": "#bbf7d0"
+           },
+           "padding": {
+            "$$type": "dimensions",
+            "value": {
+             "block-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "inline-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "block-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 32
+              }
+             },
+             "inline-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 32
+              }
+             }
+            }
+           }
+          },
+          "custom_css": null
+         }
+        ]
+       }
+      },
+      "interactions": [],
+      "editor_settings": {
+       "title": "Item 3"
+      },
+      "version": "0.0"
+     },
+     {
+      "id": "3ce684f9",
+      "settings": {
+       "classes": {
+        "$$type": "classes",
+        "value": [
+         "e-3ce684f9-a85f9f7"
+        ]
+       }
+      },
+      "elements": [
+       {
+        "id": "2b61ce60",
+        "settings": {
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-2b61ce60-816f284"
+          ]
+         },
+         "tag": {
+          "$$type": "string",
+          "value": "span"
+         },
+         "text": {
+          "$$type": "html-v3",
+          "value": {
+           "content": {
+            "$$type": "string",
+            "value": "04"
+           },
+           "children": []
+          }
+         }
+        },
+        "elements": [],
+        "isInner": false,
+        "widgetType": "e-aae-a-timeline-number",
+        "elType": "widget",
+        "styles": {
+         "e-2b61ce60-816f284": {
+          "id": "e-2b61ce60-816f284",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "width": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 22
+              }
+             },
+             "height": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 22
+              }
+             },
+             "position": {
+              "$$type": "string",
+              "value": "absolute"
+             },
+             "inset-block-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "inset-inline-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": -11
+              }
+             },
+             "z-index": {
+              "$$type": "number",
+              "value": 2
+             },
+             "font-weight": {
+              "$$type": "string",
+              "value": "800"
+             },
+             "font-size": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 10
+              }
+             },
+             "color": {
+              "$$type": "color",
+              "value": "#ffffff"
+             },
+             "line-height": {
+              "$$type": "size",
+              "value": {
+               "unit": "custom",
+               "size": "1"
+              }
+             },
+             "border-radius": {
+              "$$type": "size",
+              "value": {
+               "unit": "%",
+               "size": 50
+              }
+             },
+             "background": {
+              "$$type": "background",
+              "value": {
+               "color": {
+                "$$type": "color",
+                "value": "#117a38"
+               }
+              }
+             },
+             "box-shadow": {
+              "$$type": "box-shadow",
+              "value": [
+               {
+                "$$type": "shadow",
+                "value": {
+                 "hOffset": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 },
+                 "vOffset": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 },
+                 "blur": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 },
+                 "spread": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 4
+                  }
+                 },
+                 "color": {
+                  "$$type": "color",
+                  "value": "#f0fdf4"
+                 }
+                }
+               }
+              ]
+             },
+             "display": {
+              "$$type": "string",
+              "value": "flex"
+             },
+             "justify-content": {
+              "$$type": "string",
+              "value": "center"
+             },
+             "align-items": {
+              "$$type": "string",
+              "value": "center"
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Marker"
+        },
+        "version": "0.0"
+       },
+       {
+        "id": "16172960",
+        "settings": {
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-16172960-6223266"
+          ]
+         },
+         "tag": {
+          "$$type": "string",
+          "value": "span"
+         },
+         "text": {
+          "$$type": "html-v3",
+          "value": {
+           "content": {
+            "$$type": "string",
+            "value": "2025"
+           },
+           "children": []
+          }
+         }
+        },
+        "elements": [],
+        "isInner": false,
+        "widgetType": "e-aae-a-timeline-year",
+        "elType": "widget",
+        "styles": {
+         "e-16172960-6223266": {
+          "id": "e-16172960-6223266",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "font-weight": {
+              "$$type": "string",
+              "value": "700"
+             },
+             "font-size": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 12
+              }
+             },
+             "color": {
+              "$$type": "color",
+              "value": "#15803d"
+             },
+             "letter-spacing": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 1
+              }
+             },
+             "text-transform": {
+              "$$type": "string",
+              "value": "uppercase"
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Date"
+        },
+        "version": "0.0"
+       },
+       {
+        "id": "1278a28f",
+        "settings": {
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-1278a28f-e46273c"
+          ]
+         },
+         "tag": {
+          "$$type": "string",
+          "value": "h3"
+         },
+         "text": {
+          "$$type": "html-v3",
+          "value": {
+           "content": {
+            "$$type": "string",
+            "value": "Where We Are Now"
+           },
+           "children": []
+          }
+         }
+        },
+        "elements": [],
+        "isInner": false,
+        "widgetType": "e-aae-a-timeline-title",
+        "elType": "widget",
+        "styles": {
+         "e-1278a28f-e46273c": {
+          "id": "e-1278a28f-e46273c",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "font-weight": {
+              "$$type": "string",
+              "value": "700"
+             },
+             "font-size": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 20
+              }
+             },
+             "color": {
+              "$$type": "color",
+              "value": "#0f172a"
+             },
+             "line-height": {
+              "$$type": "size",
+              "value": {
+               "unit": "custom",
+               "size": "1.2"
+              }
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Title"
+        },
+        "version": "0.0"
+       },
+       {
+        "id": "14b95c",
+        "settings": {
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-14b95c-a9c89d7"
+          ]
+         },
+         "tag": {
+          "$$type": "string",
+          "value": "p"
+         },
+         "text": {
+          "$$type": "html-v3",
+          "value": {
+           "content": {
+            "$$type": "string",
+            "value": "Describe the fourth milestone of your timeline here."
+           },
+           "children": []
+          }
+         }
+        },
+        "elements": [],
+        "isInner": false,
+        "widgetType": "e-aae-a-timeline-desc",
+        "elType": "widget",
+        "styles": {
+         "e-14b95c-a9c89d7": {
+          "id": "e-14b95c-a9c89d7",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "font-size": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 14
+              }
+             },
+             "color": {
+              "$$type": "color",
+              "value": "#475569"
+             },
+             "line-height": {
+              "$$type": "size",
+              "value": {
+               "unit": "custom",
+               "size": "1.6"
+              }
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Description"
+        },
+        "version": "0.0"
+       }
+      ],
+      "isInner": false,
+      "elType": "e-aae-a-timeline-item",
+      "styles": {
+       "e-3ce684f9-a85f9f7": {
+        "id": "e-3ce684f9-a85f9f7",
+        "label": "local",
+        "type": "class",
+        "variants": [
+         {
+          "meta": {
+           "breakpoint": "desktop",
+           "state": null
+          },
+          "props": {
+           "color": {
+            "$$type": "color",
+            "value": "#bbf7d0"
+           },
+           "padding": {
+            "$$type": "dimensions",
+            "value": {
+             "block-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "inline-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "block-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 32
+              }
+             },
+             "inline-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 32
+              }
+             }
+            }
+           }
+          },
+          "custom_css": null
+         }
+        ]
+       }
+      },
+      "interactions": [],
+      "editor_settings": {
+       "title": "Item 4"
+      },
+      "version": "0.0"
+     }
+    ],
+    "isInner": false,
+    "elType": "e-aae-a-timeline",
+    "styles": {
+     "e-302b5bf4-b8c9827": {
+      "id": "e-302b5bf4-b8c9827",
+      "label": "local",
+      "type": "class",
+      "variants": [
+       {
+        "meta": {
+         "breakpoint": "desktop",
+         "state": null
+        },
+        "props": {
+         "max-width": {
+          "$$type": "size",
+          "value": {
+           "unit": "px",
+           "size": 720
+          }
+         },
+         "padding": {
+          "$$type": "dimensions",
+          "value": {
+           "block-start": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 16
+            }
+           },
+           "inline-end": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 0
+            }
+           },
+           "block-end": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 16
+            }
+           },
+           "inline-start": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 0
+            }
+           }
+          }
+         },
+         "display": {
+          "$$type": "string",
+          "value": "flex"
+         },
+         "flex-direction": {
+          "$$type": "string",
+          "value": "column"
+         },
+         "gap": {
+          "$$type": "size",
+          "value": {
+           "unit": "px",
+           "size": 0
+          }
+         }
+        },
+        "custom_css": null
+       }
+      ]
+     }
+    },
+    "interactions": [],
+    "editor_settings": {
+     "title": "AAE Timeline — Editorial Rail"
+    },
+    "version": "0.0"
+   }
+  ],
+  "isInner": false,
+  "elType": "e-flexbox",
+  "styles": [],
+  "interactions": [],
+  "editor_settings": [],
+  "version": "0.0"
+ },
+ "source": "remote"
+}
