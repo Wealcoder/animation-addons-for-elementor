@@ -6,6 +6,7 @@ use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
@@ -26,8 +27,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * AAE Flip Box — an open hover-flip card. No flip_type/show_back_face
  * controls: each design (direction, 3D depth, single- vs double-sided) is
- * baked into a preset (see Widgets/FlipBox/presets/) as a fixed hook class
- * on this element plus real, natively-styleable front/back containers.
+ * baked into a preset (see Widgets/FlipBox/presets/) as fixed flip_effect /
+ * flip_back_hidden / flip_3d props on this element plus real,
+ * natively-styleable front/back containers.
  *
  * The default front/back faces are each a dedicated sub-widget
  * (AAE_A_Flip_Box_Front/_Back, Widgets/FlipBox/Parts/) carrying real
@@ -90,10 +92,25 @@ class AAE_A_Flip_Box extends Atomic_Element_Base {
 			// preset-apply.js's SNAPSHOT_REVERT_TYPES / "Reset to Default".
 			'aae_preset_snapshot' => String_Prop_Type::make()->default( '' ),
 
-			// flip-box-animate-left makes a freshly dropped box actually flip
-			// out of the box, matching the very-basic reference design — a
-			// preset can still swap this for -right/-up/-down/etc.
-			'classes'    => Classes_Prop_Type::make()->default( [ 'flip-box-animate-left' ] ),
+			// The flip variant, as DATA. flip-box.scss keys its mechanics off
+			// plain hook classes (flip-box-animate-*, flip-box--back-hidden,
+			// flip-box--3d), and those used to ride in `classes` — but the
+			// editor resolves every entry of `classes` to a local or global
+			// style definition, so a raw CSS class made it warn "Some classes
+			// are missing" on the element, and dismissing that alert calls
+			// unapplyClasses() — silently stripping the hook and leaving a
+			// dead, unflippable card on the published page. The twig turns
+			// these props back into the same classes at render time, so the
+			// markup is unchanged and the panel stays clean.
+			//
+			// 'left' keeps a freshly dropped box flipping out of the box,
+			// matching the very-basic reference design — a preset swaps it
+			// for right/up/down/zoom-in/zoom-out/fade-in.
+			'flip_effect'      => String_Prop_Type::make()->default( 'left' ),
+			'flip_back_hidden' => Boolean_Prop_Type::make()->default( false ),
+			'flip_3d'          => Boolean_Prop_Type::make()->default( false ),
+
+			'classes'    => Classes_Prop_Type::make()->default( [] ),
 			'attributes' => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
 		];
 	}

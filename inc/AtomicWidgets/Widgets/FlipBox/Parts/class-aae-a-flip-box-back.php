@@ -71,9 +71,9 @@ class AAE_A_Flip_Box_Back extends Atomic_Element_Base {
 
 	protected static function define_props_schema(): array {
 		return [
-			// The hook class flip-box.scss keys its mechanics off — always
-			// present, regardless of how/where this widget gets built.
-			'classes'    => Classes_Prop_Type::make()->default( [ 'flip-box-back' ] ),
+			// Empty on purpose — the `flip-box-back` hook class is emitted by
+			// the twig. See AAE_A_Flip_Box_Front::define_props_schema().
+			'classes'    => Classes_Prop_Type::make()->default( [] ),
 			'attributes' => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
 		];
 	}

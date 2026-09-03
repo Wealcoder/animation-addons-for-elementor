@@ -1,4 +1,7 @@
-{% set classes = ['aae-a-flip-box-back', 'e-con', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') %}
+{# `flip-box-back` is a plain CSS hook, not an Elementor style-def id — see
+   the matching comment in aae-a-flip-box-front.html.twig for why it is emitted
+   here instead of riding in the `classes` prop. #}
+{% set classes = ['aae-a-flip-box-back', 'flip-box-back', 'e-con', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') %}
 <div class="{{ classes }} {{ editor_classes | default('') }}"
      data-id="{{ id }}"
      data-element_type="{{ type }}"

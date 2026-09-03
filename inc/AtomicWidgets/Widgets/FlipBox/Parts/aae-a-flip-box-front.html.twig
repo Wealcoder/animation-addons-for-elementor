@@ -1,4 +1,10 @@
-{% set classes = ['aae-a-flip-box-front', 'e-con', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') %}
+{# `flip-box-front` is a plain CSS hook flip-box.scss keys the face mechanics
+   off — NOT an Elementor style-def id. It used to ship as the `classes` prop
+   default, but the editor flags every class id it can't resolve to a local or
+   global class ("Some classes are missing"), and dismissing that alert calls
+   unapplyClasses() — stripping the hook and killing the flip on the live page.
+   Emitting it here keeps the render identical while the panel stays clean. #}
+{% set classes = ['aae-a-flip-box-front', 'flip-box-front', 'e-con', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') %}
 <div class="{{ classes }} {{ editor_classes | default('') }}"
      data-id="{{ id }}"
      data-element_type="{{ type }}"

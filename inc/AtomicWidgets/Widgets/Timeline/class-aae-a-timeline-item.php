@@ -117,6 +117,14 @@ class AAE_A_Timeline_Item extends Atomic_Element_Base {
 		];
 	}
 
+	/**
+	 * No `classes` seeded on any of the four parts. Each part's twig stamps its
+	 * own semantic hook (aae-a-timeline-item-marker/-date/-title/-desc) instead:
+	 * a raw CSS class sitting in `classes` is an id the editor can't resolve, so
+	 * it warned "Some classes are missing" on every default item and dismissing
+	 * that alert unapplied the hook. `classes` is left free for real local and
+	 * global classes.
+	 */
 	public static function build_default_inner_children(
 		string $date = '2024',
 		string $number = '01',
@@ -128,7 +136,6 @@ class AAE_A_Timeline_Item extends Atomic_Element_Base {
 				->is_locked( true )
 				->editor_settings( [ 'title' => 'Number' ] )
 				->settings( [
-					'classes' => Classes_Prop_Type::generate( [ 'aae-a-timeline-item-marker' ] ),
 					'text'    => Html_V3_Prop_Type::generate( [
 						'content'  => String_Prop_Type::generate( $number ),
 						'children' => [],
@@ -141,7 +148,6 @@ class AAE_A_Timeline_Item extends Atomic_Element_Base {
 				->is_locked( true )
 				->editor_settings( [ 'title' => 'Year' ] )
 				->settings( [
-					'classes' => Classes_Prop_Type::generate( [ 'aae-a-timeline-item-date' ] ),
 					'text'    => Html_V3_Prop_Type::generate( [
 						'content'  => String_Prop_Type::generate( $date ),
 						'children' => [],
@@ -154,7 +160,6 @@ class AAE_A_Timeline_Item extends Atomic_Element_Base {
 				->is_locked( true )
 				->editor_settings( [ 'title' => 'Title' ] )
 				->settings( [
-					'classes' => Classes_Prop_Type::generate( [ 'aae-a-timeline-item-title' ] ),
 					'text'    => Html_V3_Prop_Type::generate( [
 						'content'  => String_Prop_Type::generate( $title ),
 						'children' => [],
@@ -167,7 +172,6 @@ class AAE_A_Timeline_Item extends Atomic_Element_Base {
 				->is_locked( true )
 				->editor_settings( [ 'title' => 'Description' ] )
 				->settings( [
-					'classes' => Classes_Prop_Type::generate( [ 'aae-a-timeline-item-desc' ] ),
 					'text'    => Html_V3_Prop_Type::generate( [
 						'content'  => String_Prop_Type::generate( $desc ),
 						'children' => [],

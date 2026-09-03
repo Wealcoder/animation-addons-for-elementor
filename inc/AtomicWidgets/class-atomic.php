@@ -541,6 +541,7 @@ final class Atomic
 		'aae-a-toggle-pane-title'      => 'aae-a-toggle-switcher',
 		'aae-a-toggle-pane-desc'       => 'aae-a-toggle-switcher',
 		'aae-a-toggle-switcher-label'  => 'aae-a-toggle-switcher',
+		'aae-a-toggle-switcher-tablist' => 'aae-a-toggle-switcher',
 		'aae-a-toggle-switcher-track'  => 'aae-a-toggle-switcher',
 		'aae-a-toggle-switcher-knob'   => 'aae-a-toggle-switcher',
 
@@ -2502,6 +2503,22 @@ final class Atomic
 				'is_internal'  => true,
 				'default'      => true,
 				'keywords'     => [ 'toggle', 'switch', 'label', 'atomic' ],
+				'category'     => 'general',
+				'order'        => 14,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-toggle-switcher-tablist' => [
+				'label'        => 'Toggle Switcher — Tablist',
+				'description'  => 'Internal role="tablist" wrapper for the Track + Labels used by the Switch-style Toggle Switcher preset.',
+				'icon'         => 'eicon-t-letter',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'is_internal'  => true,
+				'default'      => true,
+				'keywords'     => [ 'toggle', 'switch', 'tablist', 'atomic' ],
 				'category'     => 'general',
 				'order'        => 14,
 				'demo_url'     => '',
@@ -5236,6 +5253,11 @@ final class Atomic
 			'aae-a-toggle-switcher-label' => [
 				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Switcher_Label',
 				'file'       => 'Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-switcher-label.php',
+				'has_script' => false,
+			],
+			'aae-a-toggle-switcher-tablist' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Switcher_Tablist',
+				'file'       => 'Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-switcher-tablist.php',
 				'has_script' => false,
 			],
 			'aae-a-toggle-switcher-track' => [

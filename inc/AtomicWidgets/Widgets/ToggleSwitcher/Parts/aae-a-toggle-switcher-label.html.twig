@@ -10,6 +10,7 @@
 {%- set position_class = is_after ? 'aae-ts-label-after' : 'aae-ts-label-before' -%}
 {%- set classes = [position_class, 'e-con', 'e-atomic-element', base_styles.base | default('')] | merge(legacy_classes) | join(' ') | trim -%}
 <div class="{{ classes }} {{ editor_classes | default('') }}"
+    role="tab"
     data-id="{{ id }}"
     data-element_type="{{ type }}"
     data-e-type="{{ type }}"

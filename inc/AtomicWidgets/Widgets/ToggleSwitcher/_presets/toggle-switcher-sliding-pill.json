@@ -1,4 +1,12 @@
 {
+    "id": "remote-11820",
+    "element_type": "e-aae-a-toggle-switcher",
+    "category": "toggle-switcher",
+    "title": "toggle-switcher-sliding-pill",
+    "thumbnail_url": "",
+    "pro": false,
+    "hash": "2cd788c5e3a6",
+    "updated_at": "2026-08-31T10:47:31+00:00",
     "name": "toggle-switcher-sliding-pill",
     "model": {
         "id": "psw000",
@@ -128,7 +136,7 @@
                                                             },
                                                             "color": {
                                                                 "$$type": "color",
-                                                                "value": "#6b7280"
+                                                                "value": "#565b66"
                                                             },
                                                             "white-space": {
                                                                 "$$type": "string",
@@ -598,7 +606,7 @@
                                                             },
                                                             "color": {
                                                                 "$$type": "color",
-                                                                "value": "#6b7280"
+                                                                "value": "#565b66"
                                                             },
                                                             "white-space": {
                                                                 "$$type": "string",
@@ -698,7 +706,7 @@
                                     }
                                 ],
                                 "isInner": false,
-                                "elType": "e-flexbox",
+                                "elType": "e-aae-a-toggle-switcher-tablist",
                                 "styles": {
                                     "e-psw010-row": {
                                         "id": "e-psw010-row",
@@ -999,5 +1007,6 @@
             "title": "toggle-switcher-sliding-pill"
         },
         "version": "0.0"
-    }
+    },
+    "source": "remote"
 }
