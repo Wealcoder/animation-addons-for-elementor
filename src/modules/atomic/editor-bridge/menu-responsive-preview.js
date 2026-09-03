@@ -41,6 +41,56 @@ function envelopeToMap(envelope) {
 	return {};
 }
 
+/** Units a dimensions row may store. Mirrored in the PHP builder. */
+const DIMENSION_UNITS = ['px', '%', 'em', 'rem'];
+
+/**
+ * A 4-side value -> a CSS shorthand, or null to skip it.
+ *
+ * A BARE NUMBER is the legacy single-value shape: Toggle Padding and Dropdown
+ * Panel Padding both shipped as one number meaning all four sides, and a menu
+ * saved before this control existed still holds one. Reading it as `Npx` keeps
+ * that menu rendering exactly as it did.
+ *
+ * An empty side is written as 0 — a shorthand cannot leave one out — but a row
+ * with NO side filled in emits nothing at all, so an untouched control never
+ * overrides the stylesheet's own spacing with a 0 the builder never chose.
+ */
+function sanitizeDimensions(raw) {
+	if (typeof raw === 'number' && Number.isFinite(raw)) return `${raw}px`;
+	if (!raw || typeof raw !== 'object') return null;
+
+	const unit = DIMENSION_UNITS.includes(raw.unit) ? raw.unit : 'px';
+	const sides = ['top', 'right', 'bottom', 'left'];
+
+	if (!sides.some((side) => Number.isFinite(Number(raw[side])) && raw[side] !== '' && raw[side] !== null)) {
+		return null;
+	}
+
+	return sides
+		.map((side) => {
+			const n = Number(raw[side]);
+			return raw[side] === '' || raw[side] === null || raw[side] === undefined || !Number.isFinite(n)
+				? '0'
+				: `${n}${unit}`;
+		})
+		.join(' ');
+}
+
+/** One side of a dimensions value, for the `sideVars` a calc() needs. */
+function dimensionSide(raw, side) {
+	if (typeof raw === 'number' && Number.isFinite(raw)) return `${raw}px`;
+	if (!raw || typeof raw !== 'object') return null;
+
+	const n = Number(raw[side]);
+	if (raw[side] === '' || raw[side] === null || raw[side] === undefined || !Number.isFinite(n)) {
+		return null;
+	}
+
+	const unit = DIMENSION_UNITS.includes(raw.unit) ? raw.unit : 'px';
+	return `${n}${unit}`;
+}
+
 /** Mirror of PHP sanitize_value(): returns null for anything unusable. */
 function sanitizeValue(raw, meta) {
 	if (raw === null || raw === undefined || raw === '') return null;
@@ -60,6 +110,8 @@ function sanitizeValue(raw, meta) {
 	if (meta.kind === 'enum') {
 		return (meta.allowed || []).includes(String(raw)) ? String(raw) : null;
 	}
+
+	if (meta.kind === 'dimensions') return sanitizeDimensions(raw);
 
 	if (typeof raw !== 'string') return null;
 	const clean = raw.trim();
@@ -108,6 +160,16 @@ function declarationsFor(settings, bp) {
 		if (value === null) return;
 
 		out += `${meta.cssVar}:${value} !important;`;
+
+		// Two rules in menu.scss feed a padding into calc(), which takes one
+		// length and not a 4-value shorthand — so those rows publish the side
+		// that calc needs on a variable of its own.
+		if (meta.sideVars) {
+			Object.keys(meta.sideVars).forEach((side) => {
+				const sideValue = dimensionSide(map[bp], side);
+				if (sideValue !== null) out += `${meta.sideVars[side]}:${sideValue} !important;`;
+			});
+		}
 	});
 
 	return out;

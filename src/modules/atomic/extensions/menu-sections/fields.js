@@ -48,6 +48,31 @@ const FONT_WEIGHT_OPTIONS = [
  */
 export const MENU_PLAY_GROUP = 'aae_menu_';
 
+/**
+ * PADDING AND MARGIN — why some rows are `hidden` rather than deleted.
+ *
+ * Padding shipped as pairs of plain numbers (Item Padding X / Y) and, on the
+ * panel and the toggle, as one number covering all four sides. Those are what
+ * the stylesheet reads, and a saved menu may hold a value — including a
+ * per-breakpoint one — for any of them.
+ *
+ * So the X / Y rows are `hidden`, never removed: they stay in this table, keep
+ * their prop, and keep emitting their CSS variable, so nothing a builder saved
+ * stops applying. They simply no longer draw a row, because the 4-side Padding
+ * control covers the same ground and opens showing their current value as its
+ * own starting point (see `legacyPair` and config.js's `paddingFromLegacy`).
+ *
+ * Toggle Padding and Dropdown Panel Padding were ALREADY single values on a
+ * variable of their own, so those two are converted in place to `dimensions`
+ * instead of being duplicated — the sanitiser reads a bare number as "all four
+ * sides", which is exactly what the stored value already meant.
+ *
+ * `sideVars` publishes ONE side on a variable of its own. Two rules in
+ * menu.scss need a single length rather than the shorthand — the arrow-gap calc
+ * needs the right side, the vertical indent calc needs the leading side — and
+ * `calc()` cannot take a 4-value shorthand.
+ */
+
 export const MENU_SECTIONS = [
 	{
 		id: 'items',
@@ -63,8 +88,20 @@ export const MENU_SECTIONS = [
 			// the only typography row on the widget — everything else is the Style
 			// tab's, which cannot target .current-menu-item on its own.
 			{ bind: 'active_weight', cssVar: '--aae-menu-active-weight',  kind: 'enum',  allowed: FONT_WEIGHT_OPTIONS, legacy: 'active_weight', legacyDefault: '600', label: 'Active Font Weight' },
-			{ bind: 'padding_x',     cssVar: '--aae-menu-item-padding-x', kind: 'px',    legacy: 'padding_x',     legacyDefault: 14,   label: 'Item Padding X (px)' },
-			{ bind: 'padding_y',     cssVar: '--aae-menu-item-padding-y', kind: 'px',    legacy: 'padding_y',     legacyDefault: 10,   label: 'Item Padding Y (px)' },
+			{ bind: 'padding_x',     cssVar: '--aae-menu-item-padding-x', kind: 'px',    legacy: 'padding_x',     legacyDefault: 14,   label: 'Item Padding X (px)', hidden: true },
+			{ bind: 'padding_y',     cssVar: '--aae-menu-item-padding-y', kind: 'px',    legacy: 'padding_y',     legacyDefault: 10,   label: 'Item Padding Y (px)', hidden: true },
+			{
+				bind: 'padding', cssVar: '--aae-menu-item-padding', kind: 'dimensions',
+				sideVars: { right: '--aae-menu-item-padding-right' },
+				legacyPair: { x: 'padding_x', y: 'padding_y' }, legacyPairDefault: { x: 14, y: 10 },
+				label: 'Padding',
+				help: 'Opens showing the padding this menu already has. The mobile drawer keeps its own 12/14 spacing \u2014 a tap target is not the desktop metric.',
+			},
+			{
+				bind: 'margin', cssVar: '--aae-menu-item-margin', kind: 'dimensions',
+				label: 'Margin',
+				help: 'Space OUTSIDE each item, on top of Item Gap. Reach for Gap first \u2014 it spaces items evenly without changing the row height.',
+			},
 			{ bind: 'item_gap',      cssVar: '--aae-menu-item-gap',       kind: 'px',    legacy: 'item_gap',      legacyDefault: 4,    label: 'Item Gap (px)' },
 			{ bind: 'link_radius',   cssVar: '--aae-menu-link-radius',    kind: 'px',    legacy: 'link_radius',   legacyDefault: 6,    label: 'Item Radius (px)' },
 			{
@@ -97,9 +134,10 @@ export const MENU_SECTIONS = [
 		fields: [
 			{ bind: 'bg', cssVar: '--aae-menu-dropdown-bg', kind: 'color', legacy: 'dropdown_bg', legacyDefault: null, label: 'Background', placeholder: '#ffffff' },
 			{
-				bind: 'panel_padding', cssVar: '--aae-menu-dropdown-panel-padding', kind: 'px',
-				legacy: 'dropdown_panel_padding', legacyDefault: 6, label: 'Padding (px)',
-				help: 'Inset between the panel edge and the items inside it.',
+				bind: 'panel_padding', cssVar: '--aae-menu-dropdown-panel-padding', kind: 'dimensions',
+				sideVars: { left: '--aae-menu-dropdown-panel-padding-left' },
+				legacy: 'dropdown_panel_padding', legacyDefault: 6, label: 'Padding',
+				help: 'Inset between the panel edge and the items inside it. In a Vertical layout it stacks with the indent rather than replacing it.',
 			},
 			{ bind: 'min_width', cssVar: '--aae-menu-dropdown-min-width', kind: 'px', legacy: 'dropdown_min_width', legacyDefault: 220, label: 'Min Width (px)' },
 			{ bind: 'radius',    cssVar: '--aae-menu-dropdown-radius',    kind: 'px', legacy: 'dropdown_radius',    legacyDefault: 8,   label: 'Border Radius (px)' },
@@ -128,8 +166,19 @@ export const MENU_SECTIONS = [
 			// appears until this is set.
 			{ bind: 'hover_bg',         cssVar: '--aae-menu-dropdown-hover-bg',         kind: 'color', legacy: 'dropdown_hover_bg',         legacyDefault: null, label: 'Hover Background', placeholder: 'None' },
 			{ bind: 'hover_text_color', cssVar: '--aae-menu-dropdown-hover-text-color', kind: 'color', legacy: 'dropdown_hover_text_color', legacyDefault: null, label: 'Hover Text Color', placeholder: '#2563eb' },
-			{ bind: 'padding_x',        cssVar: '--aae-menu-dropdown-padding-x',        kind: 'px',    legacy: 'dropdown_padding_x',        legacyDefault: 14,   label: 'Padding X (px)' },
-			{ bind: 'padding_y',        cssVar: '--aae-menu-dropdown-padding-y',        kind: 'px',    legacy: 'dropdown_padding_y',        legacyDefault: 9,    label: 'Padding Y (px)' },
+			{ bind: 'padding_x',        cssVar: '--aae-menu-dropdown-padding-x',        kind: 'px',    legacy: 'dropdown_padding_x',        legacyDefault: 14,   label: 'Padding X (px)', hidden: true },
+			{ bind: 'padding_y',        cssVar: '--aae-menu-dropdown-padding-y',        kind: 'px',    legacy: 'dropdown_padding_y',        legacyDefault: 9,    label: 'Padding Y (px)', hidden: true },
+			{
+				bind: 'padding', cssVar: '--aae-menu-dropdown-item-padding', kind: 'dimensions',
+				sideVars: { right: '--aae-menu-dropdown-item-padding-right' },
+				legacyPair: { x: 'dropdown_padding_x', y: 'dropdown_padding_y' }, legacyPairDefault: { x: 14, y: 9 },
+				label: 'Padding',
+			},
+			{
+				bind: 'margin', cssVar: '--aae-menu-dropdown-item-margin', kind: 'dimensions',
+				label: 'Margin',
+				help: 'Space OUTSIDE each dropdown row. Gap below spaces them evenly; use this when one edge needs to differ.',
+			},
 			{ bind: 'gap',              cssVar: '--aae-menu-dropdown-item-gap',         kind: 'px',    legacy: 'dropdown_item_gap',         legacyDefault: 2,    label: 'Gap (px)' },
 			{ bind: 'radius',           cssVar: '--aae-menu-dropdown-item-radius',      kind: 'px',    legacy: 'dropdown_item_radius',      legacyDefault: 4,    label: 'Border Radius (px)' },
 		],
@@ -145,8 +194,8 @@ export const MENU_SECTIONS = [
 			{ bind: 'hover_bg', cssVar: '--aae-menu-toggle-hover-bg', kind: 'color', legacy: 'toggle_hover_bg', legacyDefault: null, label: 'Hover Background', placeholder: 'rgba(0,0,0,0.05)' },
 			{ bind: 'size',     cssVar: '--aae-menu-toggle-size',     kind: 'px',    legacy: 'toggle_size',     legacyDefault: 28,   label: 'Button Size (px)' },
 			{
-				bind: 'padding', cssVar: '--aae-menu-toggle-padding', kind: 'px',
-				legacy: 'toggle_padding', legacyDefault: 0, label: 'Padding (px)',
+				bind: 'padding', cssVar: '--aae-menu-toggle-padding', kind: 'dimensions',
+				legacy: 'toggle_padding', legacyDefault: 0, label: 'Padding',
 				help: 'Insets the glyph inside the button. Button Size still governs the outer box, so this trades icon area for breathing room rather than growing the button.',
 			},
 			{
@@ -246,6 +295,9 @@ export const CSS_FIELDS = MENU_SECTIONS.reduce((acc, section) => {
 			cssVar: field.cssVar,
 			kind: field.kind,
 			allowed: field.allowed ? field.allowed.map((o) => o.value) : null,
+			// `dimensions` rows only. A hidden row still lands here: it draws no
+			// control any more, but it must keep emitting what it already stores.
+			sideVars: field.sideVars || null,
 		};
 	});
 	return acc;

@@ -19,13 +19,38 @@
 
 {% set api_key = settings.api_key | default('') %}
 
+{# Map Type / Language / Region.
+
+   The two endpoints below spell these DIFFERENTLY, which is the whole reason
+   they are resolved here rather than concatenated inline:
+
+     official Embed API   maptype=roadmap|satellite   language=xx   region=XX
+     keyless maps.google  t=m|k                       hl=xx         gl=XX
+
+   `t=m` was already hardcoded in the keyless URL — that is the roadmap value,
+   so an untouched map keeps the exact URL it had before.
+
+   Both are url_encode'd for the same reason every other interpolated part is:
+   it is the one thing standing between a stored value and the query string.
+   See the long note on the src attribute below for why esc_url must NOT be
+   added on top of that. #}
+{% set map_type = settings.map_type | default('roadmap') %}
+{% set language = settings.language | default('') | trim %}
+{% set region   = settings.region   | default('') | trim %}
+
 {% if api_key is not empty %}
     {% set map_src = 'https://www.google.com/maps/embed/v1/place?key=' ~ api_key | url_encode
         ~ '&q=' ~ address | url_encode
-        ~ '&zoom=' ~ zoom %}
+        ~ '&zoom=' ~ zoom
+        ~ '&maptype=' ~ (map_type == 'satellite' ? 'satellite' : 'roadmap')
+        ~ (language is not empty ? '&language=' ~ language | url_encode : '')
+        ~ (region   is not empty ? '&region='   ~ region   | url_encode : '') %}
 {% else %}
     {% set map_src = 'https://maps.google.com/maps?q=' ~ address | url_encode
-        ~ '&t=m&z=' ~ zoom
+        ~ '&t=' ~ (map_type == 'satellite' ? 'k' : 'm')
+        ~ '&z=' ~ zoom
+        ~ (language is not empty ? '&hl=' ~ language | url_encode : '')
+        ~ (region   is not empty ? '&gl=' ~ region   | url_encode : '')
         ~ '&output=embed&iwloc=near' %}
 {% endif %}
 

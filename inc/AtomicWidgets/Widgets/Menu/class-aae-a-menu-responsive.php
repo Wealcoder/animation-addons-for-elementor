@@ -163,6 +163,12 @@ final class AAE_A_Menu_Responsive {
 				'padding_y'         => [ 'var' => '--aae-menu-item-padding-y',    'kind' => 'px' ],
 				'item_gap'          => [ 'var' => '--aae-menu-item-gap',          'kind' => 'px' ],
 				'link_radius'       => [ 'var' => '--aae-menu-link-radius',       'kind' => 'px' ],
+				'padding'           => [
+					'var'       => '--aae-menu-item-padding',
+					'kind'      => 'dimensions',
+					'side_vars' => [ 'right' => '--aae-menu-item-padding-right' ],
+				],
+				'margin'            => [ 'var' => '--aae-menu-item-margin',       'kind' => 'dimensions' ],
 				'item_border_width' => [ 'var' => '--aae-menu-item-border-width', 'kind' => 'px' ],
 				'item_border_style' => [ 'var' => '--aae-menu-item-border-style', 'kind' => 'enum', 'allowed' => self::BORDER_STYLES ],
 				'item_border_color' => [ 'var' => '--aae-menu-item-border-color', 'kind' => 'color' ],
@@ -184,7 +190,11 @@ final class AAE_A_Menu_Responsive {
 			'prefix' => 'aae_mdp_',
 			'fields' => [
 				'bg'            => [ 'var' => '--aae-menu-dropdown-bg',             'kind' => 'color' ],
-				'panel_padding' => [ 'var' => '--aae-menu-dropdown-panel-padding',  'kind' => 'px' ],
+				'panel_padding' => [
+					'var'       => '--aae-menu-dropdown-panel-padding',
+					'kind'      => 'dimensions',
+					'side_vars' => [ 'left' => '--aae-menu-dropdown-panel-padding-left' ],
+				],
 				'min_width'     => [ 'var' => '--aae-menu-dropdown-min-width',      'kind' => 'px' ],
 				'radius'        => [ 'var' => '--aae-menu-dropdown-radius',         'kind' => 'px' ],
 				'border_width'  => [ 'var' => '--aae-menu-dropdown-border-width',   'kind' => 'px' ],
@@ -205,6 +215,12 @@ final class AAE_A_Menu_Responsive {
 				'padding_y'        => [ 'var' => '--aae-menu-dropdown-padding-y',        'kind' => 'px' ],
 				'gap'              => [ 'var' => '--aae-menu-dropdown-item-gap',         'kind' => 'px' ],
 				'radius'           => [ 'var' => '--aae-menu-dropdown-item-radius',      'kind' => 'px' ],
+				'padding'          => [
+					'var'       => '--aae-menu-dropdown-item-padding',
+					'kind'      => 'dimensions',
+					'side_vars' => [ 'right' => '--aae-menu-dropdown-item-padding-right' ],
+				],
+				'margin'           => [ 'var' => '--aae-menu-dropdown-item-margin',      'kind' => 'dimensions' ],
 			],
 		],
 
@@ -216,7 +232,7 @@ final class AAE_A_Menu_Responsive {
 				'bg'        => [ 'var' => '--aae-menu-toggle-bg',        'kind' => 'color' ],
 				'hover_bg'  => [ 'var' => '--aae-menu-toggle-hover-bg',  'kind' => 'color' ],
 				'size'      => [ 'var' => '--aae-menu-toggle-size',      'kind' => 'px' ],
-				'padding'   => [ 'var' => '--aae-menu-toggle-padding',   'kind' => 'px' ],
+				'padding'   => [ 'var' => '--aae-menu-toggle-padding',   'kind' => 'dimensions' ],
 				'gap'       => [ 'var' => '--aae-menu-toggle-gap',       'kind' => 'px' ],
 				'icon_size' => [ 'var' => '--aae-menu-toggle-icon-size', 'kind' => 'px' ],
 				'radius'    => [ 'var' => '--aae-menu-toggle-radius',    'kind' => 'px' ],
@@ -462,6 +478,17 @@ final class AAE_A_Menu_Responsive {
 			// !important: the legacy value sits in the element's inline style
 			// attribute, which no ordinary rule can outrank.
 			$out .= $meta['var'] . ':' . $value . ' !important;';
+
+			// Two rules in menu.scss feed a padding into calc(), which takes one
+			// length and not a 4-value shorthand — so those rows publish the side
+			// calc() needs on a variable of its own. See the PADDING AND MARGIN
+			// note in menu-sections/fields.js.
+			foreach ( $meta['side_vars'] ?? [] as $side => $side_var ) {
+				$side_value = self::dimension_side( $map[ $bp ], $side );
+				if ( null !== $side_value ) {
+					$out .= $side_var . ':' . $side_value . ' !important;';
+				}
+			}
 		}
 
 		return $out;
@@ -505,6 +532,10 @@ final class AAE_A_Menu_Responsive {
 			return in_array( (string) $raw, $allowed, true ) ? (string) $raw : null;
 		}
 
+		if ( 'dimensions' === $kind ) {
+			return self::sanitize_dimensions( $raw );
+		}
+
 		// Colour: hex, rgb()/rgba()/hsl()/hsla(), var(--x), or a named colour.
 		if ( ! is_string( $raw ) ) {
 			return null;
@@ -514,6 +545,73 @@ final class AAE_A_Menu_Responsive {
 			return null;
 		}
 		return $clean;
+	}
+
+	/** Units a dimensions row may store. Mirrored in the JS builder. */
+	private const DIMENSION_UNITS = [ 'px', '%', 'em', 'rem' ];
+
+	/**
+	 * A 4-side value -> a CSS shorthand, or null to skip it.
+	 *
+	 * A BARE NUMBER is the legacy single-value shape: Toggle Padding and
+	 * Dropdown Panel Padding both shipped as one number meaning all four sides,
+	 * and a menu saved before this control existed still holds one. Reading it
+	 * as `Npx` keeps that menu rendering exactly as it did.
+	 *
+	 * An empty side is written as 0 — a shorthand cannot leave one out — but a
+	 * row with NO side filled in emits nothing at all, so an untouched control
+	 * never overrides the stylesheet's own spacing with a 0 nobody chose.
+	 */
+	private static function sanitize_dimensions( $raw ): ?string {
+		if ( is_numeric( $raw ) ) {
+			return ( (float) $raw ) . 'px';
+		}
+
+		if ( ! is_array( $raw ) ) {
+			return null;
+		}
+
+		$unit  = self::dimension_unit( $raw );
+		$sides = [ 'top', 'right', 'bottom', 'left' ];
+
+		$has_any = false;
+		foreach ( $sides as $side ) {
+			if ( isset( $raw[ $side ] ) && is_numeric( $raw[ $side ] ) ) {
+				$has_any = true;
+				break;
+			}
+		}
+
+		if ( ! $has_any ) {
+			return null;
+		}
+
+		$out = [];
+		foreach ( $sides as $side ) {
+			$value = $raw[ $side ] ?? '';
+			$out[] = is_numeric( $value ) ? ( (float) $value ) . $unit : '0';
+		}
+
+		return implode( ' ', $out );
+	}
+
+	/** One side of a dimensions value, for the `side_vars` a calc() needs. */
+	private static function dimension_side( $raw, string $side ): ?string {
+		if ( is_numeric( $raw ) ) {
+			return ( (float) $raw ) . 'px';
+		}
+
+		if ( ! is_array( $raw ) || ! isset( $raw[ $side ] ) || ! is_numeric( $raw[ $side ] ) ) {
+			return null;
+		}
+
+		return ( (float) $raw[ $side ] ) . self::dimension_unit( $raw );
+	}
+
+	/** The stored unit, gated to the list the control offers. */
+	private static function dimension_unit( array $raw ): string {
+		$unit = isset( $raw['unit'] ) ? (string) $raw['unit'] : 'px';
+		return in_array( $unit, self::DIMENSION_UNITS, true ) ? $unit : 'px';
 	}
 
 	/**

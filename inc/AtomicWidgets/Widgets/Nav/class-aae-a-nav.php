@@ -28,6 +28,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+// Per-breakpoint colour/size for the dropdown indicator. Not PSR-4 (this folder is
+// loaded by class-atomic.php's registry, not the autoloader), so it has to be
+// required explicitly. Registering here rather than in class-atomic.php keeps
+// the element self-contained; register() is idempotent.
+require_once __DIR__ . '/class-aae-a-nav-responsive.php';
+AAE_A_Nav_Responsive::register();
+
 class AAE_A_Nav extends Atomic_Element_Base {
 	use Has_Element_Template;
 
@@ -73,7 +80,10 @@ class AAE_A_Nav extends Atomic_Element_Base {
 	}
 
 	protected static function define_props_schema(): array {
-		return [
+		// The `aae_ndi_` icon-style props are MERGED IN, never a replacement:
+		// every prop below keeps its key, its type and its stored value, so an
+		// existing nav renders untouched. See class-aae-a-nav-responsive.php.
+		return AAE_A_Nav_Responsive::props_schema() + [
 			'classes'    => Classes_Prop_Type::make()->default( [] ),
 			'attributes' => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
 			/* Set when the menu was populated via "Import from WordPress menu".
@@ -241,6 +251,7 @@ class AAE_A_Nav extends Atomic_Element_Base {
 						->set_label( '' )
 						->set_meta( [ 'layout' => 'custom' ] ),
 				] ),
+
 			Section::make()
 				->set_label( __( 'Dropdown Icon', 'animation-addons-for-elementor' ) )
 				->set_id( 'dropdown_icon_section' )
@@ -249,6 +260,7 @@ class AAE_A_Nav extends Atomic_Element_Base {
 						->set_label( __( 'Show Icon on Dropdown Items', 'animation-addons-for-elementor' ) ),
 					Svg_Control::bind_to( 'dropdown_icon' )
 						->set_label( __( 'Icon', 'animation-addons-for-elementor' ) ),
+					Text_Control::bind_to( AAE_A_Nav_Responsive::anchor( 'dropdown_icon' ) ),
 				] ),
 			Section::make()
 				->set_label( __( 'Menu Items', 'animation-addons-for-elementor' ) )

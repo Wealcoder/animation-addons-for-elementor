@@ -4,6 +4,7 @@ import { getPreviewWindow, getSelectedContainer } from './helpers';
 import { featuresFor, regularRowToRuntime, textRowToRuntime, imgRowToRuntime } from './features';
 import { syncSliderPreviewForElement } from './slider-editor-preview';
 import { syncMenuResponsiveCss } from './menu-responsive-preview';
+import { syncNavResponsiveCss } from './nav-responsive-preview';
 
 /**
  * Settings → preview-iframe bridge (interactions-map flavour).
@@ -99,13 +100,15 @@ function isFeatureInPlayGroup(featureName, playGroup) {
  * no features for this widget type.
  */
 export function applySettingsToDom(container, playGroup = "") {
-	// WP Menu: the responsive Item-Style rows are pure CSS, so they bypass the
-	// interactions maps entirely — rewrite the element's <style> override block
-	// instead. Deliberately ahead of the feature/target gates below: those are
-	// animation-runtime concerns (a resolvable data-interaction-id, a registered
-	// FEATURES entry) that a stylesheet override does not share. No-op for every
-	// other widget type.
+	// WP Menu's responsive Item-Style rows and the Nav's icon rows are pure
+	// CSS, so they bypass the interactions maps entirely — rewrite the
+	// element's <style> override block instead. Deliberately ahead of the
+	// feature/target gates below: those are animation-runtime concerns (a
+	// resolvable data-interaction-id, a registered FEATURES entry) that a
+	// stylesheet override does not share. Each is a no-op for every widget
+	// type but its own.
 	syncMenuResponsiveCss(getPreviewWindow(), container);
+	syncNavResponsiveCss(getPreviewWindow(), container);
 
 	const features = featuresFor(container);
 	

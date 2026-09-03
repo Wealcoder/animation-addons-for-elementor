@@ -23,6 +23,8 @@ import backgroundVideoSection from './extensions/background-video/config';
 import customCssSection from './extensions/custom-css/config';
 import nestedSliderSection from './extensions/nested-slider/config';
 import menuSections from './extensions/menu-sections/config';
+import navSections from './extensions/nav-sections/config';
+import { registerHookClassesProvider } from './editor-bridge/hook-classes-provider';
 import imageOverlaySection from './extensions/image-overlay/config';
 
 /* ---------------------------------------------------------------------------
@@ -101,6 +103,31 @@ registerResponsiveSection( imageOverlaySection );
 // panel section, each attaching by anchor key to e-aae-a-menu only, the same
 // way the Nested Slider panel does.
 menuSections.forEach( registerResponsiveSection );
+
+// Nav element sections — one per injected icon (hamburger, close, back and
+// the two dropdown arrows), attaching by anchor key to e-aae-a-nav only.
+// Same mechanism as the Menu sections above: the framework binds by anchor
+// key, so an Atomic_Element_Base hosts them exactly like a widget does.
+navSections.forEach( registerResponsiveSection );
+
+// Tell Elementor that our functional hook classes exist, so the panel stops
+// reporting them as "missing" — that alert's dismiss button DELETES the
+// classes our JS runs on. Read-only, so they never reach the class picker.
+//
+// Wrapped because this is the one registration that reads an Elementor package
+// through a bare global: webpack compiles the import to
+// `elementorV2.editorStylesRepository`, so on a build where that package is
+// absent the property access throws at the FIRST use — before the module's own
+// guard can return false. Assets.php already refuses to enqueue this bundle
+// unless the handle is registered, so this should be unreachable; it is here so
+// that if it ever is reached, one optional nicety cannot take the whole editor
+// bridge (panel sections, preset picker, responsive rows) down with it.
+try {
+	registerHookClassesProvider();
+} catch ( e ) {
+	// eslint-disable-next-line no-console
+	console.warn( '[AAE] hook-classes provider unavailable; the panel may report our functional classes as missing.', e );
+}
 
 // Native Elementor element-controls (e.g. the slider's "Slides" list). These
 // register into Elementor's shared controlsRegistry, separate from the
