@@ -2549,7 +2549,7 @@
             }
            },
            "border-width": {
-            "$$type": "border-width",
+            "$$type": "border-width-v2",
             "value": {
              "block-start": {
               "$$type": "size",

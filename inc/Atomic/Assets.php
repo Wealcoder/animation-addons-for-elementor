@@ -423,6 +423,21 @@ final class Assets
 				'nonce'            => wp_create_nonce( 'wp_rest' ),
 				'proActive'        => defined( 'WCF_ADDONS_PRO_VERSION' ),
 				'placeholderThumb' => WCF_ADDONS_URL . 'assets/images/preset-placeholder.png',
+
+				// The `$$type` tag the INSTALLED core registers for the
+				// border-width object prop. Elementor renamed it
+				// `border-width` -> `border-width-v2`, and prop validation
+				// demands an exact match: a style carrying the other build's
+				// tag renders fine in the editor, then gets dropped WHOLE on
+				// save (has-atomic-base.php::parse_atomic_styles() skips the
+				// entire style definition on any prop error), so the design
+				// vanishes on reload and never reaches the frontend.
+				// preset-apply.js's sanitizeBorderWidthType() rewrites either
+				// alias to this value, so presets stay portable across cores
+				// instead of hard-coding one build's spelling.
+				'borderWidthKey'   => class_exists( '\Elementor\Modules\AtomicWidgets\PropTypes\Border_Width_Prop_Type' )
+					? \Elementor\Modules\AtomicWidgets\PropTypes\Border_Width_Prop_Type::get_key()
+					: 'border-width-v2',
 			]
 		);
 	}

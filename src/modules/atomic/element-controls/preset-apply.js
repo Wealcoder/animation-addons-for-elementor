@@ -377,35 +377,64 @@ export function sanitizeImageSrc(node) {
 /**
  * Presets are exported from whatever Elementor build authored them, and the
  * `$$type` string for the border-width object prop has differed across
- * builds — some register it as `border-width-v2`, this codebase's installed
- * core (Border_Width_Prop_Type::get_key()) as plain `border-width`. Prop
- * validation requires an EXACT match against the registered key (see
- * Has_Transformable_Validation::is_transformable() in elementor core), so a
- * preset carrying the other build's tag fails save-time validation with
- * "...border-width: invalid_value" even though the shape itself
- * (block-start/block-end/inline-start/inline-end) is unchanged — it renders
- * fine in the editor (validation is publish-time only) then blocks
- * save/publish. Rewrite the known alias to the key this install registers.
+ * builds: older cores registered it as plain `border-width`, current ones
+ * (Elementor 4.2.x, Border_Width_Prop_Type::get_key()) as `border-width-v2`.
+ * The shape (block-start/block-end/inline-start/inline-end) never changed.
+ *
+ * Prop validation requires an EXACT match against the registered key (see
+ * Has_Transformable_Validation::is_transformable() in core), and a style
+ * carrying the wrong alias fails SILENTLY in a way that is easy to misread:
+ * the editor renders it fine (validation is save-time only), then on save
+ * Style_Parser reports "...border-width: invalid_value" and
+ * has-atomic-base.php::parse_atomic_styles() drops the WHOLE style
+ * definition — not just the offending prop — logging a warning and moving
+ * on. The element keeps its `e-xxxxxxx-xxxxxxx` class but no rule is ever
+ * emitted for it, so the design is present before a reload and gone after,
+ * and gone on the frontend.
+ *
+ * So the alias must be rewritten to the key THIS install registers, in
+ * whichever direction that is. PHP sends it as
+ * AAE_PRESET_CONFIG.borderWidthKey (see inc/Atomic/Assets.php); the
+ * fallback matches current core.
  */
+const BORDER_WIDTH_ALIASES = ['border-width', 'border-width-v2'];
+const BORDER_WIDTH_FALLBACK_KEY = 'border-width-v2';
+
+/** The border-width prop key registered by the installed Elementor core. */
+function getBorderWidthKey() {
+  const key = window.AAE_PRESET_CONFIG && window.AAE_PRESET_CONFIG.borderWidthKey;
+
+  return BORDER_WIDTH_ALIASES.indexOf(key) !== -1 ? key : BORDER_WIDTH_FALLBACK_KEY;
+}
+
 export function sanitizeBorderWidthType(node) {
-  if (Array.isArray(node)) {
-    node.forEach(sanitizeBorderWidthType);
-    return;
-  }
-  if (!node || typeof node !== 'object') {
-    return;
-  }
+  // Resolved once per call rather than per node, and NOT taken as a
+  // parameter: this function is handed straight to Array#forEach below, which
+  // would pass the array index as a second argument.
+  const targetKey = getBorderWidthKey();
 
-  if (node.$$type === 'border-width-v2') {
-    node.$$type = 'border-width';
-  }
-
-  Object.keys(node).forEach((key) => {
-    const child = node[key];
-    if (child && typeof child === 'object') {
-      sanitizeBorderWidthType(child);
+  const walk = (current) => {
+    if (Array.isArray(current)) {
+      current.forEach(walk);
+      return;
     }
-  });
+    if (!current || typeof current !== 'object') {
+      return;
+    }
+
+    if (BORDER_WIDTH_ALIASES.indexOf(current.$$type) !== -1) {
+      current.$$type = targetKey;
+    }
+
+    Object.keys(current).forEach((key) => {
+      const child = current[key];
+      if (child && typeof child === 'object') {
+        walk(child);
+      }
+    });
+  };
+
+  walk(node);
 }
 
 /** Fresh, collision-resistant local style id (mirrors Elementor's shape). */
