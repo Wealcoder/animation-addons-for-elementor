@@ -32,7 +32,7 @@ require_once __DIR__ . '/class-aae-a-flip-box-text.php';
 /**
  * AAE Flip Box — Front face. Position/size/backface-visibility/hover-rotate
  * mechanics stay in flip-box.scss (keyed off the `flip-box-front` hook class
- * below) — the atomic style schema has no `backface-visibility` key and a
+ * the twig stamps on) — the atomic style schema has no `backface-visibility` key and a
  * parent-hover-driven child transform can't be expressed as a self-only
  * atomic style state. Only the static "how it looks" bits (background,
  * color, radius, padding) live here, so each design still comes from
@@ -74,9 +74,12 @@ class AAE_A_Flip_Box_Front extends Atomic_Element_Base {
 
 	protected static function define_props_schema(): array {
 		return [
-			// The hook class flip-box.scss keys its mechanics off — always
-			// present, regardless of how/where this widget gets built.
-			'classes'    => Classes_Prop_Type::make()->default( [ 'flip-box-front' ] ),
+			// Empty on purpose. The `flip-box-front` hook class this face's
+			// mechanics need is emitted by the twig, not carried here: the
+			// editor can't resolve a raw CSS class to a style definition, so
+			// it flagged every face with "Some classes are missing" and
+			// dismissing that alert unapplied the hook — breaking the flip.
+			'classes'    => Classes_Prop_Type::make()->default( [] ),
 			'attributes' => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
 		];
 	}

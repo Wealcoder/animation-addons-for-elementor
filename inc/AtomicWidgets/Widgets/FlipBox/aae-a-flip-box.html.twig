@@ -1,4 +1,30 @@
-{% set classes = ['aae-a-flip-box', 'e-con', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') %}
+{# The flip mechanics in flip-box.scss key off plain CSS hook classes. They are
+   NOT Elementor style-def ids, so they must never live in the `classes` prop:
+   the editor resolves every entry there to a local/global class, warns "Some
+   classes are missing" for the ones it can't, and dismissing that alert calls
+   unapplyClasses() — stripping the hook and leaving a dead card on the live
+   page. They are carried as flip_effect / flip_back_hidden / flip_3d props
+   instead and turned back into the same classes here. #}
+{% set flip_classes = [] %}
+
+{# Back-compat: content saved before the props existed still has its
+   flip-box-animate-* hook sitting in `classes`. Adding the prop-derived one on
+   top would put two competing animate rules on the same card (a legacy
+   fade-in would pick up the default left rotation), so let the stored class
+   stand and only derive when there is none. #}
+{% if 'flip-box-animate-' not in (settings.classes | default([]) | join(' ')) %}
+    {% set flip_classes = flip_classes | merge(['flip-box-animate-' ~ (settings.flip_effect | default('left'))]) %}
+{% endif %}
+
+{% if settings.flip_back_hidden | default(false) %}
+    {% set flip_classes = flip_classes | merge(['flip-box--back-hidden']) %}
+{% endif %}
+
+{% if settings.flip_3d | default(false) %}
+    {% set flip_classes = flip_classes | merge(['flip-box--3d']) %}
+{% endif %}
+
+{% set classes = ['aae-a-flip-box', 'e-con', 'e-atomic-element', base_styles.base | default('')] | merge(flip_classes) | merge(settings.classes | default([])) | join(' ') %}
 
 <div class="{{ classes }} {{ editor_classes | default('') }}"
      data-id="{{ id }}"

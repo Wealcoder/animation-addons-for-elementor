@@ -1,381 +1,381 @@
 {
-    "id": "flip-box-animate-fade-in-div",
-    "name": "Fade In",
-    "model": {
-        "id": "000030a8",
+ "id": "flip-box-animate-fade-in-div",
+ "name": "Fade In",
+ "model": {
+  "id": "000030a8",
+  "settings": {
+   "classes": {
+    "$$type": "classes",
+    "value": [
+     "e-0000303a-0003071"
+    ]
+   }
+  },
+  "elements": [
+   {
+    "id": "00003003",
+    "settings": {
+     "flip_effect": {
+      "$$type": "string",
+      "value": "fade-in"
+     },
+     "classes": {
+      "$$type": "classes",
+      "value": []
+     }
+    },
+    "elements": [
+     {
+      "id": "00002e4b",
+      "settings": {
+       "classes": {
+        "$$type": "classes",
+        "value": [
+         "e-00002ddd-0002e14"
+        ]
+       }
+      },
+      "elements": [
+       {
+        "id": "00002e82",
         "settings": {
-            "classes": {
-                "$$type": "classes",
-                "value": [
-                    "e-0000303a-0003071"
-                ]
-            }
+         "title": {
+          "$$type": "html-v3",
+          "value": {
+           "content": {
+            "$$type": "string",
+            "value": "Fade In"
+           },
+           "children": []
+          }
+         },
+         "tag": {
+          "$$type": "string",
+          "value": "h2"
+         }
         },
-        "elements": [
-            {
-                "id": "00003003",
-                "settings": {
-                    "classes": {
-                        "$$type": "classes",
-                        "value": [
-                            "flip-box-animate-fade-in"
-                        ]
-                    }
-                },
-                "elements": [
-                    {
-                        "id": "00002e4b",
-                        "settings": {
-                            "classes": {
-                                "$$type": "classes",
-                                "value": [
-                                    "e-00002ddd-0002e14",
-                                    "flip-box-front"
-                                ]
-                            }
-                        },
-                        "elements": [
-                            {
-                                "id": "00002e82",
-                                "settings": {
-                                    "title": {
-                                        "$$type": "html-v3",
-                                        "value": {
-                                            "content": {
-                                                "$$type": "string",
-                                                "value": "Fade In"
-                                            },
-                                            "children": []
-                                        }
-                                    },
-                                    "tag": {
-                                        "$$type": "string",
-                                        "value": "h2"
-                                    }
-                                },
-                                "elements": [],
-                                "isInner": false,
-                                "widgetType": "e-heading",
-                                "elType": "widget",
-                                "styles": [],
-                                "interactions": [],
-                                "editor_settings": [],
-                                "version": "0.0"
-                            },
-                            {
-                                "id": "00002eb9",
-                                "settings": {
-                                    "paragraph": {
-                                        "$$type": "html-v3",
-                                        "value": {
-                                            "content": {
-                                                "$$type": "string",
-                                                "value": "Hover to flip the card and reveal the back."
-                                            },
-                                            "children": []
-                                        }
-                                    }
-                                },
-                                "elements": [],
-                                "isInner": false,
-                                "widgetType": "e-paragraph",
-                                "elType": "widget",
-                                "styles": [],
-                                "interactions": [],
-                                "editor_settings": [],
-                                "version": "0.0"
-                            }
-                        ],
-                        "isInner": false,
-                        "elType": "e-flexbox",
-                        "styles": {
-                            "e-00002ddd-0002e14": {
-                                "id": "e-00002ddd-0002e14",
-                                "label": "local",
-                                "type": "class",
-                                "variants": [
-                                    {
-                                        "meta": {
-                                            "breakpoint": "desktop",
-                                            "state": null
-                                        },
-                                        "props": {
-                                            "background": {
-                                                "$$type": "background",
-                                                "value": {
-                                                    "color": {
-                                                        "$$type": "color",
-                                                        "value": "#f2f1f1"
-                                                    }
-                                                }
-                                            },
-                                            "padding": {
-                                                "$$type": "size",
-                                                "value": {
-                                                    "size": 24,
-                                                    "unit": "px"
-                                                }
-                                            },
-                                            "border-radius": {
-                                                "$$type": "size",
-                                                "value": {
-                                                    "size": 10,
-                                                    "unit": "px"
-                                                }
-                                            },
-                                            "text-align": {
-                                                "$$type": "string",
-                                                "value": "center"
-                                            },
-                                            "gap": {
-                                                "$$type": "size",
-                                                "value": {
-                                                    "size": 8,
-                                                    "unit": "px"
-                                                }
-                                            },
-                                            "color": {
-                                                "$$type": "color",
-                                                "value": "#1a1a1a"
-                                            }
-                                        },
-                                        "custom_css": null
-                                    }
-                                ]
-                            }
-                        },
-                        "interactions": [],
-                        "editor_settings": {
-                            "title": "Front Face"
-                        },
-                        "version": "0.0"
-                    },
-                    {
-                        "id": "00002f5e",
-                        "settings": {
-                            "classes": {
-                                "$$type": "classes",
-                                "value": [
-                                    "e-00002ef0-0002f27",
-                                    "flip-box-back"
-                                ]
-                            }
-                        },
-                        "elements": [
-                            {
-                                "id": "00002f95",
-                                "settings": {
-                                    "title": {
-                                        "$$type": "html-v3",
-                                        "value": {
-                                            "content": {
-                                                "$$type": "string",
-                                                "value": "You found it"
-                                            },
-                                            "children": []
-                                        }
-                                    },
-                                    "tag": {
-                                        "$$type": "string",
-                                        "value": "h2"
-                                    },
-                                    "classes": {
-                                        "$$type": "classes",
-                                        "value": [
-                                            "e-00002f95-color"
-                                        ]
-                                    }
-                                },
-                                "elements": [],
-                                "isInner": false,
-                                "widgetType": "e-heading",
-                                "elType": "widget",
-                                "styles": {
-                                    "e-00002f95-color": {
-                                        "id": "e-00002f95-color",
-                                        "label": "local",
-                                        "type": "class",
-                                        "variants": [
-                                            {
-                                                "meta": {
-                                                    "breakpoint": "desktop",
-                                                    "state": null
-                                                },
-                                                "props": {
-                                                    "color": {
-                                                        "$$type": "color",
-                                                        "value": "#ffffff"
-                                                    }
-                                                },
-                                                "custom_css": null
-                                            }
-                                        ],
-                                        "custom_css": null
-                                    }
-                                },
-                                "interactions": [],
-                                "editor_settings": [],
-                                "version": "0.0"
-                            },
-                            {
-                                "id": "00002fcc",
-                                "settings": {
-                                    "paragraph": {
-                                        "$$type": "html-v3",
-                                        "value": {
-                                            "content": {
-                                                "$$type": "string",
-                                                "value": "Replace this with your own back-side content."
-                                            },
-                                            "children": []
-                                        }
-                                    },
-                                    "classes": {
-                                        "$$type": "classes",
-                                        "value": [
-                                            "e-00002fcc-color"
-                                        ]
-                                    }
-                                },
-                                "elements": [],
-                                "isInner": false,
-                                "widgetType": "e-paragraph",
-                                "elType": "widget",
-                                "styles": {
-                                    "e-00002fcc-color": {
-                                        "id": "e-00002fcc-color",
-                                        "label": "local",
-                                        "type": "class",
-                                        "variants": [
-                                            {
-                                                "meta": {
-                                                    "breakpoint": "desktop",
-                                                    "state": null
-                                                },
-                                                "props": {
-                                                    "color": {
-                                                        "$$type": "color",
-                                                        "value": "#ffffff"
-                                                    }
-                                                },
-                                                "custom_css": null
-                                            }
-                                        ],
-                                        "custom_css": null
-                                    }
-                                },
-                                "interactions": [],
-                                "editor_settings": [],
-                                "version": "0.0"
-                            }
-                        ],
-                        "isInner": false,
-                        "elType": "e-flexbox",
-                        "styles": {
-                            "e-00002ef0-0002f27": {
-                                "id": "e-00002ef0-0002f27",
-                                "label": "local",
-                                "type": "class",
-                                "variants": [
-                                    {
-                                        "meta": {
-                                            "breakpoint": "desktop",
-                                            "state": null
-                                        },
-                                        "props": {
-                                            "background": {
-                                                "$$type": "background",
-                                                "value": {
-                                                    "color": {
-                                                        "$$type": "color",
-                                                        "value": "#4b3df0"
-                                                    }
-                                                }
-                                            },
-                                            "padding": {
-                                                "$$type": "size",
-                                                "value": {
-                                                    "size": 24,
-                                                    "unit": "px"
-                                                }
-                                            },
-                                            "border-radius": {
-                                                "$$type": "size",
-                                                "value": {
-                                                    "size": 10,
-                                                    "unit": "px"
-                                                }
-                                            },
-                                            "text-align": {
-                                                "$$type": "string",
-                                                "value": "center"
-                                            },
-                                            "gap": {
-                                                "$$type": "size",
-                                                "value": {
-                                                    "size": 8,
-                                                    "unit": "px"
-                                                }
-                                            },
-                                            "color": {
-                                                "$$type": "color",
-                                                "value": "#ffffff"
-                                            }
-                                        },
-                                        "custom_css": null
-                                    }
-                                ]
-                            }
-                        },
-                        "interactions": [],
-                        "editor_settings": {
-                            "title": "Back Face"
-                        },
-                        "version": "0.0"
-                    }
-                ],
-                "isInner": false,
-                "elType": "e-aae-a-flip-box",
-                "styles": [],
-                "interactions": [],
-                "editor_settings": {
-                    "title": "Fade In"
-                },
-                "version": "0.0"
-            }
-        ],
+        "elements": [],
         "isInner": false,
-        "elType": "e-flexbox",
-        "styles": {
-            "e-0000303a-0003071": {
-                "id": "e-0000303a-0003071",
-                "label": "local",
-                "type": "class",
-                "variants": [
-                    {
-                        "meta": {
-                            "breakpoint": "desktop",
-                            "state": null
-                        },
-                        "props": {
-                            "flex-direction": {
-                                "$$type": "string",
-                                "value": "row"
-                            }
-                        },
-                        "custom_css": null
-                    }
-                ]
+        "widgetType": "e-heading",
+        "elType": "widget",
+        "styles": [],
+        "interactions": [],
+        "editor_settings": [],
+        "version": "0.0"
+       },
+       {
+        "id": "00002eb9",
+        "settings": {
+         "paragraph": {
+          "$$type": "html-v3",
+          "value": {
+           "content": {
+            "$$type": "string",
+            "value": "Hover to flip the card and reveal the back."
+           },
+           "children": []
+          }
+         }
+        },
+        "elements": [],
+        "isInner": false,
+        "widgetType": "e-paragraph",
+        "elType": "widget",
+        "styles": [],
+        "interactions": [],
+        "editor_settings": [],
+        "version": "0.0"
+       }
+      ],
+      "isInner": false,
+      "elType": "e-aae-a-flip-box-front",
+      "styles": {
+       "e-00002ddd-0002e14": {
+        "id": "e-00002ddd-0002e14",
+        "label": "local",
+        "type": "class",
+        "variants": [
+         {
+          "meta": {
+           "breakpoint": "desktop",
+           "state": null
+          },
+          "props": {
+           "background": {
+            "$$type": "background",
+            "value": {
+             "color": {
+              "$$type": "color",
+              "value": "#f2f1f1"
+             }
             }
+           },
+           "padding": {
+            "$$type": "size",
+            "value": {
+             "size": 24,
+             "unit": "px"
+            }
+           },
+           "border-radius": {
+            "$$type": "size",
+            "value": {
+             "size": 10,
+             "unit": "px"
+            }
+           },
+           "text-align": {
+            "$$type": "string",
+            "value": "center"
+           },
+           "gap": {
+            "$$type": "size",
+            "value": {
+             "size": 8,
+             "unit": "px"
+            }
+           },
+           "color": {
+            "$$type": "color",
+            "value": "#1a1a1a"
+           }
+          },
+          "custom_css": null
+         }
+        ]
+       }
+      },
+      "interactions": [],
+      "editor_settings": {
+       "title": "Front Face"
+      },
+      "version": "0.0"
+     },
+     {
+      "id": "00002f5e",
+      "settings": {
+       "classes": {
+        "$$type": "classes",
+        "value": [
+         "e-00002ef0-0002f27"
+        ]
+       }
+      },
+      "elements": [
+       {
+        "id": "00002f95",
+        "settings": {
+         "title": {
+          "$$type": "html-v3",
+          "value": {
+           "content": {
+            "$$type": "string",
+            "value": "You found it"
+           },
+           "children": []
+          }
+         },
+         "tag": {
+          "$$type": "string",
+          "value": "h2"
+         },
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-00002f95-color"
+          ]
+         }
+        },
+        "elements": [],
+        "isInner": false,
+        "widgetType": "e-heading",
+        "elType": "widget",
+        "styles": {
+         "e-00002f95-color": {
+          "id": "e-00002f95-color",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "color": {
+              "$$type": "color",
+              "value": "#ffffff"
+             }
+            },
+            "custom_css": null
+           }
+          ],
+          "custom_css": null
+         }
         },
         "interactions": [],
-        "editor_settings": {
-            "title": "Fade In-div"
-        },
+        "editor_settings": [],
         "version": "0.0"
+       },
+       {
+        "id": "00002fcc",
+        "settings": {
+         "paragraph": {
+          "$$type": "html-v3",
+          "value": {
+           "content": {
+            "$$type": "string",
+            "value": "Replace this with your own back-side content."
+           },
+           "children": []
+          }
+         },
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-00002fcc-color"
+          ]
+         }
+        },
+        "elements": [],
+        "isInner": false,
+        "widgetType": "e-paragraph",
+        "elType": "widget",
+        "styles": {
+         "e-00002fcc-color": {
+          "id": "e-00002fcc-color",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "color": {
+              "$$type": "color",
+              "value": "#ffffff"
+             }
+            },
+            "custom_css": null
+           }
+          ],
+          "custom_css": null
+         }
+        },
+        "interactions": [],
+        "editor_settings": [],
+        "version": "0.0"
+       }
+      ],
+      "isInner": false,
+      "elType": "e-aae-a-flip-box-back",
+      "styles": {
+       "e-00002ef0-0002f27": {
+        "id": "e-00002ef0-0002f27",
+        "label": "local",
+        "type": "class",
+        "variants": [
+         {
+          "meta": {
+           "breakpoint": "desktop",
+           "state": null
+          },
+          "props": {
+           "background": {
+            "$$type": "background",
+            "value": {
+             "color": {
+              "$$type": "color",
+              "value": "#4b3df0"
+             }
+            }
+           },
+           "padding": {
+            "$$type": "size",
+            "value": {
+             "size": 24,
+             "unit": "px"
+            }
+           },
+           "border-radius": {
+            "$$type": "size",
+            "value": {
+             "size": 10,
+             "unit": "px"
+            }
+           },
+           "text-align": {
+            "$$type": "string",
+            "value": "center"
+           },
+           "gap": {
+            "$$type": "size",
+            "value": {
+             "size": 8,
+             "unit": "px"
+            }
+           },
+           "color": {
+            "$$type": "color",
+            "value": "#ffffff"
+           }
+          },
+          "custom_css": null
+         }
+        ]
+       }
+      },
+      "interactions": [],
+      "editor_settings": {
+       "title": "Back Face"
+      },
+      "version": "0.0"
+     }
+    ],
+    "isInner": false,
+    "elType": "e-aae-a-flip-box",
+    "styles": [],
+    "interactions": [],
+    "editor_settings": {
+     "title": "Fade In"
     },
-    "source": "local",
-    "category": "Flip Box",
-    "thumbnail_url": "",
-    "pro": false
+    "version": "0.0"
+   }
+  ],
+  "isInner": false,
+  "elType": "e-flexbox",
+  "styles": {
+   "e-0000303a-0003071": {
+    "id": "e-0000303a-0003071",
+    "label": "local",
+    "type": "class",
+    "variants": [
+     {
+      "meta": {
+       "breakpoint": "desktop",
+       "state": null
+      },
+      "props": {
+       "flex-direction": {
+        "$$type": "string",
+        "value": "row"
+       }
+      },
+      "custom_css": null
+     }
+    ]
+   }
+  },
+  "interactions": [],
+  "editor_settings": {
+   "title": "Fade In-div"
+  },
+  "version": "0.0"
+ },
+ "source": "local",
+ "category": "Flip Box",
+ "thumbnail_url": "",
+ "pro": false
 }
