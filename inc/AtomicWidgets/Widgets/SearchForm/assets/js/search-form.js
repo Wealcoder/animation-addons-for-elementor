@@ -46,6 +46,119 @@
 		};
 	}
 
+	/* ---- transformed-ancestor relocation ----------------------------------- */
+
+	/**
+	 * Nearest ancestor that makes `position: fixed` resolve against IT instead of
+	 * the viewport. transform / perspective / filter (and a will-change promising
+	 * any of them) all do this. GSAP ScrollSmoother is the common case: it puts a
+	 * transform on #smooth-content and translates it as you scroll, so the
+	 * fullscreen panel's insets resolve against the whole DOCUMENT — the overlay
+	 * opens scrollY pixels ABOVE the viewport and stretches to the document's
+	 * height (Elementor's `.e-con { height: var(--height) }` resolves `auto`
+	 * between top: 0 and bottom: 0). No CSS escapes a containing block — not
+	 * z-index, not !important, not 100dvh, which fixes only the size — so the
+	 * panel has to leave the transformed subtree.
+	 *
+	 * Returns the offending element, or null when `position: fixed` behaves
+	 * normally — every ordinary page, which is why the move below is conditional
+	 * rather than unconditional. Header markup can also sit OUTSIDE
+	 * #smooth-content (the header-smoother option), so this is asked per element
+	 * instead of once per page.
+	 */
+	function fixedContainingBlockAncestor(el) {
+		for (var p = el && el.parentElement; p && p !== document.body; p = p.parentElement) {
+			var cs = window.getComputedStyle(p);
+			if (
+				cs.transform !== 'none' ||
+				cs.perspective !== 'none' ||
+				cs.filter !== 'none' ||
+				/transform|perspective|filter/.test(cs.willChange || '')
+			) {
+				return p;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Move the fullscreen panel — plus the toggle, which openPanel() turns into a
+	 * fixed floating close button — to a body-level host, so both are
+	 * viewport-fixed again. Called from openPanel(), NOT from init: ScrollSmoother
+	 * is usually created after DOMContentLoaded, so at init time the transform
+	 * that has to be detected does not exist yet.
+	 *
+	 * The host carries the `.elementor` scope's class list, because atomic styles
+	 * compile as `.elementor .e-<id>-<hash>` — outside that ancestor every
+	 * Style-tab value on the panel silently stops applying. It also carries the
+	 * form's `data-id`, which the wrapper's inline <style> needs to reach the
+	 * input's ::placeholder colour ( `[data-id="..."] input[type="search"]` is a
+	 * descendant selector; a <style> element itself keeps working from wherever it
+	 * sits). It deliberately does NOT carry the form's own classes: the host would
+	 * then answer `.aae-a-search-form` lookups and pick up `.e-con` box styles.
+	 *
+	 * `display: contents` means the host generates no box at all, so the page's
+	 * layout is untouched — nothing is added to the flow at the end of <body>.
+	 */
+	function detach(ctx) {
+		if (ctx.host || !ctx.panel || !fixedContainingBlockAncestor(ctx.panel)) {
+			return;
+		}
+		var scope = ctx.wrapper.closest('.elementor');
+		var id = ctx.wrapper.getAttribute('data-id') || '';
+		var host = document.createElement('div');
+		host.setAttribute('data-aae-search-detached', id);
+		if (scope) { host.className = scope.className; }
+		if (id) { host.setAttribute('data-id', id); }
+		host.style.display = 'contents';
+		document.body.appendChild(host);
+		/* Comment anchors put both nodes back in their authored position — and
+		 * authored order — when the panel closes. */
+		ctx.panel.parentNode.insertBefore(ctx.panelAnchor, ctx.panel);
+		host.appendChild(ctx.panel);
+		if (ctx.toggle) {
+			ctx.toggle.parentNode.insertBefore(ctx.toggleAnchor, ctx.toggle);
+			host.appendChild(ctx.toggle);
+		}
+		ctx.host = host;
+	}
+
+	function reattach(ctx) {
+		if (!ctx.host) {
+			return;
+		}
+		if (ctx.panelAnchor.parentNode) {
+			ctx.panelAnchor.parentNode.insertBefore(ctx.panel, ctx.panelAnchor);
+			ctx.panelAnchor.remove();
+		}
+		if (ctx.toggle && ctx.toggleAnchor.parentNode) {
+			ctx.toggleAnchor.parentNode.insertBefore(ctx.toggle, ctx.toggleAnchor);
+			ctx.toggleAnchor.remove();
+		}
+		ctx.host.remove();
+		ctx.host = null;
+	}
+
+	/**
+	 * Wrapper-scoped lookups have to keep working while the panel lives in the
+	 * host: the filters, the input and the results all travel with it, so a plain
+	 * `ctx.wrapper.querySelector()` would return null and the date / category
+	 * filters would be silently dropped from the Ajax request.
+	 */
+	function find(ctx, sel) {
+		return ctx.wrapper.querySelector(sel) ||
+			(ctx.host ? ctx.host.querySelector(sel) : null);
+	}
+
+	/**
+	 * Same reason for containment: with the panel outside the wrapper, every click
+	 * INSIDE the panel would read as "outside" and close it / hide the results the
+	 * moment it opened.
+	 */
+	function owns(ctx, node) {
+		return ctx.wrapper.contains(node) || !!(ctx.host && ctx.host.contains(node));
+	}
+
 	/* ---- date presets ------------------------------------------------------ */
 
 	function fmt(d) {
@@ -88,11 +201,11 @@
 		body.append('nonce', cfg.nonce || '');
 		body.append('keyword', keyword);
 
-		var from = ctx.wrapper.querySelector('.from-date');
-		var to = ctx.wrapper.querySelector('.to-date');
+		var from = find(ctx, '.from-date');
+		var to = find(ctx, '.to-date');
 		if (from && from.value) { body.append('from_date', from.value); }
 		if (to && to.value) { body.append('to_date', to.value); }
-		var cat = ctx.wrapper.querySelector('.aae-selected-category');
+		var cat = find(ctx, '.aae-selected-category');
 		if (cat && cat.value) { body.append('category[]', cat.value); }
 
 		window.fetch(cfg.ajaxUrl, { method: 'POST', body: body, credentials: 'same-origin' })
@@ -112,8 +225,8 @@
 
 		// The Date and Category filters are now two separate atomic elements
 		// (each still carries its .date-container / .category-container class).
-		var dateC = ctx.wrapper.querySelector('.date-container');
-		var catC = ctx.wrapper.querySelector('.category-container');
+		var dateC = find(ctx, '.date-container');
+		var catC = find(ctx, '.category-container');
 		if (!dateC && !catC) {
 			return;
 		}
@@ -270,6 +383,9 @@
 		panel.style.display = '';
 
 		if (ctx.mode === 'fullscreen') {
+			// Every inset below is meaningless inside a transformed subtree, so get
+			// the panel out of one first. No-op on a page without one.
+			detach(ctx);
 			Object.assign(panel.style, {
 				position: 'fixed',
 				top: '0',
@@ -318,12 +434,17 @@
 		}
 		ctx.wrapper.classList.remove('is-open');
 		iconState(ctx, false);
+		reattach(ctx);
 		ctx.open = false;
 	}
 
 	function bindMode(ctx) {
 		if (isEditor()) {
-			// Editor: keep the whole tree visible & selectable, no toggling.
+			// Editor: keep the whole tree visible & selectable, no toggling. The
+			// panel's editor visibility is the "Show Panel In Editor" preview,
+			// owned by the twig's data-editor-show-panel CSS and flipped by the
+			// delegated handler in boot() — never from here, so the two can never
+			// both fire on one click.
 			if (ctx.toggle && ctx.mode === 'inline') { ctx.toggle.style.display = 'none'; }
 			return;
 		}
@@ -355,7 +476,7 @@
 
 		if (ctx.mode === 'dropdown') {
 			document.addEventListener('click', function (e) {
-				if (ctx.open && !ctx.wrapper.contains(e.target)) { closePanel(ctx); }
+				if (ctx.open && !owns(ctx, e.target)) { closePanel(ctx); }
 			});
 		}
 	}
@@ -453,21 +574,21 @@
 	}
 
 	/**
-	 * Editor-only fallback for the "Show Panel In Editor" switch. The Twig
-	 * `.elementor-editor-active` <style> is the primary mechanism; this mirrors it
-	 * in case edit-mode stripped the class the CSS relies on.
+	 * The twig's data-editor-show-panel CSS owns preview visibility now.
+	 *
+	 * This used to write display inline, which beat that CSS: the moment the
+	 * toggle-click preview flipped the attribute, the stale inline "none" kept the
+	 * panel hidden anyway. So all it does now is clear that inline value and let
+	 * the cascade decide.
 	 */
 	function applyEditorVisibility(ctx) {
 		if (!isEditor()) {
 			return;
 		}
-		var mode = ctx.wrapper.getAttribute('data-mode') || 'inline';
-		var showPanel = ctx.wrapper.getAttribute('data-editor-show-panel') === 'true';
 		var panel = ctx.panel || ctx.wrapper.querySelector('.aae-a-search-panel, [data-e-type="e-aae-a-search-panel"]');
-		if (!panel) {
-			return;
+		if (panel) {
+			panel.style.display = '';
 		}
-		panel.style.display = (mode !== 'inline' && !showPanel) ? 'none' : '';
 	}
 
 	/* ---- init -------------------------------------------------------------- */
@@ -488,6 +609,10 @@
 			input: wrapper.querySelector('.aae-a-search-input'),
 			results: wrapper.querySelector('.aae-a-search-results'),
 			open: false,
+			/* Set by detach() only when the panel sits in a transformed subtree. */
+			host: null,
+			panelAnchor: document.createComment('aae-search-panel-' + (wrapper.getAttribute('data-id') || '')),
+			toggleAnchor: document.createComment('aae-search-toggle-' + (wrapper.getAttribute('data-id') || '')),
 		};
 
 		bindMode(ctx);
@@ -499,7 +624,7 @@
 			ctx.input.addEventListener('input', debounce(function () { doSearch(ctx); }, DEBOUNCE_MS));
 			// Hide results when clicking away.
 			document.addEventListener('click', function (e) {
-				if (ctx.results && !ctx.wrapper.contains(e.target)) {
+				if (ctx.results && !owns(ctx, e.target)) {
 					ctx.results.style.display = 'none';
 				}
 			});
@@ -511,8 +636,63 @@
 		Array.prototype.forEach.call(nodes, initForm);
 	}
 
+	/**
+	 * True inside the editor's preview iframe — and, unlike isEditor(), true from
+	 * the first line of script execution. Elementor adds
+	 * `elementor-editor-active` to the preview body only after this script runs,
+	 * so isEditor() is false at boot and cannot gate anything installed there.
+	 * On the frontend `frameElement` is null; the try/catch covers a page embedded
+	 * cross-origin, where reading it throws.
+	 */
+	function inEditorPreview() {
+		try {
+			return isEditor() ||
+				!!(window.frameElement && window.frameElement.id === 'elementor-preview-iframe');
+		} catch (e) {
+			return false;
+		}
+	}
+
+	/**
+	 * Editor-only: click the search icon in the canvas to preview the panel.
+	 *
+	 * Clicking it used to do nothing at all, so the only way to see a dropdown /
+	 * fullscreen panel was to find the "Show Panel In Editor" switch in the
+	 * Settings tab. This flips the same data-editor-show-panel attribute that
+	 * switch renders, which is what the twig's editor CSS keys off.
+	 *
+	 * PREVIEW ONLY: the saved setting is never written, so nothing marks the
+	 * document dirty and any re-render restores whatever the switch says.
+	 *
+	 * Delegated from the document so it keeps working across Elementor's
+	 * re-renders with nothing bound per node, and capture-phase so it cannot be
+	 * swallowed by a stopPropagation() on the way up. It never calls
+	 * preventDefault(), so Elementor still selects the element on the same click.
+	 */
+	function bindEditorPreviewToggle() {
+		document.addEventListener('click', function (e) {
+			var target = e.target;
+			if (!target || !target.closest) {
+				return;
+			}
+			var toggle = target.closest('.aae-a-search-toggle');
+			if (!toggle) {
+				return;
+			}
+			var wrapper = toggle.closest('.aae-a-search-form');
+			if (!wrapper || (wrapper.getAttribute('data-mode') || 'inline') === 'inline') {
+				return;
+			}
+			var on = wrapper.getAttribute('data-editor-show-panel') === 'true';
+			wrapper.setAttribute('data-editor-show-panel', on ? 'false' : 'true');
+		}, true);
+	}
+
 	function boot() {
 		init();
+		if (inEditorPreview()) {
+			bindEditorPreviewToggle();
+		}
 		// In the editor the element subtree is re-rendered on every setting change,
 		// which drops our bound handlers. Re-run init (guarded per node) on DOM
 		// mutations so freshly rendered widgets get wired + editor visibility re-applied.
