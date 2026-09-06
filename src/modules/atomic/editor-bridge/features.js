@@ -1417,7 +1417,14 @@ export const FEATURES = [
 	},
 	{
 		name: 'text-animation',
-		widgetTypes: ['e-heading', 'e-paragraph', 'e-aae-a-post-title'],
+		// Mirrors Atomic\TextAnimation\Schema::text_animation_widgets(). Keep the
+		// two in step: a type present in the PHP and missing here reads as "the
+		// effect works on the frontend but never updates in the editor" with no
+		// error anywhere — featuresFor() returns [] and applySettingsToDom() bails
+		// before it writes AAE_INTERACTIONS_TEXT or calls rebind(), so the panel
+		// saves rows and the row Play button silently does nothing. That is exactly
+		// what e-aae-a-advanced-heading and e-button did while they were absent.
+		widgetTypes: ['e-heading', 'e-paragraph', 'e-button', 'e-aae-a-post-title', 'e-aae-a-advanced-heading'],
 		enableSetting: 'aae_text_interactions',
 		autoReplaySetting: 'aae_text_enable_editor',
 		mapName: 'AAE_INTERACTIONS_TEXT',
