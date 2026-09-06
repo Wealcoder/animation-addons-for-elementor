@@ -69,6 +69,57 @@ if ( ! defined( 'WCF_TEMPLATE_STARTER_BASE_URL' ) ) {
 	define( 'WCF_TEMPLATE_STARTER_BASE_URL', 'https://www.themecrowdy.com/' );
 }
 
+if ( ! defined( 'WCF_FEATURE_REQUEST_ENDPOINT' ) ) {
+	/**
+	 * Where feature requests are POSTed, received by the aae-feature-request-api
+	 * plugin on animation-addons.com.
+	 *
+	 * That plugin exposes the SAME handler at two URLs, and this is the REST one
+	 * because it is the sturdier of the pair:
+	 *
+	 *   wp-json/aae/v1/request-new-feature  <- this. A registered REST route, so
+	 *                                          it needs no rewrite rules.
+	 *   api/request-new-feature             <- a custom rewrite (AAEFR_ROUTE).
+	 *                                          Pretty, but a permalink flush, a
+	 *                                          caching layer or a host that
+	 *                                          mangles the path can take it out
+	 *                                          — the receiver's own docblock
+	 *                                          says the REST route exists as the
+	 *                                          fallback for exactly that.
+	 *
+	 * TESTING. Since receiver v1.1.0 the SAME url answers GET with a read-only
+	 * status report — row count, the five most recent requests, whether the CPT
+	 * is registered, whether the rewrite rule survived. Paste it in a browser
+	 * with the key as a query param (GET takes ?key= precisely because a
+	 * browser bar cannot set an X-API-Key header; POST stays header-only):
+	 *
+	 *   .../wp-json/aae/v1/request-new-feature?key=<WCF_FEATURE_REQUEST_API_KEY>
+	 *
+	 * Submit from the dashboard, reload that URL, and compare `total`. That is
+	 * the check that settles whether a submission was really stored — a
+	 * "received" message alone never did, because the receiver returns it for a
+	 * deduplicated request it chose not to store as well as for a fresh one.
+	 *
+	 * Swap the two lines below to test the rewrite route instead.
+	 */
+	define( 'WCF_FEATURE_REQUEST_ENDPOINT', 'https://animation-addons.com/wp-json/aae/v1/request-new-feature' );
+	// define( 'WCF_FEATURE_REQUEST_ENDPOINT', 'https://animation-addons.com/api/request-new-feature' );
+}
+
+if ( ! defined( 'WCF_FEATURE_REQUEST_API_KEY' ) ) {
+	/**
+	 * Shared key the receiver checks, sent as the X-API-Key header.
+	 *
+	 * Must match AAEFR_API_KEY on the receiving side — change one without the
+	 * other and every submission comes back 401.
+	 *
+	 * This is obfuscation, NOT authentication: the plugin ships publicly, so
+	 * the key is extractable from the zip. The receiver's own rate limit is
+	 * what actually protects the endpoint.
+	 */
+	define( 'WCF_FEATURE_REQUEST_API_KEY', '0700c72d204521236f5af03011cb0cbb4f6229a6bbdc2ef041d76184e9a795b7' );
+}
+
 if (file_exists(__DIR__ . '/vendor/autoload.php')) {
 	require __DIR__ . '/vendor/autoload.php';
 }
