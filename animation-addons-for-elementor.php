@@ -70,40 +70,7 @@ if ( ! defined( 'WCF_TEMPLATE_STARTER_BASE_URL' ) ) {
 }
 
 if ( ! defined( 'WCF_FEATURE_REQUEST_ENDPOINT' ) ) {
-	/**
-	 * Where feature requests are POSTed, received by the aae-feature-request-api
-	 * plugin on animation-addons.com.
-	 *
-	 * That plugin exposes the SAME handler at two URLs, and this is the REST one
-	 * because it is the sturdier of the pair:
-	 *
-	 *   wp-json/aae/v1/request-new-feature  <- this. A registered REST route, so
-	 *                                          it needs no rewrite rules.
-	 *   api/request-new-feature             <- a custom rewrite (AAEFR_ROUTE).
-	 *                                          Pretty, but a permalink flush, a
-	 *                                          caching layer or a host that
-	 *                                          mangles the path can take it out
-	 *                                          — the receiver's own docblock
-	 *                                          says the REST route exists as the
-	 *                                          fallback for exactly that.
-	 *
-	 * TESTING. Since receiver v1.1.0 the SAME url answers GET with a read-only
-	 * status report — row count, the five most recent requests, whether the CPT
-	 * is registered, whether the rewrite rule survived. Paste it in a browser
-	 * with the key as a query param (GET takes ?key= precisely because a
-	 * browser bar cannot set an X-API-Key header; POST stays header-only):
-	 *
-	 *   .../wp-json/aae/v1/request-new-feature?key=<WCF_FEATURE_REQUEST_API_KEY>
-	 *
-	 * Submit from the dashboard, reload that URL, and compare `total`. That is
-	 * the check that settles whether a submission was really stored — a
-	 * "received" message alone never did, because the receiver returns it for a
-	 * deduplicated request it chose not to store as well as for a fresh one.
-	 *
-	 * Swap the two lines below to test the rewrite route instead.
-	 */
 	define( 'WCF_FEATURE_REQUEST_ENDPOINT', 'https://animation-addons.com/wp-json/aae/v1/request-new-feature' );
-	// define( 'WCF_FEATURE_REQUEST_ENDPOINT', 'https://animation-addons.com/api/request-new-feature' );
 }
 
 if ( ! defined( 'WCF_FEATURE_REQUEST_API_KEY' ) ) {

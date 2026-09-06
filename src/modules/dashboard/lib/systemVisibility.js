@@ -267,28 +267,19 @@ export const SHOW_V4_SYSTEM =
 export const SHOW_TRY_ATOMIC_LINK =
   ATOMIC_AVAILABLE && ATOMIC_DISMISSED && !ATOMIC_OPTED_IN && !SHOW_V4_SYSTEM;
 
-/**
- * Animation Settings is the V4 replacement for the five v3 chrome features that
- * used to live in Elementor's Site Settings (Preloader, Cursor, Scroll to Top,
- * Scroll Indicator, Popup), so it is offered once the v3 widgets and extensions
- * are all switched off.
+/*
+ * SHOW_ANIMATION_SETTINGS lived here until 2026-09-06 and is deliberately gone
+ * rather than merely unused.
  *
- * `V3_HAS_ACTIVE`, NOT `V3_PRESENT` — the toggles alone, deliberately. The
- * content ratchet exists to stop a site LOSING the V3 list while pages still
- * depend on it; that is an argument about the widget list, not about which
- * settings screen this site configures its chrome from. A site whose v3
- * switches are all off has moved to v4 no matter what its old pages still
- * contain, so it gets the v4 screen — and does not have to keep both.
- *
- * Hidden from the MENU only — `?tab=animation-settings` still renders.
- *
- * KNOWN GAP: on a site with v3 switches ON there is no in-dashboard route to
- * this screen, so its `legacy_v3` switch, Performance and GSAP Library tabs are
- * URL-only there. The Legacy (V3) link on the V4 view does not go here — it
- * reveals the V3 LIST, which is a different job. Worth closing, and it is the
- * reason the route must stay registered in showFullContent.jsx.
+ * It gated the Settings MENU ITEM on `!V3_HAS_ACTIVE` — the toggles only, not
+ * the V3_PRESENT content ratchet — on the reasoning that a site whose v3
+ * switches are all off has moved to v4 and should not have to keep both
+ * settings screens. The cost was a site with v3 switches ON having no
+ * in-dashboard route to the screen at all, so its `legacy_v3` switch,
+ * Performance and GSAP Library tabs were URL-only there. Settings is now a
+ * permanent menu item (it took the Free vs Pro slot), which closes that gap;
+ * re-introducing a visibility rule for it would re-open it.
  */
-export const SHOW_ANIMATION_SETTINGS = !V3_HAS_ACTIVE;
 
 /**
  * Resolve what a Widgets/Extensions page should show, honouring an explicit

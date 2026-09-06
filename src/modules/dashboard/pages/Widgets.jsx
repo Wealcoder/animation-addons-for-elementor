@@ -8,7 +8,6 @@ import { useAtomicWidgets } from "@/hooks/app.hooks";
 import { countAtomicWidgets } from "@/lib/atomicWidgetService";
 import { resolveSystems } from "@/lib/systemVisibility";
 import LegacyRevealLink from "@/components/shared/LegacyRevealLink";
-import SettingsQuickLink from "@/components/shared/SettingsQuickLink";
 import BackToV3Link from "@/components/shared/BackToV3Link";
 import TryAtomicLink from "@/components/shared/TryAtomicLink";
 import V3InUseNotice from "@/components/shared/V3InUseNotice";
@@ -183,8 +182,6 @@ const Widgets = () => {
                 on screen and on every site that never dismissed anything.
               */}
               {!isAtomic && <TryAtomicLink />}
-
-              {isAtomic && <SettingsQuickLink />}
             </div>
           </div>
 
