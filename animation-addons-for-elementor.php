@@ -131,7 +131,7 @@ final class WCF_ADDONS_Plugin {
 		// has to stay on plugins_loaded for the Elementor bootstrap ordering.
 		add_action( 'init', array( $this, 'load_textdomain' ), 0 );
 		add_action( 'admin_notices', array( $this, 'admin_notice_missing_main_plugin' ) );		
-		add_action( 'admin_init', [$this, 'redirect_to_dashboard'] );
+		
 	}
 
 	/**
@@ -496,43 +496,6 @@ final class WCF_ADDONS_Plugin {
 	}
 
 	
-
-	public function redirect_to_dashboard(){
-		
-		if ( !is_plugin_active('elementor/elementor.php') ) {	
-			return;
-		}
-
-		if ( get_option( 'aae_do_activation_redirect' ) ) {
-
-			delete_option( 'aae_do_activation_redirect' );	
-
-			if ( isset( $_GET['activate-multi'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				return;
-			}
-			wp_safe_redirect( admin_url( 'admin.php?page=wcf_addons_settings' ) );
-			exit;
-		}
-
-		if ( get_option('aae_send_activation_event') ) {
-			delete_option('aae_send_activation_event');
-
-			wp_remote_post('https://data.animation-addons.com/wp-json/wmd/v1/org/install/daily/increment?plugin_slug=animation-addons-for-elementor&event=activated', [
-				'timeout'  => 2,
-				'blocking' => false,
-			]);
-		}
-
-		if ( get_option('aae_send_deactivation_event') ) {
-			delete_option('aae_send_deactivation_event');
-
-			wp_remote_post('https://data.animation-addons.com/wp-json/wmd/v1/org/install/daily/increment?plugin_slug=animation-addons-for-elementor&event=deactivated', [
-				'timeout'  => 2,
-				'blocking' => false,
-			]);
-		}
-
-	}
 }
 
 
