@@ -4056,6 +4056,15 @@ final class Atomic
 		// wrong answer. Exact twin of Animation_Settings::maybe_invalidate_v3_usage().
 		add_action('save_post', [__CLASS__, 'maybe_invalidate_atomic_usage'], 10, 2);
 
+		// Import-time data-loss guard, the V4 twin of
+		// Animation_Settings::maybe_enable_used_v3_widgets(): switch on every atomic
+		// widget/extension the content that just arrived uses. `import_end` is fired
+		// once by WXRImporter when a content file has been fully imported; the
+		// starter-template step hook is the belt for a run that ends there without
+		// a WXR pass. Both are idempotent (one LIKE query, a no-op once enabled).
+		add_action('import_end', [$this, 'enable_used_atomic_after_import']);
+		add_action('aaeaddon/starter-template/import/step/metasettings', [$this, 'enable_used_atomic_after_import']);
+
 		add_action('elementor/widgets/register', [$this, 'register_widgets']);
 		add_action('elementor/elements/elements_registered', [$this, 'register_elements']);
 
@@ -6880,7 +6889,11 @@ JS;
 					wp_localize_script(
 						$widget_data['script_handle'],
 						'AAE_MENU_CFG',
-						[ 'ajaxUrl' => admin_url( 'admin-ajax.php' ) ]
+						[
+							'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+							// Verified by ajax_get_menu_html().
+							'nonce'   => wp_create_nonce( 'aae_loop_grid' ),
+						]
 					);
 				}
 			}
@@ -7157,7 +7170,13 @@ JS;
 		}
 
 		// Windows IIS uses LOCAL_ADDR; Apache/Nginx use SERVER_ADDR.
-		$server_ip = strtolower((string) ($_SERVER['SERVER_ADDR'] ?? $_SERVER['LOCAL_ADDR'] ?? ''));
+		$server_ip = '';
+		if (isset($_SERVER['SERVER_ADDR'])) {
+			$server_ip = sanitize_text_field(wp_unslash($_SERVER['SERVER_ADDR']));
+		} elseif (isset($_SERVER['LOCAL_ADDR'])) {
+			$server_ip = sanitize_text_field(wp_unslash($_SERVER['LOCAL_ADDR']));
+		}
+		$server_ip = strtolower($server_ip);
 
 		return in_array($server_ip, ['127.0.0.1', '::1'], true);
 	}
@@ -7174,7 +7193,7 @@ JS;
 	 */
 	private static function request_host(): string
 	{
-		$host = strtolower(trim((string) ($_SERVER['HTTP_HOST'] ?? '')));
+		$host = strtolower(trim(sanitize_text_field(wp_unslash($_SERVER['HTTP_HOST'] ?? ''))));
 
 		if ('' === $host) {
 			return '';
@@ -7271,6 +7290,14 @@ JS;
 		// capture_atomic_undo(). `available => false` most of the time.
 		$configs['atomic_undo'] = $this->atomic_undo_offer();
 
+		// Can a V4 (atomic) starter template or page be imported here at all?
+		// Read by the starter-template grids in BOTH modules (dashboard and
+		// page-import share this filter) to badge V4 cards and to disable their
+		// Import button. `in_use` is deliberately NOT shipped here -- it is asked
+		// fresh at click time (ajax_atomic_import_status), because a payload
+		// snapshot goes stale the moment the first V4 import lands.
+		$configs['atomic_import'] = [ 'available' => self::is_elementor_atomic_active() ];
+
 		return $configs;
 	}
 
@@ -7289,6 +7316,7 @@ JS;
 			wp_send_json_error(esc_html__('Missing fields.', 'animation-addons-for-elementor'));
 		}
 
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- decode_slug_map() runs sanitize_text_field() on the raw value before json_decode(), and write_widget_option()/write_extension_option() sanitise every key and value again before storing. The handler has already checked the nonce and the capability.
 		$settings = self::decode_slug_map(wp_unslash($_POST['fields']));
 
 		if (null === $settings) {
@@ -7380,6 +7408,12 @@ JS;
 	 */
 	public function ajax_get_menu_html(): void
 	{
+		// Editor-preview only: on the frontend get_atomic_settings() fills
+		// `rendered_menu` server-side, so menu.js never reaches this. The
+		// nonce rides AAE_MENU_CFG next to the ajax URL, and the action is
+		// the same one every other editor-only endpoint in this class uses.
+		check_ajax_referer('aae_loop_grid', 'nonce');
+
 		if (! current_user_can('edit_posts')) {
 			wp_send_json_error(esc_html__('Permission denied.', 'animation-addons-for-elementor'));
 		}
@@ -7479,6 +7513,7 @@ JS;
 			wp_send_json_error(esc_html__('Missing fields.', 'animation-addons-for-elementor'));
 		}
 
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- decode_slug_map() runs sanitize_text_field() on the raw value before json_decode(), and write_widget_option()/write_extension_option() sanitise every key and value again before storing. The handler has already checked the nonce and the capability.
 		$settings = self::decode_slug_map(wp_unslash($_POST['fields']));
 
 		if (null === $settings) {
@@ -7622,6 +7657,198 @@ JS;
 		}
 
 		return (bool) $elementor->experiments->is_feature_active('e_atomic_elements');
+	}
+
+	/**
+	 * Switch on every atomic widget and extension the site's CONTENT already uses.
+	 *
+	 * The V4 twin of Animation_Settings::maybe_enable_used_v3_widgets(), and it
+	 * exists for the same reason: an unregistered widget renders NOTHING — no
+	 * error, no wrapper — so a starter template built from `e-aae-a-*` elements
+	 * imports into a site where nothing has switched them on and every page
+	 * comes up blank, looking exactly like a missing-class problem. Nothing on
+	 * the import path wrote `aae_atomic_widgets` before this; only the dashboard
+	 * save handlers and the opt-in flow did.
+	 *
+	 * Two differences from the v3 guard, both deliberate:
+	 *
+	 * 1. It MERGES into the saved option and only ever switches ON. The v3 guard
+	 *    bails once `wcf_save_widgets` has been written by hand; here an
+	 *    explicit switch-off is still honoured for everything the imported
+	 *    content does not use, but the widgets it DOES use come on — importing
+	 *    a demo is the user asking for those pages to render.
+	 * 2. It matches `elType` as well as `widgetType`. AAE's slider, counter,
+	 *    button and every offcanvas part save as their OWN elType — atomic
+	 *    container-style elements are not "widgets" in the data at all — so a
+	 *    `widgetType`-only scan enables the leaf widgets and leaves every
+	 *    container blank. Same finding as Pro's usage scanner.
+	 *
+	 * Internal children (`WIDGET_PARENT_MAP`) resolve to their parent, because
+	 * that is the card the dashboard shows and `is_widget_active()` inherits
+	 * through it. Extensions leave no name in the data, only a prop inside some
+	 * other element's settings, so they are detected through the registry's
+	 * own `usage_prop` declarations — the same rule Pro's usage counter uses —
+	 * on the DECODED data, not by regex.
+	 *
+	 * @param int[]|null $post_ids Restrict the scan to these posts; null = whole site.
+	 * @return array{widgets: string[], extensions: string[]} What was newly switched on.
+	 */
+	public function enable_used_atomic( ?array $post_ids = null ): array
+	{
+		global $wpdb;
+
+		$where = '';
+		if ( null !== $post_ids ) {
+			$post_ids = array_values( array_filter( array_map( 'intval', $post_ids ) ) );
+			if ( empty( $post_ids ) ) {
+				return [ 'widgets' => [], 'extensions' => [] ];
+			}
+			$where = ' AND post_id IN (' . implode( ',', $post_ids ) . ')';
+		}
+
+		// Two families, two markers: our elements carry `e-aae-a-`, our
+		// extension props carry `aae_` — an extension can sit on a core
+		// e-heading with no AAE element anywhere on the page.
+		$rows = $wpdb->get_col(
+			"SELECT meta_value FROM {$wpdb->postmeta}
+			  WHERE meta_key = '_elementor_data'
+			    AND ( meta_value LIKE '%\"e-aae-a-%' OR meta_value LIKE '%\"aae_%' )" . $where // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $where is built from intval()ed ids only.
+		);
+
+		if ( empty( $rows ) ) {
+			return [ 'widgets' => [], 'extensions' => [] ];
+		}
+
+		$registry      = $this->get_widgets_registry();
+		$parents       = $this->widget_parent_map();
+		$always_active = $this->always_active_lookup();
+		$saved_widgets = $this->get_saved_options();
+		$saved_exts    = $this->get_saved_extension_options();
+
+		// prop => [ [ slug, kind ], ... ] — one prop can belong to several extensions.
+		$prop_index = [];
+		foreach ( $this->get_extension_usage_props() as $slug => $def ) {
+			foreach ( $def['prop'] as $prop ) {
+				$prop_index[ $prop ][] = [ $slug, $def['kind'] ];
+			}
+		}
+
+		$new_widgets = [];
+		$new_exts    = [];
+
+		foreach ( $rows as $row ) {
+			$row = (string) $row;
+
+			if ( preg_match_all( '/"(?:widgetType|elType)":"e-([a-z0-9-]+)"/', $row, $m ) ) {
+				foreach ( $m[1] as $slug ) {
+					if ( isset( $parents[ $slug ] ) ) {
+						$slug = $parents[ $slug ];
+					}
+					if ( ! isset( $registry[ $slug ] ) || isset( $always_active[ $slug ] ) || isset( $saved_widgets[ $slug ] ) ) {
+						continue;
+					}
+					$new_widgets[ $slug ] = true;
+				}
+			}
+
+			if ( ! empty( $prop_index ) && false !== strpos( $row, '"aae_' ) ) {
+				$decoded = json_decode( $row, true );
+				if ( is_array( $decoded ) ) {
+					$this->collect_used_extensions( $decoded, $prop_index, $saved_exts, $new_exts );
+				}
+			}
+		}
+
+		if ( ! empty( $new_widgets ) ) {
+			$this->write_widget_option( $saved_widgets + $new_widgets );
+		}
+
+		if ( ! empty( $new_exts ) ) {
+			$this->write_extension_option( $saved_exts + $new_exts );
+		}
+
+		return [
+			'widgets'    => array_keys( $new_widgets ),
+			'extensions' => array_keys( $new_exts ),
+		];
+	}
+
+	/**
+	 * Hook wrapper — whole-site scan after a content import.
+	 */
+	public function enable_used_atomic_after_import(): void
+	{
+		$this->enable_used_atomic( null );
+	}
+
+	/**
+	 * Walk decoded element data and mark every extension whose usage prop
+	 * qualifies. Same three kinds as Pro's Widget_Usage::prop_qualifies():
+	 * `present` (the key exists), `boolean` (value === true) and `filled`
+	 * (anything with content — an interactions list, a regex string).
+	 * Present is not enabled: a switched-off section leaves its prop behind
+	 * with `"value":false`, so the value has to be looked at.
+	 */
+	private function collect_used_extensions( array $node, array $prop_index, array $saved, array &$found ): void
+	{
+		foreach ( $node as $key => $value ) {
+			if ( is_string( $key ) && isset( $prop_index[ $key ] ) ) {
+				$inner = is_array( $value ) && array_key_exists( 'value', $value ) ? $value['value'] : $value;
+
+				foreach ( $prop_index[ $key ] as [ $slug, $kind ] ) {
+					if ( isset( $saved[ $slug ] ) || isset( $found[ $slug ] ) ) {
+						continue;
+					}
+					if ( 'present' === $kind
+						|| ( 'boolean' === $kind && true === $inner )
+						|| ( 'boolean' !== $kind && self::value_has_content( $inner ) ) ) {
+						$found[ $slug ] = true;
+					}
+				}
+			}
+
+			if ( is_array( $value ) ) {
+				$this->collect_used_extensions( $value, $prop_index, $saved, $found );
+			}
+		}
+	}
+
+	private static function value_has_content( $value ): bool
+	{
+		if ( is_array( $value ) ) {
+			foreach ( $value as $item ) {
+				if ( self::value_has_content( $item ) ) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		return ! ( null === $value || '' === $value || false === $value || 0 === $value );
+	}
+
+	/**
+	 * The two facts the V4 import UI needs, asked fresh.
+	 *
+	 * `available` -- Elementor's atomic element system is on, so a V4 template's
+	 * elements have something to render with. `in_use` -- this site already
+	 * holds V4 content, which is what decides HOW a V4 design system lands
+	 * (`match_site` on an empty site, `keep_create` beside existing classes;
+	 * see inc/admin/atomic-kit-import.php) and is therefore what the second-
+	 * import warning is about.
+	 *
+	 * `has_atomic_usage()` is the same cached signal the import step snapshots
+	 * into `aae_site_has_atomic`, so the dialog and the importer cannot
+	 * disagree about which mode is coming.
+	 *
+	 * @return array{available: bool, in_use: bool}
+	 */
+	public static function import_signal(): array
+	{
+		return [
+			'available' => self::is_elementor_atomic_active(),
+			'in_use'    => self::has_atomic_usage(),
+		];
 	}
 
 	/**
@@ -8199,7 +8426,9 @@ JS;
 		// leave the site in a state the user never chose and the undo snapshot
 		// would describe honestly but uselessly.
 		if ('accepted' === $state && isset($_POST['fields'], $_POST['ext_fields'])) {
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- decode_slug_map() runs sanitize_text_field() on the raw value before json_decode(), and write_widget_option()/write_extension_option() sanitise every key and value again before storing. The handler has already checked the nonce and the capability.
 			$widgets    = self::decode_slug_map(wp_unslash($_POST['fields']));
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- decode_slug_map() runs sanitize_text_field() on the raw value before json_decode(), and write_widget_option()/write_extension_option() sanitise every key and value again before storing. The handler has already checked the nonce and the capability.
 			$extensions = self::decode_slug_map(wp_unslash($_POST['ext_fields']));
 
 			if (null === $widgets || null === $extensions) {

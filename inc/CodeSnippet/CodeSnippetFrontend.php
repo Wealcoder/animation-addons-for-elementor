@@ -570,23 +570,59 @@ class CodeSnippetFrontend {
 	 * @since 2.3.10
 	 * @return void
 	 */
+	/**
+	 * Run a stored PHP snippet.
+	 *
+	 * This is the feature, not an accident: a snippet manager exists so a site
+	 * owner can add PHP without editing plugin files, and eval() is how every
+	 * implementation of it works. The safety is entirely in who can write the
+	 * content, so that is where the guarding is:
+	 *
+	 *   - $content is never request data. It is post meta on a
+	 *     `wcf-code-snippet` post, which only an administrator can create.
+	 *   - Authoring a PHP snippet requires `edit_plugins` and is refused when
+	 *     DISALLOW_FILE_EDIT or DISALLOW_FILE_MODS is set -- the same gate
+	 *     WordPress puts on its own plugin editor. See
+	 *     CodeSnippet::can_manage_php().
+	 *   - Only snippets explicitly marked active are collected, and only for
+	 *     the locations they declare.
+	 *
+	 * Anyone able to reach this has, by construction, the permission needed to
+	 * install a plugin -- so this grants no privilege they did not already
+	 * hold. Documented for site owners under "Code Snippets" in readme.txt.
+	 *
+	 * @param string $content Snippet body, as authored.
+	 */
 	private function execute_php_snippet( $content ) {
 		$content = preg_replace( '/^\s*<\?(php|PHP)?/i', '', $content );
 		$content = preg_replace( '/\?>\s*$/', '', $content );
 		if ( ! empty( $content ) ) {
+			// The snippet is arbitrary PHP written by an administrator: it can
+			// throw, and it can open buffers of its own. The level marker plus
+			// finally mean the buffer is always closed and only ever down to
+			// the level we opened at.
+			$ob_level = ob_get_level();
+			$output   = '';
 			ob_start();
 
 			try {
 				$wrapped = 'return function() { ' . $content . ' };';
-				$func    = eval( $wrapped ); // phpcs:ignore WordPress.Security.Eval.Discouraged, Generic.PHP.ForbiddenFunctions.Found
+				// Deliberate, and documented above this method and in readme.txt:
+				// the content is post meta on a private CPT that only a user passing
+				// CodeSnippet::can_manage_php() (edit_plugins, and neither
+				// DISALLOW_FILE_EDIT nor DISALLOW_FILE_MODS set) can ever author.
+				$func    = eval( $wrapped ); // phpcs:ignore Squiz.PHP.Eval.Discouraged, WordPress.Security.Eval.Discouraged, Generic.PHP.ForbiddenFunctions.Found
 
 				if ( is_callable( $func ) ) {
 					$func();
 				}
-			} catch ( \Throwable $e ) {
+			} catch ( \Throwable $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch -- a broken snippet must not take the page down.
+				$e = null;
+			} finally {
+				while ( ob_get_level() > $ob_level ) {
+					$output = (string) ob_get_clean() . $output;
+				}
 			}
-
-			$output = ob_get_clean();
 
 			echo wp_kses_post( $output );
 		}

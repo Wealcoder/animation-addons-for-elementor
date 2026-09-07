@@ -32,8 +32,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 final class Controls {
 
-	const TD = 'animation-addons-for-elementor';
-
 	public function register(): void {
 		add_filter( 'elementor/atomic-widgets/controls', [ $this, 'inject_controls' ], 10, 2 );
 	}
@@ -58,7 +56,7 @@ final class Controls {
 
 	private function build_text_animation_section(): Section {
 		return Section::make()
-			->set_label( Bootstrap::get_label( __( 'Text Animation', self::TD ) ) )
+			->set_label( Bootstrap::get_label( __( 'Text Animation', 'animation-addons-for-elementor' ) ) )
 			->set_items( [
 				// Anchor — React replacement renders the full responsive section here.
 				Text_Control::bind_to( Schema::TEXT_SECTION_ANCHOR ),		

@@ -18,7 +18,6 @@ const DemoImporting = () => {
   const template = url.searchParams.get("template");
   const templateid = url.searchParams.get("templateid");
   const plugins = url.searchParams.get("plugins");
-  const theme = url.searchParams.get("theme");
   const attachment = url.searchParams.get("attachment");
 
   const changeRoute = (value, meta) => {
@@ -30,7 +29,6 @@ const DemoImporting = () => {
     url.searchParams.set("templateid", templateid);
     url.searchParams.set("tab", value);
     if (meta.plugins) url.searchParams.set("plugins", meta.plugins);
-    if (meta.theme) url.searchParams.set("theme", meta.theme);
     url.searchParams.set("attachment", meta.attachment);
     window.history.replaceState({}, "", url);
     setTabKey(value);
@@ -168,7 +166,8 @@ const DemoImporting = () => {
         formData.append("template_data", JSON.stringify(tpldata));
         formData.append("nonce", WCF_ADDONS_ADMIN.nonce);
         if (plugins) formData.append("user_plugins", plugins);
-        if (theme) formData.append("theme_slug", theme);
+        // No theme is sent. The import never installs or activates a theme;
+        // it only names the one the template was designed against.
         formData.append("attachment", attachment);
         const response = await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
           method: "POST",

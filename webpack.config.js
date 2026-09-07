@@ -59,7 +59,6 @@ module.exports = {
     ...getAtomicWidgetEntries(),
     "modules/dashboard/index": "./src/modules/dashboard/main.js",
     "modules/dashboard/wizardSetup": "./src/modules/dashboard/wizardSetup.js",
-    "modules/dashboard/opt-out": "./src/modules/dashboard/opt-out.js",
     "modules/page-import/index": "./src/modules/page-import/main.js",
     "modules/custom-font/main": "./src/modules/custom-font/main.js",
     "modules/custom-icon/main": "./src/modules/custom-icon/main.js",

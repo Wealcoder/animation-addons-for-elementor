@@ -84,6 +84,15 @@ const StaterTemplate = () => {
           url.searchParams.append("layout", meta?.filterData?.dir);
         }
 
+        // Elementor V3 / V4 (atomic). Served by the template server's
+        // `?builder=` filter; absent means every template.
+        if (
+          meta?.filterData?.builder &&
+          meta?.filterData?.builder !== "all"
+        ) {
+          url.searchParams.append("builder", meta?.filterData?.builder);
+        }
+
         await fetch(url.toString())
           .then((response) => response.json())
           .then((data) => {

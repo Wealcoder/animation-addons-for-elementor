@@ -2,8 +2,8 @@
 Contributors: wealcoder, wcrayhan, jhshakil, ahsanriad, hamimbepari , raselsec
 Donate link: https://buy.stripe.com/3cs3dI7DQauI0py9AC
 Tags: animation, elementor, elementor addons, elementor templates, elementor widgets
-Requires at least: 6.0
-Tested up to: 7.0
+Requires at least: 6.6
+Tested up to: 7.1
 Requires PHP: 7.4
 Stable tag: 4.1.0
 License: GPL v2 or later
@@ -592,14 +592,123 @@ You don’t need to know the code to use the widgets and modules of Animation Ad
 7. **Section Import (Live Copy)* One-click live copy & import of pre-designed animation sections directly into your projects.
 
 
+== Code Snippets and PHP Execution ==
+
+The Code Snippet feature lets a site administrator store small pieces of CSS,
+JavaScript, HTML or PHP and have the plugin output or run them on the site. This
+is the same thing a snippet manager exists to do, but because one of those types
+is PHP it is worth stating plainly what the rules are.
+
+What runs, and when:
+
+* CSS, JavaScript and HTML snippets are printed into the page at the location
+  you choose.
+* A PHP snippet is executed with eval() when the page loads. Only snippets you
+  have marked active are run.
+
+Who may create one:
+
+* CSS, JS and HTML snippets require the "manage_options" capability, i.e. an
+  administrator.
+* A PHP snippet additionally requires "edit_plugins" -- the same capability
+  WordPress requires for its own plugin and theme editors. On multisite that
+  means a Super Admin; a site administrator cannot create one.
+* If your wp-config.php defines DISALLOW_FILE_EDIT or DISALLOW_FILE_MODS, PHP
+  snippets cannot be created or edited at all. Those constants exist to say
+  "administrators on this site may not execute code", and this feature honours
+  them rather than offering a way around them.
+
+Snippet content is never taken from a page request. It is stored as post meta on
+a private "wcf-code-snippet" post type, which is not publicly queryable and has
+no front-end URL. Anyone able to author a PHP snippet already has permission to
+install a plugin, so the feature grants no privilege they did not already hold.
+
+If you do not want this feature on your site at all, switch Code Snippet off in
+the plugin's Extensions screen and nothing in it will load.
+
 == External Services ==
-We use the Themecrowdy API for one-click import of Elementor sites and section templates.
-Our Mailchimp widget connects to Mailchimp’s API.
-Subscribing is optional—no data is collected unless you opt in.
+
+This plugin connects to the following external services. Each one is listed with
+what it is used for, when the request happens, and what is sent. No request is
+made until you use the feature it belongs to, and none of them transmit your
+site address, your account details, or any personal information about you.
+
+= 1. AAE Template Library (block.animation-addons.com) =
+Used to browse and insert the block, section and page templates offered inside
+the Elementor editor.
+When: only while you have the AAE template library open in the editor.
+Sent: the template or category you are viewing, the plugin API version, and your
+site's language so the catalogue can be returned in the right language.
+Endpoints: /wp-json/api/v2/list, /wp-json/templates/v2/wcf-tpl-category,
+/wp-json/wp/v2/wcf-templates, /wp-json/wp/v2/wcf-templates/json-content
+This service is operated by Animation Addons (Wealcoder) on a subdomain of
+animation-addons.com.
+Terms: https://animation-addons.com/terms-and-conditions/
+Privacy: https://animation-addons.com/privacy-policy/
+
+= 2. AAE Starter Templates (themecrowdy.com) =
+Used to browse, search and import complete website templates from the Starter
+Templates screen.
+When: only while you are on that screen, and when you start an import.
+Sent: the search term you type, and the identifier of the template you choose to
+import.
+Endpoints: /wp-json/wp/v2/starter-templates,
+/wp-json/starter-templates/download
+This service is operated by Theme Crowdy, run by the developer of this
+plugin. The Animation Addons privacy policy linked below names this Starter
+Template integration explicitly and is the policy that governs it.
+Terms: https://animation-addons.com/terms-and-conditions/
+Privacy: https://animation-addons.com/privacy-policy/
+
+= 3. AAE Preset Server (crowdytheme.com) =
+Used to offer ready-made design presets for the plugin's widgets.
+When: only when you open the "Presets" control on a widget in the editor.
+Sent: the widget type you are editing. Nothing else.
+Endpoints: /assets/wp-json/aae-preset-server/v1
+This service is operated by Crowdytheme.
+Terms: https://crowdytheme.com/terms-and-conditions/
+Privacy: https://crowdytheme.com/privacy-policy/
+
+= 4. OpenWeatherMap (api.openweathermap.org) =
+Used by the Weather widget to display current conditions and the forecast.
+When: only on pages where you have placed the Weather widget, and only after you
+enter your own OpenWeatherMap API key in the widget settings.
+Sent: the location you configure in the widget, and your own API key.
+Terms: https://openweathermap.org/terms
+Privacy: https://openweathermap.org/privacy-policy
+
+= 5. Mailchimp (api.mailchimp.com) =
+Used by the Mailchimp widget to add subscribers to your own Mailchimp audience.
+When: only on pages where you have placed the Mailchimp widget, and only when a
+visitor submits the form. Requires your own Mailchimp API key.
+Sent: the email address the visitor entered and any additional form fields you
+have mapped, to your own Mailchimp account.
+Terms: https://mailchimp.com/legal/terms/
+Privacy: https://mailchimp.com/legal/privacy/
+
+= 6. YouTube and Vimeo oEmbed =
+Used by the Video widget to retrieve the thumbnail image for a video you embed.
+When: only when you add a YouTube or Vimeo URL to a Video widget.
+Sent: the public video URL you entered.
+YouTube terms: https://www.youtube.com/t/terms
+YouTube privacy: https://policies.google.com/privacy
+Vimeo terms: https://vimeo.com/terms
+Vimeo privacy: https://vimeo.com/privacy
+
+Note: the Form widget can send submissions to a webhook URL, and the plugin can
+send email through your site. Those go only where you configure them; the plugin
+does not choose the destination.
 
 == Source Code ==
 
-See the unminified JS and CSS in our public repo: [GitHub Repository](https://github.com/Wealcoder/animation-addons-for-elementor/tree/dashboard/assets/src). 
+The compiled JavaScript and CSS shipped in assets/build/ and assets/js/ is built
+from the human-readable sources in this plugin's public repository:
+
+https://github.com/Wealcoder/animation-addons-for-elementor
+
+The React and JavaScript sources are under /src, the SCSS sources under
+/assets/src. Build with "npm install" then "npm run build" (webpack via
+@wordpress/scripts, plus gulp for the SCSS).
 
 == Changelog ==
 

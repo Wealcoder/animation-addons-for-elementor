@@ -406,13 +406,6 @@ class Plugin
 		return apply_filters(
 			'aae/lite/widgets/scripts', // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 			array(
-				'typed'                => array(
-					'handler' => 'typed',
-					'src'     => 'typed.min.js',
-					'dep'     => array(),
-					'version' => WCF_ADDONS_VERSION,
-					'arg'     => true,
-				),
 				'ProgressBar'          => array(
 					'handler' => 'progressbar',
 					'src'     => 'progressbar.min.js',
@@ -430,7 +423,7 @@ class Plugin
 				'typewriter'           => array(
 					'handler' => 'wcf--typewriter',
 					'src'     => 'widgets/typewriter.min.js',
-					'dep'     => array('typed', 'jquery'),
+					'dep'     => array('jquery'),
 					'version' => WCF_ADDONS_VERSION,
 					'arg'     => true,
 				),
@@ -1195,7 +1188,6 @@ class Plugin
 			require_once WCF_ADDONS_PATH . 'inc/admin/dashboard.php';
 
 			include_once WCF_ADDONS_PATH . 'inc/admin/Notices/Notices.php';
-			include_once WCF_ADDONS_PATH . 'inc/admin/Notices/ShowNotices.php';
 		}
 
 		// Only load theme builder when needed. added this condition at v-2.6.0
@@ -1615,13 +1607,6 @@ class Plugin
 				true
 			);
 
-			wp_enqueue_style(
-				'aae-plugins-styles',
-				WCF_ADDONS_URL . 'assets/css/plugins.css',
-				array(),
-				WCF_ADDONS_VERSION,
-				'all'
-			);
 		}
 	}
 

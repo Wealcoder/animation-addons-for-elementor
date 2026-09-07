@@ -22,6 +22,7 @@ const StaterTemplate = () => {
   const [loading, setLoading] = useState(true);
   const [types, setTypes] = useState([]);
   const [license, setLicense] = useState("");
+  const [builder, setBuilder] = useState("");
   const [selectedCategory, setSelectedCategory] = useState([]);
   const [openSidebar, setOpenSidebar] = useState(false);
 
@@ -32,13 +33,22 @@ const StaterTemplate = () => {
       pageNum,
       types,
       license,
+      builder,
       selectedCategory,
       allTemplate,
       wishlist: WCF_ADDONS_ADMIN.addons_config.wishlist.toString(),
     };
 
     getAllTemplate(meta);
-  }, [searchKey, filterKey, pageNum, types, license, selectedCategory]);
+  }, [
+    searchKey,
+    filterKey,
+    pageNum,
+    types,
+    license,
+    builder,
+    selectedCategory,
+  ]);
 
   const getAllTemplate = useCallback(
     debounceFn(async (meta) => {
@@ -78,6 +88,11 @@ const StaterTemplate = () => {
             "premium",
             meta.license === "pro" ? "yes" : "no",
           );
+        }
+
+        // Elementor V3 / V4 (atomic). Absent means every page.
+        if (meta.builder) {
+          url.searchParams.append("builder", meta.builder);
         }
 
         await fetch(url.toString())
@@ -162,6 +177,8 @@ const StaterTemplate = () => {
           setTypes={setTypes}
           license={license}
           setLicense={setLicense}
+          builder={builder}
+          setBuilder={setBuilder}
           selectedCategory={selectedCategory}
           setSelectedCategory={setSelectedCategory}
           setPageNum={setPageNum}
@@ -181,6 +198,8 @@ const StaterTemplate = () => {
             setTypes={setTypes}
             license={license}
             setLicense={setLicense}
+            builder={builder}
+            setBuilder={setBuilder}
             selectedCategory={selectedCategory}
             setSelectedCategory={setSelectedCategory}
             setPageNum={setPageNum}

@@ -23,8 +23,8 @@ if (function_exists('wcf_set_postview')) {
 if (! function_exists('aae_public_counter_visitor_key')) {
     function aae_public_counter_visitor_key()
     {
-        $ip = isset($_SERVER['REMOTE_ADDR']) ? wp_unslash($_SERVER['REMOTE_ADDR']) : '';
-        $ua = isset($_SERVER['HTTP_USER_AGENT']) ? wp_unslash($_SERVER['HTTP_USER_AGENT']) : '';
+        $ip = isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])) : '';
+        $ua = isset($_SERVER['HTTP_USER_AGENT']) ? sanitize_text_field(wp_unslash($_SERVER['HTTP_USER_AGENT'])) : '';
 
         return substr(wp_hash($ip . '|' . $ua), 0, 16);
     }
@@ -71,6 +71,20 @@ function aae_handle_aae_post_shares_count()
     if (isset($_POST['post_id']) && isset($_POST['social'])) {
         $post_id = absint(sanitize_text_field(wp_unslash($_POST['post_id'])));
         $social  = sanitize_key(wp_unslash($_POST['social']));
+
+        // The vendor list is a fixed SELECT in the Social Share widget, and
+        // this value becomes a POST META KEY. Left open, one unauthenticated
+        // client can mint an unbounded number of distinct meta rows on a post
+        // nobody is actually sharing. Filterable, so adding a network stays a
+        // one-line change rather than a reason to leave it open.
+        $allowed_social = apply_filters(
+            'aae_post_share_networks',
+            array( 'facebook', 'twitter', 'linkedin', 'pinterest', 'tumblr', 'blogger', 'reddit' )
+        );
+
+        if (! in_array($social, (array) $allowed_social, true)) {
+            wp_send_json_error(['message' => esc_html__('Invalid network.', 'animation-addons-for-elementor')]);
+        }
 
         // The target must be a real, published post — otherwise this writes
         // share meta onto arbitrary or non-existent ids.
@@ -163,6 +177,18 @@ if (!function_exists('aaeaddon_post_lite_reaction_ajax')) {
         $reaction = isset($_POST['reaction']) ? sanitize_text_field(wp_unslash( $_POST['reaction'] )) : [];
 
         if (! $post_id || ! $reaction) {
+            wp_send_json_error('Invalid data');
+        }
+
+        // Same reason as the share vendors: this value becomes a meta key,
+        // and the widget's Type control is a fixed SELECT — anything else
+        // arriving here was not sent by the widget.
+        $allowed_reactions = apply_filters(
+            'aae_post_reaction_types',
+            array( 'emoji', 'like', 'dislike', 'funny', 'wow', 'love', 'sad', 'angry' )
+        );
+
+        if (! in_array($reaction, (array) $allowed_reactions, true)) {
             wp_send_json_error('Invalid data');
         }
 

@@ -335,12 +335,41 @@ class Animation_Settings {
 			return;
 		}
 
+		$slugs = self::used_v3_widget_slugs();
+
+		if ( empty( $slugs ) ) {
+			return;
+		}
+
+		update_option( 'wcf_save_widgets', $slugs );
+	}
+
+	/**
+	 * Dashboard slugs of every v3 widget this site's CONTENT references, in
+	 * the shape `wcf_save_widgets` stores (`slug => true`).
+	 *
+	 * Two callers, pulling in opposite directions, share it on purpose:
+	 * maybe_enable_used_v3_widgets() switches exactly these ON after an import
+	 * that brought v3 pages; Atomic_V3_Switch_Off keeps exactly these ON while
+	 * switching everything else OFF after a V4 demo import. Both are answering
+	 * "which widgets would blank a live page if unregistered", and two scans
+	 * that could drift would answer it differently.
+	 *
+	 * Costs a full `_elementor_data` scan; callers gate on has_v3_usage() first.
+	 *
+	 * @return array<string,true>
+	 */
+	public static function used_v3_widget_slugs(): array {
 		global $wpdb;
 
+		// v3_widget_name_sql() builds a fixed REGEXP from widget_name_to_slug_map(),
+		// i.e. from the get_name() values read out of this plugin's own widget
+		// files. No request data reaches it and there is nothing user-supplied to
+		// bind, so there is no placeholder to give prepare().
 		$rows = $wpdb->get_col(
 			"SELECT meta_value FROM {$wpdb->postmeta}
 			  WHERE meta_key = '_elementor_data'
-			    AND " . self::v3_widget_name_sql()
+			    AND " . self::v3_widget_name_sql() // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- see above.
 		);
 
 		$map  = self::widget_name_to_slug_map();
@@ -366,7 +395,7 @@ class Animation_Settings {
 		}
 
 		if ( empty( $used ) ) {
-			return;
+			return [];
 		}
 
 		$slugs = [];
@@ -375,11 +404,7 @@ class Animation_Settings {
 			$slugs[ $map[ $name ] ] = true;
 		}
 
-		if ( empty( $slugs ) ) {
-			return;
-		}
-
-		update_option( 'wcf_save_widgets', $slugs );
+		return $slugs;
 	}
 
 	/**
@@ -538,12 +563,14 @@ class Animation_Settings {
 
 		global $wpdb;
 
-		$found = (bool) $wpdb->get_var(
-			"SELECT 1 FROM {$wpdb->postmeta}
+		// Same fixed REGEXP as above, built from this plugin's own widget names.
+		$sql = "SELECT 1 FROM {$wpdb->postmeta}
 			 WHERE meta_key = '_elementor_data'
 			   AND " . self::v3_widget_name_sql() . '
-			 LIMIT 1'
-		);
+			 LIMIT 1';
+
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- see above.
+		$found = (bool) $wpdb->get_var( $sql );
 
 		// The Kit counts as usage too — someone configured v3 chrome by hand.
 		if ( ! $found && did_action( 'elementor/loaded' ) && class_exists( '\Elementor\Plugin' ) ) {
@@ -1717,6 +1744,24 @@ JS;
 	}
 
 	/**
+	 * Switch the v3 Site Settings tabs on or off from PHP.
+	 *
+	 * Deliberately does NOT set `legacy_v3_user_set`: that flag is the user's
+	 * own hand on the switch, and it is what stops maybe_reactivate_legacy()'s
+	 * ratchet. A programmatic "off" after a V4 demo import must stay
+	 * ratchet-able — if the site still holds v3 content the ratchet is RIGHT
+	 * to bring the tabs back, and only a person may overrule that.
+	 */
+	public static function set_legacy_v3( bool $on ): void {
+		$settings              = self::get();
+		$settings['legacy_v3'] = $on;
+		$clean                 = self::sanitize( $settings );
+
+		update_option( self::OPTION_NAME, $clean );
+		self::$cache = $clean;
+	}
+
+	/**
 	 * Flatten a colour field to a CSS colour.
 	 *
 	 * A `global` reference is resolved against the active Kit's system colours;
@@ -2122,6 +2167,7 @@ JS;
 	public function ajax_save(): void {
 		$this->guard();
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- guard() above runs check_ajax_referer() and current_user_can(); the value is a JSON string, decoded below and run through self::sanitize() before anything is stored.
 		$raw = isset( $_POST['settings'] ) ? wp_unslash( $_POST['settings'] ) : '';
 
 		// The payload arrives as a JSON string (nested arrays don't survive

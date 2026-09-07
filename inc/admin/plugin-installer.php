@@ -4,8 +4,6 @@
 namespace WCF_ADDONS\Admin;
 // phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
-use WP_Error;
-
 if (!defined('ABSPATH')) {
     exit();
 } // Exit if accessed directly
@@ -13,90 +11,54 @@ if (!defined('ABSPATH')) {
 class WCF_Plugin_Installer
 {
 
+    /**
+     * The only plugin these endpoints may activate.
+     *
+     * The dashboard and the editor both send this exact basename, and the
+     * buttons that send it only render while Pro is installed but inactive.
+     * Accepting anything else would make this a general "activate any
+     * plugin" endpoint, which is not what the user was shown a button for.
+     */
+    const PRO_BASENAME = 'animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php';
+
     public function __construct($reload = false)
     {
         if (!$reload) {
 
             add_action('wp_ajax_wcf_active_plugin', [$this, 'ajax_activate_plugin']);
             add_action('wp_ajax_activate_from_editor_plugin', [$this, 'activate_from_editor_plugin']);
-            add_action('wp_ajax_wcf_deactive_plugin', [$this, 'ajax_deactivate_plugin']);
             add_action('wp_ajax_aaeaddon_template_dependency_status', [$this, 'dependency_status']);
+            add_action('wp_ajax_aaeaddon_atomic_import_status', [$this, 'atomic_import_status']);
         }
     }
 
     /**
-     * Install a plugin from a given source.
+     * Can a V4 (atomic) starter template be imported here, and is one already in?
      *
-     * @param string $slug   Plugin slug or download URL.
-     * @param string $source Plugin source: 'wordpress' or 'self_hosted'.
-     * @param bool   $active Activate plugin after installation.
-     * 
-     * @return mixed WP_Error | bool
+     * Asked by the starter-template grids the moment Import is pressed on a V4
+     * card -- not read from the page payload -- because the answer changes
+     * during a session: the first V4 import makes every later one a "second
+     * import", and that is the case the dialog exists for. Reports, never
+     * writes; the importer snapshots the same signal itself at step 1.
+     *
+     * @return void Sends JSON {available: bool, in_use: bool}.
      */
-    public function install_plugin($slug = '', $source = '', $active = false)
+    public function atomic_import_status()
     {
-        if (empty($slug) || empty($source)) {
-            return new WP_Error('empty_arg', __('Arguments should not be empty.', 'animation-addons-for-elementor'));
+        check_ajax_referer('wcf_admin_nonce', 'nonce');
+
+        if (!current_user_can('activate_plugins')) {
+            wp_send_json_error(__('You are not allowed to do this action', 'animation-addons-for-elementor'));
         }
 
-        include_once ABSPATH . 'wp-admin/includes/file.php';
-        include_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
-        include_once ABSPATH . 'wp-admin/includes/class-automatic-upgrader-skin.php';
-
-        $download_link = '';
-
-        // Handle source conditions
-        if ($source === 'wordpress') {
-            $plugin_data = $this->get_remote_plugin_data($slug, $source);
-            if (is_wp_error($plugin_data)) {
-                return $plugin_data;
-            }
-            $download_link = $plugin_data->download_link;
-        } elseif ($source === 'self_host') {
-
-            if (filter_var($slug, FILTER_VALIDATE_URL)) {
-                $download_link = str_replace('http://', 'https://', $slug);
-            } else {
-                return new WP_Error('invalid_url', __('Invalid download URL.', 'animation-addons-for-elementor'));
-            }
-
-            // Validate the file type
-            $file_headers = wp_remote_head($download_link, [
-                'timeout'   => 60,           // Timeout in seconds
-                'sslverify' => false,       // Disable SSL verification (not for production)
-            ]);
-
-            if (is_wp_error($file_headers) || !isset($file_headers['headers']['content-type']) || (! empty($file_headers['headers']['content-type']) && strpos($file_headers['headers']['content-type'], 'application/zip') === false
-            )) {
-                return new WP_Error('invalid_file_type', __('Provided URL is not a valid plugin ZIP file.', 'animation-addons-for-elementor'));
-            }
-        } else {
-            return new WP_Error('invalid_source', __('Invalid source specified.', 'animation-addons-for-elementor'));
+        // The atomic registry only loads on Elementor 4+; without it there is
+        // nothing a V4 template could render with, so "not available" is the
+        // honest answer rather than an error.
+        if (!class_exists('\WCF_ADDONS\AtomicWidgets\Atomic')) {
+            wp_send_json_success(['available' => false, 'in_use' => false]);
         }
 
-        // Perform plugin installation
-        $upgrader = new \Plugin_Upgrader(new \Automatic_Upgrader_Skin());
-        $install = $upgrader->install($download_link);
-
-        if (is_wp_error($install)) {
-            return $install;
-        }
-
-        // Activate plugin if requested
-        if ($install === true && $active) {
-            if ($source === 'self_host') {
-                $activate = activate_plugin($upgrader->plugin_info());
-            } else {
-                $activate = activate_plugin($upgrader->plugin_info(), '', false, true);
-            }
-
-            if (is_wp_error($activate)) {
-                return $activate;
-            }
-            return $activate === null;
-        }
-
-        return $install;
+        wp_send_json_success(\WCF_ADDONS\AtomicWidgets\Atomic::import_signal());
     }
 
     public function ajax_activate_plugin()
@@ -109,7 +71,14 @@ class WCF_Plugin_Installer
         }
 
         $basename = isset($_POST['action_base']) ? sanitize_text_field(wp_unslash($_POST['action_base'])) : '';
-        $result = activate_plugin($basename, '', false, true);
+
+        if (self::PRO_BASENAME !== $basename) {
+            wp_send_json_error(__('Invalid plugin.', 'animation-addons-for-elementor'));
+        }
+
+        // Not silent: a silent activation skips activate_{$plugin}, which is
+        // where Pro's own register_activation_hook() flushes rewrite rules.
+        $result = activate_plugin($basename, '', false, false);
 
         if (is_wp_error($result)) {
             wp_send_json_error($result->get_error_message());
@@ -128,67 +97,20 @@ class WCF_Plugin_Installer
         }
 
         $basename = isset($_POST['action_base']) ? sanitize_text_field(wp_unslash($_POST['action_base'])) : '';
-        $result = activate_plugin($basename, '', false, true);
+
+        if (self::PRO_BASENAME !== $basename) {
+            wp_send_json_error(__('Invalid plugin.', 'animation-addons-for-elementor'));
+        }
+
+        // Not silent: a silent activation skips activate_{$plugin}, which is
+        // where Pro's own register_activation_hook() flushes rewrite rules.
+        $result = activate_plugin($basename, '', false, false);
 
         if (is_wp_error($result)) {
             wp_send_json_error($result->get_error_message());
         }
 
         wp_send_json_success(__('Plugin activated successfully!', 'animation-addons-for-elementor'));
-    }
-
-    public function ajax_deactivate_plugin()
-    {
-        check_ajax_referer('wcf_admin_nonce', 'nonce');
-
-        if (!current_user_can('activate_plugins')) {
-            wp_send_json_error(__('You are not allowed to do this action', 'animation-addons-for-elementor'));
-        }
-
-        $basename = isset($_POST['action_base']) ? sanitize_text_field(wp_unslash($_POST['action_base'])) : '';
-        $result = deactivate_plugins([$basename], true);
-
-        if (is_wp_error($result)) {
-            wp_send_json_error($result->get_error_message());
-        }
-
-        wp_send_json_success(__('Plugin deactivated successfully!', 'animation-addons-for-elementor'));
-    }
-
-    private function get_remote_plugin_data($slug = '', $source = '')
-    {
-        if (empty($slug) || empty($source)) {
-            return new WP_Error('empty_arg', __('Arguments should not be empty.', 'animation-addons-for-elementor'));
-        }
-
-        if ('wordpress' === $source) {
-            $response = wp_remote_post(
-                'http://api.wordpress.org/plugins/info/1.0/',
-                [
-                    'body' => [
-                        'action'  => 'plugin_information',
-                        'request' => serialize((object) [
-                            'slug'   => $slug,
-                            'fields' => ['version' => false],
-                        ]),
-                    ],
-                ]
-            );
-
-            if (is_wp_error($response)) {
-                return $response;
-            }
-
-            $data = unserialize(wp_remote_retrieve_body($response));
-
-            if (!$data) {
-                return new WP_Error('plugin_data_error', __('Failed to fetch plugin data.', 'animation-addons-for-elementor'));
-            }
-
-            return $data;
-        }
-
-        return new WP_Error('invalid_source', __('Unsupported source.', 'animation-addons-for-elementor'));
     }
 
     function check_plugin_status($base_path)
@@ -240,11 +162,22 @@ class WCF_Plugin_Installer
 
         $plugins = isset($dependencies['plugins']) && is_array($dependencies['plugins'])  ? $dependencies['plugins'] : [];
         $themes = isset($dependencies['themes']) && is_array($dependencies['themes'])  ? $dependencies['themes'] : [];
+
+        // This plugin ships no installer. Something has to be listening on the
+        // starter-template hooks for a missing dependency to be installable at
+        // all, so when nothing is, the import screen says so per row instead of
+        // offering a checkbox that would quietly do nothing.
+        $not_installed       = __('Not Installed', 'animation-addons-for-elementor');
+        $can_install_plugins = (bool) has_action('aae/starter_template/install_plugin');
+
         // Check plugin dependencies
         foreach ($plugins as &$dep) {
-            $dep['status'] = $this->check_plugin_status($dep['Base_Slug']);
+            $dep['status']    = $this->check_plugin_status($dep['Base_Slug']);
+            $dep['needs_pro'] = ($not_installed === $dep['status']) && !$can_install_plugins;
         }
-        // Check theme dependencies
+        // Themes are reported, never installed and never activated. Changing a
+        // site's theme is the user's decision and belongs to Appearance >
+        // Themes, so these rows carry a status and nothing selectable.
         foreach ($themes as &$tm) {
             $tm['status'] = $this->check_theme_status($tm['slug']);
         }

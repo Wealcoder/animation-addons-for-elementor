@@ -43,26 +43,37 @@ class Ajax_Handler {
 
 		$settings = wcf_addons_get_widget_settings( $post_id, $element_id );
 
+		// Everything below renders content this plugin does not control -- an
+		// Elementor template and its widgets, plus every shortcode on the page
+		// -- so the close is in a finally and unwinds only to our own level.
+		$ob_level = ob_get_level();
+		$html     = '';
 		ob_start();
 
-		if ( isset( $settings['popup_content_type'] ) && 'template' === $settings['popup_content_type'] ) {
-			echo \Elementor\Plugin::$instance->frontend->get_builder_content( $settings['popup_elementor_templates'], true ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		} else {
+		try {
+			if ( isset( $settings['popup_content_type'] ) && 'template' === $settings['popup_content_type'] ) {
+				echo \Elementor\Plugin::$instance->frontend->get_builder_content( $settings['popup_elementor_templates'], true ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			} else {
 
-			$content = $settings['popup_content'] ?? 'Nothing to show.';
+				$content = $settings['popup_content'] ?? 'Nothing to show.';
 
-			$content = shortcode_unautop( $content );
-			$content = do_shortcode( $content );
-			$content = wptexturize( $content );
+				$content = shortcode_unautop( $content );
+				$content = do_shortcode( $content );
+				$content = wptexturize( $content );
 
-			if ( $GLOBALS['wp_embed'] instanceof \WP_Embed ) {
-				$content = $GLOBALS['wp_embed']->autoembed( $content );
+				if ( $GLOBALS['wp_embed'] instanceof \WP_Embed ) {
+					$content = $GLOBALS['wp_embed']->autoembed( $content );
+				}
+
+				echo wp_kses_post( $content );
 			}
 
-			echo wp_kses_post( $content );
+		} finally {
+			while ( ob_get_level() > $ob_level ) {
+				$html = (string) ob_get_clean() . $html;
+			}
 		}
 
-		$html = ob_get_clean();
 		wp_send_json_success(
 			array(
 				'html'        => $html,

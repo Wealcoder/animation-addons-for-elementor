@@ -45,12 +45,29 @@ class Importer
 	private $wcfio;
 
 	/**
+	 * Output-buffer nesting level recorded immediately before this class
+	 * called ob_start(), or null when it holds no buffer.
+	 *
+	 * The import runs third-party code (WordPress core's importer, every
+	 * filter hooked to it) and can end inside one of our own callbacks, so
+	 * the buffer cannot simply be opened and closed on adjacent lines. This
+	 * marker is what lets close_import_buffer() close exactly the buffers
+	 * opened at or above our own and never one that existed before it.
+	 *
+	 * @var int|null
+	 */
+	private $ob_level = null;
+
+	/**
 	 * Include required files.
 	 */
 	private function include_required_files()
 	{
+		// AAEImporter extends WXRImporter, which extends the core \WP_Importer
+		// class. Core does not autoload that class, so it is loaded here with
+		// require_once and used immediately by the constructor below.
 		if (! class_exists('\WP_Importer')) {
-			require ABSPATH . '/wp-admin/includes/class-wp-importer.php';
+			require_once ABSPATH . 'wp-admin/includes/class-wp-importer.php';
 		}
 	}
 
@@ -125,13 +142,46 @@ class Importer
 
 		// Import content.
 		if (! empty($import_file_path)) {
+			$this->ob_level = ob_get_level();
 			ob_start();
-			$this->import($import_file_path);
-			$message = ob_get_clean();
+
+			// finally, not a plain close: an exception anywhere inside the
+			// importer would otherwise leave the buffer open for the rest of
+			// the request.
+			try {
+				$this->import($import_file_path);
+			} finally {
+				$message = $this->close_import_buffer();
+			}
 		}
 
 		// Return any error messages for the front page output (errors, critical, alert and emergency level messages only).
 		return $this->logger->error_output;
+	}
+
+
+	/**
+	 * Close the output buffer this class opened and return what it captured.
+	 *
+	 * Safe to call more than once and safe to call when nothing is open: it
+	 * unwinds only down to the level recorded when we called ob_start(), so a
+	 * buffer belonging to WordPress, a theme or another plugin is never
+	 * closed. Returns an empty string when we hold no buffer.
+	 *
+	 * @return string
+	 */
+	private function close_import_buffer()
+	{
+		$message = '';
+
+		if (null !== $this->ob_level) {
+			while (ob_get_level() > $this->ob_level) {
+				$message = (string) ob_get_clean() . $message;
+			}
+			$this->ob_level = null;
+		}
+
+		return $message;
 	}
 
 
@@ -157,8 +207,11 @@ class Importer
 				'message' => 'Time for new AJAX request!: ' . $time,
 			);
 
-			// Add any output to the log file and clear the buffers.
-			$message = ob_get_clean();
+			// This runs as a filter callback from inside the importer and ends
+			// in wp_send_json(), which does not return -- so the buffer opened
+			// by import_content() has to be closed here or it would never be
+			// closed at all. close_import_buffer() closes only what we opened.
+			$message = $this->close_import_buffer();
 
 			// Add any error messages to the frontend_error_messages variable in main class.
 			if (! empty($message)) {

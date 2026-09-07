@@ -465,10 +465,20 @@ class WCF_Theme_Builder
 
 		// Avoid running wp_head hooks again
 		remove_all_actions('wp_head');
+		// locate_template() includes a file belonging to the active theme, so
+		// what runs between the two calls is code this plugin does not own.
+		// finally + the level check guarantee the buffer closes even if that
+		// template throws, and that we only ever close our own.
+		$ob_level = ob_get_level();
 		ob_start();
-		// It cause a `require_once` so, in the get_header it self it will not be required again.
-		locate_template($templates, true);
-		ob_get_clean();
+		try {
+			// It cause a `require_once` so, in the get_header it self it will not be required again.
+			locate_template($templates, true);
+		} finally {
+			while (ob_get_level() > $ob_level) {
+				ob_end_clean();
+			}
+		}
 	}
 
 	/**
@@ -513,10 +523,20 @@ class WCF_Theme_Builder
 
 		// Avoid running wp_head hooks again
 		remove_all_actions('wp_footer');
+		// locate_template() includes a file belonging to the active theme, so
+		// what runs between the two calls is code this plugin does not own.
+		// finally + the level check guarantee the buffer closes even if that
+		// template throws, and that we only ever close our own.
+		$ob_level = ob_get_level();
 		ob_start();
-		// It cause a `require_once` so, in the get_header it self it will not be required again.
-		locate_template($templates, true);
-		ob_get_clean();
+		try {
+			// It cause a `require_once` so, in the get_header it self it will not be required again.
+			locate_template($templates, true);
+		} finally {
+			while (ob_get_level() > $ob_level) {
+				ob_end_clean();
+			}
+		}
 	}
 
 	// Set Builder content header footer

@@ -646,9 +646,9 @@ Class CustomFonts_Lite{
 			), WCF_ADDONS_VERSION, true );
             $font = get_post_meta(get_the_id(),'wcf_addon_custom_fonts',true);
             if(is_array($font)){
-                $font = json_encode($font);
+                $font = wp_json_encode($font);
             } else {
-                $font = json_encode([]);
+                $font = wp_json_encode([]);
             }
             
 			$localize_data = [

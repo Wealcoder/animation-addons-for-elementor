@@ -12,9 +12,10 @@
  * Domain Path:                /languages
  * Requires at least: 		   6.6
  * Requires PHP:               7.4
- * Tested up to:               7.0
- * Elementor tested up to:     3.34.0
- * Elementor Pro tested up to: 3.33.1
+ * Requires Plugins:           elementor
+ * Tested up to:               7.1
+ * Elementor tested up to:     4.2.4
+ * Elementor Pro tested up to: 4.2.3
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -123,6 +124,7 @@ final class WCF_ADDONS_Plugin {
 		// register_deactivation_hook( WCF_ADDONS_BASE, [ __CLASS__, 'plugin_deactivation_hook' ] );
 		// register_uninstall_hook( WCF_ADDONS_BASE, [ __CLASS__, 'plugin_unregister_hook' ] );
 		add_action('admin_enqueue_scripts', [$this,'enqueue_elementor_install_script']);
+		add_action('admin_head', [$this,'print_admin_menu_icon_style']);
 		add_action('wp_ajax_wcf_install_elementor_plugin', [$this,'install_elementor_plugin_handler']);
 		// Init Plugin
 		add_action( 'plugins_loaded', array( $this, 'init' ) );
@@ -145,20 +147,9 @@ final class WCF_ADDONS_Plugin {
 			add_option('aae_installed', time(), '', false);
 		}
 
-		update_option('aae_do_activation_redirect', 'new', false);
-
 		if ( ! get_option('wcf_addons_setup_wizard') ) {
 			update_option('wcf_addons_setup_wizard', 'redirect', false);
 		}
-
-		$count = (int) get_option('aae_activation_count', 0);
-
-		if ( ! $count ) {
-			update_option('aae_send_activation_event', true, false);
-		}
-
-		update_option('aae_activation_count', $count + 1, false);
-		update_option('aae_last_activated', current_time('mysql'), false);
 
 		flush_rewrite_rules();
 	}
@@ -168,15 +159,6 @@ final class WCF_ADDONS_Plugin {
 	 * @since 1.0.0
 	 */
 	public static function plugin_deactivation_hook() {
-
-		$count = (int) get_option('aae_deactivation_count', 0);
-
-		if ( ! $count ) {
-			update_option('aae_send_deactivation_event', true, false);
-		}
-
-		update_option('aae_deactivation_count', $count + 1, false);
-		update_option('aae_last_deactivated', current_time('mysql'), false);
 
 		flush_rewrite_rules();
 	}
@@ -199,6 +181,10 @@ final class WCF_ADDONS_Plugin {
 
 			'aae_last_activated',
 			'aae_last_deactivated',
+
+			// Written by the removed wizard lead capture. Kept in this list so
+			// sites that already carry the row are cleaned up on uninstall.
+			'wcf_addons_wizard_subscribed',
 
 			'aae_send_activation_event',
 			'aae_send_deactivation_event',
@@ -348,9 +334,45 @@ final class WCF_ADDONS_Plugin {
 		}
 	}
 	
+	/**
+	 * The one admin rule that belongs on every screen: our own item in
+	 * #adminmenu, which WordPress prints on every page. Two declarations,
+	 * inlined, so no stylesheet is requested on screens that need nothing
+	 * else from us. It reaches only our own menu item.
+	 */
+	public function print_admin_menu_icon_style() {
+
+		echo '<style id="aae-admin-menu-icon">#adminmenu .toplevel_page_wcf_addons_page .wp-menu-image img{opacity:1;padding:7px 0 0}</style>';
+	}
+
+	/**
+	 * Admin assets for the "Elementor is missing" notice.
+	 *
+	 * Loads on the screens that need it and nowhere else: this stylesheet used
+	 * to be enqueued on every admin page, which is asking every screen in
+	 * WordPress to download our CSS for nothing.
+	 *
+	 * @param string $hook Current admin page.
+	 */
 	public function enqueue_elementor_install_script($hook) {
 
-		// ✅ Load CSS
+		// wp-admin/includes/plugin.php is loaded on admin screens, but this
+		// runs on a hook other plugins can fire early, so do not assume it.
+		if ( ! function_exists('is_plugin_active') ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+
+		$needs_notice = ! is_plugin_active('elementor/elementor.php');
+
+		$screen     = function_exists('get_current_screen') ? get_current_screen() : null;
+		$our_screen = $screen && false !== strpos( (string) $screen->id, '_page_wcf_addons_' );
+
+		// The notice prints on every admin screen while Elementor is missing,
+		// so its styles have to follow it. Otherwise this is ours alone.
+		if ( ! $needs_notice && ! $our_screen ) {
+			return;
+		}
+
 		wp_enqueue_style(
 			'aaeaddon-common',
 			WCF_ADDONS_URL . 'assets/css/wcf-admin.min.css',
@@ -358,8 +380,7 @@ final class WCF_ADDONS_Plugin {
 			WCF_ADDONS_VERSION
 		);
 
-		// ✅ Load script only if Elementor not active
-		if ( ! is_plugin_active('elementor/elementor.php') ) {
+		if ( $needs_notice ) {
 
 			wp_enqueue_script(
 				'wcf-install-elementor-script',
