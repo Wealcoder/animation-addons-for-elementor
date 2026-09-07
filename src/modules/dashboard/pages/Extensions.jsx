@@ -8,7 +8,6 @@ import { useAtomicExtensions } from "@/hooks/app.hooks";
 import { countAtomicExtensions } from "@/lib/atomicExtensionService";
 import { resolveSystems } from "@/lib/systemVisibility";
 import LegacyRevealLink from "@/components/shared/LegacyRevealLink";
-import SettingsQuickLink from "@/components/shared/SettingsQuickLink";
 import BackToV3Link from "@/components/shared/BackToV3Link";
 import TryAtomicLink from "@/components/shared/TryAtomicLink";
 import { SHOW_TRY_ATOMIC_LINK } from "@/lib/systemVisibility";
@@ -149,15 +148,14 @@ const Extensions = () => {
                   />
                   {/* Mirrors the Widgets page — see the note there. */}
                   <BackToV3Link />
-                  <SettingsQuickLink />
                 </div>
               )}
 
               {/*
-                The V3 view owns no link cluster here — the usage scan and the
-                Settings shortcut are both V4-only by design — so the way back
-                INTO V4 gets a minimal one of its own rather than being folded
-                into a block gated on the era it exists to leave. `empty:hidden`
+                The V3 view owns no link cluster here — the usage scan and
+                the Back to V3 link are both V4-only by design — so the way
+                back INTO V4 gets a minimal one of its own rather than being
+                folded into a block gated on the era it exists to leave. `empty:hidden`
                 because TryAtomicLink gates itself and is absent on almost every
                 site, which would otherwise leave a bare `ms-auto` div behind.
               */}

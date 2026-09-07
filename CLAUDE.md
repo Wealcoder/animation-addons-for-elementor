@@ -615,26 +615,20 @@ consumed by `pages/Widgets.jsx`, `pages/Extensions.jsx` and
 > `animation-settings` — the route, the `tab=` value, the payload key, the PHP
 > class, and every reference in this file. Grep for the route, not the label.
 
-**Two different questions, two different signals — do not merge them.** The
-widget/extension tabs ask "is V3 PRESENT" (toggles *or* content); the Settings
-menu item asks only "are the v3 toggles off".
+> **The Settings menu item is UNCONDITIONAL** (2026-09-06). It used to be
+> gated on `SHOW_ANIMATION_SETTINGS` (`!V3_HAS_ACTIVE`) and now sits in the
+> sidebar slot "Free vs Pro" held. See *Free vs Pro retired* below. Only the
+> Widgets/Extensions tabs are decided by `systemVisibility.js`.
 
-| V3 toggles | v3 content | V4 active | Widgets + Extensions | Settings menu |
-|---|---|---|---|---|
-| on | — | yes | both tabs | hidden |
-| on | — | no | V3 only, **no switcher** | hidden |
-| off | no | yes | V4 only, **no switcher** | shown |
-| off | no | no | **V4 only**, no switcher | shown |
-| off | **yes** | yes | both tabs | **shown** |
-| off | **yes** | no | V3 only, no switcher | **shown** |
-| atomic registry absent | | | V3 only, no switcher | per the toggles |
-
-The two rows in bold are why the signals are kept apart. The content ratchet
-exists to stop a site LOSING the V3 list while pages still depend on it — an
-argument about the widget list, not about which screen this site configures its
-chrome from. A site whose v3 switches are all off has moved to v4 whatever its
-old pages still contain, so it gets the v4 screen and does not have to keep
-both.
+| V3 toggles | v3 content | V4 active | Widgets + Extensions |
+|---|---|---|---|
+| on | — | yes | both tabs |
+| on | — | no | V3 only, **no switcher** |
+| off | no | yes | V4 only, **no switcher** |
+| off | no | no | **V4 only**, no switcher |
+| off | **yes** | yes | both tabs |
+| off | **yes** | no | V3 only, no switcher |
+| atomic registry absent | | | V3 only, no switcher |
 
 **"V3 present" is two signals ORed, and the second one is the important one:**
 
@@ -715,16 +709,17 @@ Four decisions worth not re-litigating:
   `?tab=animation-settings` still routes — the menu item is hidden, the screen
   is not. **Do not delete that route thinking the screen is unreachable.**
 
-### The two links on the V4 tab row
+### The links on the V4 tab row
 
-Both sit right-aligned on the Widgets/Extensions tab row, **V4 view only**, both
-low emphasis (12px muted text, dotted underline, no button). They do opposite
+They sit right-aligned on the Widgets/Extensions tab row, **V4 view only**, all
+low emphasis (12px muted text, dotted underline, no button). They do different
 jobs and must not be conflated:
 
 | Link | Component | Does |
 |---|---|---|
 | **Legacy (V3)** | `LegacyRevealLink.jsx` | reveals + selects the hidden V3 list |
-| **Settings** | `SettingsQuickLink.jsx` | routes to `?tab=animation-settings` |
+| **Back to V3** | `BackToV3Link.jsx` | switches the atomic set OFF |
+| ~~**Settings**~~ | `SettingsQuickLink.jsx` | **removed 2026-09-06** — see below |
 
 ### The Legacy (V3) reveal link
 
@@ -748,20 +743,31 @@ is the **V4** settings home (Preloader, Cursor, Performance, Library — it mere
 also carries the `legacy_v3` switch), and what someone hunting for their old
 widgets wants is the V3 list, not a settings page. Do not re-point it there.
 
-### The Settings shortcut
+### The Settings shortcut — REMOVED 2026-09-06
 
-`SettingsQuickLink.jsx`, always present on the V4 view. Two reasons, and the
-second is the load-bearing one:
+`SettingsQuickLink.jsx` was right-aligned on both the Widgets and the
+Extensions V4 tab rows. It is mounted nowhere now; the component file stays on
+disk, unused.
+
+It existed for two reasons, and the second was the load-bearing one:
 
 - It is the natural next stop after switching atomic widgets on — the site-wide
   V4 chrome, Performance and GSAP Library all live there.
-- **It is the only in-dashboard route to that screen on a site with v3 switches
-  ON**, where the menu item is hidden. That was a real gap for one revision.
+- It was the **only** in-dashboard route to that screen on a site with v3
+  switches ON, where the menu item was hidden.
 
-> **REMAINING GAP.** A site with v3 switches on **and no V4 tab at all** (every
-> atomic widget and extension off) has no V4 view to hang the shortcut on, so
-> the screen is `?tab=animation-settings`-only there. That is why the route must
-> stay registered in `showFullContent.jsx`.
+The second reason died when Settings became an unconditional menu item (it took
+the Free vs Pro slot — see *Free vs Pro retired* below). A shortcut to a
+permanent menu item one row above it is noise on a row that already carries
+Legacy (V3), Back to V3 and the usage scan. The first reason alone did not pay
+for the fourth link, which is why the component is kept rather than deleted:
+if that row ever gets quieter it is the obvious thing to bring back.
+
+> The gap it used to plug is genuinely closed, not merely relocated. The worst
+> case was a site with v3 switches on **and no V4 tab at all** (every atomic
+> widget and extension off) — no V4 view to hang the shortcut on, no menu item,
+> so the screen was `?tab=animation-settings`-only there. That site now has the
+> menu item like every other.
 
 `ATOMIC_AVAILABLE` is its own gate: `class-atomic.php::init_hooks()` bails on
 `meets_requirements()`, so on Elementor <4 BOTH atomic keys are absent from the
@@ -772,6 +778,40 @@ tab is worse than no tab.
 switcher hidden nothing else in the markup says which list rendered, and "the
 right list rendered" is the assertion that matters — tab presence alone cannot
 tell "V3 only" from "V4 only".
+
+### Free vs Pro retired — Settings took the slot (2026-09-06)
+
+`?tab=free-pro` no longer has a screen. Settings sits in its sidebar slot, and
+the retired tab resolves to `animation-settings`.
+
+Two things bought at once: the comparison table was a marketing page taking a
+permanent seat in an admin nav, and Settings — which holds the `legacy_v3`
+switch, Performance and the GSAP Library — had no seat at all on a site with v3
+switches on. Swapping them fixes both without growing the menu.
+
+**Retired ≠ moved, and the two get different treatment.** Three tabs have now
+left the sidebar and only this one behaves this way:
+
+| tab | screen | `?tab=` | why |
+|---|---|---|---|
+| `performance` | moved INTO Settings as a tab | own `case`, renders `Performance` | the screen still exists; the URL still names something real |
+| `integrations` | moved INTO Settings as a tab | own `case`, renders `Integrations` | same |
+| `free-pro` | **retired** | resolved to `animation-settings` **and rewritten** | there is no comparison screen left to name |
+
+`LEGACY_TAB_ALIASES` in `config/showFullContent.jsx` is the single place that
+decides it. Two consumers read it and neither re-derives it:
+
+- `ShowContent` switches on `resolveTabKey(item.tabKey)`, so the right screen
+  renders whatever put the value in state.
+- `MainLayout`'s mount effect resolves the URL's `tab` and, when it changed,
+  `history.replaceState`s the new value in. **That rewrite is about the
+  sidebar, not the screen:** `MainNav` marks the active item by comparing
+  `?tab=` against each item's `path`, and a retired value matches nothing —
+  without it the correct screen renders under a menu with no item selected.
+
+`pages/FreePro.jsx` and `components/freePro/ComparisonTable.jsx` are still on
+disk, unrouted. Deleting them buys nothing and the table is the kind of thing
+that comes back.
 
 ### Turning ALL v3 widgets off asks first
 

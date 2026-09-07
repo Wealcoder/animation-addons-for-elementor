@@ -69,6 +69,24 @@ if ( ! defined( 'WCF_TEMPLATE_STARTER_BASE_URL' ) ) {
 	define( 'WCF_TEMPLATE_STARTER_BASE_URL', 'https://www.themecrowdy.com/' );
 }
 
+if ( ! defined( 'WCF_FEATURE_REQUEST_ENDPOINT' ) ) {
+	define( 'WCF_FEATURE_REQUEST_ENDPOINT', 'https://animation-addons.com/wp-json/aae/v1/request-new-feature' );
+}
+
+if ( ! defined( 'WCF_FEATURE_REQUEST_API_KEY' ) ) {
+	/**
+	 * Shared key the receiver checks, sent as the X-API-Key header.
+	 *
+	 * Must match AAEFR_API_KEY on the receiving side — change one without the
+	 * other and every submission comes back 401.
+	 *
+	 * This is obfuscation, NOT authentication: the plugin ships publicly, so
+	 * the key is extractable from the zip. The receiver's own rate limit is
+	 * what actually protects the endpoint.
+	 */
+	define( 'WCF_FEATURE_REQUEST_API_KEY', '0700c72d204521236f5af03011cb0cbb4f6229a6bbdc2ef041d76184e9a795b7' );
+}
+
 if (file_exists(__DIR__ . '/vendor/autoload.php')) {
 	require __DIR__ . '/vendor/autoload.php';
 }

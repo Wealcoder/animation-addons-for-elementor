@@ -136,6 +136,7 @@ class WCF_Admin_Init
 		add_action('wp_ajax_wcf_dashboard_notice_store', array($this, 'notice_store'));
 		add_action('wp_ajax_wcf_get_changelog_data', array($this, 'get_changelog'));
 		add_action('wp_ajax_wcf_get_notice_data', array($this, 'get_notice'));
+		add_action('wp_ajax_wcf_request_new_feature', array($this, 'request_new_feature'));
 		add_action('wp_ajax_save_settings_with_ajax_dashboard', array($this, 'save_settings_dashboard'));
 
 		add_action('wp_ajax_save_smooth_scroller_settings', array($this, 'save_smooth_scroller_settings'));
@@ -1105,6 +1106,185 @@ class WCF_Admin_Init
 			'notice' => json_decode(get_option('wcf_notice_data')),
 		);
 		wp_send_json($return_message);
+	}
+
+	/**
+	 * Forward a "Request New Feature" submission to animation-addons.com.
+	 *
+	 * The dashboard form cannot post to the vendor's endpoint directly: the
+	 * shared key would have to ship in the JS bundle, where it is readable by
+	 * anyone with devtools on any install. So the browser posts here and this
+	 * method relays it server-to-server, which is the only reason the key
+	 * stays in PHP.
+	 *
+	 * The receiving end is the separate "AAE Feature Request API" plugin
+	 * installed on animation-addons.com.
+	 *
+	 * @since 4.1.1
+	 * @return void
+	 */
+	public function request_new_feature()
+	{
+		check_ajax_referer('wcf_admin_nonce', 'nonce');
+
+		if (! current_user_can('manage_options')) {
+			wp_send_json_error(esc_html__('you are not allowed to do this action', 'animation-addons-for-elementor'));
+		}
+
+		$name    = isset($_POST['name']) ? sanitize_text_field(wp_unslash($_POST['name'])) : '';
+		$email   = isset($_POST['email']) ? sanitize_email(wp_unslash($_POST['email'])) : '';
+		$feature = isset($_POST['feature']) ? sanitize_textarea_field(wp_unslash($_POST['feature'])) : '';
+
+		// Validate here as well as at the far end, so an obviously incomplete
+		// form never costs an outbound HTTP request.
+		if ('' === $name || '' === $feature || '' === $email || ! is_email($email)) {
+			wp_send_json_error(
+				esc_html__('Please provide your name, a valid email address, and a feature description.', 'animation-addons-for-elementor')
+			);
+		}
+
+		/*
+		 * Local throttle, per user. The vendor endpoint rate-limits too, but
+		 * that limit is keyed on this SITE's IP — so without this, one
+		 * impatient admin could exhaust the allowance for everybody on a
+		 * multi-user install and the next person would just see a failure.
+		 */
+		$throttle_key = 'wcf_feature_request_' . get_current_user_id();
+
+		if (get_transient($throttle_key)) {
+			wp_send_json_error(
+				esc_html__('You have just sent a request. Please wait a moment before sending another.', 'animation-addons-for-elementor')
+			);
+		}
+
+		$response = wp_remote_post(
+			self::feature_request_endpoint(),
+			array(
+				'timeout' => 15,
+				'headers' => array(
+					'Content-Type' => 'application/json; charset=utf-8',
+					'Accept'       => 'application/json',
+					'X-API-Key'    => self::feature_request_api_key(),
+				),
+				'body'    => wp_json_encode(
+					array(
+						'name'    => $name,
+						'email'   => $email,
+						'feature' => $feature,
+						'site'    => home_url('/'),
+						'version' => WCF_ADDONS_VERSION,
+					)
+				),
+			)
+		);
+
+		if (is_wp_error($response)) {
+			wp_send_json_error(
+				esc_html__('Could not reach the feature request service. Please try again later.', 'animation-addons-for-elementor')
+			);
+		}
+
+		$code = (int) wp_remote_retrieve_response_code($response);
+		$body = json_decode(wp_remote_retrieve_body($response), true);
+
+		/*
+		 * Only 200/201 count. Anything else is reported as a failure with the
+		 * far end's own message when it sent one — a 429 in particular has to
+		 * reach the user as "wait", not as a generic error, or they will
+		 * keep pressing Submit.
+		 */
+		if (! in_array($code, array(200, 201), true) || empty($body['success'])) {
+			$message = ! empty($body['message'])
+				? sanitize_text_field($body['message'])
+				: esc_html__('Something went wrong. Please try again.', 'animation-addons-for-elementor');
+
+			wp_send_json_error($message);
+		}
+
+		/*
+		 * A 2xx with success:true is NOT proof a row was written.
+		 *
+		 * The receiver answers "Feature request received." for BOTH a fresh
+		 * insert (201) and a duplicate it deliberately did not store (200), and
+		 * this method used to forward that message and nothing else — so a
+		 * submission that stored nothing was reported to the user, and to anyone
+		 * debugging, as a success indistinguishable from a real one.
+		 *
+		 * The id is the proof. Both branches of the receiver return one, so its
+		 * absence means the far end never confirmed storage — an older receiver,
+		 * a proxy rewriting the body, or something answering on that URL that is
+		 * not the plugin at all. That is a failure, and it is reported as one
+		 * rather than being smoothed over into a green toast.
+		 */
+		$stored_id = isset($body['id']) ? (int) $body['id'] : 0;
+
+		if ($stored_id < 1) {
+			wp_send_json_error(
+				esc_html__('The service accepted the request but did not confirm it was saved. Nothing has been stored — please try again or contact support.', 'animation-addons-for-elementor')
+			);
+		}
+
+		set_transient($throttle_key, 1, MINUTE_IN_SECONDS);
+
+		/*
+		 * A duplicate says so plainly. Telling someone their idea was received
+		 * when the receiver recognised it as one it already holds invites them
+		 * to send it a third time.
+		 */
+		if (! empty($body['duplicate'])) {
+			wp_send_json_success(
+				sprintf(
+					/* translators: %d: stored feature request id. */
+					esc_html__('You have already sent this request — it is on file as #%d.', 'animation-addons-for-elementor'),
+					$stored_id
+				)
+			);
+		}
+
+		wp_send_json_success(
+			sprintf(
+				/* translators: %d: stored feature request id. */
+				esc_html__('Thanks! Your feature request has been saved as #%d.', 'animation-addons-for-elementor'),
+				$stored_id
+			)
+		);
+	}
+
+	/**
+	 * Where feature requests are sent.
+	 *
+	 * The value lives in WCF_FEATURE_REQUEST_ENDPOINT (declared in the main
+	 * plugin file, overridable from wp-config.php). The filter is the third
+	 * layer, for a staging site that needs to decide per-request rather than
+	 * per-install.
+	 *
+	 * `defined()` is still checked because this method has to answer even if
+	 * the constant block was edited away — an empty endpoint makes
+	 * wp_remote_post() return a WP_Error the caller already reports, which is
+	 * a clean failure rather than a fatal.
+	 *
+	 * @since 4.1.1
+	 * @return string
+	 */
+	private static function feature_request_endpoint()
+	{
+		$endpoint = defined('WCF_FEATURE_REQUEST_ENDPOINT') ? WCF_FEATURE_REQUEST_ENDPOINT : '';
+
+		return apply_filters('wcf_addons_feature_request_endpoint', $endpoint); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+	}
+
+	/**
+	 * The shared key the receiver checks.
+	 *
+	 * Declared as WCF_FEATURE_REQUEST_API_KEY in the main plugin file; see the
+	 * note there on why it is obfuscation rather than authentication.
+	 *
+	 * @since 4.1.1
+	 * @return string
+	 */
+	private static function feature_request_api_key()
+	{
+		return defined('WCF_FEATURE_REQUEST_API_KEY') ? WCF_FEATURE_REQUEST_API_KEY : '';
 	}
 
 	public function save_settings_dashboard()

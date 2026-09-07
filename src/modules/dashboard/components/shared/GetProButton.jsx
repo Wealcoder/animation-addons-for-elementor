@@ -6,10 +6,33 @@ import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import LicenseDialog from "./LicenseDialog";
 
-const GetProButton = ({ btnClassName, showLicense }) => {
+/**
+ * @param {string}  btnClassName Merged onto the button (twMerge, so it can
+ *                               override the variant's own size classes).
+ * @param {boolean} showLicense  Opens the license dialog from outside.
+ * @param {boolean} upsellOnly   Render ONLY the "Get Pro Version" state, and
+ *                               nothing at all once Pro is on disk. For slots
+ *                               that exist purely to sell Pro — see below.
+ */
+const GetProButton = ({ btnClassName, showLicense, upsellOnly = false }) => {
   const { activated } = useActivate();
   const [openLicense, setOpenLicense] = useState(false);
   const role = WCF_ADDONS_ADMIN.user_role;
+  const isAdmin = role.includes("administrator");
+
+  /*
+   * PHP sets this per plugin in dashboard_integrations_config():
+   *   Download  — not on disk at all  (i.e. Pro does not exist)
+   *   Active    — on disk, not activated
+   *   Activated — on disk and running
+   *
+   * Optional chaining because the whole `integrations` branch is skipped
+   * server-side when its config key is absent.
+   */
+  const proAction =
+    activated?.integrations?.plugins?.elements?.[
+      "animation-addon-for-elementorpro"
+    ]?.action;
 
   useEffect(() => {
     setOpenLicense(showLicense);
@@ -44,12 +67,38 @@ const GetProButton = ({ btnClassName, showLicense }) => {
         }
       });
   };
+  const getProLink = (
+    <a
+      href="https://animation-addons.com/"
+      target="_blank"
+      rel="noreferrer"
+      className={cn(buttonVariants({ variant: "pro" }), btnClassName)}
+    >
+      <span className="me-2 flex">
+        <RiVipCrown2Line size={20} />
+      </span>
+      Get Pro Version
+    </a>
+  );
+
+  /*
+   * An upsell-only slot disappears the moment Pro is installed. The other two
+   * states are actions on an installed plugin ("activate it", "enter your
+   * licence"), and those belong on the header, which is on every screen —
+   * not on a hero banner someone lands on once. Returning null rather than an
+   * empty wrapper also lets a parent's `gap` collapse cleanly.
+   *
+   * No LicenseDialog here: it is only reachable from the licence state, which
+   * this mode never renders.
+   */
+  if (upsellOnly) {
+    return isAdmin && proAction === "Download" ? getProLink : null;
+  }
+
   return (
     <div>
-      {role.includes("administrator") &&
-        (activated.integrations.plugins.elements[
-          "animation-addon-for-elementorpro"
-        ].action === "Active" ? (
+      {isAdmin &&
+        (proAction === "Active" ? (
           <Button
             variant="pro"
             onClick={() => activePlugin()}
@@ -60,19 +109,8 @@ const GetProButton = ({ btnClassName, showLicense }) => {
             </span>
             Active Plugin
           </Button>
-        ) : activated.integrations.plugins.elements[
-            "animation-addon-for-elementorpro"
-          ].action === "Download" ? (
-          <a
-            href="https://animation-addons.com/"
-            target="_blank"
-            className={cn(buttonVariants({ variant: "pro" }), btnClassName)}
-          >
-            <span className="me-2 flex">
-              <RiVipCrown2Line size={20} />
-            </span>
-            Get Pro Version
-          </a>
+        ) : proAction === "Download" ? (
+          getProLink
         ) : (
           <Button
             variant="pro"
