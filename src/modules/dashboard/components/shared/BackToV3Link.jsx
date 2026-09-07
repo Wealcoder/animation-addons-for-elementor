@@ -11,9 +11,9 @@ import { ATOMIC_OPTED_IN, V3_PRESENT } from "@/lib/systemVisibility";
  * WHY IT EXISTS BESIDE THE V3 TAB. The tab switches which list you are LOOKING
  * at; this switches the atomic set back OFF and returns you to V3. Someone who
  * moved by mistake wants the second and finds only the first, which reads as
- * "there is no way back". Same distinction `LegacyRevealLink` and
- * `SettingsQuickLink` already keep from each other — three low-emphasis links
- * on one row, none of them doing another's job.
+ * "there is no way back". Same distinction it keeps from `LegacyRevealLink`,
+ * which reveals the V3 LIST and switches nothing — low-emphasis links on one
+ * row, none of them doing another's job.
  *
  * WHEN IT SHOWS. Two conditions:
  *
