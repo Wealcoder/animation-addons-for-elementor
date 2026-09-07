@@ -6478,31 +6478,78 @@ accepts only `elementor_library`), the themecrowdy fields including the
 `sort_order` trap, and the five demo-site rules. Elementor's kit-export and
 template-export paths were re-read in the src repo for it (2026-07-29 clone).
 
+### Linked images — "Copy the images into my Media Library" (2026-09-07)
+
+A V4 demo's images are mostly LINKED, not picked from a library: 99 `image-src`
+values in Design Studio are `{"id":null,"url":"https://crowdytheme.com/assets/…"}`
+(95 in `e-image`, 4 as `background-image-overlay`), 47 distinct urls. That is
+how the demo builders work and it is not a defect — the page renders the
+hot-linked file exactly as a V3 demo always has — but nothing on the import
+path can touch it (no id to remap, and `url_remap` never sees
+`_elementor_data`), so the customer's site depends on the demo host forever.
+
+So it is the CUSTOMER's choice, per import: the V4 dialog carries a checkbox,
+off by default, and ticking it adds a repeating importer step.
+
+| | |
+|---|---|
+| Server | `inc/admin/atomic-image-localize.php` — `Atomic_Image_Localize::run_batch()` |
+| Step | `localize-images`, after `install-elementor-settings`, gated on `builder_version === 'v4'` AND `aae_localize_images` |
+| Client | the checkbox in both `V4ImportDialog.jsx`; rides the URL as `v4images=1` through Required Features / Demo Importing; `aae_localize_images` on the request |
+| State | `aae_import_image_localize` (cursor, per-url cache, failed urls, counters); reset on `aaeaddon/content_import/fresh_start` |
+
+**It is its own REPEATING step, not a hook on `import_end`.** One download per
+distinct url against a remote host does not fit in one admin-ajax request on a
+shared host (measured: 47 images, 43 s, three requests at an 18 s budget).
+Each request does what fits, saves its cursor, and hands `next_step =
+'localize-images'` back; the client already re-posts until `done`. Progress
+climbs 95 → 99 with the count so the bar never looks stuck, and the settings
+step's summary is carried in `$template_data['aae_import_summary']` so the
+final message still names the design system and the V3 switch-off.
+
+**Elementor does the file handling.** `templates_manager->get_import_images_instance()->import(['id'=>0,'url'=>…])`
+— sanitised SVG, attachment metadata, the `_elementor_source_image_hash` meta —
+so a localised image is indistinguishable from one Elementor's own
+template-library import would have created. The url-shaped value becomes
+`{id:{$$type:image-attachment-id,value:N}, url:null}`, which is exactly what
+`Image_Src_Import_Transformer` would have produced had our WXR path ever called
+`on_import()`.
+
+Two things it must get right, both measured in `verify-atomic-image-localize.php`
+(26 checks, real downloads):
+
+- **Dedupe BEFORE downloading.** `Import_Images::import()` only consults its
+  hash meta when the incoming value carries an id — ours never do — so left to
+  it the hero image used on eight pages is downloaded eight times into eight
+  attachments. The hash lookup (`sha1(url)` against `_elementor_source_image_hash`)
+  is done here first, plus a per-import cache; a second import of the same demo
+  reuses the library (`reused`, 0 downloads).
+- **A dead url is remembered, never retried within the import.** It stays
+  url-shaped — the page keeps rendering the hot-link, the state the user started
+  from — and is counted ("1 could not be downloaded and stay linked"). Without
+  the memory a single 404 makes the step spin forever, since the re-scan on
+  every request finds it "pending" again.
+
+**The dialog now appears on EVERY V4 import**, not only a second one — the
+image choice applies to a first import as much as a second. `data-aae-v4-in-use`
+on the dialog says whether it is also explaining a second import; the page
+dialog offers the mode picker only then (nothing to match otherwise).
+`run-v4-import.mjs` ticks the box with `V4_IMAGES=1`; `v4-import-e2e.php report`
+asserts the outcome with `AAE_E2E_IMAGES=1` (0 url-shaped left, attachments =
+downloads, message names the copy) and, without it, that the option off leaves
+every linked image linked.
+
+**A timing lesson the extra requests exposed:** the import switches
+`legacy_v3` off without claiming `legacy_v3_user_set`, so on a site that still
+holds V3 content the Rule-5 ratchet is entitled to bring the tabs back on the
+next `admin_init` — and the image step adds several of those after the
+switch-off. The 23/23 run had passed "legacy_v3 is off" only because the
+switch-off was the LAST request. The assertion now accepts "switched off by the
+import, re-armed by the ratchet on a site with V3 content".
+
 ### Still open
 
-Two rules for whoever builds demos, both measured on this WXR:
-
 - **No images in global classes** — a class variant's background image id is
-  remapped by nobody.
-- **No url-shaped atomic images.** 99 `image-src` values in the demo are
-  `{"id":null,"url":"https://crowdytheme.com/assets/…"}` (95 in `e-image`, 4 as
-  `background-image-overlay`), which is what an atomic image becomes when it is
-  linked rather than picked from the media library. 15 of the 22 `<img>` on
-  the imported home page hot-link that host. The id remap cannot touch them
-  (there is no id) and `url_remap` never sees `_elementor_data`, so they
-  render fine today and go blank the day `crowdytheme.com/assets` moves. Pick
-  every image from the library before exporting; the WXR then carries the file
-  and the id remap does the rest.
+  remapped by nobody, and the localiser walks `_elementor_data`, not class
+  posts. Rule for demo builders.
 
-  **Elementor CAN localise these, and we do not run that code.**
-  `Image_Src_Import_Transformer` (`props-resolver/transformers/import/`) bails
-  on a url-LESS value and, for a url-shaped one, calls
-  `templates_manager->get_import_images_instance()->import()` — downloads the
-  file, creates the attachment, returns `{id, url: null}`. It runs from
-  `Atomic_Element_Base::on_import()`, which the template-library import loop
-  calls per element; our WXR content is copied verbatim and
-  `apply_design_system()` applies only the `process_content` filter, never
-  `on_import()`. Running the import resolver over the tracked posts at
-  `import_end` would close this for demos that break the rule — at the cost of
-  one download per hot-linked image (99 here) inside the import request. Not
-  built; decide it deliberately if a demo needs it.

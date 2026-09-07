@@ -19,6 +19,7 @@ import {
   PAGE_MODE_KEEP,
   fetchAtomicImportStatus,
   isV4Template,
+  LOCALIZE_IMAGES_PARAM,
 } from "C/lib/atomicImport";
 
 const TemplateShow = ({ allTemplate }) => {
@@ -35,8 +36,9 @@ const TemplateShow = ({ allTemplate }) => {
   // `aae_page_mode`.
   const [v4Pending, setV4Pending] = useState(null);
   const [v4Mode, setV4Mode] = useState(PAGE_MODE_KEEP);
+  const [v4Images, setV4Images] = useState(false);
 
-  const navigate = (value, slug, id, mode = "") => {
+  const navigate = (value, slug, id, mode = "", images = false) => {
     const url = new URL(window.location.href);
     const pageQuery = url.searchParams.get("page");
 
@@ -48,6 +50,7 @@ const TemplateShow = ({ allTemplate }) => {
     url.searchParams.set("template", slug);
     url.searchParams.set("templateid", id);
     if (mode) url.searchParams.set("v4mode", mode);
+    if (images) url.searchParams.set(LOCALIZE_IMAGES_PARAM, "1");
 
     window.history.replaceState({}, "", url);
     setTabKey(value);
@@ -66,13 +69,21 @@ const TemplateShow = ({ allTemplate }) => {
     // design should meet what is there. Asked fresh, never from the payload
     // -- see lib/atomicImport.js. A failed request proceeds with the
     // server's default (keep the page's own design).
+    // Every V4 import stops at the dialog: it carries the image choice. The
+    // mode picker inside it is only offered when the site already holds V4
+    // content -- with nothing to match, "match my site" would be a no-op.
     if (isV4Template(template)) {
       const status = await fetchAtomicImportStatus();
-      if (status?.in_use) {
-        setV4Mode(PAGE_MODE_KEEP);
-        setV4Pending({ value, slug, id, title: template?.title });
-        return;
-      }
+      setV4Mode(PAGE_MODE_KEEP);
+      setV4Images(false);
+      setV4Pending({
+        value,
+        slug,
+        id,
+        title: template?.title,
+        inUse: !!status?.in_use,
+      });
+      return;
     }
 
     navigate(value, slug, id);
@@ -252,11 +263,20 @@ const TemplateShow = ({ allTemplate }) => {
           if (!isOpen) setV4Pending(null);
         }}
         title={v4Pending?.title}
+        inUse={!!v4Pending?.inUse}
         mode={v4Mode}
         setMode={setV4Mode}
+        localizeImages={v4Images}
+        setLocalizeImages={setV4Images}
         onConfirm={(mode) => {
           if (v4Pending)
-            navigate(v4Pending.value, v4Pending.slug, v4Pending.id, mode);
+            navigate(
+              v4Pending.value,
+              v4Pending.slug,
+              v4Pending.id,
+              v4Pending.inUse ? mode : "",
+              v4Images
+            );
         }}
       />
     </>

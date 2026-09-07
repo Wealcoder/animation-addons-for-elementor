@@ -19,6 +19,9 @@ const RequiredFeatures = () => {
 
   const url = new URL(window.location.href);
   const templateid = url.searchParams.get("templateid");
+  // The image choice from the V4 dialog. Read BEFORE changeRoute rebuilds
+  // the query from scratch, or it is dropped on the way to import.
+  const v4images = url.searchParams.get("v4images");
   const changeRoute = (value) => {
     const pageQuery = url.searchParams.get("page");
     const template = url.searchParams.get("template");
@@ -32,6 +35,7 @@ const RequiredFeatures = () => {
       url.searchParams.set("plugins", selectedPlugins.toString());
     }
     url.searchParams.set("attachment", allowAttachment);
+    if (v4images) url.searchParams.set("v4images", v4images);
 
     window.history.replaceState({}, "", url);
     setTabKey(value);

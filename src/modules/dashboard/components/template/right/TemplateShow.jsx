@@ -17,6 +17,7 @@ import {
   ATOMIC_IMPORT_AVAILABLE,
   fetchAtomicImportStatus,
   isV4Template,
+  LOCALIZE_IMAGES_PARAM,
 } from "@/lib/atomicImport";
 import { __ } from "@wordpress/i18n";
 
@@ -28,8 +29,11 @@ const TemplateShow = ({ allTemplate, metaData, setMetaData }) => {
 
   // The V4 dialog holds the navigation it interrupted until the user answers.
   const [v4Pending, setV4Pending] = useState(null);
+  // "Copy images into my media library" -- the dialog's one choice on a
+  // template import. Rides the URL as v4images, off unless ticked.
+  const [v4Images, setV4Images] = useState(false);
 
-  const navigate = (value, slug, id) => {
+  const navigate = (value, slug, id, images = false) => {
     const url = new URL(window.location.href);
     const pageQuery = url.searchParams.get("page");
 
@@ -40,6 +44,7 @@ const TemplateShow = ({ allTemplate, metaData, setMetaData }) => {
     url.searchParams.set("tab", value);
     url.searchParams.set("template", slug);
     url.searchParams.set("templateid", id);
+    if (images) url.searchParams.set(LOCALIZE_IMAGES_PARAM, "1");
 
     window.history.replaceState({}, "", url);
     setTabKey(value);
@@ -60,12 +65,20 @@ const TemplateShow = ({ allTemplate, metaData, setMetaData }) => {
     // the payload -- see lib/atomicImport.js. A failed request proceeds
     // silently: the importer picks the same mode server-side from the same
     // signal, so the dialog is information, not a gate.
+    // Every V4 import stops at the dialog now: it carries the image choice,
+    // which applies to a first import as much as a second. The "already
+    // uses V4" explanation inside it is still gated on the fresh signal.
     if (isV4Template(template)) {
       const status = await fetchAtomicImportStatus();
-      if (status?.in_use) {
-        setV4Pending({ value, slug, id, title: template?.title });
-        return;
-      }
+      setV4Images(false);
+      setV4Pending({
+        value,
+        slug,
+        id,
+        title: template?.title,
+        inUse: !!status?.in_use,
+      });
+      return;
     }
 
     navigate(value, slug, id);
@@ -358,8 +371,12 @@ const TemplateShow = ({ allTemplate, metaData, setMetaData }) => {
           if (!isOpen) setV4Pending(null);
         }}
         title={v4Pending?.title}
+        inUse={!!v4Pending?.inUse}
+        localizeImages={v4Images}
+        setLocalizeImages={setV4Images}
         onConfirm={() => {
-          if (v4Pending) navigate(v4Pending.value, v4Pending.slug, v4Pending.id);
+          if (v4Pending)
+            navigate(v4Pending.value, v4Pending.slug, v4Pending.id, v4Images);
         }}
       />
     </>

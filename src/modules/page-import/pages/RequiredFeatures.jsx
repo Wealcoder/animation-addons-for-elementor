@@ -22,6 +22,7 @@ const RequiredFeatures = () => {
   // The design-system mode picked in the V4 dialog. Read BEFORE changeRoute
   // rebuilds the query from scratch, or it is dropped on the way to import.
   const v4mode = url.searchParams.get("v4mode");
+  const v4images = url.searchParams.get("v4images");
   const changeRoute = (value) => {
     const pageQuery = url.searchParams.get("page");
     const template = url.searchParams.get("template");
@@ -36,6 +37,7 @@ const RequiredFeatures = () => {
     }
     url.searchParams.set("attachment", allowAttachment);
     if (v4mode) url.searchParams.set("v4mode", v4mode);
+    if (v4images) url.searchParams.set("v4images", v4images);
 
     window.history.replaceState({}, "", url);
     setTabKey(value);

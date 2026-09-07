@@ -26,6 +26,15 @@ export const ATOMIC_IMPORT_AVAILABLE = !!(
 export const isV4Template = (template) => template?.builder_version === "v4";
 
 /**
+ * URL param that carries the "copy images into my media library" choice from
+ * the V4 dialog through Required Features and Demo Importing, where it becomes
+ * `aae_localize_images` on the importer request. Off by default: the import is
+ * then exactly what it was, with every linked image hot-linked from the demo
+ * host. See inc/admin/atomic-image-localize.php.
+ */
+export const LOCALIZE_IMAGES_PARAM = "v4images";
+
+/**
  * How a V4 page's global classes and variables land on a site that already
  * has some. Mirrors `aae_page_mode` in inc/admin/template-importer.php:
  * anything but `match_site` is `keep_create` there, so the default here is

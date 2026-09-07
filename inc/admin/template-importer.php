@@ -306,8 +306,42 @@ class AAEAddon_Importer {
 					update_option('aaeaddon_template_import_state', $msg);
 				}
 				$this->update_blog_and_homepage_options($template_data);
+				// V4 only, and only when the user ticked it in the import dialog:
+				// copy url-shaped atomic images into the media library. Its own
+				// repeating step, because it is one download per image against
+				// a remote host and does not fit in one request. See
+				// Atomic_Image_Localize.
+				$wants_images = ! empty( $template_data['aae_localize_images'] )
+					&& isset( $template_data['builder_version'] ) && 'v4' === (string) $template_data['builder_version']
+					&& class_exists( '\WCF_ADDONS\Admin\Base\Atomic_Image_Localize' );
+				if ( $wants_images ) {
+					// Keep this step's summary (design system, V3 switch-off): the
+					// image step appends its own to it when it finishes.
+					$template_data['aae_import_summary'] = $msg;
+					$template_data['next_step']          = 'localize-images';
+					$progress                            = '95';
+					$msg                                 = esc_html__( 'Copying images to the media library', 'animation-addons-for-elementor' );
+					update_option( 'aaeaddon_template_import_state', $msg );
+				}
 				do_action('aaeaddon/starter-template/import/step/metasettings'); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Established plugin hook (slash-namespaced); kept for backward compatibility.
 				
+			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'localize-images'){
+				// Repeats until done: each request does what fits in its time
+				// budget and the client re-posts the same step. Progress climbs
+				// 95 -> 99 with the image count so the bar never looks stuck.
+				$images = \WCF_ADDONS\Admin\Base\Atomic_Image_Localize::run_batch();
+				if ( $images['done'] ) {
+					$template_data['next_step'] = 'done';
+					$progress                   = '100';
+					$summary                    = isset( $template_data['aae_import_summary'] ) ? (string) $template_data['aae_import_summary'] : '';
+					$msg                        = ( '' !== $summary ? $summary . ' — ' : '' ) . \WCF_ADDONS\Admin\Base\Atomic_Image_Localize::describe( $images );
+				} else {
+					$template_data['next_step'] = 'localize-images';
+					$fraction                   = $images['total'] > 0 ? min( 1, $images['processed'] / $images['total'] ) : 0;
+					$progress                   = (string) ( 95 + (int) floor( 4 * $fraction ) );
+					$msg                        = \WCF_ADDONS\Admin\Base\Atomic_Image_Localize::progress_message( $images );
+				}
+				update_option( 'aaeaddon_template_import_state', $msg );
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'install-wp-options'){
 
 				$template_data['next_step'] = 'check-template-status';

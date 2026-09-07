@@ -19,6 +19,9 @@ const DemoImporting = () => {
   const templateid = url.searchParams.get("templateid");
   const plugins = url.searchParams.get("plugins");
   const attachment = url.searchParams.get("attachment");
+  // "Copy images into my media library" from the V4 dialog -> the importer's
+  // `aae_localize_images`, which adds the repeating localize-images step.
+  const v4images = url.searchParams.get("v4images");
 
   const changeRoute = (value, meta) => {
     const pageQuery = url.searchParams.get("page");
@@ -30,6 +33,7 @@ const DemoImporting = () => {
     url.searchParams.set("tab", value);
     if (meta.plugins) url.searchParams.set("plugins", meta.plugins);
     url.searchParams.set("attachment", meta.attachment);
+    if (v4images) url.searchParams.set("v4images", v4images);
     window.history.replaceState({}, "", url);
     setTabKey(value);
   };
@@ -153,6 +157,7 @@ const DemoImporting = () => {
         delete tpldata.downloads;
         delete tpldata.is_pro;
         delete tpldata.excerpt;
+        if (v4images) tpldata.aae_localize_images = 1;
         setTempState(tpldata);
         
         const formData = new URLSearchParams();

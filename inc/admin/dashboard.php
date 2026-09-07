@@ -320,8 +320,10 @@ class WCF_Admin_Init
 		require_once 'atomic-attachment-remap.php';
 		require_once 'atomic-kit-import.php';
 		require_once 'atomic-v3-switch-off.php';
+		require_once 'atomic-image-localize.php';
 		\WCF_ADDONS\Admin\Base\Atomic_Attachment_Remap::init();
 		\WCF_ADDONS\Admin\Base\Atomic_Kit_Import::init();
+		\WCF_ADDONS\Admin\Base\Atomic_Image_Localize::init();
 		require_once 'st-init.php';
 		require_once 'template-importer.php';
 		$oneimport = \WCF_ADDONS\Admin\Base\OneClickImport::get_instance();
