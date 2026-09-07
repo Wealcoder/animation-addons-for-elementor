@@ -4,12 +4,26 @@
 .aae-a-toggle-switcher .aae-ts-switch.active .aae-ts-knob {
   transform: translate(20px, -50%);
 }
-.aae-a-toggle-switcher .aae-ts-switch.active {
-  background-color: var(--aae-ts-switcher-active-bg, #000000);
-  border-color: var(--aae-ts-switcher-active-bg, #000000);
-}
 .aae-a-toggle-switcher .aae-ts-label-before.active .aae-ts-highlight,
 .aae-a-toggle-switcher .aae-ts-label-after.active .aae-ts-highlight {
   opacity: 1;
   transform: translateX(0);
+}
+.aae-a-toggle-switcher .aae-ts-tab.e--selected {
+  background-color: #1a1a1a;
+  color: #ffffff;
+  border-radius: 8px;
+}
+.aae-a-toggle-switcher .aae-ts-switch.active .aae-ts-knob.aae-ts-knob--pill {
+  transform: translateX(100%);
+}
+.aae-a-toggle-switcher .elementor-element.elementor-widget-e-aae-a-toggle-switcher-knob.elementor-widget-empty {
+  background: none !important;
+}
+.aae-a-toggle-switcher .elementor-element.elementor-widget-e-aae-a-toggle-switcher-knob.elementor-widget-empty .elementor-widget-empty-icon,
+.aae-a-toggle-switcher .elementor-element.elementor-widget-e-aae-a-toggle-switcher-knob.elementor-widget-empty .ui-resizable-handle {
+  display: none !important;
+}
+.aae-a-toggle-switcher .elementor-widget-e-aae-a-toggle-switcher-knob {
+  position: static !important;
 }/*# sourceMappingURL=toggle-switcher.css.map */
