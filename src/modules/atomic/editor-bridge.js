@@ -287,6 +287,28 @@ window.elementor.on('document:loaded', () => {
 		// removal-sweep note above). A timer breaks the loop: the work lands in a
 		// later task, and repaint storms coalesce into ONE resync.
 		let resyncTimer = null;
+		let isSyncing = false;
+
+		const isIgnoredAnimationNode = (n) => {
+			if (!n || n.nodeType !== 1) return true;
+			const tag = n.tagName?.toLowerCase();
+			if (tag === 'style' || tag === 'script') return true;
+			if (n.classList && (
+				n.classList.contains('aae-char') ||
+				n.classList.contains('aae-word') ||
+				n.classList.contains('aae-line') ||
+				n.classList.contains('aae-split-text') ||
+				n.classList.contains('aae-slide-clone') ||
+				n.classList.contains('aae-slide-editor-preview')
+			)) {
+				return true;
+			}
+			if (n.hasAttribute?.('data-aae-clone') || n.hasAttribute?.('data-aae-ui')) {
+				return true;
+			}
+			return false;
+		};
+
 		const scheduleResync = () => {
 			if (resyncTimer) {
 				clearTimeout(resyncTimer);
@@ -295,12 +317,12 @@ window.elementor.on('document:loaded', () => {
 			resyncTimer = setTimeout(() => {
 				resyncTimer = null;
 				syncAllElements();
-			}, 150);
+			}, 200);
 		};
 
 		let sweeping = false;
 		const observer = new win.MutationObserver((mutations) => {
-			if (sweeping) return;
+			if (sweeping || isSyncing) return;
 			sweeping = true;
 			try {
 				const seen = new Set();
@@ -309,12 +331,12 @@ window.elementor.on('document:loaded', () => {
 				mutations.forEach((mutation) => {
 					// An ADDED node carrying an interaction id is a re-render landing.
 					// Only a flag is set here; the work happens in the timer above.
-					if (!sawAdded) {
+					if (!sawAdded && !isSyncing) {
 						mutation.addedNodes.forEach((node) => {
-							if (sawAdded || node.nodeType !== 1) return;
+							if (sawAdded || node.nodeType !== 1 || isIgnoredAnimationNode(node)) return;
 							if (
 								node.hasAttribute('data-interaction-id') ||
-								node.querySelector('[data-interaction-id]')
+								(node.querySelector && node.querySelector('[data-interaction-id]'))
 							) {
 								sawAdded = true;
 							}
@@ -322,10 +344,10 @@ window.elementor.on('document:loaded', () => {
 					}
 
 					mutation.removedNodes.forEach((node) => {
-						if (node.nodeType !== 1) return; // ELEMENT_NODE only
+						if (node.nodeType !== 1 || isIgnoredAnimationNode(node)) return; // ELEMENT_NODE only
 						if (node.isConnected) return;    // re-parented, not deleted
-						const targets = Array.from(node.querySelectorAll('[data-interaction-id]'));
-						if (node.hasAttribute('data-interaction-id')) {
+						const targets = Array.from(node.querySelectorAll ? node.querySelectorAll('[data-interaction-id]') : []);
+						if (node.hasAttribute && node.hasAttribute('data-interaction-id')) {
 							targets.push(node);
 						}
 						targets.forEach(el => {
@@ -338,7 +360,7 @@ window.elementor.on('document:loaded', () => {
 					});
 				});
 
-				if (sawAdded) {
+				if (sawAdded && !isSyncing) {
 					scheduleResync();
 				}
 			} finally {
@@ -365,44 +387,53 @@ window.elementor.on('document:loaded', () => {
 		// Declared as a FUNCTION, not a const arrow: scheduleResync() above closes
 		// over it and is defined earlier in the file, so it relies on hoisting.
 		function syncAllElements() {
-			const elements = getElements();
-
-			elements.forEach((element) => {
-				const elType = element.model.get('elType');
-				const widgetType = element.model.get('widgetType');
-
-				// Get ALL settings from the element
-				const allSettings = element.settings.toJSON();
-				if(element.id == 'document'){
-					return;
-				}
-
-				// Create a mock container that settings-bridge / featuresFor can read.
-				// featuresFor() accesses container.model.get('widgetType'), so the
-				// getter MUST live under `.model`, not at the top level.
-				const mockContainer = {
-					id: element.id,
-					model: {
-						get: (prop) => prop === 'elType' ? elType : (prop === 'widgetType' ? widgetType : undefined),
-					},
-					settings: {
-						attributes: allSettings
-					}
-				};
-
-				// Bulk sync without requiring the target DOM element to exist yet
-				applySettingsToDoms(mockContainer);
-			});
-
-			// Rebuilding the maps is only half of it — scan() is what binds the
-			// freshly-rendered DOM nodes to them. A re-render produces new elements
-			// with no bound flag, so this re-injects the Custom CSS <style> and
-			// re-arms every other effect on them.
+			isSyncing = true;
 			try {
-				win.aaeAtomicAnimations?.scan(win.document);
-			} catch (_) {
-				// A resync racing a preview teardown is not worth breaking the editor
-				// over; the next one will pick it up.
+				const elements = getElements();
+
+				elements.forEach((element) => {
+					const elType = element.model.get('elType');
+					const widgetType = element.model.get('widgetType');
+
+					// Get ALL settings from the element
+					const allSettings = element.settings.toJSON();
+					if(element.id == 'document'){
+						return;
+					}
+
+					// Create a mock container that settings-bridge / featuresFor can read.
+					// featuresFor() accesses container.model.get('widgetType'), so the
+					// getter MUST live under `.model`, not at the top level.
+					const mockContainer = {
+						id: element.id,
+						model: {
+							get: (prop) => prop === 'elType' ? elType : (prop === 'widgetType' ? widgetType : undefined),
+						},
+						settings: {
+							attributes: allSettings
+						}
+					};
+
+					// Bulk sync without requiring the target DOM element to exist yet
+					applySettingsToDoms(mockContainer);
+				});
+
+				// Rebuilding the maps is only half of it — scan() is what binds the
+				// freshly-rendered DOM nodes to them. A re-render produces new elements
+				// with no bound flag, so this re-injects the Custom CSS <style> and
+				// re-arms every other effect on them.
+				try {
+					win.aaeAtomicAnimations?.scan(win.document);
+				} catch (_) {
+					// A resync racing a preview teardown is not worth breaking the editor
+					// over; the next one will pick it up.
+				}
+			} finally {
+				Promise.resolve().then(() => {
+					setTimeout(() => {
+						isSyncing = false;
+					}, 60);
+				});
 			}
 		}
 
