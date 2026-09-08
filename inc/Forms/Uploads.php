@@ -34,6 +34,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 final class Uploads {
 
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery -- Custom database tables cannot use core post query APIs ($wpdb is required) and dynamic upload rows are not object-cached.
+
 	/** Un-claimed uploads are deleted after this long. */
 	const PENDING_TTL = DAY_IN_SECONDS;
 
@@ -261,7 +263,8 @@ final class Uploads {
 		$id  = (int) $request['id'];
 		$row = $wpdb->get_row(
 			$wpdb->prepare(
-				'SELECT * FROM ' . Database::attachments_table() . ' WHERE id = %d', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- table name from our own helper.
+				'SELECT * FROM %i WHERE id = %d',
+				Database::attachments_table(),
 				$id
 			),
 			ARRAY_A
@@ -309,7 +312,8 @@ final class Uploads {
 
 			$row = $wpdb->get_row(
 				$wpdb->prepare(
-					'SELECT id, original_name, size_bytes FROM ' . Database::attachments_table() . ' WHERE id = %d AND upload_key = %s AND form_key = %s AND status = %s', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- table name from our own helper.
+					'SELECT id, original_name, size_bytes FROM %i WHERE id = %d AND upload_key = %s AND form_key = %s AND status = %s',
+					Database::attachments_table(),
 					$id,
 					$key,
 					$form_key,
@@ -368,12 +372,12 @@ final class Uploads {
 		$placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
 
 		$wpdb->query(
-			// The sniff counts only the two literal placeholders it can see;
+			// The sniff counts only the three literal placeholders it can see;
 			// $placeholders adds one %d per id, so the real count is
-			// 2 + count( $ids ) and matches the array_merge() below.
+			// 3 + count( $ids ) and matches the array_merge() below.
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
-				'UPDATE ' . Database::attachments_table() . " SET submission_id = %d, status = 'attached' WHERE form_key = %s AND status = 'pending' AND id IN ({$placeholders})", // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- table from our helper; $placeholders is one %d per id, so the count is 2 + count( $ids ) and matches array_merge() below.
-				array_merge( [ $submission_id, $form_key ], $ids )
+				"UPDATE %i SET submission_id = %d, status = 'attached' WHERE form_key = %s AND status = 'pending' AND id IN ({$placeholders})", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $placeholders is a run of %d generated from count( $ids ); the ids are prepare() arguments.
+				array_merge( [ Database::attachments_table(), $submission_id, $form_key ], $ids )
 			)
 		);
 	}
@@ -402,18 +406,23 @@ final class Uploads {
 
 		$placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
 
+		// One complete literal per branch rather than a base string appended to:
+		// the whole query text is written here, so nothing but %d/%s/%i values
+		// ever reaches the SQL.
 		if ( $submission_id > 0 ) {
-			$sql  = 'SELECT original_name, stored_path FROM ' . Database::attachments_table() . " WHERE submission_id = %d AND status = 'attached' AND id IN ({$placeholders})";
-			$args = array_merge( [ $submission_id ], $ids );
+			$sql  = "SELECT original_name, stored_path FROM %i WHERE submission_id = %d AND status = 'attached' AND id IN ({$placeholders})";
+			$args = array_merge( [ Database::attachments_table(), $submission_id ], $ids );
 		} elseif ( '' !== $form_key ) {
-			$sql  = 'SELECT original_name, stored_path FROM ' . Database::attachments_table() . " WHERE form_key = %s AND status = 'pending' AND id IN ({$placeholders})";
-			$args = array_merge( [ $form_key ], $ids );
+			$sql  = "SELECT original_name, stored_path FROM %i WHERE form_key = %s AND status = 'pending' AND id IN ({$placeholders})";
+			$args = array_merge( [ Database::attachments_table(), $form_key ], $ids );
 		} else {
 			return [];
 		}
 
 		$rows = $wpdb->get_results(
-			$wpdb->prepare( $sql, $args ), // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- table from our helper, placeholders generated to count.
+			// $sql is whichever of the two literals above the branch chose; the only
+			// variable part of it is $placeholders.
+			$wpdb->prepare( $sql, $args ), // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- one %d per id; the sniff cannot count through array_merge().
 			ARRAY_A
 		);
 
@@ -467,9 +476,10 @@ final class Uploads {
 		$placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
 
 		$rows = $wpdb->get_results(
+			// phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- one %d per id; the sniff cannot count through array_merge().
 			$wpdb->prepare(
-				'SELECT id, stored_path FROM ' . Database::attachments_table() . " WHERE form_key = %s AND status = 'pending' AND id IN ({$placeholders})", // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table from our helper, placeholders generated to count.
-				array_merge( [ $form_key ], $ids )
+				"SELECT id, stored_path FROM %i WHERE form_key = %s AND status = 'pending' AND id IN ({$placeholders})", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $placeholders is a run of %d generated from count( $ids ); the ids are prepare() arguments.
+				array_merge( [ Database::attachments_table(), $form_key ], $ids )
 			),
 			ARRAY_A
 		);
@@ -496,7 +506,8 @@ final class Uploads {
 
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(
-				'SELECT id, stored_path FROM ' . Database::attachments_table() . " WHERE status = 'pending' AND created_at < %s LIMIT 500", // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- table name from our own helper.
+				"SELECT id, stored_path FROM %i WHERE status = 'pending' AND created_at < %s LIMIT 500",
+				Database::attachments_table(),
 				$cutoff
 			),
 			ARRAY_A
@@ -609,4 +620,6 @@ final class Uploads {
 
 		return $response;
 	}
+
+	// phpcs:enable WordPress.DB.DirectDatabaseQuery
 }

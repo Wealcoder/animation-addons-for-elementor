@@ -218,22 +218,64 @@ class AAEAddon_Importer {
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'check-theme'){
 				/*
 				 * A starter template records the theme it was designed against.
-				 * This plugin does not install that theme and never changes the
-				 * site's active theme: switching themes is the user's decision,
-				 * taken in Appearance > Themes. The step only reports the
-				 * recommendation so the import can carry on.
+				 *
+				 * This plugin ships NO theme installer and switches no theme by
+				 * itself -- a plugin on the directory may not install code fetched
+				 * from elsewhere. It announces the user's choice on a public hook
+				 * and our commercial add-on, which is not distributed on
+				 * WordPress.org, answers it. With nothing attached the step reports
+				 * the recommendation and moves on, exactly as before.
+				 *
+				 * Three gates, and each removes a case where installing would be
+				 * wrong rather than merely redundant:
+				 *   - a starter PAGE drops into an existing site, so it never
+				 *     touches the theme, whatever was ticked;
+				 *   - the slug must be the one THIS template declares, so a hand
+				 *     -edited request cannot install an arbitrary theme;
+				 *   - the user has to have ticked it on the import screen.
 				 */
 				$template_data['next_step'] = 'install-elementor-settings';
 				$progress                   = '75';
 				if ( isset( $template_data['dependencies']['themes'][0]['slug'] ) ) {
 					$theme_slug = sanitize_key( $template_data['dependencies']['themes'][0]['slug'] );
 				}
+				if ( empty( $theme_slug ) ) {
+					/**
+					 * Every AAE starter template is built on the same free
+					 * wordpress.org theme, so the step still knows what it is
+					 * when a template ships no dependency list of its own.
+					 *
+					 * @param string $slug Default theme slug.
+					 */
+					$theme_slug = sanitize_key( apply_filters( 'aae/starter_template/default_theme', 'hello-animation' ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Established plugin hook (slash-namespaced); kept for backward compatibility.
+				}
 				if ( ! empty( $theme_slug ) ) {
-					$msg = sprintf(
-						/* translators: %s: slug of the theme this starter template was designed for. */
-						esc_html__( 'This template was designed for the "%s" theme. Your active theme has not been changed -- install and activate it yourself from Appearance > Themes.', 'animation-addons-for-elementor' ),
-						$theme_slug
-					);
+					$import_type_theme = isset( $_POST['import_type'] ) ? sanitize_text_field( wp_unslash( $_POST['import_type'] ) ) : 'full-demo'; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- check_ajax_referer() ran at the top of this handler.
+					$chosen_theme      = isset( $_POST['user_theme'] ) ? sanitize_key( wp_unslash( $_POST['user_theme'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- check_ajax_referer() ran at the top of this handler.
+					$installed         = null;
+
+					if ( 'page' !== $import_type_theme && $chosen_theme === $theme_slug && current_user_can( 'install_themes' ) ) {
+						/**
+						 * Install and activate the theme this starter template declares.
+						 *
+						 * Free ships no installer, so with nothing attached this returns
+						 * null and the active theme is left alone.
+						 *
+						 * @param string|null $message    Null until something answers.
+						 * @param string      $theme_slug Slug the template declares.
+						 */
+						$installed = apply_filters( 'aae/starter_template/install_theme', null, $theme_slug ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Established plugin hook (slash-namespaced); kept for backward compatibility.
+					}
+
+					if ( is_string( $installed ) && '' !== $installed ) {
+						$msg = $installed;
+					} else {
+						$msg = sprintf(
+							/* translators: %s: slug of the theme this starter template was designed for. */
+							esc_html__( 'This template was designed for the "%s" theme. Your active theme has not been changed -- install and activate it yourself from Appearance > Themes.', 'animation-addons-for-elementor' ),
+							$theme_slug
+						);
+					}
 					update_option( 'aaeaddon_template_import_state', $msg );
 				}
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'install-elementor-settings'){

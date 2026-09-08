@@ -37,6 +37,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 final class Admin_Rest {
 
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery -- Custom table queries cannot use core post query APIs ($wpdb is required) and dynamic admin REST queries are not object-cached.
+
 	const CAP       = 'manage_options';
 	const PER_PAGE  = 20;
 	const CSV_LIMIT = 5000;
@@ -51,17 +53,6 @@ final class Admin_Rest {
 	 * so an export ran wider than the list it was started from.
 	 */
 	const FILTER_KEYS = [ 'form_key', 'status', 'from', 'to', 's', 'field_key', 'field_value' ];
-
-	/**
-	 * "%d,%d,…" for an id list, one placeholder per element.
-	 *
-	 * $wpdb->prepare() has no placeholder for a variable-length IN () list, so
-	 * the run of %d has to be generated and interpolated. The ids themselves
-	 * still travel as prepare() arguments — never in the SQL string.
-	 */
-	private static function in_placeholders( array $ids ): string {
-		return implode( ',', array_fill( 0, count( $ids ), '%d' ) );
-	}
 
 	public static function init(): void {
 		add_action( 'rest_api_init', [ self::class, 'register_routes' ] );
@@ -374,9 +365,12 @@ final class Admin_Rest {
 		$previews = [];
 		if ( $result['rows'] ) {
 			$ids          = array_map( static fn( $r ) => (int) $r->id, $result['rows'] );
-			$placeholders = self::in_placeholders( $ids );
+			// $wpdb->prepare() has no placeholder for a variable-length IN () list,
+			// so the run of %d is generated here. It is built from count( $ids )
+			// and the literal '%d' -- no request data can reach the SQL string.
+			$placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
 			$value_rows   = $wpdb->get_results(
-				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $placeholders is a generated run of %d (see in_placeholders()); the ids are prepare() arguments.
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- $placeholders is a run of %d generated from count( $ids ) alone; the ids themselves are prepare() arguments.
 				$wpdb->prepare( "SELECT submission_id, field_value FROM %i WHERE submission_id IN ({$placeholders}) ORDER BY id", array_merge( [ Database::submission_values_table() ], $ids ) )
 			);
 			foreach ( $value_rows as $value ) {
@@ -628,14 +622,16 @@ final class Admin_Rest {
 		}
 
 		$ids          = array_values( $ids );
-		$placeholders = self::in_placeholders( $ids );
+		// One %d per id, generated from count( $ids ) and the literal '%d';
+		// the ids themselves travel as prepare() arguments.
+		$placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
 
 		$deleted = (int) $wpdb->query(
-			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $placeholders is a generated run of %d (see in_placeholders()); the ids are prepare() arguments.
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- $placeholders is a run of %d generated from count( $ids ) alone; the ids themselves are prepare() arguments.
 			$wpdb->prepare( "DELETE FROM %i WHERE id IN ({$placeholders})", array_merge( [ Database::submissions_table() ], $ids ) )
 		);
 		$wpdb->query(
-			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- same list, same reason.
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- same list, same reason.
 			$wpdb->prepare( "DELETE FROM %i WHERE submission_id IN ({$placeholders})", array_merge( [ Database::submission_values_table() ], $ids ) )
 		);
 
@@ -1028,9 +1024,11 @@ final class Admin_Rest {
 		$columns              = []; // field_key => header label.
 		if ( $rows ) {
 			$ids          = array_map( static fn( $r ) => (int) $r->id, $rows );
-			$placeholders = self::in_placeholders( $ids );
+			// One %d per id, generated from count( $ids ) and the literal '%d';
+			// the ids themselves travel as prepare() arguments.
+			$placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
 			$values       = $wpdb->get_results(
-				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $placeholders is a generated run of %d (see in_placeholders()); the ids are prepare() arguments.
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- $placeholders is a run of %d generated from count( $ids ) alone; the ids themselves are prepare() arguments.
 				$wpdb->prepare( "SELECT submission_id, field_key, field_label, field_value FROM %i WHERE submission_id IN ({$placeholders}) ORDER BY id", array_merge( [ Database::submission_values_table() ], $ids ) )
 			);
 
@@ -1076,4 +1074,6 @@ final class Admin_Rest {
 
 		exit;
 	}
+
+	// phpcs:enable WordPress.DB.DirectDatabaseQuery
 }

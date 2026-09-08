@@ -179,15 +179,19 @@ gulp.task('zip', () => {
         // unnecessary files
         '!node_modules/**',
         '!public/**',
-        '!src/**',
         '!dist/**',
-        '!assets/src/**',
+
+        // /src and /assets/src SHIP. They are the human-readable sources for
+        // everything compiled into assets/build and assets/css, and the
+        // directory guidelines require them to be available. Excluding them
+        // is what made the shipped plugin look like compiled code with no
+        // origin, even though the repository had them all along.
 
         '!**/*.map',
 
-        // Exclude non-minified JS files from assets/js/widgets (only keep .min.js)
-        '!assets/js/widgets/*.js',
-        'assets/js/widgets/*.min.js',
+        // Both the .js and the .min.js in assets/js/widgets ship: each .min.js
+        // is the build output of the .js beside it, and dropping the readable
+        // half left 33 scripts in the package with no source.
 
         '!.git/**',
         '!.github/**',
@@ -200,20 +204,31 @@ gulp.task('zip', () => {
         '!components.cptBuilder.json',
         '!components.dashboard.json',
         '!components.pageImport.json',
-        '!gulpfile.js',
         '!jsconfig.json',
         '!package-lock.json',
-        '!package.json',
         '!phpstan.neon',
-        '!postcss.config.js',
-        '!package.json',
-        '!swap-config.js',
-        '!tailwind.cptBuilder.config.js',
-        '!tailwind.dashboard.config.js',
-        '!tailwind.pageImport.config.js',
-        '!webpack.config.js',
-        // Developer documentation and a teaching example -- not plugin code.
+
+        // The build tooling ships too, so "npm install && npm run build" can be
+        // run against the plugin as distributed rather than only against the
+        // repository: package.json, webpack.config.js, gulpfile.js,
+        // postcss.config.js, the tailwind configs and swap-config.js.
+        // Developer documentation and internal notes -- not plugin code.
         '!elementor-atomic-learning-guide/**',
+        '!**/*.md',
+        '!phpcs.xml.dist',
+
+        // vendor/ is HALF required. vendor/autoload.php and vendor/composer/**
+        // carry the ONLY PSR-4 map for WCF_ADDONS\ -> inc/, and 337 namespaced
+        // files resolve through it, so dropping vendor wholesale ships a plugin
+        // that activates and then fatals. Everything else under vendor/ is
+        // require-dev (PHPCS/WPCS, ~3,500 files) with no runtime code at all.
+        // Running "composer install --no-dev" before the release is still the
+        // right thing to do; these lines mean forgetting it cannot ship them.
+        '!vendor/squizlabs/**',
+        '!vendor/wp-coding-standards/**',
+        '!vendor/phpcsstandards/**',
+        '!vendor/dealerdirect/**',
+        '!vendor/bin/**',
         '!README.md',
         '!.env',
         '!**/.DS_Store'

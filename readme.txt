@@ -737,20 +737,39 @@ does not choose the destination.
 
 == Source Code ==
 
-The compiled JavaScript and CSS shipped in assets/build/, assets/js/ and
-assets/css/ is built from the human-readable sources in this plugin's public
-repository:
+Every compiled file in this plugin ships with its human-readable source in the
+plugin itself. The same sources are also in the public repository:
 
 https://github.com/Wealcoder/animation-addons-for-elementor
 
-* /src -- the React and JavaScript sources for the dashboard and the editor
-  bundles, built into assets/build/
-* /assets/src -- the SCSS sources, built into assets/css/
-* /assets/js and /assets/js/widgets -- the unminified front-end scripts; the
-  .min.js file beside each one is its minified build output
+* /src -- the React and JavaScript sources for the dashboard, the page
+  importer and the Elementor editor bundles, compiled into /assets/build
+* /assets/src -- the SCSS sources, compiled into /assets/css
+* /assets/js and /assets/js/widgets -- the front-end scripts. Each .min.js is
+  the minified build of the .js file of the same name beside it.
 
-Build with "npm install" then "npm run build" (webpack via @wordpress/scripts,
-plus gulp for the SCSS).
+The build tooling is included as well, so the build can be reproduced from the
+plugin as distributed and not only from the repository:
+
+  npm install
+  npm run build
+
+That runs webpack (via @wordpress/scripts, see webpack.config.js) for /src, and
+gulp (see gulpfile.js) for the SCSS and the minification. Every npm dependency
+compiled into /assets/build is listed in package.json.
+
+Third-party libraries included directly rather than through npm, with their
+upstream sources:
+
+* CodeMirror 5.65.16 -- the code editor used by the Code Snippet screen.
+  Shipped minified in /assets/js/cs-js and /assets/css/cs-css, copied at
+  build time from /assets/src/code-snippet, which holds upstream's own
+  minified distribution files rather than sources of ours.
+  Source: https://github.com/codemirror/codemirror5
+* Select2 4.1.0 -- the enhanced select control used in admin screens.
+  /assets/js/select2.js is the unminified original; /assets/css/select2.min.css
+  is upstream's own minified stylesheet.
+  Source: https://github.com/select2/select2
 
 == Changelog ==
 

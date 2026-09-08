@@ -169,17 +169,22 @@ class WCF_Plugin_Installer
         // offering a checkbox that would quietly do nothing.
         $not_installed       = __('Not Installed', 'animation-addons-for-elementor');
         $can_install_plugins = (bool) has_action('aae/starter_template/install_plugin');
+        $can_install_themes  = (bool) has_filter('aae/starter_template/install_theme');
 
         // Check plugin dependencies
         foreach ($plugins as &$dep) {
             $dep['status']    = $this->check_plugin_status($dep['Base_Slug']);
             $dep['needs_pro'] = ($not_installed === $dep['status']) && !$can_install_plugins;
         }
-        // Themes are reported, never installed and never activated. Changing a
-        // site's theme is the user's decision and belongs to Appearance >
-        // Themes, so these rows carry a status and nothing selectable.
+        // This plugin installs no theme and switches none by itself. A theme row
+        // is only selectable when something is listening on the starter-template
+        // hook; otherwise it carries a status and a pointer to Appearance >
+        // Themes, exactly as before. `can_install` is what the screen reads to
+        // decide between a checkbox and a read-only row.
         foreach ($themes as &$tm) {
-            $tm['status'] = $this->check_theme_status($tm['slug']);
+            $tm['status']      = $this->check_theme_status($tm['slug']);
+            $tm['can_install'] = $can_install_themes;
+            $tm['needs_pro']   = ($not_installed === $tm['status']) && !$can_install_themes;
         }
 
         wp_send_json_success(['dependencies' => ['plugins' => $plugins, 'themes' => $themes]]);

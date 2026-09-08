@@ -19,6 +19,10 @@ const DemoImporting = () => {
   const templateid = url.searchParams.get("templateid");
   const plugins = url.searchParams.get("plugins");
   const attachment = url.searchParams.get("attachment");
+  // The theme the user ticked on the import screen, if any. Free installs
+  // nothing itself; the server announces this on a hook the Pro add-on
+  // answers, and with nothing attached the active theme is left alone.
+  const theme = url.searchParams.get("theme");
   // "Copy images into my media library" from the V4 dialog -> the importer's
   // `aae_localize_images`, which adds the repeating localize-images step.
   const v4images = url.searchParams.get("v4images");
@@ -34,6 +38,9 @@ const DemoImporting = () => {
     if (meta.plugins) url.searchParams.set("plugins", meta.plugins);
     url.searchParams.set("attachment", meta.attachment);
     if (v4images) url.searchParams.set("v4images", v4images);
+    // Retry re-enters the import from the fail screen, so the choice has to
+    // survive the round trip.
+    if (theme) url.searchParams.set("theme", theme);
     // The fail screen reads this back out of the URL; without it every
     // failure reads as a bare "An issue occurred while importing".
     if (meta.msg) url.searchParams.set("msg", meta.msg);
@@ -174,8 +181,10 @@ const DemoImporting = () => {
         formData.append("template_data", JSON.stringify(tpldata));
         formData.append("nonce", WCF_ADDONS_ADMIN.nonce);
         if (plugins) formData.append("user_plugins", plugins);
-        // No theme is sent. The import never installs or activates a theme;
-        // it only names the one the template was designed against.
+        // Sent only when the user ticked it. The server checks it against
+        // the slug THIS template declares before announcing it on the hook,
+        // so an edited request cannot install an arbitrary theme.
+        if (theme) formData.append("user_theme", theme);
         formData.append("attachment", attachment);
         const response = await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
           method: "POST",

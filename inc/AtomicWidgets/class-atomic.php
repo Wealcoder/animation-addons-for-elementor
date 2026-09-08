@@ -7704,23 +7704,31 @@ JS;
 		// Two families, two markers: our elements carry `e-aae-a-`, our
 		// extension props carry `aae_` — an extension can sit on a core
 		// e-heading with no AAE element anywhere on the page.
-		$sql  = "SELECT meta_value FROM {$wpdb->postmeta} WHERE meta_key = '_elementor_data' AND ( meta_value LIKE %s OR meta_value LIKE %s )";
-		$args = [
+		$like = [
 			'%' . $wpdb->esc_like( '"e-aae-a-' ) . '%',
 			'%' . $wpdb->esc_like( '"aae_' ) . '%',
 		];
 
-		if ( null !== $post_ids ) {
+		// One complete literal per branch rather than a base string appended to.
+		// Appending is what puts a variable into the query TEXT; written out this
+		// way the only thing interpolated is a run of %d generated from count().
+		if ( null === $post_ids ) {
+			$sql  = "SELECT meta_value FROM {$wpdb->postmeta} WHERE meta_key = '_elementor_data' AND ( meta_value LIKE %s OR meta_value LIKE %s )";
+			$args = $like;
+		} else {
 			$post_ids = array_values( array_filter( array_map( 'intval', $post_ids ) ) );
 			if ( empty( $post_ids ) ) {
 				return [ 'widgets' => [], 'extensions' => [] ];
 			}
 			// One %d per id; the ids themselves travel as prepare() arguments.
-			$sql .= ' AND post_id IN (' . implode( ',', array_fill( 0, count( $post_ids ), '%d' ) ) . ')';
-			$args = array_merge( $args, $post_ids );
+			$placeholders = implode( ',', array_fill( 0, count( $post_ids ), '%d' ) );
+			$sql          = "SELECT meta_value FROM {$wpdb->postmeta} WHERE meta_key = '_elementor_data' AND ( meta_value LIKE %s OR meta_value LIKE %s ) AND post_id IN ({$placeholders})";
+			$args         = array_merge( $like, $post_ids );
 		}
 
-		$rows = $wpdb->get_col( $wpdb->prepare( $sql, $args ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $sql is the literal above plus a generated run of %d; every value is in $args.
+		// $sql is whichever of the two literals above the branch chose; the only
+		// variable part of it is the generated run of %d.
+		$rows = $wpdb->get_col( $wpdb->prepare( $sql, $args ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- one %d per id; the sniff cannot count through array_merge().
 
 		if ( empty( $rows ) ) {
 			return [ 'widgets' => [], 'extensions' => [] ];
@@ -7869,7 +7877,7 @@ JS;
 	 * `"elType":"e-flexbox"`, a leaf as `"elType":"widget","widgetType":"e-heading"`
 	 * — so one alternation covers both, and covers types added in later Elementor
 	 * releases without this having to be kept in sync with a list. Its v3 twin
-	 * (`Animation_Settings::v3_widget_name_sql()`) has to enumerate names only
+	 * (`Animation_Settings::v3_widget_name_regexp()`) has to enumerate names only
 	 * because v3 widget names share no prefix at all.
 	 *
 	 * A false positive is harmless here by construction: the worst it can do is
