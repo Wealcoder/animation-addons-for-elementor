@@ -146,6 +146,13 @@ class OneClickImport
 			wp_send_json_error( [ 'message' => 'Invalid or missing nonce' ], 403 );
 		}
 
+		// A nonce proves where the request came from, not what the user is
+		// allowed to do. This reports what the last import wrote, so it is
+		// gated on the same authority the importer itself needs.
+		if ( ! current_user_can( 'edit_posts' ) ) {
+			wp_send_json_error( [ 'message' => 'Access denied.' ], 403 );
+		}
+
 		$per_page = isset($_POST['per_page']) ? max(1, (int) $_POST['per_page']) : 1; // latest one by default
 		$batch_id = get_option('aae_last_import_batch');
 
@@ -214,6 +221,11 @@ class OneClickImport
 		if (! $use_existing_importer_data) {
 			// Create a date and time string to use for demo and log file names.
 			Helpers::set_demo_import_start_time();
+
+			// A NEW content import (not a chunk continuation): let per-import
+			// trackers drop the previous run's state. `import_start` cannot be
+			// used for this -- WXRImporter fires it on every chunk.
+			do_action('aaeaddon/content_import/fresh_start'); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- slash-namespaced plugin hook, same family as aaeaddon/after_import.
 
 			// Define log file path.
 			$this->log_file_path = Helpers::get_log_path();

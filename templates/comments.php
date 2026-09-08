@@ -147,16 +147,16 @@ endif;
 
 		<?php
 
-			$post_id = '';
-			if ( null === $post_id )
-				$post_id = get_the_ID();
-			else
-				$id		 = $post_id;
-            /// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+			// This template runs in global scope, so nothing here may be named
+			// after a WordPress global. It previously assigned $post_id, $id and
+			// $user_identity, all of which core uses. $post_id was also dead
+			// logic: it was set to '' and then compared with `null === $post_id`,
+			// which is never true, so it stayed empty and every get_permalink()
+			// below silently fell back to the global post.
+			$wcf_post_id	 = get_the_ID();
 			$commenter		 = wp_get_current_commenter();
-			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-			$user			 = wp_get_current_user();
-			$user_identity	 = $user->exists() ? $user->display_name : '';
+			$wcf_user		 = wp_get_current_user();
+			$wcf_user_name	 = $wcf_user->exists() ? $wcf_user->display_name : '';
 	        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 			$req		 = get_option( 'require_name_email' );
 			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
@@ -195,12 +195,12 @@ endif;
 				/** This filter is documented in wp-includes/link-template.php */
 				'must_log_in'		 => '
 					<p class="must-log-in">
-					'.esc_html__('You must be','animation-addons-for-elementor').' <a href="'.esc_url(wp_login_url( apply_filters( 'the_permalink', get_permalink( $post_id ) ) )).'">'.esc_html__('logged in','animation-addons-for-elementor').'</a> '.esc_html__('to post a comment.','animation-addons-for-elementor').'
+					'.esc_html__('You must be','animation-addons-for-elementor').' <a href="'.esc_url(wp_login_url( apply_filters( 'the_permalink', get_permalink( $wcf_post_id ) ) )).'">'.esc_html__('logged in','animation-addons-for-elementor').'</a> '.esc_html__('to post a comment.','animation-addons-for-elementor').'
 					</p>',
 				/** This filter is documented in wp-includes/link-template.php */
 				'logged_in_as'		 => '
 					<p class="logged-in-as">
-					'.esc_html__('Logged in as','animation-addons-for-elementor').' <a href="'.esc_url(get_edit_user_link()).'">'.esc_html($user_identity).'</a>. <a href="'.esc_url(wp_logout_url( apply_filters( 'the_permalink', get_permalink( $post_id ) ) )).'" title="'.esc_attr__('Log out of this account','animation-addons-for-elementor').'">'.esc_html__('Log out?','animation-addons-for-elementor').'</a>
+					'.esc_html__('Logged in as','animation-addons-for-elementor').' <a href="'.esc_url(get_edit_user_link()).'">'.esc_html($wcf_user_name).'</a>. <a href="'.esc_url(wp_logout_url( apply_filters( 'the_permalink', get_permalink( $wcf_post_id ) ) )).'" title="'.esc_attr__('Log out of this account','animation-addons-for-elementor').'">'.esc_html__('Log out?','animation-addons-for-elementor').'</a>
 					</p>',
 				'id_form'			 => 'commentform',
 				'id_submit'			 => 'submit',

@@ -6149,3 +6149,407 @@ no local files at all, so its absence is normal.
   a static element wherever the **Custom CSS extension** is switched off,
   with no error — which is why `Atomic\Bootstrap` keeps that extension in
   the free plugin.
+
+---
+
+## Starter template / page import for Elementor V4 content (2026-09-07)
+
+A V4 (atomic) page's style lives in two places OUTSIDE `_elementor_data` —
+global classes (`e_global_class` posts + kit meta) and global variables (kit
+meta `_elementor_global_variables`) — so the WXR + options import that carries
+a V3 demo delivers a V4 demo unstyled: every element still says
+`class="g-063569e"` and nothing on the site defines it. Four pieces close that,
+all server-side, all additive, all researched against Elementor 4.2.4's own
+source (the plan with the code paths:
+https://claude.ai/code/artifact/b8725cb3-2c62-422e-8661-61b809ea30ac).
+
+| Piece | Where | Runs on |
+|---|---|---|
+| Widget auto-enable | `Atomic::enable_used_atomic()` | `import_end`, final import step |
+| Attachment id remap | `inc/admin/atomic-attachment-remap.php` | `wp_import_insert_post`, `import_end` (prio 9) |
+| Kit zip → design system | `inc/admin/atomic-kit-import.php` | `install-elementor-settings` step, `type: kit-zip` |
+| Page JSON → design system | same class, `import_template_json_from_url()` | same step, `type: template-json` |
+
+The template server (`org-starter-templates` on themecrowdy) sends `type:
+'kit-zip'` in `elementor_settings` for a V4 template and an
+`elementor_template` (`type: 'template-json'`) for a V4 page, plus
+`builder_version` (`v3` / `v4`, absent == v3). V3 templates are untouched —
+their `type: 'json'` branch is exactly what it was.
+
+### Two blockers that have nothing to do with classes — read these first
+
+**An unregistered atomic widget renders nothing**, wrapper included, and
+nothing on the import path ever wrote `aae_atomic_widgets`. `Atomic::
+enable_used_atomic()` is the V4 twin of `maybe_enable_used_v3_widgets()` with
+two deliberate differences: it MERGES into the saved option and only ever
+switches ON (an explicit switch-off survives for everything the imported
+content does not use), and it matches **`elType` as well as `widgetType`** —
+the slider, counter, button and every offcanvas part save as their own elType,
+so a widgetType-only scan enables the leaves and leaves every container blank.
+Internal children resolve to their parent through `WIDGET_PARENT_MAP`;
+extensions are found through the registry's `usage_prop` on DECODED data
+(`boolean` must be `true`, a switched-off section leaves `"value":false`
+behind). Test: `verify-atomic-autoenable.php` (20).
+
+**WXR delivers every atomic image broken.** `Image_Src_Prop_Type` is `id XOR
+url`, so a media-library image stores ONLY the attachment id; at render
+`Image_Transformer` throws on a missing id and the props resolver returns
+null — the widget renders nothing, or the WRONG image if the demo's id happens
+to exist locally. There is no url fallback once an id is set, and AAE's
+`WXRImporter::process_post_meta()` copies `_elementor_data` verbatim
+(`url_remap` only touches `post_content`). V3 hid this for years because a
+classic widget hot-links the demo url when the id fails. URL re-download is
+impossible — there is no url, and `Image_Src_Import_Transformer` returns null
+for a url-less value, which would ERASE the image. The fix is the importer's
+own map: `wp_import_insert_post` fires for attachments with (new id, original
+id); `Atomic_Attachment_Remap` records the pairs per import and at `import_end`
+rewrites every `image-attachment-id` / `video-attachment-id` in the posts that
+arrived. Unknown ids are left alone. State is an option, not importer memory,
+because the importer is CHUNKED (new AJAX every ~25 s) and `import_start`
+fires on every chunk — the reset hangs on `aaeaddon/content_import/fresh_start`,
+fired by `OneClickImport` only when `use_existing_importer_data()` is false.
+Test: `verify-atomic-attachment-remap.php` (17).
+
+### Classes + variables go through the template-library chain, NEVER the kit runners
+
+Verified in 4.2.4 and worth not re-deriving: Elementor's kit import
+(`import_kit()`) does not rewrite element class ids, does not rewrite the
+variable ids referenced INSIDE classes (`transform_snapshot` exists only on the
+template-library path, `modules/variables/hooks.php:158`), and its variables
+runner drops the id map on an id-only collision. All three bite on demos
+cloned from one base site — the shape of the `v4sites` multisite — where ids
+are identical across demos. Its `override-all` also `delete_all()`s the
+previous demo's classes after `create_new_kit()` cloned them in, so three
+imports leave one styled demo.
+
+`elementor/template_library/import/process_content` does all of it, and reads
+exactly what the kit files contain: `global-variables.json` IS the
+`{data}` snapshot; `global-classes/order.json` + `<id>.json` become
+`{items, order}` in a ten-line loop (`Atomic_Kit_Import::build_snapshots()`).
+`apply_design_system()` runs the filter ONCE over every imported post's
+elements concatenated and slices back by count — once, because `keep_create`
+creates a fresh copy of every class each time it runs. `Template_Library_
+Element_Iterator` is a plain array walk, so structure and count survive.
+
+| Import | Site settings | Classes + variables |
+|---|---|---|
+| first (`aae_site_has_atomic` = 0) | `import_kit()` with `customization.settings = {theme:false, classes:false, variables:false}` | chain, `match_site` — free ids kept verbatim |
+| later | not touched | chain, `keep_create` — new ids, `DUP_` on a label clash |
+| starter page | never | chain, `keep_create` (`aae_page_mode = match_site` to opt out) |
+
+`aae_site_has_atomic` is snapshotted into `$template_data` at step 1: asked at
+the kit step it is always true, because this import's own pages are in the DB
+by then. `$template_data` round-trips every step, so no option is needed.
+
+**Settings shape** (`Design_System_Import_Context`): `include: ['settings']`
+→ `customization.settings.classesOverrideAll` truthy is `override-all`, else
+`merge`; `include: ['design-system']` → `customization['design-system']
+['conflict_resolution']` (default `skip`). Neither is used — the runners are
+switched off. `import_kit()` also resets every experiment the manifest lists to
+its `default` state (all 29 in the sample kit), which deletes any explicit
+override the site had.
+
+**Downloads use `wp_remote_get`, not `download_url()`** — the latter is
+`wp_safe_remote_get` and refuses hosts resolving to a private address, i.e. the
+local template server. Same trust model as the XML/JSON downloads beside it.
+
+Tests: `verify-atomic-kit-import.php` (28 — real kit zip, both modes, both
+demos coexisting, the site-settings half via a hand-registered component) and
+`verify-atomic-page-import.php` (20). Both snapshot/restore kit meta, class
+posts and — for the kit one — the active kit, the kit it creates and the
+experiment options. **Deleting a kit post needs `$_GET['force_delete_kit']`
+or Elementor `wp_die()`s mid-restore** — that cost one aborted run.
+
+### Running the V4 import suites
+
+There is no `wp` on this machine's PATH. Bootstrap WordPress directly with
+Local's PHP and the site's MySQL port, overriding `DB_HOST` BEFORE `wp-load.php`
+(the "Constant DB_HOST already defined" warning is expected):
+
+```
+AAE_DB_PORT=10005 ".../lightning-services/php-8.3.23+0/bin/win64/php.exe" \
+  -c ".../Local/run/gXWQPVn4H/conf/php/php.ini" "E:\Local Testing\verify-atomic-kit-import.php"
+```
+
+`10005` is the development site; `10053` is themecrowdy.local
+(`run/u7AN-E-6a`). Define `WP_ADMIN` so `dashboard.php`'s include block runs
+and the import classes are loaded through the real path. The dev site already
+holds the sample demo's variables from earlier work, so `match_site` reports 3
+created rather than 45 — the tests assert by label, not by count, for that
+reason.
+
+### Template server (themecrowdy, `org-starter-templates`)
+
+`inc/v4-fields.php` registers the three ACF fields as LOCAL groups
+(`elementor_kit_zip` on `st-tempates`, `elementor_template_json` on
+`starter-page`, `builder_version` on both) and `aae_st_builder_meta_query()`;
+`tpl-rest-api.php` / `page-tpl-rest-api.php` gained the `kit-zip` /
+`template-json` branches, the `?builder=` filter and `builder_version` in the
+response. **The V3 branch must be `NOT EXISTS`** — an ACF default only applies
+to posts saved after the field existed, and the ~960 older templates have no
+row. And a template is only LISTED when `sort_order` meta EXISTS
+(`tpl-rest-api.php:24`) — a V4 demo post without it is invisible with no error.
+Test post `#12679` on themecrowdy.local carries the sample kit zip.
+
+### The client half (built 2026-09-07, 35 checks)
+
+Three things on the starter-template grid, in BOTH `src/modules/dashboard/` and
+`src/modules/page-import/` — the modules are separate bundles by design, so
+`lib/atomicImport.js` and `components/shared/V4ImportDialog.jsx` exist twice
+and must be kept in step:
+
+| | dashboard (templates) | page-import (pages) |
+|---|---|---|
+| V4 badge | `TemplateShow.jsx`, top-LEFT (Pro/Free owns top-right), `data-aae-v4-badge` | same |
+| Import withheld | disabled + tooltip when `atomic_import.available` is false | same |
+| Second-import dialog | Continue / Cancel, **no mode picker** | Continue / Cancel + **mode picker** |
+| BY VERSION filter | fifth column of the Filter menu (`filterData.builder`) | "Elementor Version" accordion in the sidebar |
+
+**The signal is asked FRESH at click time, not read from the payload, and not
+from `dependency_status()` as first planned.** Two reasons, both found while
+building. `in_use` changes during a session — the first V4 import makes every
+later one a "second import", and a payload snapshot would show the dialog one
+page load too late. And Required Features only calls `dependency_status()` when
+the template has plugin dependencies; with none it goes STRAIGHT to Demo
+Importing, so a signal riding that response would silently never arrive for
+exactly the templates that need no plugins. Hence
+`wp_ajax_aaeaddon_atomic_import_status` (`plugin-installer.php`), which returns
+`Atomic::import_signal()` — `available` (Elementor's atomic experiment on) and
+`in_use` (`has_atomic_usage()`, the SAME cached signal the importer snapshots
+into `aae_site_has_atomic`, so the dialog and the mode the server picks cannot
+disagree). The payload carries only `addons_config.atomic_import.available`,
+from `inject_dashboard_config()`, for the badge/disabled state at render time.
+
+**Only V4 is badged.** V3 is what ~960 templates have been until now; a "V3"
+mark on all of them would say nothing.
+
+**The dialog is information, not a gate.** A second V4 import cannot break the
+first — `keep_create` creates every class as a new entry and renames a label
+clash `DUP_` — so it is tinted indigo like the badge, never
+`DisableAllV3Dialog`'s red. The licence gate (`ProConfirmDialog`) still runs
+first, exactly as before; a failed status request proceeds without the dialog,
+because the importer picks the same mode server-side anyway.
+
+**The page mode rides the URL.** `keep_create` (default, "keep the page's
+original design") or `match_site` → `navigate()` sets `v4mode`; page-import's
+`RequiredFeatures.jsx` and `DemoImporting.jsx` both rebuild the query from
+scratch, so each re-adds it; `DemoImporting` then writes it onto
+`tpldata.aae_page_mode`, which round-trips every import step and is
+whitelisted server-side. The dialog's two options are one `<label>` each — a
+nested `<label>` inside the wrapper shipped for one build and doubled the
+click target (Playwright strict-mode caught it).
+
+**Test: `E:\Local Testing\verify-v4-import-ui.mjs` (35).** Real dashboard,
+real template server, and NOTHING is imported: every Continue is preceded by a
+`page.route` answering the `tplid=` fetch with `{}`, because Required Features
+goes straight to Demo Importing when a template has no plugin dependencies.
+Three traps it documents: the seeded V4 posts sit at `sort_order` 999 on an
+infinite-scroll grid ordered ASC, so filter to V4 BEFORE looking for the card;
+the page-import fetch is debounced, so after clicking V3 on an already-V3 page
+wait for the REQUEST (`waitForRequest`), never for the grid, which already
+satisfies the condition; and `auth-aae.json` expires — a suite that lands on
+wp-login is not a broken dashboard, run `refresh-auth.mjs`. Fixtures on
+themecrowdy.local: template #12679 and page #12681 (`tc-seed-page.php`), both
+gated by `sort_order` AND `wcf_template_xml_file` (the `if($file)` in the REST
+loop — a page with no XML id is silently unlisted).
+
+### The real import, end to end (2026-09-07, both lanes, 14/14)
+
+Driven through the actual dashboard — `E:\Local Testing\run-v4-import.mjs`
+clicks the card, the V4 dialog and Required Features exactly as a user would,
+nothing stubbed — against template #12679 on themecrowdy.local, which carries
+the real Design Studio WXR (201 items: 10 pages, 69 attachments, 61
+`e_global_class` posts, 129 `image-attachment-id` references) AND the kit zip.
+`v4-import-e2e.php before | report | cleanup` brackets it: `before` snapshots
+the id watermark, the kit's `_elementor_global_*` rows, the class posts and the
+atomic options (absent-vs-empty preserved); `report` asks the one question the
+unit suites cannot — do the imported PAGES resolve; `cleanup` force-deletes what
+arrived and restores every row.
+
+| lane | trigger | classes | variables | posts rewritten | result |
+|---|---|---|---|---|---|
+| first (`match_site`) | `aae_site_has_atomic` = 0 | 58 created (+3 kept by label) | 41 | 31 | 13/14 → fixed → n/a |
+| later (`keep_create`) | `aae_site_has_atomic` = 1 | 61 created | 45 | 31 | **14/14** |
+
+What the report proves on the rendered front page, not just in the DB: 26 of 26
+global-class labels present in the markup, a `.elementor .<label>` rule in
+`global-<home>-frontend-*.css` for every class that carries props, every local
+image served (the remapped attachment ids resolve), every AAE widget the content
+uses active, ~60 s wall clock for the whole import. **The markup never carries
+`g-…` ids** — `Atomic_Global_Styles::transform_classes_names()` swaps each id
+for its LABEL and the per-document global CSS is keyed the same way, so a grep
+for `g-` in the HTML finds nothing on a perfectly styled page. Assert the label.
+
+**The one defect the real run found, fixed the same day:** the WXR ships the
+demo site's own 61 `e_global_class` posts, and the content importer created
+every one of them. Elementor never reads a class post directly — only through
+the active kit's `_elementor_global_classes_post_ids` map, which the
+template-library chain writes for the class posts IT creates — so the WXR copies
+were unreachable dead rows: 39 orphans after one import, doubling on every
+re-import, invisible to the editor and never cleaned up.
+`Atomic_Kit_Import::skip_class_posts()` now drops that post type on
+`wxr_importer.pre_process.post` (`WXR_SKIP_TYPES`; wired by `init()` beside
+`Atomic_Attachment_Remap::init()` in `dashboard.php`). Second run: 0 orphans.
+
+Side effect to know about on the dev site: the WXR importer matches an existing
+post by title + date and updates it IN PLACE — page #3133 "About" (an earlier,
+class-less import of the same demo) had its `_elementor_data` overwritten and
+its pre-import revision was removed by `cleanup`. It referenced 30 class ids
+that resolved nowhere before and 29 that resolve nowhere now; nothing rendered
+differently. `cleanup` restores rows, not content below the watermark.
+
+**Three things the runner had to learn, all of which looked like product bugs:**
+
+- Both stops between the card and the import are CONDITIONAL. The V4 dialog
+  appears only when `in_use` is already true (a SECOND V4 import), and Required
+  Features is skipped outright when the template has no plugin dependencies.
+  The first run waited on the dialog unconditionally and timed out while the
+  import completed underneath it. `Promise.race` the dialog, "Continue to next"
+  and the `tab=demo-importing` URL, and click whichever turns up.
+- `_elementor_global_variables` is a JSON **string** on the kit, not a
+  serialised array — read it as an array and a kit holding 45 reports 0.
+- A class with no props (Design Studio's `service-pin-end`, an anchor for
+  ScrollTrigger) legitimately has no CSS rule. Assert rules only for styled
+  classes, or one hook class fails a correct page.
+
+**The unit suites must not assume a clean baseline — and did.** This dev site
+owns `step-title` / `step-label` / `secondary-btn` from a real dashboard page
+import (posts 3366–3368, 06:16 UTC that day), and the kit carries the same three
+labels. `match_site` merges BY LABEL, so `verify-atomic-kit-import.php`'s
+hardcoded "61 created" read 58, and `verify-atomic-page-import.php` picked
+exactly those three as its fixture classes and got `DUP_` where it asserted
+"no clash". Both now read the site first: the kit suite counts `$COLLISIONS`
+and asserts `61 - collisions` / `122 - collisions`; the page suite skips any
+kit class whose label the site already owns. Same lesson as the variables note
+above — assert relative to what the site had. Both also lost their fixture zip
+to a tidied Downloads folder ("kit zip missing", 0 assertions run, exit 0 —
+which reads as a pass in a loop); they now open the template server's own copy
+under `themecrowdy/…/uploads/2026/09/v4-design-studio.zip`, the file the real
+import downloads.
+
+### A V4 template import switches V3 off (2026-09-07)
+
+A V4 demo is a whole site, and a V3 preloader, cursor, scroll-to-top button,
+scroll indicator or popup saved before it keeps painting OVER it — plus ~70
+widgets registering and every extension's control sections for nothing. So a
+V4 starter TEMPLATE import ends with `Atomic_V3_Switch_Off::run()`
+(`inc/admin/atomic-v3-switch-off.php`), called from the importer's
+`install-elementor-settings` step, gated on `builder_version === 'v4'` AND
+`import_type !== 'page'` AND no `elementor_template` — a starter PAGE drops
+into an existing site and never touches its V3.
+
+| what | where it is on | off means |
+|---|---|---|
+| widgets | `wcf_save_widgets` | **empty array** (absent = "never decided" to `maybe_enable_used_v3_widgets()`) |
+| extensions | `wcf_save_extensions` | empty array |
+| preloader / cursor / to-top / indicator | ACTIVE kit, `wcf_enable_*` | key cleared via `Document::update_settings()` |
+| popups | published `wcf-addons-template` with `wcf-addons-template-meta_type = popup` | **draft** — there is no site switch; `render_popup_global()` renders whatever is published |
+| Site Settings tabs | `aae_animation_settings[legacy_v3]` | `Animation_Settings::set_legacy_v3(false)` |
+
+**The one exception is the DANGER box applied:** widgets that pre-existing V3
+pages use stay on — `keep = (on before) ∩ (used by a page)`. The INTERSECTION,
+not the used set: the first version wrote the whole used set and turned four
+used-but-off widgets ON during a step called "off" (measured: 3 on → 5 on).
+"Used" comes from `Animation_Settings::used_v3_widget_slugs()`, extracted from
+`maybe_enable_used_v3_widgets()` so the two directions share one scan.
+`aae_site_had_v3` is snapshotted at step 1 beside `aae_site_has_atomic`, for
+the same reason: asked at the end it would count the demo's own pages.
+
+`set_legacy_v3()` deliberately does NOT set `legacy_v3_user_set` — that flag is
+a person's hand on the switch and what stops the Rule-5 ratchet; if the site
+still holds V3 content the ratchet is RIGHT to bring the tabs back.
+
+Everything switched off is recorded in `aae_v4_import_v3_off` (previous
+options with absent-vs-empty, the kit keys as they were, the drafted ids) and
+`restore()` replays it — absent options deleted, popups republished only if
+still drafts. Both verified: the e2e report (`seed-v3` mode: 3 widgets, 2
+extensions, preloader+cursor, a published popup, `legacy_v3` on → 23/23 after
+a real import, "2 widgets off, 5 kept, 31 extensions off, 2 site features off,
+1 popup drafted"), plus a direct probe of the intersection and of `restore()`.
+
+### Exporting a demo — the guide
+
+`animation-addons-for-elementor-pro/docs/atomic-v4/v4-starter-template-export-guide.md`
+— the two files each kind needs, the `wp export --url` / `wp elementor kit
+export --include=settings` commands (the CLI docblock says `site-settings`;
+the runner tests `settings`, `runners/export/site-settings.php:30`), why a page
+must be "Save as Template" first (`validate_template_export_permissions()`
+accepts only `elementor_library`), the themecrowdy fields including the
+`sort_order` trap, and the five demo-site rules. Elementor's kit-export and
+template-export paths were re-read in the src repo for it (2026-07-29 clone).
+
+### Linked images — "Copy the images into my Media Library" (2026-09-07)
+
+A V4 demo's images are mostly LINKED, not picked from a library: 99 `image-src`
+values in Design Studio are `{"id":null,"url":"https://crowdytheme.com/assets/…"}`
+(95 in `e-image`, 4 as `background-image-overlay`), 47 distinct urls. That is
+how the demo builders work and it is not a defect — the page renders the
+hot-linked file exactly as a V3 demo always has — but nothing on the import
+path can touch it (no id to remap, and `url_remap` never sees
+`_elementor_data`), so the customer's site depends on the demo host forever.
+
+So it is the CUSTOMER's choice, per import: the V4 dialog carries a checkbox,
+off by default, and ticking it adds a repeating importer step.
+
+| | |
+|---|---|
+| Server | `inc/admin/atomic-image-localize.php` — `Atomic_Image_Localize::run_batch()` |
+| Step | `localize-images`, after `install-elementor-settings`, gated on `builder_version === 'v4'` AND `aae_localize_images` |
+| Client | the checkbox in both `V4ImportDialog.jsx`; rides the URL as `v4images=1` through Required Features / Demo Importing; `aae_localize_images` on the request |
+| State | `aae_import_image_localize` (cursor, per-url cache, failed urls, counters); reset on `aaeaddon/content_import/fresh_start` |
+
+**It is its own REPEATING step, not a hook on `import_end`.** One download per
+distinct url against a remote host does not fit in one admin-ajax request on a
+shared host (measured: 47 images, 43 s, three requests at an 18 s budget).
+Each request does what fits, saves its cursor, and hands `next_step =
+'localize-images'` back; the client already re-posts until `done`. Progress
+climbs 95 → 99 with the count so the bar never looks stuck, and the settings
+step's summary is carried in `$template_data['aae_import_summary']` so the
+final message still names the design system and the V3 switch-off.
+
+**Elementor does the file handling.** `templates_manager->get_import_images_instance()->import(['id'=>0,'url'=>…])`
+— sanitised SVG, attachment metadata, the `_elementor_source_image_hash` meta —
+so a localised image is indistinguishable from one Elementor's own
+template-library import would have created. The url-shaped value becomes
+`{id:{$$type:image-attachment-id,value:N}, url:null}`, which is exactly what
+`Image_Src_Import_Transformer` would have produced had our WXR path ever called
+`on_import()`.
+
+Two things it must get right, both measured in `verify-atomic-image-localize.php`
+(26 checks, real downloads):
+
+- **Dedupe BEFORE downloading.** `Import_Images::import()` only consults its
+  hash meta when the incoming value carries an id — ours never do — so left to
+  it the hero image used on eight pages is downloaded eight times into eight
+  attachments. The hash lookup (`sha1(url)` against `_elementor_source_image_hash`)
+  is done here first, plus a per-import cache; a second import of the same demo
+  reuses the library (`reused`, 0 downloads).
+- **A dead url is remembered, never retried within the import.** It stays
+  url-shaped — the page keeps rendering the hot-link, the state the user started
+  from — and is counted ("1 could not be downloaded and stay linked"). Without
+  the memory a single 404 makes the step spin forever, since the re-scan on
+  every request finds it "pending" again.
+
+**The dialog now appears on EVERY V4 import**, not only a second one — the
+image choice applies to a first import as much as a second. `data-aae-v4-in-use`
+on the dialog says whether it is also explaining a second import; the page
+dialog offers the mode picker only then (nothing to match otherwise).
+`run-v4-import.mjs` ticks the box with `V4_IMAGES=1`; `v4-import-e2e.php report`
+asserts the outcome with `AAE_E2E_IMAGES=1` (0 url-shaped left, attachments =
+downloads, message names the copy) and, without it, that the option off leaves
+every linked image linked.
+
+**A timing lesson the extra requests exposed:** the import switches
+`legacy_v3` off without claiming `legacy_v3_user_set`, so on a site that still
+holds V3 content the Rule-5 ratchet is entitled to bring the tabs back on the
+next `admin_init` — and the image step adds several of those after the
+switch-off. The 23/23 run had passed "legacy_v3 is off" only because the
+switch-off was the LAST request. The assertion now accepts "switched off by the
+import, re-armed by the ratchet on a site with V3 content".
+
+### Still open
+
+- **No images in global classes** — a class variant's background image id is
+  remapped by nobody, and the localiser walks `_elementor_data`, not class
+  posts. Rule for demo builders.
+

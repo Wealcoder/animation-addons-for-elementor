@@ -52,7 +52,7 @@ const StarterTemplateFilter = ({ metaData, setMetaData }) => {
             </TooltipProvider>
           </NavigationMenuTrigger2>
           <NavigationMenuContent2 className="-right-[30px] 2xl:right-auto left-auto 2xl:-left-[30px] p-0">
-            <div className="grid grid-cols-4 gap-5 w-[480px] p-[30px]">
+            <div className="grid grid-cols-5 gap-5 w-[600px] p-[30px]">
               <div>
                 <p className="text-xs font-medium uppercase text-[#797979] pb-2 border-b border-solid border-[#1212121A] mb-3">
                   By Type
@@ -221,6 +221,52 @@ const StarterTemplateFilter = ({ metaData, setMetaData }) => {
                       className="text-[15px] cursor-pointer"
                     >
                       New
+                    </Label>
+                  </div>
+                </RadioGroup2>
+              </div>
+              <div data-aae-builder-filter>
+                <p className="text-xs font-medium uppercase text-[#797979] pb-2 border-b border-solid border-[#1212121A] mb-3">
+                  By Version
+                </p>
+                {/* Absent == "all": the server's `?builder=` filter is only
+                    sent for v3/v4, and an older template with no
+                    builder_version row is V3 there (NOT EXISTS). */}
+                <RadioGroup2
+                  value={filterData?.builder ?? "all"}
+                  onValueChange={(value) =>
+                    setMetaData((pre) => ({
+                      ...pre,
+                      filterData: { ...filterData, builder: value },
+                      pageNum: 1,
+                    }))
+                  }
+                >
+                  <div className="flex items-center gap-1">
+                    <RadioGroupItem2 value="all" id="builder_all" />
+                    <Label
+                      htmlFor="builder_all"
+                      className="text-[15px] cursor-pointer"
+                    >
+                      All
+                    </Label>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <RadioGroupItem2 value="v3" id="builder_v3" />
+                    <Label
+                      htmlFor="builder_v3"
+                      className="text-[15px] cursor-pointer"
+                    >
+                      V3
+                    </Label>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <RadioGroupItem2 value="v4" id="builder_v4" />
+                    <Label
+                      htmlFor="builder_v4"
+                      className="text-[15px] cursor-pointer"
+                    >
+                      V4
                     </Label>
                   </div>
                 </RadioGroup2>

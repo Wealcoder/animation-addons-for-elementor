@@ -18,8 +18,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 final class Controls {
 
-	const TD = 'animation-addons-for-elementor';
-
 	public function register(): void {
 		add_filter( 'elementor/atomic-widgets/controls', [ $this, 'inject_controls' ], 10, 2 );
 	}
@@ -44,7 +42,7 @@ final class Controls {
 
 	private function build_section(): Section {
 		return Section::make()
-			->set_label( Bootstrap::get_label( __( 'Image Overlay', self::TD ) ) )
+			->set_label( Bootstrap::get_label( __( 'Image Overlay', 'animation-addons-for-elementor' ) ) )
 			->set_items( [
 				Text_Control::bind_to( Schema::SECTION_ANCHOR ),
 			] );

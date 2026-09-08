@@ -35,8 +35,6 @@ AAE_A_Menu_Responsive::register();
 class AAE_A_Menu extends Atomic_Widget_Base {
 	use Has_Template;
 
-	const TD = 'animation-addons-for-elementor';
-
 	/**
 	 * Default sub-menu toggle icons, relative to WCF_ADDONS_URL.
 	 *
@@ -258,8 +256,9 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 	 * border — it lets a builder park a width/colour they are experimenting with
 	 * instead of zeroing and retyping it.
 	 *
-	 * Text domain is spelled out literally rather than via self::TD because
-	 * `wp i18n make-pot` only extracts literal domains.
+	 * Every text domain in this plugin is a literal string: the extractors
+	 * (`wp i18n make-pot` and the WordPress.org parser) read the source
+	 * without running it, so a constant or variable yields no string.
 	 */
 	private function get_border_style_options(): array {
 		return [

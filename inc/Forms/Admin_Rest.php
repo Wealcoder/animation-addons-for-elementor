@@ -986,8 +986,15 @@ final class Admin_Rest {
 
 		// A clean byte stream: drop anything a notice/warning already printed
 		// (it would land INSIDE the .csv) and keep further ones off-stream.
-		while ( ob_get_level() > 0 ) {
-			ob_end_clean();
+		//
+		// This opens no buffer of its own. It closes the ones already open,
+		// which a file download has to do or the CSV is corrupted, and the
+		// request ends at the exit below -- so nothing runs afterwards that a
+		// changed buffer stack could affect. ob_end_clean() returns false for
+		// a buffer PHP will not let us delete, and the loop stops there rather
+		// than spinning.
+		while ( ob_get_level() > 0 && ob_end_clean() ) {
+			continue;
 		}
 		@ini_set( 'display_errors', '0' ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.PHP.IniSet.display_errors_Disallowed -- file download; errors still go to the log.
 

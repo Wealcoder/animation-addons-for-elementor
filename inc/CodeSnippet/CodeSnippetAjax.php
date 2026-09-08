@@ -87,6 +87,37 @@ class CodeSnippetAjax {
 	}
 
 	/**
+	 * A PHP snippet is executable code, so switching one ON is the same
+	 * privilege as editing plugin files -- which is why AUTHORING one
+	 * already goes through CodeSnippet::can_manage_php(). These list-table
+	 * endpoints ask only for `manage_options`, and the two diverge exactly
+	 * where it matters: a Multisite site administrator has manage_options
+	 * without edit_plugins, and a site that declares DISALLOW_FILE_EDIT has
+	 * said its administrators may not run code at all. Without this, a PHP
+	 * snippet that already exists could be switched back on from a screen
+	 * that applied neither rule.
+	 *
+	 * Only ACTIVATION is gated. Deactivating or deleting a snippet removes
+	 * code rather than runs it, and stays available to anyone who can reach
+	 * the screen.
+	 *
+	 * @param int $snippet_id Snippet post id.
+	 * @since 2.4.0
+	 * @return bool
+	 */
+	private function can_activate( $snippet_id ) {
+		if ( 'php' !== get_post_meta( $snippet_id, 'code_type', true ) ) {
+			return true;
+		}
+
+		if ( ! apply_filters( 'wcf_allow_php_snippets', false ) ) {
+			return false;
+		}
+
+		return CodeSnippet::can_manage_php();
+	}
+
+	/**
 	 * AJAX handler for searching snippets.
 	 *
 	 * @since 2.3.10
@@ -279,7 +310,7 @@ class CodeSnippetAjax {
 			case 'activate':
 				foreach ( $ids as $snippet_id ) {
 					$snippet = get_post( $snippet_id );
-					if ( $snippet && CodeSnippet::CPTTYPE === $snippet->post_type ) {
+					if ( $snippet && CodeSnippet::CPTTYPE === $snippet->post_type && $this->can_activate( $snippet_id ) ) {
 						if ( update_post_meta( $snippet_id, 'is_active', 'yes' ) ) {
 							++$processed_count;
 						}
@@ -340,10 +371,23 @@ class CodeSnippetAjax {
 		$snippet_id = isset( $_POST['snippet_id'] ) ? intval( $_POST['snippet_id'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing
 		$status     = isset( $_POST['status'] ) ? sanitize_text_field( wp_unslash( $_POST['status'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing
 
+		// The column is a two-state switch; anything else is not a state this
+		// screen can produce.
+		if ( 'yes' !== $status && 'no' !== $status ) {
+			wp_send_json_error( array( 'message' => __( 'Invalid status.', 'animation-addons-for-elementor' ) ) );
+		}
+
 		// Validate snippet exists and is of correct post-type.
 		$snippet = get_post( $snippet_id );
 		if ( ! $snippet || CodeSnippet::CPTTYPE !== $snippet->post_type ) {
 			wp_send_json_error( array( 'message' => __( 'Invalid snippet.', 'animation-addons-for-elementor' ) ) );
+		}
+
+		if ( 'yes' === $status && ! $this->can_activate( $snippet_id ) ) {
+			wp_send_json_error(
+				array( 'message' => __( 'You are not allowed to activate PHP snippets on this site.', 'animation-addons-for-elementor' ) ),
+				403
+			);
 		}
 
 		// Update the status.

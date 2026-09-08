@@ -65,7 +65,7 @@ final class Remote_Client {
 	 * failure (network error, 404, malformed response).
 	 */
 	public function fetch_single( int $id ): ?array {
-		$response = wp_remote_get(
+		$response = wp_safe_remote_get(
 			self::BASE_URL . '/presets/' . $id,
 			[ 'timeout' => self::TIMEOUT ]
 		);
@@ -103,7 +103,7 @@ final class Remote_Client {
 			$url = add_query_arg( $args, $url );
 		}
 
-		$response = wp_remote_get( $url, [ 'timeout' => self::TIMEOUT ] );
+		$response = wp_safe_remote_get( $url, [ 'timeout' => self::TIMEOUT ] );
 
 		if ( is_wp_error( $response ) ) {
 			$this->log( 'request(' . $path . ') failed: ' . $response->get_error_message() );

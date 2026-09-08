@@ -14,7 +14,6 @@ if (! defined('ABSPATH')) {
 class WCF_Admin_Init
 {
 
-
 	use \WCF_ADDONS\WCF_Extension_Widgets_Trait;
 
 	/**
@@ -132,9 +131,7 @@ class WCF_Admin_Init
 		add_action('wp_ajax_aae_get_dynamic_settings', array($this, 'get_dynamic_settings'));
 		add_action('wp_ajax_save_settings_with_ajax', array($this, 'save_settings'));
 		add_action('wp_ajax_aae_complete_setup_wizard', array($this, 'complete_setup_wizard'));
-		add_action('wp_ajax_aae_wizard_subscribe', array($this, 'wizard_subscribe'));
 		add_action('wp_ajax_wcf_dashboard_notice_store', array($this, 'notice_store'));
-		add_action('wp_ajax_wcf_get_changelog_data', array($this, 'get_changelog'));
 		add_action('wp_ajax_wcf_get_notice_data', array($this, 'get_notice'));
 		add_action('wp_ajax_wcf_request_new_feature', array($this, 'request_new_feature'));
 		add_action('wp_ajax_save_settings_with_ajax_dashboard', array($this, 'save_settings_dashboard'));
@@ -151,55 +148,7 @@ class WCF_Admin_Init
 		add_filter('wcf_addons_dashboard_config', array($this, 'dashboard_integrations_config'), 10);
 
 		add_action('admin_footer', array($this, 'admin_footer'));
-		add_action('elementor/core/files/clear_cache', function () {
-			delete_transient('wcf_menu_42_data');
-		});
-
-		//add_action('wp_dashboard_setup', [$this, 'dashboard_widget'], 999);
 	}
-
-	public function dashboard_widget()
-	{
-
-
-		if (file_exists($this->plugin_file)) {
-			return;
-		}
-
-		wp_add_dashboard_widget(
-			'aae_dashboard_widget',
-			'Animation Addons Overview',
-			[$this, 'aae_render_dashboard_widget']
-		);
-
-
-		global $wp_meta_boxes;
-
-		// Check that our widget actually exists before reordering
-		if (isset($wp_meta_boxes['dashboard']['normal']['core']['aae_dashboard_banner'])) {
-			// Get current dashboard widgets
-			$normal_dashboard = $wp_meta_boxes['dashboard']['normal']['core'];
-
-			// Backup our widget
-			$aae_widget_backup = [
-				'aae_dashboard_banner' => $normal_dashboard['aae_dashboard_banner']
-			];
-
-			// Remove from bottom and merge on top
-			unset($normal_dashboard['aae_dashboard_banner']);
-			$sorted_dashboard = array_merge($aae_widget_backup, $normal_dashboard);
-
-			// Assign back
-			$wp_meta_boxes['dashboard']['normal']['core'] = $sorted_dashboard;
-		}
-	}
-
-	function aae_render_dashboard_widget()
-	{
-		$view = __DIR__ . '/banner/ads.php';
-		require_once $view;
-	}
-
 
 	/**
 	 * Saved widget key => Elementor element manager widget name, for the
@@ -351,8 +300,11 @@ class WCF_Admin_Init
 	 */
 	public function include()
 	{
+		// base/WXRImporter.php below declares `class WXRImporter extends
+		// \WP_Importer`, so the core class has to exist before that file is
+		// parsed. Core does not autoload it; require_once, used immediately.
 		if (! class_exists('\WP_Importer')) {
-			require ABSPATH . '/wp-admin/includes/class-wp-importer.php';
+			require_once ABSPATH . 'wp-admin/includes/class-wp-importer.php';
 		}
 		require_once 'row-actions.php';
 		require_once 'plugin-installer.php';
@@ -365,6 +317,13 @@ class WCF_Admin_Init
 		require_once 'aae-importer.php';
 		require_once 'Logger.php';
 		require_once 'Importer.php';
+		require_once 'atomic-attachment-remap.php';
+		require_once 'atomic-kit-import.php';
+		require_once 'atomic-v3-switch-off.php';
+		require_once 'atomic-image-localize.php';
+		\WCF_ADDONS\Admin\Base\Atomic_Attachment_Remap::init();
+		\WCF_ADDONS\Admin\Base\Atomic_Kit_Import::init();
+		\WCF_ADDONS\Admin\Base\Atomic_Image_Localize::init();
 		require_once 'st-init.php';
 		require_once 'template-importer.php';
 		$oneimport = \WCF_ADDONS\Admin\Base\OneClickImport::get_instance();
@@ -387,7 +346,17 @@ class WCF_Admin_Init
 			self::MENU_PAGE_SLUG,
 			'',
 			WCF_ADDONS_URL . 'assets/images/wcf.png',
-			8
+			// 81 -- immediately BELOW Settings (80), in the block where plugins
+			// belong. It used to be 8, which sits between Posts (5) and Media
+			// (10) and pushed this above Media, Pages, Comments, Appearance,
+			// Plugins, Users, Tools and Settings. Core's own order is what
+			// people navigate by and it is not ours to reorder.
+			//
+			// A top-level item rather than a Settings or Tools page because
+			// this is not a settings screen: the menu also carries Templates,
+			// Custom Fonts, Custom Icons, Code Snippets and Form Submissions,
+			// which are content screens with their own list tables.
+			81
 		);
 
 		add_submenu_page(
@@ -525,7 +494,6 @@ class WCF_Admin_Init
 
 			'home_url' => add_query_arg(['aae-cache' => 1], home_url('/')),
 
-			'template_menu' => $this->get_template_menu_data(),
 
 			'hero'       => file_exists($this->plugin_file)
 				? WCF_ADDONS_URL . 'assets/images/hero-banner.jpg'
@@ -584,7 +552,9 @@ class WCF_Admin_Init
 			$json_file = WCF_ADDONS_PATH . "languages/animation-addons-for-elementor-{$user_locale}-{$md5}.json";
 
 			if (file_exists($json_file)) {
-				$json    = file_get_contents($json_file);
+				// A translation JSON shipped in this plugin's own /languages folder,
+				// addressed by locale + a constant hash -- a local path, never a URL.
+				$json    = file_get_contents($json_file); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 				$decoded = json_decode($json, true);
 
 				if ($decoded && isset($decoded['locale_data']['messages'])) {
@@ -599,60 +569,6 @@ class WCF_Admin_Init
 		}
 	}
 
-
-	public function get_template_menu_data()
-	{
-		$transient_key = 'wcf_menu_42_data';
-		$cached_data   = get_transient($transient_key);
-
-		// ✅ Return cached data if available
-		if ($cached_data !== false) {
-			return $cached_data;
-		}
-
-		$url      = "https://www.themecrowdy.com/wp-json/wcf/v1/menu/42";
-		$response = wp_remote_get($url, [
-			'timeout' => 15,
-			'sslverify' => false,
-			'headers' => [
-				'Accept' => 'application/json'
-			]
-		]);
-
-		// ✅ Validate response
-		if (is_wp_error($response)) {
-			return [];
-		}
-
-		$status_code = wp_remote_retrieve_response_code($response);
-		if ($status_code !== 200) {
-			return [];
-		}
-
-		$body = wp_remote_retrieve_body($response);
-		if (empty($body)) {
-
-			return [];
-		}
-
-		// ✅ Decode JSON safely
-		$data = json_decode($body, true);
-		if (json_last_error() !== JSON_ERROR_NONE || ! is_array($data)) {
-
-			return [];
-		}
-
-		// ✅ Ensure expected structure exists
-		if (! isset($data['items']) || ! is_array($data['items'])) {
-
-			return [];
-		}
-
-		// ✅ Cache valid data for 1 hour
-		set_transient($transient_key, $data['items'], HOUR_IN_SECONDS);
-
-		return $data['items'];
-	}
 
 
 	function dashboard_integrations_config($configs)
@@ -833,134 +749,6 @@ class WCF_Admin_Init
 		wp_send_json_success(array('status' => 'complete'));
 	}
 
-	/**
-	 * Lead-capture relay. Holds the Brevo API key and list id server-side, so
-	 * neither ever ships with the plugin.
-	 *
-	 * Its schema (GET https://animation-addons.com/wp-json/leads/v1) accepts
-	 * `email` (required) plus optional firstName / lastName / company / phone /
-	 * source / site — which is exactly what wizard_subscribe() sends. Anything
-	 * added here has to exist there too, or the relay drops it silently.
-	 */
-	const LEADS_ENDPOINT = 'https://animation-addons.com/wp-json/leads/v1/subscribe';
-
-	/**
-	 * Register the site administrator as a product lead.
-	 *
-	 * NO CREDENTIAL LIVES IN THIS PLUGIN, and that is the whole point. The
-	 * relay above owns the Brevo API key and the target list id, and maps these
-	 * neutral fields onto Brevo's attributes itself — so there is nothing here
-	 * to leak, whether from the JS bundle, the PHP source, or the shipped zip.
-	 *
-	 * That matters because of what this replaced: the call used to run in the
-	 * BROWSER, from WizWidget.jsx, POSTing with an HTTP Basic Auth
-	 * username and password written into the component. webpack published them
-	 * to assets/build/9479.js — fetchable by anyone from any site running the
-	 * plugin — so the key was public and could be used to write to the CRM
-	 * directly. Moving that call to PHP would NOT have fixed it: a distributed
-	 * plugin ships its source too. Only removing the credential fixes it.
-	 *  in released builds; it has to
-	 * be rotated regardless of this change.)
-	 *
-	 * Server-side rather than from the browser, unlike the brevo-configaration
-	 * branch's version: the request then survives ad/tracker blockers, the
-	 * once-per-site flag is an option instead of per-browser localStorage, and
-	 * the fields come from WordPress rather than from a payload the wizard
-	 * would have to localise (WCF_ADDONS_ADMIN.user carries no last name,
-	 * company or phone, so those keys silently went out empty).
-	 *
-	 * The client sends NOTHING but a nonce — the address is read from the
-	 * current user here, so this cannot be used to push arbitrary addresses.
-	 */
-	public function wizard_subscribe()
-	{
-		check_ajax_referer('wcf_admin_nonce', 'nonce');
-
-		if (! current_user_can('manage_options')) {
-			wp_send_json_error(esc_html__('Permission denied.', 'animation-addons-for-elementor'));
-		}
-
-		// Once per SITE. The old guard was localStorage, so the same site
-		// re-subscribed from every new browser, and clearing site data re-ran it.
-		if ('yes' === get_option('wcf_addons_wizard_subscribed')) {
-			wp_send_json_success(array('status' => 'already'));
-		}
-
-		$user  = wp_get_current_user();
-		$email = sanitize_email($user->user_email);
-
-		if (! is_email($email)) {
-			wp_send_json_error(esc_html__('No valid administrator email.', 'animation-addons-for-elementor'));
-		}
-
-		$first_name = trim((string) $user->first_name);
-
-		if ('' === $first_name) {
-			// Same derivation the JS did: local part, dots to spaces, capitalised.
-			$local      = strstr($email, '@', true);
-			$first_name = implode(' ', array_map('ucfirst', explode('.', (string) $local)));
-		}
-
-		$lead = array(
-			'email'     => $email,
-			'firstName' => $first_name,
-			'lastName'  => trim((string) $user->last_name),
-			'source'    => 'animation-addon',
-			'site'      => home_url(),
-		);
-
-		// Send only what has a value — the relay treats an empty attribute as a
-		// write and would blank a field the contact already has.
-		$lead = array_filter(
-			$lead,
-			static function ($value) {
-				return '' !== $value && null !== $value;
-			}
-		);
-
-		/** Swap the relay (e.g. to api.animationaddons.com) without a release. */
-		$endpoint = apply_filters(
-			'aae/wizard/lead_endpoint',  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
-			self::LEADS_ENDPOINT
-		);
-
-		/** Return [] to opt a site out of lead capture entirely. */
-		$lead = apply_filters('aae/wizard/lead_payload', $lead);  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
-
-		if (empty($endpoint) || empty($lead)) {
-			update_option('wcf_addons_wizard_subscribed', 'yes');
-			wp_send_json_success(array('status' => 'skipped'));
-		}
-
-		$response = wp_remote_post(
-			esc_url_raw($endpoint),
-			array(
-				'timeout' => 15,
-				'headers' => array(
-					'Content-Type' => 'application/json',
-					'Accept'       => 'application/json',
-				),
-				'body'    => wp_json_encode($lead),
-			)
-		);
-
-		// Marked done either way, matching the old behaviour: the JS wrote its
-		// flag in both the success and the catch branch, so a relay outage never
-		// re-queued the request on every wizard visit.
-		update_option('wcf_addons_wizard_subscribed', 'yes');
-
-		if (is_wp_error($response)) {
-			wp_send_json_success(array('status' => 'failed'));
-		}
-
-		wp_send_json_success(
-			array(
-				'status' => 'sent',
-				'code'   => wp_remote_retrieve_response_code($response),
-			)
-		);
-	}
-
 	public function get_dynamic_settings()
 	{
 		check_ajax_referer('wcf_admin_nonce', 'nonce');
@@ -1058,41 +846,6 @@ class WCF_Admin_Init
 		wp_send_json($return_message);
 	}
 
-	public function get_changelog()
-	{
-
-		check_ajax_referer('wcf_admin_nonce', 'nonce');
-
-		if (! current_user_can('manage_options')) {
-			wp_send_json_error(esc_html__('you are not allowed to do this action', 'animation-addons-for-elementor'));
-		}
-
-		$transient      = get_transient('wcf_changelog_notice_cache3');
-		$return_message = array(
-			'changelog' => '',
-		);
-		// Yep!  Just return it and we're done.
-		if ($transient !== false) {
-			$return_message['changelog'] = $transient;
-		} else {
-			$url                         = 'https://store.wealcoder.com/wp-json/userdata/v1/changelog?p=768';
-			$args                        = array(
-				'timeout'   => 60,
-				'sslverify' => false,
-				'headers'   => array(
-					'Accept' => 'application/json',
-				),
-			);
-			$out                         = wp_remote_get($url, $args);
-			$body                        = wp_remote_retrieve_body($out);
-			$decode_data                 = json_decode($body);
-			$return_message['changelog'] = $decode_data;
-			set_transient('wcf_changelog_notice_cache3', $decode_data, 12 * HOUR_IN_SECONDS);
-		}
-
-		wp_send_json($return_message);
-	}
-
 	public function get_notice()
 	{
 
@@ -1157,7 +910,7 @@ class WCF_Admin_Init
 			);
 		}
 
-		$response = wp_remote_post(
+		$response = wp_safe_remote_post(
 			self::feature_request_endpoint(),
 			array(
 				'timeout' => 15,
@@ -1171,8 +924,6 @@ class WCF_Admin_Init
 						'name'    => $name,
 						'email'   => $email,
 						'feature' => $feature,
-						'site'    => home_url('/'),
-						'version' => WCF_ADDONS_VERSION,
 					)
 				),
 			)

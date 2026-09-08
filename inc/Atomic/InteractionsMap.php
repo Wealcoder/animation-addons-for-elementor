@@ -123,7 +123,8 @@ final class InteractionsMap {
 				esc_attr( $script_id ),
 				esc_js( $window_key ),
 				esc_js( $window_key ),
-				$json // already JSON-encoded; no further escaping inside <script>
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_json_encode() output, printed as a JS value inside <script>; esc_* would corrupt it.
+				$json
 			);
 		}
 

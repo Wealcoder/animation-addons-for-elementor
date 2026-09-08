@@ -42,14 +42,12 @@ class AAE_A_Search_Query extends Atomic_Widget_Base {
 
 	use Has_Template;
 
-	const TD = 'animation-addons-for-elementor';
-
 	public static function get_element_type(): string {
 		return 'e-aae-a-search-query';
 	}
 
 	public function get_title() {
-		return esc_html__( 'Search Query', self::TD );
+		return esc_html__( 'Search Query', 'animation-addons-for-elementor' );
 	}
 
 	public function get_icon() {
@@ -84,11 +82,11 @@ class AAE_A_Search_Query extends Atomic_Widget_Base {
 	protected function define_atomic_controls(): array {
 		return [
 			Section::make()
-				->set_label( __( 'Content', self::TD ) )
+				->set_label( __( 'Content', 'animation-addons-for-elementor' ) )
 				->set_id( 'content' )
 				->set_items( [
 					Select_Control::bind_to( 'header_size' )
-						->set_label( __( 'HTML Tag', self::TD ) )
+						->set_label( __( 'HTML Tag', 'animation-addons-for-elementor' ) )
 						->set_options( [
 							[ 'value' => 'h1',   'label' => 'H1' ],
 							[ 'value' => 'h2',   'label' => 'H2' ],
@@ -101,8 +99,8 @@ class AAE_A_Search_Query extends Atomic_Widget_Base {
 							[ 'value' => 'p',    'label' => 'p' ],
 						] ),
 					Text_Control::bind_to( 'search_text' )
-						->set_label( __( 'Search Text', self::TD ) )
-						->set_placeholder( __( 'Search Results for:', self::TD ) ),
+						->set_label( __( 'Search Text', 'animation-addons-for-elementor' ) )
+						->set_placeholder( __( 'Search Results for:', 'animation-addons-for-elementor' ) ),
 				] ),
 		];
 	}
@@ -153,7 +151,7 @@ class AAE_A_Search_Query extends Atomic_Widget_Base {
 		) );
 
 		if ( $is_editor ) {
-			$settings['query_term'] = esc_html__( 'Hello World', self::TD );
+			$settings['query_term'] = esc_html__( 'Hello World', 'animation-addons-for-elementor' );
 			$settings['filters']    = [];
 		} else {
 			$settings['query_term'] = get_search_query();
@@ -183,13 +181,13 @@ class AAE_A_Search_Query extends Atomic_Widget_Base {
 
 		if ( $from_date && $to_date ) {
 			/* translators: 1: start date, 2: end date. */
-			$filters[] = sprintf( esc_html__( 'Date: From %1$s to %2$s', self::TD ), $from_date, $to_date );
+			$filters[] = sprintf( esc_html__( 'Date: From %1$s to %2$s', 'animation-addons-for-elementor' ), $from_date, $to_date );
 		} elseif ( $from_date ) {
 			/* translators: %s: start date. */
-			$filters[] = sprintf( esc_html__( 'Date: From %s', self::TD ), $from_date );
+			$filters[] = sprintf( esc_html__( 'Date: From %s', 'animation-addons-for-elementor' ), $from_date );
 		} elseif ( $to_date ) {
 			/* translators: %s: end date. */
-			$filters[] = sprintf( esc_html__( 'Date: To %s', self::TD ), $to_date );
+			$filters[] = sprintf( esc_html__( 'Date: To %s', 'animation-addons-for-elementor' ), $to_date );
 		}
 
 		$cat_names = [];
@@ -201,7 +199,7 @@ class AAE_A_Search_Query extends Atomic_Widget_Base {
 		}
 		if ( ! empty( $cat_names ) ) {
 			/* translators: %s: comma-separated category names. */
-			$filters[] = sprintf( esc_html__( 'Category: %s', self::TD ), implode( ', ', $cat_names ) );
+			$filters[] = sprintf( esc_html__( 'Category: %s', 'animation-addons-for-elementor' ), implode( ', ', $cat_names ) );
 		}
 
 		return $filters;

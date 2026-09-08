@@ -286,6 +286,37 @@ class CodeSnippet {
 	 * @since 2.3.10
 	 * @return void
 	 */
+	/**
+	 * May the current user author a PHP snippet?
+	 *
+	 * A PHP snippet is executed code, so the gate is the same one WordPress
+	 * uses for its own plugin and theme editors -- `edit_plugins` -- and not
+	 * merely `manage_options`, which grants no ability to run code. The two
+	 * diverge exactly where it matters: on multisite a site administrator has
+	 * `manage_options` and NOT `edit_plugins`, and on any site hardened with
+	 * DISALLOW_FILE_EDIT or DISALLOW_FILE_MODS the owner has said that
+	 * administrators may not execute code. Honouring those constants here is
+	 * what stops this feature becoming a way around them.
+	 *
+	 * CSS, JS and HTML snippets are unaffected and keep the `manage_options`
+	 * gate below.
+	 *
+	 * @since 4.1.0
+	 * @return bool
+	 */
+	public static function can_manage_php() {
+
+		if ( defined( 'DISALLOW_FILE_EDIT' ) && DISALLOW_FILE_EDIT ) {
+			return false;
+		}
+
+		if ( defined( 'DISALLOW_FILE_MODS' ) && DISALLOW_FILE_MODS ) {
+			return false;
+		}
+
+		return current_user_can( 'edit_plugins' );
+	}
+
 	public function handle_add_wcf_code_snippet() {
 		check_admin_referer( 'wcf_code_snippet' );
 
@@ -296,6 +327,26 @@ class CodeSnippet {
 		// only way to hold the nonce is to have already passed that gate.
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_die( esc_html__( 'You are not allowed to do this.', 'animation-addons-for-elementor' ) );
+		}
+
+		// Validate posted code type against registered code types.
+		$posted_code_type = isset( $_POST['code_type'] ) ? sanitize_key( wp_unslash( $_POST['code_type'] ) ) : '';
+		$valid_types      = array_keys( Helpers::get_code_type_list() );
+
+		if ( ! in_array( $posted_code_type, $valid_types, true ) ) {
+			wp_die(
+				esc_html__( 'Invalid code snippet type selected.', 'animation-addons-for-elementor' ),
+				esc_html__( 'Invalid Type', 'animation-addons-for-elementor' ),
+				array( 'response' => 400 )
+			);
+		}
+
+		if ( 'php' === $posted_code_type && ( ! apply_filters( 'wcf_allow_php_snippets', false ) || ! self::can_manage_php() ) ) {
+			wp_die(
+				esc_html__( 'PHP snippets are only available in Animation Addons Pro and require plugin editing capabilities.', 'animation-addons-for-elementor' ),
+				esc_html__( 'Permission denied', 'animation-addons-for-elementor' ),
+				array( 'response' => 403 )
+			);
 		}
 
 		$snippet_id = isset( $_POST['snippet_id'] ) ? absint( $_POST['snippet_id'] ) : '';

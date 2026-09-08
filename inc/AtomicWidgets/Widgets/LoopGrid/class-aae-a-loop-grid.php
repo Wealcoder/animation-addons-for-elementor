@@ -1012,9 +1012,12 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 	 * WordPress's `paged` / `page`.
 	 */
 	public static function current_page(): int {
+		// Public frontend pagination: a page NUMBER off the query string,
+		// cast to int and floored at 1. There is no state change to protect
+		// and no nonce a search engine or a shared link could carry.
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( isset( $_GET['aae_page'] ) ) {
-			return max( 1, (int) $_GET['aae_page'] );
+			return max( 1, (int) $_GET['aae_page'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		}
 		$paged = (int) get_query_var( 'paged' );
 		if ( ! $paged ) {

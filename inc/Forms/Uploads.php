@@ -347,8 +347,11 @@ final class Uploads {
 		$placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
 
 		$wpdb->query(
-			$wpdb->prepare(
-				'UPDATE ' . Database::attachments_table() . " SET submission_id = %d, status = 'attached' WHERE form_key = %s AND status = 'pending' AND id IN ({$placeholders})", // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table from our helper, placeholders generated to count.
+			// The sniff counts only the two literal placeholders it can see;
+			// $placeholders adds one %d per id, so the real count is
+			// 2 + count( $ids ) and matches the array_merge() below.
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
+				'UPDATE ' . Database::attachments_table() . " SET submission_id = %d, status = 'attached' WHERE form_key = %s AND status = 'pending' AND id IN ({$placeholders})", // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- table from our helper; $placeholders is one %d per id, so the count is 2 + count( $ids ) and matches array_merge() below.
 				array_merge( [ $submission_id, $form_key ], $ids )
 			)
 		);

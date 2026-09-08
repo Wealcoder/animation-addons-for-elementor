@@ -18,8 +18,11 @@ const DemoImporting = () => {
   const template = url.searchParams.get("template");
   const templateid = url.searchParams.get("templateid");
   const plugins = url.searchParams.get("plugins");
-  const theme = url.searchParams.get("theme");
   const attachment = url.searchParams.get("attachment");
+  // Picked in the V4 dialog on the grid; lands in the importer as
+  // `aae_page_mode` (anything but `match_site` is the server's default).
+  const v4mode = url.searchParams.get("v4mode");
+  const v4images = url.searchParams.get("v4images");
 
   const changeRoute = (value, meta) => {
     const pageQuery = url.searchParams.get("page");
@@ -30,8 +33,9 @@ const DemoImporting = () => {
     url.searchParams.set("templateid", templateid);
     url.searchParams.set("tab", value);
     if (meta.plugins) url.searchParams.set("plugins", meta.plugins);
-    if (meta.theme) url.searchParams.set("theme", meta.theme);
     url.searchParams.set("attachment", meta.attachment);
+    if (v4mode) url.searchParams.set("v4mode", v4mode);
+    if (v4images) url.searchParams.set("v4images", v4images);
     window.history.replaceState({}, "", url);
     setTabKey(value);
   };
@@ -157,6 +161,10 @@ const DemoImporting = () => {
         delete tpldata.downloads;
         delete tpldata.is_pro;
         delete tpldata.excerpt;
+        // template_data round-trips every step, so setting it each time is
+        // idempotent; the server whitelists the value.
+        if (v4mode) tpldata.aae_page_mode = v4mode;
+        if (v4images) tpldata.aae_localize_images = 1;
         setTempState(tpldata);
 
         const formData = new URLSearchParams();
@@ -170,7 +178,8 @@ const DemoImporting = () => {
         formData.append("template_data", JSON.stringify(tpldata));
         formData.append("nonce", WCF_ADDONS_ADMIN.nonce);
         if (plugins) formData.append("user_plugins", plugins);
-        if (theme) formData.append("theme_slug", theme);
+        // No theme is sent. The import never installs or activates a theme;
+        // it only names the one the template was designed against.
         formData.append("attachment", attachment);
         const response = await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
           method: "POST",

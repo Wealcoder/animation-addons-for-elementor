@@ -54,7 +54,7 @@ class Library_Source extends Source_Base {
 
 		$request_url = plugin::instance()->api_url . '/' . $template_id;
 		
-		$response    = wp_remote_get(
+		$response    = wp_safe_remote_get(
 			$request_url,
 			array(
 				'timeout' => 15,
