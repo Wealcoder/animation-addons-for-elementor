@@ -73,6 +73,38 @@ export const PRESET_TYPE_ALIASES = {
 const _fetchedPresetsByType = {};
 const _pendingFetchesByType = {};
 
+/**
+ * Elements the auto-preset watcher must leave alone.
+ *
+ * Needed because "Reset to Default" does not mutate the element in place — it
+ * recreates it from the snapshot at the same parent/index, so the restored
+ * element carries a BRAND NEW id (see resetElementToOriginal). auto-preset.js
+ * keys its one-shot guard on the container id, so that new id looks like a
+ * never-seen element; and a just-reset slider is, by definition, back to its
+ * plain default children, which is exactly the shape isUntouched() treats as
+ * "fresh drop". The watcher's next heartbeat therefore re-applied the default
+ * preset a second after every reset, and Reset looked like it did nothing.
+ *
+ * Lives here rather than in auto-preset.js only because auto-preset.js already
+ * imports from this module and the reverse would be a cycle. In-memory and
+ * session-scoped on purpose: after a reload, startAutoPreset()'s baseline
+ * already marks everything present on the page as handled, so a reset element
+ * that was saved is protected by that instead.
+ */
+const _autoPresetSuppressed = new Set();
+
+/** Mark an element as off-limits to the auto-preset watcher. */
+export function suppressAutoPreset(elementId) {
+  if (elementId) {
+    _autoPresetSuppressed.add(elementId);
+  }
+}
+
+/** Has this element been explicitly excluded from auto-presetting? */
+export function isAutoPresetSuppressed(elementId) {
+  return _autoPresetSuppressed.has(elementId);
+}
+
 /** Cache key for a type, honouring the alias table. */
 function presetCacheKey(type) {
   return _fetchedPresetsByType[type] !== undefined ? type : PRESET_TYPE_ALIASES[type] || type;
@@ -918,6 +950,12 @@ export function resetElementToOriginal(elementId, meta = {}) {
     result && Array.isArray(result.createdElements) && result.createdElements[0]
       ? result.createdElements[0].containerId
       : null;
+
+  // Claim the restored element BEFORE anything else can run, so the
+  // auto-preset heartbeat can never mistake it for a fresh drop and stamp the
+  // default preset straight back on. Synchronous, same tick as the create —
+  // the watcher polls on a 1s interval, so it cannot interleave here.
+  suppressAutoPreset(newId);
 
   if (result && Array.isArray(result.createdElements)) {
     stampContainerClassesIntoPreview(result.createdElements);

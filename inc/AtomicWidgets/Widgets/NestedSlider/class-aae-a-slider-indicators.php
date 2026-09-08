@@ -18,6 +18,7 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Dimensions_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Number_Prop_Type;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
@@ -83,11 +84,25 @@ class AAE_A_Slider_Indicators extends Atomic_Element_Base {
 			// 'position'    => String_Prop_Type::generate( 'absolute' ),
 			// 'bottom'      => Size_Prop_Type::generate( [ 'size' => 20, 'unit' => 'px' ] ),
 			// 'left'        => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
-			'width'       => String_Prop_Type::generate( '100%' ),
+			// Was a String, which `width` drops - so this 100% never applied.
+			'width'       => Size_Prop_Type::generate( [ 'size' => 100, 'unit' => '%' ] ),
 			'display'     => String_Prop_Type::generate( 'flex' ),
 			'justify-content' => String_Prop_Type::generate( 'end' ),
+			'align-items' => String_Prop_Type::generate( 'center' ),
 			'gap'         => Size_Prop_Type::generate( [ 'size' => 10, 'unit' => 'px' ] ),
-			'padding'     => String_Prop_Type::generate( '0 20px' ),
+			// Was the string '0 20px', which `padding` drops.
+			'padding'     => Dimensions_Prop_Type::generate( [
+				'block-start'  => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+				'inline-end'   => Size_Prop_Type::generate( [ 'size' => 20, 'unit' => 'px' ] ),
+				'block-end'    => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+				'inline-start' => Size_Prop_Type::generate( [ 'size' => 20, 'unit' => 'px' ] ),
+			] ),
+			'margin' => Dimensions_Prop_Type::generate( [
+				'block-start'  => Size_Prop_Type::generate( [ 'size' => 14, 'unit' => 'px' ] ),
+				'inline-end'   => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+				'block-end'    => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+				'inline-start' => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+			] ),
 			'z-index'     => Number_Prop_Type::generate( 10 ),
 			'box-sizing'  => String_Prop_Type::generate( 'border-box' ),
 		];

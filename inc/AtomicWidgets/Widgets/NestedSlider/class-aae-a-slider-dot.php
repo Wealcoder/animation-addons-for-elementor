@@ -89,7 +89,9 @@ class AAE_A_Slider_Dot extends Atomic_Widget_Base {
 			'border-radius' => Size_Prop_Type::generate( [ 'size' => 100, 'unit' => '%' ] ),
 			'border'        => String_Prop_Type::generate( '1px solid #d8d8d8' ),
 			'background'    => Background_Prop_Type::generate( [
-				'color' => Color_Prop_Type::generate( '#dddddd' ),
+				// Was #dddddd, which at 0.6 opacity is all but invisible on a
+				// light page.
+				'color' => Color_Prop_Type::generate( '#c9c9d0' ),
 			] ),
 			'opacity'       => String_Prop_Type::generate( '0.6' ),
 			'transition'    => String_Prop_Type::generate( 'opacity 0.3s ease' ),

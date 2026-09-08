@@ -111,6 +111,25 @@ class AAE_A_Slider_Nav_Prev extends Atomic_Element_Base {
 		$styles = [
 			'position' => String_Prop_Type::generate( 'absolute' ),
 			'z-index' => Number_Prop_Type::generate( 10 ),
+			// Without an inset an absolutely positioned badge stays at its
+			// static position - which put prev and next in the SAME place, one
+			// hiding the other, and made the slider look like it had a single
+			// stray arrow. Anchor each to its own edge, then centre it with a
+			// half-height negative margin so no transform prop is needed.
+			'inset-inline-start' => Size_Prop_Type::generate( [ 'size' => 16, 'unit' => 'px' ] ),
+			'inset-block-start' => Size_Prop_Type::generate( [ 'size' => 50, 'unit' => '%' ] ),
+			// `margin-block-start` is not in the style schema - it renders
+			// nothing. The full `margin` is, and negative values are allowed,
+			// so half the 44px height lifts the badge onto the centre line.
+			'margin' => Dimensions_Prop_Type::generate( [
+				'block-start'  => Size_Prop_Type::generate( [ 'size' => -22, 'unit' => 'px' ] ),
+				'inline-end'   => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+				'block-end'    => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+				'inline-start' => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+			] ),
+			'border-width' => Size_Prop_Type::generate( [ 'size' => 1, 'unit' => 'px' ] ),
+			'border-style' => String_Prop_Type::generate( 'solid' ),
+			'border-color' => Color_Prop_Type::generate( 'rgba(16,16,20,0.10)' ),
 			// FIXED round badge — NOT icon-driven. The nav's SVG child renders at
 			// different sizes depending on the element's age: a fresh drop carries the
 			// `aae-a-svg` utility (20px) while an element saved before that class existed

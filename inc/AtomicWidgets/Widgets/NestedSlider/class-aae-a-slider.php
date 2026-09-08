@@ -145,6 +145,30 @@ class AAE_A_Slider extends Atomic_Element_Base {
 		];
 	}
 
+	/**
+	 * Marker class stamped on every DIRECT child seeded below.
+	 *
+	 * Read by the editor's auto-preset watcher as its `defaultMarker` — see
+	 * AUTO_PRESETS in src/modules/atomic/editor-bridge/auto-preset.js. Same
+	 * device the Image Compare widget uses (`aae-ic-default`), and for the same
+	 * reason: the watcher decides "is this still an untouched drop?" by looking
+	 * at the children, and shape alone is not a safe answer. A preset that
+	 * happens to keep all five parts — a perfectly reasonable thing for a user
+	 * to export — would look identical to a fresh drop, and the watcher would
+	 * re-apply the default preset to its own output forever, since the
+	 * replacement element gets a new id and so is never caught by `handled`.
+	 *
+	 * A preset's children never carry this class, so its absence is a definite
+	 * "already presetted". Existing saved sliders don't carry it either, which
+	 * is also correct: they must never be restyled.
+	 */
+	const DEFAULT_CHILD_MARKER = 'aae-slider-default';
+
+	/** The marker as a `classes` prop, for the seeded children below. */
+	private static function default_marker_classes() {
+		return Classes_Prop_Type::generate( [ self::DEFAULT_CHILD_MARKER ] );
+	}
+
 	protected function define_default_children() {
 		// Start with 5 empty slides; the user fills each one.
 		$slides = [];
@@ -157,19 +181,24 @@ class AAE_A_Slider extends Atomic_Element_Base {
 		return [
 			AAE_A_Slider_Track::generate()
 				->editor_settings( [ 'title' => 'Slider Track' ] )
+				->settings( [ 'classes' => self::default_marker_classes() ] )
 				->children( $slides )
 				->build(),
 			AAE_A_Slider_Nav_Prev::generate()
 				->editor_settings( [ 'title' => 'Prev Nav' ] )
+				->settings( [ 'classes' => self::default_marker_classes() ] )
 				->build(),
 			AAE_A_Slider_Nav_Next::generate()
 				->editor_settings( [ 'title' => 'Next Nav' ] )
+				->settings( [ 'classes' => self::default_marker_classes() ] )
 				->build(),
 			AAE_A_Slider_Pagination::generate()
 				->editor_settings( [ 'title' => 'Pagination' ] )
+				->settings( [ 'classes' => self::default_marker_classes() ] )
 				->build(),
 			AAE_A_Slider_Indicators::generate()
 				->editor_settings( [ 'title' => 'Indicators' ] )
+				->settings( [ 'classes' => self::default_marker_classes() ] )
 				->children( [
 					AAE_A_Slider_Counter::generate()
 						->editor_settings( [ 'title' => 'Slide Counter' ] )

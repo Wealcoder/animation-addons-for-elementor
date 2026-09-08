@@ -82,10 +82,15 @@ class AAE_A_Slider_Progress extends Atomic_Element_Base {
 	protected function define_base_styles(): array {
 		$track_styles = [
 			'position'      => String_Prop_Type::generate( 'relative' ),
-			'width'         => Size_Prop_Type::generate( [ 'size' => 100, 'unit' => '%' ] ),
+			// 100% inside the indicators' flex row swallowed the entire row,
+			// pushing the counter hard left and the percentage hard right with
+			// a full-width bar between them. A fixed track keeps the three
+			// parts together as one tidy group.
+			'width'         => Size_Prop_Type::generate( [ 'size' => 160, 'unit' => 'px' ] ),
 			'height'        => Size_Prop_Type::generate( [ 'size' => 4, 'unit' => 'px' ] ),
+			// Was rgba(255,255,255,0.15) - invisible on a light background.
 			'background'    => Background_Prop_Type::generate( [
-				'color' => Color_Prop_Type::generate( 'rgba(255,255,255,0.15)' ),
+				'color' => Color_Prop_Type::generate( 'rgba(16,16,20,0.10)' ),
 			] ),
 			'border-radius' => Size_Prop_Type::generate( [ 'size' => 2, 'unit' => 'px' ] ),
 			'overflow'      => String_Prop_Type::generate( 'hidden' ),

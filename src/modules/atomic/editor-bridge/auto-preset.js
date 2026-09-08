@@ -17,7 +17,12 @@
  */
 
 import { track } from './disposables';
-import { applyPresetModel, ensurePresetsLoaded, getCachedPresetsForType } from '../element-controls/preset-apply';
+import {
+  applyPresetModel,
+  ensurePresetsLoaded,
+  getCachedPresetsForType,
+  isAutoPresetSuppressed,
+} from '../element-controls/preset-apply';
 
 /**
  * Which freshly-dropped widget gets which default preset.
@@ -72,6 +77,35 @@ const AUTO_PRESETS = {
     // does, so only this marker class separates the two.
     defaultMarker: 'aae-ic-default',
   },
+
+  // A bare Nested Slider drops as one empty slide plus every chrome part
+  // (nav, pagination, indicators) in its own default styling, which reads as
+  // a scattered set of controls rather than a slider. This lands it on a real
+  // layout instead.
+  'e-aae-a-slider': {
+    // No targetType: the preset's root is an e-flexbox wrapping the slider,
+    // and applyPresetModel unwraps a container root (CONTAINER_TYPES), so the
+    // dropped slider itself is what gets replaced.
+    presetId: 'remote-11948',
+    // Remote ids are the preset server's own row ids, so they can move if the
+    // catalog is ever re-seeded. Name is the stable identity — see the
+    // resolution order in maybeAutoApply().
+    presetName: 'Testimonials - Clerk slider',
+    // Marker, not shape — the same call Image Compare makes, for the same
+    // reason. Shape would "work" against the preset we ship today (five
+    // default children vs the preset's two), but it is only as good as that
+    // coincidence: a preset that keeps all five parts, which is a perfectly
+    // reasonable thing for a user to export, would be indistinguishable from a
+    // fresh drop and the watcher would re-apply to its own output forever
+    // (the replacement gets a new id, so `handled` never catches it).
+    // AAE_A_Slider::DEFAULT_CHILD_MARKER stamps this class on every seeded
+    // child; no preset carries it, so its absence is a definite "already
+    // presetted".
+    defaultMarker: 'aae-slider-default',
+    // No `settings`: this is a self-target, and applyAutoSettings is skipped
+    // for those (the replaced element would discard them). The preset model
+    // carries its own slider settings.
+  },
 };
 
 // The $$type Elementor uses for the slider's Responsive_JSON props (observed on a
@@ -80,6 +114,11 @@ const RESPONSIVE_JSON_TYPE = 'aae-rj';
 
 // Guard so we never auto-apply twice to the same created element.
 const handled = new Set();
+
+// Module scope, not a local in startAutoPreset(), so the debug hook below can
+// report it — "was the baseline ever taken?" is the first thing you need to
+// know when a drop silently fails to get its preset.
+let baselined = false;
 
 /** A container's effective element type (widgetType wins over elType). */
 function typeOf(container) {
@@ -155,7 +194,12 @@ function pendingAutoPresetTargets() {
       return;
     }
     const type = typeOf(c);
-    if (AUTO_PRESETS[type] && !handled.has(c.id)) {
+    // isAutoPresetSuppressed covers "Reset to Default": that recreates the
+    // element, so the restored one has a new id `handled` knows nothing about,
+    // and its shape is the plain default the freshness test calls "fresh".
+    // Without this check the next heartbeat put the preset straight back and
+    // Reset appeared to do nothing.
+    if (AUTO_PRESETS[type] && !handled.has(c.id) && !isAutoPresetSuppressed(c.id)) {
       out.push(c);
     }
     (c.children || []).forEach(walk);
@@ -254,7 +298,20 @@ function maybeAutoApply() {
         }
 
         const presets = getCachedPresetsForType(presetType);
-        const preset = presets.find((p) => p.id === rule.presetId) || presets[0];
+
+        // id first, then name, then — only for rules that named no preset —
+        // the historical "just take the first one" fallback.
+        //
+        // A rule that DOES carry `presetName` deliberately opts out of that
+        // fallback: for a remote preset the id is the server's row id, so if
+        // the catalog is re-seeded the id goes stale, and falling through to
+        // presets[0] would then silently stamp an arbitrary design onto every
+        // slider the user drops. Applying nothing is the better failure.
+        const preset =
+          presets.find((p) => p.id === rule.presetId) ||
+          (rule.presetName && presets.find((p) => p.name === rule.presetName)) ||
+          (rule.presetName ? null : presets[0]);
+
         if (!preset || !preset.model) {
           return;
         }
@@ -281,6 +338,86 @@ function maybeAutoApply() {
 }
 
 /**
+ * `window.__aaeAutoPreset` — console surface for "why did my drop not get its
+ * preset?". Every gate in this module is silent by design (a wrong guess must
+ * never clobber a styled element), which makes a failure invisible without
+ * this. Mirrors the existing `window.__aaeAtomicBridge` convention.
+ *
+ *   __aaeAutoPreset.explain()   per eligible element, which gate it fails
+ *   __aaeAutoPreset.state()     baselined? heartbeat installed? handled ids
+ *   __aaeAutoPreset.run()       force one pass now, ignoring the heartbeat
+ *   __aaeAutoPreset.forget(id)  drop an id from `handled` so it can re-apply
+ */
+function installDebugHook() {
+  window.__aaeAutoPreset = {
+    rules: AUTO_PRESETS,
+
+    state: () => ({
+      baselined,
+      handled: Array.from(handled),
+      heartbeatInstalled: !!window.__aaeAutoPresetHeartbeat,
+      docReady: !!window.elementor?.documents?.getCurrent?.()?.container,
+    }),
+
+    /** Per eligible element: the value of every gate, in the order applied. */
+    explain: () => {
+      const root = window.elementor?.documents?.getCurrent?.()?.container;
+      const rows = [];
+
+      const walk = (c) => {
+        if (!c) {
+          return;
+        }
+        const type = typeOf(c);
+        const rule = AUTO_PRESETS[type];
+
+        if (rule) {
+          const presetType = rule.targetType || type;
+          const target = rule.targetType ? findByType(c, rule.targetType) : c;
+          const presets = getCachedPresetsForType(presetType);
+
+          rows.push({
+            id: c.id,
+            type,
+            // gates, in the order maybeAutoApply applies them
+            gate_handled: handled.has(c.id),
+            gate_suppressed: isAutoPresetSuppressed(c.id),
+            gate_baselined: baselined,
+            gate_targetFound: !!target,
+            gate_untouched: target ? isUntouched(target, rule) : null,
+            presetsLoaded: presets.length,
+            presetResolved:
+              presets.find((p) => p.id === rule.presetId)?.name ||
+              (rule.presetName && presets.find((p) => p.name === rule.presetName)?.name) ||
+              null,
+            children: (target?.children || []).map((k) => ({
+              type: typeOf(k),
+              classes: classesOf(k),
+            })),
+          });
+        }
+
+        (c.children || []).forEach(walk);
+      };
+
+      walk(root);
+      return rows;
+    },
+
+    run: () => {
+      baselined = true;
+      maybeAutoApply();
+      return 'maybeAutoApply() invoked — watch for a "Default preset" history entry';
+    },
+
+    forget: (id) => {
+      handled.delete(id);
+      return `dropped ${id} from handled`;
+    },
+  };
+}
+
+/**
  * Install the auto-preset watcher. Idempotent; tracked for teardown.
  *
  * Atomic-widget creation in this Elementor version does NOT emit a catchable
@@ -292,11 +429,12 @@ function maybeAutoApply() {
  * default preset once. The `handled` set guarantees a single application.
  */
 export function startAutoPreset() {
+  installDebugHook();
+
   if (!window.elementor?.documents?.getCurrent) {
     return;
   }
 
-  let baselined = false;
   let stopHeartbeat = null;
 
   // Take the baseline ONLY once the document model is actually populated —
@@ -305,6 +443,24 @@ export function startAutoPreset() {
   // (bootstrap can run before the model is ready) the existing sliders would look
   // "new" and get clobbered. So we wait for a non-empty tree, then start polling.
   const establishBaseline = () => {
+    // ONCE per editor session, not once per bootstrap.
+    //
+    // bootstrap() re-runs on every `preview:loaded` — document switch,
+    // responsive-mode change, and any other preview reload — and it calls
+    // startAutoPreset() again, which called this again. Each of those re-runs
+    // swallowed whatever was on the page AT THAT MOMENT into `handled`,
+    // including a widget the user had just dropped and that had not been
+    // presetted yet. From then on it was permanently ineligible: `handled`
+    // is module-scoped and nothing removes an id from it. The drop silently
+    // got no preset, and every gate downstream looked fine — which is exactly
+    // the failure we were chasing.
+    //
+    // The baseline means "what was already on the page when we started
+    // watching". That question has one answer per session, so answer it once.
+    if (baselined) {
+      return true;
+    }
+
     const root = window.elementor?.documents?.getCurrent?.()?.container;
     // A ready document has a container with children (the page's elements). If the
     // tree isn't ready yet, keep waiting — do NOT poll for drops in the meantime.
@@ -331,7 +487,16 @@ export function startAutoPreset() {
   // even if the frame isn't actively painting; the per-tick scan is cheap.
   establishBaseline();
   const intervalId = window.setInterval(tick, 1000);
-  stopHeartbeat = () => window.clearInterval(intervalId);
+  // Recorded so __aaeAutoPreset.state() can say whether the heartbeat is
+  // actually running — "installed but never ticking" and "never installed"
+  // look identical from the outside otherwise.
+  window.__aaeAutoPresetHeartbeat = intervalId;
+  stopHeartbeat = () => {
+    window.clearInterval(intervalId);
+    if (window.__aaeAutoPresetHeartbeat === intervalId) {
+      delete window.__aaeAutoPresetHeartbeat;
+    }
+  };
 
   track(() => {
     try {

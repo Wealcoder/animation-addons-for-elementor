@@ -102,6 +102,15 @@ export const JS_HOOK_CLASSES = [
 	'aae-a-image-compare-caption-after',
 	'aae-ic-default',
 
+	// Nested Slider — the auto-preset watcher's freshness marker, seeded by
+	// AAE_A_Slider::DEFAULT_CHILD_MARKER onto every default child. Not a
+	// runtime selector like most of this list, but it needs registering for
+	// the same reason: unregistered, the panel reports it as a missing class
+	// on all five children, and the alert's ✕ strips it from the document —
+	// which would silently break the "auto-apply the default preset only on a
+	// genuinely fresh drop" contract it exists to carry.
+	'aae-slider-default',
+
 	// Counter / Countdown — the nodes whose text the runtime rewrites
 	'aae-a-counter-number',
 	'aae-a-countdown-unit-count',
