@@ -1,0 +1,3288 @@
+{
+ "name": "Outlined Card – No Icon",
+ "model": {
+  "id": "pac000",
+  "settings": {
+   "classes": {
+    "$$type": "classes",
+    "value": [
+     "e-pac000-wrap"
+    ]
+   }
+  },
+  "isInner": false,
+  "elType": "e-flexbox",
+  "elements": [
+   {
+    "id": "pac001",
+    "settings": {
+     "default_state": {
+      "$$type": "string",
+      "value": "first"
+     },
+     "max_items_expanded": {
+      "$$type": "string",
+      "value": "one"
+     },
+     "animation_duration": {
+      "$$type": "size",
+      "value": {
+       "unit": "ms",
+       "size": 200
+      }
+     },
+     "classes": {
+      "$$type": "classes",
+      "value": [
+       "e-pac001-accordion"
+      ]
+     }
+    },
+    "isInner": false,
+    "elType": "e-aae-a-accordion",
+    "elements": [
+     {
+      "id": "pac10",
+      "settings": {
+       "item_title": {
+        "$$type": "string",
+        "value": "How do I create an account?"
+       },
+       "is_active": {
+        "$$type": "boolean",
+        "value": true
+       },
+       "classes": {
+        "$$type": "classes",
+        "value": [
+         "e-pac10-item"
+        ]
+       }
+      },
+      "isInner": false,
+      "elType": "e-aae-a-accordion-item",
+      "elements": [
+       {
+        "id": "pac11",
+        "settings": {
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-pac11-header"
+          ]
+         }
+        },
+        "isInner": false,
+        "elType": "e-div-block",
+        "elements": [
+         {
+          "id": "pac111",
+          "settings": {
+           "title": {
+            "$$type": "html-v3",
+            "value": {
+             "content": {
+              "$$type": "string",
+              "value": "How do I create an account?"
+             },
+             "children": []
+            }
+           },
+           "tag": {
+            "$$type": "string",
+            "value": "h3"
+           },
+           "classes": {
+            "$$type": "classes",
+            "value": [
+             "e-pac111-title"
+            ]
+           }
+          },
+          "elements": [],
+          "isInner": false,
+          "widgetType": "e-heading",
+          "elType": "widget",
+          "styles": {
+           "e-pac111-title": {
+            "id": "e-pac111-title",
+            "label": "local",
+            "type": "class",
+            "variants": [
+             {
+              "meta": {
+               "breakpoint": "desktop",
+               "state": null
+              },
+              "props": {
+               "font-size": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 16
+                }
+               },
+               "font-weight": {
+                "$$type": "string",
+                "value": "600"
+               },
+               "line-height": {
+                "$$type": "size",
+                "value": {
+                 "unit": "em",
+                 "size": 1.5
+                }
+               },
+               "color": {
+                "$$type": "color",
+                "value": "#18181b"
+               },
+               "margin": {
+                "$$type": "dimensions",
+                "value": {
+                 "block-start": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 },
+                 "inline-end": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 },
+                 "block-end": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 },
+                 "inline-start": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 }
+                }
+               }
+              },
+              "custom_css": null
+             }
+            ]
+           }
+          },
+          "interactions": [],
+          "editor_settings": {
+           "title": "Header Title"
+          },
+          "version": "0.0"
+         }
+        ],
+        "styles": {
+         "e-pac11-header": {
+          "id": "e-pac11-header",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "display": {
+              "$$type": "string",
+              "value": "flex"
+             },
+             "flex-direction": {
+              "$$type": "string",
+              "value": "row"
+             },
+             "align-items": {
+              "$$type": "string",
+              "value": "center"
+             },
+             "padding": {
+              "$$type": "dimensions",
+              "value": {
+               "block-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 16
+                }
+               },
+               "inline-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 48
+                }
+               },
+               "block-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 16
+                }
+               },
+               "inline-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 16
+                }
+               }
+              }
+             },
+             "margin": {
+              "$$type": "dimensions",
+              "value": {
+               "block-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "inline-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "block-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "inline-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               }
+              }
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Header"
+        },
+        "version": "0.0"
+       },
+       {
+        "id": "pac12",
+        "settings": {
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-pac12-content"
+          ]
+         }
+        },
+        "isInner": false,
+        "elType": "e-div-block",
+        "elements": [
+         {
+          "id": "pac121",
+          "settings": {
+           "paragraph": {
+            "$$type": "html-v3",
+            "value": {
+             "content": {
+              "$$type": "string",
+              "value": "Click the \"Sign Up\" button in the top right corner and follow the registration process. You will be asked to confirm your email address before the account becomes active."
+             },
+             "children": []
+            }
+           },
+           "classes": {
+            "$$type": "classes",
+            "value": [
+             "e-pac121-text"
+            ]
+           }
+          },
+          "elements": [],
+          "isInner": false,
+          "widgetType": "e-paragraph",
+          "elType": "widget",
+          "styles": {
+           "e-pac121-text": {
+            "id": "e-pac121-text",
+            "label": "local",
+            "type": "class",
+            "variants": [
+             {
+              "meta": {
+               "breakpoint": "desktop",
+               "state": null
+              },
+              "props": {
+               "font-size": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 14
+                }
+               },
+               "line-height": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 20
+                }
+               },
+               "color": {
+                "$$type": "color",
+                "value": "#18181b"
+               },
+               "margin": {
+                "$$type": "dimensions",
+                "value": {
+                 "block-start": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 },
+                 "inline-end": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 },
+                 "block-end": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 },
+                 "inline-start": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 }
+                }
+               }
+              },
+              "custom_css": null
+             }
+            ]
+           }
+          },
+          "interactions": [],
+          "editor_settings": {
+           "title": "Content Text"
+          },
+          "version": "0.0"
+         }
+        ],
+        "styles": {
+         "e-pac12-content": {
+          "id": "e-pac12-content",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "padding": {
+              "$$type": "dimensions",
+              "value": {
+               "block-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "inline-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 16
+                }
+               },
+               "block-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 16
+                }
+               },
+               "inline-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 16
+                }
+               }
+              }
+             },
+             "margin": {
+              "$$type": "dimensions",
+              "value": {
+               "block-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "inline-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "block-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "inline-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               }
+              }
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Content"
+        },
+        "version": "0.0"
+       }
+      ],
+      "styles": {
+       "e-pac10-item": {
+        "id": "e-pac10-item",
+        "label": "local",
+        "type": "class",
+        "variants": [
+         {
+          "meta": {
+           "breakpoint": "desktop",
+           "state": null
+          },
+          "props": {
+           "display": {
+            "$$type": "string",
+            "value": "flex"
+           },
+           "flex-direction": {
+            "$$type": "string",
+            "value": "column"
+           },
+           "gap": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 0
+            }
+           },
+           "overflow": {
+            "$$type": "string",
+            "value": "hidden"
+           },
+           "background": {
+            "$$type": "background",
+            "value": {
+             "color": {
+              "$$type": "color",
+              "value": "#ffffff"
+             }
+            }
+           },
+           "border-style": {
+            "$$type": "string",
+            "value": "solid"
+           },
+           "border-width": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 1
+            }
+           },
+           "border-color": {
+            "$$type": "color",
+            "value": "#eeeeee"
+           },
+           "border-radius": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 16
+            }
+           },
+           "padding": {
+            "$$type": "dimensions",
+            "value": {
+             "block-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "inline-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "block-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "inline-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             }
+            }
+           },
+           "margin": {
+            "$$type": "dimensions",
+            "value": {
+             "block-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "inline-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "block-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "inline-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             }
+            }
+           },
+           "box-shadow": {
+            "$$type": "box-shadow",
+            "value": [
+             {
+              "$$type": "shadow",
+              "value": {
+               "hOffset": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "vOffset": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "blur": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "spread": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "color": {
+                "$$type": "color",
+                "value": "rgba(0, 0, 0, 0)"
+               }
+              }
+             }
+            ]
+           }
+          },
+          "custom_css": null
+         }
+        ]
+       }
+      },
+      "interactions": [],
+      "editor_settings": {
+       "title": "How do I create an account?"
+      },
+      "version": "0.0"
+     },
+     {
+      "id": "pac20",
+      "settings": {
+       "item_title": {
+        "$$type": "string",
+        "value": "I forgot my password. What should I do?"
+       },
+       "is_active": {
+        "$$type": "boolean",
+        "value": false
+       },
+       "classes": {
+        "$$type": "classes",
+        "value": [
+         "e-pac20-item"
+        ]
+       }
+      },
+      "isInner": false,
+      "elType": "e-aae-a-accordion-item",
+      "elements": [
+       {
+        "id": "pac21",
+        "settings": {
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-pac21-header"
+          ]
+         }
+        },
+        "isInner": false,
+        "elType": "e-div-block",
+        "elements": [
+         {
+          "id": "pac211",
+          "settings": {
+           "title": {
+            "$$type": "html-v3",
+            "value": {
+             "content": {
+              "$$type": "string",
+              "value": "I forgot my password. What should I do?"
+             },
+             "children": []
+            }
+           },
+           "tag": {
+            "$$type": "string",
+            "value": "h3"
+           },
+           "classes": {
+            "$$type": "classes",
+            "value": [
+             "e-pac211-title"
+            ]
+           }
+          },
+          "elements": [],
+          "isInner": false,
+          "widgetType": "e-heading",
+          "elType": "widget",
+          "styles": {
+           "e-pac211-title": {
+            "id": "e-pac211-title",
+            "label": "local",
+            "type": "class",
+            "variants": [
+             {
+              "meta": {
+               "breakpoint": "desktop",
+               "state": null
+              },
+              "props": {
+               "font-size": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 16
+                }
+               },
+               "font-weight": {
+                "$$type": "string",
+                "value": "600"
+               },
+               "line-height": {
+                "$$type": "size",
+                "value": {
+                 "unit": "em",
+                 "size": 1.5
+                }
+               },
+               "color": {
+                "$$type": "color",
+                "value": "#18181b"
+               },
+               "margin": {
+                "$$type": "dimensions",
+                "value": {
+                 "block-start": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 },
+                 "inline-end": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 },
+                 "block-end": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 },
+                 "inline-start": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 }
+                }
+               }
+              },
+              "custom_css": null
+             }
+            ]
+           }
+          },
+          "interactions": [],
+          "editor_settings": {
+           "title": "Header Title"
+          },
+          "version": "0.0"
+         }
+        ],
+        "styles": {
+         "e-pac21-header": {
+          "id": "e-pac21-header",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "display": {
+              "$$type": "string",
+              "value": "flex"
+             },
+             "flex-direction": {
+              "$$type": "string",
+              "value": "row"
+             },
+             "align-items": {
+              "$$type": "string",
+              "value": "center"
+             },
+             "padding": {
+              "$$type": "dimensions",
+              "value": {
+               "block-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 16
+                }
+               },
+               "inline-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 48
+                }
+               },
+               "block-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 16
+                }
+               },
+               "inline-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 16
+                }
+               }
+              }
+             },
+             "margin": {
+              "$$type": "dimensions",
+              "value": {
+               "block-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "inline-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "block-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "inline-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               }
+              }
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Header"
+        },
+        "version": "0.0"
+       },
+       {
+        "id": "pac22",
+        "settings": {
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-pac22-content"
+          ]
+         }
+        },
+        "isInner": false,
+        "elType": "e-div-block",
+        "elements": [
+         {
+          "id": "pac221",
+          "settings": {
+           "paragraph": {
+            "$$type": "html-v3",
+            "value": {
+             "content": {
+              "$$type": "string",
+              "value": "Click on \"Forgot Password\" on the login page and follow the instructions sent to your email. The reset link stays valid for one hour — request a new one if it expires before you get to it."
+             },
+             "children": []
+            }
+           },
+           "classes": {
+            "$$type": "classes",
+            "value": [
+             "e-pac221-text"
+            ]
+           }
+          },
+          "elements": [],
+          "isInner": false,
+          "widgetType": "e-paragraph",
+          "elType": "widget",
+          "styles": {
+           "e-pac221-text": {
+            "id": "e-pac221-text",
+            "label": "local",
+            "type": "class",
+            "variants": [
+             {
+              "meta": {
+               "breakpoint": "desktop",
+               "state": null
+              },
+              "props": {
+               "font-size": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 14
+                }
+               },
+               "line-height": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 20
+                }
+               },
+               "color": {
+                "$$type": "color",
+                "value": "#18181b"
+               },
+               "margin": {
+                "$$type": "dimensions",
+                "value": {
+                 "block-start": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 },
+                 "inline-end": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 },
+                 "block-end": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 },
+                 "inline-start": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 }
+                }
+               }
+              },
+              "custom_css": null
+             }
+            ]
+           }
+          },
+          "interactions": [],
+          "editor_settings": {
+           "title": "Content Text"
+          },
+          "version": "0.0"
+         }
+        ],
+        "styles": {
+         "e-pac22-content": {
+          "id": "e-pac22-content",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "padding": {
+              "$$type": "dimensions",
+              "value": {
+               "block-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "inline-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 16
+                }
+               },
+               "block-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 16
+                }
+               },
+               "inline-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 16
+                }
+               }
+              }
+             },
+             "margin": {
+              "$$type": "dimensions",
+              "value": {
+               "block-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "inline-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "block-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "inline-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               }
+              }
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Content"
+        },
+        "version": "0.0"
+       }
+      ],
+      "styles": {
+       "e-pac20-item": {
+        "id": "e-pac20-item",
+        "label": "local",
+        "type": "class",
+        "variants": [
+         {
+          "meta": {
+           "breakpoint": "desktop",
+           "state": null
+          },
+          "props": {
+           "display": {
+            "$$type": "string",
+            "value": "flex"
+           },
+           "flex-direction": {
+            "$$type": "string",
+            "value": "column"
+           },
+           "gap": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 0
+            }
+           },
+           "overflow": {
+            "$$type": "string",
+            "value": "hidden"
+           },
+           "background": {
+            "$$type": "background",
+            "value": {
+             "color": {
+              "$$type": "color",
+              "value": "#ffffff"
+             }
+            }
+           },
+           "border-style": {
+            "$$type": "string",
+            "value": "solid"
+           },
+           "border-width": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 1
+            }
+           },
+           "border-color": {
+            "$$type": "color",
+            "value": "#eeeeee"
+           },
+           "border-radius": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 16
+            }
+           },
+           "padding": {
+            "$$type": "dimensions",
+            "value": {
+             "block-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "inline-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "block-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "inline-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             }
+            }
+           },
+           "margin": {
+            "$$type": "dimensions",
+            "value": {
+             "block-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "inline-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "block-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "inline-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             }
+            }
+           },
+           "box-shadow": {
+            "$$type": "box-shadow",
+            "value": [
+             {
+              "$$type": "shadow",
+              "value": {
+               "hOffset": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "vOffset": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "blur": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "spread": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "color": {
+                "$$type": "color",
+                "value": "rgba(0, 0, 0, 0)"
+               }
+              }
+             }
+            ]
+           }
+          },
+          "custom_css": null
+         }
+        ]
+       }
+      },
+      "interactions": [],
+      "editor_settings": {
+       "title": "I forgot my password. What should I do?"
+      },
+      "version": "0.0"
+     },
+     {
+      "id": "pac30",
+      "settings": {
+       "item_title": {
+        "$$type": "string",
+        "value": "How do I update my profile information?"
+       },
+       "is_active": {
+        "$$type": "boolean",
+        "value": false
+       },
+       "classes": {
+        "$$type": "classes",
+        "value": [
+         "e-pac30-item"
+        ]
+       }
+      },
+      "isInner": false,
+      "elType": "e-aae-a-accordion-item",
+      "elements": [
+       {
+        "id": "pac31",
+        "settings": {
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-pac31-header"
+          ]
+         }
+        },
+        "isInner": false,
+        "elType": "e-div-block",
+        "elements": [
+         {
+          "id": "pac311",
+          "settings": {
+           "title": {
+            "$$type": "html-v3",
+            "value": {
+             "content": {
+              "$$type": "string",
+              "value": "How do I update my profile information?"
+             },
+             "children": []
+            }
+           },
+           "tag": {
+            "$$type": "string",
+            "value": "h3"
+           },
+           "classes": {
+            "$$type": "classes",
+            "value": [
+             "e-pac311-title"
+            ]
+           }
+          },
+          "elements": [],
+          "isInner": false,
+          "widgetType": "e-heading",
+          "elType": "widget",
+          "styles": {
+           "e-pac311-title": {
+            "id": "e-pac311-title",
+            "label": "local",
+            "type": "class",
+            "variants": [
+             {
+              "meta": {
+               "breakpoint": "desktop",
+               "state": null
+              },
+              "props": {
+               "font-size": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 16
+                }
+               },
+               "font-weight": {
+                "$$type": "string",
+                "value": "600"
+               },
+               "line-height": {
+                "$$type": "size",
+                "value": {
+                 "unit": "em",
+                 "size": 1.5
+                }
+               },
+               "color": {
+                "$$type": "color",
+                "value": "#18181b"
+               },
+               "margin": {
+                "$$type": "dimensions",
+                "value": {
+                 "block-start": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 },
+                 "inline-end": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 },
+                 "block-end": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 },
+                 "inline-start": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 }
+                }
+               }
+              },
+              "custom_css": null
+             }
+            ]
+           }
+          },
+          "interactions": [],
+          "editor_settings": {
+           "title": "Header Title"
+          },
+          "version": "0.0"
+         }
+        ],
+        "styles": {
+         "e-pac31-header": {
+          "id": "e-pac31-header",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "display": {
+              "$$type": "string",
+              "value": "flex"
+             },
+             "flex-direction": {
+              "$$type": "string",
+              "value": "row"
+             },
+             "align-items": {
+              "$$type": "string",
+              "value": "center"
+             },
+             "padding": {
+              "$$type": "dimensions",
+              "value": {
+               "block-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 16
+                }
+               },
+               "inline-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 48
+                }
+               },
+               "block-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 16
+                }
+               },
+               "inline-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 16
+                }
+               }
+              }
+             },
+             "margin": {
+              "$$type": "dimensions",
+              "value": {
+               "block-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "inline-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "block-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "inline-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               }
+              }
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Header"
+        },
+        "version": "0.0"
+       },
+       {
+        "id": "pac32",
+        "settings": {
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-pac32-content"
+          ]
+         }
+        },
+        "isInner": false,
+        "elType": "e-div-block",
+        "elements": [
+         {
+          "id": "pac321",
+          "settings": {
+           "paragraph": {
+            "$$type": "html-v3",
+            "value": {
+             "content": {
+              "$$type": "string",
+              "value": "Go to \"My Account\" settings and select \"Edit Profile\" to make changes. Most fields save straight away, but a new email address has to be confirmed from your inbox first."
+             },
+             "children": []
+            }
+           },
+           "classes": {
+            "$$type": "classes",
+            "value": [
+             "e-pac321-text"
+            ]
+           }
+          },
+          "elements": [],
+          "isInner": false,
+          "widgetType": "e-paragraph",
+          "elType": "widget",
+          "styles": {
+           "e-pac321-text": {
+            "id": "e-pac321-text",
+            "label": "local",
+            "type": "class",
+            "variants": [
+             {
+              "meta": {
+               "breakpoint": "desktop",
+               "state": null
+              },
+              "props": {
+               "font-size": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 14
+                }
+               },
+               "line-height": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 20
+                }
+               },
+               "color": {
+                "$$type": "color",
+                "value": "#18181b"
+               },
+               "margin": {
+                "$$type": "dimensions",
+                "value": {
+                 "block-start": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 },
+                 "inline-end": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 },
+                 "block-end": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 },
+                 "inline-start": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 }
+                }
+               }
+              },
+              "custom_css": null
+             }
+            ]
+           }
+          },
+          "interactions": [],
+          "editor_settings": {
+           "title": "Content Text"
+          },
+          "version": "0.0"
+         }
+        ],
+        "styles": {
+         "e-pac32-content": {
+          "id": "e-pac32-content",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "padding": {
+              "$$type": "dimensions",
+              "value": {
+               "block-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "inline-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 16
+                }
+               },
+               "block-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 16
+                }
+               },
+               "inline-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 16
+                }
+               }
+              }
+             },
+             "margin": {
+              "$$type": "dimensions",
+              "value": {
+               "block-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "inline-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "block-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "inline-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               }
+              }
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Content"
+        },
+        "version": "0.0"
+       }
+      ],
+      "styles": {
+       "e-pac30-item": {
+        "id": "e-pac30-item",
+        "label": "local",
+        "type": "class",
+        "variants": [
+         {
+          "meta": {
+           "breakpoint": "desktop",
+           "state": null
+          },
+          "props": {
+           "display": {
+            "$$type": "string",
+            "value": "flex"
+           },
+           "flex-direction": {
+            "$$type": "string",
+            "value": "column"
+           },
+           "gap": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 0
+            }
+           },
+           "overflow": {
+            "$$type": "string",
+            "value": "hidden"
+           },
+           "background": {
+            "$$type": "background",
+            "value": {
+             "color": {
+              "$$type": "color",
+              "value": "#ffffff"
+             }
+            }
+           },
+           "border-style": {
+            "$$type": "string",
+            "value": "solid"
+           },
+           "border-width": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 1
+            }
+           },
+           "border-color": {
+            "$$type": "color",
+            "value": "#eeeeee"
+           },
+           "border-radius": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 16
+            }
+           },
+           "padding": {
+            "$$type": "dimensions",
+            "value": {
+             "block-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "inline-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "block-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "inline-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             }
+            }
+           },
+           "margin": {
+            "$$type": "dimensions",
+            "value": {
+             "block-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "inline-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "block-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "inline-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             }
+            }
+           },
+           "box-shadow": {
+            "$$type": "box-shadow",
+            "value": [
+             {
+              "$$type": "shadow",
+              "value": {
+               "hOffset": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "vOffset": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "blur": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "spread": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "color": {
+                "$$type": "color",
+                "value": "rgba(0, 0, 0, 0)"
+               }
+              }
+             }
+            ]
+           }
+          },
+          "custom_css": null
+         }
+        ]
+       }
+      },
+      "interactions": [],
+      "editor_settings": {
+       "title": "How do I update my profile information?"
+      },
+      "version": "0.0"
+     },
+     {
+      "id": "pac40",
+      "settings": {
+       "item_title": {
+        "$$type": "string",
+        "value": "Can I use the same account on more than one device?"
+       },
+       "is_active": {
+        "$$type": "boolean",
+        "value": false
+       },
+       "classes": {
+        "$$type": "classes",
+        "value": [
+         "e-pac40-item"
+        ]
+       }
+      },
+      "isInner": false,
+      "elType": "e-aae-a-accordion-item",
+      "elements": [
+       {
+        "id": "pac41",
+        "settings": {
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-pac41-header"
+          ]
+         }
+        },
+        "isInner": false,
+        "elType": "e-div-block",
+        "elements": [
+         {
+          "id": "pac411",
+          "settings": {
+           "title": {
+            "$$type": "html-v3",
+            "value": {
+             "content": {
+              "$$type": "string",
+              "value": "Can I use the same account on more than one device?"
+             },
+             "children": []
+            }
+           },
+           "tag": {
+            "$$type": "string",
+            "value": "h3"
+           },
+           "classes": {
+            "$$type": "classes",
+            "value": [
+             "e-pac411-title"
+            ]
+           }
+          },
+          "elements": [],
+          "isInner": false,
+          "widgetType": "e-heading",
+          "elType": "widget",
+          "styles": {
+           "e-pac411-title": {
+            "id": "e-pac411-title",
+            "label": "local",
+            "type": "class",
+            "variants": [
+             {
+              "meta": {
+               "breakpoint": "desktop",
+               "state": null
+              },
+              "props": {
+               "font-size": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 16
+                }
+               },
+               "font-weight": {
+                "$$type": "string",
+                "value": "600"
+               },
+               "line-height": {
+                "$$type": "size",
+                "value": {
+                 "unit": "em",
+                 "size": 1.5
+                }
+               },
+               "color": {
+                "$$type": "color",
+                "value": "#18181b"
+               },
+               "margin": {
+                "$$type": "dimensions",
+                "value": {
+                 "block-start": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 },
+                 "inline-end": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 },
+                 "block-end": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 },
+                 "inline-start": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 }
+                }
+               }
+              },
+              "custom_css": null
+             }
+            ]
+           }
+          },
+          "interactions": [],
+          "editor_settings": {
+           "title": "Header Title"
+          },
+          "version": "0.0"
+         }
+        ],
+        "styles": {
+         "e-pac41-header": {
+          "id": "e-pac41-header",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "display": {
+              "$$type": "string",
+              "value": "flex"
+             },
+             "flex-direction": {
+              "$$type": "string",
+              "value": "row"
+             },
+             "align-items": {
+              "$$type": "string",
+              "value": "center"
+             },
+             "padding": {
+              "$$type": "dimensions",
+              "value": {
+               "block-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 16
+                }
+               },
+               "inline-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 48
+                }
+               },
+               "block-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 16
+                }
+               },
+               "inline-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 16
+                }
+               }
+              }
+             },
+             "margin": {
+              "$$type": "dimensions",
+              "value": {
+               "block-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "inline-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "block-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "inline-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               }
+              }
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Header"
+        },
+        "version": "0.0"
+       },
+       {
+        "id": "pac42",
+        "settings": {
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-pac42-content"
+          ]
+         }
+        },
+        "isInner": false,
+        "elType": "e-div-block",
+        "elements": [
+         {
+          "id": "pac421",
+          "settings": {
+           "paragraph": {
+            "$$type": "html-v3",
+            "value": {
+             "content": {
+              "$$type": "string",
+              "value": "Yes — sign in with the same email and password anywhere and your settings follow you. Every active session is listed under \"My Account\", so you can sign out of any you do not recognise."
+             },
+             "children": []
+            }
+           },
+           "classes": {
+            "$$type": "classes",
+            "value": [
+             "e-pac421-text"
+            ]
+           }
+          },
+          "elements": [],
+          "isInner": false,
+          "widgetType": "e-paragraph",
+          "elType": "widget",
+          "styles": {
+           "e-pac421-text": {
+            "id": "e-pac421-text",
+            "label": "local",
+            "type": "class",
+            "variants": [
+             {
+              "meta": {
+               "breakpoint": "desktop",
+               "state": null
+              },
+              "props": {
+               "font-size": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 14
+                }
+               },
+               "line-height": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 20
+                }
+               },
+               "color": {
+                "$$type": "color",
+                "value": "#18181b"
+               },
+               "margin": {
+                "$$type": "dimensions",
+                "value": {
+                 "block-start": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 },
+                 "inline-end": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 },
+                 "block-end": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 },
+                 "inline-start": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 }
+                }
+               }
+              },
+              "custom_css": null
+             }
+            ]
+           }
+          },
+          "interactions": [],
+          "editor_settings": {
+           "title": "Content Text"
+          },
+          "version": "0.0"
+         }
+        ],
+        "styles": {
+         "e-pac42-content": {
+          "id": "e-pac42-content",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "padding": {
+              "$$type": "dimensions",
+              "value": {
+               "block-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "inline-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 16
+                }
+               },
+               "block-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 16
+                }
+               },
+               "inline-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 16
+                }
+               }
+              }
+             },
+             "margin": {
+              "$$type": "dimensions",
+              "value": {
+               "block-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "inline-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "block-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "inline-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               }
+              }
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Content"
+        },
+        "version": "0.0"
+       }
+      ],
+      "styles": {
+       "e-pac40-item": {
+        "id": "e-pac40-item",
+        "label": "local",
+        "type": "class",
+        "variants": [
+         {
+          "meta": {
+           "breakpoint": "desktop",
+           "state": null
+          },
+          "props": {
+           "display": {
+            "$$type": "string",
+            "value": "flex"
+           },
+           "flex-direction": {
+            "$$type": "string",
+            "value": "column"
+           },
+           "gap": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 0
+            }
+           },
+           "overflow": {
+            "$$type": "string",
+            "value": "hidden"
+           },
+           "background": {
+            "$$type": "background",
+            "value": {
+             "color": {
+              "$$type": "color",
+              "value": "#ffffff"
+             }
+            }
+           },
+           "border-style": {
+            "$$type": "string",
+            "value": "solid"
+           },
+           "border-width": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 1
+            }
+           },
+           "border-color": {
+            "$$type": "color",
+            "value": "#eeeeee"
+           },
+           "border-radius": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 16
+            }
+           },
+           "padding": {
+            "$$type": "dimensions",
+            "value": {
+             "block-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "inline-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "block-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "inline-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             }
+            }
+           },
+           "margin": {
+            "$$type": "dimensions",
+            "value": {
+             "block-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "inline-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "block-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "inline-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             }
+            }
+           },
+           "box-shadow": {
+            "$$type": "box-shadow",
+            "value": [
+             {
+              "$$type": "shadow",
+              "value": {
+               "hOffset": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "vOffset": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "blur": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "spread": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "color": {
+                "$$type": "color",
+                "value": "rgba(0, 0, 0, 0)"
+               }
+              }
+             }
+            ]
+           }
+          },
+          "custom_css": null
+         }
+        ]
+       }
+      },
+      "interactions": [],
+      "editor_settings": {
+       "title": "Can I use the same account on more than one device?"
+      },
+      "version": "0.0"
+     },
+     {
+      "id": "pac50",
+      "settings": {
+       "item_title": {
+        "$$type": "string",
+        "value": "How do I delete my account?"
+       },
+       "is_active": {
+        "$$type": "boolean",
+        "value": false
+       },
+       "classes": {
+        "$$type": "classes",
+        "value": [
+         "e-pac50-item"
+        ]
+       }
+      },
+      "isInner": false,
+      "elType": "e-aae-a-accordion-item",
+      "elements": [
+       {
+        "id": "pac51",
+        "settings": {
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-pac51-header"
+          ]
+         }
+        },
+        "isInner": false,
+        "elType": "e-div-block",
+        "elements": [
+         {
+          "id": "pac511",
+          "settings": {
+           "title": {
+            "$$type": "html-v3",
+            "value": {
+             "content": {
+              "$$type": "string",
+              "value": "How do I delete my account?"
+             },
+             "children": []
+            }
+           },
+           "tag": {
+            "$$type": "string",
+            "value": "h3"
+           },
+           "classes": {
+            "$$type": "classes",
+            "value": [
+             "e-pac511-title"
+            ]
+           }
+          },
+          "elements": [],
+          "isInner": false,
+          "widgetType": "e-heading",
+          "elType": "widget",
+          "styles": {
+           "e-pac511-title": {
+            "id": "e-pac511-title",
+            "label": "local",
+            "type": "class",
+            "variants": [
+             {
+              "meta": {
+               "breakpoint": "desktop",
+               "state": null
+              },
+              "props": {
+               "font-size": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 16
+                }
+               },
+               "font-weight": {
+                "$$type": "string",
+                "value": "600"
+               },
+               "line-height": {
+                "$$type": "size",
+                "value": {
+                 "unit": "em",
+                 "size": 1.5
+                }
+               },
+               "color": {
+                "$$type": "color",
+                "value": "#18181b"
+               },
+               "margin": {
+                "$$type": "dimensions",
+                "value": {
+                 "block-start": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 },
+                 "inline-end": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 },
+                 "block-end": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 },
+                 "inline-start": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 }
+                }
+               }
+              },
+              "custom_css": null
+             }
+            ]
+           }
+          },
+          "interactions": [],
+          "editor_settings": {
+           "title": "Header Title"
+          },
+          "version": "0.0"
+         }
+        ],
+        "styles": {
+         "e-pac51-header": {
+          "id": "e-pac51-header",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "display": {
+              "$$type": "string",
+              "value": "flex"
+             },
+             "flex-direction": {
+              "$$type": "string",
+              "value": "row"
+             },
+             "align-items": {
+              "$$type": "string",
+              "value": "center"
+             },
+             "padding": {
+              "$$type": "dimensions",
+              "value": {
+               "block-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 16
+                }
+               },
+               "inline-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 48
+                }
+               },
+               "block-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 16
+                }
+               },
+               "inline-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 16
+                }
+               }
+              }
+             },
+             "margin": {
+              "$$type": "dimensions",
+              "value": {
+               "block-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "inline-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "block-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "inline-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               }
+              }
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Header"
+        },
+        "version": "0.0"
+       },
+       {
+        "id": "pac52",
+        "settings": {
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-pac52-content"
+          ]
+         }
+        },
+        "isInner": false,
+        "elType": "e-div-block",
+        "elements": [
+         {
+          "id": "pac521",
+          "settings": {
+           "paragraph": {
+            "$$type": "html-v3",
+            "value": {
+             "content": {
+              "$$type": "string",
+              "value": "Open \"My Account\" settings, scroll to the bottom and choose \"Delete Account\". You will be asked to confirm by email, and the account stays recoverable for thirty days before anything is removed for good."
+             },
+             "children": []
+            }
+           },
+           "classes": {
+            "$$type": "classes",
+            "value": [
+             "e-pac521-text"
+            ]
+           }
+          },
+          "elements": [],
+          "isInner": false,
+          "widgetType": "e-paragraph",
+          "elType": "widget",
+          "styles": {
+           "e-pac521-text": {
+            "id": "e-pac521-text",
+            "label": "local",
+            "type": "class",
+            "variants": [
+             {
+              "meta": {
+               "breakpoint": "desktop",
+               "state": null
+              },
+              "props": {
+               "font-size": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 14
+                }
+               },
+               "line-height": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 20
+                }
+               },
+               "color": {
+                "$$type": "color",
+                "value": "#18181b"
+               },
+               "margin": {
+                "$$type": "dimensions",
+                "value": {
+                 "block-start": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 },
+                 "inline-end": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 },
+                 "block-end": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 },
+                 "inline-start": {
+                  "$$type": "size",
+                  "value": {
+                   "unit": "px",
+                   "size": 0
+                  }
+                 }
+                }
+               }
+              },
+              "custom_css": null
+             }
+            ]
+           }
+          },
+          "interactions": [],
+          "editor_settings": {
+           "title": "Content Text"
+          },
+          "version": "0.0"
+         }
+        ],
+        "styles": {
+         "e-pac52-content": {
+          "id": "e-pac52-content",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "padding": {
+              "$$type": "dimensions",
+              "value": {
+               "block-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "inline-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 16
+                }
+               },
+               "block-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 16
+                }
+               },
+               "inline-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 16
+                }
+               }
+              }
+             },
+             "margin": {
+              "$$type": "dimensions",
+              "value": {
+               "block-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "inline-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "block-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "inline-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               }
+              }
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Content"
+        },
+        "version": "0.0"
+       }
+      ],
+      "styles": {
+       "e-pac50-item": {
+        "id": "e-pac50-item",
+        "label": "local",
+        "type": "class",
+        "variants": [
+         {
+          "meta": {
+           "breakpoint": "desktop",
+           "state": null
+          },
+          "props": {
+           "display": {
+            "$$type": "string",
+            "value": "flex"
+           },
+           "flex-direction": {
+            "$$type": "string",
+            "value": "column"
+           },
+           "gap": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 0
+            }
+           },
+           "overflow": {
+            "$$type": "string",
+            "value": "hidden"
+           },
+           "background": {
+            "$$type": "background",
+            "value": {
+             "color": {
+              "$$type": "color",
+              "value": "#ffffff"
+             }
+            }
+           },
+           "border-style": {
+            "$$type": "string",
+            "value": "solid"
+           },
+           "border-width": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 1
+            }
+           },
+           "border-color": {
+            "$$type": "color",
+            "value": "#eeeeee"
+           },
+           "border-radius": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 16
+            }
+           },
+           "padding": {
+            "$$type": "dimensions",
+            "value": {
+             "block-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "inline-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "block-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "inline-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             }
+            }
+           },
+           "margin": {
+            "$$type": "dimensions",
+            "value": {
+             "block-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "inline-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "block-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "inline-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             }
+            }
+           },
+           "box-shadow": {
+            "$$type": "box-shadow",
+            "value": [
+             {
+              "$$type": "shadow",
+              "value": {
+               "hOffset": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "vOffset": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "blur": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "spread": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "color": {
+                "$$type": "color",
+                "value": "rgba(0, 0, 0, 0)"
+               }
+              }
+             }
+            ]
+           }
+          },
+          "custom_css": null
+         }
+        ]
+       }
+      },
+      "interactions": [],
+      "editor_settings": {
+       "title": "How do I delete my account?"
+      },
+      "version": "0.0"
+     }
+    ],
+    "styles": {
+     "e-pac001-accordion": {
+      "id": "e-pac001-accordion",
+      "label": "local",
+      "type": "class",
+      "variants": [
+       {
+        "meta": {
+         "breakpoint": "desktop",
+         "state": null
+        },
+        "props": {
+         "padding": {
+          "$$type": "dimensions",
+          "value": {
+           "block-start": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 0
+            }
+           },
+           "inline-end": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 0
+            }
+           },
+           "block-end": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 0
+            }
+           },
+           "inline-start": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 0
+            }
+           }
+          }
+         },
+         "gap": {
+          "$$type": "size",
+          "value": {
+           "unit": "px",
+           "size": 8
+          }
+         }
+        },
+        "custom_css": null
+       }
+      ]
+     }
+    },
+    "interactions": [],
+    "editor_settings": {
+     "title": "Outlined Card – No Icon"
+    },
+    "version": "0.0"
+   }
+  ],
+  "styles": {
+   "e-pac000-wrap": {
+    "id": "e-pac000-wrap",
+    "label": "local",
+    "type": "class",
+    "variants": [
+     {
+      "meta": {
+       "breakpoint": "desktop",
+       "state": null
+      },
+      "props": {
+       "flex-direction": {
+        "$$type": "string",
+        "value": "column"
+       }
+      },
+      "custom_css": null
+     }
+    ]
+   }
+  },
+  "interactions": [],
+  "editor_settings": {
+   "title": "Outlined Card – No Icon"
+  },
+  "version": "0.0"
+ }
+}

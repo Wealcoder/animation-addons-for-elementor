@@ -1,0 +1,4017 @@
+{
+ "name": "Minimal Divider – Arrow",
+ "model": {
+  "id": "a6e6242",
+  "settings": {
+   "classes": {
+    "$$type": "classes",
+    "value": [
+     "e-a6e6242-wrap"
+    ]
+   }
+  },
+  "isInner": false,
+  "elType": "e-flexbox",
+  "elements": [
+   {
+    "id": "58efe4da",
+    "settings": {
+     "classes": {
+      "$$type": "classes",
+      "value": [
+       "e-58efe4da-accordion"
+      ]
+     }
+    },
+    "isInner": false,
+    "elType": "e-aae-a-accordion",
+    "elements": [
+     {
+      "id": "4c49907c",
+      "settings": {
+       "is_active": {
+        "$$type": "boolean",
+        "value": false
+       },
+       "item_title": {
+        "$$type": "string",
+        "value": "How do we get started?"
+       },
+       "classes": {
+        "$$type": "classes",
+        "value": [
+         "e-4c49907c-item"
+        ]
+       }
+      },
+      "isInner": false,
+      "elType": "e-aae-a-accordion-item",
+      "elements": [
+       {
+        "id": "49061b99",
+        "settings": {
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-49061b99-header"
+          ]
+         }
+        },
+        "isInner": false,
+        "elType": "e-div-block",
+        "elements": [
+         {
+          "id": "76dcaff2",
+          "settings": {
+           "paragraph": {
+            "$$type": "html-v3",
+            "value": {
+             "content": {
+              "$$type": "string",
+              "value": "How do we get started?"
+             },
+             "children": []
+            }
+           },
+           "tag": {
+            "$$type": "string",
+            "value": "span"
+           },
+           "link": {
+            "$$type": "link",
+            "value": []
+           },
+           "classes": {
+            "$$type": "classes",
+            "value": [
+             "e-76dcaff2-title"
+            ]
+           }
+          },
+          "elements": [],
+          "isInner": false,
+          "widgetType": "e-paragraph",
+          "elType": "widget",
+          "styles": {
+           "e-76dcaff2-title": {
+            "id": "e-76dcaff2-title",
+            "label": "local",
+            "type": "class",
+            "variants": [
+             {
+              "meta": {
+               "breakpoint": "desktop",
+               "state": null
+              },
+              "props": {
+               "font-weight": {
+                "$$type": "string",
+                "value": "400"
+               },
+               "font-size": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 22
+                }
+               },
+               "color": {
+                "$$type": "color",
+                "value": "#121212"
+               },
+               "line-height": {
+                "$$type": "size",
+                "value": {
+                 "unit": "em",
+                 "size": 1.18
+                }
+               }
+              },
+              "custom_css": null
+             }
+            ]
+           }
+          },
+          "interactions": [],
+          "editor_settings": {
+           "title": "Header Title"
+          },
+          "version": "0.0"
+         },
+         {
+          "id": "6f25cac9",
+          "settings": {
+           "svg": {
+            "$$type": "svg-src",
+            "value": {
+             "id": {
+              "$$type": "image-attachment-id",
+              "value": 8322
+             },
+             "url": {
+              "$$type": "url",
+              "value": "http://elementor-v4-animation-addons.test/wp-content/uploads/2026/09/read-icon.svg"
+             }
+            }
+           },
+           "link": {
+            "$$type": "link",
+            "value": []
+           },
+           "classes": {
+            "$$type": "classes",
+            "value": [
+             "e-6f25cac9-iconopen"
+            ]
+           }
+          },
+          "elements": [],
+          "isInner": false,
+          "widgetType": "e-svg",
+          "elType": "widget",
+          "styles": {
+           "e-6f25cac9-iconopen": {
+            "id": "e-6f25cac9-iconopen",
+            "label": "local",
+            "type": "class",
+            "variants": [
+             {
+              "meta": {
+               "breakpoint": "desktop",
+               "state": null
+              },
+              "props": {
+               "width": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               },
+               "height": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               },
+               "min-width": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               },
+               "min-height": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               },
+               "color": {
+                "$$type": "color",
+                "value": "#6b728000"
+               }
+              },
+              "custom_css": null
+             }
+            ]
+           }
+          },
+          "interactions": [],
+          "editor_settings": {
+           "title": "Open Icon"
+          },
+          "version": "0.0"
+         },
+         {
+          "id": "73838fff",
+          "settings": {
+           "svg": {
+            "$$type": "svg-src",
+            "value": {
+             "id": {
+              "$$type": "image-attachment-id",
+              "value": 8323
+             },
+             "url": {
+              "$$type": "url",
+              "value": "http://elementor-v4-animation-addons.test/wp-content/uploads/2026/09/up.svg"
+             }
+            }
+           },
+           "link": {
+            "$$type": "link",
+            "value": []
+           },
+           "classes": {
+            "$$type": "classes",
+            "value": [
+             "e-73838fff-iconclose"
+            ]
+           }
+          },
+          "elements": [],
+          "isInner": false,
+          "widgetType": "e-svg",
+          "elType": "widget",
+          "styles": {
+           "e-73838fff-iconclose": {
+            "id": "e-73838fff-iconclose",
+            "label": "local",
+            "type": "class",
+            "variants": [
+             {
+              "meta": {
+               "breakpoint": "desktop",
+               "state": null
+              },
+              "props": {
+               "width": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               },
+               "height": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               },
+               "min-width": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               },
+               "min-height": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               }
+              },
+              "custom_css": null
+             }
+            ]
+           }
+          },
+          "interactions": [],
+          "editor_settings": {
+           "title": "Close Icon"
+          },
+          "version": "0.0"
+         }
+        ],
+        "styles": {
+         "e-49061b99-header": {
+          "id": "e-49061b99-header",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "padding": {
+              "$$type": "dimensions",
+              "value": {
+               "inline-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               }
+              }
+             },
+             "margin": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "display": {
+              "$$type": "string",
+              "value": "flex"
+             },
+             "justify-content": {
+              "$$type": "string",
+              "value": "space-between"
+             },
+             "align-items": {
+              "$$type": "string",
+              "value": "start"
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Header"
+        },
+        "version": "0.0"
+       },
+       {
+        "id": "5ae43ea4",
+        "settings": {
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-5ae43ea4-content"
+          ]
+         }
+        },
+        "isInner": false,
+        "elType": "e-div-block",
+        "elements": [
+         {
+          "id": "4f0574ea",
+          "settings": {
+           "paragraph": {
+            "$$type": "html-v3",
+            "value": {
+             "content": {
+              "$$type": "string",
+              "value": "It begins with a short call about the problem, the audience and the deadline. You get a written proposal covering scope, price and timeline within two working days, and nothing starts until you approve it."
+             },
+             "children": []
+            }
+           },
+           "link": {
+            "$$type": "link",
+            "value": []
+           },
+           "classes": {
+            "$$type": "classes",
+            "value": [
+             "e-4f0574ea-text"
+            ]
+           }
+          },
+          "elements": [],
+          "isInner": false,
+          "widgetType": "e-paragraph",
+          "elType": "widget",
+          "styles": {
+           "e-4f0574ea-text": {
+            "id": "e-4f0574ea-text",
+            "label": "local",
+            "type": "class",
+            "variants": [
+             {
+              "meta": {
+               "breakpoint": "desktop",
+               "state": null
+              },
+              "props": {
+               "font-weight": {
+                "$$type": "string",
+                "value": "400"
+               },
+               "font-size": {
+                "$$type": "size",
+                "value": {
+                 "size": 18,
+                 "unit": "px"
+                }
+               },
+               "color": {
+                "$$type": "color",
+                "value": "#555555"
+               },
+               "line-height": {
+                "$$type": "size",
+                "value": {
+                 "size": 1.44,
+                 "unit": "em"
+                }
+               },
+               "max-width": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 546
+                }
+               }
+              },
+              "custom_css": null
+             }
+            ]
+           }
+          },
+          "interactions": [],
+          "editor_settings": {
+           "title": "Content Text"
+          },
+          "version": "0.0"
+         }
+        ],
+        "styles": {
+         "e-5ae43ea4-content": {
+          "id": "e-5ae43ea4-content",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "padding": {
+              "$$type": "dimensions",
+              "value": {
+               "block-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 10
+                }
+               },
+               "inline-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "block-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 5
+                }
+               },
+               "inline-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               }
+              }
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Content"
+        },
+        "version": "0.0"
+       }
+      ],
+      "styles": {
+       "e-4c49907c-item": {
+        "id": "e-4c49907c-item",
+        "label": "local",
+        "type": "class",
+        "variants": [
+         {
+          "meta": {
+           "breakpoint": "desktop",
+           "state": null
+          },
+          "props": {
+           "padding": {
+            "$$type": "dimensions",
+            "value": {
+             "block-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 20
+              }
+             },
+             "inline-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "block-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 20
+              }
+             },
+             "inline-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             }
+            }
+           },
+           "border-radius": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 0
+            }
+           },
+           "border-width": {
+            "$$type": "border-width-v2",
+            "value": {
+             "block-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 1
+              }
+             },
+             "block-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "inline-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "inline-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             }
+            }
+           },
+           "border-color": {
+            "$$type": "color",
+            "value": "#E2E2E2"
+           },
+           "border-style": {
+            "$$type": "string",
+            "value": "solid"
+           },
+           "box-shadow": {
+            "$$type": "box-shadow",
+            "value": [
+             {
+              "$$type": "shadow",
+              "value": {
+               "hOffset": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "vOffset": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "blur": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 10
+                }
+               },
+               "spread": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "color": {
+                "$$type": "color",
+                "value": "rgba(0, 0, 0, 0)"
+               }
+              }
+             }
+            ]
+           },
+           "display": {
+            "$$type": "string",
+            "value": "flex"
+           },
+           "flex-direction": {
+            "$$type": "string",
+            "value": "column"
+           },
+           "justify-content": {
+            "$$type": "string",
+            "value": "flex-start"
+           }
+          },
+          "custom_css": null
+         }
+        ]
+       }
+      },
+      "interactions": [],
+      "editor_settings": {
+       "title": "How do we get started?"
+      },
+      "version": "0.0"
+     },
+     {
+      "id": "5b447dd4",
+      "settings": {
+       "is_active": {
+        "$$type": "boolean",
+        "value": false
+       },
+       "item_title": {
+        "$$type": "string",
+        "value": "How long does a project usually take?"
+       },
+       "classes": {
+        "$$type": "classes",
+        "value": [
+         "e-5b447dd4-item"
+        ]
+       }
+      },
+      "isInner": false,
+      "elType": "e-aae-a-accordion-item",
+      "elements": [
+       {
+        "id": "508f67d5",
+        "settings": {
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-508f67d5-header"
+          ]
+         }
+        },
+        "isInner": false,
+        "elType": "e-div-block",
+        "elements": [
+         {
+          "id": "634480c6",
+          "settings": {
+           "paragraph": {
+            "$$type": "html-v3",
+            "value": {
+             "content": {
+              "$$type": "string",
+              "value": "How long does a project usually take?"
+             },
+             "children": []
+            }
+           },
+           "tag": {
+            "$$type": "string",
+            "value": "span"
+           },
+           "link": {
+            "$$type": "link",
+            "value": []
+           },
+           "classes": {
+            "$$type": "classes",
+            "value": [
+             "e-634480c6-title"
+            ]
+           }
+          },
+          "elements": [],
+          "isInner": false,
+          "widgetType": "e-paragraph",
+          "elType": "widget",
+          "styles": {
+           "e-634480c6-title": {
+            "id": "e-634480c6-title",
+            "label": "local",
+            "type": "class",
+            "variants": [
+             {
+              "meta": {
+               "breakpoint": "desktop",
+               "state": null
+              },
+              "props": {
+               "font-weight": {
+                "$$type": "string",
+                "value": "400"
+               },
+               "font-size": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 22
+                }
+               },
+               "color": {
+                "$$type": "color",
+                "value": "#121212"
+               },
+               "line-height": {
+                "$$type": "size",
+                "value": {
+                 "unit": "em",
+                 "size": 1.18
+                }
+               }
+              },
+              "custom_css": null
+             }
+            ]
+           }
+          },
+          "interactions": [],
+          "editor_settings": {
+           "title": "Header Title"
+          },
+          "version": "0.0"
+         },
+         {
+          "id": "cdf34a3",
+          "settings": {
+           "svg": {
+            "$$type": "svg-src",
+            "value": {
+             "id": {
+              "$$type": "image-attachment-id",
+              "value": 8324
+             },
+             "url": {
+              "$$type": "url",
+              "value": "http://elementor-v4-animation-addons.test/wp-content/uploads/2026/09/read-icon-1.svg"
+             }
+            }
+           },
+           "link": {
+            "$$type": "link",
+            "value": []
+           },
+           "classes": {
+            "$$type": "classes",
+            "value": [
+             "e-cdf34a3-iconopen"
+            ]
+           }
+          },
+          "elements": [],
+          "isInner": false,
+          "widgetType": "e-svg",
+          "elType": "widget",
+          "styles": {
+           "e-cdf34a3-iconopen": {
+            "id": "e-cdf34a3-iconopen",
+            "label": "local",
+            "type": "class",
+            "variants": [
+             {
+              "meta": {
+               "breakpoint": "desktop",
+               "state": null
+              },
+              "props": {
+               "width": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               },
+               "height": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               },
+               "min-width": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               },
+               "min-height": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               },
+               "color": {
+                "$$type": "color",
+                "value": "#6b728000"
+               }
+              },
+              "custom_css": null
+             }
+            ]
+           }
+          },
+          "interactions": [],
+          "editor_settings": {
+           "title": "Open Icon"
+          },
+          "version": "0.0"
+         },
+         {
+          "id": "55669ed1",
+          "settings": {
+           "svg": {
+            "$$type": "svg-src",
+            "value": {
+             "id": {
+              "$$type": "image-attachment-id",
+              "value": 8325
+             },
+             "url": {
+              "$$type": "url",
+              "value": "http://elementor-v4-animation-addons.test/wp-content/uploads/2026/09/up-1.svg"
+             }
+            }
+           },
+           "link": {
+            "$$type": "link",
+            "value": []
+           },
+           "classes": {
+            "$$type": "classes",
+            "value": [
+             "e-55669ed1-iconclose"
+            ]
+           }
+          },
+          "elements": [],
+          "isInner": false,
+          "widgetType": "e-svg",
+          "elType": "widget",
+          "styles": {
+           "e-55669ed1-iconclose": {
+            "id": "e-55669ed1-iconclose",
+            "label": "local",
+            "type": "class",
+            "variants": [
+             {
+              "meta": {
+               "breakpoint": "desktop",
+               "state": null
+              },
+              "props": {
+               "width": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               },
+               "height": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               },
+               "min-width": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               },
+               "min-height": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               }
+              },
+              "custom_css": null
+             }
+            ]
+           }
+          },
+          "interactions": [],
+          "editor_settings": {
+           "title": "Close Icon"
+          },
+          "version": "0.0"
+         }
+        ],
+        "styles": {
+         "e-508f67d5-header": {
+          "id": "e-508f67d5-header",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "padding": {
+              "$$type": "dimensions",
+              "value": {
+               "inline-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               }
+              }
+             },
+             "margin": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "display": {
+              "$$type": "string",
+              "value": "flex"
+             },
+             "justify-content": {
+              "$$type": "string",
+              "value": "space-between"
+             },
+             "align-items": {
+              "$$type": "string",
+              "value": "start"
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Header"
+        },
+        "version": "0.0"
+       },
+       {
+        "id": "7da4d3cc",
+        "settings": {
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-7da4d3cc-content"
+          ]
+         }
+        },
+        "isInner": false,
+        "elType": "e-div-block",
+        "elements": [
+         {
+          "id": "79ca3a5f",
+          "settings": {
+           "paragraph": {
+            "$$type": "html-v3",
+            "value": {
+             "content": {
+              "$$type": "string",
+              "value": "Most run four to eight weeks from kickoff to launch. The variable is rarely the build — it is how quickly content, feedback and approvals come back, so those dates get agreed up front."
+             },
+             "children": []
+            }
+           },
+           "link": {
+            "$$type": "link",
+            "value": []
+           },
+           "classes": {
+            "$$type": "classes",
+            "value": [
+             "e-79ca3a5f-text"
+            ]
+           }
+          },
+          "elements": [],
+          "isInner": false,
+          "widgetType": "e-paragraph",
+          "elType": "widget",
+          "styles": {
+           "e-79ca3a5f-text": {
+            "id": "e-79ca3a5f-text",
+            "label": "local",
+            "type": "class",
+            "variants": [
+             {
+              "meta": {
+               "breakpoint": "desktop",
+               "state": null
+              },
+              "props": {
+               "font-weight": {
+                "$$type": "string",
+                "value": "400"
+               },
+               "font-size": {
+                "$$type": "size",
+                "value": {
+                 "size": 18,
+                 "unit": "px"
+                }
+               },
+               "color": {
+                "$$type": "color",
+                "value": "#555555"
+               },
+               "line-height": {
+                "$$type": "size",
+                "value": {
+                 "size": 1.44,
+                 "unit": "em"
+                }
+               },
+               "max-width": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 546
+                }
+               }
+              },
+              "custom_css": null
+             }
+            ]
+           }
+          },
+          "interactions": [],
+          "editor_settings": {
+           "title": "Content Text"
+          },
+          "version": "0.0"
+         }
+        ],
+        "styles": {
+         "e-7da4d3cc-content": {
+          "id": "e-7da4d3cc-content",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "padding": {
+              "$$type": "dimensions",
+              "value": {
+               "block-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 10
+                }
+               },
+               "inline-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "block-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 5
+                }
+               },
+               "inline-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               }
+              }
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Content"
+        },
+        "version": "0.0"
+       }
+      ],
+      "styles": {
+       "e-5b447dd4-item": {
+        "id": "e-5b447dd4-item",
+        "label": "local",
+        "type": "class",
+        "variants": [
+         {
+          "meta": {
+           "breakpoint": "desktop",
+           "state": null
+          },
+          "props": {
+           "padding": {
+            "$$type": "dimensions",
+            "value": {
+             "block-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 20
+              }
+             },
+             "inline-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "block-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 20
+              }
+             },
+             "inline-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             }
+            }
+           },
+           "border-radius": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 0
+            }
+           },
+           "border-width": {
+            "$$type": "border-width-v2",
+            "value": {
+             "block-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 1
+              }
+             },
+             "block-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "inline-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "inline-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             }
+            }
+           },
+           "border-color": {
+            "$$type": "color",
+            "value": "#E2E2E2"
+           },
+           "border-style": {
+            "$$type": "string",
+            "value": "solid"
+           },
+           "box-shadow": {
+            "$$type": "box-shadow",
+            "value": [
+             {
+              "$$type": "shadow",
+              "value": {
+               "hOffset": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "vOffset": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "blur": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 10
+                }
+               },
+               "spread": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "color": {
+                "$$type": "color",
+                "value": "rgba(0, 0, 0, 0)"
+               }
+              }
+             }
+            ]
+           },
+           "display": {
+            "$$type": "string",
+            "value": "flex"
+           },
+           "flex-direction": {
+            "$$type": "string",
+            "value": "column"
+           },
+           "justify-content": {
+            "$$type": "string",
+            "value": "flex-start"
+           }
+          },
+          "custom_css": null
+         }
+        ]
+       }
+      },
+      "interactions": [],
+      "editor_settings": {
+       "title": "How long does a project usually take?"
+      },
+      "version": "0.0"
+     },
+     {
+      "id": "6b7f105e",
+      "settings": {
+       "is_active": {
+        "$$type": "boolean",
+        "value": false
+       },
+       "item_title": {
+        "$$type": "string",
+        "value": "How do you handle changes along the way?"
+       },
+       "classes": {
+        "$$type": "classes",
+        "value": [
+         "e-6b7f105e-item"
+        ]
+       }
+      },
+      "isInner": false,
+      "elType": "e-aae-a-accordion-item",
+      "elements": [
+       {
+        "id": "4ab2819f",
+        "settings": {
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-4ab2819f-header"
+          ]
+         }
+        },
+        "isInner": false,
+        "elType": "e-div-block",
+        "elements": [
+         {
+          "id": "7b0d73fe",
+          "settings": {
+           "paragraph": {
+            "$$type": "html-v3",
+            "value": {
+             "content": {
+              "$$type": "string",
+              "value": "How do you handle changes along the way?"
+             },
+             "children": []
+            }
+           },
+           "tag": {
+            "$$type": "string",
+            "value": "span"
+           },
+           "link": {
+            "$$type": "link",
+            "value": []
+           },
+           "classes": {
+            "$$type": "classes",
+            "value": [
+             "e-7b0d73fe-title"
+            ]
+           }
+          },
+          "elements": [],
+          "isInner": false,
+          "widgetType": "e-paragraph",
+          "elType": "widget",
+          "styles": {
+           "e-7b0d73fe-title": {
+            "id": "e-7b0d73fe-title",
+            "label": "local",
+            "type": "class",
+            "variants": [
+             {
+              "meta": {
+               "breakpoint": "desktop",
+               "state": null
+              },
+              "props": {
+               "font-weight": {
+                "$$type": "string",
+                "value": "400"
+               },
+               "font-size": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 22
+                }
+               },
+               "color": {
+                "$$type": "color",
+                "value": "#121212"
+               },
+               "line-height": {
+                "$$type": "size",
+                "value": {
+                 "unit": "em",
+                 "size": 1.18
+                }
+               }
+              },
+              "custom_css": null
+             }
+            ]
+           }
+          },
+          "interactions": [],
+          "editor_settings": {
+           "title": "Header Title"
+          },
+          "version": "0.0"
+         },
+         {
+          "id": "66b66ac5",
+          "settings": {
+           "svg": {
+            "$$type": "svg-src",
+            "value": {
+             "id": {
+              "$$type": "image-attachment-id",
+              "value": 8326
+             },
+             "url": {
+              "$$type": "url",
+              "value": "http://elementor-v4-animation-addons.test/wp-content/uploads/2026/09/read-icon-2.svg"
+             }
+            }
+           },
+           "link": {
+            "$$type": "link",
+            "value": []
+           },
+           "classes": {
+            "$$type": "classes",
+            "value": [
+             "e-66b66ac5-iconopen"
+            ]
+           }
+          },
+          "elements": [],
+          "isInner": false,
+          "widgetType": "e-svg",
+          "elType": "widget",
+          "styles": {
+           "e-66b66ac5-iconopen": {
+            "id": "e-66b66ac5-iconopen",
+            "label": "local",
+            "type": "class",
+            "variants": [
+             {
+              "meta": {
+               "breakpoint": "desktop",
+               "state": null
+              },
+              "props": {
+               "width": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               },
+               "height": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               },
+               "min-width": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               },
+               "min-height": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               },
+               "color": {
+                "$$type": "color",
+                "value": "#6b728000"
+               }
+              },
+              "custom_css": null
+             }
+            ]
+           }
+          },
+          "interactions": [],
+          "editor_settings": {
+           "title": "Open Icon"
+          },
+          "version": "0.0"
+         },
+         {
+          "id": "5745fb6a",
+          "settings": {
+           "svg": {
+            "$$type": "svg-src",
+            "value": {
+             "id": {
+              "$$type": "image-attachment-id",
+              "value": 8327
+             },
+             "url": {
+              "$$type": "url",
+              "value": "http://elementor-v4-animation-addons.test/wp-content/uploads/2026/09/up-2.svg"
+             }
+            }
+           },
+           "link": {
+            "$$type": "link",
+            "value": []
+           },
+           "classes": {
+            "$$type": "classes",
+            "value": [
+             "e-5745fb6a-iconclose"
+            ]
+           }
+          },
+          "elements": [],
+          "isInner": false,
+          "widgetType": "e-svg",
+          "elType": "widget",
+          "styles": {
+           "e-5745fb6a-iconclose": {
+            "id": "e-5745fb6a-iconclose",
+            "label": "local",
+            "type": "class",
+            "variants": [
+             {
+              "meta": {
+               "breakpoint": "desktop",
+               "state": null
+              },
+              "props": {
+               "width": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               },
+               "height": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               },
+               "min-width": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               },
+               "min-height": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               }
+              },
+              "custom_css": null
+             }
+            ]
+           }
+          },
+          "interactions": [],
+          "editor_settings": {
+           "title": "Close Icon"
+          },
+          "version": "0.0"
+         }
+        ],
+        "styles": {
+         "e-4ab2819f-header": {
+          "id": "e-4ab2819f-header",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "padding": {
+              "$$type": "dimensions",
+              "value": {
+               "inline-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               }
+              }
+             },
+             "margin": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "display": {
+              "$$type": "string",
+              "value": "flex"
+             },
+             "justify-content": {
+              "$$type": "string",
+              "value": "space-between"
+             },
+             "align-items": {
+              "$$type": "string",
+              "value": "start"
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Header"
+        },
+        "version": "0.0"
+       },
+       {
+        "id": "e16380f",
+        "settings": {
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-e16380f-content"
+          ]
+         }
+        },
+        "isInner": false,
+        "elType": "e-div-block",
+        "elements": [
+         {
+          "id": "73892e8e",
+          "settings": {
+           "paragraph": {
+            "$$type": "html-v3",
+            "value": {
+             "content": {
+              "$$type": "string",
+              "value": "Changes are expected, so they are priced against the remaining scope rather than treated as exceptions. Anything new is quoted before work starts on it, and you decide whether it goes in now or after launch."
+             },
+             "children": []
+            }
+           },
+           "link": {
+            "$$type": "link",
+            "value": []
+           },
+           "classes": {
+            "$$type": "classes",
+            "value": [
+             "e-73892e8e-text"
+            ]
+           }
+          },
+          "elements": [],
+          "isInner": false,
+          "widgetType": "e-paragraph",
+          "elType": "widget",
+          "styles": {
+           "e-73892e8e-text": {
+            "id": "e-73892e8e-text",
+            "label": "local",
+            "type": "class",
+            "variants": [
+             {
+              "meta": {
+               "breakpoint": "desktop",
+               "state": null
+              },
+              "props": {
+               "font-weight": {
+                "$$type": "string",
+                "value": "400"
+               },
+               "font-size": {
+                "$$type": "size",
+                "value": {
+                 "size": 18,
+                 "unit": "px"
+                }
+               },
+               "color": {
+                "$$type": "color",
+                "value": "#555555"
+               },
+               "line-height": {
+                "$$type": "size",
+                "value": {
+                 "size": 1.44,
+                 "unit": "em"
+                }
+               },
+               "max-width": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 546
+                }
+               }
+              },
+              "custom_css": null
+             }
+            ]
+           }
+          },
+          "interactions": [],
+          "editor_settings": {
+           "title": "Content Text"
+          },
+          "version": "0.0"
+         }
+        ],
+        "styles": {
+         "e-e16380f-content": {
+          "id": "e-e16380f-content",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "padding": {
+              "$$type": "dimensions",
+              "value": {
+               "block-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 10
+                }
+               },
+               "inline-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "block-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 5
+                }
+               },
+               "inline-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               }
+              }
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Content"
+        },
+        "version": "0.0"
+       }
+      ],
+      "styles": {
+       "e-6b7f105e-item": {
+        "id": "e-6b7f105e-item",
+        "label": "local",
+        "type": "class",
+        "variants": [
+         {
+          "meta": {
+           "breakpoint": "desktop",
+           "state": null
+          },
+          "props": {
+           "padding": {
+            "$$type": "dimensions",
+            "value": {
+             "block-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 20
+              }
+             },
+             "inline-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "block-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 20
+              }
+             },
+             "inline-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             }
+            }
+           },
+           "border-radius": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 0
+            }
+           },
+           "border-width": {
+            "$$type": "border-width-v2",
+            "value": {
+             "block-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 1
+              }
+             },
+             "block-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "inline-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "inline-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             }
+            }
+           },
+           "border-color": {
+            "$$type": "color",
+            "value": "#E2E2E2"
+           },
+           "border-style": {
+            "$$type": "string",
+            "value": "solid"
+           },
+           "box-shadow": {
+            "$$type": "box-shadow",
+            "value": [
+             {
+              "$$type": "shadow",
+              "value": {
+               "hOffset": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "vOffset": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "blur": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 10
+                }
+               },
+               "spread": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "color": {
+                "$$type": "color",
+                "value": "rgba(0, 0, 0, 0)"
+               }
+              }
+             }
+            ]
+           },
+           "display": {
+            "$$type": "string",
+            "value": "flex"
+           },
+           "flex-direction": {
+            "$$type": "string",
+            "value": "column"
+           },
+           "justify-content": {
+            "$$type": "string",
+            "value": "flex-start"
+           }
+          },
+          "custom_css": null
+         }
+        ]
+       }
+      },
+      "interactions": [],
+      "editor_settings": {
+       "title": "How do you handle changes along the way?"
+      },
+      "version": "0.0"
+     },
+     {
+      "id": "4c3de5bc",
+      "settings": {
+       "is_active": {
+        "$$type": "boolean",
+        "value": false
+       },
+       "item_title": {
+        "$$type": "string",
+        "value": "Who will I be working with?"
+       },
+       "classes": {
+        "$$type": "classes",
+        "value": [
+         "e-4c3de5bc-item"
+        ]
+       }
+      },
+      "isInner": false,
+      "elType": "e-aae-a-accordion-item",
+      "elements": [
+       {
+        "id": "181af539",
+        "settings": {
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-181af539-header"
+          ]
+         }
+        },
+        "isInner": false,
+        "elType": "e-div-block",
+        "elements": [
+         {
+          "id": "4fb8cfd",
+          "settings": {
+           "paragraph": {
+            "$$type": "html-v3",
+            "value": {
+             "content": {
+              "$$type": "string",
+              "value": "Who will I be working with?"
+             },
+             "children": []
+            }
+           },
+           "tag": {
+            "$$type": "string",
+            "value": "span"
+           },
+           "link": {
+            "$$type": "link",
+            "value": []
+           },
+           "classes": {
+            "$$type": "classes",
+            "value": [
+             "e-4fb8cfd-title"
+            ]
+           }
+          },
+          "elements": [],
+          "isInner": false,
+          "widgetType": "e-paragraph",
+          "elType": "widget",
+          "styles": {
+           "e-4fb8cfd-title": {
+            "id": "e-4fb8cfd-title",
+            "label": "local",
+            "type": "class",
+            "variants": [
+             {
+              "meta": {
+               "breakpoint": "desktop",
+               "state": null
+              },
+              "props": {
+               "font-weight": {
+                "$$type": "string",
+                "value": "400"
+               },
+               "font-size": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 22
+                }
+               },
+               "color": {
+                "$$type": "color",
+                "value": "#121212"
+               },
+               "line-height": {
+                "$$type": "size",
+                "value": {
+                 "unit": "em",
+                 "size": 1.18
+                }
+               }
+              },
+              "custom_css": null
+             }
+            ]
+           }
+          },
+          "interactions": [],
+          "editor_settings": {
+           "title": "Header Title"
+          },
+          "version": "0.0"
+         },
+         {
+          "id": "773ea7cb",
+          "settings": {
+           "svg": {
+            "$$type": "svg-src",
+            "value": {
+             "id": {
+              "$$type": "image-attachment-id",
+              "value": 8328
+             },
+             "url": {
+              "$$type": "url",
+              "value": "http://elementor-v4-animation-addons.test/wp-content/uploads/2026/09/read-icon-3.svg"
+             }
+            }
+           },
+           "link": {
+            "$$type": "link",
+            "value": []
+           },
+           "classes": {
+            "$$type": "classes",
+            "value": [
+             "e-773ea7cb-iconopen"
+            ]
+           }
+          },
+          "elements": [],
+          "isInner": false,
+          "widgetType": "e-svg",
+          "elType": "widget",
+          "styles": {
+           "e-773ea7cb-iconopen": {
+            "id": "e-773ea7cb-iconopen",
+            "label": "local",
+            "type": "class",
+            "variants": [
+             {
+              "meta": {
+               "breakpoint": "desktop",
+               "state": null
+              },
+              "props": {
+               "width": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               },
+               "height": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               },
+               "min-width": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               },
+               "min-height": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               },
+               "color": {
+                "$$type": "color",
+                "value": "#6b728000"
+               }
+              },
+              "custom_css": null
+             }
+            ]
+           }
+          },
+          "interactions": [],
+          "editor_settings": {
+           "title": "Open Icon"
+          },
+          "version": "0.0"
+         },
+         {
+          "id": "2a352c36",
+          "settings": {
+           "svg": {
+            "$$type": "svg-src",
+            "value": {
+             "id": {
+              "$$type": "image-attachment-id",
+              "value": 8329
+             },
+             "url": {
+              "$$type": "url",
+              "value": "http://elementor-v4-animation-addons.test/wp-content/uploads/2026/09/up-3.svg"
+             }
+            }
+           },
+           "link": {
+            "$$type": "link",
+            "value": []
+           },
+           "classes": {
+            "$$type": "classes",
+            "value": [
+             "e-2a352c36-iconclose"
+            ]
+           }
+          },
+          "elements": [],
+          "isInner": false,
+          "widgetType": "e-svg",
+          "elType": "widget",
+          "styles": {
+           "e-2a352c36-iconclose": {
+            "id": "e-2a352c36-iconclose",
+            "label": "local",
+            "type": "class",
+            "variants": [
+             {
+              "meta": {
+               "breakpoint": "desktop",
+               "state": null
+              },
+              "props": {
+               "width": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               },
+               "height": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               },
+               "min-width": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               },
+               "min-height": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               }
+              },
+              "custom_css": null
+             }
+            ]
+           }
+          },
+          "interactions": [],
+          "editor_settings": {
+           "title": "Close Icon"
+          },
+          "version": "0.0"
+         }
+        ],
+        "styles": {
+         "e-181af539-header": {
+          "id": "e-181af539-header",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "padding": {
+              "$$type": "dimensions",
+              "value": {
+               "inline-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               }
+              }
+             },
+             "margin": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "display": {
+              "$$type": "string",
+              "value": "flex"
+             },
+             "justify-content": {
+              "$$type": "string",
+              "value": "space-between"
+             },
+             "align-items": {
+              "$$type": "string",
+              "value": "start"
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Header"
+        },
+        "version": "0.0"
+       },
+       {
+        "id": "2054f3c",
+        "settings": {
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-2054f3c-content"
+          ]
+         }
+        },
+        "isInner": false,
+        "elType": "e-div-block",
+        "elements": [
+         {
+          "id": "c6d27cc",
+          "settings": {
+           "paragraph": {
+            "$$type": "html-v3",
+            "value": {
+             "content": {
+              "$$type": "string",
+              "value": "One lead stays with your project from the first call through to handover and is your single point of contact. Specialists join for the stretches where their work is needed, and you always know who is doing what."
+             },
+             "children": []
+            }
+           },
+           "link": {
+            "$$type": "link",
+            "value": []
+           },
+           "classes": {
+            "$$type": "classes",
+            "value": [
+             "e-c6d27cc-text"
+            ]
+           }
+          },
+          "elements": [],
+          "isInner": false,
+          "widgetType": "e-paragraph",
+          "elType": "widget",
+          "styles": {
+           "e-c6d27cc-text": {
+            "id": "e-c6d27cc-text",
+            "label": "local",
+            "type": "class",
+            "variants": [
+             {
+              "meta": {
+               "breakpoint": "desktop",
+               "state": null
+              },
+              "props": {
+               "font-weight": {
+                "$$type": "string",
+                "value": "400"
+               },
+               "font-size": {
+                "$$type": "size",
+                "value": {
+                 "size": 18,
+                 "unit": "px"
+                }
+               },
+               "color": {
+                "$$type": "color",
+                "value": "#555555"
+               },
+               "line-height": {
+                "$$type": "size",
+                "value": {
+                 "size": 1.44,
+                 "unit": "em"
+                }
+               },
+               "max-width": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 546
+                }
+               }
+              },
+              "custom_css": null
+             }
+            ]
+           }
+          },
+          "interactions": [],
+          "editor_settings": {
+           "title": "Content Text"
+          },
+          "version": "0.0"
+         }
+        ],
+        "styles": {
+         "e-2054f3c-content": {
+          "id": "e-2054f3c-content",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "padding": {
+              "$$type": "dimensions",
+              "value": {
+               "block-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 10
+                }
+               },
+               "inline-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "block-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 5
+                }
+               },
+               "inline-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               }
+              }
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Content"
+        },
+        "version": "0.0"
+       }
+      ],
+      "styles": {
+       "e-4c3de5bc-item": {
+        "id": "e-4c3de5bc-item",
+        "label": "local",
+        "type": "class",
+        "variants": [
+         {
+          "meta": {
+           "breakpoint": "desktop",
+           "state": null
+          },
+          "props": {
+           "padding": {
+            "$$type": "dimensions",
+            "value": {
+             "block-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 20
+              }
+             },
+             "inline-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "block-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 20
+              }
+             },
+             "inline-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             }
+            }
+           },
+           "border-radius": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 0
+            }
+           },
+           "border-width": {
+            "$$type": "border-width-v2",
+            "value": {
+             "block-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 1
+              }
+             },
+             "block-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "inline-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "inline-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             }
+            }
+           },
+           "border-color": {
+            "$$type": "color",
+            "value": "#E2E2E2"
+           },
+           "border-style": {
+            "$$type": "string",
+            "value": "solid"
+           },
+           "box-shadow": {
+            "$$type": "box-shadow",
+            "value": [
+             {
+              "$$type": "shadow",
+              "value": {
+               "hOffset": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "vOffset": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "blur": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 10
+                }
+               },
+               "spread": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "color": {
+                "$$type": "color",
+                "value": "rgba(0, 0, 0, 0)"
+               }
+              }
+             }
+            ]
+           },
+           "display": {
+            "$$type": "string",
+            "value": "flex"
+           },
+           "flex-direction": {
+            "$$type": "string",
+            "value": "column"
+           },
+           "justify-content": {
+            "$$type": "string",
+            "value": "flex-start"
+           }
+          },
+          "custom_css": null
+         }
+        ]
+       }
+      },
+      "interactions": [],
+      "editor_settings": {
+       "title": "Who will I be working with?"
+      },
+      "version": "0.0"
+     },
+     {
+      "id": "6988912b",
+      "settings": {
+       "is_active": {
+        "$$type": "boolean",
+        "value": false
+       },
+       "item_title": {
+        "$$type": "string",
+        "value": "How and when do I pay?"
+       },
+       "classes": {
+        "$$type": "classes",
+        "value": [
+         "e-6988912b-item"
+        ]
+       }
+      },
+      "isInner": false,
+      "elType": "e-aae-a-accordion-item",
+      "elements": [
+       {
+        "id": "7bbe6a92",
+        "settings": {
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-7bbe6a92-header"
+          ]
+         }
+        },
+        "isInner": false,
+        "elType": "e-div-block",
+        "elements": [
+         {
+          "id": "31d509a6",
+          "settings": {
+           "paragraph": {
+            "$$type": "html-v3",
+            "value": {
+             "content": {
+              "$$type": "string",
+              "value": "How and when do I pay?"
+             },
+             "children": []
+            }
+           },
+           "tag": {
+            "$$type": "string",
+            "value": "span"
+           },
+           "link": {
+            "$$type": "link",
+            "value": []
+           },
+           "classes": {
+            "$$type": "classes",
+            "value": [
+             "e-31d509a6-title"
+            ]
+           }
+          },
+          "elements": [],
+          "isInner": false,
+          "widgetType": "e-paragraph",
+          "elType": "widget",
+          "styles": {
+           "e-31d509a6-title": {
+            "id": "e-31d509a6-title",
+            "label": "local",
+            "type": "class",
+            "variants": [
+             {
+              "meta": {
+               "breakpoint": "desktop",
+               "state": null
+              },
+              "props": {
+               "font-weight": {
+                "$$type": "string",
+                "value": "400"
+               },
+               "font-size": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 22
+                }
+               },
+               "color": {
+                "$$type": "color",
+                "value": "#121212"
+               },
+               "line-height": {
+                "$$type": "size",
+                "value": {
+                 "unit": "em",
+                 "size": 1.18
+                }
+               }
+              },
+              "custom_css": null
+             }
+            ]
+           }
+          },
+          "interactions": [],
+          "editor_settings": {
+           "title": "Header Title"
+          },
+          "version": "0.0"
+         },
+         {
+          "id": "4c0006fc",
+          "settings": {
+           "svg": {
+            "$$type": "svg-src",
+            "value": {
+             "id": {
+              "$$type": "image-attachment-id",
+              "value": 8330
+             },
+             "url": {
+              "$$type": "url",
+              "value": "http://elementor-v4-animation-addons.test/wp-content/uploads/2026/09/read-icon-4.svg"
+             }
+            }
+           },
+           "link": {
+            "$$type": "link",
+            "value": []
+           },
+           "classes": {
+            "$$type": "classes",
+            "value": [
+             "e-4c0006fc-iconopen"
+            ]
+           }
+          },
+          "elements": [],
+          "isInner": false,
+          "widgetType": "e-svg",
+          "elType": "widget",
+          "styles": {
+           "e-4c0006fc-iconopen": {
+            "id": "e-4c0006fc-iconopen",
+            "label": "local",
+            "type": "class",
+            "variants": [
+             {
+              "meta": {
+               "breakpoint": "desktop",
+               "state": null
+              },
+              "props": {
+               "width": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               },
+               "height": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               },
+               "min-width": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               },
+               "min-height": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               },
+               "color": {
+                "$$type": "color",
+                "value": "#6b728000"
+               }
+              },
+              "custom_css": null
+             }
+            ]
+           }
+          },
+          "interactions": [],
+          "editor_settings": {
+           "title": "Open Icon"
+          },
+          "version": "0.0"
+         },
+         {
+          "id": "3fbaa350",
+          "settings": {
+           "svg": {
+            "$$type": "svg-src",
+            "value": {
+             "id": {
+              "$$type": "image-attachment-id",
+              "value": 8331
+             },
+             "url": {
+              "$$type": "url",
+              "value": "http://elementor-v4-animation-addons.test/wp-content/uploads/2026/09/up-4.svg"
+             }
+            }
+           },
+           "link": {
+            "$$type": "link",
+            "value": []
+           },
+           "classes": {
+            "$$type": "classes",
+            "value": [
+             "e-3fbaa350-iconclose"
+            ]
+           }
+          },
+          "elements": [],
+          "isInner": false,
+          "widgetType": "e-svg",
+          "elType": "widget",
+          "styles": {
+           "e-3fbaa350-iconclose": {
+            "id": "e-3fbaa350-iconclose",
+            "label": "local",
+            "type": "class",
+            "variants": [
+             {
+              "meta": {
+               "breakpoint": "desktop",
+               "state": null
+              },
+              "props": {
+               "width": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               },
+               "height": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               },
+               "min-width": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               },
+               "min-height": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               }
+              },
+              "custom_css": null
+             }
+            ]
+           }
+          },
+          "interactions": [],
+          "editor_settings": {
+           "title": "Close Icon"
+          },
+          "version": "0.0"
+         }
+        ],
+        "styles": {
+         "e-7bbe6a92-header": {
+          "id": "e-7bbe6a92-header",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "padding": {
+              "$$type": "dimensions",
+              "value": {
+               "inline-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               }
+              }
+             },
+             "margin": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "display": {
+              "$$type": "string",
+              "value": "flex"
+             },
+             "justify-content": {
+              "$$type": "string",
+              "value": "space-between"
+             },
+             "align-items": {
+              "$$type": "string",
+              "value": "start"
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Header"
+        },
+        "version": "0.0"
+       },
+       {
+        "id": "2ccadb53",
+        "settings": {
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-2ccadb53-content"
+          ]
+         }
+        },
+        "isInner": false,
+        "elType": "e-div-block",
+        "elements": [
+         {
+          "id": "1e634984",
+          "settings": {
+           "paragraph": {
+            "$$type": "html-v3",
+            "value": {
+             "content": {
+              "$$type": "string",
+              "value": "Half on kickoff and half on delivery for most projects; longer engagements are billed monthly instead. Invoices are due within 14 days and every one is itemised against the agreed scope."
+             },
+             "children": []
+            }
+           },
+           "link": {
+            "$$type": "link",
+            "value": []
+           },
+           "classes": {
+            "$$type": "classes",
+            "value": [
+             "e-1e634984-text"
+            ]
+           }
+          },
+          "elements": [],
+          "isInner": false,
+          "widgetType": "e-paragraph",
+          "elType": "widget",
+          "styles": {
+           "e-1e634984-text": {
+            "id": "e-1e634984-text",
+            "label": "local",
+            "type": "class",
+            "variants": [
+             {
+              "meta": {
+               "breakpoint": "desktop",
+               "state": null
+              },
+              "props": {
+               "font-weight": {
+                "$$type": "string",
+                "value": "400"
+               },
+               "font-size": {
+                "$$type": "size",
+                "value": {
+                 "size": 18,
+                 "unit": "px"
+                }
+               },
+               "color": {
+                "$$type": "color",
+                "value": "#555555"
+               },
+               "line-height": {
+                "$$type": "size",
+                "value": {
+                 "size": 1.44,
+                 "unit": "em"
+                }
+               },
+               "max-width": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 546
+                }
+               }
+              },
+              "custom_css": null
+             }
+            ]
+           }
+          },
+          "interactions": [],
+          "editor_settings": {
+           "title": "Content Text"
+          },
+          "version": "0.0"
+         }
+        ],
+        "styles": {
+         "e-2ccadb53-content": {
+          "id": "e-2ccadb53-content",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "padding": {
+              "$$type": "dimensions",
+              "value": {
+               "block-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 10
+                }
+               },
+               "inline-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "block-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 5
+                }
+               },
+               "inline-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               }
+              }
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Content"
+        },
+        "version": "0.0"
+       }
+      ],
+      "styles": {
+       "e-6988912b-item": {
+        "id": "e-6988912b-item",
+        "label": "local",
+        "type": "class",
+        "variants": [
+         {
+          "meta": {
+           "breakpoint": "desktop",
+           "state": null
+          },
+          "props": {
+           "padding": {
+            "$$type": "dimensions",
+            "value": {
+             "block-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 20
+              }
+             },
+             "inline-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "block-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 20
+              }
+             },
+             "inline-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             }
+            }
+           },
+           "border-radius": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 0
+            }
+           },
+           "border-width": {
+            "$$type": "border-width-v2",
+            "value": {
+             "block-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 1
+              }
+             },
+             "block-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "inline-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "inline-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             }
+            }
+           },
+           "border-color": {
+            "$$type": "color",
+            "value": "#E2E2E2"
+           },
+           "border-style": {
+            "$$type": "string",
+            "value": "solid"
+           },
+           "box-shadow": {
+            "$$type": "box-shadow",
+            "value": [
+             {
+              "$$type": "shadow",
+              "value": {
+               "hOffset": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "vOffset": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "blur": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 10
+                }
+               },
+               "spread": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "color": {
+                "$$type": "color",
+                "value": "rgba(0, 0, 0, 0)"
+               }
+              }
+             }
+            ]
+           },
+           "display": {
+            "$$type": "string",
+            "value": "flex"
+           },
+           "flex-direction": {
+            "$$type": "string",
+            "value": "column"
+           },
+           "justify-content": {
+            "$$type": "string",
+            "value": "flex-start"
+           }
+          },
+          "custom_css": null
+         }
+        ]
+       }
+      },
+      "interactions": [],
+      "editor_settings": {
+       "title": "How and when do I pay?"
+      },
+      "version": "0.0"
+     },
+     {
+      "id": "10adc9bb",
+      "settings": {
+       "is_active": {
+        "$$type": "boolean",
+        "value": false
+       },
+       "item_title": {
+        "$$type": "string",
+        "value": "What happens after launch?"
+       },
+       "classes": {
+        "$$type": "classes",
+        "value": [
+         "e-10adc9bb-item"
+        ]
+       }
+      },
+      "isInner": false,
+      "elType": "e-aae-a-accordion-item",
+      "elements": [
+       {
+        "id": "3f86b33c",
+        "settings": {
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-3f86b33c-header"
+          ]
+         }
+        },
+        "isInner": false,
+        "elType": "e-div-block",
+        "elements": [
+         {
+          "id": "1742f639",
+          "settings": {
+           "paragraph": {
+            "$$type": "html-v3",
+            "value": {
+             "content": {
+              "$$type": "string",
+              "value": "What happens after launch?"
+             },
+             "children": []
+            }
+           },
+           "tag": {
+            "$$type": "string",
+            "value": "span"
+           },
+           "link": {
+            "$$type": "link",
+            "value": []
+           },
+           "classes": {
+            "$$type": "classes",
+            "value": [
+             "e-1742f639-title"
+            ]
+           }
+          },
+          "elements": [],
+          "isInner": false,
+          "widgetType": "e-paragraph",
+          "elType": "widget",
+          "styles": {
+           "e-1742f639-title": {
+            "id": "e-1742f639-title",
+            "label": "local",
+            "type": "class",
+            "variants": [
+             {
+              "meta": {
+               "breakpoint": "desktop",
+               "state": null
+              },
+              "props": {
+               "font-weight": {
+                "$$type": "string",
+                "value": "400"
+               },
+               "font-size": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 22
+                }
+               },
+               "color": {
+                "$$type": "color",
+                "value": "#121212"
+               },
+               "line-height": {
+                "$$type": "size",
+                "value": {
+                 "unit": "em",
+                 "size": 1.18
+                }
+               }
+              },
+              "custom_css": null
+             }
+            ]
+           }
+          },
+          "interactions": [],
+          "editor_settings": {
+           "title": "Header Title"
+          },
+          "version": "0.0"
+         },
+         {
+          "id": "4703bcb8",
+          "settings": {
+           "svg": {
+            "$$type": "svg-src",
+            "value": {
+             "id": {
+              "$$type": "image-attachment-id",
+              "value": 8332
+             },
+             "url": {
+              "$$type": "url",
+              "value": "http://elementor-v4-animation-addons.test/wp-content/uploads/2026/09/read-icon-5.svg"
+             }
+            }
+           },
+           "link": {
+            "$$type": "link",
+            "value": []
+           },
+           "classes": {
+            "$$type": "classes",
+            "value": [
+             "e-4703bcb8-iconopen"
+            ]
+           }
+          },
+          "elements": [],
+          "isInner": false,
+          "widgetType": "e-svg",
+          "elType": "widget",
+          "styles": {
+           "e-4703bcb8-iconopen": {
+            "id": "e-4703bcb8-iconopen",
+            "label": "local",
+            "type": "class",
+            "variants": [
+             {
+              "meta": {
+               "breakpoint": "desktop",
+               "state": null
+              },
+              "props": {
+               "width": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               },
+               "height": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               },
+               "min-width": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               },
+               "min-height": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               },
+               "color": {
+                "$$type": "color",
+                "value": "#6b728000"
+               }
+              },
+              "custom_css": null
+             }
+            ]
+           }
+          },
+          "interactions": [],
+          "editor_settings": {
+           "title": "Open Icon"
+          },
+          "version": "0.0"
+         },
+         {
+          "id": "58fa4c1c",
+          "settings": {
+           "svg": {
+            "$$type": "svg-src",
+            "value": {
+             "id": {
+              "$$type": "image-attachment-id",
+              "value": 8333
+             },
+             "url": {
+              "$$type": "url",
+              "value": "http://elementor-v4-animation-addons.test/wp-content/uploads/2026/09/up-5.svg"
+             }
+            }
+           },
+           "link": {
+            "$$type": "link",
+            "value": []
+           },
+           "classes": {
+            "$$type": "classes",
+            "value": [
+             "e-58fa4c1c-iconclose"
+            ]
+           }
+          },
+          "elements": [],
+          "isInner": false,
+          "widgetType": "e-svg",
+          "elType": "widget",
+          "styles": {
+           "e-58fa4c1c-iconclose": {
+            "id": "e-58fa4c1c-iconclose",
+            "label": "local",
+            "type": "class",
+            "variants": [
+             {
+              "meta": {
+               "breakpoint": "desktop",
+               "state": null
+              },
+              "props": {
+               "width": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               },
+               "height": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               },
+               "min-width": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               },
+               "min-height": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 42
+                }
+               }
+              },
+              "custom_css": null
+             }
+            ]
+           }
+          },
+          "interactions": [],
+          "editor_settings": {
+           "title": "Close Icon"
+          },
+          "version": "0.0"
+         }
+        ],
+        "styles": {
+         "e-3f86b33c-header": {
+          "id": "e-3f86b33c-header",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "padding": {
+              "$$type": "dimensions",
+              "value": {
+               "inline-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               }
+              }
+             },
+             "margin": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "display": {
+              "$$type": "string",
+              "value": "flex"
+             },
+             "justify-content": {
+              "$$type": "string",
+              "value": "space-between"
+             },
+             "align-items": {
+              "$$type": "string",
+              "value": "start"
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Header"
+        },
+        "version": "0.0"
+       },
+       {
+        "id": "1d515342",
+        "settings": {
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-1d515342-content"
+          ]
+         }
+        },
+        "isInner": false,
+        "elType": "e-div-block",
+        "elements": [
+         {
+          "id": "334cb1ca",
+          "settings": {
+           "paragraph": {
+            "$$type": "html-v3",
+            "value": {
+             "content": {
+              "$$type": "string",
+              "value": "Thirty days of post-launch support for anything behaving differently than agreed, plus a handover covering the code, the hosting and the decisions behind both. Ongoing maintenance is available, but nothing is built so that you need it."
+             },
+             "children": []
+            }
+           },
+           "link": {
+            "$$type": "link",
+            "value": []
+           },
+           "classes": {
+            "$$type": "classes",
+            "value": [
+             "e-334cb1ca-text"
+            ]
+           }
+          },
+          "elements": [],
+          "isInner": false,
+          "widgetType": "e-paragraph",
+          "elType": "widget",
+          "styles": {
+           "e-334cb1ca-text": {
+            "id": "e-334cb1ca-text",
+            "label": "local",
+            "type": "class",
+            "variants": [
+             {
+              "meta": {
+               "breakpoint": "desktop",
+               "state": null
+              },
+              "props": {
+               "font-weight": {
+                "$$type": "string",
+                "value": "400"
+               },
+               "font-size": {
+                "$$type": "size",
+                "value": {
+                 "size": 18,
+                 "unit": "px"
+                }
+               },
+               "color": {
+                "$$type": "color",
+                "value": "#555555"
+               },
+               "line-height": {
+                "$$type": "size",
+                "value": {
+                 "size": 1.44,
+                 "unit": "em"
+                }
+               },
+               "max-width": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 546
+                }
+               }
+              },
+              "custom_css": null
+             }
+            ]
+           }
+          },
+          "interactions": [],
+          "editor_settings": {
+           "title": "Content Text"
+          },
+          "version": "0.0"
+         }
+        ],
+        "styles": {
+         "e-1d515342-content": {
+          "id": "e-1d515342-content",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "padding": {
+              "$$type": "dimensions",
+              "value": {
+               "block-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 10
+                }
+               },
+               "inline-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "block-end": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 5
+                }
+               },
+               "inline-start": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               }
+              }
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Content"
+        },
+        "version": "0.0"
+       }
+      ],
+      "styles": {
+       "e-10adc9bb-item": {
+        "id": "e-10adc9bb-item",
+        "label": "local",
+        "type": "class",
+        "variants": [
+         {
+          "meta": {
+           "breakpoint": "desktop",
+           "state": null
+          },
+          "props": {
+           "padding": {
+            "$$type": "dimensions",
+            "value": {
+             "block-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 20
+              }
+             },
+             "inline-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "block-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 20
+              }
+             },
+             "inline-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             }
+            }
+           },
+           "border-radius": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 0
+            }
+           },
+           "border-width": {
+            "$$type": "border-width-v2",
+            "value": {
+             "block-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 1
+              }
+             },
+             "block-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 1
+              }
+             },
+             "inline-start": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             },
+             "inline-end": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 0
+              }
+             }
+            }
+           },
+           "border-color": {
+            "$$type": "color",
+            "value": "#E2E2E2"
+           },
+           "border-style": {
+            "$$type": "string",
+            "value": "solid"
+           },
+           "box-shadow": {
+            "$$type": "box-shadow",
+            "value": [
+             {
+              "$$type": "shadow",
+              "value": {
+               "hOffset": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "vOffset": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "blur": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 10
+                }
+               },
+               "spread": {
+                "$$type": "size",
+                "value": {
+                 "unit": "px",
+                 "size": 0
+                }
+               },
+               "color": {
+                "$$type": "color",
+                "value": "rgba(0, 0, 0, 0)"
+               }
+              }
+             }
+            ]
+           },
+           "display": {
+            "$$type": "string",
+            "value": "flex"
+           },
+           "flex-direction": {
+            "$$type": "string",
+            "value": "column"
+           },
+           "justify-content": {
+            "$$type": "string",
+            "value": "flex-start"
+           }
+          },
+          "custom_css": null
+         }
+        ]
+       }
+      },
+      "interactions": [],
+      "editor_settings": {
+       "title": "What happens after launch?"
+      },
+      "version": "0.0"
+     }
+    ],
+    "styles": {
+     "e-58efe4da-accordion": {
+      "id": "e-58efe4da-accordion",
+      "label": "local",
+      "type": "class",
+      "variants": [
+       {
+        "meta": {
+         "breakpoint": "desktop",
+         "state": null
+        },
+        "props": {
+         "font-weight": {
+          "$$type": "string",
+          "value": "400"
+         },
+         "font-size": {
+          "$$type": "size",
+          "value": {
+           "unit": "px",
+           "size": 22
+          }
+         },
+         "color": {
+          "$$type": "color",
+          "value": "#121212"
+         },
+         "line-height": {
+          "$$type": "size",
+          "value": {
+           "unit": "em",
+           "size": 1.18
+          }
+         },
+         "padding": {
+          "$$type": "size",
+          "value": {
+           "unit": "px",
+           "size": 0
+          }
+         },
+         "gap": {
+          "$$type": "size",
+          "value": {
+           "unit": "px",
+           "size": 0
+          }
+         }
+        },
+        "custom_css": null
+       }
+      ]
+     }
+    },
+    "interactions": [],
+    "editor_settings": [],
+    "version": "0.0"
+   }
+  ],
+  "styles": {
+   "e-a6e6242-wrap": {
+    "id": "e-a6e6242-wrap",
+    "label": "local",
+    "type": "class",
+    "variants": [
+     {
+      "meta": {
+       "breakpoint": "desktop",
+       "state": null
+      },
+      "props": {
+       "flex-direction": {
+        "$$type": "string",
+        "value": "column"
+       }
+      },
+      "custom_css": null
+     }
+    ]
+   }
+  },
+  "interactions": [],
+  "editor_settings": {
+   "title": "Minimal Divider – Arrow"
+  },
+  "version": "0.0"
+ }
+}
