@@ -36,6 +36,9 @@ const DemoImporting = () => {
     url.searchParams.set("attachment", meta.attachment);
     if (v4mode) url.searchParams.set("v4mode", v4mode);
     if (v4images) url.searchParams.set("v4images", v4images);
+    // The fail screen reads this back out of the URL; without it every
+    // failure reads as a bare "An issue occurred while importing".
+    if (meta.msg) url.searchParams.set("msg", meta.msg);
     window.history.replaceState({}, "", url);
     setTabKey(value);
   };
@@ -219,7 +222,10 @@ const DemoImporting = () => {
             if (completed === true) {
               changeCompleteRoute("complete-import");
             } else if (data.template.next_step === "fail") {
-              changeRoute("fail-import", { plugins, theme, attachment });
+              // No `theme` here: the import neither installs nor switches one,
+              // and referencing it threw a ReferenceError that replaced the
+              // server's own reason and left this screen stuck mid-progress.
+              changeRoute("fail-import", { plugins, attachment, msg: data.msg });
             } else {
               runImport(data.template);
 
@@ -244,7 +250,6 @@ const DemoImporting = () => {
         } else {
           changeRoute("fail-import", {
             plugins,
-            theme,
             attachment,
             msg: error.message,
           });

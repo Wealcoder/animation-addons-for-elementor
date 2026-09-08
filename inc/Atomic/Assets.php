@@ -369,8 +369,9 @@ final class Assets
 
 		$missing_core = array_diff(self::EDITOR_BRIDGE_CORE_DEPS, $core);
 
-		if ($missing_core && defined('WP_DEBUG') && WP_DEBUG) {
-			error_log(sprintf(
+		if ($missing_core) {
+			// wp_trigger_error() is a no-op unless WP_DEBUG is on.
+			wp_trigger_error(__METHOD__, sprintf(
 				'AAE: editor-bridge enqueued without %d unregistered Elementor package(s): %s',
 				count($missing_core),
 				implode(', ', $missing_core)

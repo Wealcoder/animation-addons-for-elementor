@@ -15,7 +15,7 @@
 	<exclude-pattern>*/vendor/*</exclude-pattern>
 	<exclude-pattern>*/assets/*</exclude-pattern>
 
-	<config name="minimum_wp_version" value="6.0"/>
+	<config name="minimum_wp_version" value="6.6"/>
 	<config name="testVersion" value="7.4-"/>
 
 	<rule ref="WordPress">

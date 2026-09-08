@@ -186,7 +186,15 @@ class AAEAddon_Importer {
 					$template_data['file']      = json_decode($tpl);
 					
 				}else{
-					update_option('aaeaddon_template_import_state', esc_html__( 'Invalid file', 'animation-addons-for-elementor'));
+					// validate_download_file() has already recorded WHY it refused the
+					// file. Overwriting that with a bare 'Invalid file' threw away the
+					// one thing the failure screen could have shown.
+					$reason = get_option( 'aaeaddon_template_import_state' );
+					if ( ! is_string( $reason ) || '' === $reason ) {
+						$reason = esc_html__( 'Invalid file', 'animation-addons-for-elementor' );
+						update_option( 'aaeaddon_template_import_state', $reason );
+					}
+					$msg                        = $reason;
 					$template_data['next_step'] = 'fail';
 				}
 				$progress                    = '37';

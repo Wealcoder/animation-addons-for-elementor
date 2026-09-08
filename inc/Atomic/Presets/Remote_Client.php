@@ -14,9 +14,10 @@ if ( ! defined( 'ABSPATH' ) ) {
  * route (see Rest.php) for the editor's JS to call.
  *
  * Never throws. Any failure (network error, non-200, malformed JSON) is
- * logged (gated by WP_DEBUG — this codebase has no centralized logger) and
- * resolved to null/[] so callers can always fall through to the next tier
- * of the fallback/merge chain without special-casing exceptions.
+ * reported through wp_trigger_error() (a no-op unless WP_DEBUG is on — this
+ * codebase has no centralized logger) and resolved to null/[] so callers can
+ * always fall through to the next tier of the fallback/merge chain without
+ * special-casing exceptions.
  */
 final class Remote_Client {
 
@@ -128,8 +129,9 @@ final class Remote_Client {
 	}
 
 	private function log( string $message ): void {
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			error_log( '[AAE Preset Remote_Client] ' . $message ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-		}
+		// Developer-facing only: wp_trigger_error() is a no-op unless WP_DEBUG is
+		// on, and core keeps display_errors off for REST/AJAX/JSON requests, so
+		// the editor's preset fetch never sees it in the response body.
+		wp_trigger_error( '', '[AAE Preset Remote_Client] ' . $message );
 	}
 }

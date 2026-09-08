@@ -1,4 +1,12 @@
 <?php
+namespace WCF_ADDONS\Admin\Base;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+use WCF_ADDONS\AnimationSettings\Animation_Settings;
+
 /**
  * After a V4 (atomic) starter TEMPLATE import, switch the V3 era off.
  *
@@ -46,14 +54,6 @@
  * option values, the Kit keys as they were, the popup ids that were drafted —
  * so what happened is inspectable and restore() can put it back.
  */
-
-namespace WCF_ADDONS\Admin\Base;
-
-use WCF_ADDONS\AnimationSettings\Animation_Settings;
-
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
 
 class Atomic_V3_Switch_Off {
 

@@ -1,4 +1,13 @@
 <?php
+namespace WCF_ADDONS\AtomicWidgets\Widgets\Nav;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+use WCF_ADDONS\Atomic\PropTypes\Section_Anchor_Prop_Type as Base_Section_Anchor;
+use WCF_ADDONS\Atomic\PropTypes\Responsive_Json_Prop_Type;
+
 /**
  * Nav — responsive style controls for the DESKTOP DROPDOWN INDICATOR.
  *
@@ -52,15 +61,6 @@
  *
  * @package animation-addons-for-elementor
  */
-
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Nav;
-
-use WCF_ADDONS\Atomic\PropTypes\Section_Anchor_Prop_Type as Base_Section_Anchor;
-use WCF_ADDONS\Atomic\PropTypes\Responsive_Json_Prop_Type;
-
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
 
 /**
  * Sentinel props the panel binds placeholder Text_Controls to. The editor's

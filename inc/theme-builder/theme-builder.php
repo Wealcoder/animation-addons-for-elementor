@@ -259,15 +259,10 @@ class WCF_Theme_Builder
 					continue;
 				}
 
-				$src = $style->src;
-
-				if (! empty($style->ver)) {
-					$src = add_query_arg('ver', $style->ver, $src);
-				}
-
 				$this->deferred_template_styles[] = array(
 					'handle' => $handle,
-					'src'    => $src,
+					'src'    => $style->src,
+					'ver'    => ! empty($style->ver) ? $style->ver : null,
 					'media'  => is_string($style->args) && '' !== $style->args ? $style->args : 'all',
 				);
 
@@ -288,12 +283,16 @@ class WCF_Theme_Builder
 	public function print_builder_template_styles()
 	{
 		foreach ($this->deferred_template_styles as $style) {
-			printf(
-				"<link rel='stylesheet' id='aae-tb-%s-css' href='%s' media='%s' />\n",
-				esc_attr($style['handle']),
-				esc_url($style['src']),
-				esc_attr($style['media'])
+			$handle = 'aae-tb-' . $style['handle'];
+
+			wp_enqueue_style(
+				$handle,
+				$style['src'],
+				array(),
+				$style['ver'],
+				$style['media']
 			);
+			wp_print_styles($handle);
 		}
 
 		$this->deferred_template_styles = array();

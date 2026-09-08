@@ -4270,28 +4270,32 @@ final class Atomic
 		);
 
 		if ($missing_metadata) {
-			error_log(
+			wp_trigger_error(
+				__METHOD__,
 				'AAE atomic registry: registered widget(s) with no dashboard metadata — unreachable: '
 				. implode(', ', $missing_metadata)
 			);
 		}
 
 		if ($orphan_children) {
-			error_log(
+			wp_trigger_error(
+				__METHOD__,
 				'AAE atomic registry: internal widget(s) with no WIDGET_PARENT_MAP parent — cannot inherit: '
 				. implode(', ', $orphan_children)
 			);
 		}
 
 		if ($dangling_parents) {
-			error_log(
+			wp_trigger_error(
+				__METHOD__,
 				'AAE atomic registry: WIDGET_PARENT_MAP points at unknown parent(s): '
 				. implode(', ', $dangling_parents)
 			);
 		}
 
 		if ($missing_class) {
-			error_log(
+			wp_trigger_error(
+				__METHOD__,
 				'AAE atomic registry: dashboard metadata with no class/file — toggle does nothing: '
 				. implode(', ', $missing_class)
 			);
@@ -7697,23 +7701,26 @@ JS;
 	{
 		global $wpdb;
 
-		$where = '';
+		// Two families, two markers: our elements carry `e-aae-a-`, our
+		// extension props carry `aae_` — an extension can sit on a core
+		// e-heading with no AAE element anywhere on the page.
+		$sql  = "SELECT meta_value FROM {$wpdb->postmeta} WHERE meta_key = '_elementor_data' AND ( meta_value LIKE %s OR meta_value LIKE %s )";
+		$args = [
+			'%' . $wpdb->esc_like( '"e-aae-a-' ) . '%',
+			'%' . $wpdb->esc_like( '"aae_' ) . '%',
+		];
+
 		if ( null !== $post_ids ) {
 			$post_ids = array_values( array_filter( array_map( 'intval', $post_ids ) ) );
 			if ( empty( $post_ids ) ) {
 				return [ 'widgets' => [], 'extensions' => [] ];
 			}
-			$where = ' AND post_id IN (' . implode( ',', $post_ids ) . ')';
+			// One %d per id; the ids themselves travel as prepare() arguments.
+			$sql .= ' AND post_id IN (' . implode( ',', array_fill( 0, count( $post_ids ), '%d' ) ) . ')';
+			$args = array_merge( $args, $post_ids );
 		}
 
-		// Two families, two markers: our elements carry `e-aae-a-`, our
-		// extension props carry `aae_` — an extension can sit on a core
-		// e-heading with no AAE element anywhere on the page.
-		$rows = $wpdb->get_col(
-			"SELECT meta_value FROM {$wpdb->postmeta}
-			  WHERE meta_key = '_elementor_data'
-			    AND ( meta_value LIKE '%\"e-aae-a-%' OR meta_value LIKE '%\"aae_%' )" . $where // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $where is built from intval()ed ids only.
-		);
+		$rows = $wpdb->get_col( $wpdb->prepare( $sql, $args ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $sql is the literal above plus a generated run of %d; every value is in $args.
 
 		if ( empty( $rows ) ) {
 			return [ 'widgets' => [], 'extensions' => [] ];

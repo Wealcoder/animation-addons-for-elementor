@@ -117,7 +117,7 @@ class Atomic_Kit_Import {
 		$code = is_wp_error( $response ) ? 0 : (int) wp_remote_retrieve_response_code( $response );
 
 		if ( is_wp_error( $response ) || 200 !== $code || ! is_file( $zip ) || 0 === filesize( $zip ) ) {
-			@unlink( $zip ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- temp file, best effort.
+			wp_delete_file( $zip );
 
 			return is_wp_error( $response )
 				? $response
@@ -126,7 +126,7 @@ class Atomic_Kit_Import {
 
 		$result = self::import_from_file( $zip, $site_has_atomic, $post_ids );
 
-		@unlink( $zip ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- temp file, best effort.
+		wp_delete_file( $zip );
 
 		return $result;
 	}
@@ -553,19 +553,21 @@ class Atomic_Kit_Import {
 	}
 
 	private static function remove_dir( string $dir ): void {
-		if ( ! is_dir( $dir ) ) {
+		global $wp_filesystem;
+
+		if ( ! $wp_filesystem ) {
+			if ( ! function_exists( 'WP_Filesystem' ) ) {
+				require_once ABSPATH . 'wp-admin/includes/file.php';
+			}
+			WP_Filesystem();
+		}
+
+		// extract() initialised this same filesystem before unzip_file(); if
+		// that failed nothing was extracted, so there is nothing to remove.
+		if ( ! $wp_filesystem || ! $wp_filesystem->is_dir( $dir ) ) {
 			return;
 		}
 
-		$items = new \RecursiveIteratorIterator(
-			new \RecursiveDirectoryIterator( $dir, \FilesystemIterator::SKIP_DOTS ),
-			\RecursiveIteratorIterator::CHILD_FIRST
-		);
-
-		foreach ( $items as $item ) {
-			$item->isDir() ? rmdir( $item->getPathname() ) : unlink( $item->getPathname() );
-		}
-
-		rmdir( $dir );
+		$wp_filesystem->rmdir( $dir, true );
 	}
 }

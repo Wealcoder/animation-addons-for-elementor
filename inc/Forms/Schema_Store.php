@@ -17,8 +17,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- queries interpolate only the internal aae_forms/aae_form_schemas table names; every value goes through $wpdb->prepare().
-
 final class Schema_Store {
 
 	/** Is this key owned by a different post/element? (Identity collision oracle.) */
@@ -28,7 +26,8 @@ final class Schema_Store {
 
 		$row = $wpdb->get_row(
 			$wpdb->prepare(
-				"SELECT post_id, element_id FROM {$table} WHERE form_key = %s LIMIT 1",
+				'SELECT post_id, element_id FROM %i WHERE form_key = %s LIMIT 1',
+				$table,
 				$key
 			)
 		);
@@ -48,7 +47,8 @@ final class Schema_Store {
 
 		$id = $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT id FROM {$table} WHERE form_key = %s LIMIT 1",
+				'SELECT id FROM %i WHERE form_key = %s LIMIT 1',
+				$table,
 				$form_key
 			)
 		);
@@ -99,7 +99,8 @@ final class Schema_Store {
 
 		$latest = $wpdb->get_row(
 			$wpdb->prepare(
-				"SELECT version, schema_hash FROM {$table} WHERE form_id = %d ORDER BY version DESC LIMIT 1",
+				'SELECT version, schema_hash FROM %i WHERE form_id = %d ORDER BY version DESC LIMIT 1',
+				$table,
 				$form_id
 			)
 		);
@@ -147,10 +148,12 @@ final class Schema_Store {
 
 		$row = $wpdb->get_row(
 			$wpdb->prepare(
-				"SELECT f.id AS form_id, s.version, s.schema_json FROM {$schemas} s
-			 INNER JOIN {$forms} f ON f.id = s.form_id
+				'SELECT f.id AS form_id, s.version, s.schema_json FROM %i s
+			 INNER JOIN %i f ON f.id = s.form_id
 			 WHERE f.form_key = %s AND s.active = 1
-			 ORDER BY s.version DESC LIMIT 1",
+			 ORDER BY s.version DESC LIMIT 1',
+				$schemas,
+				$forms,
 				$form_key
 			)
 		);
