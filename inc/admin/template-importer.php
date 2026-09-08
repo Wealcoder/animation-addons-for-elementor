@@ -249,11 +249,14 @@ class AAEAddon_Importer {
 					}
 				}
 				if ( isset( $template_data['elementor_settings']['content_url'] ) && 'json' === $kit_type ) {
-					$response = wp_remote_get( $template_data['elementor_settings']['content_url']);
-					if ( is_array( $response ) && ! is_wp_error( $response ) ) {
-						$json_data = wp_remote_retrieve_body( $response );
-						$msg = $this->installElementorKit($json_data);
-						update_option('aaeaddon_template_import_state', $msg);
+					$content_url = esc_url_raw( $template_data['elementor_settings']['content_url'] );
+					if ( wp_http_validate_url( $content_url ) ) {
+						$response = wp_safe_remote_get( $content_url, [ 'timeout' => 60 ] );
+						if ( is_array( $response ) && ! is_wp_error( $response ) ) {
+							$json_data = wp_remote_retrieve_body( $response );
+							$msg = $this->installElementorKit($json_data);
+							update_option('aaeaddon_template_import_state', $msg);
+						}
 					}
 				}
 				if ( isset( $template_data['elementor_settings']['content_url'] ) && 'kit-zip' === $kit_type ) {
@@ -432,7 +435,14 @@ class AAEAddon_Importer {
 		delete_option('aae_cpts_032153');
 		delete_option('aae_taxs_933153');
 		foreach ( $settings as $item ) {
-			$response = wp_remote_get( $item['xml_file'] );
+			if ( empty( $item['xml_file'] ) ) {
+				continue;
+			}
+			$xml_file_url = esc_url_raw( $item['xml_file'] );
+			if ( ! wp_http_validate_url( $xml_file_url ) ) {
+				continue;
+			}
+			$response = wp_safe_remote_get( $xml_file_url, [ 'timeout' => 60 ] );
 	
 			if ( is_array( $response ) && ! is_wp_error( $response ) ) {
 				$xml_data = wp_remote_retrieve_body( $response );
@@ -497,20 +507,22 @@ class AAEAddon_Importer {
 		
 	    $remote_url = WCF_TEMPLATE_STARTER_BASE_URL . 'wp-json/starter-templates/download';	
 		
-		if(isset($template['base_path']) && $template['base_path'] !=''){
-			$remote_url = $template['base_path'] . 'wp-json/starter-templates/download';
+		if ( isset( $template['base_path'] ) && '' !== $template['base_path'] ) {
+			$base_path = esc_url_raw( $template['base_path'] );
+			if ( wp_http_validate_url( $base_path ) ) {
+				$remote_url = trailingslashit( $base_path ) . 'wp-json/starter-templates/download';
+			}
 		}
 
 		$args = [
-			'timeout'   => 90,
-			'body' => [
-				'template' => $template
+			'timeout' => 90,
+			'body'    => [
+				'template' => $template,
 			],
-			'sslverify' => false // Disable SSL verification
 		];	
 	    
-		// Fetch the remote file with POST request
-		$response = wp_remote_get($remote_url, apply_filters('aaeaddon/starter_templates/download_args',$args)); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Established plugin hook (slash-namespaced); kept for backward compatibility.
+		// Fetch the remote file with safe request (SSRF protection enabled, SSL verification enforced)
+		$response = wp_safe_remote_get( $remote_url, apply_filters( 'aaeaddon/starter_templates/download_args', $args ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Established plugin hook (slash-namespaced); kept for backward compatibility.
 		
 		if (is_wp_error($response)) {
 			update_option('aaeaddon_template_import_state', esc_html__('Failed to validate file from remote URL.', 'animation-addons-for-elementor'));

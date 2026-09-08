@@ -106,15 +106,35 @@ class Mailchimp_Api {
             wp_send_json_error('Invalid nonce');
         }
   
-        // 1) Decode API key and basic inputs
-        $api_key = '';
-        if (!empty($_POST['key'])) {
-            $api_key = str_replace('w1c2f', '', base64_decode( sanitize_text_field( wp_unslash($_POST['key']) )));
-        }
-        $list_id = isset($_POST['listId']) ? trim((string) sanitize_text_field( wp_unslash($_POST['listId']))) : '';
-        $double  = (isset($_POST['doubleOpt']) && $_POST['doubleOpt'] === 'yes');
+        // 1) Retrieve API key securely on the server side
+        $api_key         = '';
+        $post_id         = ! empty( $_POST['postId'] ) ? absint( $_POST['postId'] ) : 0;
+        $widget_id       = ! empty( $_POST['widgetId'] ) ? sanitize_text_field( wp_unslash( $_POST['widgetId'] ) ) : '';
+        $widget_settings = [];
 
-        if (!$api_key || !$list_id) {
+        if ( $post_id && $widget_id && function_exists( 'wcf_addons_get_widget_settings' ) ) {
+            $widget_settings = wcf_addons_get_widget_settings( $post_id, $widget_id );
+            if ( ! empty( $widget_settings['mailchimp_api'] ) ) {
+                $api_key = trim( (string) $widget_settings['mailchimp_api'] );
+            }
+        }
+
+        // Fallback to global option if not set in widget settings
+        if ( empty( $api_key ) ) {
+            $global_api = get_option( 'aae_mailchimp_api', '' );
+            if ( ! empty( $global_api ) ) {
+                $api_key = trim( (string) $global_api );
+            }
+        }
+
+        $list_id = isset( $_POST['listId'] ) ? trim( (string) sanitize_text_field( wp_unslash( $_POST['listId'] ) ) ) : '';
+        if ( empty( $list_id ) && ! empty( $widget_settings['mailchimp_lists'] ) ) {
+            $list_id = trim( (string) $widget_settings['mailchimp_lists'] );
+        }
+
+        $double  = ( isset( $_POST['doubleOpt'] ) && 'yes' === $_POST['doubleOpt'] );
+
+        if ( ! $api_key || ! $list_id ) {
             return ['status' => 0, 'msg' => esc_html__('Missing API key or List ID.', 'animation-addons-for-elementor')];
         }
 

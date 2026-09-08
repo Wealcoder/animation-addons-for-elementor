@@ -47,8 +47,8 @@ class WCF_Plugin_Installer
     {
         check_ajax_referer('wcf_admin_nonce', 'nonce');
 
-        if (!current_user_can('activate_plugins')) {
-            wp_send_json_error(__('You are not allowed to do this action', 'animation-addons-for-elementor'));
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( __( 'You are not allowed to do this action', 'animation-addons-for-elementor' ) );
         }
 
         // The atomic registry only loads on Elementor 4+; without it there is
@@ -116,7 +116,7 @@ class WCF_Plugin_Installer
     function check_plugin_status($base_path)
     {
 
-        include_once ABSPATH . 'wp-admin/includes/plugin.php';
+        require_once ABSPATH . 'wp-admin/includes/plugin.php';
         if (file_exists(WP_PLUGIN_DIR . '/' . $base_path)) {
             return is_plugin_active($base_path) ? 'Active' : 'Inactive';
         }
@@ -145,8 +145,8 @@ class WCF_Plugin_Installer
 
         check_ajax_referer('wcf_admin_nonce', 'nonce');
 
-        if (!current_user_can('activate_plugins')) {
-            wp_send_json_error(__('You are not allowed to do this action', 'animation-addons-for-elementor'));
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( __( 'You are not allowed to do this action', 'animation-addons-for-elementor' ) );
         }
 
         delete_option('aaeaddon_template_import_progress');

@@ -481,9 +481,49 @@ https://youtu.be/ml_irWYVam0
 - have more questions? [contact support](https://crowdyflow.ticksy.com/).
 - For more information [Animation Addons](https://animation-addons.com/).
 
-### Happy User of Animation Addons?
- - Join our [Facebook Group](https://www.facebook.com/groups/animationaddons/).
- - Learn from our [YouTube channel tutorials](https://www.youtube.com/@AnimationAddons). 
+== Custom Code Snippets Notice ==
+
+This plugin includes an optional **Code Snippets** module that allows authorized administrators to add and manage custom CSS, JavaScript, and HTML code snippets directly from the WordPress dashboard:
+
+* **Supported Snippet Types in Free**:
+  - **HTML**: Render tracking codes (Google Tag Manager, Meta Pixel, etc.) or custom markup in `<head>`, `<body>`, or `<footer>`.
+  - **CSS**: Inject custom stylesheet rules without editing theme files.
+  - **JavaScript**: Run frontend scripts and custom logic.
+
+* **PHP Snippets**:
+  Custom backend PHP snippet execution is an exclusive feature available in **Animation Addons Pro**. The free version does not evaluate or execute PHP code snippets.
+
+== External Services ==
+
+This plugin connects to external services to provide certain features:
+
+* **Feature Request Service**:
+  - Service Provider: Animation Addons (https://animation-addons.com/)
+  - Purpose: When an administrator explicitly submits a feature request from the plugin dashboard, the request details are relayed to our server to help our team review and prioritize development.
+  - Data Sent: Name, email address, and feature request text entered by the administrator in the form. No site data or telemetry is collected.
+  - Terms of Service: https://animation-addons.com/terms-of-service/
+  - Privacy Policy: https://animation-addons.com/privacy-policy/
+
+* **Mailchimp API Service**:
+  - Service Provider: The Rocket Science Group LLC d/b/a Mailchimp / Intuit Inc. (https://mailchimp.com/)
+  - Purpose: Connects the Mailchimp subscription widget to the site owner's Mailchimp account to allow visitors to subscribe to audience newsletter lists.
+  - Data Sent: Subscriber information submitted by visitors through the newsletter form (email address, optional first/last name, phone number, and audience list tags).
+  - Terms of Service: https://mailchimp.com/legal/terms/
+  - Privacy Policy: https://mailchimp.com/legal/privacy/
+
+* **OpenWeatherMap API Service**:
+  - Service Provider: OpenWeather Ltd. (https://openweathermap.org/)
+  - Purpose: Fetches current weather and forecast data for the city configured in the Weather widget.
+  - Data Sent: City name and site owner's OpenWeather API key.
+  - Terms of Service: https://openweather.co.uk/terms
+  - Privacy Policy: https://openweather.co.uk/privacy-policy
+
+* **Template & Preset Library Service**:
+  - Service Provider: ThemeCrowdy / Animation Addons (https://themecrowdy.com/ and https://animation-addons.com/)
+  - Purpose: Provides starter website templates, Elementor block templates, and widget design presets when an administrator browses and imports templates in the template library.
+  - Data Sent: Requested template identifier, site language, and plugin version. No personal data is sent.
+  - Terms of Service: https://animation-addons.com/terms-of-service/
+  - Privacy Policy: https://animation-addons.com/privacy-policy/
 
 == Installation ==
 
@@ -509,6 +549,10 @@ Note: This plugin requires Elementor to function. Please ensure Elementor is ins
 For any questions, visit our FAQ page or reach out via our Contact Form. 🚀
 
 == Frequently Asked Questions ==
+
+= What snippet types are supported in Code Snippets? =
+
+The free version of Animation Addons supports custom CSS, JavaScript, and HTML code snippets directly. Custom PHP code snippet execution is an advanced feature supported in Animation Addons Pro.
 
 = What is Animation Addons for Elementor? =
 
@@ -592,36 +636,25 @@ You don’t need to know the code to use the widgets and modules of Animation Ad
 7. **Section Import (Live Copy)* One-click live copy & import of pre-designed animation sections directly into your projects.
 
 
-== Code Snippets and PHP Execution ==
+== Code Snippets ==
 
 The Code Snippet feature lets a site administrator store small pieces of CSS,
-JavaScript, HTML or PHP and have the plugin output or run them on the site. This
-is the same thing a snippet manager exists to do, but because one of those types
-is PHP it is worth stating plainly what the rules are.
+JavaScript, and HTML and have the plugin output them on the site.
 
 What runs, and when:
 
-* CSS, JavaScript and HTML snippets are printed into the page at the location
-  you choose.
-* A PHP snippet is executed with eval() when the page loads. Only snippets you
-  have marked active are run.
+* CSS, JavaScript, and HTML snippets are printed into the page at the location
+  you choose (Header, Footer, Body Open, Content). Only snippets you have marked
+  active are output.
 
 Who may create one:
 
-* CSS, JS and HTML snippets require the "manage_options" capability, i.e. an
-  administrator.
-* A PHP snippet additionally requires "edit_plugins" -- the same capability
-  WordPress requires for its own plugin and theme editors. On multisite that
-  means a Super Admin; a site administrator cannot create one.
-* If your wp-config.php defines DISALLOW_FILE_EDIT or DISALLOW_FILE_MODS, PHP
-  snippets cannot be created or edited at all. Those constants exist to say
-  "administrators on this site may not execute code", and this feature honours
-  them rather than offering a way around them.
+* CSS, JavaScript, and HTML snippets require the "manage_options" capability, i.e.
+  an administrator.
 
 Snippet content is never taken from a page request. It is stored as post meta on
 a private "wcf-code-snippet" post type, which is not publicly queryable and has
-no front-end URL. Anyone able to author a PHP snippet already has permission to
-install a plugin, so the feature grants no privilege they did not already hold.
+no front-end URL.
 
 If you do not want this feature on your site at all, switch Code Snippet off in
 the plugin's Extensions screen and nothing in it will load.

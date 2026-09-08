@@ -329,13 +329,21 @@ class CodeSnippet {
 			wp_die( esc_html__( 'You are not allowed to do this.', 'animation-addons-for-elementor' ) );
 		}
 
-		// A PHP snippet is executed code and needs the stronger gate. Checked
-		// before anything is written, so a refused request stores nothing.
+		// Validate posted code type against registered code types.
 		$posted_code_type = isset( $_POST['code_type'] ) ? sanitize_key( wp_unslash( $_POST['code_type'] ) ) : '';
+		$valid_types      = array_keys( Helpers::get_code_type_list() );
 
-		if ( 'php' === $posted_code_type && ! self::can_manage_php() ) {
+		if ( ! in_array( $posted_code_type, $valid_types, true ) ) {
 			wp_die(
-				esc_html__( 'You are not allowed to create or edit PHP snippets on this site. PHP snippets run as plugin code, so they require the same permission as the plugin editor, and they are unavailable when file editing is disabled.', 'animation-addons-for-elementor' ),
+				esc_html__( 'Invalid code snippet type selected.', 'animation-addons-for-elementor' ),
+				esc_html__( 'Invalid Type', 'animation-addons-for-elementor' ),
+				array( 'response' => 400 )
+			);
+		}
+
+		if ( 'php' === $posted_code_type && ( ! apply_filters( 'wcf_allow_php_snippets', false ) || ! self::can_manage_php() ) ) {
+			wp_die(
+				esc_html__( 'PHP snippets are only available in Animation Addons Pro and require plugin editing capabilities.', 'animation-addons-for-elementor' ),
 				esc_html__( 'Permission denied', 'animation-addons-for-elementor' ),
 				array( 'response' => 403 )
 			);

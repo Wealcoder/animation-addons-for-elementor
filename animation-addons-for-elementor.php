@@ -81,9 +81,8 @@ if ( ! defined( 'WCF_FEATURE_REQUEST_API_KEY' ) ) {
 	 * Must match AAEFR_API_KEY on the receiving side — change one without the
 	 * other and every submission comes back 401.
 	 *
-	 * This is obfuscation, NOT authentication: the plugin ships publicly, so
-	 * the key is extractable from the zip. The receiver's own rate limit is
-	 * what actually protects the endpoint.
+	 * Shared client key sent as the X-API-Key header to route and rate-limit
+	 * submissions on the feature request receiving endpoint.
 	 */
 	define( 'WCF_FEATURE_REQUEST_API_KEY', '0700c72d204521236f5af03011cb0cbb4f6229a6bbdc2ef041d76184e9a795b7' );
 }
@@ -419,9 +418,9 @@ final class WCF_ADDONS_Plugin {
 		// Verify the AJAX nonce for security
 		check_ajax_referer('wcfinstall_elementor_nonce', '_ajax_nonce');
 
-		if (!current_user_can('activate_plugins')) {
-			wp_send_json_error(['message' => esc_html__('Plugin Activation Permission Required, Contact Admin', 'animation-addons-for-elementor')]);
-        }
+		if ( ! current_user_can( 'install_plugins' ) || ! current_user_can( 'activate_plugins' ) ) {
+			wp_send_json_error( [ 'message' => esc_html__( 'Plugin installation and activation permission required.', 'animation-addons-for-elementor' ) ] );
+		}
 		
 		// Include required WordPress files
 		if (!class_exists('Plugin_Upgrader')) {
@@ -495,9 +494,9 @@ final class WCF_ADDONS_Plugin {
 	 * @access public
 	 */
 	public function admin_notice_minimum_elementor_version() {
-		if (!current_user_can('activate_plugins')) {
-            return;
-        }
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
 
 		$message = sprintf(
 		/* translators: 1: Plugin name 2: Elementor 3: Required Elementor version */
@@ -519,9 +518,9 @@ final class WCF_ADDONS_Plugin {
 	 * @access public
 	 */
 	public function admin_notice_minimum_php_version() {
-		if (!current_user_can('activate_plugins')) {
-            return;
-        }
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
 
 		$message = sprintf(
 		/* translators: 1: Plugin name 2: PHP 3: Required PHP version */

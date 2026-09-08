@@ -910,7 +910,7 @@ class WCF_Admin_Init
 			);
 		}
 
-		$response = wp_remote_post(
+		$response = wp_safe_remote_post(
 			self::feature_request_endpoint(),
 			array(
 				'timeout' => 15,
@@ -924,8 +924,6 @@ class WCF_Admin_Init
 						'name'    => $name,
 						'email'   => $email,
 						'feature' => $feature,
-						'site'    => home_url('/'),
-						'version' => WCF_ADDONS_VERSION,
 					)
 				),
 			)

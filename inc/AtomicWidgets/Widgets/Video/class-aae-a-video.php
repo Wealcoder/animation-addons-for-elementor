@@ -610,7 +610,7 @@ class AAE_A_Video extends Atomic_Element_Base {
 			return $cached;
 		}
 
-		$response = wp_remote_get( $oembed_url, [ 'timeout' => 3 ] );
+		$response = wp_safe_remote_get( $oembed_url, [ 'timeout' => 3 ] );
 
 		$thumb = '';
 

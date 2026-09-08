@@ -285,6 +285,17 @@ class Notices {
 	 * @return bool
 	 */
 	public function should_display( $notice ) {
+		// WordPress.org Guideline 11: Display notices only on plugin-related screens unless it is an error.
+		if ( function_exists( 'get_current_screen' ) ) {
+			$screen = get_current_screen();
+			if ( $screen ) {
+				$is_plugin_screen = ( false !== strpos( $screen->id, 'animation-addons' ) || false !== strpos( $screen->id, 'wcf' ) );
+				if ( ! $is_plugin_screen && ( empty( $notice['type'] ) || 'error' !== $notice['type'] ) ) {
+					return false;
+				}
+			}
+		}
+
 		if ( ( $notice['notice_id'] && $this->is_dismissed( $notice['notice_id'] ) ) || ( $notice['capability'] && ! current_user_can( $notice['capability'] ) ) ) {
 			return false;
 		}

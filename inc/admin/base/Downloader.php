@@ -58,8 +58,16 @@ class Downloader {
 			);
 		}
 
-		// Get file content from the server.
-		$response = wp_remote_get(
+		$url = esc_url_raw( $url );
+		if ( ! wp_http_validate_url( $url ) ) {
+			return new \WP_Error(
+				'invalid_url',
+				__( 'Invalid URL for downloading a file!', 'animation-addons-for-elementor' )
+			);
+		}
+
+		// Get file content safely from the server.
+		$response = wp_safe_remote_get(
 			$url,
 			array( 'timeout' => Helpers::apply_filters( 'aaeaddon/timeout_for_downloading_import_file', 45 ) )
 		);

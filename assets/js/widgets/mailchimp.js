@@ -57,7 +57,6 @@
             });
         });
 
-        elForm.removeAttr('data-key');
         // E-News
         const radios = document.querySelectorAll('.enews');
         const slider = document.createElement('span');

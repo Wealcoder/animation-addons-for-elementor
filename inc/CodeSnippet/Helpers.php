@@ -79,7 +79,6 @@ class Helpers {
 		$code_type_list = array(
 			'html'       => __( 'HTML', 'animation-addons-for-elementor' ),
 			'css'        => __( 'CSS', 'animation-addons-for-elementor' ),
-			'php'        => __( 'PHP', 'animation-addons-for-elementor' ),
 			'javascript' => __( 'JavaScript', 'animation-addons-for-elementor' ),
 		);
 

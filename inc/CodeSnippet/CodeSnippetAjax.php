@@ -110,6 +110,10 @@ class CodeSnippetAjax {
 			return true;
 		}
 
+		if ( ! apply_filters( 'wcf_allow_php_snippets', false ) ) {
+			return false;
+		}
+
 		return CodeSnippet::can_manage_php();
 	}
 

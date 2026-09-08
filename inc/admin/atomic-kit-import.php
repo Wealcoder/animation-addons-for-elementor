@@ -102,12 +102,13 @@ class Atomic_Kit_Import {
 
 		$zip = wp_tempnam( 'aae-kit.zip' );
 
-		// wp_remote_get, not download_url(): the latter is wp_safe_remote_get and
-		// refuses hosts that resolve to a private address, which is exactly a
-		// local template server (themecrowdy.local). Same trust model as the
-		// XML/JSON downloads next to this in template-importer.php — the URL
-		// comes from the template server's own response, on an admin request.
-		$response = wp_remote_get( $url, [
+		$url = esc_url_raw( $url );
+		if ( ! wp_http_validate_url( $url ) ) {
+			return new WP_Error( 'aae_kit_invalid_url', 'Invalid kit URL provided.' );
+		}
+
+		// Use wp_safe_remote_get to prevent Server-Side Request Forgery (SSRF).
+		$response = wp_safe_remote_get( $url, [
 			'timeout'  => 120,
 			'stream'   => true,
 			'filename' => $zip,
@@ -208,7 +209,13 @@ class Atomic_Kit_Import {
 	 * @return array|WP_Error Summary on success.
 	 */
 	public static function import_template_json_from_url( string $url, string $mode = self::MODE_KEEP_CREATE, ?array $post_ids = null ) {
-		$response = wp_remote_get( $url, [ 'timeout' => 120 ] );
+		$url = esc_url_raw( $url );
+		if ( ! wp_http_validate_url( $url ) ) {
+			return new WP_Error( 'aae_tpl_invalid_url', 'Invalid template JSON URL provided.' );
+		}
+
+		// Use wp_safe_remote_get to prevent Server-Side Request Forgery (SSRF).
+		$response = wp_safe_remote_get( $url, [ 'timeout' => 120 ] );
 
 		if ( is_wp_error( $response ) ) {
 			return $response;
