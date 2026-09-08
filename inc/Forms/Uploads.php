@@ -175,20 +175,41 @@ final class Uploads {
 			return self::error( 500, 'aae_form_storage', __( 'We could not store the file. Please try again.', 'animation-addons-for-elementor' ) );
 		}
 
+		if ( ! function_exists( 'wp_handle_upload' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+		}
+
 		$stored_name = wp_generate_password( 24, false, false ) . '.' . $ext;
-		$destination = trailingslashit( $dir ) . $stored_name;
 
-		$moved = is_uploaded_file( $file['tmp_name'] )
-			? move_uploaded_file( $file['tmp_name'], $destination ) // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions -- private dir, validated above.
-			: false;
+		$upload_dir_callback = static function ( $dirs ) use ( $form_key ) {
+			$subdir         = '/aae-forms/' . sanitize_file_name( $form_key );
+			$dirs['subdir'] = $subdir;
+			$dirs['path']   = $dirs['basedir'] . $subdir;
+			$dirs['url']    = $dirs['baseurl'] . $subdir;
+			return $dirs;
+		};
 
-		if ( ! $moved ) {
+		add_filter( 'upload_dir', $upload_dir_callback );
+
+		$overrides = [
+			'test_form'                => false,
+			'unique_filename_callback' => static function () use ( $stored_name ) {
+				return $stored_name;
+			},
+		];
+
+		$upload_result = wp_handle_upload( $file, $overrides );
+
+		remove_filter( 'upload_dir', $upload_dir_callback );
+
+		if ( ! empty( $upload_result['error'] ) || empty( $upload_result['file'] ) ) {
 			return self::error( 500, 'aae_form_storage', __( 'We could not store the file. Please try again.', 'animation-addons-for-elementor' ) );
 		}
 
-		$uploads    = wp_upload_dir();
-		$rel_path   = ltrim( str_replace( wp_normalize_path( $uploads['basedir'] ), '', wp_normalize_path( $destination ) ), '/' );
-		$upload_key = wp_generate_password( 40, false, false );
+		$destination = (string) $upload_result['file'];
+		$uploads     = wp_upload_dir();
+		$rel_path    = ltrim( str_replace( wp_normalize_path( $uploads['basedir'] ), '', wp_normalize_path( $destination ) ), '/' );
+		$upload_key  = wp_generate_password( 40, false, false );
 
 		global $wpdb;
 		$inserted = $wpdb->insert(
@@ -347,8 +368,11 @@ final class Uploads {
 		$placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
 
 		$wpdb->query(
-			$wpdb->prepare(
-				'UPDATE ' . Database::attachments_table() . " SET submission_id = %d, status = 'attached' WHERE form_key = %s AND status = 'pending' AND id IN ({$placeholders})", // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table from our helper, placeholders generated to count.
+			// The sniff counts only the two literal placeholders it can see;
+			// $placeholders adds one %d per id, so the real count is
+			// 2 + count( $ids ) and matches the array_merge() below.
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
+				'UPDATE ' . Database::attachments_table() . " SET submission_id = %d, status = 'attached' WHERE form_key = %s AND status = 'pending' AND id IN ({$placeholders})", // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- table from our helper; $placeholders is one %d per id, so the count is 2 + count( $ids ) and matches array_merge() below.
 				array_merge( [ $submission_id, $form_key ], $ids )
 			)
 		);

@@ -5,7 +5,6 @@ import {
   NavigationMenuList2,
   NavigationMenuTrigger2,
 } from "@/components/ui/navigation-menu-2";
-import { useEffect, useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -14,18 +13,10 @@ import { CircleX } from "lucide-react";
 import templateMenuJson from "@/config/starterTemplateMenu.json";
 
 export function StaterTemplateHeader({ metaData, setMetaData }) {
-  const [menuData, setMenuData] = useState([]);
-
-  useEffect(() => {
-    if (
-      WCF_ADDONS_ADMIN.template_menu &&
-      WCF_ADDONS_ADMIN.template_menu.length
-    ) {
-      setMenuData(WCF_ADDONS_ADMIN.template_menu);
-    } else {
-      setMenuData(templateMenuJson);
-    }
-  }, []);
+  // The starter-template menu ships with the plugin. It used to be fetched
+  // from a remote site with this file as the fallback; the fetch is gone, so
+  // the bundled copy is simply the source.
+  const menuData = templateMenuJson;
 
   const { selectedCategory, tempSelectedCategory } = metaData || {};
 

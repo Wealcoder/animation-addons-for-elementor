@@ -12,8 +12,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 final class Controls {
 
-	const TD = 'animation-addons-for-elementor';
-
 	public function register(): void {
 		add_filter( 'elementor/atomic-widgets/controls', [ $this, 'inject_controls' ], 10, 2 );
 	}
@@ -52,7 +50,7 @@ final class Controls {
 		// switch row inside the section so it can hide when no effect is
 		// selected — see config.js (`when: isAnimated`).
 		return Section::make()
-			->set_label( Bootstrap::get_label( __( 'Animation', self::TD ) ) )
+			->set_label( Bootstrap::get_label( __( 'Animation', 'animation-addons-for-elementor' ) ) )
 			->set_items( [
 
 				// Anchor — React replacement renders the full responsive section

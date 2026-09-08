@@ -28,8 +28,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- queries interpolate only the internal aae_action_jobs table name; every value goes through $wpdb->prepare().
-
 final class Queue {
 
 	const STATUS_PENDING    = 'pending';
@@ -82,9 +80,10 @@ final class Queue {
 
 		$jobs = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT * FROM {$table}
+				"SELECT * FROM %i
 			 WHERE status IN ('pending','retrying') AND (next_run_at IS NULL OR next_run_at <= %s)
 			 ORDER BY id ASC LIMIT %d",
+				$table,
 				$now,
 				self::BATCH_SIZE
 			)

@@ -8,6 +8,7 @@ log/
 z_temp/
 /dist
 *.log
+*.md
 
 # ─── Dependencies ────────────────────────────────────────────────────
 node_modules/
@@ -62,3 +63,12 @@ templates.json
 # on anyone else's machine.
 .claude/*
 !.claude/skills/
+
+# ─── Developer documentation ─────────────────────────────────────────
+# A learning guide and a teaching example (an "Alert Box" atomic widget),
+# not plugin code. It lives inside the plugin directory, so it was tracked
+# and it shipped: nothing in `gulp zip` excluded it, and its example used
+# the boilerplate text domain 'my-plugin', which is the kind of thing a
+# WordPress.org review flags. gulpfile.js now excludes it from the release
+# ZIP as well — this rule keeps it out of the repository.
+elementor-atomic-learning-guide/

@@ -168,11 +168,60 @@ final class AAE_Admin_Page_Importer
             'screen'   => $is_importer_page ? 'animation-addon_page_aae-page-importer' : '',
             'post_id'  => $post_id,
             'logo'     => WCF_ADDONS_URL . 'assets/images/wcf-2.png',
+            'label'    => __('Import Page', 'animation-addons-for-elementor'),
             'page_url' => esc_url(admin_url('admin.php?page=aae-page-importer')),
         ]);
 
-  
         wp_enqueue_script(self::HANDLE);
+
+        // The button is injected next to "Add Page" by aae-admin-actions.js; its look
+        // is owned here so it reads as a brand action rather than a bare link.
+        wp_add_inline_style('wp-admin', $this->heading_button_css());
+    }
+
+    /**
+     * Styles for the "Import Page" action on the Pages list.
+     *
+     * Rides on `.page-title-action` for size and alignment (so it sits level with
+     * "Add Page" on every WordPress version) and overrides only colour and shape.
+     */
+    private function heading_button_css(): string
+    {
+        return '
+        .wrap .page-title-action.aae-import-page-action {
+            margin-left: 6px;
+            padding-left: 10px;
+            padding-right: 12px;
+            border: 1px solid #fc6848;
+            border-radius: 4px;
+            background: #fc6848;
+            color: #fff;
+            font-weight: 500;
+            box-shadow: none;
+            text-decoration: none;
+            transition: background-color .15s ease, border-color .15s ease;
+        }
+        .wrap .page-title-action.aae-import-page-action img {
+            width: 16px;
+            height: 16px;
+            margin-right: 6px;
+            vertical-align: -4px;
+        }
+        .wrap .page-title-action.aae-import-page-action:hover,
+        .wrap .page-title-action.aae-import-page-action:focus {
+            background: #e85a3c;
+            border-color: #e85a3c;
+            color: #fff;
+        }
+        .wrap .page-title-action.aae-import-page-action:focus {
+            box-shadow: 0 0 0 1px #fff, 0 0 0 3px #fc6848;
+            outline: 2px solid transparent;
+        }
+        .wrap .page-title-action.aae-import-page-action:active {
+            background: #d4502f;
+            border-color: #d4502f;
+        }
+        ';
     }
 
    public function importer_assets($hook)

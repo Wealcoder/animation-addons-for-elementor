@@ -5,77 +5,28 @@ import TLogo from "../../../../../public/images/wizard/t-logo.png";
 import TLogo2 from "../../../../../public/images/wizard/t-logo-2.png";
 import TempImg1 from "../../../../../public/images/wizard/temp-img-1.png";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
 
 const WizTemplate = () => {
-  const [themelabel, setThemelabel] = useState("Install Theme");
-  const [installmsg, setInstallmsg] = useState(false);
-  useEffect(function () {
-    if (WCF_ADDONS_ADMIN.theme_status === "activeted") {
-      setThemelabel("Activated");
-    }
+  // This plugin does not install themes and never changes the active theme --
+  // that is the user's decision, taken in Appearance > Themes. All the wizard
+  // does here is report where the starter theme stands and link to the screen
+  // where WordPress itself handles it.
+  const themeStatus = WCF_ADDONS_ADMIN.theme_status;
+  const adminUrl = WCF_ADDONS_ADMIN.adminURL || "";
 
-    if (WCF_ADDONS_ADMIN.theme_status === "installed") {
-      setThemelabel("Active Now");
-    }
-  });
-  const themeInstller = async (slug) => {
-    setThemelabel("Installing .... ");
-    await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        Accept: "application/json",
-      },
-
-      body: new URLSearchParams({
-        action:
-          themelabel == "Active Now"
-            ? "wcf_activate_theme"
-            : "wcf_installer_theme",
-        nonce: WCF_ADDONS_ADMIN.nonce,
-        theme_slug: slug,
-      }),
-    })
-      .then((response) => {
-        return response.text();
-      })
-      .then((return_content) => {
-        if (
-          /^[\],:{}\s]*$/.test(
-            return_content
-              .replace(/\\["\\\/bfnrtu]/g, "@")
-              .replace(
-                /"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g,
-                "]"
-              )
-              .replace(/(?:^|:|,)(?:\s*\[)+/g, "")
-          )
-        ) {
-          const redata = JSON.parse(return_content);
-
-          if (redata.success == true) {
-            WCF_ADDONS_ADMIN.theme_status = "Activated";
-          }
-          if (redata.data?.message) {
-            setInstallmsg(redata.data.message);
-          }
-        } else {
-          setInstallmsg(return_content);
-          if (return_content.includes("200 ok")) {
-            WCF_ADDONS_ADMIN.theme_status = "installed";
-            setThemelabel("Active Now");
-          }
+  const themeAction =
+    themeStatus === "activeted"
+      ? null
+      : themeStatus === "installed"
+      ? {
+          label: "Activate in Appearance",
+          href: `${adminUrl}themes.php`,
         }
-      });
-  };
+      : {
+          label: "Find it in Themes",
+          href: `${adminUrl}theme-install.php?search=hello+animation`,
+        };
 
-  const installTheme = (slug) => {
-    if (themelabel == "Activated") {
-      return;
-    }
-    themeInstller(slug);
-  };
   return (
     <div className="rounded-lg overflow-hidden mx-2.5">
       <div className="bg-[linear-gradient(0deg,rgba(245,246,248,0.50)_0%,rgba(245,246,248,0.50)_100%)] rounded-lg">
@@ -229,30 +180,39 @@ const WizTemplate = () => {
                       theme designed for seamless integration with perfect
                       dynamic animation features.
                     </p>
-                    {WCF_ADDONS_ADMIN.theme_status && (
+                    {themeAction ? (
                       <Button
+                        asChild
                         variant="secondary"
                         className="rounded-lg text-text"
-                        onClick={() => installTheme("hello-animation")}
                       >
-                        {themelabel}
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="18"
-                          height="18"
-                          className="ml-1.5"
-                          viewBox="0 0 18 18"
-                          fill="none"
-                        >
-                          <path
-                            d="M12.0026 7.05623L5.55882 13.5L4.5 12.4412L10.9438 5.9974H5.26429V4.5H13.5V12.7357H12.0026V7.05623Z"
-                            fill="#181B25"
-                          />
-                        </svg>
+                        <a href={themeAction.href}>
+                          {themeAction.label}
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="18"
+                            height="18"
+                            className="ml-1.5"
+                            viewBox="0 0 18 18"
+                            fill="none"
+                          >
+                            <path
+                              d="M12.0026 7.05623L5.55882 13.5L4.5 12.4412L10.9438 5.9974H5.26429V4.5H13.5V12.7357H12.0026V7.05623Z"
+                              fill="#181B25"
+                            />
+                          </svg>
+                        </a>
                       </Button>
+                    ) : (
+                      <p className="text-base font-medium">
+                        This theme is active on your site.
+                      </p>
                     )}
-                    {installmsg && (
-                      <div dangerouslySetInnerHTML={{ __html: installmsg }} />
+                    {themeAction && (
+                      <p className="mt-2 text-sm text-text-secondary">
+                        WordPress handles this on its own screen. Your active
+                        theme is not changed from here.
+                      </p>
                     )}
                   </div>
                 </div>

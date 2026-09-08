@@ -18,8 +18,10 @@ const DemoImporting = () => {
   const template = url.searchParams.get("template");
   const templateid = url.searchParams.get("templateid");
   const plugins = url.searchParams.get("plugins");
-  const theme = url.searchParams.get("theme");
   const attachment = url.searchParams.get("attachment");
+  // "Copy images into my media library" from the V4 dialog -> the importer's
+  // `aae_localize_images`, which adds the repeating localize-images step.
+  const v4images = url.searchParams.get("v4images");
 
   const changeRoute = (value, meta) => {
     const pageQuery = url.searchParams.get("page");
@@ -30,8 +32,11 @@ const DemoImporting = () => {
     url.searchParams.set("templateid", templateid);
     url.searchParams.set("tab", value);
     if (meta.plugins) url.searchParams.set("plugins", meta.plugins);
-    if (meta.theme) url.searchParams.set("theme", meta.theme);
     url.searchParams.set("attachment", meta.attachment);
+    if (v4images) url.searchParams.set("v4images", v4images);
+    // The fail screen reads this back out of the URL; without it every
+    // failure reads as a bare "An issue occurred while importing".
+    if (meta.msg) url.searchParams.set("msg", meta.msg);
     window.history.replaceState({}, "", url);
     setTabKey(value);
   };
@@ -155,6 +160,7 @@ const DemoImporting = () => {
         delete tpldata.downloads;
         delete tpldata.is_pro;
         delete tpldata.excerpt;
+        if (v4images) tpldata.aae_localize_images = 1;
         setTempState(tpldata);
         
         const formData = new URLSearchParams();
@@ -168,7 +174,8 @@ const DemoImporting = () => {
         formData.append("template_data", JSON.stringify(tpldata));
         formData.append("nonce", WCF_ADDONS_ADMIN.nonce);
         if (plugins) formData.append("user_plugins", plugins);
-        if (theme) formData.append("theme_slug", theme);
+        // No theme is sent. The import never installs or activates a theme;
+        // it only names the one the template was designed against.
         formData.append("attachment", attachment);
         const response = await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
           method: "POST",
@@ -208,7 +215,10 @@ const DemoImporting = () => {
             if (completed === true) {
               changeCompleteRoute("complete-import");
             } else if (data.template.next_step === "fail") {
-              changeRoute("fail-import", { plugins, theme, attachment });
+              // No `theme` here: the import neither installs nor switches one,
+              // and referencing it threw a ReferenceError that replaced the
+              // server's own reason and left this screen stuck mid-progress.
+              changeRoute("fail-import", { plugins, attachment, msg: data.msg });
             } else {
               runImport(data.template);
 
@@ -231,7 +241,7 @@ const DemoImporting = () => {
         if (tempstate) {
           runImport(tempstate);
         }else{
-          changeRoute("fail-import", { plugins, theme, attachment , msg: error.message });
+          changeRoute("fail-import", { plugins, attachment, msg: error.message });
         }
       }
     }, 300),

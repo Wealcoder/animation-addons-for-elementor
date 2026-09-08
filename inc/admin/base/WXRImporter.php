@@ -1932,8 +1932,14 @@ class WXRImporter extends \WP_Importer
 			return new WP_Error('upload_dir_error', $upload['error']);
 		}
 
-		// fetch the remote url and write it to the placeholder file
-		$response = wp_remote_get($url, array(
+		$url = esc_url_raw( $url );
+		if ( ! wp_http_validate_url( $url ) ) {
+			wp_delete_file( $upload['file'] );
+			return new WP_Error( 'invalid_url', 'Invalid attachment URL' );
+		}
+
+		// fetch the remote url safely and write it to the placeholder file
+		$response = wp_safe_remote_get($url, array(
 			'stream' => true,
 			'filename' => $upload['file'],
 		));

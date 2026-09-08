@@ -17,8 +17,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 final class Controls {
 
-	const TD = 'animation-addons-for-elementor';
-
 	public function register(): void {
 		add_filter( 'elementor/atomic-widgets/controls', [ $this, 'inject_controls' ], 10, 2 );
 	}
@@ -43,7 +41,7 @@ final class Controls {
 
 	private function build_parallax_section(): Section {
 		return Section::make()
-			->set_label( Bootstrap::get_label( __( 'Parallax Effect', self::TD ) ) )
+			->set_label( Bootstrap::get_label( __( 'Parallax Effect', 'animation-addons-for-elementor' ) ) )
 			->set_items( [
 				// Anchor — React replacement renders Enable / Speed / Lag rows.
 				Text_Control::bind_to( Schema::PARALLAX_SECTION_ANCHOR ),

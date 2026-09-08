@@ -70,7 +70,6 @@ class Notices {
 	 */
 	public function enqueue_scripts() {
 		wp_register_style( 'aae-notice', WCF_ADDONS_URL . 'assets/css/css/notice.css', array(), WCF_ADDONS_VERSION );
-		wp_register_style( 'aae-notice-halloween', WCF_ADDONS_URL . 'assets/css/css/halloween-2025.css', array(), WCF_ADDONS_VERSION );
 		wp_register_script( 'aae-notice', WCF_ADDONS_URL . 'assets/js/js/notice.js', array( 'jquery' ), WCF_ADDONS_VERSION, true );
 	}
 
@@ -80,21 +79,10 @@ class Notices {
 	 * @since 2.4.16
 	 */
 	public function add_admin_notices() {
-		$installed_time = absint( get_option( 'aae_installed' ) );
-		$current_time   = absint( wp_date( 'U' ) );
-		$plugin_file = WP_PLUGIN_DIR . '/animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php';
-		if ( !file_exists( $plugin_file ) ) {
-			wp_enqueue_style( 'aae-notice-halloween' );
-			// $this->add(
-			// 	array(
-			// 		'message'     => __DIR__ . '/views/halloween-2025.php',
-			// 		'notice_id'   => 'aae_halloween',
-			// 		'style'       => 'border-left-color: #FC6848; border-radius: 6px; overflow: hidden;',
-			// 		'dismissible' => false,
-			// 	)
-			// );
-		}
-		
+		// No notice is registered here at present. The seasonal promotion this
+		// method used to carry is switched off, and its stylesheet is no longer
+		// enqueued -- it was still loading on every admin page for a notice that
+		// never rendered.
 	}
 
 	/**
@@ -163,9 +151,15 @@ class Notices {
 					wp_enqueue_style( 'aae-notice' );
 					$path = wp_normalize_path( $message );
 					if ( file_exists( $path ) ) {
+						$ob_level = ob_get_level();
 						ob_start();
-						include $path;
-						$message = ob_get_clean();
+						try {
+							include $path;
+						} finally {
+							while ( ob_get_level() > $ob_level ) {
+								$message = (string) ob_get_clean();
+							}
+						}
 					}
 				}
 
@@ -291,6 +285,17 @@ class Notices {
 	 * @return bool
 	 */
 	public function should_display( $notice ) {
+		// WordPress.org Guideline 11: Display notices only on plugin-related screens unless it is an error.
+		if ( function_exists( 'get_current_screen' ) ) {
+			$screen = get_current_screen();
+			if ( $screen ) {
+				$is_plugin_screen = ( false !== strpos( $screen->id, 'animation-addons' ) || false !== strpos( $screen->id, 'wcf' ) );
+				if ( ! $is_plugin_screen && ( empty( $notice['type'] ) || 'error' !== $notice['type'] ) ) {
+					return false;
+				}
+			}
+		}
+
 		if ( ( $notice['notice_id'] && $this->is_dismissed( $notice['notice_id'] ) ) || ( $notice['capability'] && ! current_user_can( $notice['capability'] ) ) ) {
 			return false;
 		}

@@ -212,6 +212,8 @@ gulp.task('zip', () => {
         '!tailwind.dashboard.config.js',
         '!tailwind.pageImport.config.js',
         '!webpack.config.js',
+        // Developer documentation and a teaching example -- not plugin code.
+        '!elementor-atomic-learning-guide/**',
         '!README.md',
         '!.env',
         '!**/.DS_Store'

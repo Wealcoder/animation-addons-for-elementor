@@ -14,9 +14,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 final class Controls {
 
-	const TD =
-		'animation-addons-for-elementor';
-
 	public function register(): void {
 
 		add_filter(
@@ -64,7 +61,7 @@ final class Controls {
 		return Section::make()
 
 			->set_label(
-				Bootstrap::get_label( __( 'Horizontal Scroll', self::TD ) )
+				Bootstrap::get_label( __( 'Horizontal Scroll', 'animation-addons-for-elementor' ) )
 			)
 
 			->set_items([

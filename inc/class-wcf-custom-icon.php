@@ -433,7 +433,9 @@ class CustomIcons_Lite
 		$target_dir   = trailingslashit($uploads['basedir']) . 'aaeaddon-icons/' . $this->process_id . '/';
 
 		if ( ! wp_mkdir_p( $target_dir ) ) {
-			@wp_delete_file( $zip_file_path );
+			if ( file_exists( $zip_file_path ) ) {
+				wp_delete_file( $zip_file_path );
+			}
 			wp_send_json_error( [
 				'message' =>esc_html__( 'Failed to create target directory.', 'animation-addons-for-elementor' ),
 			], 400 );			
@@ -464,7 +466,9 @@ class CustomIcons_Lite
 		$unzipped = unzip_file( $zip_file_path, $target_dir );
 		
 		// Always remove the uploaded zip after processing
-		@wp_delete_file($zip_file_path);
+		if ( file_exists( $zip_file_path ) ) {
+			wp_delete_file( $zip_file_path );
+		}
 
 		if ( is_wp_error( $unzipped ) ) {
 			$msg = $unzipped->get_error_message();
@@ -473,7 +477,14 @@ class CustomIcons_Lite
 			], 400 );
 		}
 
-		// 6) Process extracted files (your custom logic)
+		// 6) An icon pack is an ordinary zip and unzip_file() writes whatever
+		// is inside it into a PUBLIC uploads folder, .php included. An admin
+		// uploading a pack they downloaded somewhere is not consenting to run
+		// its code, so anything an IcoMoon export does not need goes now,
+		// before a single line of it can be requested.
+		$this->prune_extracted( $target_dir );
+
+		// 7) Process extracted files (your custom logic)
 		$msg = $this->process_icon_files($target_dir); // should return string/array
 		update_option('aae_gl_load', 'yes');
 		// 7) Done
@@ -483,6 +494,49 @@ class CustomIcons_Lite
 		));
 	}
 
+
+	/**
+	 * File types an IcoMoon export actually needs: the manifest, the
+	 * stylesheet, and the font faces it points at. Everything else that
+	 * arrives in the zip is deleted after extraction.
+	 *
+	 * @since 2.4.0
+	 * @var string[]
+	 */
+	const ICON_ALLOWED_EXT = array( 'json', 'css', 'svg', 'ttf', 'woff', 'woff2', 'eot', 'otf', 'txt' );
+
+	/**
+	 * Delete every extracted file whose extension is not in
+	 * self::ICON_ALLOWED_EXT. Runs straight after unzip_file(), so a pack
+	 * carrying a .php (or .html, or .htaccess) never becomes reachable over
+	 * HTTP even for the moment between extraction and processing.
+	 *
+	 * @param string $dir Absolute path to the extracted pack.
+	 * @since 2.4.0
+	 * @return void
+	 */
+	private function prune_extracted( $dir ) {
+		if ( ! is_dir( $dir ) ) {
+			return;
+		}
+
+		$items = new \RecursiveIteratorIterator(
+			new \RecursiveDirectoryIterator( $dir, \FilesystemIterator::SKIP_DOTS ),
+			\RecursiveIteratorIterator::CHILD_FIRST
+		);
+
+		foreach ( $items as $item ) {
+			if ( $item->isDir() ) {
+				continue;
+			}
+
+			$ext = strtolower( pathinfo( $item->getFilename(), PATHINFO_EXTENSION ) );
+
+			if ( ! in_array( $ext, self::ICON_ALLOWED_EXT, true ) ) {
+				wp_delete_file( $item->getPathname() );
+			}
+		}
+	}
 
 	/**
 	 * Processes icon files from the uploaded zip.
@@ -512,7 +566,10 @@ class CustomIcons_Lite
 		WP_Filesystem();
 		global $wp_filesystem;
 
-		$json_data = json_decode(file_get_contents($json_path), true);
+		// WP_Filesystem is initialised directly above; reading through it
+		// keeps this on the same API the write below already uses.
+		$json_raw  = $wp_filesystem->get_contents($json_path);
+		$json_data = $json_raw ? json_decode($json_raw, true) : [];
 		$icons = [];
 		$this->icon_prefix = $json_data['preferences']['fontPref']['prefix'];
 		$this->icon_postfix = $json_data['preferences']['fontPref']['postfix'];
@@ -530,7 +587,7 @@ class CustomIcons_Lite
 
 		$elementor_file = 'elementor-icon.js';
 		$file_path = $upload_dir . $elementor_file;
-		$output_data = json_encode(['icons' => $icons], JSON_PRETTY_PRINT);
+		$output_data = wp_json_encode(['icons' => $icons], JSON_PRETTY_PRINT);
 
 		// Write file using WP_Filesystem
 		if ($wp_filesystem->put_contents($file_path, $output_data, FS_CHMOD_FILE)) {

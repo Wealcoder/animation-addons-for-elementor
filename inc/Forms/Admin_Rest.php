@@ -35,13 +35,33 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// phpcs:disable WordPress.DB.PreparedSQL, WordPress.DB.PreparedSQLPlaceholders -- this file queries the six custom aae_* tables only: every VALUE goes through $wpdb->prepare(); interpolated fragments are internal table-name constants, int-cast id lists, or %-placeholder WHERE clauses whose args are built alongside them (the sniff cannot count placeholders in dynamic SQL).
-
 final class Admin_Rest {
 
 	const CAP       = 'manage_options';
 	const PER_PAGE  = 20;
 	const CSV_LIMIT = 5000;
+
+	/**
+	 * Every filter query_submissions() understands.
+	 *
+	 * Both readers are driven from this list so that no caller can hand over a
+	 * partial set. The CSV export used to build its own five-key array while
+	 * the query read seven keys, which raised two "Undefined array key"
+	 * warnings on every download and silently dropped the field-wise filter --
+	 * so an export ran wider than the list it was started from.
+	 */
+	const FILTER_KEYS = [ 'form_key', 'status', 'from', 'to', 's', 'field_key', 'field_value' ];
+
+	/**
+	 * "%d,%d,…" for an id list, one placeholder per element.
+	 *
+	 * $wpdb->prepare() has no placeholder for a variable-length IN () list, so
+	 * the run of %d has to be generated and interpolated. The ids themselves
+	 * still travel as prepare() arguments — never in the SQL string.
+	 */
+	private static function in_placeholders( array $ids ): string {
+		return implode( ',', array_fill( 0, count( $ids ), '%d' ) );
+	}
 
 	public static function init(): void {
 		add_action( 'rest_api_init', [ self::class, 'register_routes' ] );
@@ -256,23 +276,24 @@ final class Admin_Rest {
 
 	/** Sanitized list filters from the request. */
 	private static function read_filters( WP_REST_Request $request ): array {
-		return [
-			'form_key'    => sanitize_text_field( (string) $request->get_param( 'form_key' ) ),
-			'status'      => sanitize_text_field( (string) $request->get_param( 'status' ) ),
-			'from'        => sanitize_text_field( (string) $request->get_param( 'from' ) ),
-			'to'          => sanitize_text_field( (string) $request->get_param( 'to' ) ),
-			's'           => sanitize_text_field( (string) $request->get_param( 's' ) ),
-			// Field-wise filter: ONE field key (e.g. "experience") + the value
-			// to match within it — distinct from `s`, which searches every
-			// field's value across the whole submission with no key filter.
-			'field_key'   => sanitize_text_field( (string) $request->get_param( 'field_key' ) ),
-			'field_value' => sanitize_text_field( (string) $request->get_param( 'field_value' ) ),
-		];
+		$filters = [];
+
+		foreach ( self::FILTER_KEYS as $key ) {
+			$filters[ $key ] = sanitize_text_field( (string) $request->get_param( $key ) );
+		}
+
+		return $filters;
 	}
 
 	/** @return array [ 'rows' => object[], 'total' => int ] */
 	private static function query_submissions( array $filters, int $limit, int $offset ): array {
 		global $wpdb;
+
+		// Fill anything the caller left out. Union keeps the caller's values;
+		// only absent keys take the empty default, and an empty filter is a
+		// filter that is not applied.
+		$filters += array_fill_keys( self::FILTER_KEYS, '' );
+
 		$table  = Database::submissions_table();
 		$values = Database::submission_values_table();
 
@@ -297,31 +318,41 @@ final class Admin_Rest {
 		}
 		if ( '' !== $filters['s'] ) {
 			// Find-by-value — incl. find-by-email for DSAR/support requests.
-			$where[] = "id IN ( SELECT submission_id FROM {$values} WHERE field_value LIKE %s )";
+			$where[] = 'id IN ( SELECT submission_id FROM %i WHERE field_value LIKE %s )';
+			$args[]  = $values;
 			$args[]  = '%' . $wpdb->esc_like( $filters['s'] ) . '%';
 		}
 		if ( '' !== $filters['field_key'] ) {
-			// Field-wise filter: match ONE field's value, not every field's
-			// (unlike `s` above). An empty field_value with a field_key set
-			// still narrows to submissions that HAVE that field at all.
+			// Field-wise filter: ONE field key (e.g. "experience") plus the
+			// value to match within it — unlike `s` above, which searches
+			// every field's value with no key filter. An empty field_value
+			// with a field_key set still narrows to submissions that HAVE
+			// that field at all.
 			if ( '' !== $filters['field_value'] ) {
-				$where[] = "id IN ( SELECT submission_id FROM {$values} WHERE field_key = %s AND field_value LIKE %s )";
+				$where[] = 'id IN ( SELECT submission_id FROM %i WHERE field_key = %s AND field_value LIKE %s )';
+				$args[]  = $values;
 				$args[]  = $filters['field_key'];
 				$args[]  = '%' . $wpdb->esc_like( $filters['field_value'] ) . '%';
 			} else {
-				$where[] = "id IN ( SELECT submission_id FROM {$values} WHERE field_key = %s )";
+				$where[] = 'id IN ( SELECT submission_id FROM %i WHERE field_key = %s )';
+				$args[]  = $values;
 				$args[]  = $filters['field_key'];
 			}
 		}
 
+		// Every fragment above is a literal written in this method; the only
+		// things that vary are the VALUES, and they are all in $args, in
+		// placeholder order. $where_sql itself never carries request data.
 		$where_sql = implode( ' AND ', $where );
 
 		$total = (int) $wpdb->get_var(
-			$args ? $wpdb->prepare( "SELECT COUNT(*) FROM {$table} WHERE {$where_sql}", $args ) : "SELECT COUNT(*) FROM {$table} WHERE {$where_sql}"
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $where_sql is assembled from the literal fragments above; every value is a prepare() argument.
+			$wpdb->prepare( "SELECT COUNT(*) FROM %i WHERE {$where_sql}", array_merge( [ $table ], $args ) )
 		);
 
 		$rows = $wpdb->get_results(
-			$wpdb->prepare( "SELECT * FROM {$table} WHERE {$where_sql} ORDER BY id DESC LIMIT %d OFFSET %d", array_merge( $args, [ $limit, $offset ] ) )
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- same $where_sql, same argument order, plus the paging pair; the sniff cannot count through array_merge().
+			$wpdb->prepare( "SELECT * FROM %i WHERE {$where_sql} ORDER BY id DESC LIMIT %d OFFSET %d", array_merge( [ $table ], $args, [ $limit, $offset ] ) )
 		);
 
 		return [
@@ -342,9 +373,12 @@ final class Admin_Rest {
 		// One query for all previews: first two values per listed submission.
 		$previews = [];
 		if ( $result['rows'] ) {
-			$ids = implode( ',', array_map( static fn( $r ) => (int) $r->id, $result['rows'] ) );
-			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- ids are ints.
-			$value_rows = $wpdb->get_results( 'SELECT submission_id, field_value FROM ' . Database::submission_values_table() . " WHERE submission_id IN ({$ids}) ORDER BY id" );
+			$ids          = array_map( static fn( $r ) => (int) $r->id, $result['rows'] );
+			$placeholders = self::in_placeholders( $ids );
+			$value_rows   = $wpdb->get_results(
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $placeholders is a generated run of %d (see in_placeholders()); the ids are prepare() arguments.
+				$wpdb->prepare( "SELECT submission_id, field_value FROM %i WHERE submission_id IN ({$placeholders}) ORDER BY id", array_merge( [ Database::submission_values_table() ], $ids ) )
+			);
 			foreach ( $value_rows as $value ) {
 				$sid = (int) $value->submission_id;
 				if ( count( $previews[ $sid ] ?? [] ) < 2 ) {
@@ -388,10 +422,14 @@ final class Admin_Rest {
 		global $wpdb;
 
 		$rows = $wpdb->get_results(
-			'SELECT f.form_key, f.post_id, COUNT(s.id) AS submissions'
-			. ' FROM ' . Database::forms_table() . ' f'
-			. ' LEFT JOIN ' . Database::submissions_table() . ' s ON s.form_key = f.form_key'
-			. ' GROUP BY f.id, f.form_key, f.post_id ORDER BY f.id'
+			$wpdb->prepare(
+				'SELECT f.form_key, f.post_id, COUNT(s.id) AS submissions'
+				. ' FROM %i f'
+				. ' LEFT JOIN %i s ON s.form_key = f.form_key'
+				. ' GROUP BY f.id, f.form_key, f.post_id ORDER BY f.id',
+				Database::forms_table(),
+				Database::submissions_table()
+			)
 		);
 
 		return array_map(
@@ -430,13 +468,17 @@ final class Admin_Rest {
 
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(
-				'SELECT v.field_key, v.field_label FROM ' . $values . ' v'
-				. ' INNER JOIN ' . $submissions . ' s ON s.id = v.submission_id'
-				. ' INNER JOIN ( SELECT field_key, MAX(id) AS max_id FROM ' . $values
-				. ' WHERE submission_id IN ( SELECT id FROM ' . $submissions . ' WHERE form_key = %s )'
+				'SELECT v.field_key, v.field_label FROM %i v'
+				. ' INNER JOIN %i s ON s.id = v.submission_id'
+				. ' INNER JOIN ( SELECT field_key, MAX(id) AS max_id FROM %i'
+				. ' WHERE submission_id IN ( SELECT id FROM %i WHERE form_key = %s )'
 				. ' GROUP BY field_key ) latest ON latest.max_id = v.id'
 				. ' WHERE s.form_key = %s'
 				. ' ORDER BY v.field_key',
+				$values,
+				$submissions,
+				$values,
+				$submissions,
 				$form_key,
 				$form_key
 			)
@@ -457,14 +499,14 @@ final class Admin_Rest {
 		global $wpdb;
 		$id = (int) $request['id'];
 
-		$submission = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM ' . Database::submissions_table() . ' WHERE id = %d', $id ) );
+		$submission = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM %i WHERE id = %d', Database::submissions_table(), $id ) );
 
 		if ( ! $submission ) {
 			return new WP_REST_Response( [ 'message' => __( 'Submission not found.', 'animation-addons-for-elementor' ) ], 404 );
 		}
 
-		$values = $wpdb->get_results( $wpdb->prepare( 'SELECT field_key, field_label, field_type, field_value FROM ' . Database::submission_values_table() . ' WHERE submission_id = %d ORDER BY id', $id ) );
-		$logs   = $wpdb->get_results( $wpdb->prepare( 'SELECT action_type, status, message, created_at FROM ' . Database::action_logs_table() . ' WHERE submission_id = %d ORDER BY id', $id ) );
+		$values = $wpdb->get_results( $wpdb->prepare( 'SELECT field_key, field_label, field_type, field_value FROM %i WHERE submission_id = %d ORDER BY id', Database::submission_values_table(), $id ) );
+		$logs   = $wpdb->get_results( $wpdb->prepare( 'SELECT action_type, status, message, created_at FROM %i WHERE submission_id = %d ORDER BY id', Database::action_logs_table(), $id ) );
 
 		return new WP_REST_Response(
 			[
@@ -585,9 +627,17 @@ final class Admin_Rest {
 			return new WP_REST_Response( [ 'deleted' => 0 ], 200 );
 		}
 
-		$in      = implode( ',', $ids );
-		$deleted = (int) $wpdb->query( 'DELETE FROM ' . Database::submissions_table() . " WHERE id IN ({$in})" );
-		$wpdb->query( 'DELETE FROM ' . Database::submission_values_table() . " WHERE submission_id IN ({$in})" );
+		$ids          = array_values( $ids );
+		$placeholders = self::in_placeholders( $ids );
+
+		$deleted = (int) $wpdb->query(
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $placeholders is a generated run of %d (see in_placeholders()); the ids are prepare() arguments.
+			$wpdb->prepare( "DELETE FROM %i WHERE id IN ({$placeholders})", array_merge( [ Database::submissions_table() ], $ids ) )
+		);
+		$wpdb->query(
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- same list, same reason.
+			$wpdb->prepare( "DELETE FROM %i WHERE submission_id IN ({$placeholders})", array_merge( [ Database::submission_values_table() ], $ids ) )
+		);
 
 		return new WP_REST_Response( [ 'deleted' => $deleted ], 200 );
 	}
@@ -603,10 +653,11 @@ final class Admin_Rest {
 		$page   = max( 1, (int) $request->get_param( 'page' ) );
 		$offset = ( $page - 1 ) * self::PER_PAGE;
 
-		$total = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table} WHERE action_type = 'bot_shield'" );
+		$total = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %i WHERE action_type = 'bot_shield'", $table ) );
 		$rows  = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT id, message, request_snapshot, created_at FROM {$table} WHERE action_type = 'bot_shield' ORDER BY id DESC LIMIT %d OFFSET %d",
+				"SELECT id, message, request_snapshot, created_at FROM %i WHERE action_type = 'bot_shield' ORDER BY id DESC LIMIT %d OFFSET %d",
+				$table,
 				self::PER_PAGE,
 				$offset
 			)
@@ -642,10 +693,11 @@ final class Admin_Rest {
 		$page   = max( 1, (int) $request->get_param( 'page' ) );
 		$offset = ( $page - 1 ) * self::PER_PAGE;
 
-		$total = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table}" );
+		$total = (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i', $table ) );
 		$rows  = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT id, submission_id, action_type, status, attempts, next_run_at, updated_at FROM {$table} ORDER BY id DESC LIMIT %d OFFSET %d",
+				'SELECT id, submission_id, action_type, status, attempts, next_run_at, updated_at FROM %i ORDER BY id DESC LIMIT %d OFFSET %d',
+				$table,
 				self::PER_PAGE,
 				$offset
 			)
@@ -692,17 +744,19 @@ final class Admin_Rest {
 	public static function form_health(): WP_REST_Response {
 		global $wpdb;
 
-		$forms = $wpdb->get_results( 'SELECT * FROM ' . Database::forms_table() . ' ORDER BY id' );
+		$forms = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM %i ORDER BY id', Database::forms_table() ) );
 
 		$out = [];
 		foreach ( (array) $forms as $form ) {
 			$active = Schema_Store::get_active( (string) $form->form_key );
 
-			$submissions = (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM ' . Database::submissions_table() . ' WHERE form_key = %s', $form->form_key ) );
-			$last        = (string) $wpdb->get_var( $wpdb->prepare( 'SELECT created_at FROM ' . Database::submissions_table() . ' WHERE form_key = %s ORDER BY id DESC LIMIT 1', $form->form_key ) );
+			$submissions = (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i WHERE form_key = %s', Database::submissions_table(), $form->form_key ) );
+			$last        = (string) $wpdb->get_var( $wpdb->prepare( 'SELECT created_at FROM %i WHERE form_key = %s ORDER BY id DESC LIMIT 1', Database::submissions_table(), $form->form_key ) );
 			$failed      = (int) $wpdb->get_var(
 				$wpdb->prepare(
-					'SELECT COUNT(*) FROM ' . Database::action_jobs_table() . ' j INNER JOIN ' . Database::submissions_table() . ' s ON s.id = j.submission_id WHERE s.form_key = %s AND j.status = %s',
+					'SELECT COUNT(*) FROM %i j INNER JOIN %i s ON s.id = j.submission_id WHERE s.form_key = %s AND j.status = %s',
+					Database::action_jobs_table(),
+					Database::submissions_table(),
 					$form->form_key,
 					Queue::STATUS_FAILED
 				)
@@ -959,22 +1013,26 @@ final class Admin_Rest {
 
 		global $wpdb;
 
-		$filters = [
-			'form_key' => isset( $_GET['form_key'] ) ? sanitize_text_field( wp_unslash( $_GET['form_key'] ) ) : '',
-			'status'   => isset( $_GET['status'] ) ? sanitize_text_field( wp_unslash( $_GET['status'] ) ) : '',
-			'from'     => isset( $_GET['from'] ) ? sanitize_text_field( wp_unslash( $_GET['from'] ) ) : '',
-			'to'       => isset( $_GET['to'] ) ? sanitize_text_field( wp_unslash( $_GET['to'] ) ) : '',
-			's'        => isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : '',
-		];
+		// Read straight after check_admin_referer() above, and every value is
+		// unslashed and sanitised here. Driven from FILTER_KEYS so this stays
+		// in step with the REST reader.
+		$filters = [];
+
+		foreach ( self::FILTER_KEYS as $key ) {
+			$filters[ $key ] = isset( $_GET[ $key ] ) ? sanitize_text_field( wp_unslash( $_GET[ $key ] ) ) : '';
+		}
 
 		$rows = self::query_submissions( $filters, self::CSV_LIMIT, 0 )['rows'];
 
 		$values_by_submission = [];
 		$columns              = []; // field_key => header label.
 		if ( $rows ) {
-			$ids = implode( ',', array_map( static fn( $r ) => (int) $r->id, $rows ) );
-			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- ids are ints.
-			$values = $wpdb->get_results( 'SELECT submission_id, field_key, field_label, field_value FROM ' . Database::submission_values_table() . " WHERE submission_id IN ({$ids}) ORDER BY id" );
+			$ids          = array_map( static fn( $r ) => (int) $r->id, $rows );
+			$placeholders = self::in_placeholders( $ids );
+			$values       = $wpdb->get_results(
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $placeholders is a generated run of %d (see in_placeholders()); the ids are prepare() arguments.
+				$wpdb->prepare( "SELECT submission_id, field_key, field_label, field_value FROM %i WHERE submission_id IN ({$placeholders}) ORDER BY id", array_merge( [ Database::submission_values_table() ], $ids ) )
+			);
 
 			foreach ( $values as $value ) {
 				$values_by_submission[ (int) $value->submission_id ][ $value->field_key ] = $value->field_value;
@@ -986,10 +1044,16 @@ final class Admin_Rest {
 
 		// A clean byte stream: drop anything a notice/warning already printed
 		// (it would land INSIDE the .csv) and keep further ones off-stream.
-		while ( ob_get_level() > 0 ) {
-			ob_end_clean();
+		//
+		// This opens no buffer of its own. It closes the ones already open,
+		// which a file download has to do or the CSV is corrupted, and the
+		// request ends at the exit below -- so nothing runs afterwards that a
+		// changed buffer stack could affect. ob_end_clean() returns false for
+		// a buffer PHP will not let us delete, and the loop stops there rather
+		// than spinning.
+		while ( ob_get_level() > 0 && ob_end_clean() ) {
+			continue;
 		}
-		@ini_set( 'display_errors', '0' ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.PHP.IniSet.display_errors_Disallowed -- file download; errors still go to the log.
 
 		nocache_headers();
 		header( 'Content-Type: text/csv; charset=utf-8' );

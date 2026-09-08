@@ -36,7 +36,18 @@ final class Rest {
 			[
 				'methods'             => \WP_REST_Server::READABLE,
 				'callback'            => [ $this, 'get_presets' ],
-				'permission_callback' => '__return_true',
+				/*
+				 * Editor-only. This route proxies a REMOTE fetch (Remote_Client ->
+				 * the preset server), so a public permission callback let any
+				 * anonymous visitor make this site issue outbound requests, and
+				 * vary element_type/category to walk straight past the transient
+				 * cache that is supposed to bound them. The only consumer is the
+				 * editor panel's preset picker, which nobody without edit_posts
+				 * can open.
+				 */
+				'permission_callback' => static function () {
+					return current_user_can( 'edit_posts' );
+				},
 				'args'                => [
 					'element_type' => [ 'type' => 'string', 'required' => true ],
 					'category'     => [ 'type' => 'string', 'required' => false ],

@@ -1,4 +1,10 @@
 <?php
+namespace WCF_ADDONS\AtomicWidgets\Widgets\CurvedText;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 /**
  * AAE Curved Text — atomic WIDGET.
  *
@@ -76,12 +82,6 @@
  *
  * @package AnimationAddonsForElementor
  */
-
-namespace WCF_ADDONS\AtomicWidgets\Widgets\CurvedText;
-
-if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly.
-}
 
 if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base' ) ) {
 	return;

@@ -1,4 +1,10 @@
 <?php
+namespace WCF_ADDONS\AtomicWidgets\Widgets\AdvancedHeading;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
 /**
  * AAE Advanced Heading — atomic leaf widget.
  *
@@ -47,12 +53,6 @@
  *
  * @package AnimationAddonsForElementor
  */
-
-namespace WCF_ADDONS\AtomicWidgets\Widgets\AdvancedHeading;
-
-if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly.
-}
 
 if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Widget_Base' ) ) {
 	return;

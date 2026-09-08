@@ -572,7 +572,9 @@ class AAE_A_Social_Share_Item extends Atomic_Element_Base {
 	 * post" in this plugin's CLAUDE.md) — the request IS the current page.
 	 */
 	protected static function current_page_url(): string {
-		$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '/';
+		$request_uri = isset( $_SERVER['REQUEST_URI'] )
+			? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) )
+			: '/';
 
 		return esc_url_raw( home_url( $request_uri ) );
 	}

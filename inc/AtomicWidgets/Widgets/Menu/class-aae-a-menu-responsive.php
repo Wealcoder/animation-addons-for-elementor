@@ -1,4 +1,12 @@
 <?php
+namespace WCF_ADDONS\AtomicWidgets\Widgets\Menu;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+use WCF_ADDONS\Atomic\PropTypes\Section_Anchor_Prop_Type as Base_Section_Anchor;
+
 /**
  * WP Menu — responsive overrides for every CSS-variable-driven style section.
  *
@@ -48,14 +56,6 @@
  *
  * @package animation-addons-for-elementor
  */
-
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Menu;
-
-use WCF_ADDONS\Atomic\PropTypes\Section_Anchor_Prop_Type as Base_Section_Anchor;
-
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
 
 /**
  * Sentinel prop the panel binds a placeholder Text_Control to. The editor's

@@ -97,9 +97,20 @@ class CodeSnippetFrontend {
 	/**
 	 * Run PHP code snippets.
 	 *
+	 * Note: PHP code execution requires Animation Addons Pro.
+	 *
 	 * @return void
 	 */
 	public function run_php_code_snippets() {
+		// Guard: Do not process PHP snippets unless Pro handler is registered and file editing is allowed.
+		if ( ! has_action( 'wcf_code_snippet_execute_php' ) ) {
+			return;
+		}
+
+		if ( ( defined( 'DISALLOW_FILE_EDIT' ) && DISALLOW_FILE_EDIT ) || ( defined( 'DISALLOW_FILE_MODS' ) && DISALLOW_FILE_MODS ) ) {
+			return;
+		}
+
 		$snippets = $this->get_active_snippets( 'php' );
 
 		foreach ( $snippets as $snippet ) {
@@ -462,7 +473,8 @@ class CodeSnippetFrontend {
 				break;
 
 			case 'php':
-				$this->execute_php_snippet( $code_content );
+				// PHP snippet execution is handled by Animation Addons Pro.
+				do_action( 'wcf_code_snippet_execute_php', $code_content, $snippet );
 				break;
 
 			default:
@@ -562,35 +574,6 @@ class CodeSnippetFrontend {
 		}
 	}
 
-	/**
-	 * Execute PHP snippet
-	 *
-	 * @param string $content PHP content.
-	 *
-	 * @since 2.3.10
-	 * @return void
-	 */
-	private function execute_php_snippet( $content ) {
-		$content = preg_replace( '/^\s*<\?(php|PHP)?/i', '', $content );
-		$content = preg_replace( '/\?>\s*$/', '', $content );
-		if ( ! empty( $content ) ) {
-			ob_start();
-
-			try {
-				$wrapped = 'return function() { ' . $content . ' };';
-				$func    = eval( $wrapped ); // phpcs:ignore WordPress.Security.Eval.Discouraged, Generic.PHP.ForbiddenFunctions.Found
-
-				if ( is_callable( $func ) ) {
-					$func();
-				}
-			} catch ( \Throwable $e ) {
-			}
-
-			$output = ob_get_clean();
-
-			echo wp_kses_post( $output );
-		}
-	}
 }
 
 CodeSnippetFrontend::instance();

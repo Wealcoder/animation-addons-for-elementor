@@ -259,15 +259,10 @@ class WCF_Theme_Builder
 					continue;
 				}
 
-				$src = $style->src;
-
-				if (! empty($style->ver)) {
-					$src = add_query_arg('ver', $style->ver, $src);
-				}
-
 				$this->deferred_template_styles[] = array(
 					'handle' => $handle,
-					'src'    => $src,
+					'src'    => $style->src,
+					'ver'    => ! empty($style->ver) ? $style->ver : null,
 					'media'  => is_string($style->args) && '' !== $style->args ? $style->args : 'all',
 				);
 
@@ -288,12 +283,16 @@ class WCF_Theme_Builder
 	public function print_builder_template_styles()
 	{
 		foreach ($this->deferred_template_styles as $style) {
-			printf(
-				"<link rel='stylesheet' id='aae-tb-%s-css' href='%s' media='%s' />\n",
-				esc_attr($style['handle']),
-				esc_url($style['src']),
-				esc_attr($style['media'])
+			$handle = 'aae-tb-' . $style['handle'];
+
+			wp_enqueue_style(
+				$handle,
+				$style['src'],
+				array(),
+				$style['ver'],
+				$style['media']
 			);
+			wp_print_styles($handle);
 		}
 
 		$this->deferred_template_styles = array();
@@ -465,10 +464,20 @@ class WCF_Theme_Builder
 
 		// Avoid running wp_head hooks again
 		remove_all_actions('wp_head');
+		// locate_template() includes a file belonging to the active theme, so
+		// what runs between the two calls is code this plugin does not own.
+		// finally + the level check guarantee the buffer closes even if that
+		// template throws, and that we only ever close our own.
+		$ob_level = ob_get_level();
 		ob_start();
-		// It cause a `require_once` so, in the get_header it self it will not be required again.
-		locate_template($templates, true);
-		ob_get_clean();
+		try {
+			// It cause a `require_once` so, in the get_header it self it will not be required again.
+			locate_template($templates, true);
+		} finally {
+			while (ob_get_level() > $ob_level) {
+				ob_end_clean();
+			}
+		}
 	}
 
 	/**
@@ -513,10 +522,20 @@ class WCF_Theme_Builder
 
 		// Avoid running wp_head hooks again
 		remove_all_actions('wp_footer');
+		// locate_template() includes a file belonging to the active theme, so
+		// what runs between the two calls is code this plugin does not own.
+		// finally + the level check guarantee the buffer closes even if that
+		// template throws, and that we only ever close our own.
+		$ob_level = ob_get_level();
 		ob_start();
-		// It cause a `require_once` so, in the get_header it self it will not be required again.
-		locate_template($templates, true);
-		ob_get_clean();
+		try {
+			// It cause a `require_once` so, in the get_header it self it will not be required again.
+			locate_template($templates, true);
+		} finally {
+			while (ob_get_level() > $ob_level) {
+				ob_end_clean();
+			}
+		}
 	}
 
 	// Set Builder content header footer

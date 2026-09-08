@@ -191,14 +191,25 @@ class Ajax_Handler {
 	 */
 	public function ajax_load_more() {
 		try {
-			$this->verify_nonce();
+			// Checked here rather than through verify_nonce() so the check is in
+			// the same scope as the request reads below (the sniff cannot follow
+			// a helper). Same action, same field, same 403 reply as the helper.
+			if ( ! check_ajax_referer( 'aae_loop_builder_nonce', 'nonce', false ) ) {
+				wp_send_json_error( array( 'message' => esc_html__( 'Security check failed.', 'animation-addons-for-elementor' ) ), 403 );
+			}
 
-			// Nonce is verified in verify_nonce() above.
-			$settings = isset( $_POST['settings'] ) ? $this->sanitize_settings( wp_unslash( $_POST['settings'] ) ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Missing
-			$page     = isset( $_POST['page'] ) ? intval( wp_unslash( $_POST['page'] ) ) : 1; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$safe_settings = isset( $_POST['settings'] ) ? map_deep( (array) wp_unslash( $_POST['settings'] ), 'sanitize_text_field' ) : array();
+			$settings      = $this->sanitize_settings( $safe_settings );
+			
+			$page = isset( $_POST['page'] ) ? absint( wp_unslash( $_POST['page'] ) ) : 1;
 
 			if ( empty( $settings['template_id'] ) ) {
 				wp_send_json_error( array( 'message' => 'No template specified' ) );
+			}
+
+			// Security: Enforce a hard maximum limit on posts per page to prevent DoS via heavy queries.
+			if ( isset( $settings['posts_per_page'] ) && (int) $settings['posts_per_page'] > 100 ) {
+				$settings['posts_per_page'] = 100;
 			}
 
 			$settings['paged'] = $page;
@@ -316,14 +327,25 @@ class Ajax_Handler {
 	 */
 	public function ajax_load_page() {
 		try {
-			$this->verify_nonce();
+			// Checked here rather than through verify_nonce() so the check is in
+			// the same scope as the request reads below (the sniff cannot follow
+			// a helper). Same action, same field, same 403 reply as the helper.
+			if ( ! check_ajax_referer( 'aae_loop_builder_nonce', 'nonce', false ) ) {
+				wp_send_json_error( array( 'message' => esc_html__( 'Security check failed.', 'animation-addons-for-elementor' ) ), 403 );
+			}
 
-			// Nonce is verified in verify_nonce() above.
-			$settings = isset( $_POST['settings'] ) ? $this->sanitize_settings( wp_unslash( $_POST['settings'] ) ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Missing
-			$page     = isset( $_POST['page'] ) ? absint( wp_unslash( $_POST['page'] ) ) : ( $settings['paged'] ?? 1 ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$safe_settings = isset( $_POST['settings'] ) ? map_deep( (array) wp_unslash( $_POST['settings'] ), 'sanitize_text_field' ) : array();
+			$settings      = $this->sanitize_settings( $safe_settings );
+			
+			$page = isset( $_POST['page'] ) ? absint( wp_unslash( $_POST['page'] ) ) : ( $settings['paged'] ?? 1 );
 
 			if ( empty( $settings['template_id'] ) ) {
 				wp_send_json_error( array( 'message' => 'No template specified' ) );
+			}
+
+			// Security: Enforce a hard maximum limit on posts per page to prevent DoS via heavy queries.
+			if ( isset( $settings['posts_per_page'] ) && (int) $settings['posts_per_page'] > 100 ) {
+				$settings['posts_per_page'] = 100;
 			}
 
 			$settings['paged'] = $page;

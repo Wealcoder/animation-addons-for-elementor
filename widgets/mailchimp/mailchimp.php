@@ -1193,11 +1193,17 @@ class Mailchimp extends Widget_Base
 	{
 		$settings = $this->get_settings_for_display();
 
+		$post_id = get_the_ID();
+		if ( empty( $post_id ) && class_exists( '\Elementor\Plugin' ) && \Elementor\Plugin::$instance->documents->get_current() ) {
+			$post_id = \Elementor\Plugin::$instance->documents->get_current()->get_main_id();
+		}
+
 		$this->add_render_attribute('wrapper', 'class', 'wcf--mailchimp');
 
 		$this->add_render_attribute('wcf-mailchimp-form', [
 			'class'           => 'wcf-mailchimp-form wcf--form-wrapper',
-			'data-key'        => ! empty($settings['mailchimp_api']) ? base64_encode('w1c2f' . $settings['mailchimp_api'] . 'w1c2f') : '',
+			'data-post-id'    => $post_id ? $post_id : '',
+			'data-widget-id'  => $this->get_id(),
 			'data-list-id'    => ! empty($settings['mailchimp_lists']) ? ltrim($settings['mailchimp_lists']) : '',
 			'data-double-opt' => ! empty($settings['enable_double_opt_in']) ? $settings['enable_double_opt_in'] : '',
 			'data-list-tags'  => ! empty($settings['mailchimp_list_tags']) ? $settings['mailchimp_list_tags'] : '',

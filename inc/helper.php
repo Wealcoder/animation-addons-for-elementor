@@ -189,7 +189,7 @@ if ( ! function_exists( 'wcf_addons_get_local_plugin_data' ) ) :
 		}
 
 		if ( ! function_exists( 'get_plugins' ) ) {
-			include_once ABSPATH . 'wp-admin/includes/plugin.php';
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
 
 		$plugins = get_plugins();

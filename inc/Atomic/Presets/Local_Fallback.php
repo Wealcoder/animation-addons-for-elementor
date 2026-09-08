@@ -199,7 +199,10 @@ final class Local_Fallback {
 	 * never throws.
 	 */
 	private function parse_preset_file( string $file ): ?array {
-		$raw = file_get_contents( $file );
+		// A preset JSON bundled inside this plugin, resolved from the widget
+		// registry's own path -- never a URL and never request data, so the
+		// wp_remote_get() the sniff suggests would be wrong here.
+		$raw = file_get_contents( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 
 		if ( false === $raw ) {
 			return null;

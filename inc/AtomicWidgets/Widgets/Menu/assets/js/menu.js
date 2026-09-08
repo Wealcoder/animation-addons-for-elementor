@@ -476,11 +476,18 @@ const initMenu = (root) => {
 			&& window.elementorFrontend.config.ajaxurl)
 			|| window.ajaxurl
 			|| '/wp-admin/admin-ajax.php';
-		fetch(`${ajaxUrl}?action=aae_get_menu_html&menu=${encodeURIComponent(slug)}`, {
-			// admin-ajax authenticates by cookie; without this the request is
-			// anonymous, the priv-only action never matches and it 400s.
-			credentials: 'same-origin',
-		})
+		// The endpoint verifies this; it is localized onto this handle in
+		// the same block that supplies ajaxUrl.
+		const nonce = (window.AAE_MENU_CFG && window.AAE_MENU_CFG.nonce) || '';
+		fetch(
+			`${ajaxUrl}?action=aae_get_menu_html&menu=${encodeURIComponent(slug)}`
+			+ `&nonce=${encodeURIComponent(nonce)}`,
+			{
+				// admin-ajax authenticates by cookie; without this the request is
+				// anonymous, the priv-only action never matches and it 400s.
+				credentials: 'same-origin',
+			},
+		)
 			.then((r) => r.json())
 			.then((data) => {
 				if (data && data.success && data.data && body) {
