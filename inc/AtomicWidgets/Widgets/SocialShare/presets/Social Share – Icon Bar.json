@@ -1,0 +1,776 @@
+{
+ "content": [
+  {
+   "id": "37fd8a3e",
+   "settings": {
+    "classes": {
+     "$$type": "classes",
+     "value": [
+      "e-37fd8a3e-a5ad134"
+     ]
+    }
+   },
+   "elements": [
+    {
+     "id": "5ad101d1",
+     "settings": {
+      "classes": {
+       "$$type": "classes",
+       "value": [
+        "e-5ad101d1-93f33b5"
+       ]
+      }
+     },
+     "elements": [
+      {
+       "id": "2473e562",
+       "settings": {
+        "classes": {
+         "$$type": "classes",
+         "value": [
+          "e-2473e562-131360b"
+         ]
+        },
+        "share_vendor": {
+         "$$type": "string",
+         "value": "facebook"
+        },
+        "btn_target": {
+         "$$type": "string",
+         "value": "_blank"
+        },
+        "btn_nofollow": {
+         "$$type": "boolean",
+         "value": false
+        }
+       },
+       "elements": [
+        {
+         "id": "4dee0bc0",
+         "settings": {
+          "classes": {
+           "$$type": "classes",
+           "value": [
+            "e-4dee0bc0-0300fcf"
+           ]
+          },
+          "svg": {
+           "$$type": "svg-src",
+           "value": {
+            "id": null,
+            "url": {
+             "$$type": "url",
+             "value": "{{AAE_ASSET_URL}}Widgets/SocialShare/assets/svg/facebook-glyph.svg"
+            }
+           }
+          },
+          "link": {
+           "$$type": "link",
+           "value": []
+          }
+         },
+         "elements": [],
+         "isInner": false,
+         "widgetType": "e-aae-a-social-share-item-icon",
+         "elType": "widget",
+         "styles": {
+          "e-4dee0bc0-0300fcf": {
+           "id": "e-4dee0bc0-0300fcf",
+           "label": "local",
+           "type": "class",
+           "variants": [
+            {
+             "meta": {
+              "breakpoint": "desktop",
+              "state": null
+             },
+             "props": {
+              "width": {
+               "$$type": "size",
+               "value": {
+                "unit": "px",
+                "size": 10
+               }
+              },
+              "height": {
+               "$$type": "size",
+               "value": {
+                "unit": "px",
+                "size": 15
+               }
+              }
+             },
+             "custom_css": null
+            }
+           ]
+          }
+         },
+         "interactions": [],
+         "editor_settings": {
+          "title": "Icon"
+         },
+         "version": "0.0"
+        }
+       ],
+       "isInner": false,
+       "elType": "e-aae-a-social-share-item",
+       "styles": {
+        "e-2473e562-131360b": {
+         "id": "e-2473e562-131360b",
+         "label": "local",
+         "type": "class",
+         "variants": [
+          {
+           "meta": {
+            "breakpoint": "desktop",
+            "state": null
+           },
+           "props": {
+            "width": {
+             "$$type": "size",
+             "value": {
+              "unit": "auto",
+              "size": ""
+             }
+            },
+            "padding": {
+             "$$type": "size",
+             "value": {
+              "unit": "px",
+              "size": 0
+             }
+            },
+            "background": {
+             "$$type": "background",
+             "value": {
+              "color": {
+               "$$type": "color",
+               "value": "#f2f3f500"
+              }
+             }
+            },
+            "justify-content": {
+             "$$type": "string",
+             "value": "center"
+            }
+           },
+           "custom_css": null
+          },
+          {
+           "meta": {
+            "breakpoint": "desktop",
+            "state": "hover"
+           },
+           "props": {
+            "background": {
+             "$$type": "background",
+             "value": {
+              "color": {
+               "$$type": "color",
+               "value": "#e4e6eb00"
+              }
+             }
+            }
+           },
+           "custom_css": null
+          }
+         ]
+        }
+       },
+       "interactions": [],
+       "editor_settings": {
+        "title": "Facebook"
+       },
+       "version": "0.0"
+      },
+      {
+       "id": "55d01141",
+       "settings": {
+        "classes": {
+         "$$type": "classes",
+         "value": [
+          "e-55d01141-a42c990"
+         ]
+        },
+        "share_vendor": {
+         "$$type": "string",
+         "value": "twitter"
+        },
+        "btn_target": {
+         "$$type": "string",
+         "value": "_blank"
+        },
+        "btn_nofollow": {
+         "$$type": "boolean",
+         "value": false
+        }
+       },
+       "elements": [
+        {
+         "id": "6b08acdb",
+         "settings": {
+          "classes": {
+           "$$type": "classes",
+           "value": [
+            "e-6b08acdb-3a66f28"
+           ]
+          },
+          "svg": {
+           "$$type": "svg-src",
+           "value": {
+            "id": null,
+            "url": {
+             "$$type": "url",
+             "value": "{{AAE_ASSET_URL}}Widgets/SocialShare/assets/svg/twitter-glyph.svg"
+            }
+           }
+          },
+          "link": {
+           "$$type": "link",
+           "value": []
+          }
+         },
+         "elements": [],
+         "isInner": false,
+         "widgetType": "e-aae-a-social-share-item-icon",
+         "elType": "widget",
+         "styles": {
+          "e-6b08acdb-3a66f28": {
+           "id": "e-6b08acdb-3a66f28",
+           "label": "local",
+           "type": "class",
+           "variants": [
+            {
+             "meta": {
+              "breakpoint": "desktop",
+              "state": null
+             },
+             "props": {
+              "width": {
+               "$$type": "size",
+               "value": {
+                "unit": "px",
+                "size": 15
+               }
+              },
+              "height": {
+               "$$type": "size",
+               "value": {
+                "unit": "px",
+                "size": 17
+               }
+              }
+             },
+             "custom_css": null
+            }
+           ]
+          }
+         },
+         "interactions": [],
+         "editor_settings": {
+          "title": "Icon"
+         },
+         "version": "0.0"
+        }
+       ],
+       "isInner": false,
+       "elType": "e-aae-a-social-share-item",
+       "styles": {
+        "e-55d01141-a42c990": {
+         "id": "e-55d01141-a42c990",
+         "label": "local",
+         "type": "class",
+         "variants": [
+          {
+           "meta": {
+            "breakpoint": "desktop",
+            "state": null
+           },
+           "props": {
+            "width": {
+             "$$type": "size",
+             "value": {
+              "unit": "auto",
+              "size": ""
+             }
+            },
+            "padding": {
+             "$$type": "size",
+             "value": {
+              "unit": "px",
+              "size": 0
+             }
+            },
+            "background": {
+             "$$type": "background",
+             "value": {
+              "color": {
+               "$$type": "color",
+               "value": "#f2f3f500"
+              }
+             }
+            },
+            "justify-content": {
+             "$$type": "string",
+             "value": "center"
+            }
+           },
+           "custom_css": null
+          },
+          {
+           "meta": {
+            "breakpoint": "desktop",
+            "state": "hover"
+           },
+           "props": {
+            "background": {
+             "$$type": "background",
+             "value": {
+              "color": {
+               "$$type": "color",
+               "value": "#e4e6eb00"
+              }
+             }
+            }
+           },
+           "custom_css": null
+          }
+         ]
+        }
+       },
+       "interactions": [],
+       "editor_settings": {
+        "title": "Twitter"
+       },
+       "version": "0.0"
+      },
+      {
+       "id": "77fe2eb7",
+       "settings": {
+        "classes": {
+         "$$type": "classes",
+         "value": [
+          "e-77fe2eb7-6680589"
+         ]
+        },
+        "share_vendor": {
+         "$$type": "string",
+         "value": "linkedin"
+        },
+        "btn_target": {
+         "$$type": "string",
+         "value": "_blank"
+        },
+        "btn_nofollow": {
+         "$$type": "boolean",
+         "value": false
+        }
+       },
+       "elements": [
+        {
+         "id": "7306224",
+         "settings": {
+          "classes": {
+           "$$type": "classes",
+           "value": [
+            "e-7306224-8193bd4"
+           ]
+          },
+          "svg": {
+           "$$type": "svg-src",
+           "value": {
+            "id": null,
+            "url": {
+             "$$type": "url",
+             "value": "{{AAE_ASSET_URL}}Widgets/SocialShare/assets/svg/linkedin-glyph.svg"
+            }
+           }
+          },
+          "link": {
+           "$$type": "link",
+           "value": []
+          }
+         },
+         "elements": [],
+         "isInner": false,
+         "widgetType": "e-aae-a-social-share-item-icon",
+         "elType": "widget",
+         "styles": {
+          "e-7306224-8193bd4": {
+           "id": "e-7306224-8193bd4",
+           "label": "local",
+           "type": "class",
+           "variants": [
+            {
+             "meta": {
+              "breakpoint": "desktop",
+              "state": null
+             },
+             "props": {
+              "width": {
+               "$$type": "size",
+               "value": {
+                "unit": "px",
+                "size": 17
+               }
+              },
+              "height": {
+               "$$type": "size",
+               "value": {
+                "unit": "px",
+                "size": 17
+               }
+              }
+             },
+             "custom_css": null
+            }
+           ]
+          }
+         },
+         "interactions": [],
+         "editor_settings": {
+          "title": "Icon"
+         },
+         "version": "0.0"
+        }
+       ],
+       "isInner": false,
+       "elType": "e-aae-a-social-share-item",
+       "styles": {
+        "e-77fe2eb7-6680589": {
+         "id": "e-77fe2eb7-6680589",
+         "label": "local",
+         "type": "class",
+         "variants": [
+          {
+           "meta": {
+            "breakpoint": "desktop",
+            "state": null
+           },
+           "props": {
+            "width": {
+             "$$type": "size",
+             "value": {
+              "unit": "auto",
+              "size": ""
+             }
+            },
+            "padding": {
+             "$$type": "size",
+             "value": {
+              "unit": "px",
+              "size": 0
+             }
+            },
+            "background": {
+             "$$type": "background",
+             "value": {
+              "color": {
+               "$$type": "color",
+               "value": "#f2f3f500"
+              }
+             }
+            },
+            "justify-content": {
+             "$$type": "string",
+             "value": "center"
+            }
+           },
+           "custom_css": null
+          },
+          {
+           "meta": {
+            "breakpoint": "desktop",
+            "state": "hover"
+           },
+           "props": {
+            "background": {
+             "$$type": "background",
+             "value": {
+              "color": {
+               "$$type": "color",
+               "value": "#e4e6eb00"
+              }
+             }
+            }
+           },
+           "custom_css": null
+          }
+         ]
+        }
+       },
+       "interactions": [],
+       "editor_settings": {
+        "title": "LinkedIn"
+       },
+       "version": "0.0"
+      },
+      {
+       "id": "7b05bb9a",
+       "settings": {
+        "classes": {
+         "$$type": "classes",
+         "value": [
+          "e-7b05bb9a-c44fa9f"
+         ]
+        },
+        "btn_target": {
+         "$$type": "string",
+         "value": "_blank"
+        },
+        "btn_nofollow": {
+         "$$type": "boolean",
+         "value": false
+        }
+       },
+       "elements": [
+        {
+         "id": "4e9b74d7",
+         "settings": {
+          "classes": {
+           "$$type": "classes",
+           "value": [
+            "e-4e9b74d7-2b57689"
+           ]
+          },
+          "svg": {
+           "$$type": "svg-src",
+           "value": {
+            "id": null,
+            "url": {
+             "$$type": "url",
+             "value": "{{AAE_ASSET_URL}}Widgets/SocialShare/assets/svg/share-nodes.svg"
+            }
+           }
+          },
+          "link": {
+           "$$type": "link",
+           "value": []
+          }
+         },
+         "elements": [],
+         "isInner": false,
+         "widgetType": "e-aae-a-social-share-item-icon",
+         "elType": "widget",
+         "styles": {
+          "e-4e9b74d7-2b57689": {
+           "id": "e-4e9b74d7-2b57689",
+           "label": "local",
+           "type": "class",
+           "variants": [
+            {
+             "meta": {
+              "breakpoint": "desktop",
+              "state": null
+             },
+             "props": {
+              "width": {
+               "$$type": "size",
+               "value": {
+                "unit": "px",
+                "size": 17
+               }
+              },
+              "height": {
+               "$$type": "size",
+               "value": {
+                "unit": "px",
+                "size": 17
+               }
+              }
+             },
+             "custom_css": null
+            }
+           ]
+          }
+         },
+         "interactions": [],
+         "editor_settings": {
+          "title": "Icon"
+         },
+         "version": "0.0"
+        }
+       ],
+       "isInner": false,
+       "elType": "e-aae-a-social-share-item",
+       "styles": {
+        "e-7b05bb9a-c44fa9f": {
+         "id": "e-7b05bb9a-c44fa9f",
+         "label": "local",
+         "type": "class",
+         "variants": [
+          {
+           "meta": {
+            "breakpoint": "desktop",
+            "state": null
+           },
+           "props": {
+            "width": {
+             "$$type": "size",
+             "value": {
+              "unit": "auto",
+              "size": ""
+             }
+            },
+            "padding": {
+             "$$type": "size",
+             "value": {
+              "unit": "px",
+              "size": 0
+             }
+            },
+            "background": {
+             "$$type": "background",
+             "value": {
+              "color": {
+               "$$type": "color",
+               "value": "#f2f3f500"
+              }
+             }
+            },
+            "justify-content": {
+             "$$type": "string",
+             "value": "center"
+            }
+           },
+           "custom_css": null
+          },
+          {
+           "meta": {
+            "breakpoint": "desktop",
+            "state": "hover"
+           },
+           "props": {
+            "background": {
+             "$$type": "background",
+             "value": {
+              "color": {
+               "$$type": "color",
+               "value": "#e4e6eb00"
+              }
+             }
+            }
+           },
+           "custom_css": null
+          }
+         ]
+        }
+       },
+       "interactions": [],
+       "editor_settings": {
+        "title": "Custom"
+       },
+       "version": "0.0"
+      }
+     ],
+     "isInner": false,
+     "elType": "e-aae-a-social-share",
+     "styles": {
+      "e-5ad101d1-93f33b5": {
+       "id": "e-5ad101d1-93f33b5",
+       "label": "local",
+       "type": "class",
+       "variants": [
+        {
+         "meta": {
+          "breakpoint": "desktop",
+          "state": null
+         },
+         "props": {
+          "padding": {
+           "$$type": "dimensions",
+           "value": {
+            "block-start": {
+             "$$type": "size",
+             "value": {
+              "unit": "px",
+              "size": 0
+             }
+            },
+            "inline-end": {
+             "$$type": "size",
+             "value": {
+              "unit": "px",
+              "size": 0
+             }
+            },
+            "block-end": {
+             "$$type": "size",
+             "value": {
+              "unit": "px",
+              "size": 0
+             }
+            },
+            "inline-start": {
+             "$$type": "size",
+             "value": {
+              "unit": "px",
+              "size": 0
+             }
+            }
+           }
+          },
+          "gap": {
+           "$$type": "size",
+           "value": {
+            "unit": "px",
+            "size": 15
+           }
+          },
+          "justify-content": {
+           "$$type": "string",
+           "value": "flex-start"
+          },
+          "align-items": {
+           "$$type": "string",
+           "value": "center"
+          }
+         },
+         "custom_css": null
+        }
+       ]
+      }
+     },
+     "interactions": [],
+     "editor_settings": {
+      "title": "Social Share - Icon Bar"
+     },
+     "version": "0.0"
+    }
+   ],
+   "isInner": false,
+   "elType": "e-flexbox",
+   "styles": {
+    "e-37fd8a3e-a5ad134": {
+     "id": "e-37fd8a3e-a5ad134",
+     "label": "local",
+     "type": "class",
+     "variants": [
+      {
+       "meta": {
+        "breakpoint": "desktop",
+        "state": null
+       },
+       "props": {
+        "flex-direction": {
+         "$$type": "string",
+         "value": "column"
+        }
+       },
+       "custom_css": null
+      }
+     ]
+    }
+   },
+   "interactions": [],
+   "editor_settings": {
+    "title": "Flexbox"
+   },
+   "version": "0.0"
+  }
+ ],
+ "page_settings": [],
+ "version": "0.4",
+ "title": "Social Share - Icon Bar",
+ "type": "e-flexbox"
+}
