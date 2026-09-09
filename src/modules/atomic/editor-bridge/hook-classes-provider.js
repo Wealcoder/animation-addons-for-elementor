@@ -111,6 +111,14 @@ export const JS_HOOK_CLASSES = [
 	// genuinely fresh drop" contract it exists to carry.
 	'aae-slider-default',
 
+	// Stack Cards — the auto-preset watcher's freshness marker, seeded by
+	// AAE_A_Stack_Cards::DEFAULT_CHILD_MARKER onto all four default cards.
+	// Registered for the same reason as the slider's: unregistered, the panel
+	// reports it as a missing class on every card and the alert's ✕ strips it,
+	// which would silently break the "auto-apply only on a genuinely fresh
+	// drop" contract it exists to carry.
+	'aae-sc-default',
+
 	// Counter / Countdown — the nodes whose text the runtime rewrites
 	'aae-a-counter-number',
 	'aae-a-countdown-unit-count',
