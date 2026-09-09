@@ -100,6 +100,29 @@ const AUTO_PRESETS = {
     defaultMarker: 'aae-ic-default',
   },
 
+  // A bare Stack Cards drops as four empty cards in a plain vertical list —
+  // readable, but it gives no hint that the widget is a scroll-scrubbed deck.
+  // This lands it on a real pile with styled cards.
+  'e-aae-a-stack-cards': {
+    // No targetType: the preset's model root IS an e-aae-a-stack-cards, so the
+    // dropped widget itself is what gets replaced.
+    //
+    // Scroll Stack is the pick because it matches the widget's OWN defaults:
+    // animations.js exports DEFAULT_ANIMATION = 'scroll-stack', so a fresh
+    // drop already behaves this way and the preset adds the styling without
+    // also changing the motion out from under the panel's shown values.
+    presetId: 'remote-12059',
+    // Remote ids are the preset server's own row ids and move if the catalog
+    // is re-seeded, so the name is the stable identity — see the resolution
+    // order in maybeAutoApply(). Note the em dash: it is the real character in
+    // the preset's name, not a hyphen.
+    presetName: 'Scroll Stack — Showcase',
+    // Marker, not shape: a fresh drop and EVERY preset for this widget are
+    // both four e-aae-a-stack-card children, so shape cannot tell them apart.
+    // See AAE_A_Stack_Cards::DEFAULT_CHILD_MARKER.
+    defaultMarker: 'aae-sc-default',
+  },
+
   // A bare Nested Slider drops as one empty slide plus every chrome part
   // (nav, pagination, indicators) in its own default styling, which reads as
   // a scattered set of controls rather than a slider. This lands it on a real
