@@ -55,7 +55,18 @@ final class AAE_Admin_Page_Importer
         $current_view = isset($_GET['aae-latest-import']) ? sanitize_key(wp_unslash($_GET['aae-latest-import'])) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
         $class        = ('import' === $current_view) ? 'current' : '';
         $url   = add_query_arg('aae-latest-import', 'import', admin_url('edit.php?post_type=page'));
-        $views['latest-import'] = "<a href='$url' class='$class' style='color: #fc6848; font-weight: 500' >AAE Imported <span class='count'>($count)</span></a>";
+
+        // Built with sprintf rather than interpolated: this is returned into $views,
+        // which the list table echoes as-is -- it escapes nothing on our behalf. The
+        // label goes through esc_html__ because a string written straight into the
+        // markup here cannot be translated, and this one never was.
+        $views['latest-import'] = sprintf(
+            '<a href="%1$s" class="%2$s">%3$s <span class="count">(%4$s)</span></a>',
+            esc_url($url),
+            esc_attr(trim($class . ' aae-imported-view')),
+            esc_html__('AAE Imported', 'animation-addons-for-elementor'),
+            esc_html(number_format_i18n($count))
+        );
         return $views;
     }
     function custom_page_filter($query)
@@ -220,6 +231,11 @@ final class AAE_Admin_Page_Importer
         .wrap .page-title-action.aae-import-page-action:active {
             background: #d4502f;
             border-color: #d4502f;
+        }
+        .subsubsub a.aae-imported-view,
+        .subsubsub a.aae-imported-view .count {
+            color: #fc6848;
+            font-weight: 500;
         }
         ';
     }
