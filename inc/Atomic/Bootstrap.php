@@ -207,10 +207,17 @@ final class Bootstrap {
 
 		( new Assets() )->register();
 
-		// Remote preset system — "Presets" panel section for native atomic
-		// widgets, and the same-origin proxy route the editor's JS fetches
-		// (merges remote + local presets; see Atomic\Presets\Cache).
-		( new \WCF_ADDONS\Atomic\Presets\Controls() )->register();
+		// Editor schema trim — strips each extension's props from the EDITOR
+		// copy of every atomic type the extension does not apply to. The
+		// props-schema filter has no element argument, so every module above
+		// adds its props to every type; the server keeps that (it is what
+		// protects saved data on save), the client does not need it. See the
+		// class docblock for the rule that keeps this safe.
+		( new \WCF_ADDONS\Atomic\Editor\Schema_Trim() )->register();
+
+		// Remote preset system — the same-origin proxy route the editor's JS
+		// fetches (merges remote + local presets; see Atomic\Presets\Cache).
+		// The "Presets" panel section itself is registered once, above.
 		( new \WCF_ADDONS\Atomic\Presets\Rest() )->register();
 	}
 

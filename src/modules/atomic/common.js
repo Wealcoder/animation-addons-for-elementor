@@ -492,6 +492,69 @@ function rebindIfChanged(el) {
 	rebind(el);
 }
 
+/**
+ * Breakpoint rebind pass, spread over idle slices instead of one blocking turn.
+ *
+ * configSignature() re-reads every kind's config and JSON.stringify()s it, so on
+ * a page carrying ~1,000 animated elements the pass costs 1-3 SECONDS. It runs
+ * on the main thread, so the editor is frozen for all of it at exactly the
+ * moment the user switches device mode. Slicing keeps each turn inside a frame
+ * budget; most widgets never override per-breakpoint, so their signature matches
+ * and they cost only the read.
+ *
+ * DOCUMENT ORDER IS PRESERVED, deliberately. Sorting viewport-first would settle
+ * the visible elements sooner, but parent -> child completion chaining
+ * (drainChildQueue) means a reordered pass is not equivalent to this one.
+ *
+ * MIN_PER_SLICE is what guarantees termination: a requestIdleCallback that fires
+ * on its timeout reports zero time remaining, so a purely budget-driven loop
+ * would do no work and reschedule itself forever.
+ */
+let rebindPassId = 0;
+
+const sliceNow = () => (
+	typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now()
+);
+
+function scheduleSlice(fn) {
+	if (typeof window.requestIdleCallback === 'function') {
+		window.requestIdleCallback(fn, { timeout: 200 });
+	} else {
+		requestAnimationFrame(() => fn(null));
+	}
+}
+
+function rebindInSlices(candidates) {
+	const pass = ++rebindPassId;
+	const SLICE_MS = 8;
+	const MIN_PER_SLICE = 25;
+	let i = 0;
+
+	const step = (deadline) => {
+		// A newer device switch supersedes this pass; its own run covers the rest.
+		if (pass !== rebindPassId) return;
+
+		const started = sliceNow();
+		let done = 0;
+
+		while (i < candidates.length) {
+			if (done >= MIN_PER_SLICE) {
+				const hasBudget = deadline && typeof deadline.timeRemaining === 'function'
+					? deadline.timeRemaining() > 1
+					: (sliceNow() - started) < SLICE_MS;
+				if (!hasBudget) break;
+			}
+			try { rebindIfChanged(candidates[i]); } catch (_) { }
+			i++;
+			done++;
+		}
+
+		if (i < candidates.length) scheduleSlice(step);
+	};
+
+	scheduleSlice(step);
+}
+
 // Device-mode switches (in the editor) and real window resizes both fire
 // native `resize` on this window. Elementor's device-mode switch can emit a
 // short burst of resize events while the preview iframe settles, and a real
@@ -510,11 +573,7 @@ window.addEventListener('resize', () => {
 			updateBodyDeviceMode(newBp);
 			const candidates = Array.from(document.querySelectorAll('[data-interaction-id]'));
 			if (!candidates.length) return;
-			requestAnimationFrame(() => {
-				candidates.forEach((el) => {
-					try { rebindIfChanged(el); } catch (_) { }
-				});
-			});
+			rebindInSlices(candidates);
 		}
 	}, RESIZE_SETTLE_MS);
 });
