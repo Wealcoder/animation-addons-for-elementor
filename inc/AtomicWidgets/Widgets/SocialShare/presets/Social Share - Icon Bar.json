@@ -1,0 +1,745 @@
+{
+ "id": "remote-12010",
+ "element_type": "e-aae-a-social-share",
+ "category": "social-share",
+ "title": "Social Share &#8211; Icon Bar",
+ "thumbnail_url": "",
+ "pro": false,
+ "hash": "820fd1d9d9db",
+ "updated_at": "2026-09-08T00:00:00+00:00",
+ "name": "Social Share - Icon Bar",
+ "model": {
+  "id": "pss000",
+  "settings": {
+   "classes": {
+    "$$type": "classes",
+    "value": [
+     "e-pss000-wrap"
+    ]
+   }
+  },
+  "elements": [
+   {
+    "id": "pss001",
+    "settings": {
+     "classes": {
+      "$$type": "classes",
+      "value": [
+       "e-pss001-bar"
+      ]
+     }
+    },
+    "elements": [
+     {
+      "id": "pss10",
+      "settings": {
+       "btn_target": {
+        "$$type": "string",
+        "value": "_blank"
+       },
+       "btn_nofollow": {
+        "$$type": "boolean",
+        "value": false
+       },
+       "share_vendor": {
+        "$$type": "string",
+        "value": "facebook"
+       },
+       "classes": {
+        "$$type": "classes",
+        "value": [
+         "e-pss10-item"
+        ]
+       }
+      },
+      "elements": [
+       {
+        "id": "pss11",
+        "settings": {
+         "svg": {
+          "$$type": "svg-src",
+          "value": {
+           "id": null,
+           "url": {
+            "$$type": "url",
+            "value": "{{AAE_ASSET_URL}}Widgets/SocialShare/assets/svg/facebook-glyph.svg"
+           }
+          }
+         },
+         "link": {
+          "$$type": "link",
+          "value": []
+         },
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-pss11-icon"
+          ]
+         }
+        },
+        "elements": [],
+        "isInner": false,
+        "widgetType": "e-aae-a-social-share-item-icon",
+        "elType": "widget",
+        "styles": {
+         "e-pss11-icon": {
+          "id": "e-pss11-icon",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "width": {
+              "$$type": "size",
+              "value": {
+               "size": 10,
+               "unit": "px"
+              }
+             },
+             "height": {
+              "$$type": "size",
+              "value": {
+               "size": 15,
+               "unit": "px"
+              }
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Icon"
+        },
+        "version": "0.0"
+       }
+      ],
+      "isInner": false,
+      "elType": "e-aae-a-social-share-item",
+      "styles": {
+       "e-pss10-item": {
+        "id": "e-pss10-item",
+        "label": "local",
+        "type": "class",
+        "variants": [
+         {
+          "meta": {
+           "breakpoint": "desktop",
+           "state": null
+          },
+          "props": {
+           "padding": {
+            "$$type": "size",
+            "value": {
+             "size": 0,
+             "unit": "px"
+            }
+           },
+           "background": {
+            "$$type": "background",
+            "value": {
+             "color": {
+              "$$type": "color",
+              "value": "#f2f3f500"
+             }
+            }
+           },
+           "justify-content": {
+            "$$type": "string",
+            "value": "center"
+           }
+          },
+          "custom_css": null
+         },
+         {
+          "meta": {
+           "breakpoint": "desktop",
+           "state": "hover"
+          },
+          "props": {
+           "background": {
+            "$$type": "background",
+            "value": {
+             "color": {
+              "$$type": "color",
+              "value": "#e4e6eb00"
+             }
+            }
+           }
+          },
+          "custom_css": null
+         }
+        ]
+       }
+      },
+      "interactions": [],
+      "editor_settings": {
+       "title": "Facebook"
+      },
+      "version": "0.0"
+     },
+     {
+      "id": "pss20",
+      "settings": {
+       "btn_target": {
+        "$$type": "string",
+        "value": "_blank"
+       },
+       "btn_nofollow": {
+        "$$type": "boolean",
+        "value": false
+       },
+       "share_vendor": {
+        "$$type": "string",
+        "value": "twitter"
+       },
+       "classes": {
+        "$$type": "classes",
+        "value": [
+         "e-pss20-item"
+        ]
+       }
+      },
+      "elements": [
+       {
+        "id": "pss21",
+        "settings": {
+         "svg": {
+          "$$type": "svg-src",
+          "value": {
+           "id": null,
+           "url": {
+            "$$type": "url",
+            "value": "{{AAE_ASSET_URL}}Widgets/SocialShare/assets/svg/twitter-glyph.svg"
+           }
+          }
+         },
+         "link": {
+          "$$type": "link",
+          "value": []
+         },
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-pss21-icon"
+          ]
+         }
+        },
+        "elements": [],
+        "isInner": false,
+        "widgetType": "e-aae-a-social-share-item-icon",
+        "elType": "widget",
+        "styles": {
+         "e-pss21-icon": {
+          "id": "e-pss21-icon",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "width": {
+              "$$type": "size",
+              "value": {
+               "size": 15,
+               "unit": "px"
+              }
+             },
+             "height": {
+              "$$type": "size",
+              "value": {
+               "size": 17,
+               "unit": "px"
+              }
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Icon"
+        },
+        "version": "0.0"
+       }
+      ],
+      "isInner": false,
+      "elType": "e-aae-a-social-share-item",
+      "styles": {
+       "e-pss20-item": {
+        "id": "e-pss20-item",
+        "label": "local",
+        "type": "class",
+        "variants": [
+         {
+          "meta": {
+           "breakpoint": "desktop",
+           "state": null
+          },
+          "props": {
+           "padding": {
+            "$$type": "size",
+            "value": {
+             "size": 0,
+             "unit": "px"
+            }
+           },
+           "background": {
+            "$$type": "background",
+            "value": {
+             "color": {
+              "$$type": "color",
+              "value": "#f2f3f500"
+             }
+            }
+           },
+           "justify-content": {
+            "$$type": "string",
+            "value": "center"
+           }
+          },
+          "custom_css": null
+         },
+         {
+          "meta": {
+           "breakpoint": "desktop",
+           "state": "hover"
+          },
+          "props": {
+           "background": {
+            "$$type": "background",
+            "value": {
+             "color": {
+              "$$type": "color",
+              "value": "#e4e6eb00"
+             }
+            }
+           }
+          },
+          "custom_css": null
+         }
+        ]
+       }
+      },
+      "interactions": [],
+      "editor_settings": {
+       "title": "Twitter"
+      },
+      "version": "0.0"
+     },
+     {
+      "id": "pss30",
+      "settings": {
+       "btn_target": {
+        "$$type": "string",
+        "value": "_blank"
+       },
+       "btn_nofollow": {
+        "$$type": "boolean",
+        "value": false
+       },
+       "share_vendor": {
+        "$$type": "string",
+        "value": "linkedin"
+       },
+       "classes": {
+        "$$type": "classes",
+        "value": [
+         "e-pss30-item"
+        ]
+       }
+      },
+      "elements": [
+       {
+        "id": "pss31",
+        "settings": {
+         "svg": {
+          "$$type": "svg-src",
+          "value": {
+           "id": null,
+           "url": {
+            "$$type": "url",
+            "value": "{{AAE_ASSET_URL}}Widgets/SocialShare/assets/svg/linkedin-glyph.svg"
+           }
+          }
+         },
+         "link": {
+          "$$type": "link",
+          "value": []
+         },
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-pss31-icon"
+          ]
+         }
+        },
+        "elements": [],
+        "isInner": false,
+        "widgetType": "e-aae-a-social-share-item-icon",
+        "elType": "widget",
+        "styles": {
+         "e-pss31-icon": {
+          "id": "e-pss31-icon",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "width": {
+              "$$type": "size",
+              "value": {
+               "size": 17,
+               "unit": "px"
+              }
+             },
+             "height": {
+              "$$type": "size",
+              "value": {
+               "size": 17,
+               "unit": "px"
+              }
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Icon"
+        },
+        "version": "0.0"
+       }
+      ],
+      "isInner": false,
+      "elType": "e-aae-a-social-share-item",
+      "styles": {
+       "e-pss30-item": {
+        "id": "e-pss30-item",
+        "label": "local",
+        "type": "class",
+        "variants": [
+         {
+          "meta": {
+           "breakpoint": "desktop",
+           "state": null
+          },
+          "props": {
+           "padding": {
+            "$$type": "size",
+            "value": {
+             "size": 0,
+             "unit": "px"
+            }
+           },
+           "background": {
+            "$$type": "background",
+            "value": {
+             "color": {
+              "$$type": "color",
+              "value": "#f2f3f500"
+             }
+            }
+           },
+           "justify-content": {
+            "$$type": "string",
+            "value": "center"
+           }
+          },
+          "custom_css": null
+         },
+         {
+          "meta": {
+           "breakpoint": "desktop",
+           "state": "hover"
+          },
+          "props": {
+           "background": {
+            "$$type": "background",
+            "value": {
+             "color": {
+              "$$type": "color",
+              "value": "#e4e6eb00"
+             }
+            }
+           }
+          },
+          "custom_css": null
+         }
+        ]
+       }
+      },
+      "interactions": [],
+      "editor_settings": {
+       "title": "LinkedIn"
+      },
+      "version": "0.0"
+     },
+     {
+      "id": "pss40",
+      "settings": {
+       "btn_target": {
+        "$$type": "string",
+        "value": "_blank"
+       },
+       "btn_nofollow": {
+        "$$type": "boolean",
+        "value": false
+       },
+       "classes": {
+        "$$type": "classes",
+        "value": [
+         "e-pss40-item"
+        ]
+       }
+      },
+      "elements": [
+       {
+        "id": "pss41",
+        "settings": {
+         "svg": {
+          "$$type": "svg-src",
+          "value": {
+           "id": null,
+           "url": {
+            "$$type": "url",
+            "value": "{{AAE_ASSET_URL}}Widgets/SocialShare/assets/svg/share-nodes.svg"
+           }
+          }
+         },
+         "link": {
+          "$$type": "link",
+          "value": []
+         },
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-pss41-icon"
+          ]
+         }
+        },
+        "elements": [],
+        "isInner": false,
+        "widgetType": "e-aae-a-social-share-item-icon",
+        "elType": "widget",
+        "styles": {
+         "e-pss41-icon": {
+          "id": "e-pss41-icon",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "width": {
+              "$$type": "size",
+              "value": {
+               "size": 17,
+               "unit": "px"
+              }
+             },
+             "height": {
+              "$$type": "size",
+              "value": {
+               "size": 17,
+               "unit": "px"
+              }
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Icon"
+        },
+        "version": "0.0"
+       }
+      ],
+      "isInner": false,
+      "elType": "e-aae-a-social-share-item",
+      "styles": {
+       "e-pss40-item": {
+        "id": "e-pss40-item",
+        "label": "local",
+        "type": "class",
+        "variants": [
+         {
+          "meta": {
+           "breakpoint": "desktop",
+           "state": null
+          },
+          "props": {
+           "padding": {
+            "$$type": "size",
+            "value": {
+             "size": 0,
+             "unit": "px"
+            }
+           },
+           "background": {
+            "$$type": "background",
+            "value": {
+             "color": {
+              "$$type": "color",
+              "value": "#f2f3f500"
+             }
+            }
+           },
+           "justify-content": {
+            "$$type": "string",
+            "value": "center"
+           }
+          },
+          "custom_css": null
+         },
+         {
+          "meta": {
+           "breakpoint": "desktop",
+           "state": "hover"
+          },
+          "props": {
+           "background": {
+            "$$type": "background",
+            "value": {
+             "color": {
+              "$$type": "color",
+              "value": "#e4e6eb00"
+             }
+            }
+           }
+          },
+          "custom_css": null
+         }
+        ]
+       }
+      },
+      "interactions": [],
+      "editor_settings": {
+       "title": "Custom"
+      },
+      "version": "0.0"
+     }
+    ],
+    "isInner": false,
+    "elType": "e-aae-a-social-share",
+    "styles": {
+     "e-pss001-bar": {
+      "id": "e-pss001-bar",
+      "label": "local",
+      "type": "class",
+      "variants": [
+       {
+        "meta": {
+         "breakpoint": "desktop",
+         "state": null
+        },
+        "props": {
+         "padding": {
+          "$$type": "dimensions",
+          "value": {
+           "block-start": {
+            "$$type": "size",
+            "value": {
+             "size": 0,
+             "unit": "px"
+            }
+           },
+           "inline-end": {
+            "$$type": "size",
+            "value": {
+             "size": 0,
+             "unit": "px"
+            }
+           },
+           "block-end": {
+            "$$type": "size",
+            "value": {
+             "size": 0,
+             "unit": "px"
+            }
+           },
+           "inline-start": {
+            "$$type": "size",
+            "value": {
+             "size": 0,
+             "unit": "px"
+            }
+           }
+          }
+         },
+         "justify-content": {
+          "$$type": "string",
+          "value": "center"
+         },
+         "align-items": {
+          "$$type": "string",
+          "value": "center"
+         }
+        },
+        "custom_css": null
+       }
+      ]
+     }
+    },
+    "interactions": [],
+    "editor_settings": {
+     "title": "Social Share - Icon Bar"
+    },
+    "version": "0.0"
+   }
+  ],
+  "isInner": false,
+  "elType": "e-flexbox",
+  "styles": {
+   "e-pss000-wrap": {
+    "id": "e-pss000-wrap",
+    "label": "local",
+    "type": "class",
+    "variants": [
+     {
+      "meta": {
+       "breakpoint": "desktop",
+       "state": null
+      },
+      "props": {
+       "flex-direction": {
+        "$$type": "string",
+        "value": "column"
+       }
+      },
+      "custom_css": null
+     }
+    ]
+   }
+  },
+  "interactions": [],
+  "editor_settings": {
+   "title": "Social Share - Icon Bar"
+  },
+  "version": "0.0"
+ },
+ "source": "remote"
+}

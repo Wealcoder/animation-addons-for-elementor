@@ -1,0 +1,1302 @@
+{
+ "name": "Social Share - Stats Rail",
+ "model": {
+  "id": "pssr00",
+  "settings": {
+   "classes": {
+    "$$type": "classes",
+    "value": [
+     "e-pssr00-wrap"
+    ]
+   }
+  },
+  "elements": [
+   {
+    "id": "pssr01",
+    "settings": {
+     "classes": {
+      "$$type": "classes",
+      "value": [
+       "e-pssr01-views"
+      ]
+     }
+    },
+    "elements": [
+     {
+      "id": "pssr02",
+      "settings": {
+       "classes": {
+        "$$type": "classes",
+        "value": [
+         "e-pssr02-icon"
+        ]
+       },
+       "svg": {
+        "$$type": "svg-src",
+        "value": {
+         "id": null,
+         "url": {
+          "$$type": "url",
+          "value": "{{AAE_ASSET_URL}}Widgets/SocialShare/assets/svg/views-bars.svg"
+         }
+        }
+       },
+       "link": {
+        "$$type": "link",
+        "value": []
+       }
+      },
+      "elements": [],
+      "isInner": false,
+      "widgetType": "e-svg",
+      "elType": "widget",
+      "styles": {
+       "e-pssr02-icon": {
+        "id": "e-pssr02-icon",
+        "label": "local",
+        "type": "class",
+        "variants": [
+         {
+          "meta": {
+           "breakpoint": "desktop",
+           "state": null
+          },
+          "props": {
+           "width": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 17
+            }
+           },
+           "height": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 17
+            }
+           }
+          },
+          "custom_css": null
+         }
+        ]
+       }
+      },
+      "interactions": [],
+      "editor_settings": {
+       "title": "Views Icon"
+      },
+      "version": "0.0"
+     },
+     {
+      "id": "pssr03",
+      "settings": {
+       "classes": {
+        "$$type": "classes",
+        "value": [
+         "e-pssr03-text"
+        ]
+       },
+       "paragraph": {
+        "$$type": "html-v3",
+        "value": {
+         "content": {
+          "$$type": "string",
+          "value": "145 Views"
+         },
+         "children": []
+        }
+       },
+       "link": {
+        "$$type": "link",
+        "value": []
+       }
+      },
+      "elements": [],
+      "isInner": false,
+      "widgetType": "e-paragraph",
+      "elType": "widget",
+      "styles": {
+       "e-pssr03-text": {
+        "id": "e-pssr03-text",
+        "label": "local",
+        "type": "class",
+        "variants": [
+         {
+          "meta": {
+           "breakpoint": "desktop",
+           "state": null
+          },
+          "props": {
+           "font-weight": {
+            "$$type": "string",
+            "value": "400"
+           },
+           "font-size": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 12
+            }
+           },
+           "color": {
+            "$$type": "color",
+            "value": "#121212"
+           },
+           "text-align": {
+            "$$type": "string",
+            "value": "center"
+           }
+          },
+          "custom_css": null
+         }
+        ]
+       }
+      },
+      "interactions": [],
+      "editor_settings": {
+       "title": "Views"
+      },
+      "version": "0.0"
+     }
+    ],
+    "isInner": false,
+    "elType": "e-flexbox",
+    "styles": {
+     "e-pssr01-views": {
+      "id": "e-pssr01-views",
+      "label": "local",
+      "type": "class",
+      "variants": [
+       {
+        "meta": {
+         "breakpoint": "desktop",
+         "state": null
+        },
+        "props": {
+         "padding": {
+          "$$type": "dimensions",
+          "value": {
+           "block-start": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 0
+            }
+           },
+           "inline-end": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 0
+            }
+           },
+           "block-end": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 20
+            }
+           },
+           "inline-start": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 0
+            }
+           }
+          }
+         },
+         "border-width": {
+          "$$type": "border-width-v2",
+          "value": {
+           "block-start": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 0
+            }
+           },
+           "block-end": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 1
+            }
+           },
+           "inline-start": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 0
+            }
+           },
+           "inline-end": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 0
+            }
+           }
+          }
+         },
+         "border-color": {
+          "$$type": "color",
+          "value": "#E5E5EA"
+         },
+         "border-style": {
+          "$$type": "string",
+          "value": "solid"
+         },
+         "flex-direction": {
+          "$$type": "string",
+          "value": "column"
+         },
+         "gap": {
+          "$$type": "size",
+          "value": {
+           "unit": "px",
+           "size": 10
+          }
+         },
+         "align-items": {
+          "$$type": "string",
+          "value": "center"
+         }
+        },
+        "custom_css": null
+       }
+      ]
+     }
+    },
+    "interactions": [],
+    "editor_settings": {
+     "title": "Views"
+    },
+    "version": "0.0"
+   },
+   {
+    "id": "pssr04",
+    "settings": {
+     "classes": {
+      "$$type": "classes",
+      "value": [
+       "e-pssr04-count"
+      ]
+     }
+    },
+    "elements": [
+     {
+      "id": "pssr05",
+      "settings": {
+       "classes": {
+        "$$type": "classes",
+        "value": [
+         "e-pssr05-icon"
+        ]
+       },
+       "svg": {
+        "$$type": "svg-src",
+        "value": {
+         "id": null,
+         "url": {
+          "$$type": "url",
+          "value": "{{AAE_ASSET_URL}}Widgets/SocialShare/assets/svg/share-nodes.svg"
+         }
+        }
+       },
+       "link": {
+        "$$type": "link",
+        "value": []
+       }
+      },
+      "elements": [],
+      "isInner": false,
+      "widgetType": "e-svg",
+      "elType": "widget",
+      "styles": {
+       "e-pssr05-icon": {
+        "id": "e-pssr05-icon",
+        "label": "local",
+        "type": "class",
+        "variants": [
+         {
+          "meta": {
+           "breakpoint": "desktop",
+           "state": null
+          },
+          "props": {
+           "width": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 17
+            }
+           },
+           "height": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 19
+            }
+           }
+          },
+          "custom_css": null
+         }
+        ]
+       }
+      },
+      "interactions": [],
+      "editor_settings": {
+       "title": "Shares Icon"
+      },
+      "version": "0.0"
+     },
+     {
+      "id": "pssr06",
+      "settings": {
+       "classes": {
+        "$$type": "classes",
+        "value": [
+         "e-pssr06-text"
+        ]
+       },
+       "paragraph": {
+        "$$type": "html-v3",
+        "value": {
+         "content": {
+          "$$type": "string",
+          "value": "14 Shares"
+         },
+         "children": []
+        }
+       },
+       "link": {
+        "$$type": "link",
+        "value": []
+       }
+      },
+      "elements": [],
+      "isInner": false,
+      "widgetType": "e-paragraph",
+      "elType": "widget",
+      "styles": {
+       "e-pssr06-text": {
+        "id": "e-pssr06-text",
+        "label": "local",
+        "type": "class",
+        "variants": [
+         {
+          "meta": {
+           "breakpoint": "desktop",
+           "state": null
+          },
+          "props": {
+           "font-weight": {
+            "$$type": "string",
+            "value": "400"
+           },
+           "font-size": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 12
+            }
+           },
+           "color": {
+            "$$type": "color",
+            "value": "#121212"
+           },
+           "text-align": {
+            "$$type": "string",
+            "value": "center"
+           }
+          },
+          "custom_css": null
+         }
+        ]
+       }
+      },
+      "interactions": [],
+      "editor_settings": {
+       "title": "Shares"
+      },
+      "version": "0.0"
+     }
+    ],
+    "isInner": false,
+    "elType": "e-flexbox",
+    "styles": {
+     "e-pssr04-count": {
+      "id": "e-pssr04-count",
+      "label": "local",
+      "type": "class",
+      "variants": [
+       {
+        "meta": {
+         "breakpoint": "desktop",
+         "state": null
+        },
+        "props": {
+         "padding": {
+          "$$type": "dimensions",
+          "value": {
+           "block-start": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 20
+            }
+           },
+           "inline-end": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 0
+            }
+           },
+           "block-end": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 0
+            }
+           },
+           "inline-start": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 0
+            }
+           }
+          }
+         },
+         "flex-direction": {
+          "$$type": "string",
+          "value": "column"
+         },
+         "gap": {
+          "$$type": "size",
+          "value": {
+           "unit": "px",
+           "size": 10
+          }
+         },
+         "justify-content": {
+          "$$type": "string",
+          "value": "center"
+         },
+         "align-items": {
+          "$$type": "string",
+          "value": "center"
+         }
+        },
+        "custom_css": null
+       }
+      ]
+     }
+    },
+    "interactions": [],
+    "editor_settings": {
+     "title": "Shares"
+    },
+    "version": "0.0"
+   },
+   {
+    "id": "pssr07",
+    "settings": {
+     "classes": {
+      "$$type": "classes",
+      "value": [
+       "e-pssr07-bar"
+      ]
+     }
+    },
+    "elements": [
+     {
+      "id": "pssr10",
+      "settings": {
+       "classes": {
+        "$$type": "classes",
+        "value": [
+         "e-pssr10-item"
+        ]
+       },
+       "btn_url": {
+        "$$type": "string",
+        "value": "https://www.facebook.com/sharer/sharer.php"
+       },
+       "btn_target": {
+        "$$type": "string",
+        "value": "_blank"
+       },
+       "btn_nofollow": {
+        "$$type": "boolean",
+        "value": false
+       }
+      },
+      "elements": [
+       {
+        "id": "pssr11",
+        "settings": {
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-pssr11-icon"
+          ]
+         },
+         "svg": {
+          "$$type": "svg-src",
+          "value": {
+           "id": null,
+           "url": {
+            "$$type": "url",
+            "value": "{{AAE_ASSET_URL}}Widgets/SocialShare/assets/svg/facebook-glyph.svg"
+           }
+          }
+         },
+         "link": {
+          "$$type": "link",
+          "value": []
+         }
+        },
+        "elements": [],
+        "isInner": false,
+        "widgetType": "e-aae-a-social-share-item-icon",
+        "elType": "widget",
+        "styles": {
+         "e-pssr11-icon": {
+          "id": "e-pssr11-icon",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "width": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 10
+              }
+             },
+             "height": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 20
+              }
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Icon"
+        },
+        "version": "0.0"
+       }
+      ],
+      "isInner": false,
+      "elType": "e-aae-a-social-share-item",
+      "styles": {
+       "e-pssr10-item": {
+        "id": "e-pssr10-item",
+        "label": "local",
+        "type": "class",
+        "variants": [
+         {
+          "meta": {
+           "breakpoint": "desktop",
+           "state": null
+          },
+          "props": {
+           "padding": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 0
+            }
+           },
+           "border-radius": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 0
+            }
+           },
+           "border-width": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 0
+            }
+           },
+           "border-style": {
+            "$$type": "string",
+            "value": "none"
+           },
+           "background": {
+            "$$type": "background",
+            "value": {
+             "color": {
+              "$$type": "color",
+              "value": "#ffffff00"
+             }
+            }
+           },
+           "transition": {
+            "$$type": "transition",
+            "value": [
+             {
+              "$$type": "selection-size",
+              "value": {
+               "selection": {
+                "$$type": "key-value",
+                "value": {
+                 "key": {
+                  "$$type": "string",
+                  "value": "All properties"
+                 },
+                 "value": {
+                  "$$type": "string",
+                  "value": "all"
+                 }
+                }
+               },
+               "size": {
+                "$$type": "size",
+                "value": {
+                 "unit": "ms",
+                 "size": 200
+                }
+               }
+              }
+             }
+            ]
+           },
+           "display": {
+            "$$type": "string",
+            "value": "flex"
+           },
+           "justify-content": {
+            "$$type": "string",
+            "value": "center"
+           }
+          },
+          "custom_css": null
+         },
+         {
+          "meta": {
+           "breakpoint": "desktop",
+           "state": "hover"
+          },
+          "props": {
+           "color": {
+            "$$type": "color",
+            "value": "#ffffff"
+           },
+           "background": {
+            "$$type": "background",
+            "value": {
+             "color": {
+              "$$type": "color",
+              "value": "#f7f7f700"
+             }
+            }
+           }
+          },
+          "custom_css": null
+         }
+        ]
+       }
+      },
+      "interactions": [],
+      "editor_settings": {
+       "title": "Facebook"
+      },
+      "version": "0.0"
+     },
+     {
+      "id": "pssr20",
+      "settings": {
+       "classes": {
+        "$$type": "classes",
+        "value": [
+         "e-pssr20-item"
+        ]
+       },
+       "btn_url": {
+        "$$type": "string",
+        "value": "https://twitter.com/intent/tweet"
+       },
+       "btn_target": {
+        "$$type": "string",
+        "value": "_blank"
+       },
+       "btn_nofollow": {
+        "$$type": "boolean",
+        "value": false
+       }
+      },
+      "elements": [
+       {
+        "id": "pssr21",
+        "settings": {
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-pssr21-icon"
+          ]
+         },
+         "svg": {
+          "$$type": "svg-src",
+          "value": {
+           "id": null,
+           "url": {
+            "$$type": "url",
+            "value": "{{AAE_ASSET_URL}}Widgets/SocialShare/assets/svg/twitter.svg"
+           }
+          }
+         },
+         "link": {
+          "$$type": "link",
+          "value": []
+         }
+        },
+        "elements": [],
+        "isInner": false,
+        "widgetType": "e-aae-a-social-share-item-icon",
+        "elType": "widget",
+        "styles": {
+         "e-pssr21-icon": {
+          "id": "e-pssr21-icon",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "width": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 20
+              }
+             },
+             "height": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 20
+              }
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Icon"
+        },
+        "version": "0.0"
+       }
+      ],
+      "isInner": false,
+      "elType": "e-aae-a-social-share-item",
+      "styles": {
+       "e-pssr20-item": {
+        "id": "e-pssr20-item",
+        "label": "local",
+        "type": "class",
+        "variants": [
+         {
+          "meta": {
+           "breakpoint": "desktop",
+           "state": null
+          },
+          "props": {
+           "padding": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 0
+            }
+           },
+           "border-radius": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 0
+            }
+           },
+           "border-width": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 0
+            }
+           },
+           "border-color": {
+            "$$type": "color",
+            "value": "#1a1a1a"
+           },
+           "border-style": {
+            "$$type": "string",
+            "value": "none"
+           },
+           "background": {
+            "$$type": "background",
+            "value": {
+             "color": {
+              "$$type": "color",
+              "value": "#ffffff00"
+             }
+            }
+           },
+           "transition": {
+            "$$type": "transition",
+            "value": [
+             {
+              "$$type": "selection-size",
+              "value": {
+               "selection": {
+                "$$type": "key-value",
+                "value": {
+                 "key": {
+                  "$$type": "string",
+                  "value": "All properties"
+                 },
+                 "value": {
+                  "$$type": "string",
+                  "value": "all"
+                 }
+                }
+               },
+               "size": {
+                "$$type": "size",
+                "value": {
+                 "unit": "ms",
+                 "size": 200
+                }
+               }
+              }
+             }
+            ]
+           },
+           "display": {
+            "$$type": "string",
+            "value": "flex"
+           },
+           "justify-content": {
+            "$$type": "string",
+            "value": "center"
+           }
+          },
+          "custom_css": null
+         },
+         {
+          "meta": {
+           "breakpoint": "desktop",
+           "state": "hover"
+          },
+          "props": {
+           "color": {
+            "$$type": "color",
+            "value": "#121212"
+           },
+           "background": {
+            "$$type": "background",
+            "value": {
+             "color": {
+              "$$type": "color",
+              "value": "#ffffff00"
+             }
+            }
+           }
+          },
+          "custom_css": null
+         }
+        ]
+       }
+      },
+      "interactions": [],
+      "editor_settings": {
+       "title": "Twitter"
+      },
+      "version": "0.0"
+     },
+     {
+      "id": "pssr30",
+      "settings": {
+       "classes": {
+        "$$type": "classes",
+        "value": [
+         "e-pssr30-item"
+        ]
+       },
+       "btn_url": {
+        "$$type": "string",
+        "value": "https://www.linkedin.com/shareArticle"
+       },
+       "btn_target": {
+        "$$type": "string",
+        "value": "_blank"
+       },
+       "btn_nofollow": {
+        "$$type": "boolean",
+        "value": false
+       }
+      },
+      "elements": [
+       {
+        "id": "pssr31",
+        "settings": {
+         "classes": {
+          "$$type": "classes",
+          "value": [
+           "e-pssr31-icon"
+          ]
+         },
+         "svg": {
+          "$$type": "svg-src",
+          "value": {
+           "id": null,
+           "url": {
+            "$$type": "url",
+            "value": "{{AAE_ASSET_URL}}Widgets/SocialShare/assets/svg/linkedin.svg"
+           }
+          }
+         },
+         "link": {
+          "$$type": "link",
+          "value": []
+         }
+        },
+        "elements": [],
+        "isInner": false,
+        "widgetType": "e-aae-a-social-share-item-icon",
+        "elType": "widget",
+        "styles": {
+         "e-pssr31-icon": {
+          "id": "e-pssr31-icon",
+          "label": "local",
+          "type": "class",
+          "variants": [
+           {
+            "meta": {
+             "breakpoint": "desktop",
+             "state": null
+            },
+            "props": {
+             "width": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 20
+              }
+             },
+             "height": {
+              "$$type": "size",
+              "value": {
+               "unit": "px",
+               "size": 20
+              }
+             }
+            },
+            "custom_css": null
+           }
+          ]
+         }
+        },
+        "interactions": [],
+        "editor_settings": {
+         "title": "Icon"
+        },
+        "version": "0.0"
+       }
+      ],
+      "isInner": false,
+      "elType": "e-aae-a-social-share-item",
+      "styles": {
+       "e-pssr30-item": {
+        "id": "e-pssr30-item",
+        "label": "local",
+        "type": "class",
+        "variants": [
+         {
+          "meta": {
+           "breakpoint": "desktop",
+           "state": null
+          },
+          "props": {
+           "padding": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 0
+            }
+           },
+           "border-radius": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 0
+            }
+           },
+           "border-width": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 0
+            }
+           },
+           "border-color": {
+            "$$type": "color",
+            "value": "#1a1a1a"
+           },
+           "border-style": {
+            "$$type": "string",
+            "value": "none"
+           },
+           "background": {
+            "$$type": "background",
+            "value": {
+             "color": {
+              "$$type": "color",
+              "value": "#ffffff00"
+             }
+            }
+           },
+           "transition": {
+            "$$type": "transition",
+            "value": [
+             {
+              "$$type": "selection-size",
+              "value": {
+               "selection": {
+                "$$type": "key-value",
+                "value": {
+                 "key": {
+                  "$$type": "string",
+                  "value": "All properties"
+                 },
+                 "value": {
+                  "$$type": "string",
+                  "value": "all"
+                 }
+                }
+               },
+               "size": {
+                "$$type": "size",
+                "value": {
+                 "unit": "ms",
+                 "size": 200
+                }
+               }
+              }
+             }
+            ]
+           },
+           "display": {
+            "$$type": "string",
+            "value": "flex"
+           },
+           "justify-content": {
+            "$$type": "string",
+            "value": "center"
+           }
+          },
+          "custom_css": null
+         },
+         {
+          "meta": {
+           "breakpoint": "desktop",
+           "state": "hover"
+          },
+          "props": {
+           "color": {
+            "$$type": "color",
+            "value": "#121212"
+           },
+           "background": {
+            "$$type": "background",
+            "value": {
+             "color": {
+              "$$type": "color",
+              "value": "#ffffff00"
+             }
+            }
+           }
+          },
+          "custom_css": null
+         }
+        ]
+       }
+      },
+      "interactions": [],
+      "editor_settings": {
+       "title": "LinkedIn"
+      },
+      "version": "0.0"
+     }
+    ],
+    "isInner": false,
+    "elType": "e-aae-a-social-share",
+    "styles": {
+     "e-pssr07-bar": {
+      "id": "e-pssr07-bar",
+      "label": "local",
+      "type": "class",
+      "variants": [
+       {
+        "meta": {
+         "breakpoint": "desktop",
+         "state": null
+        },
+        "props": {
+         "padding": {
+          "$$type": "dimensions",
+          "value": {
+           "block-start": {
+            "$$type": "size",
+            "value": {
+             "unit": "px",
+             "size": 26
+            }
+           }
+          }
+         },
+         "gap": {
+          "$$type": "size",
+          "value": {
+           "unit": "px",
+           "size": 15
+          }
+         },
+         "flex-wrap": {
+          "$$type": "string",
+          "value": "nowrap"
+         }
+        },
+        "custom_css": null
+       }
+      ]
+     }
+    },
+    "interactions": [],
+    "editor_settings": {
+     "title": "Social Share - Stats Rail"
+    },
+    "version": "0.0"
+   }
+  ],
+  "isInner": false,
+  "elType": "e-flexbox",
+  "styles": {
+   "e-pssr00-wrap": {
+    "id": "e-pssr00-wrap",
+    "label": "local",
+    "type": "class",
+    "variants": [
+     {
+      "meta": {
+       "breakpoint": "desktop",
+       "state": null
+      },
+      "props": {
+       "width": {
+        "$$type": "size",
+        "value": {
+         "unit": "px",
+         "size": 80
+        }
+       },
+       "padding": {
+        "$$type": "size",
+        "value": {
+         "unit": "px",
+         "size": 0
+        }
+       },
+       "border-width": {
+        "$$type": "border-width-v2",
+        "value": {
+         "block-start": {
+          "$$type": "size",
+          "value": {
+           "unit": "px",
+           "size": 0
+          }
+         },
+         "block-end": {
+          "$$type": "size",
+          "value": {
+           "unit": "px",
+           "size": 0
+          }
+         },
+         "inline-start": {
+          "$$type": "size",
+          "value": {
+           "unit": "px",
+           "size": 0
+          }
+         },
+         "inline-end": {
+          "$$type": "size",
+          "value": {
+           "unit": "px",
+           "size": 1
+          }
+         }
+        }
+       },
+       "border-color": {
+        "$$type": "color",
+        "value": "#E5E5EA"
+       },
+       "border-style": {
+        "$$type": "string",
+        "value": "solid"
+       },
+       "flex-direction": {
+        "$$type": "string",
+        "value": "column"
+       },
+       "justify-content": {
+        "$$type": "string",
+        "value": "flex-start"
+       },
+       "align-items": {
+        "$$type": "string",
+        "value": "start"
+       },
+       "align-self": {
+        "$$type": "string",
+        "value": "start"
+       }
+      },
+      "custom_css": null
+     }
+    ]
+   }
+  },
+  "interactions": [],
+  "editor_settings": {
+   "title": "Social Share - Stats Rail"
+  },
+  "version": "0.0"
+ }
+}
