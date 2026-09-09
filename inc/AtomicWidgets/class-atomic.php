@@ -6031,13 +6031,25 @@ final class Atomic
 		}
 
 		// Our own atomic widget stylesheets (e.g. aae-a-nav-css) must ALSO print
-		// after editor-preview. The early add_style_dependency() in
-		// enqueue_atomic_preview_styles() silently bails when editor-preview isn't
-		// registered yet at preview/enqueue_styles time, so on some hard reloads
-		// the widget CSS printed before editor-preview and its positioning lost —
-		// the Nav dropdown rendered unpositioned / in-flow ("styles missing on
-		// reload"). Patching here (wp_print_styles, when every handle is finally
-		// registered) makes the dependency reliable.
+		// after editor-preview, or the Nav dropdown renders unpositioned / in-flow
+		// ("styles missing on reload").
+		//
+		// THIS PASS IS THE ONLY ONE THAT CAN DO IT, and the reason is timing, not
+		// a race. An earlier revision of this comment blamed the dependency being
+		// added "too early to stick" — that cannot happen: Elementor registers AND
+		// enqueues editor-preview on the two lines immediately before it fires
+		// `elementor/preview/enqueue_styles` (includes/preview.php:271, :287,
+		// :299), so any callback on that hook always finds the handle registered.
+		//
+		// The real reason is that half the handles do not EXIST yet at that point.
+		// Elementor's per-document CSS (`local-<id>-preview-*`,
+		// `elementor-post-<id>`) registers later, while the document renders, so
+		// nothing hooked to an enqueue action can reach it. wp_print_styles at
+		// priority 0 is the last moment when every handle is finally registered
+		// and nothing has been echoed yet.
+		//
+		// Do not "simplify" this away on the assumption the enqueue-time
+		// dependency already covers it — it covers the widget sheets only.
 		$atomic_handles = [];
 		foreach ( $this->get_available_widgets() as $widget_data ) {
 			if ( ! empty( $widget_data['style_handle'] ) ) {
@@ -6950,42 +6962,58 @@ JS;
 	}
 
 	/**
-	 * Enqueue every active atomic widget's stylesheet inside the editor
-	 * preview iframe.
+	 * Enqueue the EDITOR-ONLY atomic widget stylesheets into the preview iframe.
 	 *
-	 * Why: `maybe_enqueue_widget_script()` rides on
-	 * `elementor/frontend/before_render`, which does not fire when the v4
-	 * editor renders atomic widgets through its client-side Element_Builder
-	 * pipeline. Without this hook, widgets like Image Compare whose slider
-	 * button / handle styles live only in the external CSS file render
-	 * unstyled inside the editor (frontend is unaffected).
+	 * WHAT IS LEFT HERE, AND WHY IT IS ONLY THIS. An `editor_style_handle` is
+	 * deliberately absent from `register_atomic_styles()` (which feeds the
+	 * frontend), so `register_editor_style()` below is the ONLY thing in the
+	 * codebase that registers it — nothing else can, and without this the sheet
+	 * never reaches the preview and never reaches a published page either.
+	 * Today that is one widget: `aae-a-loop-grid-editor-css`.
+	 *
+	 * WHAT WAS REMOVED, AND WHY IT WAS SAFE. This method used to enqueue every
+	 * active widget's ordinary `style_handle` too, and add the `editor-preview`
+	 * dependency to each. Both halves were already being done, in the same
+	 * request, by two other passes:
+	 *
+	 *   - `enqueue_widget_scripts_in_preview()` walks the same registry with the
+	 *     same `is_widget_active()` filter on `elementor/preview/enqueue_scripts`
+	 *     and enqueues the same `style_handle` (its docblock says so).
+	 *   - `fix_preview_css_order()` re-adds the `editor-preview` dependency to
+	 *     every AAE handle — `editor_style_handle` included — at
+	 *     `wp_print_styles` priority 0, which is the only pass that can also
+	 *     reach Elementor's later-registered per-document CSS.
+	 *
+	 * MEASURED, 16 editor loads with the old loop toggled on/off/on/off across
+	 * two pages: the preview carried 26 AAE stylesheets with it and 25 without,
+	 * with ZERO landing before `editor-preview` either way. The single missing
+	 * sheet was the editor-only one — which is exactly what this method now
+	 * owns, and nothing else changed. Editor-ready time was indistinguishable
+	 * (within-state spread 2.3-4.6 s, larger than any gap between states, and
+	 * the direction flipped between batches).
+	 *
+	 * So this is not a speed change — it removes duplicated work while keeping
+	 * the one job no other pass can do.
+	 *
+	 * `add_style_dependency()` is still called here as belt-and-braces: it costs
+	 * one array check and keeps this sheet correctly ordered even if
+	 * `fix_preview_css_order()` is ever narrowed.
 	 */
 	public function enqueue_atomic_preview_styles(): void {
 		$this->register_atomic_styles();
 
-		// In the editor preview iframe every atomic widget style MUST load AFTER
-		// Elementor's `editor-preview` stylesheet. Otherwise, on a hard reload the
-		// widget CSS can win source-order before editor-preview.css is parsed,
-		// briefly applying the wrong base rules (e.g.
-		// `.e-flexbox-base { display:flex; flex-direction:row }`) and breaking the
-		// layout until editor-preview settles. add_style_dependency() below makes
-		// WordPress emit our <link> after editor-preview's.
 		foreach ( $this->get_available_widgets() as $widget_id => $widget_data ) {
-			if ( $this->is_widget_active( $widget_id ) ) {
-				if ( ! empty( $widget_data['style_handle'] ) ) {
-					$this->add_style_dependency( $widget_data['style_handle'], 'editor-preview' );
-					wp_enqueue_style( $widget_data['style_handle'] );
-				}
-
-				// Editor-only stylesheet: NOT registered by register_atomic_styles()
-				// (which feeds the frontend), so it never reaches a published page.
-				// Register it on the spot here and enqueue it in the preview only.
-				if ( ! empty( $widget_data['editor_style_handle'] ) && ! empty( $widget_data['editor_style_path'] ) ) {
-					$this->register_editor_style( $widget_data['editor_style_handle'], $widget_data['editor_style_path'] );
-					$this->add_style_dependency( $widget_data['editor_style_handle'], 'editor-preview' );
-					wp_enqueue_style( $widget_data['editor_style_handle'] );
-				}
+			if ( ! $this->is_widget_active( $widget_id ) ) {
+				continue;
 			}
+
+			if ( empty( $widget_data['editor_style_handle'] ) || empty( $widget_data['editor_style_path'] ) ) {
+				continue;
+			}
+
+			$this->register_editor_style( $widget_data['editor_style_handle'], $widget_data['editor_style_path'] );
+			$this->add_style_dependency( $widget_data['editor_style_handle'], 'editor-preview' );
+			wp_enqueue_style( $widget_data['editor_style_handle'] );
 		}
 	}
 

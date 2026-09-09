@@ -105,6 +105,32 @@ const setAttr = (el, name, value) => {
     if (el.getAttribute(name) !== value) el.setAttribute(name, value);
 };
 
+// Same rule for classes. `classList.add()` of a class that is ALREADY present
+// still rewrites the attribute and still delivers a MutationRecord, so an
+// unconditional add on every pass is not free: measured in the editor, one
+// style change on a 1,000-element page produced 1,640 attribute mutations from
+// this file alone — every one of them a no-op — because Elementor's CSS
+// regeneration touches <head>, the document observer fired, and every
+// accordion re-tagged every hook it already had.
+const addClass = (el, ...names) => {
+    for (const name of names) {
+        if (!el.classList.contains(name)) el.classList.add(name);
+    }
+};
+
+// The icon candidates are the only elements ensureHooks() needs to see:
+// Atomic_Svg roots (`.e-svg-base`) and any element that directly wraps an
+// <svg>. Asking for those two shapes is what replaces the old
+// `querySelectorAll('*')` walk of the whole item on every pass.
+const iconCandidates = (item) => {
+    const out = new Set();
+    item.querySelectorAll('.e-svg-base, svg').forEach((el) => {
+        const node = el.tagName.toLowerCase() === 'svg' ? el.parentElement : el;
+        if (node && node !== item && isIconEl(node)) out.add(node);
+    });
+    return Array.from(out);
+};
+
 const ensureHooks = (item) => {
     // Header-side parts are everything outside the content region. Scoping by
     // the CONTENT wrapper rather than by the header slot is deliberate: both
@@ -117,8 +143,7 @@ const ensureHooks = (item) => {
     const contentWrap = item.querySelector('.aae-accordion-content-wrapper');
     const headerSide = (el) => !(contentWrap && contentWrap.contains(el));
 
-    const all = Array.from(item.querySelectorAll('*'));
-    const icons = all.filter((el) => isIconEl(el) && headerSide(el));
+    const icons = iconCandidates(item).filter(headerSide);
 
     // Prefer whichever hook class survived; fall back to document order, which
     // define_default_children() fixes as title, open icon, close icon. Only
@@ -132,15 +157,15 @@ const ensureHooks = (item) => {
     }
 
     icons.forEach((i) => {
-        i.classList.add('aae-header-icon-element', ICON_CLASS);
+        addClass(i, 'aae-header-icon-element', ICON_CLASS);
         // The chevrons duplicate the state the button already announces through
         // aria-expanded, so letting a screen reader announce them again is noise.
         setAttr(i, 'aria-hidden', 'true');
     });
 
     if (open && close && open !== close) {
-        open.classList.add('aae-header-icon-open');
-        close.classList.add('aae-header-icon-close');
+        addClass(open, 'aae-header-icon-open');
+        addClass(close, 'aae-header-icon-close');
         setAttr(open, 'data-aae-accordion-icon', 'open');
         setAttr(close, 'data-aae-accordion-icon', 'close');
     }
@@ -153,15 +178,15 @@ const ensureHooks = (item) => {
         (headerSlot && headerSlot.firstElementChild);
 
     if (headerDiv && headerSide(headerDiv) && headerDiv !== headerSlot) {
-        headerDiv.classList.add('aae-header-element', HEADER_CLASS);
+        addClass(headerDiv, 'aae-header-element', HEADER_CLASS);
 
         const title = Array.from(headerDiv.children).find((k) => !isIconEl(k));
-        if (title) title.classList.add('aae-header-title-element');
+        if (title) addClass(title, 'aae-header-title-element');
     }
 
     const contentSlot = item.querySelector('.aae-accordion-content');
     const contentDiv = contentSlot && contentSlot.firstElementChild;
-    if (contentDiv) contentDiv.classList.add('aae-content-element');
+    if (contentDiv) addClass(contentDiv, 'aae-content-element');
 };
 
 // Accessible name safety net for the header <button>.
@@ -528,10 +553,51 @@ const bootstrap = (doc) => {
     doc.__aaeAccordionBootstrapped = true;
 
     const win = doc.defaultView || window;
-    const docObserver = new win.MutationObserver(() => {
-        doc.querySelectorAll('.aae-a-accordion').forEach(initAccordion);
+
+    // This observer exists for ONE thing: an accordion that arrives after
+    // bootstrap (a drop in the editor, a re-render that replaces the whole
+    // element, a popup mounting later). It used to re-initialise every accordion
+    // on the page on EVERY childList mutation anywhere in the document — and in
+    // the editor the busiest source of those is Elementor rewriting <style>
+    // tags in <head> on each style change, which has nothing to do with us.
+    // initAccordion() is guarded per container, but distributeAll() is not, so
+    // each of those passes re-walked every item. Three fences now:
+    //
+    //   1. Only records whose added nodes contain (or are) an accordion or an
+    //      accordion item are acted on; everything else is dropped unread.
+    //   2. <head> is never observed — the root is <body> when it exists.
+    //   3. Work is coalesced to one pass per animation frame, so a burst of
+    //      mutations from a single re-render costs one scan, not N.
+    //
+    // Re-renders INSIDE an existing accordion are the per-container observer's
+    // job (observeContainer), which is scoped to that element already.
+    const isAccordionish = (node) =>
+        node.nodeType === 1 && (
+            node.classList.contains('aae-a-accordion') ||
+            node.classList.contains('aae-a-accordion-item') ||
+            !!node.querySelector('.aae-a-accordion')
+        );
+
+    let scheduled = false;
+    const docObserver = new win.MutationObserver((records) => {
+        if (scheduled) return;
+
+        let relevant = false;
+        for (const record of records) {
+            for (const node of record.addedNodes) {
+                if (isAccordionish(node)) { relevant = true; break; }
+            }
+            if (relevant) break;
+        }
+        if (!relevant) return;
+
+        scheduled = true;
+        win.requestAnimationFrame(() => {
+            scheduled = false;
+            doc.querySelectorAll('.aae-a-accordion').forEach(initAccordion);
+        });
     });
-    docObserver.observe(doc.documentElement || doc.body, { childList: true, subtree: true });
+    docObserver.observe(doc.body || doc.documentElement, { childList: true, subtree: true });
 };
 
 bootstrap(document);

@@ -23,6 +23,8 @@
  */
 
 let started = false;
+let scanRafId = null;
+let isScanning = false;
 
 function brandCard(card) {
 	if (!card || card.dataset.aaeCardBranded) return;
@@ -35,9 +37,23 @@ function brandCard(card) {
 }
 
 function scan() {
-	document
+	const root = document.getElementById('elementor-panel') || document;
+	root
 		.querySelectorAll('button.elementor-element[data-library-element-type^="e-aae-a-"]:not([data-aae-card-branded])')
 		.forEach(brandCard);
+}
+
+function scheduleScan() {
+	if (isScanning || scanRafId) return;
+	scanRafId = requestAnimationFrame(() => {
+		scanRafId = null;
+		isScanning = true;
+		try {
+			scan();
+		} finally {
+			isScanning = false;
+		}
+	});
 }
 
 export function startCardBranding() {
@@ -45,9 +61,23 @@ export function startCardBranding() {
 	started = true;
 
 	const run = () => {
-		scan();
-		const observer = new MutationObserver(() => scan());
-		observer.observe(document.body, { childList: true, subtree: true });
+		scheduleScan();
+		const target = document.getElementById('elementor-panel') || document.body;
+		const observer = new MutationObserver((mutations) => {
+			if (isScanning) return;
+			const relevant = mutations.some((m) => {
+				if (m.type !== 'childList') return false;
+				const nodes = [...m.addedNodes];
+				return nodes.some((n) => n.nodeType === 1 && (
+					n.classList?.contains('elementor-element') ||
+					(n.querySelector && n.querySelector('button.elementor-element'))
+				));
+			});
+			if (relevant) {
+				scheduleScan();
+			}
+		});
+		observer.observe(target, { childList: true, subtree: true });
 	};
 
 	if (document.readyState === 'loading') {
