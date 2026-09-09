@@ -127,7 +127,7 @@ const BP_CASCADE = {
  */
 function interactionIdFor(el) {
 	if (!el || !el.dataset) return null;
-	return el.dataset.interactionId || null;
+	return el.dataset.interactionId || el.dataset.id || null;
 }
 
 /**
@@ -140,6 +140,7 @@ function interactionIdFor(el) {
  * on a single element works because lookup is per-map.
  */
 function configFor(el, mapName) {
+	if (!el) return null;
 	const id = interactionIdFor(el);
 	if (!id) return null;
 	const map = window[mapName];
@@ -203,6 +204,8 @@ const KINDS = [];
  * Order in the returned array matches KINDS registration order.
  */
 function kindsFor(el) {
+	el = resolveElement(el);
+	if (!el) return [];
 	const result = [];
 	const id = interactionIdFor(el);
 	if (!id) return result;
@@ -324,6 +327,12 @@ function scan(root) {
 
 			kind.bind(el, config);
 		}
+
+		if (!el[CONFIG_SIG_KEY]) {
+			try {
+				el[CONFIG_SIG_KEY] = configSignature(el);
+			} catch (_) {}
+		}
 	}
 }
 
@@ -349,8 +358,26 @@ function isKindInPlayGroup(kindName, playGroup) {
 	return groupMap[group] === kindName;
 }
 
+function resolveElement(el) {
+	if (!el) return null;
+	if (el.jquery && el[0]) {
+		el = el[0];
+	}
+	if (typeof el === 'string') {
+		const doc = typeof document !== 'undefined' ? document : null;
+		if (!doc) return null;
+		return doc.querySelector(`[data-interaction-id="${el}"]`)
+			|| doc.querySelector(`[data-id="${el}"]`)
+			|| doc.querySelector(`.elementor-element-${el}`)
+			|| ((el.startsWith('.') || el.startsWith('#')) ? doc.querySelector(el) : null)
+			|| null;
+	}
+	return el && el.nodeType === 1 ? el : null;
+}
+
 /** Clear bound state and re-bind one element across every owning kind. */
 function rebind(el, playGroup = "") {
+	el = resolveElement(el);
 	if (!el) return;
 
 	// Full destroy of the previous animation before re-binding:
@@ -406,6 +433,10 @@ function rebind(el, playGroup = "") {
 		el.classList.add(kind.boundFlag);
 		kind.bind(el, config);
 	}
+
+	try {
+		el[CONFIG_SIG_KEY] = configSignature(el);
+	} catch (_) {}
 }
 
 function updateBodyDeviceMode(bp) {
@@ -453,9 +484,10 @@ function configSignature(el) {
  * otherwise the previous bind is left running untouched.
  */
 function rebindIfChanged(el) {
+	el = resolveElement(el);
 	if (!el) return;
 	const sig = configSignature(el);
-	if (el[CONFIG_SIG_KEY] === sig) return;
+	if (el[CONFIG_SIG_KEY] && el[CONFIG_SIG_KEY] === sig) return;
 	el[CONFIG_SIG_KEY] = sig;
 	rebind(el);
 }
@@ -466,7 +498,7 @@ function rebindIfChanged(el) {
 // window drag fires many events per second — debounce so the (potentially
 // page-wide) rebind pass runs once per settle, not once per event.
 let resizeSettleTimer = null;
-const RESIZE_SETTLE_MS = 120;
+const RESIZE_SETTLE_MS = 150;
 
 window.addEventListener('resize', () => {
 	if (resizeSettleTimer) clearTimeout(resizeSettleTimer);
@@ -476,8 +508,12 @@ window.addEventListener('resize', () => {
 		if (newBp !== activeBp) {
 			activeBp = newBp;
 			updateBodyDeviceMode(newBp);
-			document.querySelectorAll('[data-interaction-id]').forEach((el) => {
-				try { rebindIfChanged(el); } catch (_) { }
+			const candidates = Array.from(document.querySelectorAll('[data-interaction-id]'));
+			if (!candidates.length) return;
+			requestAnimationFrame(() => {
+				candidates.forEach((el) => {
+					try { rebindIfChanged(el); } catch (_) { }
+				});
 			});
 		}
 	}, RESIZE_SETTLE_MS);
@@ -490,8 +526,7 @@ window.addEventListener('resize', () => {
  * tears down the trigger so no further events fire.
  */
 function resetEl(el, playGroup = "") {
-
-
+	el = resolveElement(el);
 	if (!el) return;
 
 	if (!playGroup) {
@@ -543,6 +578,7 @@ function resetEl(el, playGroup = "") {
  * `playRow(el, config, rowIndex, rowCfg)` uses rowCfg directly when present.
  */
 function replayRow(el, playGroup = "", rowIndex = 0, rowCfg = null) {
+	el = resolveElement(el);
 	if (!el) return;
 	for (const kind of kindsFor(el)) {
 		if (playGroup && !isKindInPlayGroup(kind.name, playGroup)) continue;
@@ -563,6 +599,7 @@ function replayRow(el, playGroup = "", rowIndex = 0, rowCfg = null) {
  *  child text reveals). Skip the chain check when this replay was itself
  *  triggered by an ancestor's drain (`fromChain=true`). */
 function replay(el, fromChain = false, playGroup = "") {
+	el = resolveElement(el);
 	if (!el) return;
 
 	const owningKinds = kindsFor(el);

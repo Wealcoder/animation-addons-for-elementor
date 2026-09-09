@@ -41,3 +41,5 @@ window.addEventListener("elementor/frontend/init", () => {
         ($scope) => new ImageAccordion($scope[0] || $scope)
     );
 });
+
+//# sourceMappingURL=image-accordion.js.map

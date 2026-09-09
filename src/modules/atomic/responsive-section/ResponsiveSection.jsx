@@ -144,7 +144,7 @@ export function ResponsiveSection({ config }) {
 			}
 		};
 
-		fieldList.forEach((field) => {
+		fieldList.forEach((field, fIndex) => {
 			if (typeof field.when === 'function' && !field.when(settings, activeBp)) {
 				return;
 			}
@@ -165,7 +165,7 @@ export function ResponsiveSection({ config }) {
 				const label = typeof field.label === 'function' ? field.label(settings, activeBp) : field.label;
 				elements.push(
 					<ResponsiveRow
-						key={fullBind || field.control || Math.random()}
+						key={fullBind || `${field.control || 'row'}-${fIndex}`}
 						bind={fullBind}
 						label={label}
 						control={field.control}

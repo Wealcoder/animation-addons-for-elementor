@@ -116,14 +116,31 @@ function brandLabel(labelEl) {
 	}
 }
 
+let scanRafId = null;
+let isBranding = false;
+
 /** Scan the document for unbranded AAE section header labels and brand them. */
 function scan() {
 	// Section titles render via MUI ListItemText `secondary`, surfaced as
 	// .MuiListItemText-secondary. Fall back to any Typography root for safety.
-	const labels = document.querySelectorAll(
+	const root = document.getElementById('elementor-panel') || document;
+	const labels = root.querySelectorAll(
 		'.MuiListItemText-secondary:not([data-aae-branded]), .MuiListItemText-root .MuiTypography-root:not([data-aae-branded])'
 	);
 	labels.forEach(brandLabel);
+}
+
+function scheduleScan() {
+	if (isBranding || scanRafId) return;
+	scanRafId = requestAnimationFrame(() => {
+		scanRafId = null;
+		isBranding = true;
+		try {
+			scan();
+		} finally {
+			isBranding = false;
+		}
+	});
 }
 
 /**
@@ -135,9 +152,23 @@ export function startSectionBranding() {
 	started = true;
 
 	const run = () => {
-		scan();
-		const observer = new MutationObserver(() => scan());
-		observer.observe(document.body, { childList: true, subtree: true });
+		scheduleScan();
+		const target = document.getElementById('elementor-panel') || document.body;
+		const observer = new MutationObserver((mutations) => {
+			if (isBranding) return;
+			const relevant = mutations.some((m) => {
+				if (m.type !== 'childList') return false;
+				const nodes = [...m.addedNodes];
+				return nodes.some((n) => n.nodeType === 1 && (
+					n.classList?.contains('MuiListItemText-root') ||
+					(n.querySelector && n.querySelector('.MuiListItemText-secondary, .MuiTypography-root'))
+				));
+			});
+			if (relevant) {
+				scheduleScan();
+			}
+		});
+		observer.observe(target, { childList: true, subtree: true });
 	};
 
 	if (document.readyState === 'loading') {

@@ -19,6 +19,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 final class Schema_Store {
 
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery -- Custom database tables cannot use core post query APIs ($wpdb is required) and dynamic form schemas are not object-cached.
+
 	/** Is this key owned by a different post/element? (Identity collision oracle.) */
 	public static function key_taken_elsewhere( string $key, int $post_id, string $element_id ): bool {
 		global $wpdb;
@@ -181,4 +183,6 @@ final class Schema_Store {
 
 		return $active ? $active['schema'] : null;
 	}
+
+	// phpcs:enable WordPress.DB.DirectDatabaseQuery
 }

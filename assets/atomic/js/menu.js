@@ -698,16 +698,30 @@ const initMenu = root => {
   } else {
     closeAllSubmenus = buildDropdowns();
   }
+  if (root.__aaeMenuController) {
+    try {
+      root.__aaeMenuController.abort();
+    } catch (_) {}
+  }
+  const menuController = new AbortController();
+  root.__aaeMenuController = menuController;
+  const menuSignal = {
+    signal: menuController.signal
+  };
 
   /* ---------- Outside-click + Escape closes desktop dropdowns ---------- */
   document.addEventListener('click', e => {
+    if (!root.isConnected) {
+      menuController.abort();
+      return;
+    }
     // Flyouts only. An inline accordion (drawer or Layout = Vertical) must not
     // collapse because the visitor clicked somewhere unrelated on the page.
     if (isStacked()) return;
     if (!root.contains(e.target) && typeof closeAllSubmenus === 'function') {
       closeAllSubmenus();
     }
-  });
+  }, menuSignal);
 
   /* ---------- Mobile drawer ----------
      Gated on the BUTTON existing, not on a data-hamburger snapshot. The old
@@ -742,11 +756,19 @@ const initMenu = root => {
     closeDrawer();
   });
   document.addEventListener('keydown', e => {
+    if (!root.isConnected) {
+      menuController.abort();
+      return;
+    }
     if (e.key === 'Escape' && root.classList.contains('aae-a-menu--open')) closeDrawer();
-  });
+  }, menuSignal);
   window.addEventListener('resize', () => {
+    if (!root.isConnected) {
+      menuController.abort();
+      return;
+    }
     if (!isMobile() && root.classList.contains('aae-a-menu--open')) closeDrawer();
-  });
+  }, menuSignal);
 };
 (0,_elementor_frontend_handlers__WEBPACK_IMPORTED_MODULE_0__.register)({
   elementType: 'e-aae-a-menu',

@@ -243,7 +243,9 @@ final class Database {
 			];
 
 			foreach ( $tables as $table ) {
-				$wpdb->query( "DROP TABLE IF EXISTS {$table}" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery -- schema teardown at uninstall; table names come from our own prefix helpers.
+				// %i quotes the identifier in core rather than trusting the string we
+				// built, so the table name is never interpolated into the SQL.
+				$wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %i', $table ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- schema teardown at uninstall.
 			}
 
 			delete_option( 'aae_forms_delete_data_on_uninstall' );

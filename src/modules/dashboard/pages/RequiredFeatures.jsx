@@ -14,6 +14,9 @@ const RequiredFeatures = () => {
   const { setTabKey } = useTNavigation();
   const [currenTemplate, setCurrenTemplate] = useState({});
   const [selectedPlugins, setSelectedPlugins] = useState([]);
+  // One theme at a time: a site has one active theme, so this is a slug,
+  // not a list. Empty means "leave my theme alone", which is the default.
+  const [selectedTheme, setSelectedTheme] = useState("");
   const [allowAttachment, setAllowAttachment] = useState(true);
   const [loading, setIsLoading] = useState(true);
 
@@ -35,6 +38,7 @@ const RequiredFeatures = () => {
       url.searchParams.set("plugins", selectedPlugins.toString());
     }
     url.searchParams.set("attachment", allowAttachment);
+    if (selectedTheme) url.searchParams.set("theme", selectedTheme);
     if (v4images) url.searchParams.set("v4images", v4images);
 
     window.history.replaceState({}, "", url);
@@ -130,9 +134,8 @@ const RequiredFeatures = () => {
             <div className="mb-7">
               <h3 className="text-2xl font-medium">Required Features</h3>
               <p className="mt-1.5 text-text-secondary">
-                Pick the plugins to install. Themes are listed for
-                reference only -- this plugin never installs or switches your
-                theme.
+                Pick what the import should install. Nothing is installed,
+                activated or switched on unless you tick it.
               </p>
             </div>
             <div>
@@ -219,17 +222,37 @@ const RequiredFeatures = () => {
                       </div>
                     </AccordionTrigger>
                     <AccordionContent className="mt-2 space-y-4">
-                      {/* Read only. Changing the active theme is the user's
-                          decision and belongs to Appearance > Themes, so these
-                          rows report a status and offer nothing to tick. */}
+                      {/* A theme row is only selectable when something is
+                          listening on the starter-template hook. This plugin
+                          installs no theme itself, so without that the row stays
+                          read-only and points at Appearance > Themes. */}
                       {currenTemplate?.dependencies?.themes?.map((theme, i) => (
                         <div
                           className="flex items-center space-x-2.5"
                           key={theme.slug + i}
                         >
-                          <span className="text-base font-medium leading-none">
-                            {theme.title}
-                          </span>
+                          {theme?.can_install ? (
+                            <>
+                              <Checkbox
+                                id={`theme-${theme.slug}`}
+                                checked={selectedTheme === theme?.slug}
+                                disabled={theme?.status === "Active"}
+                                onCheckedChange={(value) =>
+                                  setSelectedTheme(value ? theme?.slug : "")
+                                }
+                              />
+                              <label
+                                htmlFor={`theme-${theme.slug}`}
+                                className="text-base font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                              >
+                                {theme.title}
+                              </label>
+                            </>
+                          ) : (
+                            <span className="text-base font-medium leading-none">
+                              {theme.title}
+                            </span>
+                          )}
                           <Badge
                             variant={
                               theme?.status === "Not Installed"
@@ -239,12 +262,28 @@ const RequiredFeatures = () => {
                           >
                             {theme?.status}
                           </Badge>
+                          {/* Nothing here can install a theme on its own,
+                              so a missing one needs the Pro add-on. */}
+                          {theme?.needs_pro && <Badge variant="pro">Pro</Badge>}
                         </div>
                       ))}
                       <p className="text-sm text-text-secondary">
-                        The template was designed against this theme. Your
-                        active theme is not changed by the import -- install
-                        and activate it yourself from{" "}
+                        {currenTemplate?.dependencies?.themes?.some(
+                          (t) => t?.can_install
+                        ) ? (
+                          <>
+                            The template was designed against this theme. Tick
+                            it to install and switch to it as part of the
+                            import; leave it and your active theme is untouched
+                            -- you can always do it later from{" "}
+                          </>
+                        ) : (
+                          <>
+                            The template was designed against this theme. Your
+                            active theme is not changed by the import -- install
+                            and activate it yourself from{" "}
+                          </>
+                        )}
                         <a
                           className="underline"
                           href={`${WCF_ADDONS_ADMIN.adminURL || ""}themes.php`}

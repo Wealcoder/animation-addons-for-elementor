@@ -30,6 +30,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 final class Queue {
 
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery -- Custom database tables cannot use core post query APIs ($wpdb is required) and dynamic queue jobs are not object-cached.
+
 	const STATUS_PENDING    = 'pending';
 	const STATUS_PROCESSING = 'processing';
 	const STATUS_SUCCESS    = 'success';
@@ -240,4 +242,6 @@ final class Queue {
 	private static function schedule_run( int $timestamp ): void {
 		wp_schedule_single_event( $timestamp, self::CRON_HOOK );
 	}
+
+	// phpcs:enable WordPress.DB.DirectDatabaseQuery
 }

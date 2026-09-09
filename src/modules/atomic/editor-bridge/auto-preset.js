@@ -71,10 +71,32 @@ const AUTO_PRESETS = {
   // vertically, so it has to arrive pre-set to be usable at all.
   'e-aae-a-image-compare': {
     // No targetType — the preset root IS an e-aae-a-image-compare, so the
-    // dropped widget itself is replaced by the styled one.
-    presetId: 'image-compare-horizontal',
+    // dropped widget itself is replaced by the styled one. (Verified against
+    // remote-12004: its model root is that type directly, not a container, so
+    // applyPresetModel has nothing to unwrap.)
+    //
+    // This was 'image-compare-horizontal' — the id Local_Fallback derives from
+    // the bundled presets/image-compare-horizontal.json filename. That folder
+    // is being removed in favour of the remote catalog, so the local id stops
+    // resolving and the rule has to name the remote row.
+    //
+    // Worth knowing why this did not fail loudly when local went away: with no
+    // `presetName` set, maybeAutoApply()'s last fallback is presets[0], and the
+    // remote 'Horizontal' happens to sort first. So the drop would still have
+    // landed on the right preset — by luck of ordering, until the catalog gains
+    // another image-compare preset that sorts ahead of it. Naming it removes
+    // that dependence.
+    presetId: 'remote-12004',
+    // Remote ids are the preset server's own row ids, so they can move if the
+    // catalog is ever re-seeded. Name is the stable identity — see the
+    // resolution order in maybeAutoApply(). It only has to be unique within
+    // THIS element type's preset list, which 'Horizontal' is ('Horizontal' vs
+    // 'Vertical').
+    presetName: 'Horizontal',
     // The preset seeds the same six widget types define_default_children()
-    // does, so only this marker class separates the two.
+    // does, so only this marker class separates the two. Stamped by
+    // class-aae-a-image-compare.php on all six seeded children; registered in
+    // hook-classes-provider.js so the panel cannot strip it.
     defaultMarker: 'aae-ic-default',
   },
 

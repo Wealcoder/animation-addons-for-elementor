@@ -362,14 +362,17 @@ class Animation_Settings {
 	public static function used_v3_widget_slugs(): array {
 		global $wpdb;
 
-		// v3_widget_name_sql() builds a fixed REGEXP from widget_name_to_slug_map(),
-		// i.e. from the get_name() values read out of this plugin's own widget
-		// files. No request data reaches it and there is nothing user-supplied to
-		// bind, so there is no placeholder to give prepare().
+		// The pattern is built from widget_name_to_slug_map(), i.e. from the
+		// get_name() values read out of this plugin's own widget files -- no
+		// request data reaches it. It is still BOUND rather than pasted into the
+		// query, so the SQL here is entirely literal.
 		$rows = $wpdb->get_col(
-			"SELECT meta_value FROM {$wpdb->postmeta}
-			  WHERE meta_key = '_elementor_data'
-			    AND " . self::v3_widget_name_sql() // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- see above.
+			$wpdb->prepare(
+				"SELECT meta_value FROM {$wpdb->postmeta}
+				  WHERE meta_key = '_elementor_data'
+				    AND meta_value REGEXP %s",
+				self::v3_widget_name_regexp()
+			)
 		);
 
 		$map  = self::widget_name_to_slug_map();
@@ -500,7 +503,7 @@ class Animation_Settings {
 	 * is exactly how the `wcf--` assumption survived: it was written out three
 	 * times and widening one would have left the others blind.
 	 *
-	 * Falls back to the historic `wcf--` LIKE when the map is unavailable
+	 * Falls back to the historic `wcf--` test when the map is unavailable
 	 * (`wcf_get_config()` missing this early). That is no worse than the
 	 * behaviour this replaced, and failing to the OLD answer is the only safe
 	 * direction — an empty alternation would match every row or none, and both
@@ -519,11 +522,12 @@ class Animation_Settings {
 	 * would therefore be safe — but it must still be DERIVED from the map, or
 	 * it re-creates exactly the `wcf--` assumption this replaced.
 	 *
-	 * @return string SQL fragment, already escaped, testing `meta_value`.
+	 * Returned as a PATTERN, not as SQL: the callers bind it with %s, so no
+	 * part of the query text is ever assembled from a value.
+	 *
+	 * @return string REGEXP pattern to test `meta_value` against.
 	 */
-	private static function v3_widget_name_sql(): string {
-		global $wpdb;
-
+	private static function v3_widget_name_regexp(): string {
 		// A real Elementor widget name is `[a-zA-Z0-9_-]`. Anything else could
 		// not have come from get_name(), and must not reach a regex.
 		$names = array_filter(
@@ -533,14 +537,13 @@ class Animation_Settings {
 			}
 		);
 
+		// The same substring the old LIKE tested for, written as a pattern so
+		// there is still exactly one query shape to reason about.
 		if ( empty( $names ) ) {
-			return "meta_value LIKE '%\"widgetType\":\"wcf--%'";
+			return '"widgetType":"wcf--';
 		}
 
-		return $wpdb->prepare(
-			'meta_value REGEXP %s',
-			'"widgetType":"(' . implode( '|', $names ) . ')"'
-		);
+		return '"widgetType":"(' . implode( '|', $names ) . ')"';
 	}
 
 	/**
@@ -563,14 +566,17 @@ class Animation_Settings {
 
 		global $wpdb;
 
-		// Same fixed REGEXP as above, built from this plugin's own widget names.
-		$sql = "SELECT 1 FROM {$wpdb->postmeta}
-			 WHERE meta_key = '_elementor_data'
-			   AND " . self::v3_widget_name_sql() . '
-			 LIMIT 1';
-
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- see above.
-		$found = (bool) $wpdb->get_var( $sql );
+		// Same fixed pattern as above, built from this plugin's own widget names
+		// and bound as a value.
+		$found = (bool) $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT 1 FROM {$wpdb->postmeta}
+				 WHERE meta_key = '_elementor_data'
+				   AND meta_value REGEXP %s
+				 LIMIT 1",
+				self::v3_widget_name_regexp()
+			)
+		);
 
 		// The Kit counts as usage too — someone configured v3 chrome by hand.
 		if ( ! $found && did_action( 'elementor/loaded' ) && class_exists( '\Elementor\Plugin' ) ) {

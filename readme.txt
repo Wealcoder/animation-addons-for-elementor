@@ -612,145 +612,105 @@ Who may create one:
 * CSS, JavaScript, and HTML snippets require the "manage_options" capability,
   i.e. an administrator.
 
-PHP snippets:
-
-* The free version does not evaluate or execute PHP. A PHP snippet cannot be
-  created here and none is ever run by this plugin. PHP snippet execution is a
-  feature of Animation Addons Pro.
-
-Snippet content is never taken from a page request. It is stored as post meta on
-a private "wcf-code-snippet" post type, which is not publicly queryable and has
-no front-end URL.
-
-If you do not want this feature on your site at all, switch Code Snippet off in
-the plugin's Extensions screen and nothing in it will load.
 
 == External Services ==
 
-This plugin connects to the following external services. Each one is listed with
-what it is used for, when the request happens, and what is sent. No request is
-made until you use the feature it belongs to.
-
-Only one of them sends personal data, and only when you type that data into a
-form yourself and press Send: the Feature Request form, listed first below. None
-of the others transmit your site address, your account details, or any personal
-information about you.
+Each service is contacted only when you use the feature it belongs to. Nothing
+is sent on activation, in the background, or on a schedule. Only the Feature
+Request form sends personal data, and only what you type into it. No service is
+sent your site address or your account details.
 
 = 1. AAE Feature Requests (animation-addons.com) =
-Used by the "Request a feature" form on the plugin's dashboard, so you can send
-the developers an idea.
-When: only when an administrator fills that form in and submits it. Nothing is
-sent if the form is never used.
-Sent: the name, email address and feature description YOU type into the form.
-Nothing is read from your site or from your WordPress account, and no telemetry,
-usage statistics or site address are included.
-Endpoint: /wp-json/aae/v1/request-new-feature
-This service is operated by Animation Addons (Wealcoder).
+The "Request a feature" form on the plugin dashboard. Operated by us.
+Sent, only when an administrator submits that form: the name, email and
+description typed into it. Nothing is read from your site.
 Terms: https://animation-addons.com/terms-and-conditions/
 Privacy: https://animation-addons.com/privacy-policy/
 
 = 2. AAE Template Library (block.animation-addons.com) =
-Used to browse and insert the block, section and page templates offered inside
-the Elementor editor.
-When: only while you have the AAE template library open in the editor.
-Sent: the template or category you are viewing, the plugin API version, and your
-site's language so the catalogue can be returned in the right language.
-Endpoints: /wp-json/api/v2/list, /wp-json/templates/v2/wcf-tpl-category,
-/wp-json/wp/v2/wcf-templates, /wp-json/wp/v2/wcf-templates/json-content
-This service is operated by Animation Addons (Wealcoder) on a subdomain of
-animation-addons.com.
+The templates offered inside the Elementor editor. Operated by us.
+Sent, while the library is open: the template or category being viewed, the
+plugin API version, and your site language.
 Terms: https://animation-addons.com/terms-and-conditions/
 Privacy: https://animation-addons.com/privacy-policy/
 
 = 3. AAE Starter Templates (themecrowdy.com) =
-Used to browse, search and import complete website templates from the Starter
-Templates screen.
-When: only while you are on that screen, and when you start an import. An import
-also downloads that template's own content, media and design-system files from
-the addresses this service returns.
-Sent: the search term you type, and the identifier of the template you choose to
-import.
-Endpoints: /wp-json/wp/v2/starter-templates,
-/wp-json/starter-templates/download
-This service is operated by Theme Crowdy, run by the developer of this
-plugin. The Animation Addons privacy policy linked below names this Starter
-Template integration explicitly and is the policy that governs it.
+The website templates on the Starter Templates screen. Operated by Theme
+Crowdy, run by this plugin's developer -- not an unrelated third party.
+Sent, on that screen: your search term, and the identifier of the template you
+import. An import then also downloads that template's content, media and
+design-system files from the addresses this service returns.
 Terms: https://animation-addons.com/terms-and-conditions/
 Privacy: https://animation-addons.com/privacy-policy/
 
 = 4. AAE Preset Server (crowdytheme.com) =
-Used to offer ready-made design presets for the plugin's widgets.
-When: only when you open the "Presets" control on a widget in the editor.
-Sent: the widget type you are editing. Nothing else.
-Endpoints: /assets/wp-json/aae-preset-server/v1
-This service is operated by Crowdytheme.
+Ready-made design presets for the plugin's widgets. Operated by Crowdytheme,
+also run by this plugin's developer.
+Sent, when you open the "Presets" control: the widget type you are editing.
+Nothing else.
 Terms: https://crowdytheme.com/terms-and-conditions/
 Privacy: https://crowdytheme.com/privacy-policy/
 
 = 5. OpenWeatherMap (api.openweathermap.org) =
-Used by the Weather widget to display current conditions and the forecast.
-When: only on pages where you have placed the Weather widget, and only after you
-enter your own OpenWeatherMap API key in the widget settings.
-Sent: the location you configure in the widget, and your own API key.
+Forecasts for the Weather widget. Needs your own API key; without one nothing
+is requested.
+Sent, on pages carrying the widget: the location you configure, and that key.
 Terms: https://openweathermap.org/terms
 Privacy: https://openweathermap.org/privacy-policy
 
 = 6. Mailchimp (api.mailchimp.com) =
-Used by the Mailchimp widget to add subscribers to your own Mailchimp audience.
-When: only on pages where you have placed the Mailchimp widget, and only when a
-visitor submits the form. Requires your own Mailchimp API key.
-Sent: the email address the visitor entered and any additional form fields you
-have mapped, to your own Mailchimp account.
+Adds subscribers to your own Mailchimp audience. Needs your own API key.
+Sent, when a visitor submits the widget's form: their email address and any
+fields you have mapped, to your own account.
 Terms: https://mailchimp.com/legal/terms/
 Privacy: https://mailchimp.com/legal/privacy/
 
-= 7. Video thumbnail lookups (YouTube, Vimeo, Dailymotion, VideoPress) =
-Used by the Video widget to retrieve the poster image for a video you embed.
-Only the platform whose URL you entered is contacted; the others are not.
-When: only when you add a video URL to a Video widget.
-Sent: the public video URL you entered.
-Endpoints: youtube.com/oembed, vimeo.com/api/oembed.json,
-dailymotion.com/services/oembed, public-api.wordpress.com/oembed
-YouTube terms: https://www.youtube.com/t/terms
-YouTube privacy: https://policies.google.com/privacy
-Vimeo terms: https://vimeo.com/terms
-Vimeo privacy: https://vimeo.com/privacy
-Dailymotion terms: https://legal.dailymotion.com/en/terms-of-use/
-Dailymotion privacy: https://legal.dailymotion.com/en/privacy-policy/
-VideoPress is operated by Automattic.
-Automattic terms: https://wordpress.com/tos/
-Automattic privacy: https://automattic.com/privacy/
+= 7. Video thumbnails (YouTube, Vimeo, Dailymotion, VideoPress) =
+The poster image for a video in the Video widget. Only the platform whose URL
+you entered is contacted; the others are not.
+Sent, when you add the URL: that public video URL.
+YouTube: https://www.youtube.com/t/terms + https://policies.google.com/privacy
+Vimeo: https://vimeo.com/terms + https://vimeo.com/privacy
+Dailymotion: https://legal.dailymotion.com/en/terms-of-use/ +
+https://legal.dailymotion.com/en/privacy-policy/
+VideoPress (Automattic): https://wordpress.com/tos/ +
+https://automattic.com/privacy/
 
 = 8. Google Maps (maps.google.com) =
-Used by the Google Maps widget to render the map you place on a page.
-When: only on pages where you have placed that widget. The map is loaded in the
-visitor's browser through an iframe; the plugin makes no server-side request.
-Sent: the address or coordinates you configure in the widget, and -- because it
-is the visitor's browser that loads the frame -- whatever Google receives from
-that browser.
+Renders the map placed by the Google Maps widget, as an iframe in the visitor's
+browser -- the plugin makes no server-side request.
+Sent: the address or coordinates you configure and, because the visitor's
+browser loads the frame, whatever Google receives from that browser.
 Terms: https://policies.google.com/terms
 Privacy: https://policies.google.com/privacy
 
-Note: the Form widget can send submissions to a webhook URL, and the plugin can
-send email through your site. Those go only where you configure them; the plugin
-does not choose the destination.
+The Form widget can also post submissions to a webhook and send email through
+your site. Both go only where you configure them.
 
 == Source Code ==
 
-The compiled JavaScript and CSS shipped in assets/build/, assets/js/ and
-assets/css/ is built from the human-readable sources in this plugin's public
-repository:
+Every compiled file ships with its human-readable source inside the plugin, and
+the build tooling ships too, so the build can be reproduced from the plugin as
+distributed:
 
+  npm install
+  npm run build
+
+* /src -- React and JavaScript for the dashboard, page importer and editor
+  bundles, compiled by webpack into /assets/build (see webpack.config.js)
+* /assets/src -- SCSS, compiled by gulp into /assets/css (see gulpfile.js)
+* /assets/js and /assets/js/widgets -- front-end scripts; each .min.js is the
+  build of the .js of the same name beside it
+
+Every npm dependency is listed in package.json. The same sources are also at
 https://github.com/Wealcoder/animation-addons-for-elementor
 
-* /src -- the React and JavaScript sources for the dashboard and the editor
-  bundles, built into assets/build/
-* /assets/src -- the SCSS sources, built into assets/css/
-* /assets/js and /assets/js/widgets -- the unminified front-end scripts; the
-  .min.js file beside each one is its minified build output
+Two libraries are vendored directly rather than through npm and are minified
+upstream, so their projects are the source:
 
-Build with "npm install" then "npm run build" (webpack via @wordpress/scripts,
-plus gulp for the SCSS).
+* CodeMirror 5.65.16 (Code Snippet editor), in /assets/js/cs-js and
+  /assets/css/cs-css -- https://github.com/codemirror/codemirror5
+* Select2 4.1.0 (admin select control) -- https://github.com/select2/select2
 
 == Changelog ==
 

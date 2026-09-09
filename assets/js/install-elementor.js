@@ -37,3 +37,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+//# sourceMappingURL=install-elementor.js.map
