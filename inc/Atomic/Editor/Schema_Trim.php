@@ -77,11 +77,6 @@ final class Schema_Trim {
 			return;
 		}
 
-		// TEMP A/B switch: ?aae_notrim=1 on the editor URL.
-		if ( isset( $_GET['aae_notrim'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			return;
-		}
-
 		// Initial editor load — `initial_document.widgets` + `elements`.
 		add_filter( 'elementor/editor/localize_settings', [ $this, 'trim_localized' ], 1000 );
 

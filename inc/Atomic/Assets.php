@@ -323,10 +323,11 @@ final class Assets
 	 */
 	public function enqueue_editor_bridge(): void
 	{
-		// Independent of both gates below: the hot path this speeds up is
-		// Elementor's own, and it is just as slow on a site with none of our
+		// Independent of both gates below: the hot paths these speed up are
+		// Elementor's own, and they are just as slow on a site with none of our
 		// atomic widgets switched on.
 		$this->patch_editor_props();
+		$this->patch_editor_lookup();
 
 		// GATE ONE — is there anything of OURS for it to drive?
 		//
@@ -490,11 +491,6 @@ final class Assets
 			return;
 		}
 
-		// TEMP A/B switch: ?aae_nofast=1 on the editor URL.
-		if (isset($_GET['aae_nofast'])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			return;
-		}
-
 		if (! wp_script_is('elementor-v2-editor-props', 'registered')) {
 			return;
 		}
@@ -518,6 +514,125 @@ window.__aaeFastProps=(v2.editorProps===n);
 JS;
 
 		wp_add_inline_script('elementor-v2-editor-props', $js, 'after');
+	}
+
+	/**
+	 * Gives `$e.components.get('document').utils.findViewById()` an id -> view
+	 * index, for the life of one synchronous turn.
+	 *
+	 * WHY. `elementor.getContainer( id )` resolves through `findContainerById`
+	 * -> `findViewById` -> `findViewRecursive`, and `findViewRecursive` is a
+	 * full depth-first walk of the element tree with no index at all
+	 * (editor/document/component.js). So one container lookup is O(n) — and
+	 * `getElements()` in `@elementor/editor-elements` calls `getContainer()`
+	 * once per element, which makes the whole enumeration O(n^2).
+	 *
+	 * Measured in the editor on a 960-element document: ONE `getElements()`
+	 * call visits 475,991 views and takes 105 ms. Over a boot that is 90 of
+	 * the 174 seconds of sampled JS — 51.7%, the single largest cost in the
+	 * editor by a wide margin. The callers are all Elementor's own: 52.6%
+	 * editor-canvas reacting to a v1-adapters state dispatch, 47% the styles
+	 * repository's `all()` via `transformClassId` and `createItems`. With the
+	 * index the same call is 2 ms and returns the identical 960 containers in
+	 * the identical order.
+	 *
+	 * HOW. The index is built ONCE per synchronous turn and dropped on the
+	 * next microtask. That scope is the whole safety argument: nothing can
+	 * mutate the element tree in the middle of a synchronous walk, so the
+	 * index cannot go stale while it exists, and there is no structure-change
+	 * invalidation to get wrong. It is built by the SAME traversal
+	 * `findViewRecursive` performs, keeping the FIRST id seen in DFS order, so
+	 * it returns what the original returns by construction.
+	 *
+	 * WHAT KEEPS IT SAFE. Three fallbacks, all landing on the original:
+	 *  - A MISS defers to the original search. An element created after the
+	 *    index was built in the same turn is therefore still found.
+	 *  - A hit on a view that has since been DESTROYED is treated as a miss —
+	 *    that is the dangerous direction, where a stale index would hand back
+	 *    a detached view and the caller would edit the wrong element.
+	 *  - The first hit of the session is checked against the original's own
+	 *    answer for that same id; on any disagreement the patch disables
+	 *    itself permanently and the original serves every later call.
+	 * A future Elementor that reshapes any of this degrades to "no index",
+	 * never to a wrong element. `window.__aaeFastLookup` is true when it
+	 * applied, and `aae/atomic/editor_fast_lookup` switches it off.
+	 *
+	 * The install polls because the document component does not exist until
+	 * `elementor.start()` runs `initComponents()`, which is long after this
+	 * inline script evaluates. It stops on the first success.
+	 */
+	private function patch_editor_lookup(): void
+	{
+		if (! apply_filters('aae/atomic/editor_fast_lookup', true)) {
+			return;
+		}
+
+		if (! wp_script_is('elementor-editor', 'registered') && ! wp_script_is('elementor-editor', 'enqueued')) {
+			return;
+		}
+
+		$js = <<<'JS'
+(function(){
+var tries=0;
+function alive(v){
+	if(!v||!v.model)return false;
+	if(v.isDestroyed===true)return false;
+	if(typeof v.isDestroyed==='function'&&v.isDestroyed())return false;
+	return true;
+}
+function install(utils){
+	var orig=utils.findViewById;
+	if(typeof orig!=='function')return false;
+	var index=null,verified=false,disabled=false;
+	function build(){
+		var root;
+		try{root=window.elementor&&window.elementor.getPreviewView&&window.elementor.getPreviewView();}catch(e){return null;}
+		if(!root||!root.children)return null;
+		var map=new Map();
+		(function walk(coll){
+			if(!coll||!coll._views)return;
+			for(var x in coll._views){
+				var v=coll._views[x];
+				if(!v||!v.model)continue;
+				var id=v.model.get('id');
+				if(!map.has(id))map.set(id,v);
+				if(v.children)walk(v.children);
+			}
+		})(root.children);
+		return map;
+	}
+	utils.findViewById=function(id){
+		if(disabled)return orig(id);
+		if(!index){
+			index=build();
+			if(!index)return orig(id);
+			queueMicrotask(function(){index=null;});
+		}
+		var hit=index.get(id);
+		if(hit&&alive(hit)){
+			if(!verified){
+				verified=true;
+				var real=orig(id);
+				if(real!==hit){disabled=true;index=null;window.__aaeFastLookup=false;return real;}
+			}
+			return hit;
+		}
+		return orig(id);
+	};
+	window.__aaeFastLookup=true;
+	return true;
+}
+(function attempt(){
+	var c=null;
+	try{c=window.$e&&window.$e.components&&window.$e.components.get&&window.$e.components.get('document');}catch(e){}
+	if(c&&c.utils&&install(c.utils))return;
+	if(++tries>4800)return;
+	setTimeout(attempt,25);
+})();
+})();
+JS;
+
+		wp_add_inline_script('elementor-editor', $js, 'after');
 	}
 
 	private function load_asset(string $entry, array $manual_deps = []): array
