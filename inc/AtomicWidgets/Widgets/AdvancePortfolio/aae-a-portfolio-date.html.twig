@@ -1,0 +1,25 @@
+{#
+  No `{% if settings.text %}` guard, deliberately — and this is the FAITHFUL
+  behaviour, not a shortcut. The v3 base skin's render_date() is an
+  unconditional `<div class="date">get_the_date()</div>` with no empty check.
+
+  It also matters in the editor. get_atomic_settings() supplies a stand-in date
+  when there is no loop, but the editor's element render does not pick that up,
+  so a guard here left this element as a completely EMPTY wrapper in the canvas
+  (verified: its widget wrapper existed with innerHTML ""), which cannot be
+  clicked or styled. Always emitting the div keeps it selectable, and on the
+  frontend the loop always has a post so it is never blank there.
+#}
+{% set classes = ['date', base_styles.base] | merge(settings.classes | default([])) | join(' ') %}
+<div class="{{ classes }} {{ editor_classes | default('') }}"
+    data-id="{{ id }}"
+    data-element_type="{{ type }}"
+    data-e-type="{{ type }}"
+    data-interaction-id="{{ interaction_id | default('') }}"
+    {% if settings._cssid is defined and settings._cssid is not empty %}
+        id="{{ settings._cssid | e('html_attr') }}"
+    {% endif %}
+    {% if settings.attributes is defined and settings.attributes is not empty %}
+        {{ settings.attributes | raw }}
+    {% endif %}
+    {{ editor_attributes | default('') | raw }}>{{ settings.text }}</div>
