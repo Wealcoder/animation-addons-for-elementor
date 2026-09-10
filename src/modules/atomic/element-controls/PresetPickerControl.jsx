@@ -58,6 +58,8 @@ import {
   resetElementToOriginal,
 } from "./preset-apply";
 
+// NOTE: the site ROOT, not pro-upsell.js's /pricing/. Pre-existing and left
+// as-is deliberately — retargeting a live upsell link is a product decision.
 const UPGRADE_URL = "https://animation-addons.com/";
 const BRAND = "#ff7a00";
 const BRAND_DARK = "#e35f00";

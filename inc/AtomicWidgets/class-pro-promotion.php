@@ -78,7 +78,8 @@ final class Pro_Promotion {
 	 */
 	const PANEL_CATEGORY = 'aae-atomic-general';
 
-	const UPGRADE_URL = 'https://animation-addons.com/pricing/';
+	/** @see Atomic::UPGRADE_URL — one destination for every editor upsell. */
+	const UPGRADE_URL = Atomic::UPGRADE_URL;
 
 	/**
 	 * The Pro widgets worth a card, as `slug => [ label, icon ]`.

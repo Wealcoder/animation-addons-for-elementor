@@ -41,6 +41,7 @@ import {
   useElementEditorSettings,
 } from "@elementor/editor-elements";
 import { useElement } from "@elementor/editor-editing-panel";
+import { PRO_ACCENT, UPGRADE_URL } from "./pro-upsell";
 import {
   Box,
   Collapse,
@@ -54,7 +55,6 @@ import {
 const TRACK_TYPE = "e-aae-a-slider-track";
 const SLIDE_TYPE = "e-aae-a-slide";
 
-const UPGRADE_URL = "https://animation-addons.com/pricing/";
 
 /**
  * How many slides this site may author, and whether it is capped at all.
@@ -289,7 +289,7 @@ export function SlidesControl({ label }) {
             size="tiny"
             onClick={handleAdd}
             aria-label={atLimit ? "Upgrade to Pro to add more slides" : "Add Slide"}
-            sx={atLimit ? { color: "#ff7a00" } : undefined}
+            sx={atLimit ? { color: PRO_ACCENT } : undefined}
           >
             <span style={{ fontSize: 16, lineHeight: 1 }}>{atLimit ? "★" : "+"}</span>
           </IconButton>
@@ -358,7 +358,7 @@ export function SlidesControl({ label }) {
                   <IconButton
                     size="tiny"
                     aria-label="Duplicate slide"
-                    sx={atLimit ? { color: "#ff7a00" } : undefined}
+                    sx={atLimit ? { color: PRO_ACCENT } : undefined}
                     onClick={(e) => {
                       e.stopPropagation();
                       handleDuplicate(row);
