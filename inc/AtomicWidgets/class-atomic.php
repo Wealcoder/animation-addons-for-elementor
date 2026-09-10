@@ -6210,6 +6210,69 @@ final class Atomic
 	}
 
 	/**
+	 * Slides an unlicensed site may author in either slider.
+	 *
+	 * Lives HERE, not on AAE_A_Loop_Grid_Slider, because Assets.php has to ship
+	 * it to the editor on every load and that widget's class is only required
+	 * when the widget is switched on — reading it there would fatal on a site
+	 * that has the slider disabled.
+	 *
+	 * PANEL ONLY. Nothing downstream of a saved value consults it, so a slider
+	 * built with more slides keeps rendering all of them if the licence lapses.
+	 */
+	const FREE_SLIDE_LIMIT = 3;
+
+	/**
+	 * Is there a Pro plugin here with a VALID licence?
+	 *
+	 * The same gate Pro puts on its own include_files(), so it answers the only
+	 * question that matters downstream: will Pro's code actually run. Absent
+	 * function means either no Pro at all or one too old to have it, and both
+	 * are correctly "no".
+	 *
+	 * Licence-only, with NO version floor: it answers "has this customer
+	 * paid", which is the only question a feature gate needs. Anything that
+	 * must ALSO know "is the Pro here new enough" has to check
+	 * WCF_ADDONS_PRO_VERSION itself rather than widening this.
+	 *
+	 * Pro memoises the underlying option read in a static, so repeat calls are
+	 * free.
+	 */
+	public static function pro_licensed(): bool
+	{
+		return function_exists('wcf__addons__pro__status') && (bool) wcf__addons__pro__status();
+	}
+
+	/**
+	 * Is the CODE for this atomic widget present on disk?
+	 *
+	 * The registry-entry half and the file half are both required and mean
+	 * different things: a slug missing entirely is a widget this build never
+	 * knew about, while an entry whose file is gone is a widget this build
+	 * expects someone else to ship (a moved-to-Pro slug on a site with no Pro,
+	 * or a partial deploy). Both end the same way in
+	 * resolve_registerable_classes() — the element type never registers — which
+	 * is the only thing a caller asking this question cares about.
+	 *
+	 * Deliberately NOT is_widget_active(): that answers whether the user
+	 * switched it on, which is their choice and not a missing-code condition.
+	 * Pro_Promotion needs exactly this split, so that a widget somebody turned
+	 * off in the dashboard is not advertised back at them as a paid upgrade.
+	 */
+	public function widget_code_present(string $slug): bool
+	{
+		$widgets = $this->get_available_widgets();
+
+		if (! isset($widgets[$slug])) {
+			return false;
+		}
+
+		$file = self::widget_class_file($widgets[$slug]);
+
+		return '' !== $file && file_exists($file);
+	}
+
+	/**
 	 * Absolute path to a registry entry's class file.
 	 *
 	 * `file` is normally relative to this directory. An entry from another
