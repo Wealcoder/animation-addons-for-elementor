@@ -571,12 +571,6 @@ final class Atomic
 		'aae-a-loop-slide-item'        => 'aae-a-loop-grid-slider',
 		'aae-a-loop-slide-pagination'  => 'aae-a-loop-grid-slider',
 
-		// Offcanvas
-		'aae-a-offcanvas-panel'        => 'aae-a-offcanvas',
-		'aae-a-offcanvas-trigger'      => 'aae-a-offcanvas',
-		'aae-a-offcanvas-close'        => 'aae-a-offcanvas',
-		'aae-a-offcanvas-overlay'      => 'aae-a-offcanvas',
-
 		// Image Hotspot
 		'aae-a-hotspot-point'          => 'aae-a-image-hotspot',
 		'aae-a-hotspot-marker'         => 'aae-a-image-hotspot',
@@ -594,9 +588,6 @@ final class Atomic
 		'aae-a-post-pagination-preview-date'      => 'aae-a-post-pagination',
 		'aae-a-post-pagination-preview-author'    => 'aae-a-post-pagination',
 		'aae-a-post-pagination-preview-excerpt'   => 'aae-a-post-pagination',
-
-		// Stack Cards
-		'aae-a-stack-card'             => 'aae-a-stack-cards',
 
 		// Timeline
 		'aae-a-timeline-item'          => 'aae-a-timeline',
@@ -1329,23 +1320,6 @@ final class Atomic
 				'hide_from_panel' => true,
 			],
 
-			'aae-a-draw-svg' => [
-				'label'        => 'DrawSVG',
-				'description'  => 'Draw an SVG\'s paths with GSAP DrawSVGPlugin — per-path, optional ScrollTrigger, from/to/method/ease/duration/yoyo/scrub and an optional wrapper link.',
-				'icon'         => 'eicon-animation',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\DrawSvg\AAE_A_Draw_Svg',
-				'is_pro'       => true,
-				'badge_only'       => true,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [ 'draw', 'svg', 'gsap', 'animation', 'scroll', 'atomic' ],
-				'category'     => 'animation',
-				'order'        => 0,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
 			'aae-a-posts' => [
 				'label'        => 'Posts Grid',
 				'description'  => 'A dynamic grid of recent posts with GSAP stagger animations.',
@@ -1899,32 +1873,6 @@ final class Atomic
 				'hide_from_panel' => true,
 			],
 
-			'aae-a-stack-cards' => [
-				'label'        => 'Stack Cards',
-				'description'  => 'A scroll-driven card deck: independently-styleable cards that stack and animate with GSAP ScrollTrigger. First release ships the Scroll Stack animation; more arrive as presets.',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\StackCards\AAE_A_Stack_Cards',
-				'keywords'     => ['atomic', 'stack', 'cards', 'scroll', 'gsap'],
-				'icon'         => 'eicon-post-list',
-				'is_pro'       => true,
-				'badge_only'       => true,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'category'     => 'slider',
-				'order'        => 1,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-			'aae-a-stack-card' => [
-				'is_internal'  => true,
-				'label'        => 'Stack Card (Internal)',
-				'description'  => 'Internal card element for Stack Cards.',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\StackCards\AAE_A_Stack_Card',
-				'keywords'     => ['atomic', 'stack', 'card', 'internal'],
-				'icon'         => 'eicon-single-post',
-				'hide_from_panel' => true,
-			],
-
 			'aae-a-accordion' => [
 				'label'        => 'Accordion',
 				'description'  => 'Atomic accordion with GSAP interactive effects and smooth controls.',
@@ -1942,30 +1890,6 @@ final class Atomic
 				],
 				'category'     => 'general',
 				'order'        => 6,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
-			'aae-a-toc' => [
-				'label'        => 'Table of Content',
-				'description'  => 'Auto-generated Table of Contents from the page headings — nested hierarchy, active-heading highlighting, smooth scroll, collapsible + responsive minimize box.',
-				'icon'         => 'eicon-table-of-contents',
-				'is_pro'       => true,
-				'badge_only'       => true,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'toc',
-					'table',
-					'content',
-					'contents',
-					'anchor',
-					'heading',
-					'atomic',
-				],
-				'category'     => 'blog',
-				'order'        => 7,
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
@@ -2555,84 +2479,6 @@ final class Atomic
 				'order'        => 14,
 				'demo_url'     => '',
 				'doc_url'      => '',
-			],
-
-			'aae-a-offcanvas' => [
-				'label'        => 'Offcanvas',
-				'description'  => 'Offcanvas drawer with trigger + panel and selectable GSAP open/close animations.',
-				'icon'         => 'eicon-sidebar',
-				'is_pro'       => true,
-				'badge_only'       => true,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'offcanvas',
-					'drawer',
-					'sidebar',
-					'panel',
-					'atomic',
-				],
-				'category'     => 'interaction',
-				'order'        => 15,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
-			'aae-a-offcanvas-panel' => [
-				'is_internal'  => true,
-				'label'        => 'Offcanvas Panel (Internal)',
-				'description'  => 'Internal locked panel container for Offcanvas.',
-				'icon'         => 'eicon-inner-section',
-				'is_pro'       => true,
-				'badge_only'       => true,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'offcanvas panel',
-					'internal',
-				],
-				'category'     => 'general',
-				'order'        => 16,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
-			'aae-a-offcanvas-trigger' => [
-				'is_internal'  => true,
-				'label'           => 'Offcanvas Trigger',
-				'class_name'      => 'WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Trigger',
-				'icon'            => 'eicon-menu-bar',
-				'keywords'        => [ 'offcanvas', 'trigger', 'icon' ],
-				'hide_from_panel' => true,
-			],
-			'aae-a-offcanvas-close' => [
-				'is_internal'  => true,
-				'label'           => 'Offcanvas Close',
-				'class_name'      => 'WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Close',
-				'icon'            => 'eicon-close',
-				'keywords'        => [ 'offcanvas', 'close', 'icon' ],
-				'hide_from_panel' => true,
-			],
-			// ── Offcanvas backdrop — HELPER widget. Seeded as a locked child of
-			// the Offcanvas root, never dragged from the panel on its own, so
-			// `is_internal => true` keeps it out of the dashboard list. This
-			// entry previously carried the class-registry keys (`class_name`,
-			// `hide_from_panel`) instead of dashboard metadata, which rendered
-			// it as a card with no category, toggle state or description.
-			'aae-a-offcanvas-overlay' => [
-				'label'        => 'Offcanvas Overlay',
-				'description'  => 'Backdrop layer behind an open Offcanvas panel.',
-				'icon'         => 'eicon-square',
-				'is_pro'       => true,
-				'badge_only'       => true,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [ 'offcanvas', 'overlay', 'backdrop', 'scrim' ],
-				'category'     => 'general',
-				'is_internal'  => true,
 			],
 
 			'aae-a-form' => [
@@ -4861,37 +4707,6 @@ final class Atomic
 				'has_script' => false,
 			],
 
-			'aae-a-draw-svg' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\DrawSvg\AAE_A_Draw_Svg',
-				'file' => 'Widgets/DrawSvg/class-aae-a-draw-svg.php',
-				'script_handle' => 'aae-a-draw-svg-js',
-				'script_path' => '/assets/atomic/js/draw-svg.js',
-				// Only when Pro is present — see aae-a-offcanvas below. Free ships
-				// no GSAP of its own and Atomic\Assets::ensure_gsap_registered()
-				// sources these from Pro's assets/lib, so without Pro the handles
-				// never exist. draw-svg.js guards on `typeof gsap` and no-ops.
-				'script_deps' => defined( 'WCF_ADDONS_PRO_VERSION' )
-					? [ 'gsap', 'ScrollTrigger', 'DrawSVGPlugin', 'MotionPathPlugin' ]
-					: [],
-				'has_script' => true,
-			],
-
-			'aae-a-stack-cards' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\StackCards\AAE_A_Stack_Cards',
-				'file' => 'Widgets/StackCards/class-aae-a-stack-cards.php',
-				'script_handle' => 'aae-a-stack-cards-js',
-				'script_path' => '/assets/atomic/js/stack-cards.js',
-				// Pro-only handles; stack-cards.js already returns early when
-				// window.gsap / window.ScrollTrigger are absent.
-				'script_deps' => defined( 'WCF_ADDONS_PRO_VERSION' ) ? [ 'gsap', 'ScrollTrigger' ] : [],
-				'has_script' => true,
-			],
-			'aae-a-stack-card' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\StackCards\AAE_A_Stack_Card',
-				'file' => 'Widgets/StackCards/class-aae-a-stack-card.php',
-				'has_script' => false,
-			],
-
 			// Loop Grid Slider — reuses the Loop Grid query engine + the shared
 			// nested-slider runtime. Its only own script is the load-more bridge
 			'aae-a-post-pagination' => [
@@ -5046,22 +4861,6 @@ final class Atomic
 				'has_script' => true,
 				'style_handle' => 'aae-a-accordion-css',
 				'style_path' => '/assets/atomic/css/accordion.css',
-			],
-
-			// Table of Content — leaf widget. Its JS uses GSAP ScrollTrigger
-			// (active-heading scroll-spy) + ScrollToPlugin (smooth scroll) when
-			// present, and degrades gracefully to native smooth scroll without
-			// them — so, like Counter, it declares NO gsap script_deps (those
-			// handles live in the Pro plugin; a missing registered dep would
-			// silently prevent this free widget's script from enqueuing).
-			'aae-a-toc' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\TableOfContents\AAE_A_Table_Of_Contents',
-				'file' => 'Widgets/TableOfContents/class-aae-a-table-of-contents.php',
-				'script_handle' => 'aae-a-toc-js',
-				'script_path' => '/assets/atomic/js/table-of-contents.js',
-				'has_script' => true,
-				'style_handle' => 'aae-a-toc-css',
-				'style_path' => '/assets/atomic/css/table-of-contents.css',
 			],
 
 			'aae-a-accordion-item' => [
@@ -5281,41 +5080,6 @@ final class Atomic
 			'aae-a-toggle-switcher-knob' => [
 				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Switcher_Knob',
 				'file'       => 'Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-switcher-knob.php',
-				'has_script' => false,
-			],
-
-			'aae-a-offcanvas' => [
-				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas',
-				'file'          => 'Widgets/Offcanvas/class-aae-a-offcanvas.php',
-				'script_handle' => 'aae-a-offcanvas-js',
-				'script_path'   => '/assets/atomic/js/offcanvas.js',
-				'has_script'    => true,
-				// GSAP powers the open/close animations, but the `gsap` handle is
-				// registered only by the Pro plugin. Depend on it ONLY when Pro is
-				// present (an unregistered dep would silently block the script);
-				// the runtime falls back to a CSS slide when GSAP is absent.
-				'script_deps'   => defined( 'WCF_ADDONS_PRO_VERSION' ) ? [ 'gsap' ] : [],
-			],
-
-			'aae-a-offcanvas-panel' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Panel',
-				'file'       => 'Widgets/Offcanvas/class-aae-a-offcanvas-panel.php',
-				'has_script' => false,
-			],
-
-			'aae-a-offcanvas-trigger' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Trigger',
-				'file'       => 'Widgets/Offcanvas/class-aae-a-offcanvas-trigger.php',
-				'has_script' => false,
-			],
-			'aae-a-offcanvas-close' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Close',
-				'file'       => 'Widgets/Offcanvas/class-aae-a-offcanvas-close.php',
-				'has_script' => false,
-			],
-			'aae-a-offcanvas-overlay' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Overlay',
-				'file'       => 'Widgets/Offcanvas/class-aae-a-offcanvas-overlay.php',
 				'has_script' => false,
 			],
 
@@ -5637,8 +5401,6 @@ final class Atomic
 
 		// Add new atomic widgets below...
 		];
-
-		$widgets = self::drop_widgets_owned_by_pro($widgets);
 
 		/**
 		 * The class/asset registry for every atomic widget.
@@ -6445,89 +6207,6 @@ final class Atomic
 	 * Both callers already skip a path that does not exist, so a Pro entry left
 	 * behind by a partial deploy costs that widget, not the request.
 	 */
-	/**
-	 * Atomic widgets that moved to the Pro plugin, and the Pro release that took
-	 * them. Free keeps its own copies for ONE release as a transitional
-	 * fallback: an atomic element type that nothing registers is not merely
-	 * invisible, Elementor DROPS it from `_elementor_data` on the next save
-	 * (get_elements_raw_data(), elementor/core/base/document.php:1111), so a
-	 * version-skew window with no registrar would destroy customers' pages.
-	 *
-	 * Delete these entries, this method and the widget folders in the follow-up
-	 * release, once Pro 4.2.0 is the floor.
-	 */
-	const PRO_OWNS_WIDGETS_FROM = '4.2.0';
-
-	const WIDGETS_MOVED_TO_PRO = [
-		'aae-a-counter',
-		'aae-a-draw-svg',
-		'aae-a-stack-cards',
-		'aae-a-stack-card',
-		'aae-a-btn-pro',
-		'aae-a-offcanvas',
-		'aae-a-offcanvas-panel',
-		'aae-a-offcanvas-trigger',
-		'aae-a-offcanvas-close',
-		'aae-a-offcanvas-overlay',
-		'aae-a-nav',
-		'aae-a-nav-item',
-		'aae-a-nav-sub-item',
-		'aae-a-mobile-nav',
-		'aae-a-toc',
-	];
-
-	/**
-	 * True once the installed Pro is new enough to register the moved widgets
-	 * itself.
-	 *
-	 * Two conditions, and the LICENCE half is the one that matters.
-	 *
-	 * The atomic EXTENSIONS deliberately guard on Pro's version alone: an
-	 * unlicensed Pro must not make free resume rendering a paid effect. Widgets
-	 * cannot use that rule. WCF_ADDONS_PRO_VERSION is defined at Pro's file
-	 * scope, BEFORE its licence gate, while Pro only registers these widgets
-	 * when the licence is valid — so version-only would leave an expired site
-	 * with NOBODY registering them, and an unregistered atomic element type is
-	 * deleted from `_elementor_data` on the next save of any page using it
-	 * (get_elements_raw_data(), elementor/core/base/document.php:1111).
-	 *
-	 * A lapsed customer keeping these widgets alive is a revenue leak. A lapsed
-	 * customer's pages silently losing their content is not recoverable. So free
-	 * stands down only when Pro will actually take over.
-	 *
-	 * Still not `class_exists` on a Pro widget: Pro loads its classes on
-	 * `elementor/init`, long after this runs, so that check would read false
-	 * even on a perfectly licensed site.
-	 */
-	public static function pro_owns_widgets(): bool
-	{
-		if (! defined('WCF_ADDONS_PRO_VERSION')
-			|| version_compare(WCF_ADDONS_PRO_VERSION, self::PRO_OWNS_WIDGETS_FROM, '<')) {
-			return false;
-		}
-
-		// Same gate Pro puts on its own include_files(); absent means a Pro too
-		// old to have the function, which the version check already excluded.
-		return function_exists('wcf__addons__pro__status') && (bool) wcf__addons__pro__status();
-	}
-
-	/**
-	 * @param array<string,array> $widgets
-	 * @return array<string,array>
-	 */
-	private static function drop_widgets_owned_by_pro(array $widgets): array
-	{
-		if (! self::pro_owns_widgets()) {
-			return $widgets;
-		}
-
-		foreach (self::WIDGETS_MOVED_TO_PRO as $slug) {
-			unset($widgets[$slug]);
-		}
-
-		return $widgets;
-	}
-
 	private static function widget_class_file(array $widget_data): string
 	{
 		$file = $widget_data['file'] ?? '';
