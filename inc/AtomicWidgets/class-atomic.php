@@ -6516,8 +6516,40 @@ final class Atomic
 			return false;
 		}
 
-		// Same gate Pro puts on its own include_files(); absent means a Pro too
-		// old to have the function, which the version check already excluded.
+		return self::pro_licensed();
+	}
+
+	/**
+	 * Is there a Pro plugin here with a VALID licence?
+	 *
+	 * The same gate Pro puts on its own include_files(), so it answers the only
+	 * question that matters downstream: will Pro's code actually run. Absent
+	 * function means either no Pro at all or one too old to have it, and both
+	 * are correctly "no".
+	 *
+	 * Note this is licence-only and carries NO version floor, unlike
+	 * pro_owns_widgets() — a feature gate wants "has this customer paid", while
+	 * the widget hand-over additionally needs "is the Pro here new enough to
+	 * take over". Do not collapse the two.
+	 *
+	 * Pro memoises the underlying option read in a static, so repeat calls are
+	 * free.
+	 */
+	/**
+	 * Slides an unlicensed site may author in either slider.
+	 *
+	 * Lives HERE, not on AAE_A_Loop_Grid_Slider, because Assets.php has to ship
+	 * it to the editor on every load and that widget's class is only required
+	 * when the widget is switched on — reading it there would fatal on a site
+	 * that has the slider disabled.
+	 *
+	 * PANEL ONLY. Nothing downstream of a saved value consults it, so a slider
+	 * built with more slides keeps rendering all of them if the licence lapses.
+	 */
+	const FREE_SLIDE_LIMIT = 3;
+
+	public static function pro_licensed(): bool
+	{
 		return function_exists('wcf__addons__pro__status') && (bool) wcf__addons__pro__status();
 	}
 
