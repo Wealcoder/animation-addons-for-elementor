@@ -43,8 +43,16 @@ use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\AtomicWidgets\Styles\Style_States;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
+use WCF_ADDONS\Forms\Pro_Gated;
 
 class AAE_A_Form_Password extends Atomic_Widget_Base {
+
+	/**
+	 * Locks this widget's PANEL CARD (not the element) without a Pro licence:
+	 * not draggable, lock badge, click opens the upgrade card. Instances already
+	 * on the canvas stay fully editable — see the trait.
+	 */
+	use Pro_Gated;
 
 	use Has_Template;
 

@@ -63,6 +63,47 @@ function prefersReducedMotion() {
 	return typeof window !== 'undefined' && window.matchMedia && window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
 }
 
+/**
+ * Is multi-step locked on this site (no valid Pro licence)?
+ *
+ * Read lazily from the localized AAEFormConfig — the bundle can evaluate before
+ * the global is printed. See inc/Forms/Pro_Gate.php.
+ */
+function isLocked() {
+	return !! ( typeof window !== 'undefined' && window.AAEFormConfig && window.AAEFormConfig.proLocked );
+}
+
+/**
+ * Show every step at once, and never bind stepping.
+ *
+ * This is what "multi-step is a Pro feature" renders as, and the alternative is
+ * genuinely worse for everyone: a step's base style is `display: none` until
+ * this runtime adds `aae-form-step-active`, so simply refusing to bind would
+ * leave a blank form, and Pro_Gate blanks the Next/Prev widgets, so binding
+ * without them would strand the visitor on step one. Flattening turns the form
+ * back into an ordinary single-page form — the paid feature (stepping, per-step
+ * validation, the transitions) is gone, while the form still collects the lead
+ * it was built to collect.
+ *
+ * The nav row is hidden too: with one long form there is nothing to navigate,
+ * and an author-placed Next button that Pro_Gate did not blank (it only blanks
+ * widgets, and a builder may have put one inside a flexbox) would otherwise sit
+ * there doing nothing.
+ */
+function flattenSteps( form ) {
+	form.dataset.aaeStepsBound = 'true';
+	form.classList.add( 'aae-form-steps-flattened' );
+
+	stepsOf( form ).forEach( ( step ) => {
+		step.classList.add( ACTIVE_CLASS );
+		step.removeAttribute( 'hidden' );
+	} );
+
+	form.querySelectorAll( NAV_SELECTOR ).forEach( ( nav ) => {
+		nav.hidden = true;
+	} );
+}
+
 /** This form's step elements, in DOM order (= step order, no separate index prop). */
 function stepsOf( form ) {
 	return Array.from( form.querySelectorAll( '[data-aae-form-step="true"]' ) );
@@ -324,6 +365,16 @@ function animateStepChange( form, fromStep, toStep, direction, onDone ) {
  *   (showFieldError/focusFirstInvalid are private to form.js).
  */
 export function initSteps( form, validateStep, onBlocked ) {
+	// Locked FRONTEND only. The editor keeps full stepping so an existing
+	// multi-step form stays visible and stylable — the panel's lock badge and
+	// upgrade card are what say it is Pro, and taking the editor experience
+	// away as well would only make the builder's saved work look broken.
+	// `validateStep === null` is how form.js signals edit mode to this module.
+	if ( isLocked() && validateStep && form.dataset.aaeStepsBound !== 'true' ) {
+		flattenSteps( form );
+		return;
+	}
+
 	if ( form.dataset.aaeStepsBound === 'true' ) {
 		resyncSteps( form ); // re-render may have happened since the last bind — always safe to reconcile.
 		return;

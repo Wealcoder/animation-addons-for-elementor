@@ -6548,6 +6548,17 @@ final class Atomic
 	 */
 	const FREE_SLIDE_LIMIT = 3;
 
+	/**
+	 * Where every in-editor upsell sends the user.
+	 *
+	 * One constant because two of them drifting is not a hypothetical: the
+	 * dashboard already reaches the site root in some places and /pricing/ in
+	 * others, which is how a campaign link ends up half-applied. Anything new
+	 * that upsells from inside the editor should read this rather than typing
+	 * the URL again.
+	 */
+	const UPGRADE_URL = 'https://animation-addons.com/pricing/';
+
 	public static function pro_licensed(): bool
 	{
 		return function_exists('wcf__addons__pro__status') && (bool) wcf__addons__pro__status();
