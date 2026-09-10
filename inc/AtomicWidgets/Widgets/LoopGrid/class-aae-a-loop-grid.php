@@ -253,7 +253,7 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 					Number_Control::bind_to( 'posts_per_page' )
 						->set_label( __( 'Posts Per Page', 'animation-addons-for-elementor' ) )
 						->set_min( 1 )
-						->set_max( 50 ),
+						->set_max( $this->per_page_max() ),
 
 					Number_Control::bind_to( 'offset' )
 						->set_label( __( 'Offset', 'animation-addons-for-elementor' ) )
@@ -677,6 +677,22 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 		}
 
 		return $args;
+	}
+
+	/**
+	 * Upper bound offered by the Posts Per Page control.
+	 *
+	 * A seam, not a constant, because AAE_A_Loop_Grid_Slider lowers it on an
+	 * unlicensed site — see its override. The plain grid is deliberately NOT
+	 * gated and always offers the full range.
+	 *
+	 * PANEL ONLY. sanitize_per_page() is what the QUERY uses and is left alone
+	 * on purpose: a page saved while licensed keeps rendering every item it was
+	 * built with, so a lapse costs the ability to author more, never the content
+	 * already on the site.
+	 */
+	protected function per_page_max(): int {
+		return 50;
 	}
 
 	private static function sanitize_per_page( array $s ): int {

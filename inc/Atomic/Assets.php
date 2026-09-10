@@ -433,6 +433,20 @@ final class Assets
 				'restUrl'          => esc_url_raw( rest_url( 'aae/v1/presets' ) ),
 				'nonce'            => wp_create_nonce( 'wp_rest' ),
 				'proActive'        => defined( 'WCF_ADDONS_PRO_VERSION' ),
+
+				// proActive says a Pro plugin is INSTALLED; this says its licence
+				// is valid, i.e. whether the customer has actually paid. The
+				// slide limit below is gated on this one — an expired licence
+				// must stop authoring new slides even though Pro's files are
+				// still sitting on disk.
+				'proLicensed'      => \WCF_ADDONS\AtomicWidgets\Atomic::pro_licensed(),
+
+				// Slides an unlicensed site may author, shared with the PHP
+				// constant Atomic::FREE_SLIDE_LIMIT so the Nested
+				// Slider's JS control and the Loop Grid Slider's panel cap cannot
+				// drift apart. PANEL ONLY — nothing here reaches the renderer, so
+				// existing sliders keep every slide they were built with.
+				'freeSlideLimit'   => \WCF_ADDONS\AtomicWidgets\Atomic::FREE_SLIDE_LIMIT,
 				'placeholderThumb' => WCF_ADDONS_URL . 'assets/images/preset-placeholder.png',
 
 				// The `$$type` tag the INSTALLED core registers for the

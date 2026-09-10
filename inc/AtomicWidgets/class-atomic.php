@@ -3914,6 +3914,16 @@ final class Atomic
 		add_action('elementor/widgets/register', [$this, 'register_widgets']);
 		add_action('elementor/elements/elements_registered', [$this, 'register_elements']);
 
+		// Locked upsell cards for the Pro-owned atomic widgets, so a free site's
+		// panel shows what it is missing instead of eight silently absent cards.
+		// Registered right beside the real registration because it answers the
+		// same question from the other side: whatever those two hooks did NOT
+		// register is exactly what Pro_Promotion advertises. Hand-required — the
+		// PSR-4 map expects a class-named file, and this one follows the
+		// class-*.php convention its neighbours use.
+		require_once WCF_ADDONS_PATH . 'inc/AtomicWidgets/class-pro-promotion.php';
+		(new Pro_Promotion())->register();
+
 		// Advanced Heading's `content` prop changed shape (string → html-v3) on
 		// 2026-08-04. Registered UNCONDITIONALLY, not behind is_widget_active():
 		// the read path has to keep converting even while the widget is switched
