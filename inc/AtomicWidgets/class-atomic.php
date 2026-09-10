@@ -4068,6 +4068,16 @@ final class Atomic
 		add_action('elementor/widgets/register', [$this, 'register_widgets']);
 		add_action('elementor/elements/elements_registered', [$this, 'register_elements']);
 
+		// Locked upsell cards for the Pro-owned atomic widgets, so a free site's
+		// panel shows what it is missing instead of eight silently absent cards.
+		// Registered right beside the real registration because it answers the
+		// same question from the other side: whatever those two hooks did NOT
+		// register is exactly what Pro_Promotion advertises. Hand-required — the
+		// PSR-4 map expects a class-named file, and this one follows the
+		// class-*.php convention its neighbours use.
+		require_once WCF_ADDONS_PATH . 'inc/AtomicWidgets/class-pro-promotion.php';
+		(new Pro_Promotion())->register();
+
 		// Advanced Heading's `content` prop changed shape (string → html-v3) on
 		// 2026-08-04. Registered UNCONDITIONALLY, not behind is_widget_active():
 		// the read path has to keep converting even while the widget is switched
@@ -6526,6 +6536,35 @@ final class Atomic
 		}
 
 		return $widgets;
+	}
+
+	/**
+	 * Is the CODE for this atomic widget present on disk?
+	 *
+	 * The registry-entry half and the file half are both required and mean
+	 * different things: a slug missing entirely is a widget this build never
+	 * knew about, while an entry whose file is gone is a widget this build
+	 * expects someone else to ship (a moved-to-Pro slug on a site with no Pro,
+	 * or a partial deploy). Both end the same way in
+	 * resolve_registerable_classes() — the element type never registers — which
+	 * is the only thing a caller asking this question cares about.
+	 *
+	 * Deliberately NOT is_widget_active(): that answers whether the user
+	 * switched it on, which is their choice and not a missing-code condition.
+	 * Pro_Promotion needs exactly this split, so that a widget somebody turned
+	 * off in the dashboard is not advertised back at them as a paid upgrade.
+	 */
+	public function widget_code_present(string $slug): bool
+	{
+		$widgets = $this->get_available_widgets();
+
+		if (! isset($widgets[$slug])) {
+			return false;
+		}
+
+		$file = self::widget_class_file($widgets[$slug]);
+
+		return '' !== $file && file_exists($file);
 	}
 
 	private static function widget_class_file(array $widget_data): string
