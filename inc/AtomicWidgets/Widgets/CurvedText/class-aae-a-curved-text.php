@@ -13,73 +13,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  * no click behavior, no JS runtime at all, driven entirely by a CSS
  * `@keyframes` animation.
  *
- * This widget is what remains of the old "Video Popup" family after the
- * video engine and the popup mechanics (Overlay/Panel/Close/PlayBtn/Player)
- * were removed entirely — only the spinning trigger badge survived, promoted
- * from an internal child to its own standalone top-level widget (briefly
- * named "Rotating Badge" before this name). See git history for the removed
- * video/popup code if it's ever needed for reference.
- *
- * Structure:
- *   AAE_A_Curved_Text (this class, a container)
- *     ├─ (twig-rendered SVG) — curved text, when rotator_type='text'
- *     ├─ e-image   (locked)  — rotator image, shown when rotator_type='image'
- *     └─ e-div-block (locked) — the static "Center" box, never spins
- *          ├─ e-svg       (locked) — Icon, shown when center_content='icon'
- *          └─ e-paragraph (locked) — Text, shown when center_content='text'
- *
- * The Center box always holds BOTH Icon and Text; `center_content` only
- * toggles which one is visible (a scoped CSS rule in the twig, same
- * never-remove convention as `rotator_type`/the old `show_icon`) — so
- * switching back and forth never loses either one's settings.
- *
- * Rotator Image, Icon and Text are real, native Elementor elements
- * (Image/Svg/Paragraph) instead of markup this class renders itself; text
- * ROTATOR mode is this class's own inline curved SVG `<textPath>` — a native
- * Paragraph can't bend text along a circle (tried twice on the original
- * Video Popup Trigger — see git history). DO NOT re-introduce a Paragraph
- * child for ROTATOR text mode without an explicit, repeated ask — this
- * restriction does not apply to the static Center Text added above, which
- * never curves and is a plain, fully-editable Paragraph.
- *
- * Rotator text mode has NO isolated Style-tab section of its own, and this
- * is architectural, not a gap to close later: Elementor's Style tab only
- * ever edits a real element's own per-instance style (keyed by that
- * element's `elementId`, via the editor's `documentElementsStylesProvider`).
- * `define_base_styles()` keys like `rotator`/`center`/`icon` only ever LOOK
- * independently editable because those class names also happen to sit on
- * real children (Rotator Image / Center box / Icon) — the class itself,
- * read by `elementBaseStylesProvider`, is a static per-WIDGET-TYPE default
- * with no write path at all. There is no API to give one isolated piece of
- * a widget's own twig-rendered markup (like this SVG `<text>`) its own
- * separate, genuinely editable Style-tab section. (Confirmed 2026-08-25 —
- * a first attempt at exactly that, giving `rotator_text` a label in
- * `define_base_styles()`, shipped and did nothing; every Typography field
- * silently failed to apply. A second attempt, plain explicit props written
- * as inline styles, DID work but wasn't "Style tab" and was explicitly
- * rejected.)
- *
- * So — an explicit, repeated decision (2026-08-25, after both alternatives
- * above): Rotator Text's typography rides THIS WIDGET'S OWN root Style tab
- * instead, via ordinary CSS inheritance. `define_base_styles()`'s `base` key
- * carries `color` and `font-size` (both real, per-instance editable via the
- * root element's genuine Style tab, since the root IS a real, separately
- * selectable element), and the twig's `<text>` sets nothing of its own
- * beyond `fill: currentColor` — the one fixed, non-editable bridge SVG needs
- * to turn CSS `color` into visible paint (SVG text is colored via `fill`,
- * not `color`). Any Typography property inherits down normally: set
- * font-family/font-weight/line-height/letter-spacing on the ROOT's own
- * Style tab and the curved text picks it up.
- *
- * KNOWN, ACCEPTED trade-off: this is NOT isolated to the rotator text alone.
- * The Icon child sizes itself at `1em` (see `define_base_styles()`'s `icon`
- * key), relative to whatever font-size it inherits — which, absent an
- * explicit font-size of its own, is this SAME root value. Changing the
- * root's Font Size to restyle the curved text also resizes the Icon. This
- * was weighed and accepted rather than reverted to inline-style props,
- * because a real Style tab (even a shared one) was worth more than an
- * isolated one that isn't actually a Style tab.
- *
  * @package AnimationAddonsForElementor
  */
 
@@ -89,7 +22,6 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Elem
 
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Image\Atomic_Image;
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Svg\Atomic_Svg;
-use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
 use Elementor\Modules\AtomicWidgets\Elements\Div_Block\Div_Block;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
@@ -103,15 +35,11 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Svg_Src_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Image_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Image_Src_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Url_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Number_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Color_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Background_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Transform\Transform_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Transform\Transform_Functions_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Transform\Functions\Transform_Move_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\AtomicWidgets\PropDependencies\Manager as Dependency_Manager;
@@ -121,7 +49,7 @@ class AAE_A_Curved_Text extends Atomic_Element_Base {
 
 	use Has_Element_Template;
 
-	public static $widget_description = 'A spinning circular badge with curved rotating text or a rotating image, plus a static icon or text on top — pick which one to show under Center Content. Fully styleable via the Style tab. Its Rotator Image, Icon and Text children are real Image, Svg and Paragraph elements — edit them directly.';
+	public static $widget_description = 'A spinning circular badge with curved rotating text or a rotating image, plus an open "Center" box on top that you fill yourself. It starts with a single Icon you can restyle or delete outright, and accepts anything else you drop in — text, headings, several elements stacked and centered. Fully styleable via the Style tab. Its Rotator Image and Icon are real Image and Svg elements — edit them directly.';
 
 	public function __construct( $data = [], $args = null ) {
 		parent::__construct( $data, $args );
@@ -200,16 +128,6 @@ class AAE_A_Curved_Text extends Atomic_Element_Base {
 			'rotation_direction' => String_Prop_Type::make()
 				->enum( [ 'cw', 'ccw' ] )
 				->default( 'cw' ),
-
-			// The Center box (see define_default_children()) always holds
-			// BOTH the Icon and the Text child — locked, non-deletable —
-			// so this only chooses which one is visible (a scoped CSS rule
-			// in the twig), the same way `rotator_type` hides the Rotator
-			// Image without ever removing it. Never a boolean: "icon or
-			// text" is a choice between two things, not a single on/off.
-			'center_content' => String_Prop_Type::make()
-				->enum( [ 'icon', 'text' ] )
-				->default( 'icon' ),
 		];
 	}
 
@@ -236,12 +154,6 @@ class AAE_A_Curved_Text extends Atomic_Element_Base {
 							[ 'value' => 'cw',  'label' => __( 'Clockwise', 'animation-addons-for-elementor' ) ],
 							[ 'value' => 'ccw', 'label' => __( 'Counter-clockwise', 'animation-addons-for-elementor' ) ],
 						] ),
-					Select_Control::bind_to( 'center_content' )
-						->set_label( __( 'Center Content', 'animation-addons-for-elementor' ) )
-						->set_options( [
-							[ 'value' => 'icon', 'label' => __( 'Icon', 'animation-addons-for-elementor' ) ],
-							[ 'value' => 'text', 'label' => __( 'Text', 'animation-addons-for-elementor' ) ],
-						] ),
 				] ),
 
 			Section::make()
@@ -259,39 +171,9 @@ class AAE_A_Curved_Text extends Atomic_Element_Base {
 	 * Neutral circle default — every value below is fully Style-tab
 	 * overridable. `overflow: hidden` clips a non-square uploaded rotator
 	 * image to the circle.
-	 *
-	 * Every key here — including the two pure-hook ones with no visual
-	 * purpose of their own (`rotator--image`, `text`) — MUST live in this
-	 * dictionary rather than only as a per-instance `styles` override on a
-	 * default child. The panel's "Some classes are missing" check reads
-	 * TWO providers: `documentElementsStylesProvider` (per element
-	 * INSTANCE) and `elementBaseStylesProvider`, which reads
-	 * `widgetsCache[<every widget type>].base_styles` — i.e. exactly this
-	 * dictionary, compiled once per WIDGET TYPE and applied unconditionally
-	 * to every check, regardless of which element is selected. A per-child
-	 * local `styles` entry (see define_default_children()) is NOT a
-	 * reliable substitute — measured: `rotator--image` and `text` still
-	 * reported missing with one. Only a real key here fixes it, which is
-	 * exactly why `rotator`/`center`/`icon` were never flagged despite
-	 * carrying no such per-instance override of their own.
 	 */
 	protected function define_base_styles(): array {
 		$zero = Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] );
-
-		// `translate(-50%, -50%)`, shared by the Icon and the Text hook —
-		// see the 'icon'/'text' keys below for why. Verified shape against
-		// `AAE_A_Hotspot_Content::define_base_styles()`, the only other
-		// place in this plugin building a `Transform_Prop_Type` by hand:
-		// one `Transform_Move_Prop_Type` entry with `x`/`y` set (its own
-		// `z` defaults to 0px).
-		$center_xy = Transform_Prop_Type::generate( [
-			'transform-functions' => Transform_Functions_Prop_Type::generate( [
-				Transform_Move_Prop_Type::generate( [
-					'x' => Size_Prop_Type::generate( [ 'size' => -50, 'unit' => '%' ] ),
-					'y' => Size_Prop_Type::generate( [ 'size' => -50, 'unit' => '%' ] ),
-				] ),
-			] ),
-		] );
 
 		return [
 			'base' => Style_Definition::make()
@@ -361,26 +243,14 @@ class AAE_A_Curved_Text extends Atomic_Element_Base {
 			// (see define_default_children()), never spins. Same
 			// full-fill-the-circle shape as 'rotator' above (position:
 			// absolute + inset 0 on every side + 100%/100%) rather than a
-			// flex row: Icon and Text now each self-center via their OWN
-			// absolute positioning (see 'icon'/'text' below), so this box
-			// no longer needs to lay them out — it only needs to be a
-			// correctly-sized positioning CONTEXT for them to center
-			// against. `z-index: 1` is load-bearing, not just "look": the
-			// rotator layer is `position: absolute` too, and CSS always
-			// paints a positioned element above a non-positioned sibling
-			// regardless of DOM order — so without it the box renders
-			// BEHIND the rotator and is invisible, even though it comes
-			// later in the tree.
-			//
-			// Deliberately NOT a flex row centering its children, which is
-			// what this used to be: with two flex-item children, hiding
-			// one via `display: none` to show the other left it laid out
-			// exactly where you'd want — but hiding one via `visibility:
-			// hidden` instead (required below, see the twig) keeps a
-			// hidden flex item's OWN slot in the row, which would visibly
-			// push/misalign its sibling. Absolute + self-centering sidesteps
-			// that entirely: neither child's box depends on the other's
-			// presence or visibility, hidden or shown.
+			// centered flex COLUMN laying out the Icon above the Text.
+			// `z-index: 1` is load-bearing, not just "look": the rotator
+			// layer is `position: absolute` too, and CSS always paints a
+			// positioned element above a non-positioned sibling regardless
+			// of DOM order — so without it the box renders BEHIND the
+			// rotator and is invisible, even though it comes later in the
+			// tree.
+
 			'center' => Style_Definition::make()
 				->set_label( __( 'Center', 'animation-addons-for-elementor' ) )
 				->add_variant( Style_Variant::make()->add_props( [
@@ -392,43 +262,39 @@ class AAE_A_Curved_Text extends Atomic_Element_Base {
 					'width'              => Size_Prop_Type::generate( [ 'size' => 100, 'unit' => '%' ] ),
 					'height'             => Size_Prop_Type::generate( [ 'size' => 100, 'unit' => '%' ] ),
 					'z-index'            => Number_Prop_Type::generate( 1 ),
+					'display'            => String_Prop_Type::generate( 'flex' ),
+					'flex-direction'     => String_Prop_Type::generate( 'column' ),
+					'align-items'        => String_Prop_Type::generate( 'center' ),
+					'justify-content'    => String_Prop_Type::generate( 'center' ),
 				] ) ),
 
-			// The icon itself, centered in the Center box via the classic
-			// "absolute + inset-*-start: 50% + translate(-50%, -50%)"
-			// trick — NOT `display: flex` on the parent, because that
-			// would tie this child's on-screen position to whether its
-			// Text sibling is also occupying flex-row space (see the
-			// 'center' key above). `1em` on both axes rather than a fixed
-			// px size so the Icon child's own Typography > Font Size
-			// control (the native e-svg widget inherits/accepts font-size
-			// like any other atomic element) is what resizes it — set the
-			// font-size on the Icon child itself to scale the icon.
-			// `display: block` is required for width/height to apply at
-			// all on the Svg child's own wrapper.
+			// The icon — a plain flex item of the Center column now,
+			// carrying no positioning of its own (it used to self-centre
+			// with `absolute + 50%/50% + translate(-50%,-50%)`; see the
+			// 'center' key for why that's gone). `1em` on both axes rather
+			// than a fixed px size so the Icon child's own Typography >
+			// Font Size control (the native e-svg widget inherits/accepts
+			// font-size like any other atomic element) is what resizes it —
+			// set the font-size on the Icon child itself to scale the icon.
+			// `display: block` is required for width/height to apply at all
+			// on the Svg child's own wrapper; it is ALSO the value the user
+			// flips to `none` (Style tab > Layout > Display) to hide the
+			// icon, now that this widget no longer hides it for them.
 			'icon' => Style_Definition::make()
 				->set_label( __( 'Icon', 'animation-addons-for-elementor' ) )
 				->add_variant( Style_Variant::make()->add_props( [
-					'position'           => String_Prop_Type::generate( 'absolute' ),
-					'inset-block-start'  => Size_Prop_Type::generate( [ 'size' => 50, 'unit' => '%' ] ),
-					'inset-inline-start' => Size_Prop_Type::generate( [ 'size' => 50, 'unit' => '%' ] ),
-					'transform'          => $center_xy,
-					'display'            => String_Prop_Type::generate( 'block' ),
-					'width'              => Size_Prop_Type::generate( [ 'size' => 1, 'unit' => 'em' ] ),
-					'height'             => Size_Prop_Type::generate( [ 'size' => 1, 'unit' => 'em' ] ),
+					'display' => String_Prop_Type::generate( 'block' ),
+					'width'   => Size_Prop_Type::generate( [ 'size' => 40, 'unit' => 'px' ] ),
+					'height'  => Size_Prop_Type::generate( [ 'size' => 40, 'unit' => 'px' ] ),
 				] ) ),
 
-			// The Center box's Text hook (hidden — via `visibility`, see
-			// the twig — when `center_content` is 'icon'). Same
-			// self-centering trick as 'icon' above, sized to its own
-			// content rather than a fixed box.
+			// The Center box's Text — a plain flex item, no positioning of
+			// its own. `text-align: center` keeps a wrapped, multi-line
+			// label centred; the flex column above does the rest.
 			'text' => Style_Definition::make()
 				->set_label( __( 'Text', 'animation-addons-for-elementor' ) )
 				->add_variant( Style_Variant::make()->add_props( [
-					'position'           => String_Prop_Type::generate( 'absolute' ),
-					'inset-block-start'  => Size_Prop_Type::generate( [ 'size' => 50, 'unit' => '%' ] ),
-					'inset-inline-start' => Size_Prop_Type::generate( [ 'size' => 50, 'unit' => '%' ] ),
-					'transform'          => $center_xy,
+					'text-align' => String_Prop_Type::generate( 'center' ),
 				] ) ),
 		];
 	}
@@ -439,28 +305,19 @@ class AAE_A_Curved_Text extends Atomic_Element_Base {
 	 * removing/re-adding it, so switching `rotator_type` back and forth
 	 * never loses the uploaded image.
 	 *
-	 * The Center box is likewise always present, and always holds BOTH the
-	 * Icon and the Text child — locked, non-deletable. `center_content`
-	 * only toggles which of the two is visible (twig, scoped CSS), so
-	 * switching back and forth never loses either one's settings, and the
-	 * badge never ends up with nothing on top of the rotator.
+	 * The Center box is likewise always present and locked, but it is an
+	 * OPEN drop target: its only seeded child is a single Icon, and that
+	 * Icon is deliberately NOT locked, so the user can delete it and put
+	 * whatever they like in the middle of the badge. There is no Text child
+	 * any more — a user who wants text drops a real Paragraph or Heading.
+	 * See the class docblock for the three steps that led here, and why
+	 * neither a `center_content` select nor a hidden-by-default child is
+	 * coming back.
 	 */
 	protected function define_default_children() {
 		$rotator_class = static::get_element_type() . '-rotator';
 		$icon_class    = static::get_element_type() . '-icon';
 		$zero          = Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] );
-
-		// Same `translate(-50%, -50%)` shape as `define_base_styles()`'s
-		// `$center_xy` — see that method for why. Duplicated rather than
-		// shared, same convention as `$zero` above.
-		$center_xy = Transform_Prop_Type::generate( [
-			'transform-functions' => Transform_Functions_Prop_Type::generate( [
-				Transform_Move_Prop_Type::generate( [
-					'x' => Size_Prop_Type::generate( [ 'size' => -50, 'unit' => '%' ] ),
-					'y' => Size_Prop_Type::generate( [ 'size' => -50, 'unit' => '%' ] ),
-				] ),
-			] ),
-		] );
 
 		$rotator_image = Atomic_Image::generate()
 			->settings( [
@@ -480,24 +337,7 @@ class AAE_A_Curved_Text extends Atomic_Element_Base {
 		/**
 		 * Backs `$rotator_class` with a REAL local style entry on THIS
 		 * element too, so Elementor's panel recognizes it as a known style
-		 * instead of flagging "Some classes are missing" — see "Never put
-		 * a functional hook class in the classes prop" in CLAUDE.md. Its
-		 * props exactly mirror `define_base_styles()`'s 'rotator' key
-		 * below (kept there too, unchanged, since the text-mode inline
-		 * `<svg>` still reads it via `base_styles.rotator` and is never a
-		 * separately-selectable element) — this is a second, real copy of
-		 * the same values, not a replacement, so nothing about the
-		 * compiled CSS or cascade changes: the Rotator Image simply now
-		 * legitimately OWNS the class it already carried.
-		 *
-		 * `$rotator_class . '--image'` (the hide-in-text-mode hook the twig
-		 * toggles) deliberately has NO entry here — a per-instance local
-		 * `styles` override on a default child is not what the panel's
-		 * missing-classes check actually reads for it (measured: it still
-		 * reported missing with one, empty or not). It's instead a REAL
-		 * key in `define_base_styles()` below ('rotator--image'), which is
-		 * what `elementBaseStylesProvider` reads unconditionally for every
-		 * instance of this widget type — see that method's docblock.
+		 * instead of flagging "Some classes are missing"
 		 */
 		$rotator_image['styles'] = [
 			$rotator_class => Style_Definition::make()
@@ -517,7 +357,6 @@ class AAE_A_Curved_Text extends Atomic_Element_Base {
 		];
 
 		$center_class = static::get_element_type() . '-center';
-		$text_class   = static::get_element_type() . '-text';
 
 		$icon = Atomic_Svg::generate()
 			->settings( [
@@ -527,7 +366,10 @@ class AAE_A_Curved_Text extends Atomic_Element_Base {
 					'url' => Url_Prop_Type::generate( WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/CurvedText/assets/icons/icon.svg' ),
 				] ),
 			] )
-			->is_locked( true )
+			// NOT locked, unlike every other default child here. The Icon is a
+			// starting suggestion, not part of the widget's structure: the user
+			// is meant to delete it and drop whatever they want into Center.
+			->is_locked( false )
 			->editor_settings( [ 'title' => 'Icon' ] )
 			->build();
 
@@ -539,40 +381,23 @@ class AAE_A_Curved_Text extends Atomic_Element_Base {
 			$icon_class => Style_Definition::make()
 				->set_label( 'local' )
 				->add_variant( Style_Variant::make()->add_props( [
-					'position'           => String_Prop_Type::generate( 'absolute' ),
-					'inset-block-start'  => Size_Prop_Type::generate( [ 'size' => 50, 'unit' => '%' ] ),
-					'inset-inline-start' => Size_Prop_Type::generate( [ 'size' => 50, 'unit' => '%' ] ),
-					'transform'          => $center_xy,
-					'display'            => String_Prop_Type::generate( 'block' ),
-					'width'              => Size_Prop_Type::generate( [ 'size' => 1, 'unit' => 'em' ] ),
-					'height'             => Size_Prop_Type::generate( [ 'size' => 1, 'unit' => 'em' ] ),
+					'display' => String_Prop_Type::generate( 'block' ),
+					'width'   => Size_Prop_Type::generate( [ 'size' => 1, 'unit' => 'em' ] ),
+					'height'  => Size_Prop_Type::generate( [ 'size' => 1, 'unit' => 'em' ] ),
 				] ) )
 				->build( $icon_class ),
 		];
 
-		$text = Atomic_Paragraph::generate()
-			->settings( [
-				'classes'   => Classes_Prop_Type::generate( [ $text_class ] ),
-				'paragraph' => Html_V3_Prop_Type::generate( [
-					'content'  => String_Prop_Type::generate( __( 'Text', 'animation-addons-for-elementor' ) ),
-					'children' => [],
-				] ),
-				'tag'       => String_Prop_Type::generate( 'span' ),
-			] )
-			->is_locked( true )
-			->editor_settings( [ 'title' => 'Text' ] )
-			->build();
-
-		// `text_class` (the hide-when-icon-is-shown hook the twig toggles)
-		// deliberately has NO per-instance local `styles` entry — same
-		// reason as `$rotator_class . '--image'` above. It's a real key in
-		// `define_base_styles()` below ('text') instead.
+		/**
+		 * No child gets a `styles` entry here, and none should — assigning
+		 * one does nothing at all.
+		 */
 
 		$center_box = Div_Block::generate()
 			->settings( [
 				'classes' => Classes_Prop_Type::generate( [ $center_class ] ),
 			] )
-			->children( [ $icon, $text ] )
+			->children( [ $icon ] )
 			->is_locked( true )
 			->editor_settings( [ 'title' => 'Center' ] )
 			->build();
@@ -591,6 +416,10 @@ class AAE_A_Curved_Text extends Atomic_Element_Base {
 					'width'              => Size_Prop_Type::generate( [ 'size' => 100, 'unit' => '%' ] ),
 					'height'             => Size_Prop_Type::generate( [ 'size' => 100, 'unit' => '%' ] ),
 					'z-index'            => Number_Prop_Type::generate( 1 ),
+					'display'            => String_Prop_Type::generate( 'flex' ),
+					'flex-direction'     => String_Prop_Type::generate( 'column' ),
+					'align-items'        => String_Prop_Type::generate( 'center' ),
+					'justify-content'    => String_Prop_Type::generate( 'center' ),
 				] ) )
 				->build( $center_class ),
 		];
@@ -603,9 +432,9 @@ class AAE_A_Curved_Text extends Atomic_Element_Base {
 
 	/**
 	 * Only the Rotator Image and the Center box are allowed as DIRECT
-	 * children of the root — Icon and Text live one level down, inside the
-	 * Center box (a plain `e-div-block`), which accepts whatever it
-	 * natively allows.
+	 * children of the root. This restriction stops at the root: the Center
+	 * box is a plain `e-div-block` and accepts whatever it natively allows,
+	 * which is what makes it a usable drop target for the badge's contents.
 	 */
 	protected function define_allowed_child_types() {
 		return [ 'e-image', 'e-div-block' ];
