@@ -78,6 +78,10 @@ class AAE_A_Form_Input extends Atomic_Widget_Base {
 				'label' => __( 'Tel', 'animation-addons-for-elementor' ),
 			],
 			[
+				'value' => 'url',
+				'label' => __( 'URL', 'animation-addons-for-elementor' ),
+			],
+			[
 				'value' => 'password',
 				'label' => __( 'Password', 'animation-addons-for-elementor' ),
 			],
@@ -173,8 +177,39 @@ class AAE_A_Form_Input extends Atomic_Widget_Base {
 	}
 
 	/** Just the value slugs, for the prop enum. */
+	/**
+	 * Type values that only a Pro plugin ever OFFERS, but that free must always
+	 * ACCEPT.
+	 *
+	 * Pro adds these to type_options() through `aae_form/input_types`. Free has
+	 * to know them anyway, because the validation enum is not the same question
+	 * as the dropdown — see type_values().
+	 */
+	const PRO_TYPE_VALUES = [ 'date', 'time' ];
+
+	/**
+	 * The VALIDATION enum: every value this widget has ever shipped, Pro's
+	 * included, whatever is installed today.
+	 *
+	 * NOT derived from type_options(), and the difference is a real bug that
+	 * shipped: options is the dropdown (what you may CHOOSE) while this is the
+	 * enum Props_Parser::validate() checks (what may EXIST). Deriving one from
+	 * the other means a value Pro contributed becomes invalid the moment Pro is
+	 * deactivated or its licence lapses, and then:
+	 *
+	 *   - publishing any page holding such an input fails outright with
+	 *     "Settings validation failed. type: invalid_value" — reported from the
+	 *     editor after importing the Advanced Fields, Doctor Appointment and
+	 *     Event Booking presets, which all carry date/time inputs;
+	 *   - and a prop the schema rejects is dropped from `_elementor_data`, so
+	 *     the customer's field is not merely unusable, it is gone.
+	 *
+	 * Same rule as never unregistering a Pro element type: the SCHEMA stays
+	 * complete in free, and gating happens where it cannot destroy data — the
+	 * control's option list, and the renderer.
+	 */
 	private static function type_values(): array {
-		return array_values(
+		$offered = array_values(
 			array_filter(
 				array_map(
 					static function ( $opt ) {
@@ -185,6 +220,8 @@ class AAE_A_Form_Input extends Atomic_Widget_Base {
 				'strlen'
 			)
 		);
+
+		return array_values( array_unique( array_merge( $offered, self::PRO_TYPE_VALUES ) ) );
 	}
 
 	public static function get_element_type(): string {
