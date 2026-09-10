@@ -251,7 +251,7 @@ final class Bootstrap {
 	 * structure panel, and every shared extension has to be reachable there.
 	 * The Loop Grid Slider reuses the same part types, so one entry covers both.
 	 *
-	 * Pro-owned types (`e-aae-a-nav`, `e-aae-a-btn-pro`, `e-aae-a-lottie`, …)
+	 * Pro-owned types (`e-aae-a-offcanvas`, `e-aae-a-btn-pro`, `e-aae-a-lottie`, …)
 	 * belong here too — atomic element types can only be REGISTERED from the
 	 * free plugin, and this list is matched by type string, so it is the same
 	 * seam either way.

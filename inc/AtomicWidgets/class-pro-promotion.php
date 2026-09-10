@@ -3,24 +3,20 @@
  * Panel upsell cards for the Pro-owned atomic widgets.
  *
  * An atomic element type that nothing registers does not merely vanish from the
- * panel — Elementor DELETES it from `_elementor_data` on the next save. That is
- * why free still ships its own copies of the widgets that moved to Pro
- * (`Atomic::WIDGETS_MOVED_TO_PRO`) and only stands down once `pro_owns_widgets()`
- * confirms a licensed Pro 4.2.0+ will take over.
+ * panel — Elementor DELETES it from `_elementor_data` on the next save. Free
+ * used to ship transitional copies of the widgets that moved to Pro for exactly
+ * that reason, retiring them through a version-gated stand-down. Those copies
+ * and that machinery are both gone now, so on a free-only site every widget
+ * below genuinely fails to register and earns its card.
  *
- * CONSEQUENCE, AND THE THING TO UNDERSTAND BEFORE EDITING THIS FILE: on a
- * free-only site TODAY most of the list below is not missing at all — free
- * registers it, and it drags and edits normally. Measured 2026-09-10 with the
- * Pro plugin deactivated: only `aae-a-lottie` (never in free's registry) and
- * `aae-a-btn-pro` (registry entry present, `Widgets/BtnPro/` empty) actually
- * fail to register. So this class advertises TWO cards today, not eight.
+ * The list is the CANDIDATES; the REGISTRY decides. `missing_widgets()` asks
+ * `Atomic::widget_code_present()` per slug, so a widget free still ships is
+ * never advertised, and a widget added to Pro later starts advertising itself
+ * the moment free stops shipping it — with no edit here.
  *
- * It is still written against the full list on purpose. When the transitional
- * copies are deleted — free's own docblock says to drop WIDGETS_MOVED_TO_PRO,
- * `pro_owns_widgets()` and the widget folders once Pro 4.2.0 is the floor —
- * each widget in turn starts failing to register on a free site and its card
- * appears by itself, with no edit here. The list is the CANDIDATES; the
- * registry decides.
+ * This is also why Counter and Nav are deliberately NOT listed: they came back
+ * to free permanently and are not Pro-owned any more, so a card for either
+ * would be an upsell for something the site already has.
  *
  * ELEMENTOR DOES ALL THE WORK; this class only supplies the data.
  * `elementor/editor/localize_settings` => `atomicWidgetPromotions`, and then:
@@ -104,10 +100,6 @@ final class Pro_Promotion {
 	 */
 	private static function widgets(): array {
 		return [
-			'aae-a-counter'     => [
-				'label' => esc_html__( 'Counter', 'animation-addons-for-elementor' ),
-				'icon'  => 'eicon-counter',
-			],
 			'aae-a-draw-svg'    => [
 				'label' => esc_html__( 'DrawSVG', 'animation-addons-for-elementor' ),
 				'icon'  => 'eicon-animation',
@@ -123,10 +115,6 @@ final class Pro_Promotion {
 			'aae-a-offcanvas'   => [
 				'label' => esc_html__( 'Offcanvas', 'animation-addons-for-elementor' ),
 				'icon'  => 'eicon-sidebar',
-			],
-			'aae-a-nav'         => [
-				'label' => esc_html__( 'Nav', 'animation-addons-for-elementor' ),
-				'icon'  => 'eicon-nav-menu',
 			],
 			'aae-a-lottie'      => [
 				'label' => esc_html__( 'Lottie', 'animation-addons-for-elementor' ),
