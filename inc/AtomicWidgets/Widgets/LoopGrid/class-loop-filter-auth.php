@@ -773,8 +773,31 @@ final class Loop_Filter_Auth {
 			if ( ! $term instanceof \WP_Term ) {
 				continue;
 			}
-			if ( $d['chosen'] && ! in_array( (int) $term->term_id, $d['chosen'], true ) ) {
-				continue;
+			if ( ! empty( $d['chosen'] ) ) {
+				$term_id = (int) $term->term_id;
+				$chosen  = (array) $d['chosen'];
+				if ( ! in_array( $term_id, $chosen, true ) ) {
+					// WPML / Polylang translation fallback: check if term translates to any chosen term ID
+					$matched = false;
+					if ( has_filter( 'wpml_object_id' ) ) {
+						foreach ( $chosen as $cid ) {
+							if ( (int) apply_filters( 'wpml_object_id', (int) $cid, $d['taxonomy'], false ) === $term_id ) {
+								$matched = true;
+								break;
+							}
+						}
+					} elseif ( function_exists( 'pll_get_term' ) ) {
+						foreach ( $chosen as $cid ) {
+							if ( (int) pll_get_term( (int) $cid ) === $term_id ) {
+								$matched = true;
+								break;
+							}
+						}
+					}
+					if ( ! $matched ) {
+						continue;
+					}
+				}
 			}
 			$ids[] = (int) $term->term_id;
 		}

@@ -5751,6 +5751,17 @@ final class Atomic
 			wp_send_json_error(['message' => 'Access denied.'], 403);
 		}
 
+		// Multilingual context (WPML & Polylang): switch active language to match requesting post.
+		if ( function_exists( 'do_action' ) ) {
+			do_action( 'wpml_switch_language_for_post', $post_id );
+		}
+		if ( function_exists( 'pll_get_post_language' ) && function_exists( 'PLL' ) ) {
+			$pll_lang = pll_get_post_language( $post_id );
+			if ( $pll_lang && isset( PLL()->curlang, PLL()->model ) ) {
+				PLL()->curlang = PLL()->model->get_language( $pll_lang );
+			}
+		}
+
 		$doc = \Elementor\Plugin::$instance->documents->get($post_id);
 		if (! $doc) {
 			wp_send_json_error(['message' => 'Document not found.'], 404);
