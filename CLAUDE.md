@@ -2097,6 +2097,141 @@ loads every matching id. Only runs when Sticky First is on.
 the SQL WordPress actually emits, not on the args array, since a flag that never
 reaches the query is worth nothing.
 
+## Loop Filters — M1: the seam, the authoriser, the ratchet (FREE, 2026-09-10)
+
+Visitor-driven filtering of a Loop Grid (taxonomy · meta · search · author ·
+date · sort), the way a shop or classified board filters. Spec + prototype:
+https://claude.ai/code/artifact/16939c90-99e3-4d07-baec-5f0a960ff3b7. M1 is the
+half nobody sees: the free plugin now ACCEPTS filters from the URL and the AJAX
+body and applies them safely; the widgets a visitor clicks are M2 (Pro-facing,
+classes in free with `Pro_Gated`). Everything below is in
+`inc/AtomicWidgets/Widgets/LoopGrid/`.
+
+| Piece | Where |
+|---|---|
+| The gate | `class-loop-filter-auth.php` — `Loop_Filter_Auth` |
+| WooCommerce rules | `class-loop-query-woo.php` — `Loop_Query_Woo` |
+| The seam | `AAE_A_Loop_Grid::build_query_args( $raw, $paged, array $filters = [] )` |
+| URL → filters on first render | `define_render_context()` → `Loop_Filter_Auth::current()` |
+| AJAX → filters | `Atomic::ajax_loop_grid_page()`, body field `filters` (JSON) |
+| Panel instructions | `inc/AtomicWidgets/Controls/class-aae-notice-control.php` + `NoticeControl.jsx` |
+
+**The visitor sends choices. The saved page says which choices exist.** A url
+key (`aae_tax_area`, `aae_meta_price`, `aae_s`, `aae_author`, `aae_date`,
+`aae_sort`) is honoured only when a filter widget in the saved `_elementor_data`
+targets this grid and declares it — `Loop_Filter_Auth::declarations()` walks the
+tree once and reads the M2 prop contract (documented in the class header). The
+value is then resolved INSIDE that declaration: a slug inside the widget's
+taxonomy (`get_term_by`, ids from the wire refused), a value from the widget's
+authored list, a range clamped to the widget's bounds, a sort KEY into the
+widget's option list (`rand` / `post__in` refused, `meta_value_num` only with a
+meta_key), an author nicename who publishes this post type (ids refused — the
+endpoint must not become a user-enumeration oracle). Undeclared keys are not
+even read. Caps: 4 KB body, 20 keys, 50 values, 200-char search; over → 400.
+
+**URL and AJAX carry the SAME shape** — a map of url_key => string
+(`slug1,slug2`, `10..500`, `2026-01-01..2026-03-31`, a sort key) — so there is
+one parser and one authoriser, and a rule added once holds on both. The active
+map is echoed into the pagination config (`cfg.filters`) and the AJAX response,
+and `loop-grid.js` posts it back on every page change: page 2 is page 2 OF THE
+FILTERED SET. The pagination's `postId` is now the render context's
+`document_id` (the document whose saved data declares the widgets), falling
+back to `get_the_ID()`.
+
+Four decisions that were wrong in the spec and are right in the code:
+
+- **`$filters` is its own argument, never a key in the settings blob.**
+  `ajax_loop_post_data()` (editor preview) passes CLIENT-SENT settings straight
+  into `build_query_args()`; a `_filters` key there would let any `edit_posts`
+  user hand-write a `meta_query`. Asserted: a `_filters` key in `$raw_settings`
+  changes nothing.
+- **All three sources get the visitor's filters**, not just the plain post-type
+  branch. A WooCommerce shop page is an archive = Current Query source — exactly
+  where filtering matters most — and the spec's merge sat after an early
+  `return`. The builder's manual filters still skip Related / Current Query;
+  the visitor's do not. Related's OR term group is NESTED under the AND
+  (`Loop_Query_Woo::and_group()`), never flattened into it.
+- **A choice compares as CHAR unless told otherwise.** The first cut defaulted
+  every meta filter to NUMERIC, so `CAST('red' AS SIGNED) = 0` matched every
+  row — caught by the suite (3 rows, not 2). Range → numeric, choice/toggle →
+  char, ACF/`value_type` override both.
+- **Sticky pinning yields to an explicit visitor sort.** `sticky_first` still
+  runs last (its id pre-query carries the visitor's tax/meta), but a sort key
+  switches it off for that request — a pinned-first list sorted by price is
+  neither.
+
+**The known-taxonomy ratchet is shipped** (`aae_loop_grid_known_taxonomies`).
+`get_query_taxonomies()` unions public+UI taxonomies, WooCommerce attribute
+taxonomies (`pa_*` register `public => false` unless "Enable archives" — the
+Color/Size filters a shop needs most were invisible), the
+`aae/loop_grid/query_taxonomies` filter, and every slug the option has ever
+seen. An unregistered slug comes back as a stub flagged `aae_unregistered`: the
+schema keeps its `tax_*` prop (so `Props_Parser::validate()` no longer erases
+the saved value on the next save — the measured data-loss bug), the panel shows
+no control for it, the query skips it. Evidence only ever adds; the escape
+hatch is `aae/loop_grid/known_taxonomies`.
+
+**DANGER — the ratchet remembers TEST taxonomies too.** The seam suite's first
+run fatalled inside its shutdown handler (before restoring the option), and
+every builder on the dev site then met "T Area, T Other: not registered right
+now" in the panel. Restore one-way options FIRST in a shutdown handler, before
+anything that can fatal; `set-known-taxonomy.php remove <slug>` cleans up.
+
+**`Section::set_description()` renders NOTHING in the installed panel** (4.2.x;
+the string never reaches the DOM — measured). Builder-facing copy goes through
+`AAE_Notice_Control`, an element-control the panel routes to `NoticeControl.jsx`.
+Static copy in props; instance-specific copy through a `source` the component
+resolves against the ELEMENT (controls are built once per widget TYPE, not per
+instance) and a data map PHP localizes — `AAE_LOOP_GRID.notices.taxonomies`,
+per post type: count / unregistered / nonPublic. Same lazy-read pattern as
+`ProNoticeControl` and the same trap: `make()` sets label + meta, because
+`Element_Control_Base` types both non-null while defaulting them to null and
+`jsonSerialize()` takes the editor down otherwise. A resolver returning null
+renders nothing — a notice with nothing to say takes no space.
+
+**WooCommerce (`Loop_Query_Woo`), mirrored from WC 10.0.4's own
+`ProductCollection/QueryBuilder.php`, inert without WC.** WC shapes only the
+main query (`WC_Query::pre_get_posts` bails on `! is_main_query()`), so a
+product Loop Grid showed catalog-hidden and out-of-stock products; now every
+product query gets `product_visibility NOT IN exclude-from-catalog` (or
+`-search` when searching) + `outofstock` when the store hides them. Price goes
+through `wc_product_meta_lookup.min_price/max_price` with the tax-display
+adjustment (a variable product carries one `_price` row per variation price;
+an `incl`-display store must convert the filter amount) — never `_price` meta.
+Sort keys `price` / `popularity` / `rating` are the lookup-table ORDER BYs
+WC_Query emits; rating filter = `rated-N` visibility terms; on sale =
+`wc_get_product_ids_on_sale()`; featured / stock as WC does. The lookup work
+rides `posts_clauses` scoped by private query vars (`aae_woo_price`,
+`aae_woo_sort`) — WC's own `isProductCollection` trick — hooked from
+`class-atomic.php` so the element class is only loaded when a query carries one.
+A Meta Filter widget with `source = woo` declares a `woo` field; the authoriser
+puts it in `$filters['woo']`, not `meta_query`. **Unverified live: WooCommerce
+is not installed on any running Local site** (development-2 has the source on
+disk, not in Local). The adapter's SQL and rules are read from that source;
+before M2 install WC on development.local with attributes (archives off), a
+variable product, a hidden + an out-of-stock product and one tax rate under
+`incl` display.
+
+Also in M1: `authors` / `exclude_authors` chips on the grid (`user` kind on
+`aae-query-chips` → `ajax_loop_query_options kind=user`, people with
+`edit_posts` only), `count_total()` / `pages_for_total()` (the Result Count
+widget's number; `compute_max_pages()` now derives from them), `total` in the
+render context and the AJAX response, `aae_title_only` search via
+`posts_search_title_only()`.
+
+Tests (`E:\Local Testing`): `verify-loop-filter-seam.php` (78 — hostile
+payloads, honest values vs hand-written WP_Query, all three sources, sticky vs
+sort, the ratchet through schema + panel + query, WC inert, the notice map),
+`verify-loop-filter-frontend.mjs` (23 — a real page: URL params, filtered page
+2, range/sort/search, undeclared keys, the AJAX endpoint incl. the 400s),
+`verify-loop-filter-editor.mjs` (9 — panel opens, chips present, the notice
+names a ghost taxonomy, `kind=user` search). Fixture
+`make-loop-filter-page.php` writes RAW `_elementor_data` (the filter widget
+types do not exist yet and `Document::save()` would drop them; the frontend
+skips an unknown child type silently, the editor does not — `nofilters` builds
+the editor variant). Legacy `wp eval-file` suites run with
+`-d auto_prepend_file=<scratch>/_wp-bootstrap.php`.
+
 ## Caching computed artifacts — and why option VALUES are not one (2026-08-06)
 
 Asked directly: "what would we gain by file-caching the option values?" The

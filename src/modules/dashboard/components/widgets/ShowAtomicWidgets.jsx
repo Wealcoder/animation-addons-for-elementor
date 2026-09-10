@@ -13,6 +13,7 @@ import {
 import { useActiveItem, useAtomicWidgets } from "@/hooks/app.hooks";
 import { toast } from "sonner";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
+import { WidgetSettingConfig } from "@/config/widgetSettingConfig";
 import WidgetCategoryGrid from "../shared/WidgetCategoryGrid";
 import { filterUsedWidgets } from "@/lib/usedWidgets";
 
@@ -20,9 +21,11 @@ const ShowAtomicWidgets = ({
   searchKey,
   filterKey,
   setWidgetCount,
+  settingOpen,
   // { slug: pages }, or null until the Usage scan has run.
   usage = null,
 }) => {
+  const widgetSettings = WidgetSettingConfig;
   const { allAtomicWidgets } = useAtomicWidgets();
   const { updateActiveAtomicWidget, updateActiveAtomicGroupWidget } =
     useActiveItem();
@@ -182,6 +185,8 @@ const ShowAtomicWidgets = ({
               onToggleCategory={(value) => setCheck({ value, slug: tab })}
               updateActiveItem={updateActiveAtomicWidget}
               usage={usage}
+              settingOpen={settingOpen}
+              widgetSettings={widgetSettings}
             />
           ))
         )}
@@ -203,6 +208,8 @@ const ShowAtomicWidgets = ({
                 showGroupToggle={false}
                 updateActiveItem={updateActiveAtomicWidget}
                 usage={usage}
+                settingOpen={settingOpen}
+                widgetSettings={widgetSettings}
               />
             ))
           ) : (
@@ -229,6 +236,8 @@ const ShowAtomicWidgets = ({
             onToggleCategory={(value) => setCheck({ value, slug: tab })}
             updateActiveItem={updateActiveAtomicWidget}
             usage={usage}
+            settingOpen={settingOpen}
+            widgetSettings={widgetSettings}
           />
         </TabsContent>
       ))}

@@ -63,6 +63,12 @@
 		if (cfg.query && cfg.query.qv && Object.keys(cfg.query.qv).length) {
 			body.append('qv', JSON.stringify(cfg.query.qv));
 		}
+		// Visitor filters the server authorised for the first render — posted
+		// back as-is so a page change stays inside the filtered set. The filter
+		// runtime (Pro) replaces cfg.filters when the visitor changes a filter.
+		if (cfg.filters && Object.keys(cfg.filters).length) {
+			body.append('filters', JSON.stringify(cfg.filters));
+		}
 		return window.fetch(cfg.ajaxUrl, { method: 'POST', body: body, credentials: 'same-origin' })
 			.then(function (r) { return r.json(); });
 	}

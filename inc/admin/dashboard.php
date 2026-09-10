@@ -49,6 +49,7 @@ class WCF_Admin_Init
 		'aae_youtube_video_advanced_settings',
 		'aae_anim_builder_settings',
 		'wcf_addon_sl_license_key',
+		'aae_loop_grid_settings',
 	);
 
 	/**
@@ -129,6 +130,7 @@ class WCF_Admin_Init
 		add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
 		add_action('wp_ajax_aae_save_dynamic_settings', array($this, 'save_dynamic_settings'));
 		add_action('wp_ajax_aae_get_dynamic_settings', array($this, 'get_dynamic_settings'));
+		add_action('wp_ajax_aae_flush_known_taxonomies', array($this, 'flush_known_taxonomies'));
 		add_action('wp_ajax_save_settings_with_ajax', array($this, 'save_settings'));
 		add_action('wp_ajax_aae_complete_setup_wizard', array($this, 'complete_setup_wizard'));
 		add_action('wp_ajax_wcf_dashboard_notice_store', array($this, 'notice_store'));
@@ -822,6 +824,22 @@ class WCF_Admin_Init
 			'message' => 'Settings Updated',
 		);
 		wp_send_json($return_message);
+	}
+
+	public function flush_known_taxonomies()
+	{
+		check_ajax_referer('wcf_admin_nonce', 'nonce');
+
+		if (! current_user_can('manage_options')) {
+			wp_send_json_error(esc_html__('Permission denied.', 'animation-addons-for-elementor'));
+		}
+
+		delete_option('aae_loop_grid_known_taxonomies');
+		if (class_exists('\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid')) {
+			\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::flush_taxonomy_memo();
+		}
+
+		wp_send_json_success(array('message' => esc_html__('Taxonomy cache flushed successfully.', 'animation-addons-for-elementor')));
 	}
 
 	public function notice_store()

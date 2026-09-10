@@ -4018,6 +4018,25 @@ final class Atomic
 		add_action('wp_ajax_aae_loop_grid_page', [$this, 'ajax_loop_grid_page']);
 		add_action('wp_ajax_nopriv_aae_loop_grid_page', [$this, 'ajax_loop_grid_page']);
 
+		// Loop Grid query-level hooks (title-only search, the WooCommerce
+		// lookup-table clauses). Both are no-ops unless a query carries one of
+		// the grid's private vars, so they are hooked here — cheaply, without
+		// loading the element class — and only load it when they fire.
+		add_filter('posts_search', function ($search, $query) {
+			if (! $query instanceof \WP_Query || ! $query->get('aae_title_only')) {
+				return $search;
+			}
+			self::load_loop_grid_class();
+			return \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::posts_search_title_only($search, $query);
+		}, 10, 2);
+		add_filter('posts_clauses', function ($clauses, $query) {
+			if (! $query instanceof \WP_Query || (! $query->get('aae_woo_price') && ! $query->get('aae_woo_sort'))) {
+				return $clauses;
+			}
+			self::load_loop_grid_class();
+			return \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\Loop_Query_Woo::posts_clauses($clauses, $query);
+		}, 10, 2);
+
 		// AAE Post Pagination: invalidate the cached ordered-id lists for a post
 		// type the moment content actually changes, rather than trusting the
 		// transient TTL alone.
@@ -5499,6 +5518,47 @@ final class Atomic
 	}
 
 	/**
+	 * For each public post type: how many taxonomy filters the Loop Grid offers
+	 * it, which of them are currently UNREGISTERED (kept by the known-taxonomy
+	 * ratchet — their plugin is off) and which are offered although not public
+	 * (WooCommerce attributes). The panel cannot compute this per instance
+	 * (controls are built once per type), so it is shipped as data and the
+	 * notice card resolves it against the element's own Source.
+	 *
+	 * @return array<string, array{count:int, unregistered:string[], nonPublic:string[]}>
+	 */
+	private static function loop_grid_taxonomy_notices(): array
+	{
+		self::load_loop_grid_class();
+		$taxes = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::get_query_taxonomies();
+		$out   = [];
+
+		foreach (array_keys(get_post_types(['public' => true])) as $type) {
+			if ('attachment' === $type) {
+				continue;
+			}
+			$entry = ['count' => 0, 'unregistered' => [], 'nonPublic' => []];
+			foreach ($taxes as $tax) {
+				if (! in_array($type, (array) ($tax->object_type ?? []), true)) {
+					continue;
+				}
+				$label = (string) ($tax->label ?? $tax->name);
+				if (! empty($tax->aae_unregistered)) {
+					$entry['unregistered'][] = $label;
+					continue;
+				}
+				$entry['count']++;
+				if (empty($tax->public)) {
+					$entry['nonPublic'][] = $label;
+				}
+			}
+			$out[ $type ] = $entry;
+		}
+
+		return $out;
+	}
+
+	/**
 	 * Panel search for the `aae-query-chips` controls: posts (by title / ID) or
 	 * taxonomy terms (by name). Returns [{id, label}] — max 20.
 	 */
@@ -5514,7 +5574,31 @@ final class Atomic
 		$term = isset($_POST['search']) ? sanitize_text_field(wp_unslash($_POST['search'])) : '';
 		$options = [];
 
-		if ('term' === $kind) {
+		if ('user' === $kind) {
+			// Authors for the grid's authors / exclude_authors chips. Only people
+			// who can publish — a subscriber is never an author. Numeric search
+			// tries the id first, like the post kind.
+			if (ctype_digit($term)) {
+				$by_id = get_user_by('id', (int) $term);
+				if ($by_id instanceof \WP_User && $by_id->has_cap('edit_posts')) {
+					$options[] = ['id' => (int) $by_id->ID, 'label' => $by_id->display_name];
+				}
+			}
+			$users = get_users([
+				'number'              => ('' === $term) ? 8 : 20,
+				'search'              => '' === $term ? '' : '*' . $term . '*',
+				'search_columns'      => ['display_name', 'user_login', 'user_nicename', 'user_email'],
+				'capability'          => 'edit_posts',
+				'orderby'             => 'display_name',
+				'order'               => 'ASC',
+			]);
+			foreach ($users as $u) {
+				if (! empty($by_id) && (int) $u->ID === (int) $by_id->ID) {
+					continue;
+				}
+				$options[] = ['id' => (int) $u->ID, 'label' => $u->display_name];
+			}
+		} elseif ('term' === $kind) {
 			$taxonomy = isset($_POST['taxonomy']) ? sanitize_key(wp_unslash($_POST['taxonomy'])) : '';
 			if (! $taxonomy || ! taxonomy_exists($taxonomy)) {
 				wp_send_json_error(['message' => 'Invalid taxonomy.'], 400);
@@ -5662,6 +5746,11 @@ final class Atomic
 			wp_send_json_error(['message' => 'Missing post_id or grid_id.'], 400);
 		}
 
+		$post = get_post($post_id);
+		if (! $post || ('publish' !== $post->post_status && ! current_user_can('read_post', $post_id)) || post_password_required($post)) {
+			wp_send_json_error(['message' => 'Access denied.'], 403);
+		}
+
 		$doc = \Elementor\Plugin::$instance->documents->get($post_id);
 		if (! $doc) {
 			wp_send_json_error(['message' => 'Document not found.'], 404);
@@ -5738,13 +5827,37 @@ final class Atomic
 			}
 		}
 
+		// Visitor filters: a JSON map of url_key => value, the same shape the
+		// URL carries on the first render. Authorised against the filter widgets
+		// this SAVED document declares for this grid — anything not declared is
+		// dropped — and handed to the builder as its own argument, never inside
+		// the settings blob. Oversized / malformed is a 400, not a guess.
+		$filters = [];
+		if (isset($_POST['filters'])) {
+			$raw = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\Loop_Filter_Auth::decode_payload(wp_unslash($_POST['filters'])); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- decoded + capped, then every value is authorised
+			if (null === $raw) {
+				wp_send_json_error(['message' => 'Invalid filters payload.'], 400);
+			}
+			$decls = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\Loop_Filter_Auth::declarations($data, $grid_id);
+			if ($decls) {
+				$grid_type = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::unwrap($gs['post_type'] ?? 'post');
+				$filters   = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\Loop_Filter_Auth::authorize(
+					$decls,
+					\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\Loop_Filter_Auth::raw_from_request($decls, $raw),
+					is_string($grid_type) ? $grid_type : 'post'
+				);
+			}
+		}
+
 		$query_args = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::build_query_args(
 			$gs,
-			$paged
+			$paged,
+			$filters
 		);
 
-		// Total pages (respects the same query, offset-corrected).
-		$max_pages = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::compute_max_pages($gs, $query_args);
+		// Total + pages (respects the same query, offset-corrected).
+		$total     = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::count_total($gs, $query_args);
+		$max_pages = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::pages_for_total($total, $query_args);
 
 		// Push context (same key the Loop Item reads) and render the item.
 		\Elementor\Modules\AtomicWidgets\Elements\Base\Render_Context::push(
@@ -5767,6 +5880,8 @@ final class Atomic
 			'html'      => $html,
 			'paged'     => $paged,
 			'max_pages' => $max_pages,
+			'total'     => $total,
+			'filters'   => (object) ($filters['active'] ?? []),
 		]);
 	}
 
@@ -8401,13 +8516,18 @@ JS;
 		// a small, unrelated outer-frame bridge). See Atomic\Assets::
 		// enqueue_editor_bridge() for the correct wp_localize_script() call.
 
-		// Loop Grid: ajax config for the editor "full grid live" preview module.
+		// Loop Grid: ajax config for the editor "full grid live" preview module,
+		// plus the per-post-type taxonomy map the panel's notice card reads
+		// (NoticeControl.jsx, source 'loop-grid-taxonomies').
 		wp_localize_script(
 			'aae-atomic-editor',
 			'AAE_LOOP_GRID',
 			[
 				'ajaxUrl' => admin_url('admin-ajax.php'),
 				'nonce'   => wp_create_nonce('aae_loop_grid'),
+				'notices' => [
+					'taxonomies' => self::loop_grid_taxonomy_notices(),
+				],
 			]
 		);
 

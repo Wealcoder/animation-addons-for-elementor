@@ -46,6 +46,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 require_once __DIR__ . '/class-aae-query-chips-control.php';
+require_once __DIR__ . '/class-loop-filter-auth.php';
+require_once __DIR__ . '/class-loop-query-woo.php';
+require_once __DIR__ . '/../../Controls/class-aae-notice-control.php';
 require_once __DIR__ . '/class-aae-a-loop-layout.php';
 require_once __DIR__ . '/class-aae-a-loop-item.php';
 require_once __DIR__ . '/class-aae-a-loop-pagination.php';
@@ -56,6 +59,7 @@ require_once __DIR__ . '/../PostTitle/class-aae-a-post-title.php';
 
 use WCF_ADDONS\AtomicWidgets\Widgets\PostImage\AAE_A_Post_Image;
 use WCF_ADDONS\AtomicWidgets\Widgets\PostTitle\AAE_A_Post_Title;
+use WCF_ADDONS\AtomicWidgets\Controls\AAE_Notice_Control;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -67,6 +71,16 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Elem
 
 class AAE_A_Loop_Grid extends Atomic_Element_Base {
 	use Has_Element_Template;
+
+	/**
+	 * Every taxonomy slug the schema has EVER built a `tax_*` prop for, with the
+	 * label and object types it had — so the prop survives the taxonomy's plugin
+	 * being switched off. See known_taxonomies().
+	 */
+	public const KNOWN_TAXONOMIES_OPTION = 'aae_loop_grid_known_taxonomies';
+
+	/** Per-request memo for get_query_taxonomies(). */
+	private static ?array $taxonomy_memo = null;
 
 	public function __construct( $data = [], $args = null ) {
 		parent::__construct( $data, $args );
@@ -185,6 +199,9 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 
 		$schema['include_posts']       = String_Array_Prop_Type::make()->default( [] )->set_dependencies( $special_hide );
 		$schema['exclude_posts']       = String_Array_Prop_Type::make()->default( [] )->set_dependencies( $special_hide );
+		// Authors — the same chips shape, `user` kind: {"id":<user id>,"label":"Name"}.
+		$schema['authors']             = String_Array_Prop_Type::make()->default( [] )->set_dependencies( $special_hide );
+		$schema['exclude_authors']     = String_Array_Prop_Type::make()->default( [] )->set_dependencies( $special_hide );
 		$schema['date_range']          = Date_Range_Prop_Type::make()->set_dependencies( $special_hide );
 		$schema['meta_key_exists']     = String_Prop_Type::make()->default( '' )->set_dependencies( $special_hide );
 		$schema['only_featured_image'] = Boolean_Prop_Type::make()->default( false )->set_dependencies( $special_hide );
@@ -209,22 +226,106 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 	}
 
 	/**
-	 * Public taxonomies offered as query filters. post_format rides the same
-	 * per-taxonomy chips system (its object_type ['post'] makes the control
-	 * show only when Source = Posts), but only when the active theme actually
-	 * supports post formats — core registers the taxonomy unconditionally, so
-	 * without theme support it would be an always-empty control.
+	 * Taxonomies offered as query filters — one `tax_<slug>` prop each.
 	 *
-	 * @return array<string, \WP_Taxonomy>
+	 * Three sources, unioned:
+	 *
+	 *  1. Every public taxonomy with a UI. post_format rides the same system
+	 *     (its object_type ['post'] makes the control show only when Source =
+	 *     Posts), but only when the active theme actually supports post formats
+	 *     — core registers the taxonomy unconditionally, so without theme
+	 *     support it would be an always-empty control.
+	 *  2. WooCommerce attribute taxonomies (`pa_color`, …). WC registers them
+	 *     `public => false` unless "Enable archives" is ticked, so (1) never
+	 *     sees them — and Color/Size are the filters a shop needs most.
+	 *  3. The KNOWN-TAXONOMY RATCHET: every slug the schema has ever built a
+	 *     prop for, persisted in KNOWN_TAXONOMIES_OPTION. A prop the schema does
+	 *     not declare is ERASED from `_elementor_data` on the next save
+	 *     (Props_Parser::validate()), so before this, switching off the plugin
+	 *     that registers `aae_color` and saving any page lost every Color
+	 *     filter on every grid — measured, silently. An unregistered taxonomy
+	 *     comes back as a stub object flagged `aae_unregistered`; the schema
+	 *     keeps its prop (the value survives the save), the panel shows no
+	 *     control for it, and the query skips it until the taxonomy returns.
+	 *     Evidence only ever ADDS to the option — same ratchet shape as
+	 *     `legacy_v3` and maybe_enable_used_v3_widgets().
+	 *
+	 * Filterable through `aae/loop_grid/query_taxonomies` for a taxonomy that
+	 * is deliberately non-public but should still be offered.
+	 *
+	 * @return array<string, \WP_Taxonomy|object>
 	 */
 	public static function get_query_taxonomies(): array {
+		if ( null !== self::$taxonomy_memo ) {
+			return self::$taxonomy_memo;
+		}
+
 		$taxes = get_taxonomies( [ 'public' => true, 'show_ui' => true ], 'objects' );
 
 		if ( isset( $taxes['post_format'] ) && ! current_theme_supports( 'post-formats' ) ) {
 			unset( $taxes['post_format'] );
 		}
 
+		foreach ( Loop_Query_Woo::attribute_taxonomies() as $name => $tax ) {
+			$taxes[ $name ] = $tax;
+		}
+
+		/**
+		 * @param array<string, \WP_Taxonomy> $taxes Registered taxonomies offered as filters.
+		 */
+		$taxes = (array) apply_filters( 'aae/loop_grid/query_taxonomies', $taxes );
+		$taxes = array_filter( $taxes, static fn( $t ) => is_object( $t ) && ! empty( $t->name ) && taxonomy_exists( $t->name ) );
+
+		// The ratchet: remember what we saw, restore what we no longer see.
+		$known   = self::known_taxonomies();
+		$changed = false;
+		foreach ( $taxes as $name => $tax ) {
+			$entry = [
+				'label'       => (string) ( $tax->label ?? $name ),
+				'object_type' => array_values( array_map( 'strval', (array) ( $tax->object_type ?? [] ) ) ),
+			];
+			if ( ( $known[ $name ] ?? null ) !== $entry ) {
+				$known[ $name ] = $entry;
+				$changed        = true;
+			}
+		}
+		if ( $changed ) {
+			update_option( self::KNOWN_TAXONOMIES_OPTION, $known, false );
+		}
+		foreach ( $known as $name => $entry ) {
+			if ( isset( $taxes[ $name ] ) ) {
+				continue;
+			}
+			$taxes[ $name ] = (object) [
+				'name'             => $name,
+				'label'            => (string) ( $entry['label'] ?? $name ),
+				'object_type'      => (array) ( $entry['object_type'] ?? [] ),
+				'aae_unregistered' => true,
+			];
+		}
+
+		self::$taxonomy_memo = $taxes;
 		return $taxes;
+	}
+
+	/**
+	 * The persisted ratchet: slug => [ label, object_type ].
+	 *
+	 * Never pruned automatically — that is the point. The one escape hatch is
+	 * the filter, for a site that knows a slug is gone for good (a renamed
+	 * taxonomy, a test run that aborted before restoring the option):
+	 *
+	 *   add_filter( 'aae/loop_grid/known_taxonomies', fn( $k ) => array_diff_key( $k, [ 'old_slug' => 1 ] ) );
+	 */
+	public static function known_taxonomies(): array {
+		$known = get_option( self::KNOWN_TAXONOMIES_OPTION, [] );
+		$known = is_array( $known ) ? $known : [];
+		return (array) apply_filters( 'aae/loop_grid/known_taxonomies', $known );
+	}
+
+	/** Forget the per-request taxonomy memo (a test registering a taxonomy mid-run). */
+	public static function flush_taxonomy_memo(): void {
+		self::$taxonomy_memo = null;
 	}
 
 	/** Prop name for a taxonomy's term filter, e.g. `tax_category`. */
@@ -276,6 +377,10 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 						] ),
 				] ),
 
+			// No set_description(): the installed editing panel (Elementor 4.2.x)
+			// does not render a section description — measured, the string never
+			// reaches the DOM. Builder-facing copy goes through the notice card
+			// at the top of the section instead (get_filter_controls()).
 			Section::make()
 				->set_label( __( 'Query Filters', 'animation-addons-for-elementor' ) )
 				->set_id( 'aae_loop_query_filters' )
@@ -299,7 +404,16 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 	private function get_filter_controls(): array {
 		$items = [];
 
+		// Instance-specific copy ("Color is not registered right now", "no
+		// taxonomy for this post type") — resolved in the panel from the
+		// element's own post_type against the map class-atomic.php localizes as
+		// AAE_LOOP_GRID.notices. Renders nothing when there is nothing to say.
+		$items[] = AAE_Notice_Control::make()->set_source( 'loop-grid-taxonomies' );
+
 		foreach ( self::get_query_taxonomies() as $tax ) {
+			if ( ! empty( $tax->aae_unregistered ) ) {
+				continue; // Prop kept (ratchet), control withheld — nothing to search.
+			}
 			$items[] = AAE_Query_Chips_Control::bind_to( self::tax_prop_name( $tax->name ) )
 				->set_label( $tax->label )
 				->set_kind( 'term' )
@@ -316,6 +430,16 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 			->set_label( __( 'Exclude Posts', 'animation-addons-for-elementor' ) )
 			->set_kind( 'post' )
 			->set_placeholder( __( 'Search by title or ID…', 'animation-addons-for-elementor' ) );
+
+		$items[] = AAE_Query_Chips_Control::bind_to( 'authors' )
+			->set_label( __( 'Authors', 'animation-addons-for-elementor' ) )
+			->set_kind( 'user' )
+			->set_placeholder( __( 'Search by name…', 'animation-addons-for-elementor' ) );
+
+		$items[] = AAE_Query_Chips_Control::bind_to( 'exclude_authors' )
+			->set_label( __( 'Exclude Authors', 'animation-addons-for-elementor' ) )
+			->set_kind( 'user' )
+			->set_placeholder( __( 'Search by name…', 'animation-addons-for-elementor' ) );
 
 		$items[] = Date_Range_Control::bind_to( 'date_range' )
 			->set_label( __( 'Date Range', 'animation-addons-for-elementor' ) );
@@ -468,23 +592,40 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 	protected function define_render_context(): array {
 		$s = $this->get_atomic_settings();
 
-		$per_page = isset( $s['posts_per_page'] ) ? (int) $s['posts_per_page'] : 6;
-		$paged    = self::current_page();
+		$per_page  = isset( $s['posts_per_page'] ) ? (int) $s['posts_per_page'] : 6;
+		$paged     = self::current_page();
+		$is_editor = \Elementor\Plugin::$instance->editor->is_edit_mode();
+		$post_type = isset( $s['post_type'] ) && is_string( $s['post_type'] ) ? $s['post_type'] : 'post';
+
+		// Visitor filters off the URL, authorised against the filter widgets the
+		// SAVED document declares for this grid. The editor never filters: the
+		// canvas is for styling, and a stale ?aae_* on the editor URL would hide
+		// the builder's own cards.
+		$document_id = self::current_document_id();
+		$filters     = [];
+		if ( ! $is_editor && $document_id ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only filter state, same footing as aae_page.
+			$filters = Loop_Filter_Auth::current( $document_id, $this->get_id(), $post_type, (array) $_GET );
+		}
 
 		// Build from the RAW ($$type-wrapped) settings via the shared builder —
 		// the same code path the AJAX pagination and the editor preview use, so
 		// all three always agree on the filters.
-		$query_args = self::build_query_args( (array) $this->get_data( 'settings' ), $paged );
+		$query_args = self::build_query_args( (array) $this->get_data( 'settings' ), $paged, $filters );
 
-		// Resolve total pages once so the Pagination child can render the right
+		// Resolve the total once so the Pagination child can render the right
 		// number of page links without re-querying.
 		// Only pay for the count when something will actually display it. The
 		// count is a second SQL_CALC_FOUND_ROWS scan of the same result set,
 		// and a grid with no pagination child has nothing to do with the
 		// answer — it was previously run on every frontend render regardless.
+		// A filtered render always counts: the AJAX response carries `total`
+		// for the Result Count widget, and the first paint must match it.
+		$total     = null;
 		$max_pages = 1;
-		if ( ! \Elementor\Plugin::$instance->editor->is_edit_mode() && $this->has_pagination_child() ) {
-			$max_pages = self::compute_max_pages( (array) $this->get_data( 'settings' ), $query_args );
+		if ( ! $is_editor && ( $filters || $this->has_pagination_child() ) ) {
+			$total     = self::count_total( (array) $this->get_data( 'settings' ), $query_args );
+			$max_pages = self::pages_for_total( $total, $query_args );
 		}
 
 		return [
@@ -494,6 +635,12 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 					'query_args'    => $query_args,
 					'paged'         => $paged,
 					'max_num_pages' => $max_pages,
+					'total'         => $total,
+					// Active visitor filters (url_key => value) — the pagination
+					// posts them back so a page change keeps the filter, and the
+					// Active Filters / Result Count widgets read them.
+					'filters'       => $filters['active'] ?? [],
+					'document_id'   => $document_id,
 					// The load_method setting is the Pagination child's own —
 					// intentionally NOT published here, so changing it doesn't
 					// invalidate this element's render context (which would re-render
@@ -516,6 +663,22 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 	}
 
 	/**
+	 * The document this grid is being rendered in — the one whose saved
+	 * `_elementor_data` declares the filter widgets. Elementor sets the current
+	 * document for the duration of a document render; the queried post is the
+	 * fallback for a render outside that (a shortcode, a widget area).
+	 */
+	public static function current_document_id(): int {
+		if ( class_exists( '\Elementor\Plugin' ) ) {
+			$doc = \Elementor\Plugin::$instance->documents->get_current();
+			if ( $doc && method_exists( $doc, 'get_main_id' ) ) {
+				return (int) $doc->get_main_id();
+			}
+		}
+		return (int) get_the_ID();
+	}
+
+	/**
 	 * Build the WP_Query args from this element's settings — the ONE place the
 	 * loop query is assembled. Used by:
 	 *   - define_render_context() (frontend + server render), from raw element data
@@ -525,8 +688,18 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 	 * Accepts both $$type-wrapped atomic settings and already-plain values —
 	 * everything is unwrapped and defensively sanitized here, so callers can pass
 	 * whatever shape they have.
+	 *
+	 * @param array $raw_settings The grid's settings (wrapped or plain).
+	 * @param int   $paged        1-based page.
+	 * @param array $filters      Visitor filters, ALREADY AUTHORISED by
+	 *                            Loop_Filter_Auth::authorize(). Its own argument
+	 *                            on purpose: the editor preview endpoint passes
+	 *                            client-sent settings straight in here, so a
+	 *                            filter key inside $raw_settings would be a way
+	 *                            to hand-write a meta_query. Raw request data
+	 *                            never reaches this function.
 	 */
-	public static function build_query_args( array $raw_settings, int $paged = 1 ): array {
+	public static function build_query_args( array $raw_settings, int $paged = 1, array $filters = [] ): array {
 		$s = self::unwrap_settings( $raw_settings );
 
 		$post_type = isset( $s['post_type'] ) && is_string( $s['post_type'] ) && '' !== $s['post_type']
@@ -535,15 +708,179 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 
 		// Special sources — not post types. Related builds its own term query
 		// from the current post; Current Query inherits the page's main
-		// (archive) query. Both skip the manual filters below (their controls
-		// are hidden for these sources too).
+		// (archive) query. Both skip the builder's manual filters (their
+		// controls are hidden for these sources too) — but NOT the visitor's:
+		// a shop archive is a Current Query grid, and that is exactly where
+		// filtering matters most.
 		if ( 'related' === $post_type ) {
-			return self::build_related_query_args( $s, $paged );
-		}
-		if ( 'current_query' === $post_type ) {
-			return self::build_current_query_args( $s, $paged );
+			$args = self::build_related_query_args( $s, $paged );
+		} elseif ( 'current_query' === $post_type ) {
+			$args = self::build_current_query_args( $s, $paged );
+		} else {
+			$args = self::build_default_query_args( $s, $post_type, $paged );
 		}
 
+		$args = self::merge_visitor_filters( $args, $filters );
+
+		// WooCommerce: catalog visibility on every product query, plus the
+		// lookup-table price / rating / stock / sort the authoriser allowed.
+		$args = Loop_Query_Woo::apply( $args, $filters['woo'] ?? [] );
+
+		// Sticky posts first. WP_Query's own sticky handling only applies to
+		// the main home query, never to a secondary query like this one — so
+		// we pin manually: pre-resolve the FULL matching id list (stickies that
+		// match the filters first, then the rest in the chosen order) and turn
+		// the query into `post__in` + `orderby: post__in`. Pagination then
+		// flows naturally across the pinned list. Runs LAST so the id
+		// pre-query carries every filter above (tax/include/date/meta AND the
+		// visitor's). An explicit visitor sort wins over pinning for that
+		// request: a pinned-first list sorted by price is neither.
+		$visitor_sorted = ! empty( $filters['sort'] ) || ! empty( $filters['woo']['sort'] );
+		if ( ! in_array( $post_type, [ 'related', 'current_query' ], true ) && ! empty( $s['sticky_first'] ) && ! $visitor_sorted ) {
+			$sticky = array_map( 'intval', (array) get_option( 'sticky_posts', [] ) );
+			if ( $sticky ) {
+				$id_args = array_merge( $args, [
+					'posts_per_page' => -1,
+					'paged'          => 1,
+					'fields'         => 'ids',
+					'no_found_rows'  => true,
+				] );
+				// The final paged query applies the offset — the id list must
+				// stay complete or the skip would happen twice.
+				unset( $id_args['offset'] );
+				$all_ids = ( new \WP_Query( $id_args ) )->posts;
+
+				$pinned = array_values( array_intersect( $sticky, $all_ids ) );
+				if ( $pinned ) {
+					$rest             = array_values( array_diff( $all_ids, $sticky ) );
+					$args['post__in'] = array_merge( $pinned, $rest );
+					$args['orderby']  = 'post__in';
+					unset( $args['order'] );
+				}
+			}
+		}
+
+		return $args;
+	}
+
+	/**
+	 * Fold authorised visitor filters into a built args array. Every clause
+	 * ANDs with what the builder saved; an existing OR group (the Related
+	 * source's term query) is nested, never flattened.
+	 */
+	private static function merge_visitor_filters( array $args, array $filters ): array {
+		if ( ! $filters ) {
+			return $args;
+		}
+
+		// Taxonomy terms.
+		$tax_new = [];
+		foreach ( (array) ( $filters['tax'] ?? [] ) as $taxonomy => $clause ) {
+			if ( empty( $clause['ids'] ) || ! taxonomy_exists( (string) $taxonomy ) ) {
+				continue;
+			}
+			$tax_new[] = [
+				'taxonomy'         => (string) $taxonomy,
+				'field'            => 'term_id',
+				'terms'            => array_map( 'intval', (array) $clause['ids'] ),
+				'operator'         => ! empty( $clause['all'] ) ? 'AND' : 'IN',
+				'include_children' => ! isset( $clause['include_children'] ) || ! empty( $clause['include_children'] ),
+			];
+		}
+		if ( $tax_new ) {
+			$args['tax_query'] = Loop_Query_Woo::and_group( (array) ( $args['tax_query'] ?? [] ), $tax_new ); // phpcs:ignore WordPress.DB.SlowDBQuery
+		}
+
+		// Meta clauses — each already carries key / compare / type from the widget.
+		$meta_new = array_values( array_filter( (array) ( $filters['meta'] ?? [] ), 'is_array' ) );
+		if ( $meta_new ) {
+			$args['meta_query'] = Loop_Query_Woo::and_group( (array) ( $args['meta_query'] ?? [] ), $meta_new ); // phpcs:ignore WordPress.DB.SlowDBQuery
+		}
+
+		// Search.
+		if ( ! empty( $filters['s'] ) && is_string( $filters['s'] ) ) {
+			$args['s'] = $filters['s'];
+			if ( ! empty( $filters['title_only'] ) ) {
+				$args['aae_title_only'] = true; // honoured by posts_search_title_only()
+			}
+		}
+
+		// Authors — the builder's exclude list still wins.
+		if ( ! empty( $filters['author'] ) ) {
+			$ids = array_map( 'intval', (array) $filters['author'] );
+			if ( ! empty( $args['author__not_in'] ) ) {
+				$ids = array_values( array_diff( $ids, array_map( 'intval', (array) $args['author__not_in'] ) ) );
+			}
+			$args['author__in'] = $ids ? $ids : [ 0 ];
+		}
+
+		// Date ranges (publish / modified) — appended to the builder's own.
+		if ( ! empty( $filters['date'] ) ) {
+			$date = isset( $args['date_query'] ) ? (array) $args['date_query'] : [];
+			foreach ( (array) $filters['date'] as $clause ) {
+				if ( is_array( $clause ) ) {
+					$date[] = $clause;
+				}
+			}
+			$args['date_query'] = $date;
+		}
+
+		// Sort — the Sort widget's own option, already whitelisted.
+		if ( ! empty( $filters['sort']['orderby'] ) ) {
+			$orderby = (string) $filters['sort']['orderby'];
+			if ( 'relevance' === $orderby && empty( $args['s'] ) ) {
+				$orderby = 'date';
+			}
+			$args['orderby'] = $orderby;
+			$args['order']   = 'ASC' === strtoupper( (string) ( $filters['sort']['order'] ?? 'DESC' ) ) ? 'ASC' : 'DESC';
+			if ( in_array( $orderby, [ 'meta_value', 'meta_value_num' ], true ) && ! empty( $filters['sort']['meta_key'] ) ) {
+				$args['meta_key'] = (string) $filters['sort']['meta_key']; // phpcs:ignore WordPress.DB.SlowDBQuery
+				if ( ! empty( $filters['sort']['meta_type'] ) ) {
+					$args['meta_type'] = (string) $filters['sort']['meta_type'];
+				}
+			}
+		}
+
+		return $args;
+	}
+
+	/**
+	 * Title-only search: replaces WP's title + excerpt + content LIKE with a
+	 * title-only one for a query carrying `aae_title_only`. Registered once by
+	 * register_query_hooks(); a no-op for every other query.
+	 *
+	 * @param string    $search The WHERE fragment WP built.
+	 * @param \WP_Query $query
+	 */
+	public static function posts_search_title_only( $search, $query ) {
+		if ( ! $query instanceof \WP_Query || ! $query->get( 'aae_title_only' ) ) {
+			return $search;
+		}
+		$terms = (array) $query->get( 'search_terms' );
+		if ( ! $terms ) {
+			return $search;
+		}
+		global $wpdb;
+		$parts = [];
+		foreach ( $terms as $term ) {
+			$parts[] = $wpdb->prepare( "{$wpdb->posts}.post_title LIKE %s", '%' . $wpdb->esc_like( (string) $term ) . '%' );
+		}
+		return ' AND (' . implode( ' AND ', $parts ) . ') ';
+	}
+
+	/** Query-level hooks the seam relies on. Idempotent. */
+	public static function register_query_hooks(): void {
+		static $done = false;
+		if ( $done ) {
+			return;
+		}
+		$done = true;
+		add_filter( 'posts_search', [ self::class, 'posts_search_title_only' ], 10, 2 );
+		Loop_Query_Woo::register();
+	}
+
+	/** The builder's own query for a plain post-type Source, up to and including the offset. */
+	private static function build_default_query_args( array $s, string $post_type, int $paged ): array {
 		$args = [
 			'post_type'           => $post_type,
 			'post_status'         => 'publish',
@@ -570,6 +907,9 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 		// the settings but must not leak into the query).
 		$tax_query = [];
 		foreach ( self::get_query_taxonomies() as $tax ) {
+			if ( ! empty( $tax->aae_unregistered ) || ! taxonomy_exists( $tax->name ) ) {
+				continue; // ratchet stub: the saved value waits for its taxonomy to return
+			}
 			if ( ! in_array( $post_type, (array) $tax->object_type, true ) ) {
 				continue;
 			}
@@ -598,6 +938,17 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 		$exclude = self::extract_ids( $s['exclude_posts'] ?? null );
 		if ( $exclude ) {
 			$args['post__not_in'] = $exclude;
+		}
+
+		// Authors (builder-side). Exclude wins over include on an overlap.
+		$authors = self::extract_ids( $s['authors'] ?? null );
+		$not_authors = self::extract_ids( $s['exclude_authors'] ?? null );
+		if ( $not_authors ) {
+			$args['author__not_in'] = $not_authors;
+			$authors = array_values( array_diff( $authors, $not_authors ) );
+		}
+		if ( $authors ) {
+			$args['author__in'] = $authors;
 		}
 
 		// Publish date range (inclusive; min/max are Y-m-d strings).
@@ -643,37 +994,6 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 		$offset = self::sanitize_offset( $s );
 		if ( $offset ) {
 			$args['offset'] = $offset + ( max( 1, $paged ) - 1 ) * $args['posts_per_page'];
-		}
-
-		// Sticky posts first. WP_Query's own sticky handling only applies to
-		// the main home query, never to a secondary query like this one — so
-		// we pin manually: pre-resolve the FULL matching id list (stickies that
-		// match the filters first, then the rest in the chosen order) and turn
-		// the query into `post__in` + `orderby: post__in`. Pagination then
-		// flows naturally across the pinned list. Runs LAST so the id
-		// pre-query carries every filter above (tax/include/date/meta).
-		if ( ! empty( $s['sticky_first'] ) ) {
-			$sticky = array_map( 'intval', (array) get_option( 'sticky_posts', [] ) );
-			if ( $sticky ) {
-				$id_args = array_merge( $args, [
-					'posts_per_page' => -1,
-					'paged'          => 1,
-					'fields'         => 'ids',
-					'no_found_rows'  => true,
-				] );
-				// The final paged query applies the offset — the id list must
-				// stay complete or the skip would happen twice.
-				unset( $id_args['offset'] );
-				$all_ids = ( new \WP_Query( $id_args ) )->posts;
-
-				$pinned = array_values( array_intersect( $sticky, $all_ids ) );
-				if ( $pinned ) {
-					$rest             = array_values( array_diff( $all_ids, $sticky ) );
-					$args['post__in'] = array_merge( $pinned, $rest );
-					$args['orderby']  = 'post__in';
-					unset( $args['order'] );
-				}
-			}
 		}
 
 		return $args;
@@ -774,9 +1094,16 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 	 * cost more than it saved.
 	 */
 	public static function compute_max_pages( array $raw_settings, array $query_args ): int {
-		$s        = self::unwrap_settings( $raw_settings );
-		$offset   = self::sanitize_offset( $s );
-		$per_page = max( 1, (int) ( $query_args['posts_per_page'] ?? 6 ) );
+		return self::pages_for_total( self::count_total( $raw_settings, $query_args ), $query_args );
+	}
+
+	/**
+	 * How many posts match the built query, minus the builder's offset — the
+	 * number the Result Count widget shows and the page count divides.
+	 */
+	public static function count_total( array $raw_settings, array $query_args ): int {
+		$s      = self::unwrap_settings( $raw_settings );
+		$offset = self::sanitize_offset( $s );
 
 		$count_args = array_merge( $query_args, [
 			'fields'         => 'ids',
@@ -790,6 +1117,11 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 		$total = max( 0, (int) $count->found_posts - $offset );
 		wp_reset_postdata();
 
+		return $total;
+	}
+
+	public static function pages_for_total( int $total, array $query_args ): int {
+		$per_page = max( 1, (int) ( $query_args['posts_per_page'] ?? 6 ) );
 		return max( 1, (int) ceil( $total / $per_page ) );
 	}
 
@@ -974,14 +1306,19 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 	}
 
 	/** Recursively unwrap { $$type, value } atomic prop shapes to plain values. */
-	private static function unwrap_settings( $value ) {
+	public static function unwrap( $value ) {
 		if ( is_array( $value ) && isset( $value['$$type'] ) && array_key_exists( 'value', $value ) ) {
-			return self::unwrap_settings( $value['value'] );
+			return self::unwrap( $value['value'] );
 		}
 		if ( is_array( $value ) ) {
-			return array_map( [ self::class, 'unwrap_settings' ], $value );
+			return array_map( [ self::class, 'unwrap' ], $value );
 		}
 		return $value;
+	}
+
+	/** @deprecated internal alias kept for the call sites below. */
+	private static function unwrap_settings( $value ) {
+		return self::unwrap( $value );
 	}
 
 	/**
@@ -989,7 +1326,7 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 	 * JSON strings {"id":123,"label":".."} (aae-query-chips storage format),
 	 * plain numerics, or already-decoded arrays.
 	 */
-	private static function extract_ids( $items ): array {
+	public static function extract_ids( $items ): array {
 		if ( ! is_array( $items ) ) {
 			return [];
 		}
@@ -1014,7 +1351,7 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 	}
 
 	/** Return the value if it's a valid Y-m-d date string, else null. */
-	private static function valid_date( $value ): ?string {
+	public static function valid_date( $value ): ?string {
 		if ( ! is_string( $value ) || '' === $value ) {
 			return null;
 		}

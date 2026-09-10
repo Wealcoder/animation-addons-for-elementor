@@ -33,6 +33,7 @@ import { StackCardsControl } from './StackCardsControl';
 import { StackPreviewControl } from './StackPreviewControl';
 import { BtnHoverStyleControl } from './BtnHoverStyleControl';
 import { ProNoticeControl } from './ProNoticeControl';
+import { NoticeControl } from './NoticeControl';
 
 const ELEMENT_CONTROLS = [
 	{ type: 'aae-slides', component: SlidesControl, layout: 'full' },
@@ -53,6 +54,8 @@ const ELEMENT_CONTROLS = [
 	// Pinned to the top of a locked Pro form field's panel by
 	// inc/Forms/Pro_Gate.php — see that class on why the element stays editable.
 	{ type: 'aae-pro-notice', component: ProNoticeControl, layout: 'full' },
+	// Generic instruction card — inc/AtomicWidgets/Controls/class-aae-notice-control.php.
+	{ type: 'aae-notice', component: NoticeControl, layout: 'full' },
 	// Prop-bound (unlike the element-controls above): the panel wraps it in a
 	// SettingsField for its bind key; useBoundProp(stringArrayPropTypeUtil)
 	// reads/writes the String_Array prop.

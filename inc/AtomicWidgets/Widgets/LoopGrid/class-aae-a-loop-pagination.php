@@ -206,8 +206,15 @@ class AAE_A_Loop_Pagination extends Atomic_Element_Base {
 			'current' => $current,
 			'total'   => $total,
 			'grid'    => $grid_id,
-			'postId'  => get_the_ID(),
+			// The document the grid was rendered from — the one whose saved data
+			// the AJAX handler searches for this grid id. get_the_ID() is only
+			// right when the grid sits in the queried post itself.
+			'postId'  => ! empty( $ctx['document_id'] ) ? (int) $ctx['document_id'] : get_the_ID(),
 			'query'   => $query,
+			// Active visitor filters (url_key => value): posted back on every
+			// page change so page 2 is page 2 OF THE FILTERED SET.
+			// (object) so an empty map encodes as {} — JS reads it as an object.
+			'filters' => (object) ( isset( $ctx['filters'] ) && is_array( $ctx['filters'] ) ? $ctx['filters'] : [] ),
 			'nonce'   => wp_create_nonce( 'aae_loop_grid_front' ),
 			'ajaxUrl' => admin_url( 'admin-ajax.php' ),
 		];
