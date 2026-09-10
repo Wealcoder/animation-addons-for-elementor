@@ -5062,6 +5062,104 @@ shapes, chosen per the same free/Pro registry constraint documented under
   its error, and the next control — not just that the error text exists
   somewhere in the DOM.
 
+### Date / Time fields get a real calendar — flatpickr (PRO, shipped 2026-09-10)
+
+`animation-addons-for-elementor-pro/inc/AtomicV4/FormDatepicker/` (Assets +
+Renderer, the FormValidation shape) + `pro/src/modules/atomic-v4/form-datepicker.{js,css}`
++ `pro/assets/lib/flatpickr-l10n/` (65 locale files). No Schema, no Controls:
+it enhances the Input widget's existing `date`/`time` types and reads its
+`min`/`max`/`placeholder`. **The library is Elementor core's own flatpickr
+4.6.13** — `elementor/includes/frontend.php:388/509` register handle
+`flatpickr` (script + style) for the editor's `Date_Time` control, and Elementor
+Pro's form date field depends on the same handle — so this costs an Elementor
+site zero bytes and never puts a second calendar on a page.
+`Assets::ensure_flatpickr_registered()` re-registers the same file from
+`ELEMENTOR_ASSETS_URL` if the handle is ever missing, because a dependency on an
+unregistered handle does not warn — WordPress silently skips printing OUR script.
+
+**The server contract did not move, and that is the whole design.** flatpickr
+runs in `altInput` mode: the REAL input keeps its `name` and keeps posting
+`Y-m-d` / `H:i` (it becomes `type=hidden`), and a visible twin shows the site's
+`date_format`, localised. `Validator.php:378/386`, `Schema_Walker`, storage and
+email are untouched; a page without Pro, or with JS off, falls back to the
+browser's native picker and posts the identical value. Verified: the stored row
+is `2026-09-15` / `14:30` whichever way it was entered.
+
+Five things the free runtime and flatpickr disagree about, each fixed on the
+Pro side unless noted:
+
+1. **Focus.** `focusFirstInvalid()` focuses the control it validated — the
+   hidden original — which does nothing, silently. Free form.js gained ONE
+   neutral filter, `aae_form/focus_target` (control, form), and the Pro runtime
+   answers with the twin. With nothing hooked the control itself is used.
+2. **Error placement.** `showFieldError()` inserts AFTER the control; flatpickr
+   puts the twin after the original, so the message would land *between* them —
+   above the visible field. The runtime moves the original behind the twin once
+   (`[twin][hidden original]`), and the message falls where it does for every
+   other field. No wrapper element, so the form's flex row-break still applies.
+3. **Invalid state.** `.aae-form-invalid` / `aria-invalid` / `aria-describedby`
+   are set on the original; a MutationObserver mirrors them onto the twin so the
+   red border paints on what the visitor sees.
+4. **`<label for>`.** Still names the hidden original, and activating it focuses
+   nothing. Labels are resolved BEFORE flatpickr rewrites the type (a hidden
+   input is not labelable, `input.labels` comes back empty afterwards) and a
+   click on them focuses the twin + opens the picker. `id` is deliberately NOT
+   moved to the twin: Conditional Display looks a field's label up by `el.id`
+   (`form-conditions.js:157`) and would stop hiding the label with the field.
+5. **Reset.** `form.reset()` (the success path, and the Reset button) empties
+   the original but not flatpickr's selection; a `reset` listener calls
+   `fp.clear(false)` on every instance, or yesterday's date stays on screen
+   over an empty value.
+
+**Editor is a different mode, on purpose.** No `altInput`: the original carries
+`data-id`, which is how the canvas selects the widget, so it stays the visible
+element and flatpickr just formats it (display format — nothing submits there).
+Renderer's PHP filter never runs in the canvas (Twig-in-JS), so the runtime also
+matches on `type` and Assets blanket-enqueues on `elementor/preview/enqueue_scripts`.
+Elementor re-renders a widget on ANY setting change, replacing the node, so the
+editor path re-scans on a 1 s tick (form.js's multi-step cadence) and
+**destroys instances whose input has left the document** — flatpickr appends its
+calendar to `<body>`, so without the sweep every setting change leaves one more
+calendar behind. Measured: count stays at 2 across a `$e` settings write.
+
+**Skin, not settings.** `form-datepicker.css` scopes to
+`.flatpickr-calendar.aae-fp` (added in `onReady`, so Elementor Pro's own date
+field keeps stock flatpickr) and is all custom properties. The runtime fills
+them from computed style on every open: text/font/radius/border from the twin,
+background from the first solid one of twin → form → parent, and the
+selected-day accent from the **submit button's background** — the one element a
+builder always paints in the form's primary colour. A dark form gets a dark
+calendar with no panel control for it.
+
+**Config goes out through `wp_add_inline_script` + `wp_json_encode`, NOT
+`wp_localize_script`** — that one casts every scalar to a string, so `firstDay`
+arrived as `"1"`, `Number.isInteger()` said no, and the week started on Sunday
+with nothing in the console. Caught by the suite; the runtime also coerces
+(`parseInt`, `'1' === time24`) so a stringified config still works.
+
+**Locale.** Elementor ships no `l10n/` (its date field is English everywhere).
+`Assets::locale_file()` maps `determine_locale()` to a flatpickr file with an
+alias table for the codes that are not ISO (`ca→cat`, `el→gr`, `vi→vn`,
+`kk→kz`, `uz→uz_latn`, `de-at→at`, `zh-hk→zh-tw`, `sr-rs→sr-cyr`) and checks
+the disk, so a bad guess degrades to English rather than a 404 in the dependency
+chain. The files register under keys that differ from their names
+(`ar-dz.js` → `l10ns.ar`, `zh-tw.js` → `l10ns.zh_tw`), so the runtime tries the
+spellings and then "whichever non-default key exists" — only one file is ever
+loaded. `Assets::to_flatpickr_format()` translates the PHP `date_format`
+(flatpickr borrowed PHP's letters: `g→h`, `a/A→K`, `s→S`, `jS→J`) and falls back
+to `F j, Y` / `h:i K` for anything it cannot render (timezone tokens, a
+backslash-escaped letter — flatpickr has no escape). 16 mapping cases + 15
+locales are asserted in the scratch probe that shipped with it.
+
+Tests: `E:\Local Testing\verify-form-datepicker.mjs` (32 — the whole list
+above, on the live page, ending in the stored row and the post-reset twin) and
+`verify-form-datepicker-editor.mjs` (10 — the editor mode and the sweep).
+Fixture `make-form-datepicker-page.php` (`cleanup` arg removes it),
+`read-submission-values.php <form_key>`. **Playwright cannot `fill()` the
+twin** — it is readonly; drive the value with `input._flatpickr.setDate(v, true,
+fmt)`. The older `verify-form-advfields.mjs` still does `page.fill('#aae-adv-date', …)`
+and will need the same change when it is next run against a Pro-licensed site.
+
 ### Advanced Field Types — Batch 2 started: Country (shipped 2026-07-20)
 
 **Country** (`e-aae-a-form-country`,

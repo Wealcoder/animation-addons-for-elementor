@@ -578,12 +578,6 @@ final class Atomic
 		'aae-a-loop-slide-item'        => 'aae-a-loop-grid-slider',
 		'aae-a-loop-slide-pagination'  => 'aae-a-loop-grid-slider',
 
-		// Offcanvas
-		'aae-a-offcanvas-panel'        => 'aae-a-offcanvas',
-		'aae-a-offcanvas-trigger'      => 'aae-a-offcanvas',
-		'aae-a-offcanvas-close'        => 'aae-a-offcanvas',
-		'aae-a-offcanvas-overlay'      => 'aae-a-offcanvas',
-
 		// Image Hotspot
 		'aae-a-hotspot-point'          => 'aae-a-image-hotspot',
 		'aae-a-hotspot-marker'         => 'aae-a-image-hotspot',
@@ -601,9 +595,6 @@ final class Atomic
 		'aae-a-post-pagination-preview-date'      => 'aae-a-post-pagination',
 		'aae-a-post-pagination-preview-author'    => 'aae-a-post-pagination',
 		'aae-a-post-pagination-preview-excerpt'   => 'aae-a-post-pagination',
-
-		// Stack Cards
-		'aae-a-stack-card'             => 'aae-a-stack-cards',
 
 		// Timeline
 		'aae-a-timeline-item'          => 'aae-a-timeline',
@@ -1402,23 +1393,6 @@ final class Atomic
 				'hide_from_panel' => true,
 			],
 
-			'aae-a-draw-svg' => [
-				'label'        => 'DrawSVG',
-				'description'  => 'Draw an SVG\'s paths with GSAP DrawSVGPlugin — per-path, optional ScrollTrigger, from/to/method/ease/duration/yoyo/scrub and an optional wrapper link.',
-				'icon'         => 'eicon-animation',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\DrawSvg\AAE_A_Draw_Svg',
-				'is_pro'       => true,
-				'badge_only'       => true,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [ 'draw', 'svg', 'gsap', 'animation', 'scroll', 'atomic' ],
-				'category'     => 'animation',
-				'order'        => 0,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
 			'aae-a-posts' => [
 				'label'        => 'Posts Grid',
 				'description'  => 'A dynamic grid of recent posts with GSAP stagger animations.',
@@ -1972,32 +1946,6 @@ final class Atomic
 				'hide_from_panel' => true,
 			],
 
-			'aae-a-stack-cards' => [
-				'label'        => 'Stack Cards',
-				'description'  => 'A scroll-driven card deck: independently-styleable cards that stack and animate with GSAP ScrollTrigger. First release ships the Scroll Stack animation; more arrive as presets.',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\StackCards\AAE_A_Stack_Cards',
-				'keywords'     => ['atomic', 'stack', 'cards', 'scroll', 'gsap'],
-				'icon'         => 'eicon-post-list',
-				'is_pro'       => true,
-				'badge_only'       => true,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'category'     => 'slider',
-				'order'        => 1,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-			'aae-a-stack-card' => [
-				'is_internal'  => true,
-				'label'        => 'Stack Card (Internal)',
-				'description'  => 'Internal card element for Stack Cards.',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\StackCards\AAE_A_Stack_Card',
-				'keywords'     => ['atomic', 'stack', 'card', 'internal'],
-				'icon'         => 'eicon-single-post',
-				'hide_from_panel' => true,
-			],
-
 			'aae-a-accordion' => [
 				'label'        => 'Accordion',
 				'description'  => 'Atomic accordion with GSAP interactive effects and smooth controls.',
@@ -2015,30 +1963,6 @@ final class Atomic
 				],
 				'category'     => 'general',
 				'order'        => 6,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
-			'aae-a-toc' => [
-				'label'        => 'Table of Content',
-				'description'  => 'Auto-generated Table of Contents from the page headings — nested hierarchy, active-heading highlighting, smooth scroll, collapsible + responsive minimize box.',
-				'icon'         => 'eicon-table-of-contents',
-				'is_pro'       => true,
-				'badge_only'       => true,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'toc',
-					'table',
-					'content',
-					'contents',
-					'anchor',
-					'heading',
-					'atomic',
-				],
-				'category'     => 'blog',
-				'order'        => 7,
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
@@ -2628,84 +2552,6 @@ final class Atomic
 				'order'        => 14,
 				'demo_url'     => '',
 				'doc_url'      => '',
-			],
-
-			'aae-a-offcanvas' => [
-				'label'        => 'Offcanvas',
-				'description'  => 'Offcanvas drawer with trigger + panel and selectable GSAP open/close animations.',
-				'icon'         => 'eicon-sidebar',
-				'is_pro'       => true,
-				'badge_only'       => true,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'offcanvas',
-					'drawer',
-					'sidebar',
-					'panel',
-					'atomic',
-				],
-				'category'     => 'interaction',
-				'order'        => 15,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
-			'aae-a-offcanvas-panel' => [
-				'is_internal'  => true,
-				'label'        => 'Offcanvas Panel (Internal)',
-				'description'  => 'Internal locked panel container for Offcanvas.',
-				'icon'         => 'eicon-inner-section',
-				'is_pro'       => true,
-				'badge_only'       => true,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'offcanvas panel',
-					'internal',
-				],
-				'category'     => 'general',
-				'order'        => 16,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
-			'aae-a-offcanvas-trigger' => [
-				'is_internal'  => true,
-				'label'           => 'Offcanvas Trigger',
-				'class_name'      => 'WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Trigger',
-				'icon'            => 'eicon-menu-bar',
-				'keywords'        => [ 'offcanvas', 'trigger', 'icon' ],
-				'hide_from_panel' => true,
-			],
-			'aae-a-offcanvas-close' => [
-				'is_internal'  => true,
-				'label'           => 'Offcanvas Close',
-				'class_name'      => 'WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Close',
-				'icon'            => 'eicon-close',
-				'keywords'        => [ 'offcanvas', 'close', 'icon' ],
-				'hide_from_panel' => true,
-			],
-			// ── Offcanvas backdrop — HELPER widget. Seeded as a locked child of
-			// the Offcanvas root, never dragged from the panel on its own, so
-			// `is_internal => true` keeps it out of the dashboard list. This
-			// entry previously carried the class-registry keys (`class_name`,
-			// `hide_from_panel`) instead of dashboard metadata, which rendered
-			// it as a card with no category, toggle state or description.
-			'aae-a-offcanvas-overlay' => [
-				'label'        => 'Offcanvas Overlay',
-				'description'  => 'Backdrop layer behind an open Offcanvas panel.',
-				'icon'         => 'eicon-square',
-				'is_pro'       => true,
-				'badge_only'       => true,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [ 'offcanvas', 'overlay', 'backdrop', 'scrim' ],
-				'category'     => 'general',
-				'is_internal'  => true,
 			],
 
 			'aae-a-form' => [
@@ -4141,6 +3987,16 @@ final class Atomic
 		add_action('elementor/widgets/register', [$this, 'register_widgets']);
 		add_action('elementor/elements/elements_registered', [$this, 'register_elements']);
 
+		// Locked upsell cards for the Pro-owned atomic widgets, so a free site's
+		// panel shows what it is missing instead of eight silently absent cards.
+		// Registered right beside the real registration because it answers the
+		// same question from the other side: whatever those two hooks did NOT
+		// register is exactly what Pro_Promotion advertises. Hand-required — the
+		// PSR-4 map expects a class-named file, and this one follows the
+		// class-*.php convention its neighbours use.
+		require_once WCF_ADDONS_PATH . 'inc/AtomicWidgets/class-pro-promotion.php';
+		(new Pro_Promotion())->register();
+
 		// Advanced Heading's `content` prop changed shape (string → html-v3) on
 		// 2026-08-04. Registered UNCONDITIONALLY, not behind is_widget_active():
 		// the read path has to keep converting even while the widget is switched
@@ -4973,37 +4829,6 @@ final class Atomic
 				'has_script' => false,
 			],
 
-			'aae-a-draw-svg' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\DrawSvg\AAE_A_Draw_Svg',
-				'file' => 'Widgets/DrawSvg/class-aae-a-draw-svg.php',
-				'script_handle' => 'aae-a-draw-svg-js',
-				'script_path' => '/assets/atomic/js/draw-svg.js',
-				// Only when Pro is present — see aae-a-offcanvas below. Free ships
-				// no GSAP of its own and Atomic\Assets::ensure_gsap_registered()
-				// sources these from Pro's assets/lib, so without Pro the handles
-				// never exist. draw-svg.js guards on `typeof gsap` and no-ops.
-				'script_deps' => defined( 'WCF_ADDONS_PRO_VERSION' )
-					? [ 'gsap', 'ScrollTrigger', 'DrawSVGPlugin', 'MotionPathPlugin' ]
-					: [],
-				'has_script' => true,
-			],
-
-			'aae-a-stack-cards' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\StackCards\AAE_A_Stack_Cards',
-				'file' => 'Widgets/StackCards/class-aae-a-stack-cards.php',
-				'script_handle' => 'aae-a-stack-cards-js',
-				'script_path' => '/assets/atomic/js/stack-cards.js',
-				// Pro-only handles; stack-cards.js already returns early when
-				// window.gsap / window.ScrollTrigger are absent.
-				'script_deps' => defined( 'WCF_ADDONS_PRO_VERSION' ) ? [ 'gsap', 'ScrollTrigger' ] : [],
-				'has_script' => true,
-			],
-			'aae-a-stack-card' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\StackCards\AAE_A_Stack_Card',
-				'file' => 'Widgets/StackCards/class-aae-a-stack-card.php',
-				'has_script' => false,
-			],
-
 			// Loop Grid Slider — reuses the Loop Grid query engine + the shared
 			// nested-slider runtime. Its only own script is the load-more bridge
 			'aae-a-post-pagination' => [
@@ -5158,22 +4983,6 @@ final class Atomic
 				'has_script' => true,
 				'style_handle' => 'aae-a-accordion-css',
 				'style_path' => '/assets/atomic/css/accordion.css',
-			],
-
-			// Table of Content — leaf widget. Its JS uses GSAP ScrollTrigger
-			// (active-heading scroll-spy) + ScrollToPlugin (smooth scroll) when
-			// present, and degrades gracefully to native smooth scroll without
-			// them — so, like Counter, it declares NO gsap script_deps (those
-			// handles live in the Pro plugin; a missing registered dep would
-			// silently prevent this free widget's script from enqueuing).
-			'aae-a-toc' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\TableOfContents\AAE_A_Table_Of_Contents',
-				'file' => 'Widgets/TableOfContents/class-aae-a-table-of-contents.php',
-				'script_handle' => 'aae-a-toc-js',
-				'script_path' => '/assets/atomic/js/table-of-contents.js',
-				'has_script' => true,
-				'style_handle' => 'aae-a-toc-css',
-				'style_path' => '/assets/atomic/css/table-of-contents.css',
 			],
 
 			'aae-a-accordion-item' => [
@@ -5393,41 +5202,6 @@ final class Atomic
 			'aae-a-toggle-switcher-knob' => [
 				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Switcher_Knob',
 				'file'       => 'Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-switcher-knob.php',
-				'has_script' => false,
-			],
-
-			'aae-a-offcanvas' => [
-				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas',
-				'file'          => 'Widgets/Offcanvas/class-aae-a-offcanvas.php',
-				'script_handle' => 'aae-a-offcanvas-js',
-				'script_path'   => '/assets/atomic/js/offcanvas.js',
-				'has_script'    => true,
-				// GSAP powers the open/close animations, but the `gsap` handle is
-				// registered only by the Pro plugin. Depend on it ONLY when Pro is
-				// present (an unregistered dep would silently block the script);
-				// the runtime falls back to a CSS slide when GSAP is absent.
-				'script_deps'   => defined( 'WCF_ADDONS_PRO_VERSION' ) ? [ 'gsap' ] : [],
-			],
-
-			'aae-a-offcanvas-panel' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Panel',
-				'file'       => 'Widgets/Offcanvas/class-aae-a-offcanvas-panel.php',
-				'has_script' => false,
-			],
-
-			'aae-a-offcanvas-trigger' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Trigger',
-				'file'       => 'Widgets/Offcanvas/class-aae-a-offcanvas-trigger.php',
-				'has_script' => false,
-			],
-			'aae-a-offcanvas-close' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Close',
-				'file'       => 'Widgets/Offcanvas/class-aae-a-offcanvas-close.php',
-				'has_script' => false,
-			],
-			'aae-a-offcanvas-overlay' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Overlay',
-				'file'       => 'Widgets/Offcanvas/class-aae-a-offcanvas-overlay.php',
 				'has_script' => false,
 			],
 
@@ -5749,8 +5523,6 @@ final class Atomic
 
 		// Add new atomic widgets below...
 		];
-
-		$widgets = self::drop_widgets_owned_by_pro($widgets);
 
 		/**
 		 * The class/asset registry for every atomic widget.
@@ -6143,13 +5915,25 @@ final class Atomic
 		}
 
 		// Our own atomic widget stylesheets (e.g. aae-a-nav-css) must ALSO print
-		// after editor-preview. The early add_style_dependency() in
-		// enqueue_atomic_preview_styles() silently bails when editor-preview isn't
-		// registered yet at preview/enqueue_styles time, so on some hard reloads
-		// the widget CSS printed before editor-preview and its positioning lost —
-		// the Nav dropdown rendered unpositioned / in-flow ("styles missing on
-		// reload"). Patching here (wp_print_styles, when every handle is finally
-		// registered) makes the dependency reliable.
+		// after editor-preview, or the Nav dropdown renders unpositioned / in-flow
+		// ("styles missing on reload").
+		//
+		// THIS PASS IS THE ONLY ONE THAT CAN DO IT, and the reason is timing, not
+		// a race. An earlier revision of this comment blamed the dependency being
+		// added "too early to stick" — that cannot happen: Elementor registers AND
+		// enqueues editor-preview on the two lines immediately before it fires
+		// `elementor/preview/enqueue_styles` (includes/preview.php:271, :287,
+		// :299), so any callback on that hook always finds the handle registered.
+		//
+		// The real reason is that half the handles do not EXIST yet at that point.
+		// Elementor's per-document CSS (`local-<id>-preview-*`,
+		// `elementor-post-<id>`) registers later, while the document renders, so
+		// nothing hooked to an enqueue action can reach it. wp_print_styles at
+		// priority 0 is the last moment when every handle is finally registered
+		// and nothing has been echoed yet.
+		//
+		// Do not "simplify" this away on the assumption the enqueue-time
+		// dependency already covers it — it covers the widget sheets only.
 		$atomic_handles = [];
 		foreach ( $this->get_available_widgets() as $widget_data ) {
 			if ( ! empty( $widget_data['style_handle'] ) ) {
@@ -6538,6 +6322,80 @@ final class Atomic
 	}
 
 	/**
+	 * Slides an unlicensed site may author in either slider.
+	 *
+	 * Lives HERE, not on AAE_A_Loop_Grid_Slider, because Assets.php has to ship
+	 * it to the editor on every load and that widget's class is only required
+	 * when the widget is switched on — reading it there would fatal on a site
+	 * that has the slider disabled.
+	 *
+	 * PANEL ONLY. Nothing downstream of a saved value consults it, so a slider
+	 * built with more slides keeps rendering all of them if the licence lapses.
+	 */
+	const FREE_SLIDE_LIMIT = 3;
+
+	/**
+	 * Where every in-editor upsell sends the user.
+	 *
+	 * One constant because two of them drifting is not a hypothetical: the
+	 * dashboard already reaches the site root in some places and /pricing/ in
+	 * others, which is how a campaign link ends up half-applied. Anything new
+	 * that upsells from inside the editor should read this rather than typing
+	 * the URL again.
+	 */
+	const UPGRADE_URL = 'https://animation-addons.com/pricing/';
+
+	/**
+	 * Is there a Pro plugin here with a VALID licence?
+	 *
+	 * The same gate Pro puts on its own include_files(), so it answers the only
+	 * question that matters downstream: will Pro's code actually run. Absent
+	 * function means either no Pro at all or one too old to have it, and both
+	 * are correctly "no".
+	 *
+	 * Licence-only, with NO version floor: it answers "has this customer
+	 * paid", which is the only question a feature gate needs. Anything that
+	 * must ALSO know "is the Pro here new enough" has to check
+	 * WCF_ADDONS_PRO_VERSION itself rather than widening this.
+	 *
+	 * Pro memoises the underlying option read in a static, so repeat calls are
+	 * free.
+	 */
+	public static function pro_licensed(): bool
+	{
+		return function_exists('wcf__addons__pro__status') && (bool) wcf__addons__pro__status();
+	}
+
+	/**
+	 * Is the CODE for this atomic widget present on disk?
+	 *
+	 * The registry-entry half and the file half are both required and mean
+	 * different things: a slug missing entirely is a widget this build never
+	 * knew about, while an entry whose file is gone is a widget this build
+	 * expects someone else to ship (a moved-to-Pro slug on a site with no Pro,
+	 * or a partial deploy). Both end the same way in
+	 * resolve_registerable_classes() — the element type never registers — which
+	 * is the only thing a caller asking this question cares about.
+	 *
+	 * Deliberately NOT is_widget_active(): that answers whether the user
+	 * switched it on, which is their choice and not a missing-code condition.
+	 * Pro_Promotion needs exactly this split, so that a widget somebody turned
+	 * off in the dashboard is not advertised back at them as a paid upgrade.
+	 */
+	public function widget_code_present(string $slug): bool
+	{
+		$widgets = $this->get_available_widgets();
+
+		if (! isset($widgets[$slug])) {
+			return false;
+		}
+
+		$file = self::widget_class_file($widgets[$slug]);
+
+		return '' !== $file && file_exists($file);
+	}
+
+	/**
 	 * Absolute path to a registry entry's class file.
 	 *
 	 * `file` is normally relative to this directory. An entry from another
@@ -6545,89 +6403,6 @@ final class Atomic
 	 * Both callers already skip a path that does not exist, so a Pro entry left
 	 * behind by a partial deploy costs that widget, not the request.
 	 */
-	/**
-	 * Atomic widgets that moved to the Pro plugin, and the Pro release that took
-	 * them. Free keeps its own copies for ONE release as a transitional
-	 * fallback: an atomic element type that nothing registers is not merely
-	 * invisible, Elementor DROPS it from `_elementor_data` on the next save
-	 * (get_elements_raw_data(), elementor/core/base/document.php:1111), so a
-	 * version-skew window with no registrar would destroy customers' pages.
-	 *
-	 * Delete these entries, this method and the widget folders in the follow-up
-	 * release, once Pro 4.2.0 is the floor.
-	 */
-	const PRO_OWNS_WIDGETS_FROM = '4.2.0';
-
-	const WIDGETS_MOVED_TO_PRO = [
-		'aae-a-counter',
-		'aae-a-draw-svg',
-		'aae-a-stack-cards',
-		'aae-a-stack-card',
-		'aae-a-btn-pro',
-		'aae-a-offcanvas',
-		'aae-a-offcanvas-panel',
-		'aae-a-offcanvas-trigger',
-		'aae-a-offcanvas-close',
-		'aae-a-offcanvas-overlay',
-		'aae-a-nav',
-		'aae-a-nav-item',
-		'aae-a-nav-sub-item',
-		'aae-a-mobile-nav',
-		'aae-a-toc',
-	];
-
-	/**
-	 * True once the installed Pro is new enough to register the moved widgets
-	 * itself.
-	 *
-	 * Two conditions, and the LICENCE half is the one that matters.
-	 *
-	 * The atomic EXTENSIONS deliberately guard on Pro's version alone: an
-	 * unlicensed Pro must not make free resume rendering a paid effect. Widgets
-	 * cannot use that rule. WCF_ADDONS_PRO_VERSION is defined at Pro's file
-	 * scope, BEFORE its licence gate, while Pro only registers these widgets
-	 * when the licence is valid — so version-only would leave an expired site
-	 * with NOBODY registering them, and an unregistered atomic element type is
-	 * deleted from `_elementor_data` on the next save of any page using it
-	 * (get_elements_raw_data(), elementor/core/base/document.php:1111).
-	 *
-	 * A lapsed customer keeping these widgets alive is a revenue leak. A lapsed
-	 * customer's pages silently losing their content is not recoverable. So free
-	 * stands down only when Pro will actually take over.
-	 *
-	 * Still not `class_exists` on a Pro widget: Pro loads its classes on
-	 * `elementor/init`, long after this runs, so that check would read false
-	 * even on a perfectly licensed site.
-	 */
-	public static function pro_owns_widgets(): bool
-	{
-		if (! defined('WCF_ADDONS_PRO_VERSION')
-			|| version_compare(WCF_ADDONS_PRO_VERSION, self::PRO_OWNS_WIDGETS_FROM, '<')) {
-			return false;
-		}
-
-		// Same gate Pro puts on its own include_files(); absent means a Pro too
-		// old to have the function, which the version check already excluded.
-		return function_exists('wcf__addons__pro__status') && (bool) wcf__addons__pro__status();
-	}
-
-	/**
-	 * @param array<string,array> $widgets
-	 * @return array<string,array>
-	 */
-	private static function drop_widgets_owned_by_pro(array $widgets): array
-	{
-		if (! self::pro_owns_widgets()) {
-			return $widgets;
-		}
-
-		foreach (self::WIDGETS_MOVED_TO_PRO as $slug) {
-			unset($widgets[$slug]);
-		}
-
-		return $widgets;
-	}
-
 	private static function widget_class_file(array $widget_data): string
 	{
 		$file = $widget_data['file'] ?? '';
@@ -7062,42 +6837,58 @@ JS;
 	}
 
 	/**
-	 * Enqueue every active atomic widget's stylesheet inside the editor
-	 * preview iframe.
+	 * Enqueue the EDITOR-ONLY atomic widget stylesheets into the preview iframe.
 	 *
-	 * Why: `maybe_enqueue_widget_script()` rides on
-	 * `elementor/frontend/before_render`, which does not fire when the v4
-	 * editor renders atomic widgets through its client-side Element_Builder
-	 * pipeline. Without this hook, widgets like Image Compare whose slider
-	 * button / handle styles live only in the external CSS file render
-	 * unstyled inside the editor (frontend is unaffected).
+	 * WHAT IS LEFT HERE, AND WHY IT IS ONLY THIS. An `editor_style_handle` is
+	 * deliberately absent from `register_atomic_styles()` (which feeds the
+	 * frontend), so `register_editor_style()` below is the ONLY thing in the
+	 * codebase that registers it — nothing else can, and without this the sheet
+	 * never reaches the preview and never reaches a published page either.
+	 * Today that is one widget: `aae-a-loop-grid-editor-css`.
+	 *
+	 * WHAT WAS REMOVED, AND WHY IT WAS SAFE. This method used to enqueue every
+	 * active widget's ordinary `style_handle` too, and add the `editor-preview`
+	 * dependency to each. Both halves were already being done, in the same
+	 * request, by two other passes:
+	 *
+	 *   - `enqueue_widget_scripts_in_preview()` walks the same registry with the
+	 *     same `is_widget_active()` filter on `elementor/preview/enqueue_scripts`
+	 *     and enqueues the same `style_handle` (its docblock says so).
+	 *   - `fix_preview_css_order()` re-adds the `editor-preview` dependency to
+	 *     every AAE handle — `editor_style_handle` included — at
+	 *     `wp_print_styles` priority 0, which is the only pass that can also
+	 *     reach Elementor's later-registered per-document CSS.
+	 *
+	 * MEASURED, 16 editor loads with the old loop toggled on/off/on/off across
+	 * two pages: the preview carried 26 AAE stylesheets with it and 25 without,
+	 * with ZERO landing before `editor-preview` either way. The single missing
+	 * sheet was the editor-only one — which is exactly what this method now
+	 * owns, and nothing else changed. Editor-ready time was indistinguishable
+	 * (within-state spread 2.3-4.6 s, larger than any gap between states, and
+	 * the direction flipped between batches).
+	 *
+	 * So this is not a speed change — it removes duplicated work while keeping
+	 * the one job no other pass can do.
+	 *
+	 * `add_style_dependency()` is still called here as belt-and-braces: it costs
+	 * one array check and keeps this sheet correctly ordered even if
+	 * `fix_preview_css_order()` is ever narrowed.
 	 */
 	public function enqueue_atomic_preview_styles(): void {
 		$this->register_atomic_styles();
 
-		// In the editor preview iframe every atomic widget style MUST load AFTER
-		// Elementor's `editor-preview` stylesheet. Otherwise, on a hard reload the
-		// widget CSS can win source-order before editor-preview.css is parsed,
-		// briefly applying the wrong base rules (e.g.
-		// `.e-flexbox-base { display:flex; flex-direction:row }`) and breaking the
-		// layout until editor-preview settles. add_style_dependency() below makes
-		// WordPress emit our <link> after editor-preview's.
 		foreach ( $this->get_available_widgets() as $widget_id => $widget_data ) {
-			if ( $this->is_widget_active( $widget_id ) ) {
-				if ( ! empty( $widget_data['style_handle'] ) ) {
-					$this->add_style_dependency( $widget_data['style_handle'], 'editor-preview' );
-					wp_enqueue_style( $widget_data['style_handle'] );
-				}
-
-				// Editor-only stylesheet: NOT registered by register_atomic_styles()
-				// (which feeds the frontend), so it never reaches a published page.
-				// Register it on the spot here and enqueue it in the preview only.
-				if ( ! empty( $widget_data['editor_style_handle'] ) && ! empty( $widget_data['editor_style_path'] ) ) {
-					$this->register_editor_style( $widget_data['editor_style_handle'], $widget_data['editor_style_path'] );
-					$this->add_style_dependency( $widget_data['editor_style_handle'], 'editor-preview' );
-					wp_enqueue_style( $widget_data['editor_style_handle'] );
-				}
+			if ( ! $this->is_widget_active( $widget_id ) ) {
+				continue;
 			}
+
+			if ( empty( $widget_data['editor_style_handle'] ) || empty( $widget_data['editor_style_path'] ) ) {
+				continue;
+			}
+
+			$this->register_editor_style( $widget_data['editor_style_handle'], $widget_data['editor_style_path'] );
+			$this->add_style_dependency( $widget_data['editor_style_handle'], 'editor-preview' );
+			wp_enqueue_style( $widget_data['editor_style_handle'] );
 		}
 	}
 

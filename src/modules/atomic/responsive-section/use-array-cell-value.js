@@ -67,9 +67,10 @@ export function useArrayCellValue({ propValue, bind, activeBp, elementId, defaul
 			value = Array.isArray(defaultValue) ? defaultValue : [];
 		}
 	}
-	const container = getContainer(elementId);
-	if (!container) throw new Error('container not found');
+
 	const setValue = (nextRows) => {
+		const container = getContainer(elementId);
+		if (!container) return;
 		const cellValue = (nextRows === null || nextRows === undefined) ? null : nextRows;
 		const nextMap = { ...map, [activeBp]: cellValue };
 		const nextEnvelope = { $$type: RESPONSIVE_JSON_KEY, value: nextMap };

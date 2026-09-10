@@ -207,10 +207,17 @@ final class Bootstrap {
 
 		( new Assets() )->register();
 
-		// Remote preset system — "Presets" panel section for native atomic
-		// widgets, and the same-origin proxy route the editor's JS fetches
-		// (merges remote + local presets; see Atomic\Presets\Cache).
-		( new \WCF_ADDONS\Atomic\Presets\Controls() )->register();
+		// Editor schema trim — strips each extension's props from the EDITOR
+		// copy of every atomic type the extension does not apply to. The
+		// props-schema filter has no element argument, so every module above
+		// adds its props to every type; the server keeps that (it is what
+		// protects saved data on save), the client does not need it. See the
+		// class docblock for the rule that keeps this safe.
+		( new \WCF_ADDONS\Atomic\Editor\Schema_Trim() )->register();
+
+		// Remote preset system — the same-origin proxy route the editor's JS
+		// fetches (merges remote + local presets; see Atomic\Presets\Cache).
+		// The "Presets" panel section itself is registered once, above.
 		( new \WCF_ADDONS\Atomic\Presets\Rest() )->register();
 	}
 
@@ -244,7 +251,7 @@ final class Bootstrap {
 	 * structure panel, and every shared extension has to be reachable there.
 	 * The Loop Grid Slider reuses the same part types, so one entry covers both.
 	 *
-	 * Pro-owned types (`e-aae-a-nav`, `e-aae-a-btn-pro`, `e-aae-a-lottie`, …)
+	 * Pro-owned types (`e-aae-a-offcanvas`, `e-aae-a-btn-pro`, `e-aae-a-lottie`, …)
 	 * belong here too — atomic element types can only be REGISTERED from the
 	 * free plugin, and this list is matched by type string, so it is the same
 	 * seam either way.

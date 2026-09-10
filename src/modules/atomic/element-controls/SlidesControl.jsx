@@ -41,6 +41,7 @@ import {
   useElementEditorSettings,
 } from "@elementor/editor-elements";
 import { useElement } from "@elementor/editor-editing-panel";
+import { PRO_ACCENT, UPGRADE_URL } from "./pro-upsell";
 import {
   Box,
   Collapse,
@@ -53,6 +54,31 @@ import {
 
 const TRACK_TYPE = "e-aae-a-slider-track";
 const SLIDE_TYPE = "e-aae-a-slide";
+
+
+/**
+ * How many slides this site may author, and whether it is capped at all.
+ *
+ * Read LAZILY from window.AAE_PRESET_CONFIG (inc/Atomic/Assets.php) rather than
+ * captured at module scope — same rule the rest of this folder follows, since
+ * the bundle can evaluate before the localized global is on the page.
+ *
+ * `proLicensed`, not `proActive`: an expired licence leaves Pro's files on disk
+ * but the customer has not paid, and this is a paid feature.
+ *
+ * PANEL ONLY. Nothing here touches saved data or the renderer, so a slider
+ * built with more slides on a licensed site keeps every one of them if the
+ * licence lapses — the cap stops you AUTHORING a fourth, it never removes a
+ * fourth you already published.
+ */
+function slideLimit() {
+  const config = window.AAE_PRESET_CONFIG || {};
+  if (config.proLicensed) {
+    return null;
+  }
+  const limit = Number(config.freeSlideLimit);
+  return Number.isFinite(limit) && limit > 0 ? limit : 3;
+}
 
 /**
  * Build the model for a fresh, EMPTY slide (no heading/image — the user fills
@@ -154,12 +180,24 @@ export function SlidesControl({ label }) {
 
   const getTrack = () => findChildContainerByType(sliderId, TRACK_TYPE);
 
+  const limit = slideLimit();
+  const atLimit = limit !== null && rows.length >= limit;
+
+  // Matches PresetPickerControl's locked-preset behaviour: the control stays
+  // live and the click explains itself, rather than a disabled button that
+  // cannot say why it is disabled.
+  const goUpgrade = () => window.open(UPGRADE_URL, "_blank", "noopener");
+
   const handleRowClick = (row) => {
     setExpandedId((cur) => (cur === row.id ? null : row.id));
     navigatePreviewToSlide(sliderId, row.id, row.index);
   };
 
   const handleAdd = () => {
+    if (atLimit) {
+      goUpgrade();
+      return;
+    }
     const track = getTrack();
     if (!track) {
       return;
@@ -179,6 +217,12 @@ export function SlidesControl({ label }) {
   };
 
   const handleDuplicate = (row) => {
+    // Duplicate is a second way to reach slide N+1, so it needs the same gate —
+    // gating only the Add button would leave the limit trivially sidestepped.
+    if (atLimit) {
+      goUpgrade();
+      return;
+    }
     duplicateElements({
       elementIds: [row.id],
       title: "Slide",
@@ -234,9 +278,20 @@ export function SlidesControl({ label }) {
         <Typography variant="caption" sx={{ fontWeight: 500, color: "text.secondary" }}>
           {label}
         </Typography>
-        <Tooltip title="Add Slide">
-          <IconButton size="tiny" onClick={handleAdd} aria-label="Add Slide">
-            <span style={{ fontSize: 16, lineHeight: 1 }}>+</span>
+        <Tooltip
+          title={
+            atLimit
+              ? `Upgrade to Pro to add more than ${limit} slides`
+              : "Add Slide"
+          }
+        >
+          <IconButton
+            size="tiny"
+            onClick={handleAdd}
+            aria-label={atLimit ? "Upgrade to Pro to add more slides" : "Add Slide"}
+            sx={atLimit ? { color: PRO_ACCENT } : undefined}
+          >
+            <span style={{ fontSize: 16, lineHeight: 1 }}>{atLimit ? "★" : "+"}</span>
           </IconButton>
         </Tooltip>
       </Stack>
@@ -293,10 +348,17 @@ export function SlidesControl({ label }) {
                 >
                   <RowTitle elementId={row.id} fallback={row.title} />
                 </Typography>
-                <Tooltip title="Duplicate">
+                <Tooltip
+                  title={
+                    atLimit
+                      ? `Upgrade to Pro to add more than ${limit} slides`
+                      : "Duplicate"
+                  }
+                >
                   <IconButton
                     size="tiny"
                     aria-label="Duplicate slide"
+                    sx={atLimit ? { color: PRO_ACCENT } : undefined}
                     onClick={(e) => {
                       e.stopPropagation();
                       handleDuplicate(row);
