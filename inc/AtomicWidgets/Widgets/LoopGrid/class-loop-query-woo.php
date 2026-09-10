@@ -329,13 +329,29 @@ final class Loop_Query_Woo {
 		return $display !== $storage;
 	}
 
+	/** Cached tax classes for tax-adjusted price filtering. */
+	private static ?array $tax_classes = null;
+
+	/**
+	 * Retrieve distinct tax classes from product lookup table, memoized per request.
+	 *
+	 * @return array
+	 */
+	private static function get_distinct_tax_classes(): array {
+		if ( null === self::$tax_classes ) {
+			global $wpdb;
+			$lookup            = $wpdb->prefix . 'wc_product_meta_lookup';
+			self::$tax_classes = (array) $wpdb->get_col( "SELECT DISTINCT tax_class FROM {$lookup};" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		}
+		return self::$tax_classes;
+	}
+
 	/**
 	 * WC's own per-tax-class expansion (QueryBuilder::get_price_filter_query_for_displayed_taxes).
 	 */
 	private static function tax_adjusted_where( float $amount, string $column, string $operator ): string {
 		global $wpdb;
-		$lookup  = $wpdb->prefix . 'wc_product_meta_lookup';
-		$classes = $wpdb->get_col( "SELECT DISTINCT tax_class FROM {$lookup};" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$classes = self::get_distinct_tax_classes();
 		if ( empty( $classes ) ) {
 			return '';
 		}
