@@ -2809,6 +2809,79 @@ settings UI 9, **readouts 75** (`verify-loop-readouts.php`, which asserts agains
 the demo pages themselves and checks every count against a hand-written WP_Query
 — a readout and a grid agreeing on a wrong number must not pass).
 
+### Designing the demo pages — four things that were wrong everywhere (2026-09-11)
+
+The demo pages were rebuilt as real designs (`make-loop-demo-pages.php` +
+`demo-art.php`), and the exercise found four defects that a bare fixture can
+never surface. Three of them are in the PRODUCT, not the demo.
+
+**`e-div-block` ships `padding: 10px`, and nothing says so.** Every wrapper that
+does not set padding quietly gains 10px on all four sides. It shows up as a
+nested group sitting 10px right of its siblings, and otherwise as a slackness
+across the whole layout that reads as "not quite aligned" rather than as any one
+thing being wrong. **Any programmatic atomic layout must set `padding` explicitly
+on every structural div**; `ui_stack()` / `ui_row()` in the demo builder do it
+once so no caller has to remember.
+
+**A theme's content CSS outranks a widget's own, and by a lot.** Measured on this
+site's theme: `.page-template-default .builder--page-details ul li { list-style:
+disc }` is (0,3,1) and `… a { text-decoration: underline }` is (0,2,1), while the
+filter family's rules were single classes at (0,1,0). Every filter rendered
+bulleted, underlined and indented 20px. `loop-filters.scss` now ends in a
+**theme-armour block** scoped `.elementor .e-atomic-element.<root> ul.<list> > li`
+(0,4,2) whose every declaration merely re-states a value set above. No
+`!important` — that would also beat the builder's Style-panel output, which must
+always win. **Any atomic widget rendering `ul`/`li`/`a` needs the same armour.**
+
+**A filter heading is a LABEL, and the Style panel cannot reach it.** Atomic
+styles have no descendant selector, so the heading's typography is decided in the
+stylesheet or nowhere; 600-weight body text was the weakest possible reading of
+the role. It is now a real label — but deliberately NOT `text-transform:
+uppercase`, because a transform rewrites the builder's own words with no way to
+switch it off. The demo types its titles in the case it wants.
+
+**One label, one owner.** The demo first rendered its own eyebrow headings and
+set every widget's `title` to `''`. That looked identical and broke four
+assertions, because the heading the authoriser records in its declaration — the
+text an Active Filters chip groups by — was no longer the text on screen. The
+widget's `title` is the label; a second one beside it is a second source of
+truth.
+
+#### The art generator, and the staleness trap it walked straight into
+
+`demo-art.php` draws every cover with GD at 2× and downsamples (GD does not
+antialias filled shapes, so a circle drawn at final size has stepped edges).
+Covers are deterministic per title, so a rebuild is a no-op.
+
+**"The file exists" is not "the art is current".** `art_attach()` originally
+skipped drawing whenever the JPEG was on disk, so every change to a drawing
+routine was invisible until someone cleared the uploads folder by hand — the page
+kept showing the previous art while the source said otherwise, which reads as the
+new code not working rather than as never having run. It now redraws whenever
+`filemtime( art file ) < filemtime( __FILE__ )`. `art_cleanup()` also sweeps
+orphan JPEGs by glob, because `wp_delete_attachment()` only removes what
+`_wp_attached_file` points at and a file written but never attached survives.
+
+Two drawing bugs worth not repeating: a gradient that offsets each row sideways
+to fake a diagonal leaves the canvas **unpainted at two corners** — black wedges
+that read as a broken image; and one palette per category makes four articles in
+that category look identical, so the palette is rotated around the colour wheel
+by a per-TITLE amount and the composition is one of three genuinely different
+layouts rather than one layout with the shapes moved about.
+
+#### A suite must not hardcode its fixture's copy
+
+`verify-loop-readouts.php` asserted `'Topic' === $decl['label']` and grepped for
+`'Price: low to high'`. Redesigning the demo — changing only wording — produced
+four failures on a completely correct plugin. The assertions now read the
+expected value out of the saved document (`setting_of()`) and compare it against
+what the authoriser recorded, which still catches the real regressions (label
+dropped, wrong source, a slug leaking through where a name belongs) while
+surviving a copy change. **Assert the relationship, not the string.**
+
+Suites after this pass: seam 107, frontend 25, widget 22, instant 25, editor 9,
+settings UI 9, **readouts 76**.
+
 ## Caching computed artifacts — and why option VALUES are not one (2026-08-06)
 
 Asked directly: "what would we gain by file-caching the option values?" The
