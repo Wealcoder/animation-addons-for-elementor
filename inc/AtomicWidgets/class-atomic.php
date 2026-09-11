@@ -5859,7 +5859,26 @@ final class Atomic
 		// is not $post_id once the grid lives in a theme-builder template —
 		// there $post_id is the template document, the one whose saved data
 		// declares this grid. The runtime posts the viewed post separately.
-		$context_id             = isset($_POST['context_id']) ? absint($_POST['context_id']) : 0;
+		//
+		// It goes through the SAME gate $post_id did, and for the same reason.
+		// The Related builder reads this post's type and its terms to find posts
+		// "like" it, so an unchecked id lets a visitor anchor the query on a
+		// draft and learn which published posts share its terms. Nothing
+		// unpublished is ever rendered either way — all three builders pin
+		// post_status to publish — but the result set is still an inference
+		// channel about a post nobody was shown. A rejected id falls back to the
+		// document, exactly as an absent one does.
+		$context_id = isset($_POST['context_id']) ? absint($_POST['context_id']) : 0;
+		if ($context_id && $context_id !== $post_id) {
+			$context = get_post($context_id);
+			if (
+				! $context
+				|| ('publish' !== $context->post_status && ! current_user_can('read_post', $context_id))
+				|| post_password_required($context)
+			) {
+				$context_id = 0;
+			}
+		}
 		$gs['_context_post_id'] = $context_id ?: $post_id;
 
 		// Current Query source: the archive's query vars, captured into the

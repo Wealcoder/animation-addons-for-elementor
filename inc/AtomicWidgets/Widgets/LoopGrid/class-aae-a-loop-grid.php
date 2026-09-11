@@ -1466,12 +1466,27 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 			}
 		}
 
-		// Authors — the builder's exclude list still wins.
+		// Authors — the builder's own list bounds the visitor's, BOTH ways.
+		//
+		// The exclude list was always subtracted. The include list was not, and
+		// that was the one place in this whole merge where a visitor's value
+		// WIDENED what the saved page allows: a grid scoped to two authors could
+		// be filtered to a third, because this line assigned `author__in` over
+		// the builder's instead of intersecting with it. Every other filter here
+		// can only ever narrow (tax and meta nest under an AND, dates append),
+		// and that is the property the authoriser exists to guarantee.
 		if ( ! empty( $filters['author'] ) ) {
 			$ids = array_map( 'intval', (array) $filters['author'] );
 			if ( ! empty( $args['author__not_in'] ) ) {
 				$ids = array_values( array_diff( $ids, array_map( 'intval', (array) $args['author__not_in'] ) ) );
 			}
+			if ( ! empty( $args['author__in'] ) ) {
+				$ids = array_values( array_intersect( $ids, array_map( 'intval', (array) $args['author__in'] ) ) );
+			}
+			// `[0]` is "no author", i.e. match nothing — the honest answer when
+			// the visitor picked somebody this grid does not offer. Leaving the
+			// key off instead would show every author, which is the failure
+			// being fixed rather than a fallback from it.
 			$args['author__in'] = $ids ? $ids : [ 0 ];
 		}
 

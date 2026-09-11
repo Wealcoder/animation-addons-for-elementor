@@ -160,6 +160,27 @@ final class Loop_Filter_Auth {
 	public const MAX_VALUE_LENGTH  = 200;
 	public const MAX_SEARCH_LENGTH = 200;
 
+	/**
+	 * The value an unresolvable open-choice id is replaced by, so that it
+	 * matches nothing instead of dropping its filter.
+	 *
+	 * An "open choice" filter (an ACF relationship or user field) cannot carry
+	 * a whitelist — its legitimate values are every post or user id — so the
+	 * only check available is whether the id resolves. Refusing the VALUE the
+	 * way every other resolver does would then drop the whole clause, and a
+	 * filter that contributes nothing returns the UNFILTERED grid, which is
+	 * visibly different from the empty one a real-but-unused id produces. Those
+	 * two responses together answer "does user id N exist" for anyone who can
+	 * load the page, which is precisely the user-enumeration oracle the author
+	 * resolver refuses ids to avoid.
+	 *
+	 * So both cases answer with the same empty grid. `-1` is the sentinel
+	 * because it is never a post or user id and is safe in every shape this
+	 * clause takes: `CAST('-1' AS SIGNED)` is `-1` under a numeric compare, it
+	 * is itself under CHAR, and `"-1"` appears in no serialized id array.
+	 */
+	private const NO_MATCH_ID = '-1';
+
 	/** Meta compare types the widget may declare (`value_type` => WP_Meta_Query type). */
 	private const META_TYPES = [
 		'numeric'  => 'NUMERIC',
@@ -1352,6 +1373,7 @@ final class Loop_Filter_Auth {
 
 			case 'choice':
 				$picked = [];
+				$active = [];
 				foreach ( self::parts( $value ) as $v ) {
 					$v = sanitize_text_field( mb_substr( $v, 0, self::MAX_VALUE_LENGTH ) );
 					if ( '' === $v ) {
@@ -1364,12 +1386,19 @@ final class Loop_Filter_Auth {
 						$exists = 'user' === $d['open_choice']
 							? get_user_by( 'id', (int) $v ) instanceof \WP_User
 							: ( ( $p = get_post( (int) $v ) ) && 'publish' === $p->post_status );
-						if ( ! $exists ) {
-							continue;
-						}
-					} elseif ( ! in_array( $v, $d['choices'], true ) ) {
+						// NOT `continue` — see NO_MATCH_ID. Dropping the only
+						// value sent drops the whole filter, and an unfiltered
+						// grid looks nothing like the empty one a valid-but-unused
+						// id produces, so the two answers together tell an
+						// anonymous visitor whether user id N exists.
+						$active[] = $v;
+						$picked[] = $exists ? $v : self::NO_MATCH_ID;
 						continue;
 					}
+					if ( ! in_array( $v, $d['choices'], true ) ) {
+						continue;
+					}
+					$active[] = $v;
 					$picked[] = $v;
 				}
 				if ( ! $picked ) {
@@ -1386,7 +1415,11 @@ final class Loop_Filter_Auth {
 				} else {
 					$clause = [ 'key' => $d['key'], 'value' => $picked, 'compare' => 'IN', 'type' => $type ];
 				}
-				return [ 'clause' => $clause, 'active' => implode( ',', $picked ) ];
+				// `$active`, not `$picked`: for an open-choice filter the two
+				// differ exactly when an id did not resolve, and the chip should
+				// name what the visitor asked for rather than the sentinel that
+				// replaced it.
+				return [ 'clause' => $clause, 'active' => implode( ',', $active ) ];
 
 			case 'toggle':
 				if ( '1' !== $value && 'true' !== $value && 'on' !== $value ) {
