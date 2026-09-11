@@ -2700,6 +2700,12 @@ of that is a control reporting on a different grid than the one beside it.
 
 ### A price filter with no slider, and why that was the right call
 
+> **Superseded in part (2026-09-11).** The slider shipped — see *M3: the two
+> controls that are FORMS* below. Everything this section says about BUCKETS
+> still holds and buckets are still the default; what changed is that a form
+> turned out to be a perfectly honest no-JavaScript control, which is what the
+> last paragraph here was waiting for.
+
 A two-handled range slider is a FORM CONTROL: no href, so it cannot be a link,
 and it does nothing until a script binds it. **Buckets** — "Under 50", "50 –
 120", "200 and up" — are ordinary links, are what visitors actually click on most
@@ -2881,6 +2887,196 @@ surviving a copy change. **Assert the relationship, not the string.**
 
 Suites after this pass: seam 107, frontend 25, widget 22, instant 25, editor 9,
 settings UI 9, **readouts 76**.
+
+## Loop Filters — M3: the two controls that are FORMS (2026-09-11)
+
+The last two of the nine widgets, and the only two that cannot be links:
+**Loop Search** (`e-aae-a-loop-search`, PRO, new) and the **range SLIDER**
+(`range_style = slider` on the existing Field filter). Both were blocked on the
+same thing — a submit path in `pro/src/modules/atomic-v4/loop-filters.js` — and
+both land with it.
+
+| Piece | Where |
+|---|---|
+| The Search widget | **PRO** `inc/AtomicV4/Widgets/LoopFilters/class-aae-a-loop-search.php` + twig |
+| The slider | **PRO** same folder, `range_style` / `step` / `range_prefix` / `apply_text` on `class-aae-a-loop-filter-meta.php` |
+| Shared form plumbing | **PRO** `Loop_Filter_Widget_Base::form_action()` + `carry_fields()` |
+| Submit + slider runtime | **PRO** `loop-filters.js` — `formTarget()`, `onSubmit()`, `onInput()`, `enhanceRanges()` |
+| The wire format | **FREE** `Loop_Filter_Auth::join_separator()` |
+| Slider track bounds | **FREE** `Loop_Query_Woo::price_bounds()` |
+
+**A `<form method="get">` IS the link-equivalent for typed input**, and that is
+the whole design. The browser composes exactly the URL a link would have
+carried and navigates to it, so with no JavaScript the control lands on the same
+server render the M1 authoriser already filters — it is not a degraded path, it
+is the same path. Pro's runtime then intercepts the submit the way it already
+intercepts a click. `e-aae-a-loop-search` was already in `FILTER_TYPES` from M1,
+so the authoriser, `RERENDER_TYPES` and Pro's `Renderer` all picked it up with
+no change: the runtime enqueues itself on a page carrying one.
+
+### How a form expresses a range — one key, two boxes
+
+A range is ONE url_key holding `min..max`. A form has TWO boxes. There is no
+way to compose the one from the other in HTML, and every obvious answer is
+worse than it looks:
+
+- a second URL spelling (`price_min` / `price_max`) has to be reserved against
+  WordPress's own query vars, explained, and kept in step with the first;
+- one text box the visitor types `10..50` into is not a control anybody uses;
+- a hidden field written by JavaScript is not a control at all without it.
+
+So both boxes carry **`name="<key>[]"`**, which arrives as an ARRAY, and
+`Loop_Filter_Auth::join_separator()` joins a RANGE declaration's array with
+`..` instead of a comma. `?price[]=&price[]=50` and `?price=..50` are then the
+same filter, proven against the live page. A taxonomy or choice array keeps its
+comma — that is a LIST and always has been.
+
+Three properties fall out of that and are asserted:
+
+- **empty boxes clear the filter** rather than sending a bare `..`, which
+  `parse_range()` refuses (so the key is simply dropped);
+- **a third value is refused, not truncated** — inventing a meaning for it is
+  how an array key becomes a way past `parse_range()`;
+- **the bounds are still the gate.** The slider's `lo`/`hi` decide where the
+  track is DRAWN. Whatever arrives is clamped to the widget's own Min/Max
+  exactly as a hand-typed URL is, and the form shape changes nothing about it.
+  Never move the gate into the drawing.
+
+The runtime's enhanced submit writes the canonical single-key spelling
+(`price=10..50`) so the URL bar and a shared link stay readable. Both spellings
+reach an identical filter; that equality is a test, not a convention.
+
+### DANGER — a GET form REPLACES the whole query string
+
+This is the one thing a form does that a link never could, and it fails
+silently: submit a search and every other filter on the page is gone, with the
+page looking like it worked. `carry_fields()` re-states the rest of the current
+query as hidden inputs on every form (dropping `aae_page`/`paged`, for the same
+reason a term link does). **The widget's own key AND its legacy `aae_*` spelling
+are both excluded** — the authoriser reads the legacy key whatever the site's
+URL mode, so a stale `?aae_s=` re-posted as a hidden field beside the live box
+would beat what the visitor just typed.
+
+`form_action()` is the PATH alone for the same reason: an action carrying a
+query string would fight the hidden fields.
+
+### The slider is enhancement, and the number boxes are the control
+
+With no script the slider renders as two number boxes and an Apply button —
+usable, and posting the identical value. The runtime then appends two real
+`<input type="range">` handles over the track (real range inputs, so keyboard
+operation and screen-reader announcement come free) and reveals the track,
+which is `display: none` until a handle exists. Rules worth keeping:
+
+- **Handles may meet but never cross.** An inverted range matches nothing and
+  the server drops it, leaving a slider that visibly moved and did nothing.
+- **A handle left at its own bound writes an EMPTY box**, not that number —
+  otherwise every drag pins both ends into the URL and `?price=0..200` reads as
+  a filter when it is the whole catalogue.
+- **`change`, not `input`, submits** — once per drag or arrow-key settle, never
+  per frame. Typed values still wait for Apply or Enter.
+- **The number boxes are the source of truth** in both directions; the handles
+  mirror them. One state, not two.
+
+**`Loop_Query_Woo::price_bounds()` answers a DRAWING question only.** A builder
+who has not typed bounds should still get a usable track rather than two bare
+boxes that read as the slider being broken, so a WooCommerce price slider asks
+the catalogue (one memoised aggregate over `wc_product_meta_lookup`, paid only
+by a page that draws one). Deliberately store-wide rather than scoped to the
+grid's current filters: a track whose ends move on every category click makes
+the handle positions mean something different on each render, and the visitor's
+own selection appears to jump.
+
+### Search as you type replaces its history entry
+
+`live` is off by default: applying on every keystroke is a request per
+character. When on, the runtime debounces ~420 ms and calls
+`history.replaceState`, not `pushState` — one entry per pause in typing turns
+the back button into a character-by-character rewind of a word nobody wants to
+revisit. An explicit submit still pushes.
+
+**DANGER — the re-render replaces the input being typed into.** Every filter
+widget is re-rendered after a filter change, which is what keeps selected
+states, counts and carried hidden fields honest; for a list of links that costs
+nothing, and for a search box it is destructive. `captureFocus()` /
+`restoreFocus()` in `swapFilters()` identify the control by its ROLE within the
+widget (`data-aae-range-role`, `.aae-a-loop-search-input`) rather than by node,
+and restore focus, caret and — importantly — **the visitor's own value over the
+server's echo of it**. The request was sent some keystrokes ago; painting what
+was true then is the classic laggy-search bug.
+
+### Things that will bite
+
+- **`range` is a Twig FUNCTION.** The slider's twig variable is `slider` for
+  that reason. A `{% set range = … %}` is asking for a collision that reports as
+  a template error with no obvious cause.
+- **The canvas needs its own render, and a slider CAN have one.** A term list
+  cannot be drawn client-side (the terms come from PHP), which is what the
+  placeholder dots are for — but a slider's bounds and step ARE panel props, so
+  the twig builds a preview from them. It renders as a `<div>` with **nameless**
+  inputs and a `type="button"` Apply, because a stray Enter inside the canvas
+  would navigate the iframe away from the document being edited. The search box
+  does the same. The runtime never binds handles in the editor: a live slider
+  would fire filter requests while somebody is styling it.
+- **Themes style form controls at least as hard as they style lists.** The
+  theme-armour block at the end of `loop-filters.scss` grew `form`, `input` and
+  `button` selectors for the same (0,2,1)-beats-(0,1,0) reason the `ul`/`li`/`a`
+  ones exist. Still no `!important` — that would beat the Style panel too.
+- **A search box must not dim under its own cursor.** The family's `is-loading`
+  state fades every widget; `.aae-a-loop-search.is-loading:focus-within` opts
+  out, because the text being read back while typing is the one thing that has
+  to stay crisp.
+- **Chrome draws its own ✕ in a `type="search"` input.** It sits beside ours and
+  clears the field without submitting — two controls that look alike and do
+  different things. `appearance: none` on `::-webkit-search-cancel-button`.
+- **The focus ring goes on the BOX, not the input.** The wrapper has
+  `overflow: hidden`, so the input's own outline is clipped and a keyboard user
+  gets no indicator at all.
+
+### Testing it
+
+`verify-loop-filter-forms.mjs` (35) and `verify-loop-filter-forms-editor.mjs`
+(9), both driving the DEMO PAGES, which they rebuild first. The front-end suite
+runs its whole first act in a context with **`javaScriptEnabled: false`** —
+that is the claim, so it is tested rather than reasoned about — and ends by
+aborting `admin-ajax.php` to prove the enhanced submit still falls back to a
+real navigation.
+
+Three traps it documents, each of which reads as a product bug:
+
+- **With scripting off, this theme's preloader is never removed** (the script
+  that removes it never runs), so it covers the page and swallows every CLICK.
+  Keyboard events are not hit-tested, so `press(…, 'Enter')` reaches the control
+  the overlay is covering. Clicking Apply there fails exactly like a broken
+  submit button.
+- **`waitForNavigation` resolves on a same-document History API navigation.**
+  The runtime pushes state BEFORE it discovers a request has failed, so the wait
+  settles on the pushState, the assertion reads the pre-navigation DOM, and a
+  working fallback reports as "still unfiltered" while the real navigation lands
+  a moment later. Use `waitForEvent('load')`, which only fires for a real
+  document load — the thing actually being claimed.
+- **`wp-emoji-loader` logs a missing-settings error inside the editor** on this
+  WP build. Core noise, present with the plugin deactivated.
+
+#### A suite must not freeze a COUNT either
+
+Two more assertions in `verify-loop-readouts.php` failed on a correct plugin
+this pass, both by naming a number the fixture happened to have: the blog page's
+declaration types (`tax + author + sort`, until Search joined them) and the
+preset count per widget type. Same lesson as the copy assertions before them,
+one level up — they now assert the RELATIONSHIP:
+
+- every filter widget saved in the document produces exactly one declaration,
+  and each declaration's `element_id` is one of those widgets;
+- the resolver finds exactly as many presets as there are JSON files on disk for
+  that type.
+
+Both still catch what they were written for (a dropped declaration, a Pro
+widget whose absolute preset path stops resolving) and survive shipping another
+widget or another preset.
+
+Suites after M3: seam **120**, frontend 25, widget 22, instant 25, editor 9,
+settings UI 9, readouts **80**, **forms 35**, **forms-editor 9**.
 
 ## Caching computed artifacts — and why option VALUES are not one (2026-08-06)
 
