@@ -161,7 +161,7 @@ final class Loop_Query_Woo {
 	 *
 	 * @return array{value: mixed, active: string}|null
 	 */
-	public static function authorize_field( string $field, string $value ): ?array {
+	public static function authorize_field( string $field, string $value, array $decl = [] ): ?array {
 		switch ( $field ) {
 			case 'price':
 				$range = Loop_Filter_Auth::parse_range( $value );
@@ -171,6 +171,30 @@ final class Loop_Query_Woo {
 				[ $min, $max ] = $range;
 				$min = null === $min ? null : max( 0.0, $min );
 				$max = null === $max ? null : max( 0.0, $max );
+
+				// The builder's own bounds, when they typed any. A price filter
+				// is the one range that never passed through meta_clause(),
+				// where every other range is clamped, so it accepted anything
+				// until this — including a hand-typed span entirely outside the
+				// track its own slider draws.
+				//
+				// An OPEN end is clamped too, and that is the half worth being
+				// deliberate about: `?price=200..` on a shop capped at 200 means
+				// "everything above the ceiling", which is not a narrower
+				// question than the builder allowed — it is the one they
+				// excluded. Closing it against the ceiling turns it into a
+				// filter that matches the top of the allowed range instead.
+				$lo = isset( $decl['min'] ) && is_numeric( $decl['min'] ) ? (float) $decl['min'] : null;
+				$hi = isset( $decl['max'] ) && is_numeric( $decl['max'] ) ? (float) $decl['max'] : null;
+				if ( null !== $lo ) {
+					$min = null === $min ? null : max( $min, $lo );
+					$max = null === $max ? null : max( $max, $lo );
+				}
+				if ( null !== $hi ) {
+					$min = null === $min ? null : min( $min, $hi );
+					$max = null === $max ? $hi : min( $max, $hi );
+				}
+
 				if ( null !== $min && null !== $max && $min > $max ) {
 					return null;
 				}

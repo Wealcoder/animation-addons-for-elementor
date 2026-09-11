@@ -598,6 +598,33 @@ final class Loop_Filter_Auth {
 		return null;
 	}
 
+	/**
+	 * The Min / Max a builder typed, or nothing.
+	 *
+	 * Both props default to 0, so `is_numeric()` alone reads an untouched pair
+	 * as a real ceiling of zero — which clamps every range filter to "at most
+	 * nothing" and matches no row on the site. The widget already settled the
+	 * convention when it decided whether to draw a slider track
+	 * (`$hi <= $lo` means "not typed"), and this is that same test on the
+	 * authorising side so the track and the gate cannot disagree about whether
+	 * bounds exist.
+	 *
+	 * @return array{0: ?float, 1: ?float}
+	 */
+	private static function authored_bounds( array $s ): array {
+		$min = isset( $s['min'] ) && is_numeric( $s['min'] ) ? (float) $s['min'] : null;
+		$max = isset( $s['max'] ) && is_numeric( $s['max'] ) ? (float) $s['max'] : null;
+
+		if ( null !== $max && null !== $min && $max <= $min ) {
+			return [ null, null ];
+		}
+		if ( null !== $max && null === $min && $max <= 0.0 ) {
+			return [ null, null ];
+		}
+
+		return [ $min, $max ];
+	}
+
 	private static function declare_meta( array $s, string $element_id ): ?array {
 		$source = (string) ( $s['source'] ?? 'custom' );
 
@@ -607,12 +634,23 @@ final class Loop_Filter_Auth {
 				return null;
 			}
 			$legacy_key = 'aae_' . $field;
+			$bounds     = self::authored_bounds( $s );
 			return [
 				'type'       => 'woo',
 				'element_id' => $element_id,
 				'url_key'    => self::url_key( $s, self::default_url_key( 'woo', $field, $legacy_key ), $legacy_key ),
 				'legacy_key' => $legacy_key,
 				'field'      => $field,
+				// A WooCommerce price is a RANGE, so it has the same gate every
+				// other range has — and until this it had none: the woo branch
+				// returned before the bounds were read, and a price filter never
+				// reaches meta_clause(), where the clamp lives. The panel calls
+				// these fields the gate and the slider draws its track from
+				// them, so a shop capped at 200 answered a hand-typed
+				// ?price=300..400 with the products above it. Measured on the
+				// shop demo.
+				'min'        => $bounds[0],
+				'max'        => $bounds[1],
 			];
 		}
 
@@ -643,12 +681,7 @@ final class Loop_Filter_Auth {
 			$decl = array_merge( $decl, $acf );
 		} else {
 			$decl['key'] = sanitize_text_field( (string) ( $s['meta_key'] ?? '' ) );
-			if ( isset( $s['min'] ) && is_numeric( $s['min'] ) ) {
-				$decl['min'] = (float) $s['min'];
-			}
-			if ( isset( $s['max'] ) && is_numeric( $s['max'] ) ) {
-				$decl['max'] = (float) $s['max'];
-			}
+			[ $decl['min'], $decl['max'] ] = self::authored_bounds( $s );
 			// One value per line, or an array of them. The panel's textarea
 			// gives a string; a preset JSON and the documented contract give an
 			// array. Casting a newline string with (array) would make the whole
@@ -656,7 +689,8 @@ final class Loop_Filter_Auth {
 			$choice_lines = $s['choices'] ?? [];
 			if ( is_string( $choice_lines ) ) {
 				$choice_lines = preg_split( '/
-||
+|
+|
 /', $choice_lines );
 			}
 
@@ -1163,7 +1197,7 @@ final class Loop_Filter_Auth {
 					break;
 
 				case 'woo':
-					$woo = Loop_Query_Woo::authorize_field( $d['field'], $value );
+					$woo = Loop_Query_Woo::authorize_field( $d['field'], $value, $d );
 					if ( null !== $woo ) {
 						$f['woo'][ $d['field'] ] = $woo['value'];
 						$f['active'][ $key ]     = $woo['active'];
