@@ -219,6 +219,14 @@ final class Bootstrap {
 		// fetches (merges remote + local presets; see Atomic\Presets\Cache).
 		// The "Presets" panel section itself is registered once, above.
 		( new \WCF_ADDONS\Atomic\Presets\Rest() )->register();
+
+		// The install door for a preset that needs a post type, an ACF field
+		// group or a plugin before its design can do anything. Free owns the
+		// door — nonce, capability, and the decision about what a given preset
+		// requires — and Pro owns what is behind it, so a site without Pro gets
+		// an honest "nothing can install this" instead of a 400 from an action
+		// nobody registered. See Presets\Requires.
+		( new \WCF_ADDONS\Atomic\Presets\Requires() )->register();
 	}
 
 	/**

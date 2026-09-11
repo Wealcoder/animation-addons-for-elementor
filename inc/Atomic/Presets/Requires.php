@@ -41,6 +41,104 @@ final class Requires {
 	/** The only keys a requires block may carry. */
 	public const KINDS = [ 'plugins', 'post_types', 'taxonomies', 'acf_groups' ];
 
+	/** admin-ajax action. Free owns the door; Pro owns what is behind it. */
+	public const ACTION = 'aae_preset_requires_install';
+
+	/**
+	 * Hook the install door.
+	 *
+	 * The ENDPOINT is free and the INSTALLER is Pro, which is the opposite of
+	 * where each half usually sits and is deliberate: the nonce, the capability
+	 * and — most importantly — the decision about WHAT a given preset requires
+	 * all live in one auditable place, and Pro is handed an already-validated
+	 * list with nothing left to re-check. It also means a site without Pro gets
+	 * an honest "nothing can install this" rather than a 400 from an action
+	 * nobody registered.
+	 */
+	public function register(): void {
+		add_action( 'wp_ajax_' . self::ACTION, [ $this, 'ajax_install' ] );
+	}
+
+	/**
+	 * Install what one preset needs.
+	 *
+	 * THE CLIENT NAMES A PRESET; THE SERVER DECIDES WHAT THAT PRESET REQUIRES.
+	 * The browser does not send the requirement list, and that is the whole
+	 * shape of this handler — the same rule the Loop Grid's filter authoriser
+	 * holds for a visitor's URL. A posted list would mean an admin's browser,
+	 * or anything that could reach it with a valid nonce, naming plugins to
+	 * install; re-resolving the preset server-side means the only installable
+	 * things are the ones a preset actually asked for.
+	 *
+	 * `install_plugins` is checked by Pro per plugin on top of this, because on
+	 * multisite `manage_options` is true for a site admin who may not install
+	 * anything.
+	 */
+	public function ajax_install(): void {
+		check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
+
+		// NOT edit_posts. The preset picker opens at edit_posts, and a
+		// contributor who could make this site install a plugin the remote
+		// preset server named would be remote code execution by proxy.
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( [ 'message' => __( 'You are not allowed to install anything.', 'animation-addons-for-elementor' ) ], 403 );
+		}
+
+		if ( ! self::installable() ) {
+			wp_send_json_error( [ 'message' => __( 'Nothing on this site can install a preset’s requirements.', 'animation-addons-for-elementor' ) ], 501 );
+		}
+
+		$type = isset( $_POST['element_type'] ) ? sanitize_text_field( wp_unslash( $_POST['element_type'] ) ) : '';
+		$id   = isset( $_POST['preset_id'] ) ? sanitize_text_field( wp_unslash( $_POST['preset_id'] ) ) : '';
+
+		if ( '' === $type || '' === $id ) {
+			wp_send_json_error( [ 'message' => __( 'Missing preset.', 'animation-addons-for-elementor' ) ], 400 );
+		}
+
+		$requires = self::requires_of( $type, $id );
+		if ( ! $requires ) {
+			wp_send_json_error( [ 'message' => __( 'That preset needs nothing, or no longer exists.', 'animation-addons-for-elementor' ) ], 404 );
+		}
+
+		/**
+		 * Install one preset's requirements. Pro answers this.
+		 *
+		 * @param array $results  Per-item outcome, keyed "<kind>:<slug>".
+		 * @param array $requires An ALREADY-NORMALISED requires block.
+		 */
+		$results = (array) apply_filters( 'aae/preset/requires/install', [], $requires );
+
+		// The status is re-read rather than inferred from $results: an install
+		// can report success and still leave the requirement unmet (a plugin
+		// that downloads but will not activate), and the panel must show what
+		// is TRUE now, not what was attempted.
+		wp_send_json_success(
+			[
+				'results' => $results,
+				'status'  => self::status( $requires ),
+			]
+		);
+	}
+
+	/**
+	 * The requires block of one preset, read from the server's own copy.
+	 *
+	 * @return array Normalised, or [] when the preset is unknown or needs nothing.
+	 */
+	private static function requires_of( string $element_type, string $preset_id ): array {
+		$cache  = new Cache();
+		$result = $cache->get_presets_for_type( $element_type, '', false );
+
+		foreach ( (array) ( $result['presets'] ?? [] ) as $entry ) {
+			if ( (string) ( $entry['id'] ?? '' ) !== $preset_id ) {
+				continue;
+			}
+			return self::normalize( $entry['requires'] ?? null );
+		}
+
+		return [];
+	}
+
 	/**
 	 * Per-kind caps. A preset that genuinely needs nine plugins is not a
 	 * preset, so these are generous enough never to bite an honest author and
@@ -149,6 +247,15 @@ final class Requires {
 					'slug' => $slug,
 					'name' => self::label( $item, $slug ),
 				];
+
+				// The builder needs a singular as well as a plural and warns
+				// without one, so it is carried rather than left to the
+				// installer to invent. Falling back to the plural is wrong
+				// English and right behaviour: a visible label a builder can
+				// correct beats a PHP notice on every admin page load.
+				$clean['singular'] = ! empty( $item['singular'] ) && is_string( $item['singular'] )
+					? sanitize_text_field( $item['singular'] )
+					: $clean['name'];
 
 				// The definition the CPT builder needs to create it. Carried
 				// verbatim minus its shape check — the builder is what decides
