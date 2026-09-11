@@ -3078,6 +3078,186 @@ widget or another preset.
 Suites after M3: seam **120**, frontend 25, widget 22, instant 25, editor 9,
 settings UI 9, readouts **80**, **forms 35**, **forms-editor 9**.
 
+## Loop Filters — the checkbox, the Date filter, and M5 (2026-09-11)
+
+Four more slices, after which the only outstanding item in the whole feature is
+publishing the presets to the remote server.
+
+| Piece | Where |
+|---|---|
+| Selection marker | **PRO** `Loop_Filter_Widget_Base::marker_props()` / `marker_control()` / `resolve_marker()` |
+| Date filter | **PRO** `class-aae-a-loop-filter-date.php` + twig |
+| Dynamic counts | **FREE** `AAE_A_Loop_Grid::facet_counts()`; **PRO** `count_mode` on Taxonomy + Author |
+| Filter drawer | **PRO** `class-aae-a-loop-filter-drawer.php` + twig + `enhanceDrawers()` in the runtime |
+
+### The checkbox is a MARKER, not a control
+
+The most-requested thing in the family, and the one easiest to build wrongly.
+Every option here is a LINK — that is what makes a filter work before any
+script loads and what makes a filtered page shareable — so an
+`<input type="checkbox">` beside it would be a control that submits nothing and
+does nothing without JavaScript. The box is a decorative span INSIDE the link,
+`aria-hidden`, and the link's own `aria-pressed` carries the state.
+
+`marker` is off by default so no existing page changes. The value to recommend
+is **`auto`**, because the shape is a promise about the next click that a
+builder should not have to think about: **a checkbox says picking a second
+option ADDS to the first, a radio says it REPLACES it**, and the widget already
+knows which it is. Additive: taxonomy, author, a choice-mode field. Exclusive:
+a price bracket, a sort, a date period.
+
+The tick and the dot are **drawn** (a rotated border, an inset circle), never
+typed. A text glyph inherits the option's font, so a theme with a display face
+hands the list a serif check mark at whatever size that face happens to be.
+
+**Found while wiring it: Match All was single-select.**
+`$multi = 'all' !== $match` meant that under AND a click REPLACED the selection,
+so two terms could never both be chosen and the AND mode was unreachable from
+the UI — an AND of one term is just that term. The comment beside it already
+said both modes take a list.
+
+### The Date filter — the widget the server was already waiting for
+
+`TYPE_DATE` has been in `FILTER_TYPES` since M1, with `declare_date()` and
+`date_clause()` behind it. Nothing ever rendered one, so the server would have
+honoured a date filter all along and no builder could reach it. Worth knowing as
+a shape: the registration checklist warns about a widget missing from a list;
+this was the far end of the same failure.
+
+Two controls, the same split as the Field filter. **Periods** ("Last 7 days",
+"This month") are links. The optional **custom range** is two
+`<input type="date">` sharing one `name="<key>[]"` — `join_separator()` already
+returned `..` for a date declaration, so it needed nothing new on the server.
+
+**A period's href carries ABSOLUTE dates, never a relative token.** The range is
+computed at render time, so `7d` in the URL would silently slide: a link shared
+today would mean a different week next week. The cost is that a full-page cache
+serves yesterday's "Last 7 days" until purged — inherent to a relative period,
+and the reason the URL is absolute rather than the reverse.
+
+`current_datetime()`, not `date()`. In UTC+6 "Today" returns yesterday for the
+first six hours of every day — a bug nobody reports because it fixes itself by
+lunchtime.
+
+### Dynamic counts — count against the OTHERS, never against yourself
+
+A term's own `count` is site-wide. "Footwear (12)" beside a result set of four
+is not a number anyone can act on. `AAE_A_Loop_Grid::facet_counts()` resolves
+the grid's scope with every filter applied EXCEPT this one, then counts over it
+in a single grouped query.
+
+**Excluding a filter's own key is the rule that looks like a bug until you know
+it.** Counting against itself drops every unselected option to zero the moment
+one is picked. Each option answers "what if I picked this INSTEAD", not "what is
+true now". Measured on the blog demo: unfiltered 4/5/3 by topic and 4/4/4 by
+author; with one author picked the topics become 3/1/0 while the author counts
+stay 4/4/4; with a date range on top, 1/1/0.
+
+**Opt-in, because it costs.** One id-list query plus one grouped count, per
+filter widget, per request. `MAX_FACET_SCOPE` is a hard ceiling above which it
+returns **NULL — no count at all** rather than an answer. Null means
+unanswerable, never zero, the same distinction the extension usage scan draws;
+a ceiling that silently fell back to the site-wide numbers would change what
+they MEAN halfway up a collection, which nobody would notice.
+
+An option absent from the facet map is a real 0 and renders as one, with
+`is-empty` on the row. It stays a LINK rather than being hidden or disabled:
+"Field Notes (0)" is a real answer to "what else is there", and removing the
+option leaves the visitor unable to see it exists.
+
+Authors are keyed by **nicename**, matching what the filter puts in the URL —
+ids are refused on both sides so the endpoint cannot become a user-enumeration
+oracle.
+
+### The drawer — OPEN is the no-script state
+
+On a desktop sidebar a filter set is a column; on a phone it is a wall between
+the visitor and the products. `e-aae-a-loop-filter-drawer` is a CONTAINER
+holding whatever filter set the builder designed.
+
+**The inversion is the whole design.** A drawer is a script-driven control: a
+panel that only opens on a click is a panel nobody can open if the handler never
+arrived, and hiding a page's only filters behind it would be the worst failure
+this family could ship. So the panel renders OPEN with the toggle hidden, and
+the runtime adds `is-enhanced`, which reveals the toggle and closes the panel.
+With no JavaScript the visitor gets the plain column they would have had without
+the drawer.
+
+**Above the breakpoint it stops being a drawer** — toggle gone, panel back in
+the flow. That is what makes one page a sidebar on desktop and a drawer on a
+phone, and it is why this exists rather than the generic Offcanvas widget (which
+a builder may still use, and which can do neither this nor the badge).
+`is-wide` is toggled by a **matchMedia in the runtime**, because a media query
+cannot read a custom property and the breakpoint is a per-widget setting.
+
+**The badge counts the APPLIED filters**, from the grid summary, not the URL: a
+key the authoriser refused is not a filter the visitor has, and counting it says
+"3 applied" over a grid filtered by two. After an instant filter the runtime
+re-derives the number from the URL it just applied — the drawer is a CONTAINER
+and is deliberately NOT in `RERENDER_TYPES`, because re-rendering it would
+replace the filter widgets inside it that the runtime has just replaced
+individually.
+
+A resize past the breakpoint while open unlocks `body` scroll; otherwise a page
+with no drawer on it stays frozen.
+
+### Testing it
+
+New suites, all with a JavaScript-disabled act:
+`verify-loop-filter-marker.mjs` (15), `verify-loop-filter-date.mjs` (16),
+`verify-loop-filter-counts.mjs` (13), `verify-loop-filter-drawer.mjs` (27).
+
+**Three Playwright traps, each of which reads as a product bug:**
+
+- **A fixed panel plus Playwright's auto-scroll.** "Scroll into view if needed"
+  scrolls the DOCUMENT, which moves the page under a `position: fixed` drawer
+  that stays put, so the click lands on whatever the hero scrolled to that
+  point. The interception message names the hero and looks exactly like a
+  stacking-context bug. It is not — `elementFromPoint` inside the panel's rect
+  returns the filter link. Dispatch a bubbling MouseEvent (the runtime's handler
+  is delegated from `document`, so it is the same path) and verify hit-testing
+  separately.
+- **Clicking a scrim at the origin hits the panel.** The panel covers the
+  leading edge; aim past its measured width.
+- **`page.goto` cannot navigate a relative href.** These links are built
+  relative; read `a.href`, not `getAttribute('href')`.
+
+#### A fixture the suite only BORROWED
+
+`verify-loop-grid-perf.php` read `aae-v4-widgets`, a large general fixture built
+for something else. Deleting that page silently took three assertions with it —
+the only guard on the slider page-count regression. It now has
+`make-loop-pagination-page.php`: nine posts, three per page, one Loop Grid and
+one Loop Grid Slider, which is the smallest thing that can hold the regression
+and cannot be lost to somebody tidying a page it borrowed. Back to 15/15.
+
+**The same staleness trap appeared in `make-loop-demo-pages.php`.** `demo_post()`
+updated an existing post's content but not its DATE, so re-anchoring the demo
+articles to today did nothing and every relative period answered zero — on a
+rebuild that had plainly just run. "The post exists" is not "the post is
+current", exactly as "the file exists" was not "the art is current". Note
+`wp_update_post` ignores `post_date` on a published post unless `edit_date` is
+also set, so the write fails silently without it.
+
+### Remote presets — prepared, NOT published
+
+The last M5 item, and the one that cannot be done from here: it is a write to
+crowdytheme.com's preset server. `E:\Local Testing\export-loop-filter-presets.php`
+produces the payload in the shape `Remote_Client::fetch_presets_for_type()`
+consumes (21 entries across 8 element types).
+
+**Read that file's header before uploading.** `Cache::drop_shadowed_remote()`
+de-duplicates local against remote BY SLUG OF THE NAME, and on an overlap the
+LOCAL file wins — so uploading while the bundled files are still on disk makes
+the upload invisible, and uploading under different names lists every design
+twice. `pro` is false on every exported entry because `Local_Fallback` hardcodes
+that for a bundled file; only a remote entry can carry its own flag, and that is
+the decision to make per preset on the server.
+
+Suite counts after this pass: seam **129**, frontend 25, widget 22, instant 25,
+editor 9, settings UI 9, readouts **82**, forms 35, forms-editor 9,
+**marker 15**, **date 16**, **counts 13**, **drawer 27**, grid-perf **15**.
+
 ## Caching computed artifacts — and why option VALUES are not one (2026-08-06)
 
 Asked directly: "what would we gain by file-caching the option values?" The
