@@ -48,24 +48,22 @@ final class Loop_Query_Woo {
 	/** Sort orderby values that only the lookup table can answer. */
 	public const SORT_KEYS = [ 'price', 'popularity', 'rating' ];
 
-	private const QV_PRICE = 'aae_woo_price';
-	private const QV_SORT  = 'aae_woo_sort';
-
-	private static bool $registered = false;
+	/**
+	 * The private query vars that carry a price range and a lookup-table sort
+	 * into posts_clauses. PUBLIC because the gate that decides whether to load
+	 * this class at all lives in Atomic::init_hooks(). That gate spells both
+	 * names as literals — reading a constant would mean loading this class on
+	 * every WP_Query on the site — so the two are a MIRROR: rename one and the
+	 * gate goes silently dead, the JOIN is never added and the visitor's price
+	 * range is simply ignored. verify-loop-filter-seam.php asserts they match.
+	 */
+	public const QV_PRICE = 'aae_woo_price';
+	public const QV_SORT  = 'aae_woo_sort';
 
 	public static function active(): bool {
 		return class_exists( 'WooCommerce' )
 			&& function_exists( 'wc_get_product_visibility_term_ids' )
 			&& taxonomy_exists( 'product_visibility' );
-	}
-
-	/** Hook the lookup-table clauses. Safe to call more than once. */
-	public static function register(): void {
-		if ( self::$registered ) {
-			return;
-		}
-		self::$registered = true;
-		add_filter( 'posts_clauses', [ self::class, 'posts_clauses' ], 10, 2 );
 	}
 
 	/** Is this args array a product query (string or array post_type)? */
@@ -159,10 +157,24 @@ final class Loop_Query_Woo {
 		$terms     = wc_get_product_visibility_term_ids();
 		$tax_query = [];
 
-		// --- visibility, always ---------------------------------------------
-		$not_in = [ ! empty( $args['s'] ) ? ( $terms['exclude-from-search'] ?? 0 ) : ( $terms['exclude-from-catalog'] ?? 0 ) ];
-		if ( 'yes' === get_option( 'woocommerce_hide_out_of_stock_items' ) && ! empty( $terms['outofstock'] ) ) {
-			$not_in[] = $terms['outofstock'];
+		// --- visibility, on every product query ------------------------------
+		// WC_Query only shapes the MAIN query, so without this a Loop Grid shows
+		// catalog-hidden and (where the store hides them) out-of-stock products
+		// that no other listing on the site would show.
+		//
+		// It is applied unconditionally, which does change what an existing grid
+		// renders — a strip deliberately pinning hidden products, say. The
+		// filter is the way back for that site; the default matches every other
+		// product listing WooCommerce draws.
+		//
+		// @param bool  $apply Whether to exclude hidden / out-of-stock products.
+		// @param array $args  The query args being built.
+		$not_in = [];
+		if ( (bool) apply_filters( 'aae/loop_grid/woo_visibility', true, $args ) ) {
+			$not_in = [ ! empty( $args['s'] ) ? ( $terms['exclude-from-search'] ?? 0 ) : ( $terms['exclude-from-catalog'] ?? 0 ) ];
+			if ( 'yes' === get_option( 'woocommerce_hide_out_of_stock_items' ) && ! empty( $terms['outofstock'] ) ) {
+				$not_in[] = $terms['outofstock'];
+			}
 		}
 		$not_in = array_values( array_filter( array_map( 'intval', $not_in ) ) );
 		if ( $not_in ) {

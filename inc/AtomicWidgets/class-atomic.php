@@ -4018,17 +4018,21 @@ final class Atomic
 		add_action('wp_ajax_aae_loop_grid_page', [$this, 'ajax_loop_grid_page']);
 		add_action('wp_ajax_nopriv_aae_loop_grid_page', [$this, 'ajax_loop_grid_page']);
 
-		// Loop Grid query-level hooks (title-only search, the WooCommerce
-		// lookup-table clauses). Both are no-ops unless a query carries one of
-		// the grid's private vars, so they are hooked here — cheaply, without
-		// loading the element class — and only load it when they fire.
-		add_filter('posts_search', function ($search, $query) {
-			if (! $query instanceof \WP_Query || ! $query->get('aae_title_only')) {
-				return $search;
-			}
-			self::load_loop_grid_class();
-			return \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::posts_search_title_only($search, $query);
-		}, 10, 2);
+		// Loop Grid query-level hooks: the WooCommerce lookup-table clauses.
+		// A no-op unless a query carries one of the grid's private vars, so it
+		// is hooked here — cheaply, without loading the element class — and only
+		// loads it when it fires. This is the ONLY registration site; the class
+		// deliberately has no register() of its own, because a second one is how
+		// posts_clauses ends up appending the same JOIN twice.
+		//
+		// Title-only search needs no hook at all: it rides WP's own
+		// `search_columns` query var. See merge_visitor_filters().
+		//
+		// The two var names are spelled here as LITERALS on purpose: reading
+		// Loop_Query_Woo::QV_PRICE would mean loading the element class on every
+		// WP_Query on the site just to ask a question that is almost always no.
+		// They mirror that class's public constants, verify-loop-filter-seam.php
+		// asserts the pair still matches, and the constants' own docblock says so.
 		add_filter('posts_clauses', function ($clauses, $query) {
 			if (! $query instanceof \WP_Query || (! $query->get('aae_woo_price') && ! $query->get('aae_woo_sort'))) {
 				return $clauses;
@@ -4632,6 +4636,11 @@ final class Atomic
 				'file' => 'Widgets/LoopGrid/class-aae-a-loop-item.php',
 				'has_script' => false,
 			],
+			// --- Loop Filters (M2) -------------------------------------
+			// The visitor-facing half. Classes ship FREE and are ALWAYS
+			// registered, because an element type nobody registers is deleted
+			// from every saved page on the next save; the paid behaviour is
+			// gated at runtime through Pro_Gate instead.
 			'aae-a-loop-layout' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Layout',
 				'file' => 'Widgets/LoopGrid/class-aae-a-loop-layout.php',
@@ -5751,6 +5760,7 @@ final class Atomic
 			wp_send_json_error(['message' => 'Access denied.'], 403);
 		}
 
+
 		// Multilingual context (WPML & Polylang): switch active language to match requesting post.
 		if ( function_exists( 'do_action' ) ) {
 			do_action( 'wpml_switch_language_for_post', $post_id );
@@ -5825,9 +5835,32 @@ final class Atomic
 		self::load_loop_grid_class();
 		$gs = (array) ($grid_el['settings'] ?? []);
 
-		// Related source: the requesting page's post is the relatedness anchor
-		// (admin-ajax has no queried object of its own).
-		$gs['_context_post_id'] = $post_id;
+		// The page this request is FOR, as `path?query` — the URL the visitor's
+		// address bar is about to show. Read here rather than at the top of the
+		// handler because it is the first line that may touch Loop_Filter_Auth,
+		// and load_loop_grid_class() immediately above is what puts that class
+		// on disk-to-memory.
+		//
+		// With it the response is, by construction, what a full page load of
+		// that URL would have rendered: the page number and the filter state are
+		// read back out of it by the very code the first render uses, and the
+		// filter widgets re-rendered below build their links against it instead
+		// of against admin-ajax.php. That is what lets the filter runtime be a
+		// pure "same render, no reload" upgrade with no second copy of any rule.
+		//
+		// Without it the handler behaves exactly as it always has, which is what
+		// keeps the existing pagination runtime working untouched.
+		$path = isset($_POST['path']) ? (string) wp_unslash($_POST['path']) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- set_request_url() is the validator: same-host only, capped, no traversal.
+		if ('' !== $path && ! \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\Loop_Filter_Auth::set_request_url($path)) {
+			wp_send_json_error(['message' => 'Invalid path.'], 400);
+		}
+
+		// Related source: the anchor is the post the visitor is READING, which
+		// is not $post_id once the grid lives in a theme-builder template —
+		// there $post_id is the template document, the one whose saved data
+		// declares this grid. The runtime posts the viewed post separately.
+		$context_id             = isset($_POST['context_id']) ? absint($_POST['context_id']) : 0;
+		$gs['_context_post_id'] = $context_id ?: $post_id;
 
 		// Current Query source: the archive's query vars, captured into the
 		// pagination config at render time and posted back by the runtime.
@@ -5844,20 +5877,44 @@ final class Atomic
 		// dropped — and handed to the builder as its own argument, never inside
 		// the settings blob. Oversized / malformed is a 400, not a guess.
 		$filters = [];
-		if (isset($_POST['filters'])) {
+		if ('' !== $path) {
+			// URL mode: the filter state is IN the path, so it is read with the
+			// same request parser the first render uses. No second shape, and
+			// nothing for the browser to get wrong about which keys are filter
+			// keys — request_args() is already unslashed, hence `false`.
+			\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\Loop_Filter_Auth::prime_document($post_id, $data);
+			$request_args = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\Loop_Filter_Auth::request_args();
+
+			$filters = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\Loop_Filter_Auth::current(
+				$post_id,
+				$grid_id,
+				\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::effective_post_type($gs),
+				$request_args,
+				false
+			);
+
+			// The page number comes from the same place, so a filter link (which
+			// strips it) lands on page 1 without the runtime having to say so.
+			$paged = isset($request_args['aae_page']) ? max(1, absint($request_args['aae_page'])) : 1;
+		} elseif (isset($_POST['filters'])) {
 			$raw = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\Loop_Filter_Auth::decode_payload(wp_unslash($_POST['filters'])); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- decoded + capped, then every value is authorised
 			if (null === $raw) {
 				wp_send_json_error(['message' => 'Invalid filters payload.'], 400);
 			}
-			$decls = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\Loop_Filter_Auth::declarations($data, $grid_id);
-			if ($decls) {
-				$grid_type = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::unwrap($gs['post_type'] ?? 'post');
-				$filters   = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\Loop_Filter_Auth::authorize(
-					$decls,
-					\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\Loop_Filter_Auth::raw_from_request($decls, $raw),
-					is_string($grid_type) ? $grid_type : 'post'
-				);
-			}
+			// current() is the one authorisation pipeline the first render also
+			// uses, so page 2 can never be authorised on different terms than
+			// page 1. The tree is handed over rather than re-read: this handler
+			// already decoded it above. `false` says the payload was unslashed
+			// once already, at decode_payload() — unslashing it twice ate real
+			// backslashes and made page 2 a different result set.
+			\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\Loop_Filter_Auth::prime_document($post_id, $data);
+			$filters = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\Loop_Filter_Auth::current(
+				$post_id,
+				$grid_id,
+				\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::effective_post_type($gs),
+				$raw,
+				false
+			);
 		}
 
 		$query_args = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::build_query_args(
@@ -5887,13 +5944,110 @@ final class Atomic
 			\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::class
 		);
 
+		// The filter widgets, re-rendered for the same URL.
+		//
+		// Asked for explicitly, so the pagination runtime — which changes the
+		// page and never the filter state — pays nothing for it. The widgets are
+		// rendered rather than patched in the browser because everything they
+		// draw (which terms read as selected, where each link points NEXT, the
+		// Clear link) follows from rules that already exist once, in PHP.
+		// Recomputing them in JS would be a second copy that can disagree with
+		// the page a reload would produce.
+		$filters_html = [];
+		if (! empty($_POST['with_filters'])) {
+			$filters_html = $this->render_loop_filters($post_id, $grid_id, $data);
+		}
+
 		wp_send_json_success([
-			'html'      => $html,
-			'paged'     => $paged,
-			'max_pages' => $max_pages,
-			'total'     => $total,
-			'filters'   => (object) ($filters['active'] ?? []),
+			'html'         => $html,
+			'paged'        => $paged,
+			'max_pages'    => $max_pages,
+			'total'        => $total,
+			'filters'      => (object) ($filters['active'] ?? []),
+			'filters_html' => (object) $filters_html,
 		]);
+	}
+
+	/**
+	 * Every filter widget that targets $grid_id, rendered fresh, keyed by its
+	 * element id.
+	 *
+	 * The list comes from `Loop_Filter_Auth::declarations_for_document()` — the
+	 * same walk that decides which filters this page is even allowed to honour —
+	 * so a widget that is not authorised to filter this grid is also never sent
+	 * back for it.
+	 *
+	 * The document is switched to for the duration: a filter widget asks
+	 * `AAE_A_Loop_Grid::current_document_id()` which document declares it, and
+	 * in an admin-ajax request there is no current document and no global post,
+	 * so without this every widget would resolve nothing and render an empty
+	 * list. `switch_to_document()` only swaps Elementor's own pointer — it
+	 * touches no post globals, so it cannot disturb anything around it.
+	 *
+	 * @param int    $post_id  The document whose saved data declares the filters.
+	 * @param string $grid_id  The Loop Grid element id they target.
+	 * @param array  $elements That document's already-decoded element tree.
+	 * @return array<string, string> element id => HTML.
+	 */
+	private function render_loop_filters(int $post_id, string $grid_id, array $elements): array {
+		$decls = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\Loop_Filter_Auth::declarations_for_document($post_id, $grid_id);
+		if (! $decls) {
+			return [];
+		}
+
+		$wanted = [];
+		foreach ($decls as $decl) {
+			$id = (string) ($decl['element_id'] ?? '');
+			if ('' !== $id) {
+				$wanted[$id] = true;
+			}
+		}
+		if (! $wanted) {
+			return [];
+		}
+
+		$found = [];
+		$walk  = function ($els) use (&$walk, &$found, $wanted) {
+			foreach ((array) $els as $el) {
+				if (! is_array($el)) {
+					continue;
+				}
+				$id = (string) ($el['id'] ?? '');
+				if ('' !== $id && isset($wanted[$id])) {
+					$found[$id] = $el;
+				}
+				if (! empty($el['elements'])) {
+					$walk($el['elements']);
+				}
+			}
+		};
+		$walk($elements);
+
+		if (! $found) {
+			return [];
+		}
+
+		$doc = \Elementor\Plugin::$instance->documents->get($post_id);
+		if ($doc) {
+			\Elementor\Plugin::$instance->documents->switch_to_document($doc);
+		}
+
+		$out = [];
+		foreach ($found as $id => $el) {
+			$obj = \Elementor\Plugin::$instance->elements_manager->create_element_instance($el);
+			if (! $obj) {
+				continue;
+			}
+			ob_start();
+			$obj->print_element();
+			$out[$id] = ob_get_clean();
+		}
+
+		if ($doc) {
+			\Elementor\Plugin::$instance->documents->restore_document();
+		}
+
+		return $out;
 	}
 
 	/**

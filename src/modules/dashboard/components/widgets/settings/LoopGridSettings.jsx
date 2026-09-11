@@ -25,17 +25,31 @@ import {
 import { toast } from "sonner";
 import { RefreshCw, Check } from "lucide-react";
 
+// Every per-filter key the "custom" mode can override. One table, so the schema,
+// the defaults, the reset fallbacks and the rendered fields cannot drift apart.
+// `fallback` is the placeholder only: the stored value stays EMPTY unless the
+// user types something, because a pre-filled key would always win over the
+// Prefix field below it and the prefix would silently do nothing.
+const CUSTOM_KEYS = [
+  { name: "custom_price", label: __("Price Key", "animation-addons-for-elementor"), fallback: "price" },
+  { name: "custom_rating", label: __("Rating Key", "animation-addons-for-elementor"), fallback: "rating" },
+  { name: "custom_stock", label: __("Stock Key", "animation-addons-for-elementor"), fallback: "stock" },
+  { name: "custom_onsale", label: __("On Sale Key", "animation-addons-for-elementor"), fallback: "onsale" },
+  { name: "custom_featured", label: __("Featured Key", "animation-addons-for-elementor"), fallback: "featured" },
+  { name: "custom_sort", label: __("Sort Key", "animation-addons-for-elementor"), fallback: "sort" },
+  { name: "custom_search", label: __("Search Key", "animation-addons-for-elementor"), fallback: "search" },
+  { name: "custom_author", label: __("Author Key", "animation-addons-for-elementor"), fallback: "author" },
+  { name: "custom_date", label: __("Date Key", "animation-addons-for-elementor"), fallback: "date" },
+];
+
+const emptyCustomKeys = () =>
+  Object.fromEntries(CUSTOM_KEYS.map((k) => [k.name, ""]));
+
 // Schema
 const FormSchema = z.object({
   param_mode: z.enum(["clean", "prefixed", "custom"]),
   custom_prefix: z.string().optional(),
-  custom_price: z.string().optional(),
-  custom_rating: z.string().optional(),
-  custom_stock: z.string().optional(),
-  custom_search: z.string().optional(),
-  custom_sort: z.string().optional(),
-  custom_author: z.string().optional(),
-  custom_date: z.string().optional(),
+  ...Object.fromEntries(CUSTOM_KEYS.map((k) => [k.name, z.string().optional()])),
 });
 
 const LoopGridSettings = () => {
@@ -48,13 +62,7 @@ const LoopGridSettings = () => {
     defaultValues: {
       param_mode: "clean",
       custom_prefix: "",
-      custom_price: "price",
-      custom_rating: "rating",
-      custom_stock: "stock",
-      custom_search: "search",
-      custom_sort: "sort",
-      custom_author: "author",
-      custom_date: "date",
+      ...emptyCustomKeys(),
     },
   });
 
@@ -81,13 +89,7 @@ const LoopGridSettings = () => {
         reset({
           param_mode: s.param_mode || "clean",
           custom_prefix: s.custom_prefix || "",
-          custom_price: s.custom_price || "price",
-          custom_rating: s.custom_rating || "rating",
-          custom_stock: s.custom_stock || "stock",
-          custom_search: s.custom_search || "search",
-          custom_sort: s.custom_sort || "sort",
-          custom_author: s.custom_author || "author",
-          custom_date: s.custom_date || "date",
+          ...Object.fromEntries(CUSTOM_KEYS.map((k) => [k.name, s[k.name] || ""])),
         });
       }
     } catch (err) {
@@ -116,13 +118,13 @@ const LoopGridSettings = () => {
       const data = await res.json();
       if (data.success) {
         toast.success(
-          data.data?.message || __("Taxonomy cache flushed successfully.", "animation-addons-for-elementor")
+          data.data?.message || __("Done.", "animation-addons-for-elementor")
         );
       } else {
-        toast.error(__("Failed to flush taxonomy cache.", "animation-addons-for-elementor"));
+        toast.error(data.data?.message || __("Could not update the remembered taxonomies.", "animation-addons-for-elementor"));
       }
     } catch (e) {
-      toast.error(__("Network error while flushing cache.", "animation-addons-for-elementor"));
+      toast.error(__("Network error.", "animation-addons-for-elementor"));
     } finally {
       setIsFlushing(false);
     }
@@ -164,7 +166,7 @@ const LoopGridSettings = () => {
         </h2>
         <p className="text-sm text-text-secondary mt-1">
           {__(
-            "Customize URL filter parameters and manage taxonomy cache for Loop Grid.",
+            "Choose how filter parameters look in visitor URLs, and manage the taxonomies the Loop Grid remembers.",
             "animation-addons-for-elementor"
           )}
         </p>
@@ -192,10 +194,10 @@ const LoopGridSettings = () => {
                     </FormControl>
                     <SelectContent>
                       <SelectItem value="clean">
-                        {__("Clean / Human-Friendly (e.g. ?price=10-50&rating=4)", "animation-addons-for-elementor")}
+                        {__("Clean / Human-Friendly (e.g. ?price=10..50&rating=4)", "animation-addons-for-elementor")}
                       </SelectItem>
                       <SelectItem value="prefixed">
-                        {__("Plugin Prefixed (e.g. ?aae_price=10-50&aae_rating=4)", "animation-addons-for-elementor")}
+                        {__("Plugin Prefixed (e.g. ?aae_price=10..50&aae_rating=4)", "animation-addons-for-elementor")}
                       </SelectItem>
                       <SelectItem value="custom">
                         {__("Custom Parameter Keys", "animation-addons-for-elementor")}
@@ -205,7 +207,7 @@ const LoopGridSettings = () => {
                   <FormDescription className="text-xs text-text-secondary">
                     {field.value === "clean" &&
                       __(
-                        "Removes plugin prefixes from visitor URLs. Shared links with legacy 'aae_' keys are automatically supported for backwards compatibility.",
+                        "Removes plugin prefixes from visitor URLs. A name WordPress already uses — author, search, or a taxonomy that owns its own query string — keeps its aae_ prefix, because borrowing one makes the page itself 404. Older links using the aae_ keys keep working either way.",
                         "animation-addons-for-elementor"
                       )}
                     {field.value === "prefixed" &&
@@ -230,6 +232,12 @@ const LoopGridSettings = () => {
                 <h4 className="text-sm font-semibold text-text">
                   {__("Custom URL Keys", "animation-addons-for-elementor")}
                 </h4>
+                <p className="text-xs text-text-secondary">
+                  {__(
+                    "Leave a key blank to use the prefix with its normal name. Type a key and it is used as-is, prefix and all, for that filter only.",
+                    "animation-addons-for-elementor"
+                  )}
+                </p>
 
                 <div className="grid grid-cols-2 gap-3">
                   <FormField
@@ -241,116 +249,27 @@ const LoopGridSettings = () => {
                           {__("Prefix (optional)", "animation-addons-for-elementor")}
                         </FormLabel>
                         <FormControl>
-                          <Input placeholder="e.g. f_ or empty" {...field} />
+                          <Input placeholder="e.g. f" {...field} />
                         </FormControl>
                       </FormItem>
                     )}
                   />
 
-                  <FormField
-                    control={form.control}
-                    name="custom_price"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-xs text-text">
-                          {__("Price Key", "animation-addons-for-elementor")}
-                        </FormLabel>
-                        <FormControl>
-                          <Input placeholder="price" {...field} />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="custom_rating"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-xs text-text">
-                          {__("Rating Key", "animation-addons-for-elementor")}
-                        </FormLabel>
-                        <FormControl>
-                          <Input placeholder="rating" {...field} />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="custom_stock"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-xs text-text">
-                          {__("Stock Key", "animation-addons-for-elementor")}
-                        </FormLabel>
-                        <FormControl>
-                          <Input placeholder="stock" {...field} />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="custom_sort"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-xs text-text">
-                          {__("Sort Key", "animation-addons-for-elementor")}
-                        </FormLabel>
-                        <FormControl>
-                          <Input placeholder="sort" {...field} />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="custom_search"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-xs text-text">
-                          {__("Search Key", "animation-addons-for-elementor")}
-                        </FormLabel>
-                        <FormControl>
-                          <Input placeholder="search" {...field} />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="custom_author"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-xs text-text">
-                          {__("Author Key", "animation-addons-for-elementor")}
-                        </FormLabel>
-                        <FormControl>
-                          <Input placeholder="author" {...field} />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="custom_date"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-xs text-text">
-                          {__("Date Key", "animation-addons-for-elementor")}
-                        </FormLabel>
-                        <FormControl>
-                          <Input placeholder="date" {...field} />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
+                  {CUSTOM_KEYS.map((k) => (
+                    <FormField
+                      key={k.name}
+                      control={form.control}
+                      name={k.name}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-xs text-text">{k.label}</FormLabel>
+                          <FormControl>
+                            <Input placeholder={k.fallback} {...field} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  ))}
                 </div>
               </div>
             )}
@@ -360,11 +279,11 @@ const LoopGridSettings = () => {
               <div className="flex items-center justify-between p-3.5 bg-background-secondary rounded-lg border border-[#E2E8F0]">
                 <div>
                   <h4 className="text-sm font-medium text-text">
-                    {__("Taxonomy Cache", "animation-addons-for-elementor")}
+                    {__("Remembered Taxonomies", "animation-addons-for-elementor")}
                   </h4>
                   <p className="text-xs text-text-secondary mt-0.5">
                     {__(
-                      "Flush cached public taxonomies when new CPTs or taxonomies are registered.",
+                      "Taxonomies whose plugin is switched off are remembered so pages keep their saved filters. Forget the ones no page uses any more. Newly registered taxonomies appear on their own and need no action here.",
                       "animation-addons-for-elementor"
                     )}
                   </p>
@@ -379,8 +298,8 @@ const LoopGridSettings = () => {
                 >
                   <RefreshCw className={`w-3.5 h-3.5 ${isFlushing ? "animate-spin" : ""}`} />
                   {isFlushing
-                    ? __("Flushing...", "animation-addons-for-elementor")
-                    : __("Flush Cache", "animation-addons-for-elementor")}
+                    ? __("Checking...", "animation-addons-for-elementor")
+                    : __("Forget Unused", "animation-addons-for-elementor")}
                 </Button>
               </div>
             </div>

@@ -93,6 +93,32 @@ class AAE_A_Loop_Layout extends Atomic_Element_Base {
 		];
 	}
 
-	// No custom template context: the column layout is flexbox-driven (the Loop
-	// Item's base style `flex: 1 1 32%`), so there is no columns CSS var to pass.
+	/**
+	 * The grid's identity, on the element whose contents actually get replaced.
+	 *
+	 * The Pagination child carries the same block, but a grid does not have to
+	 * have one — a six-item portfolio with a category filter and no second page
+	 * is an ordinary shape, and until this existed nothing in the DOM said which
+	 * grid that was, so a filter had no way to ask for it. Built by
+	 * `AAE_A_Loop_Grid::endpoint_config()`, the one builder both use.
+	 *
+	 * Editor canvas only ever gets an empty attribute: there is no render
+	 * context there, so `grid` would be '' and a runtime keying on it would bind
+	 * to a grid that does not exist.
+	 */
+	protected function build_template_context(): array {
+		$ctx = Render_Context::get( AAE_A_Loop_Grid::class );
+
+		$config = '';
+		if ( is_array( $ctx ) && ! empty( $ctx['grid_id'] ) && class_exists( AAE_A_Loop_Grid::class ) ) {
+			$config = (string) wp_json_encode( AAE_A_Loop_Grid::endpoint_config( $ctx ) );
+		}
+
+		return array_merge( $this->build_base_template_context(), [
+			'grid_config' => $config,
+		] );
+	}
+
+	// The column layout itself is flexbox-driven (the Loop Item's base style
+	// `flex: 1 1 32%`), so there is no columns CSS var to pass.
 }
