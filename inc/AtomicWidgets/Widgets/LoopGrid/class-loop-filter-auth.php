@@ -72,6 +72,87 @@ final class Loop_Filter_Auth {
 		self::TYPE_SORT,
 	];
 
+	/**
+	 * Widgets that READ the filter state instead of contributing to it.
+	 *
+	 * They declare nothing, so they are deliberately absent from FILTER_TYPES —
+	 * the authoriser must never read a value for a widget that offers no
+	 * choices. But they still describe the filtered result set, so a filter
+	 * change makes them stale exactly as a filter widget goes stale, and the
+	 * AJAX response has to send them back too.
+	 */
+	public const TYPE_RESULT_COUNT   = 'e-aae-a-loop-result-count';
+	public const TYPE_ACTIVE_FILTERS = 'e-aae-a-loop-active-filters';
+
+	public const READOUT_TYPES = [
+		self::TYPE_RESULT_COUNT,
+		self::TYPE_ACTIVE_FILTERS,
+	];
+
+	/**
+	 * Everything a filter change invalidates: the controls AND the readouts.
+	 *
+	 * One list, because "which elements does the endpoint re-render" has one
+	 * answer and two callers — free's AJAX handler and Pro's decision about
+	 * whether a page gets the instant runtime at all.
+	 */
+	public const RERENDER_TYPES = [
+		self::TYPE_TAX,
+		self::TYPE_META,
+		self::TYPE_SEARCH,
+		self::TYPE_AUTHOR,
+		self::TYPE_DATE,
+		self::TYPE_SORT,
+		self::TYPE_RESULT_COUNT,
+		self::TYPE_ACTIVE_FILTERS,
+	];
+
+	/**
+	 * The ids of every element in $elements that this grid's filter change
+	 * invalidates — the declared filter widgets plus the readouts pointed at it.
+	 *
+	 * A readout has no declaration (it offers no choices), so it cannot be found
+	 * the way a filter widget is. It is matched here the same way `declarations()`
+	 * matches a filter's target: an explicit `target_grid`, or an empty one
+	 * meaning "the grid on this page".
+	 *
+	 * @param array  $elements Saved element tree.
+	 * @param string $grid_id  The Loop Grid element id.
+	 * @return array<string, true> element id => true
+	 */
+	public static function rerender_ids( array $elements, string $grid_id ): array {
+		$ids = [];
+		foreach ( self::declarations( $elements, $grid_id ) as $decl ) {
+			$id = (string) ( $decl['element_id'] ?? '' );
+			if ( '' !== $id ) {
+				$ids[ $id ] = true;
+			}
+		}
+
+		$walk = static function ( $els ) use ( &$walk, &$ids, $grid_id ) {
+			foreach ( (array) $els as $el ) {
+				if ( ! is_array( $el ) ) {
+					continue;
+				}
+				$type = (string) ( $el['widgetType'] ?? ( $el['elType'] ?? '' ) );
+				if ( in_array( $type, self::READOUT_TYPES, true ) ) {
+					$s      = AAE_A_Loop_Grid::unwrap( (array) ( $el['settings'] ?? [] ) );
+					$target = trim( (string) ( $s['target_grid'] ?? '' ) );
+					$id     = (string) ( $el['id'] ?? '' );
+					if ( '' !== $id && ( '' === $target || $target === $grid_id ) ) {
+						$ids[ $id ] = true;
+					}
+				}
+				if ( ! empty( $el['elements'] ) ) {
+					$walk( $el['elements'] );
+				}
+			}
+		};
+		$walk( $elements );
+
+		return $ids;
+	}
+
 	/** Rule 6 — hard caps on what a visitor may send. */
 	public const MAX_PAYLOAD_BYTES = 4096;
 	public const MAX_KEYS          = 20;
@@ -86,6 +167,34 @@ final class Loop_Filter_Auth {
 		'char'     => 'CHAR',
 		'date'     => 'DATE',
 		'datetime' => 'DATETIME',
+	];
+
+	/**
+	 * The sort options a Sort widget can offer by NAME instead of by writing the
+	 * orderby out itself.
+	 *
+	 * It lives here, beside the whitelist it draws from, because "which sorts
+	 * exist" is an authorisation question before it is a panel question — a key
+	 * the visitor sends has to mean the same thing on the server as it did in
+	 * the builder's switch. The `options` JSON contract is still read and still
+	 * wins, for the sorts nobody can enumerate in advance (a meta key).
+	 *
+	 * price / popularity / rating are `Loop_Query_Woo::SORT_KEYS`, refused by
+	 * resolve_sort() unless WooCommerce is running AND the grid queries products
+	 * — so offering them on a blog grid costs nothing but an option that never
+	 * resolves.
+	 */
+	public const SORT_CATALOGUE = [
+		'newest'     => [ 'orderby' => 'date', 'order' => 'DESC' ],
+		'oldest'     => [ 'orderby' => 'date', 'order' => 'ASC' ],
+		'title_asc'  => [ 'orderby' => 'title', 'order' => 'ASC' ],
+		'title_desc' => [ 'orderby' => 'title', 'order' => 'DESC' ],
+		'commented'  => [ 'orderby' => 'comment_count', 'order' => 'DESC' ],
+		'menu_order' => [ 'orderby' => 'menu_order', 'order' => 'ASC' ],
+		'price_asc'  => [ 'orderby' => 'price', 'order' => 'ASC' ],
+		'price_desc' => [ 'orderby' => 'price', 'order' => 'DESC' ],
+		'popularity' => [ 'orderby' => 'popularity', 'order' => 'DESC' ],
+		'rating'     => [ 'orderby' => 'rating', 'order' => 'DESC' ],
 	];
 
 	/** Rule 4 — orderby values a Sort option may name. `rand` is deliberately absent. */
@@ -229,6 +338,10 @@ final class Loop_Filter_Auth {
 		self::$elements    = [];
 		self::$settings    = null;
 		self::$request_url = '';
+		// Same per-request family: a summary was computed FROM these
+		// declarations, so keeping it after they are dropped is how a test
+		// asserts against the state it thought it had cleared.
+		AAE_A_Loop_Grid::reset_summaries();
 	}
 
 	/* ------------------------------------------------------------------ */
@@ -335,6 +448,22 @@ final class Loop_Filter_Auth {
 	 * cannot be resolved must vanish rather than degrade into something wider.
 	 */
 	private static function declare( string $type, array $s, string $element_id ): ?array {
+		$decl = self::declare_type( $type, $s, $element_id );
+		if ( null === $decl ) {
+			return null;
+		}
+
+		// The builder's own heading for this filter, carried so a readout can
+		// say "Category: Hoodies" instead of "product_cat: hoodies". Display
+		// text only — nothing in the authorisation path reads it, and a label
+		// can never widen what a filter allows.
+		$decl['label'] = sanitize_text_field( (string) ( $s['title'] ?? '' ) );
+
+		return $decl;
+	}
+
+	/** The per-type half of declare(). @see declare() */
+	private static function declare_type( string $type, array $s, string $element_id ): ?array {
 		switch ( $type ) {
 			case self::TYPE_TAX:
 				$taxonomy = sanitize_key( (string) ( $s['taxonomy'] ?? '' ) );
@@ -403,12 +532,35 @@ final class Loop_Filter_Auth {
 						continue;
 					}
 					$options[ $key ] = [
+						// Carried only so a readout can NAME the active sort.
+						// Nothing in the authorisation path reads it — an option
+						// is chosen by key, and the label is display text the
+						// builder typed.
+						'label'      => sanitize_text_field( (string) ( $o['label'] ?? '' ) ),
 						'orderby'    => (string) ( $o['orderby'] ?? 'date' ),
 						'order'      => 'asc' === strtolower( (string) ( $o['order'] ?? 'desc' ) ) ? 'ASC' : 'DESC',
 						'meta_key'   => $meta_key,
 						'value_type' => (string) ( $o['value_type'] ?? 'char' ),
 					];
 				}
+				// The catalogue half of the contract: `sort_<key> => true` plus an
+				// optional `label_<key>`. An explicit JSON option of the same key
+				// wins — it is the more specific statement, and silently
+				// overwriting it with the generic one is how a builder's custom
+				// meta sort turns back into "Newest" without a word.
+				foreach ( self::SORT_CATALOGUE as $cat_key => $spec ) {
+					if ( empty( $s[ 'sort_' . $cat_key ] ) || isset( $options[ $cat_key ] ) ) {
+						continue;
+					}
+					$options[ $cat_key ] = [
+						'label'      => sanitize_text_field( (string) ( $s[ 'label_' . $cat_key ] ?? '' ) ),
+						'orderby'    => $spec['orderby'],
+						'order'      => $spec['order'],
+						'meta_key'   => '',
+						'value_type' => 'char',
+					];
+				}
+
 				if ( ! $options ) {
 					return null;
 				}
@@ -456,6 +608,7 @@ final class Loop_Filter_Auth {
 			'min'            => null,
 			'max'            => null,
 			'choices'        => [],
+			'choice_labels'  => [],
 			'multi_stored'   => ! empty( $s['multi_stored'] ),
 			'toggle_compare' => (string) ( $s['toggle_compare'] ?? 'exists' ),
 			'toggle_value'   => (string) ( $s['toggle_value'] ?? '1' ),
@@ -475,13 +628,32 @@ final class Loop_Filter_Auth {
 			if ( isset( $s['max'] ) && is_numeric( $s['max'] ) ) {
 				$decl['max'] = (float) $s['max'];
 			}
-			foreach ( (array) ( $s['choices'] ?? [] ) as $line ) {
+			// One value per line, or an array of them. The panel's textarea
+			// gives a string; a preset JSON and the documented contract give an
+			// array. Casting a newline string with (array) would make the whole
+			// block ONE choice, which matches nothing and says nothing.
+			$choice_lines = $s['choices'] ?? [];
+			if ( is_string( $choice_lines ) ) {
+				$choice_lines = preg_split( '/
+||
+/', $choice_lines );
+			}
+
+			foreach ( (array) $choice_lines as $line ) {
 				if ( ! is_string( $line ) ) {
 					continue;
 				}
 				$value = trim( (string) strtok( $line, '|' ) );
-				if ( '' !== $value ) {
-					$decl['choices'][] = $value;
+				if ( '' === $value ) {
+					continue;
+				}
+				$decl['choices'][] = $value;
+				// "value|Label" — the label half, kept for the readouts only.
+				// Authorisation still matches on the VALUE; a label can never
+				// widen what is allowed.
+				$label = trim( (string) substr( (string) $line, strlen( $value ) + 1 ) );
+				if ( '' !== $label ) {
+					$decl['choice_labels'][ $value ] = sanitize_text_field( $label );
 				}
 			}
 		}

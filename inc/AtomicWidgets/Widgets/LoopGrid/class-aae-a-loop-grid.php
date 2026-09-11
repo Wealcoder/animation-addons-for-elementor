@@ -79,6 +79,15 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 	 */
 	public const KNOWN_TAXONOMIES_OPTION = 'aae_loop_grid_known_taxonomies';
 
+	/**
+	 * The element types that ARE a loop grid.
+	 *
+	 * The slider extends this class and carries its own type, so anything
+	 * looking for "the grid on this page" has to accept both — matching the
+	 * plain one alone is how a slider silently reports no grid at all.
+	 */
+	public const GRID_TYPES = [ 'e-aae-a-loop-grid', 'e-aae-a-loop-grid-slider' ];
+
 	/** Per-request memo for get_query_taxonomies(). */
 	private static ?array $taxonomy_memo = null;
 
@@ -706,9 +715,33 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 		// for the Result Count widget, and the first paint must match it.
 		$total     = null;
 		$max_pages = 1;
-		if ( ! $is_editor && ( $filters || $this->has_pagination_child() ) ) {
+		$primed = $is_editor ? null : self::peek_summary( $document_id, $this->get_id() );
+		if ( $primed ) {
+			// A readout ABOVE the grid has already asked, and it computed from
+			// these same saved settings through this same builder. Re-counting
+			// would only risk the two disagreeing.
+			$total     = (int) $primed['total'];
+			$max_pages = (int) $primed['max_pages'];
+		} elseif ( ! $is_editor && ( $filters || $this->has_pagination_child() || $this->has_readout_sibling( $document_id ) ) ) {
 			$total     = self::count_total( (array) $this->get_data( 'settings' ), $query_args );
 			$max_pages = self::pages_for_total( $total, $query_args );
+
+			// A Result Count sitting BELOW the grid then costs nothing — and one
+			// sitting above has already primed this, so the two always show the
+			// same number.
+			self::prime_summary(
+				$document_id,
+				$this->get_id(),
+				[
+					'grid_id'   => $this->get_id(),
+					'post_type' => $post_type,
+					'filters'   => $filters['active'] ?? [],
+					'total'     => $total,
+					'max_pages' => $max_pages,
+					'paged'     => $paged,
+					'per_page'  => max( 1, (int) ( $query_args['posts_per_page'] ?? 6 ) ),
+				]
+			);
 		}
 
 		return [
@@ -780,6 +813,266 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 			'nonce'     => wp_create_nonce( 'aae_loop_grid_front' ),
 			'ajaxUrl'   => admin_url( 'admin-ajax.php' ),
 		];
+	}
+
+	/* ------------------------------------------------------------------ */
+	/* What a SIBLING widget can learn about a grid                        */
+	/* ------------------------------------------------------------------ */
+
+	/**
+	 * Per-request summary cache: "<document id>|<grid id>" => summary.
+	 *
+	 * @var array<string, array>
+	 */
+	private static array $summaries = [];
+
+	/**
+	 * What a widget standing OUTSIDE the grid can know about it — the filtered
+	 * total, the page count, and which filters are active.
+	 *
+	 * The Render_Context stack cannot answer this: it reaches DESCENDANTS only,
+	 * and a Result Count or an Active Filters bar is a sibling — usually ABOVE
+	 * the grid, so it renders before the grid has computed anything at all.
+	 *
+	 * Both paths therefore go through one memo. The grid primes it from
+	 * define_render_context() with the numbers it already paid for, and a
+	 * sibling that asks first computes them from the SAME saved settings
+	 * through the SAME builder, so whichever runs first, the readout and the
+	 * grid can never disagree — and the count is paid for at most once per
+	 * request per grid.
+	 *
+	 * @return array{grid_id: string, post_type: string, filters: array, total: int, max_pages: int, paged: int, per_page: int}|null
+	 */
+	public static function summary_for( int $document_id, string $grid_id ): ?array {
+		if ( $document_id < 1 || '' === $grid_id ) {
+			return null;
+		}
+
+		$memo_key = $document_id . '|' . $grid_id;
+		if ( array_key_exists( $memo_key, self::$summaries ) ) {
+			return self::$summaries[ $memo_key ];
+		}
+
+		$raw = self::grid_settings_in_document( $document_id, $grid_id );
+		if ( null === $raw ) {
+			self::$summaries[ $memo_key ] = null;
+			return null;
+		}
+
+		$post_type = self::effective_post_type( $raw );
+		$paged     = self::current_page();
+
+		// request_args(), not $_GET: on an AJAX re-render the live request is
+		// admin-ajax.php and carries none of the visitor's filter state, and the
+		// endpoint has already told the authoriser which page it is rendering.
+		// It is ALWAYS unslashed, hence $slashed = false.
+		$filters = Loop_Filter_Auth::current(
+			$document_id,
+			$grid_id,
+			$post_type,
+			Loop_Filter_Auth::request_args(),
+			false
+		);
+
+		$query_args = self::build_query_args( $raw, $paged, $filters );
+		$total      = self::count_total( $raw, $query_args );
+
+		$summary = [
+			'grid_id'   => $grid_id,
+			'post_type' => $post_type,
+			'filters'   => $filters['active'] ?? [],
+			'total'     => $total,
+			'max_pages' => self::pages_for_total( $total, $query_args ),
+			'paged'     => $paged,
+			'per_page'  => max( 1, (int) ( $query_args['posts_per_page'] ?? 6 ) ),
+		];
+
+		self::$summaries[ $memo_key ] = $summary;
+		return $summary;
+	}
+
+	/**
+	 * Hand the memo the numbers the grid has already computed, so a readout
+	 * below it costs nothing. Never overwrites: a summary already in the memo
+	 * was built from the same settings and is the one a readout above the grid
+	 * has already rendered from.
+	 */
+	public static function prime_summary( int $document_id, string $grid_id, array $summary ): void {
+		if ( $document_id < 1 || '' === $grid_id ) {
+			return;
+		}
+		$memo_key = $document_id . '|' . $grid_id;
+		if ( ! array_key_exists( $memo_key, self::$summaries ) ) {
+			self::$summaries[ $memo_key ] = $summary;
+		}
+	}
+
+	/**
+	 * The memoised summary for a grid, WITHOUT computing one.
+	 *
+	 * The grid itself asks this so that a readout rendered above it does not
+	 * make the page pay for the same count twice.
+	 */
+	public static function peek_summary( int $document_id, string $grid_id ): ?array {
+		$memo_key = $document_id . '|' . $grid_id;
+		return self::$summaries[ $memo_key ] ?? null;
+	}
+
+	/** Drop the summary memo (tests, or a second render inside one request). */
+	public static function reset_summaries(): void {
+		self::$summaries = [];
+	}
+
+	/**
+	 * Does anything on this page READ this grid's total?
+	 *
+	 * The count is a second scan of the result set, so it is only paid for when
+	 * something will display it. Pagination was the original reason; a Result
+	 * Count widget is the other one, and it is usually not a descendant, so
+	 * has_pagination_child() cannot see it.
+	 */
+	private function has_readout_sibling( int $document_id ): bool {
+		if ( $document_id < 1 ) {
+			return false;
+		}
+
+		static $memo = [];
+		$key = $document_id . '|' . $this->get_id();
+		if ( isset( $memo[ $key ] ) ) {
+			return $memo[ $key ];
+		}
+
+		$grid_id = $this->get_id();
+		$hit     = false;
+		$walk    = static function ( $els ) use ( &$walk, &$hit, $grid_id ) {
+			foreach ( (array) $els as $el ) {
+				if ( $hit || ! is_array( $el ) ) {
+					continue;
+				}
+				$type = (string) ( $el['widgetType'] ?? ( $el['elType'] ?? '' ) );
+				if ( Loop_Filter_Auth::TYPE_RESULT_COUNT === $type ) {
+					$s      = self::unwrap( (array) ( $el['settings'] ?? [] ) );
+					$target = trim( (string) ( $s['target_grid'] ?? '' ) );
+					if ( '' === $target || $target === $grid_id ) {
+						$hit = true;
+						return;
+					}
+				}
+				if ( ! empty( $el['elements'] ) ) {
+					$walk( $el['elements'] );
+				}
+			}
+		};
+
+		if ( class_exists( '\Elementor\Plugin' ) ) {
+			$doc = \Elementor\Plugin::$instance->documents->get( $document_id );
+			if ( $doc ) {
+				$walk( (array) $doc->get_elements_data() );
+			}
+		}
+
+		$memo[ $key ] = $hit;
+		return $hit;
+	}
+
+	/**
+	 * The post type a grid's query really targets, asked from OUTSIDE it.
+	 *
+	 * Cheaper than summary_for() and answers a different question: a widget that
+	 * only needs to know "posts or products" — an Author filter listing the
+	 * people who publish this type — should not trigger a count of the result
+	 * set to find out.
+	 */
+	public static function post_type_for( int $document_id, string $grid_id ): string {
+		$primed = self::peek_summary( $document_id, $grid_id );
+		if ( $primed ) {
+			return (string) $primed['post_type'];
+		}
+		$raw = self::grid_settings_in_document( $document_id, $grid_id );
+		return null === $raw ? 'post' : self::effective_post_type( $raw );
+	}
+
+	/**
+	 * The raw ($$type-wrapped) settings of one Loop Grid inside a saved
+	 * document, or null when that id is not a grid on that page.
+	 *
+	 * @return array|null
+	 */
+	private static function grid_settings_in_document( int $document_id, string $grid_id ): ?array {
+		$found = null;
+		$walk  = static function ( $els ) use ( &$walk, &$found, $grid_id ) {
+			foreach ( (array) $els as $el ) {
+				if ( null !== $found ) {
+					return;
+				}
+				if ( ! is_array( $el ) ) {
+					continue;
+				}
+				$type = (string) ( $el['widgetType'] ?? ( $el['elType'] ?? '' ) );
+				if ( (string) ( $el['id'] ?? '' ) === $grid_id
+					&& in_array( $type, self::GRID_TYPES, true ) ) {
+					$found = (array) ( $el['settings'] ?? [] );
+					return;
+				}
+				if ( ! empty( $el['elements'] ) ) {
+					$walk( $el['elements'] );
+				}
+			}
+		};
+
+		if ( class_exists( '\Elementor\Plugin' ) ) {
+			$doc = \Elementor\Plugin::$instance->documents->get( $document_id );
+			if ( $doc ) {
+				$walk( (array) $doc->get_elements_data() );
+			}
+		}
+
+		return $found;
+	}
+
+	/**
+	 * The id of the page's ONLY Loop Grid, or '' when there is none or several.
+	 *
+	 * This is what makes a filter or a readout work the moment it is dropped:
+	 * the common page has one grid, and asking a builder to copy an element id
+	 * before anything renders is a setup step for a case that usually does not
+	 * exist. A page with two grids is exactly where the field gets filled in.
+	 *
+	 * Lives here rather than in each widget because every filter and readout
+	 * asks the same question, and two implementations of "which grid" is a
+	 * control that points at a different grid than the one it reports on.
+	 */
+	public static function only_grid_id( int $document_id ): string {
+		static $memo = [];
+		if ( isset( $memo[ $document_id ] ) ) {
+			return $memo[ $document_id ];
+		}
+
+		$found = [];
+		$walk  = static function ( $els ) use ( &$walk, &$found ) {
+			foreach ( (array) $els as $el ) {
+				if ( ! is_array( $el ) ) {
+					continue;
+				}
+				$type = (string) ( $el['widgetType'] ?? ( $el['elType'] ?? '' ) );
+				if ( in_array( $type, self::GRID_TYPES, true ) ) {
+					$found[] = (string) ( $el['id'] ?? '' );
+				}
+				if ( ! empty( $el['elements'] ) ) {
+					$walk( $el['elements'] );
+				}
+			}
+		};
+
+		if ( class_exists( '\Elementor\Plugin' ) ) {
+			$doc = \Elementor\Plugin::$instance->documents->get( $document_id );
+			if ( $doc ) {
+				$walk( (array) $doc->get_elements_data() );
+			}
+		}
+
+		$memo[ $document_id ] = ( 1 === count( $found ) ) ? $found[0] : '';
+		return $memo[ $document_id ];
 	}
 
 	/**

@@ -2623,6 +2623,192 @@ Suite counts after M2 slice 2: seam **107**, frontend 25, widget 22, **instant
 > still printed a clean 12/12. It now fails loudly instead. Check for this shape
 > whenever a suite's count drops.
 
+## Loop Filters — M2 rest + the link-shaped M3 half (2026-09-11)
+
+Five more widgets, all **PRO-owned** in `pro/inc/AtomicV4/Widgets/LoopFilters/`,
+and the two demo pages that prove the feature is finished enough to build a site
+with: `/aae-demo-blog/` and `/aae-demo-shop/`.
+
+| Widget | Type | What it is |
+|---|---|---|
+| Loop Filter: Author | `e-aae-a-loop-filter-author` | filter |
+| Loop Filter: Field | `e-aae-a-loop-filter-meta` | filter — price, rating, stock, on sale, ACF, custom field |
+| Loop Sort | `e-aae-a-loop-sort` | filter |
+| Loop Result Count | `e-aae-a-loop-result-count` | **readout** |
+| Loop Active Filters | `e-aae-a-loop-active-filters` | **readout** |
+
+**Sort and the Field filter are M3 work brought forward, because a shop page
+cannot exist without them** — the M2-rest widgets alone would have produced a
+catalogue, not a shop. Both turned out to be link-shaped after all, which is why
+neither had to wait for the runtime's submit path (see the price note below).
+
+All five extend `Loop_Filter_Widget_Base` (Pro), which owns the four questions
+every one of them asks — which grid, which url_key, what is selected, where does
+this link go next. Answering those five times is how a control ends up building
+links with a key the authoriser does not read. The Taxonomy Filter was refactored
+onto it in the same pass.
+
+### A READOUT is not a filter, and the difference is load-bearing
+
+Result Count and Active Filters declare nothing and are deliberately **absent
+from `FILTER_TYPES`** — the authoriser must never read a value for a widget that
+offers no choices to legitimise it. But they describe the filtered result, so a
+filter change makes them stale exactly as it makes a filter widget stale. Hence
+a second list:
+
+- `Loop_Filter_Auth::READOUT_TYPES` — the two of them.
+- `Loop_Filter_Auth::RERENDER_TYPES` — filters **plus** readouts, and the single
+  answer to "what does a filter change invalidate". Two consumers read it and
+  neither re-derives it: free's `render_loop_filters()` (via `rerender_ids()`,
+  which matches a readout by its `target_grid` the way `declarations()` matches a
+  filter's) and Pro's `Renderer`, which now decides on it whether a page gets the
+  instant runtime — an Active Filters bar renders removal LINKS, so it needs the
+  runtime as much as any filter does.
+
+Active Filters shows the **authorised** state, never the URL: its chips come from
+the summary's `filters` map, which is what came back OUT of the authoriser. A
+"remove" control for a filter that was never applied tells the visitor the result
+set is narrower than it is.
+
+### The shared grid summary — the seam a sibling widget needed
+
+`Render_Context` reaches DESCENDANTS of the grid only. A Result Count is a
+sibling, and on every real page it sits ABOVE the grid, so at the moment it
+renders the grid has computed nothing at all.
+
+`AAE_A_Loop_Grid::summary_for( $document_id, $grid_id )` is the answer, memoised
+per request: total, max_pages, paged, per_page, post_type and the active filter
+map, built from the SAME saved settings through the SAME builder the grid uses.
+Whichever of the two asks first pays for the count and the other reads it back,
+so **the caption can never claim a different total than the grid beneath it** —
+and the count is paid for at most once per grid per request (asserted: a second
+ask issues 0 SQL).
+
+Three places prime or read it, and all three matter:
+
+- `define_render_context()` **peeks first** (`peek_summary()`) and reuses a
+  readout's numbers rather than re-counting; otherwise it computes and primes.
+- It also counts when `has_readout_sibling()` — a Result Count with no pagination
+  and no active filter was the one shape where nothing had asked for a total, so
+  the widget would have had to run its own second scan.
+- `ajax_loop_grid_page()` primes from the numbers the request already paid for,
+  so a re-rendered readout cannot answer a *different* count inside one response.
+
+`only_grid_id()` and `post_type_for()` moved into the grid class for the same
+reason: every filter and every readout asks "which grid", and two implementations
+of that is a control reporting on a different grid than the one beside it.
+
+### A price filter with no slider, and why that was the right call
+
+A two-handled range slider is a FORM CONTROL: no href, so it cannot be a link,
+and it does nothing until a script binds it. **Buckets** — "Under 50", "50 –
+120", "200 and up" — are ordinary links, are what visitors actually click on most
+shops, and are shareable and crawlable. They go through the existing `mode=range`
+path and send the identical `min..max` value a slider eventually will.
+
+**The buckets are display; the BOUNDS are the gate.** `Loop_Filter_Auth` still
+clamps any incoming range to the widget's own Min/Max, so a hand-typed
+`?price=0..999999` is bounded whether or not a bucket for it was ever drawn.
+Never move the bounds into the bucket list.
+
+The widget's SHAPE (range / choice / toggle) is read from the DECLARATION, not
+the panel: an ACF field resolves its own mode, so trusting the panel's `mode`
+would draw price buckets over a true/false field.
+
+### The sort catalogue lives in the authoriser
+
+A Sort panel that makes a builder hand-write `{"key":…,"orderby":…}` JSON is not
+a panel. `Loop_Filter_Auth::SORT_CATALOGUE` names ten sorts, the widget offers
+them as switches (`sort_<key>` plus an optional `label_<key>`), and
+`declare_type()` builds the option list from them. The `options` JSON contract
+still works and still **wins on a key collision** — it is the more specific
+statement, and it is the only way to sort by an arbitrary meta key.
+
+It lives in free beside the whitelist it draws from because "which sorts exist"
+is an authorisation question before it is a panel question: a key the visitor
+sends has to mean the same thing on the server as it did in the switch. Only the
+WORDING is in Pro (`AAE_A_Loop_Sort::catalogue()`, public so the Active Filters
+chip can name an applied sort — otherwise a chip reads `price_asc` beside a
+control reading "Price: low to high").
+
+price / popularity / rating are `Loop_Query_Woo::SORT_KEYS` and are refused
+unless WooCommerce is running AND the grid queries products, so offering them on
+a blog grid costs nothing but an option that never resolves.
+
+### Things that will bite
+
+- **A widget that renders NO NODE when empty can never be brought back.** The
+  runtime finds an element by id and replaces it; Active Filters therefore always
+  renders its wrapper and uses the `hidden` attribute for "hide when nothing is
+  applied". That needs an explicit `.elementor .aae-a-loop-active-filters[hidden]
+  { display: none !important }` — the atomic base style sets `display: flex` at
+  (0,2,0) and beats the user-agent `[hidden]` rule on a tie, the same trap the
+  form's nav buttons already document.
+- **`Textarea_Control` binds to a STRING prop, not a String_Array** (see
+  `AAE_A_Form_Country`'s option list). The Field filter's `choices` / `buckets`
+  are strings for that reason, and the authoriser splits either form — a newline
+  string cast with `(array)` becomes ONE choice containing newlines, which
+  matches nothing and says nothing.
+- **A `private` method in a subclass cannot narrow a `protected` one in the
+  base.** Refactoring the Taxonomy Filter onto `Loop_Filter_Widget_Base` fataled
+  on `own_declaration()` for exactly that, and the fatal is at CLASS LOAD, so
+  every page carrying the widget 500s at once.
+- **Do not assert that `price_desc` is the reverse of `price_asc`.** A 6-of-12
+  grid shows two different HALVES of the catalogue, not mirrored lists. Assert
+  the head of each order against the real cheapest/dearest, and that the page is
+  monotonic.
+- **A control bound to a prop the schema does not declare is erased by
+  `Props_Parser` on the next save**, so panel copy goes through
+  `AAE_Notice_Control`, never a `Text_Control` bound to some `_note` key.
+  `Section::set_description()` renders nothing at all in the shipped panel.
+- The Author filter offers only people who have **published** the grid's post
+  type — the same test the authoriser applies to an incoming nicename, so the
+  list and the gate cannot disagree. Ids are refused on both sides: an endpoint
+  that turns `?author=7` into a result set is a user-enumeration oracle.
+
+### Presets
+
+16, in `pro/inc/AtomicV4/Widgets/LoopFilters/presets/`, generated by
+`E:\Local Testing\make-loop-filter-presets.php` rather than hand-written — the
+atomic style envelope is the half that fails silently (one invalid key voids the
+WHOLE definition with no error), so the shapes are declared once there and every
+file is built from them. All six widgets get a Presets section from
+`Loop_Filter_Widget_Base::presets_section()`; one picker stub serves the family
+because the picker is passed nothing from PHP and fetches by the SELECTED
+element's type. Verified resolving through the real `Local_Fallback`, which
+derives a Pro widget's preset directory from its absolute registry `file`.
+
+### The demo pages
+
+`E:\Local Testing\make-loop-demo-pages.php` (`blog` / `shop` / `cleanup`) builds
+`/aae-demo-blog/` — 12 articles, 3 categories, 3 real authors, with category +
+author + sort + count + chips — and `/aae-demo-shop/` — 12 WooCommerce products
+with prices, sale prices, stock states, featured flags and ratings, filtered by
+category, price, rating, stock and on-sale.
+
+**Writing the product meta is not enough.** Featured, rating and out-of-stock are
+recorded in the `product_visibility` taxonomy, which is what `Loop_Query_Woo`
+reads, and the price filter reads ONLY `wc_product_meta_lookup` — so the fixture
+sets the visibility terms explicitly and calls `$product->save()` to rebuild the
+lookup row. Without that the filters agree with nothing, which reads as a broken
+filter rather than a missing index row.
+
+Measured on the shop page: 12 products, `?price=..50` → 3, `?onsale=1` → 4,
+`?stock=1` → 10, `?rating=5` → 3, and `price_asc` orders 28 < 38 < 45 < 52 < 89 <
+116 — the sale price, not the regular one, because the lookup table holds the
+effective price. That is what a shop should do.
+
+Note the shop's category filter answers to `aae_tax_product_cat`, not
+`product_cat`: `register_taxonomy()` defaults `query_var` to the taxonomy name,
+so the readable spelling is RESERVED and borrowing it would 404 the page before
+the grid rendered. Price, rating, stock, onsale and sort all keep their readable
+keys. That is the M1.5 reservation rule doing its job on a real page.
+
+Suites after this slice: seam 107, frontend 25, widget 22, instant 25, editor 9,
+settings UI 9, **readouts 75** (`verify-loop-readouts.php`, which asserts against
+the demo pages themselves and checks every count against a hand-written WP_Query
+— a readout and a grid agreeing on a wrong number must not pass).
+
 ## Caching computed artifacts — and why option VALUES are not one (2026-08-06)
 
 Asked directly: "what would we gain by file-caching the option values?" The

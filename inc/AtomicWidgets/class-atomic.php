@@ -5927,6 +5927,25 @@ final class Atomic
 		$total     = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::count_total($gs, $query_args);
 		$max_pages = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::pages_for_total($total, $query_args);
 
+		// Hand the readouts the numbers this request already paid for. A Result
+		// Count re-rendered below would otherwise run the same count again — and,
+		// worse, could answer a different one if anything about the request
+		// changed between the two, so the grid and its own caption would
+		// disagree inside a single response.
+		\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::prime_summary(
+			$post_id,
+			$grid_id,
+			[
+				'grid_id'   => $grid_id,
+				'post_type' => \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::effective_post_type($gs),
+				'filters'   => $filters['active'] ?? [],
+				'total'     => $total,
+				'max_pages' => $max_pages,
+				'paged'     => $paged,
+				'per_page'  => max(1, (int) ($query_args['posts_per_page'] ?? 6)),
+			]
+		);
+
 		// Push context (same key the Loop Item reads) and render the item.
 		\Elementor\Modules\AtomicWidgets\Elements\Base\Render_Context::push(
 			\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::class,
@@ -5972,10 +5991,12 @@ final class Atomic
 	 * Every filter widget that targets $grid_id, rendered fresh, keyed by its
 	 * element id.
 	 *
-	 * The list comes from `Loop_Filter_Auth::declarations_for_document()` — the
-	 * same walk that decides which filters this page is even allowed to honour —
-	 * so a widget that is not authorised to filter this grid is also never sent
-	 * back for it.
+	 * The list comes from `Loop_Filter_Auth::rerender_ids()`, which is the
+	 * declaration walk — so a widget not authorised to filter this grid is never
+	 * sent back for it — PLUS the READOUTS pointed at the grid. A Result Count
+	 * or an Active Filters bar declares nothing and so has no declaration to be
+	 * found by; it still describes the result set, and leaving it out is how a
+	 * filtered page ends up saying "24 results" over twelve of them.
 	 *
 	 * The document is switched to for the duration: a filter widget asks
 	 * `AAE_A_Loop_Grid::current_document_id()` which document declares it, and
@@ -5990,18 +6011,7 @@ final class Atomic
 	 * @return array<string, string> element id => HTML.
 	 */
 	private function render_loop_filters(int $post_id, string $grid_id, array $elements): array {
-		$decls = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\Loop_Filter_Auth::declarations_for_document($post_id, $grid_id);
-		if (! $decls) {
-			return [];
-		}
-
-		$wanted = [];
-		foreach ($decls as $decl) {
-			$id = (string) ($decl['element_id'] ?? '');
-			if ('' !== $id) {
-				$wanted[$id] = true;
-			}
-		}
+		$wanted = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\Loop_Filter_Auth::rerender_ids($elements, $grid_id);
 		if (! $wanted) {
 			return [];
 		}
