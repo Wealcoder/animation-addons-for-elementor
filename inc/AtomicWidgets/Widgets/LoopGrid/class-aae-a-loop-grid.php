@@ -826,6 +826,20 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 	 */
 	private static array $summaries = [];
 
+	/** Facet counts, memoised per grid and per EXCLUDED filter key. */
+	private static array $facets = [];
+
+	/**
+	 * The largest result set a facet count will resolve to an id list for.
+	 *
+	 * Above it `facet_counts()` answers null — no count at all — rather than
+	 * loading tens of thousands of ids to draw a sidebar. A ceiling that
+	 * refuses is honest; one that silently falls back to the site-wide term
+	 * counts would change what the numbers MEAN halfway up a collection, which
+	 * nobody would ever notice.
+	 */
+	public const MAX_FACET_SCOPE = 3000;
+
 	/**
 	 * What a widget standing OUTSIDE the grid can know about it — the filtered
 	 * total, the page count, and which filters are active.
@@ -889,6 +903,176 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 
 		self::$summaries[ $memo_key ] = $summary;
 		return $summary;
+	}
+
+	/**
+	 * How many results each option of ONE filter would leave, given every
+	 * OTHER filter currently applied.
+	 *
+	 * This is the difference between a count that helps and a count that lies.
+	 * A taxonomy term's own `count` is site-wide: it says how many posts carry
+	 * the term anywhere, not how many are in this grid, and certainly not how
+	 * many survive the three filters the visitor has already set. "Footwear
+	 * (12)" beside a result set of four is not a number anyone can act on.
+	 *
+	 * The rule is the standard one for faceted search and it is worth stating
+	 * because it looks like a bug until you know it: a filter's own key is
+	 * EXCLUDED from the scope it counts against. Otherwise picking Footwear
+	 * would drop every other category to zero — each option has to answer "what
+	 * if I picked this instead", not "what is true now".
+	 *
+	 * COST, and why this is opt-in. It resolves the scope to an id list, which
+	 * is a full query with no LIMIT, then one grouped count over it — per filter
+	 * widget, per request. That is affordable on the collections these grids are
+	 * usually pointed at and is not affordable on a very large one, so it is off
+	 * unless a builder asks, and `MAX_FACET_SCOPE` is a hard ceiling above which
+	 * this returns NULL rather than an answer.
+	 *
+	 * NULL means "not answerable", never zero. A widget must render no count at
+	 * all rather than a confident 0 — the same distinction the extension usage
+	 * scan draws, and for the same reason: absent is a fact, zero is a claim.
+	 *
+	 * @param array $decl One declaration from Loop_Filter_Auth.
+	 * @return array<string, int>|null value => count, keyed by the slug or
+	 *                                 nicename the filter puts in the URL.
+	 */
+	public static function facet_counts( int $document_id, string $grid_id, array $decl ): ?array {
+		$type = (string) ( $decl['type'] ?? '' );
+		if ( ! in_array( $type, [ 'tax', 'author' ], true ) ) {
+			// A range, a search and a sort have no enumerable options to count.
+			return null;
+		}
+
+		$key      = (string) ( $decl['url_key'] ?? '' );
+		$memo_key = $document_id . '|' . $grid_id . '|' . $key;
+		if ( array_key_exists( $memo_key, self::$facets ) ) {
+			return self::$facets[ $memo_key ];
+		}
+		self::$facets[ $memo_key ] = null;
+
+		$ids = self::facet_scope_ids( $document_id, $grid_id, $key );
+		if ( null === $ids ) {
+			return null;
+		}
+		if ( ! $ids ) {
+			// A genuinely empty scope IS answerable: every option would leave
+			// nothing, and saying so is more useful than saying nothing.
+			self::$facets[ $memo_key ] = [];
+			return [];
+		}
+
+		$counts = 'tax' === $type
+			? self::count_by_term( $ids, (string) $decl['taxonomy'] )
+			: self::count_by_author( $ids );
+
+		self::$facets[ $memo_key ] = $counts;
+		return $counts;
+	}
+
+	/**
+	 * The post ids this grid would show with every filter applied EXCEPT one.
+	 *
+	 * @return int[]|null Null when the scope is too large to count against.
+	 */
+	private static function facet_scope_ids( int $document_id, string $grid_id, string $except_key ): ?array {
+		$raw = self::grid_settings_in_document( $document_id, $grid_id );
+		if ( null === $raw ) {
+			return null;
+		}
+
+		$post_type = self::effective_post_type( $raw );
+		$args      = Loop_Filter_Auth::request_args();
+		unset( $args[ $except_key ] );
+
+		$filters = Loop_Filter_Auth::current( $document_id, $grid_id, $post_type, $args, false );
+
+		$query_args                   = self::build_query_args( $raw, 1, $filters );
+		$query_args['fields']         = 'ids';
+		$query_args['posts_per_page'] = self::MAX_FACET_SCOPE + 1;
+		$query_args['no_found_rows']  = true;
+		// A visitor-chosen sort cannot change WHICH posts match, only their
+		// order, and ordering a list we are about to count is pure cost.
+		unset( $query_args['orderby'], $query_args['order'], $query_args['meta_key'] );
+
+		$ids = get_posts( $query_args );
+		if ( ! is_array( $ids ) ) {
+			return null;
+		}
+
+		// Over the ceiling: refuse rather than answer slowly. The extra row
+		// requested above is what makes "more than the ceiling" detectable
+		// without a second count.
+		return count( $ids ) > self::MAX_FACET_SCOPE ? null : array_map( 'intval', $ids );
+	}
+
+	/**
+	 * @param int[] $ids
+	 * @return array<string, int> term slug => count
+	 */
+	private static function count_by_term( array $ids, string $taxonomy ): array {
+		global $wpdb;
+
+		$placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
+
+		// One grouped query rather than a count per term: a sidebar with thirty
+		// categories would otherwise issue thirty queries to draw one list.
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT t.slug, COUNT(*) AS n
+				 FROM {$wpdb->term_relationships} tr
+				 INNER JOIN {$wpdb->term_taxonomy} tt ON tt.term_taxonomy_id = tr.term_taxonomy_id
+				 INNER JOIN {$wpdb->terms} t ON t.term_id = tt.term_id
+				 WHERE tt.taxonomy = %s AND tr.object_id IN ({$placeholders})
+				 GROUP BY t.slug",
+				array_merge( [ $taxonomy ], $ids )
+			)
+		);
+		// phpcs:enable
+
+		$out = [];
+		foreach ( (array) $rows as $row ) {
+			$out[ (string) $row->slug ] = (int) $row->n;
+		}
+		return $out;
+	}
+
+	/**
+	 * @param int[] $ids
+	 * @return array<string, int> user_nicename => count
+	 */
+	private static function count_by_author( array $ids ): array {
+		global $wpdb;
+
+		$placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
+
+		// Keyed by NICENAME, because that is what the author filter puts in the
+		// URL — ids are refused on both sides so the endpoint cannot become a
+		// user-enumeration oracle, and a count keyed by id would have to be
+		// translated back by whoever read it.
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT u.user_nicename AS slug, COUNT(*) AS n
+				 FROM {$wpdb->posts} p
+				 INNER JOIN {$wpdb->users} u ON u.ID = p.post_author
+				 WHERE p.ID IN ({$placeholders})
+				 GROUP BY u.user_nicename",
+				$ids
+			)
+		);
+		// phpcs:enable
+
+		$out = [];
+		foreach ( (array) $rows as $row ) {
+			$out[ (string) $row->slug ] = (int) $row->n;
+		}
+		return $out;
+	}
+
+	/** Drop the facet memo (tests, or a second render inside one request). */
+	public static function reset_facets(): void {
+		self::$facets = [];
 	}
 
 	/**
