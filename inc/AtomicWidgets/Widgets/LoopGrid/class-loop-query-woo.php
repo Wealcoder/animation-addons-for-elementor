@@ -97,6 +97,63 @@ final class Loop_Query_Woo {
 		return $out;
 	}
 
+	/** Memoised store-wide price bounds. @see price_bounds() */
+	private static $price_bounds = null;
+
+	/**
+	 * The cheapest and dearest effective price in the catalogue.
+	 *
+	 * Only a range SLIDER needs this: a slider has to know where its track
+	 * starts and ends before a visitor has chosen anything, and a builder who
+	 * has not typed bounds should still get a usable one rather than two bare
+	 * number boxes that read as the slider being broken.
+	 *
+	 * It is NOT the gate, and must never become it. `Loop_Filter_Auth` clamps an
+	 * incoming range to the WIDGET's own Min/Max exactly as before, so a
+	 * hand-typed `?price=0..999999` is bounded by the builder's decision and not
+	 * by whatever happens to be in stock today. This answers a drawing question
+	 * only.
+	 *
+	 * Deliberately store-wide rather than scoped to the grid's current filters:
+	 * a track whose ends move every time a category is picked makes the handle
+	 * positions mean something different on each render, and the visitor's own
+	 * selection appears to jump. One aggregate over the price index, memoised
+	 * per request, and only ever asked for by a page that draws a slider.
+	 *
+	 * @return array{0: float, 1: float}|null Null when unanswerable.
+	 */
+	public static function price_bounds(): ?array {
+		if ( null !== self::$price_bounds ) {
+			return self::$price_bounds ?: null;
+		}
+		self::$price_bounds = false;
+
+		if ( ! self::active() ) {
+			return null;
+		}
+
+		global $wpdb;
+		$table = $wpdb->prefix . 'wc_product_meta_lookup';
+
+		// The same index every price filter and price sort already reads, so a
+		// store whose prices work at all can answer this.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$row = $wpdb->get_row( "SELECT MIN(min_price) AS lo, MAX(max_price) AS hi FROM {$table} WHERE min_price IS NOT NULL" );
+
+		if ( ! $row || null === $row->lo || null === $row->hi ) {
+			return null;
+		}
+
+		$lo = (float) $row->lo;
+		$hi = (float) $row->hi;
+		if ( $hi <= $lo ) {
+			return null;
+		}
+
+		self::$price_bounds = [ $lo, $hi ];
+		return self::$price_bounds;
+	}
+
 	/**
 	 * Authorise one visitor value for a WC field (Loop_Filter_Auth rule 3: the
 	 * widget fixes the field, the visitor supplies a value, and that value is

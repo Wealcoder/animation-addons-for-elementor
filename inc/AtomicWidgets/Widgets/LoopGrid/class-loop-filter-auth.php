@@ -1017,7 +1017,7 @@ final class Loop_Filter_Auth {
 						$scalars[] = (string) $item;
 					}
 				}
-				$v = implode( ',', $scalars );
+				$v = implode( self::join_separator( $d ), $scalars );
 			}
 			if ( ! is_scalar( $v ) ) {
 				continue;
@@ -1029,6 +1029,38 @@ final class Loop_Filter_Auth {
 			$raw[ $k ] = $v;
 		}
 		return $raw;
+	}
+
+	/**
+	 * How several values sent under one key are joined into this declaration's
+	 * own wire format.
+	 *
+	 * This exists so a plain HTML FORM can express a range. A range is one key
+	 * holding `min..max`, but a form has two boxes, and two boxes named
+	 * `price[]` arrive here as an array — which joined with a comma becomes
+	 * `10,500`, a value `parse_range()` refuses. So the widget would submit,
+	 * the page would reload, and the filter would be dropped in total silence:
+	 * exactly the failure mode a link-shaped control was chosen to avoid.
+	 *
+	 * Joining a RANGE declaration's array with `..` instead makes the form's
+	 * natural output the value the authoriser already understands, with no
+	 * second URL spelling to reserve, explain, or keep in step. It is also why
+	 * the range slider needs nothing of its own here: it writes the same two
+	 * boxes.
+	 *
+	 * Anything else still joins with a comma — a taxonomy or choice filter's
+	 * `?cat[]=a&cat[]=b` is a LIST, and it always has been.
+	 */
+	private static function join_separator( array $d ): string {
+		switch ( (string) ( $d['type'] ?? '' ) ) {
+			case 'date':
+				return '..';
+			case 'meta':
+				return 'range' === (string) ( $d['mode'] ?? '' ) ? '..' : ',';
+			case 'woo':
+				return 'price' === (string) ( $d['field'] ?? '' ) ? '..' : ',';
+		}
+		return ',';
 	}
 
 	/**
