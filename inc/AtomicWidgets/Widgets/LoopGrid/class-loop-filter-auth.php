@@ -72,12 +72,114 @@ final class Loop_Filter_Auth {
 		self::TYPE_SORT,
 	];
 
+	/**
+	 * Widgets that READ the filter state instead of contributing to it.
+	 *
+	 * They declare nothing, so they are deliberately absent from FILTER_TYPES —
+	 * the authoriser must never read a value for a widget that offers no
+	 * choices. But they still describe the filtered result set, so a filter
+	 * change makes them stale exactly as a filter widget goes stale, and the
+	 * AJAX response has to send them back too.
+	 */
+	public const TYPE_RESULT_COUNT   = 'e-aae-a-loop-result-count';
+	public const TYPE_ACTIVE_FILTERS = 'e-aae-a-loop-active-filters';
+
+	public const READOUT_TYPES = [
+		self::TYPE_RESULT_COUNT,
+		self::TYPE_ACTIVE_FILTERS,
+	];
+
+	/**
+	 * Everything a filter change invalidates: the controls AND the readouts.
+	 *
+	 * One list, because "which elements does the endpoint re-render" has one
+	 * answer and two callers — free's AJAX handler and Pro's decision about
+	 * whether a page gets the instant runtime at all.
+	 */
+	public const RERENDER_TYPES = [
+		self::TYPE_TAX,
+		self::TYPE_META,
+		self::TYPE_SEARCH,
+		self::TYPE_AUTHOR,
+		self::TYPE_DATE,
+		self::TYPE_SORT,
+		self::TYPE_RESULT_COUNT,
+		self::TYPE_ACTIVE_FILTERS,
+	];
+
+	/**
+	 * The ids of every element in $elements that this grid's filter change
+	 * invalidates — the declared filter widgets plus the readouts pointed at it.
+	 *
+	 * A readout has no declaration (it offers no choices), so it cannot be found
+	 * the way a filter widget is. It is matched here the same way `declarations()`
+	 * matches a filter's target: an explicit `target_grid`, or an empty one
+	 * meaning "the grid on this page".
+	 *
+	 * @param array  $elements Saved element tree.
+	 * @param string $grid_id  The Loop Grid element id.
+	 * @return array<string, true> element id => true
+	 */
+	public static function rerender_ids( array $elements, string $grid_id ): array {
+		$ids = [];
+		foreach ( self::declarations( $elements, $grid_id ) as $decl ) {
+			$id = (string) ( $decl['element_id'] ?? '' );
+			if ( '' !== $id ) {
+				$ids[ $id ] = true;
+			}
+		}
+
+		$walk = static function ( $els ) use ( &$walk, &$ids, $grid_id ) {
+			foreach ( (array) $els as $el ) {
+				if ( ! is_array( $el ) ) {
+					continue;
+				}
+				$type = (string) ( $el['widgetType'] ?? ( $el['elType'] ?? '' ) );
+				if ( in_array( $type, self::READOUT_TYPES, true ) ) {
+					$s      = AAE_A_Loop_Grid::unwrap( (array) ( $el['settings'] ?? [] ) );
+					$target = trim( (string) ( $s['target_grid'] ?? '' ) );
+					$id     = (string) ( $el['id'] ?? '' );
+					if ( '' !== $id && ( '' === $target || $target === $grid_id ) ) {
+						$ids[ $id ] = true;
+					}
+				}
+				if ( ! empty( $el['elements'] ) ) {
+					$walk( $el['elements'] );
+				}
+			}
+		};
+		$walk( $elements );
+
+		return $ids;
+	}
+
 	/** Rule 6 — hard caps on what a visitor may send. */
 	public const MAX_PAYLOAD_BYTES = 4096;
 	public const MAX_KEYS          = 20;
 	public const MAX_VALUES        = 50;
 	public const MAX_VALUE_LENGTH  = 200;
 	public const MAX_SEARCH_LENGTH = 200;
+
+	/**
+	 * The value an unresolvable open-choice id is replaced by, so that it
+	 * matches nothing instead of dropping its filter.
+	 *
+	 * An "open choice" filter (an ACF relationship or user field) cannot carry
+	 * a whitelist — its legitimate values are every post or user id — so the
+	 * only check available is whether the id resolves. Refusing the VALUE the
+	 * way every other resolver does would then drop the whole clause, and a
+	 * filter that contributes nothing returns the UNFILTERED grid, which is
+	 * visibly different from the empty one a real-but-unused id produces. Those
+	 * two responses together answer "does user id N exist" for anyone who can
+	 * load the page, which is precisely the user-enumeration oracle the author
+	 * resolver refuses ids to avoid.
+	 *
+	 * So both cases answer with the same empty grid. `-1` is the sentinel
+	 * because it is never a post or user id and is safe in every shape this
+	 * clause takes: `CAST('-1' AS SIGNED)` is `-1` under a numeric compare, it
+	 * is itself under CHAR, and `"-1"` appears in no serialized id array.
+	 */
+	private const NO_MATCH_ID = '-1';
 
 	/** Meta compare types the widget may declare (`value_type` => WP_Meta_Query type). */
 	private const META_TYPES = [
@@ -86,6 +188,34 @@ final class Loop_Filter_Auth {
 		'char'     => 'CHAR',
 		'date'     => 'DATE',
 		'datetime' => 'DATETIME',
+	];
+
+	/**
+	 * The sort options a Sort widget can offer by NAME instead of by writing the
+	 * orderby out itself.
+	 *
+	 * It lives here, beside the whitelist it draws from, because "which sorts
+	 * exist" is an authorisation question before it is a panel question — a key
+	 * the visitor sends has to mean the same thing on the server as it did in
+	 * the builder's switch. The `options` JSON contract is still read and still
+	 * wins, for the sorts nobody can enumerate in advance (a meta key).
+	 *
+	 * price / popularity / rating are `Loop_Query_Woo::SORT_KEYS`, refused by
+	 * resolve_sort() unless WooCommerce is running AND the grid queries products
+	 * — so offering them on a blog grid costs nothing but an option that never
+	 * resolves.
+	 */
+	public const SORT_CATALOGUE = [
+		'newest'     => [ 'orderby' => 'date', 'order' => 'DESC' ],
+		'oldest'     => [ 'orderby' => 'date', 'order' => 'ASC' ],
+		'title_asc'  => [ 'orderby' => 'title', 'order' => 'ASC' ],
+		'title_desc' => [ 'orderby' => 'title', 'order' => 'DESC' ],
+		'commented'  => [ 'orderby' => 'comment_count', 'order' => 'DESC' ],
+		'menu_order' => [ 'orderby' => 'menu_order', 'order' => 'ASC' ],
+		'price_asc'  => [ 'orderby' => 'price', 'order' => 'ASC' ],
+		'price_desc' => [ 'orderby' => 'price', 'order' => 'DESC' ],
+		'popularity' => [ 'orderby' => 'popularity', 'order' => 'DESC' ],
+		'rating'     => [ 'orderby' => 'rating', 'order' => 'DESC' ],
 	];
 
 	/** Rule 4 — orderby values a Sort option may name. `rand` is deliberately absent. */
@@ -105,6 +235,9 @@ final class Loop_Filter_Auth {
 
 	/** Per-document declaration cache: post id => [ grid id => declarations ]. */
 	private static array $memo = [];
+
+	/** Per-document element tree cache: post id => elements. */
+	private static array $elements = [];
 
 	/** Cached dashboard settings for loop grid filters. */
 	private static ?array $settings = null;
@@ -136,7 +269,14 @@ final class Loop_Filter_Auth {
 				$type = (string) ( $el['widgetType'] ?? ( $el['elType'] ?? '' ) );
 				if ( in_array( $type, self::FILTER_TYPES, true ) ) {
 					$s = AAE_A_Loop_Grid::unwrap( (array) ( $el['settings'] ?? [] ) );
-					if ( (string) ( $s['target_grid'] ?? '' ) === $grid_id ) {
+					// An EMPTY target means "whichever grid is on this page",
+					// which is the common case and what lets a filter widget
+					// work the moment it is dropped. It is not a loosening of
+					// the gate: the declaration still offers exactly what this
+					// widget declares, and a page with two grids is where the
+					// builder fills the field in.
+					$target = trim( (string) ( $s['target_grid'] ?? '' ) );
+					if ( '' === $target || $target === $grid_id ) {
 						$decl = self::declare( $type, $s, (string) ( $el['id'] ?? '' ) );
 						if ( $decl ) {
 							$out[] = $decl;
@@ -173,22 +313,154 @@ final class Loop_Filter_Auth {
 			return self::$memo[ $post_id ][ $grid_id ];
 		}
 
-		$decls = [];
-		if ( class_exists( '\Elementor\Plugin' ) ) {
-			$doc = \Elementor\Plugin::$instance->documents->get( $post_id );
-			if ( $doc ) {
-				$decls = self::declarations( (array) $doc->get_elements_data(), $grid_id );
-			}
-		}
+		$decls = self::declarations( self::elements_for( $post_id ), $grid_id );
 
 		self::$memo[ $post_id ][ $grid_id ] = $decls;
 		return $decls;
 	}
 
+	/**
+	 * The decoded element tree for a document, once per request. Document::
+	 * get_elements_data() is a get_post_meta plus a json_decode every time it is
+	 * called and Elementor memoises neither, so a page holding several grids
+	 * would otherwise decode the whole blob once more per grid.
+	 */
+	private static function elements_for( int $post_id ): array {
+		if ( isset( self::$elements[ $post_id ] ) ) {
+			return self::$elements[ $post_id ];
+		}
+
+		$elements = [];
+		if ( class_exists( '\Elementor\Plugin' ) ) {
+			$doc = \Elementor\Plugin::$instance->documents->get( $post_id );
+			if ( $doc ) {
+				$elements = (array) $doc->get_elements_data();
+			}
+		}
+
+		self::$elements[ $post_id ] = $elements;
+		return $elements;
+	}
+
+	/**
+	 * Hand over a tree the caller has already decoded, so current() does not
+	 * decode it a second time. Purely an optimisation: the declarations are read
+	 * from it exactly as they would be from the document.
+	 */
+	public static function prime_document( int $post_id, array $elements ): void {
+		if ( $post_id > 0 && ! isset( self::$elements[ $post_id ] ) ) {
+			self::$elements[ $post_id ] = $elements;
+		}
+	}
+
 	/** Drop the per-request memo (tests, or after a document save inside one request). */
 	public static function reset_memo(): void {
-		self::$memo = [];
-		self::$settings = null;
+		self::$memo        = [];
+		self::$elements    = [];
+		self::$settings    = null;
+		self::$request_url = '';
+		// Same per-request family: a summary was computed FROM these
+		// declarations, so keeping it after they are dropped is how a test
+		// asserts against the state it thought it had cleared.
+		AAE_A_Loop_Grid::reset_summaries();
+	}
+
+	/* ------------------------------------------------------------------ */
+	/* The page this render is FOR                                         */
+	/* ------------------------------------------------------------------ */
+
+	/**
+	 * The page whose filter state we are rendering, as `path?query`.
+	 *
+	 * Empty means "the live request", which is every ordinary page view. It is
+	 * set only by the AJAX endpoint, where `$_SERVER['REQUEST_URI']` is
+	 * `/wp-admin/admin-ajax.php` and `$_GET` is empty — so a filter widget
+	 * re-rendered there would read no active terms and build every link
+	 * pointing at admin-ajax. One value, read by both halves of that question.
+	 */
+	private static string $request_url = '';
+
+	/**
+	 * Render as though the visitor were on $url.
+	 *
+	 * The value arrives from the browser, so the only thing it is ever allowed
+	 * to decide is WHICH PAGE's links we draw — never which host they point at.
+	 * An absolute URL is accepted only for this site; anything else, and
+	 * anything with a traversal in it, resets to the live request rather than
+	 * being half-honoured.
+	 *
+	 * @param string $url Absolute same-site URL, or a site-relative path.
+	 * @return bool Whether it was accepted. A caller that was handed a URL and
+	 *              gets false back should refuse the request rather than render
+	 *              the live one — silently rendering a different page than the
+	 *              one asked for is the confusing failure.
+	 */
+	public static function set_request_url( string $url ): bool {
+		self::$request_url = '';
+
+		$url = trim( $url );
+		if ( '' === $url || strlen( $url ) > 2000 ) {
+			return false;
+		}
+
+		$parts = wp_parse_url( $url );
+		if ( false === $parts || ! is_array( $parts ) ) {
+			return false;
+		}
+
+		if ( ! empty( $parts['host'] ) ) {
+			$home = wp_parse_url( home_url( '/' ) );
+			if ( strtolower( (string) $parts['host'] ) !== strtolower( (string) ( $home['host'] ?? '' ) ) ) {
+				return false;
+			}
+		}
+
+		$path = isset( $parts['path'] ) ? '/' . ltrim( (string) $parts['path'], '/' ) : '/';
+		if ( false !== strpos( $path, '..' ) ) {
+			return false;
+		}
+
+		$query = isset( $parts['query'] ) ? (string) $parts['query'] : '';
+
+		self::$request_url = '' !== $query ? $path . '?' . $query : $path;
+		return true;
+	}
+
+	/**
+	 * The URL a filter widget builds its links against. Defaults to the live
+	 * request, which is exactly what `remove_query_arg()` would have used on
+	 * its own — so an ordinary page view is unchanged.
+	 */
+	public static function request_url(): string {
+		if ( '' !== self::$request_url ) {
+			return self::$request_url;
+		}
+		return isset( $_SERVER['REQUEST_URI'] )
+			? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) )
+			: '/';
+	}
+
+	/**
+	 * The query args of that URL, ALWAYS UNSLASHED — including the `$_GET`
+	 * case, which WordPress leaves slashed. Callers therefore never unslash,
+	 * and cannot get it right for one source and wrong for the other.
+	 *
+	 * @return array<string, mixed>
+	 */
+	public static function request_args(): array {
+		if ( '' === self::$request_url ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only filter state, same footing as aae_page.
+			return (array) wp_unslash( $_GET );
+		}
+
+		$query = (string) ( wp_parse_url( self::$request_url, PHP_URL_QUERY ) ?? '' );
+		if ( '' === $query ) {
+			return [];
+		}
+
+		$args = [];
+		wp_parse_str( $query, $args );
+		return (array) $args;
 	}
 
 	/**
@@ -197,6 +469,22 @@ final class Loop_Filter_Auth {
 	 * cannot be resolved must vanish rather than degrade into something wider.
 	 */
 	private static function declare( string $type, array $s, string $element_id ): ?array {
+		$decl = self::declare_type( $type, $s, $element_id );
+		if ( null === $decl ) {
+			return null;
+		}
+
+		// The builder's own heading for this filter, carried so a readout can
+		// say "Category: Hoodies" instead of "product_cat: hoodies". Display
+		// text only — nothing in the authorisation path reads it, and a label
+		// can never widen what a filter allows.
+		$decl['label'] = sanitize_text_field( (string) ( $s['title'] ?? '' ) );
+
+		return $decl;
+	}
+
+	/** The per-type half of declare(). @see declare() */
+	private static function declare_type( string $type, array $s, string $element_id ): ?array {
 		switch ( $type ) {
 			case self::TYPE_TAX:
 				$taxonomy = sanitize_key( (string) ( $s['taxonomy'] ?? '' ) );
@@ -207,11 +495,19 @@ final class Loop_Filter_Auth {
 				return [
 					'type'             => 'tax',
 					'element_id'       => $element_id,
-					'url_key'          => self::url_key( $s, self::default_url_key( 'tax', $taxonomy, $legacy_key ) ),
+					'url_key'          => self::url_key( $s, self::default_url_key( 'tax', $taxonomy, $legacy_key ), $legacy_key ),
 					'legacy_key'       => $legacy_key,
 					'taxonomy'         => $taxonomy,
 					'all'              => 'all' === ( $s['match'] ?? 'any' ),
-					'chosen'           => 'chosen' === ( $s['offer'] ?? 'all' ) ? AAE_A_Loop_Grid::extract_ids( $s['terms'] ?? null ) : [],
+					// The Chosen list is stored per taxonomy (`terms_<slug>`),
+					// because the chips control resolves its taxonomy when
+					// controls are built — once per widget TYPE, not per
+					// instance — so one shared `terms` control could never know
+					// which taxonomy this instance picked. A plain `terms` is
+					// still read, for anything that sets the contract directly.
+					'chosen'           => 'chosen' === ( $s['offer'] ?? 'all' )
+						? AAE_A_Loop_Grid::extract_ids( $s[ 'terms_' . $taxonomy ] ?? ( $s['terms'] ?? null ) )
+						: [],
 					'include_children' => ! isset( $s['include_children'] ) || ! empty( $s['include_children'] ),
 				];
 
@@ -223,7 +519,7 @@ final class Loop_Filter_Auth {
 				return [
 					'type'       => 'search',
 					'element_id' => $element_id,
-					'url_key'    => self::url_key( $s, self::default_url_key( 'search', 'search', $legacy_key ) ),
+					'url_key'    => self::url_key( $s, self::default_url_key( 'search', 'search', $legacy_key ), $legacy_key ),
 					'legacy_key' => $legacy_key,
 					'title_only' => ! empty( $s['title_only'] ),
 				];
@@ -233,7 +529,7 @@ final class Loop_Filter_Auth {
 				return [
 					'type'       => 'author',
 					'element_id' => $element_id,
-					'url_key'    => self::url_key( $s, self::default_url_key( 'author', 'author', $legacy_key ) ),
+					'url_key'    => self::url_key( $s, self::default_url_key( 'author', 'author', $legacy_key ), $legacy_key ),
 					'legacy_key' => $legacy_key,
 					'chosen'     => 'chosen' === ( $s['offer'] ?? 'all' ) ? AAE_A_Loop_Grid::extract_ids( $s['authors'] ?? null ) : [],
 				];
@@ -257,12 +553,35 @@ final class Loop_Filter_Auth {
 						continue;
 					}
 					$options[ $key ] = [
+						// Carried only so a readout can NAME the active sort.
+						// Nothing in the authorisation path reads it — an option
+						// is chosen by key, and the label is display text the
+						// builder typed.
+						'label'      => sanitize_text_field( (string) ( $o['label'] ?? '' ) ),
 						'orderby'    => (string) ( $o['orderby'] ?? 'date' ),
 						'order'      => 'asc' === strtolower( (string) ( $o['order'] ?? 'desc' ) ) ? 'ASC' : 'DESC',
 						'meta_key'   => $meta_key,
 						'value_type' => (string) ( $o['value_type'] ?? 'char' ),
 					];
 				}
+				// The catalogue half of the contract: `sort_<key> => true` plus an
+				// optional `label_<key>`. An explicit JSON option of the same key
+				// wins — it is the more specific statement, and silently
+				// overwriting it with the generic one is how a builder's custom
+				// meta sort turns back into "Newest" without a word.
+				foreach ( self::SORT_CATALOGUE as $cat_key => $spec ) {
+					if ( empty( $s[ 'sort_' . $cat_key ] ) || isset( $options[ $cat_key ] ) ) {
+						continue;
+					}
+					$options[ $cat_key ] = [
+						'label'      => sanitize_text_field( (string) ( $s[ 'label_' . $cat_key ] ?? '' ) ),
+						'orderby'    => $spec['orderby'],
+						'order'      => $spec['order'],
+						'meta_key'   => '',
+						'value_type' => 'char',
+					];
+				}
+
 				if ( ! $options ) {
 					return null;
 				}
@@ -270,13 +589,40 @@ final class Loop_Filter_Auth {
 				return [
 					'type'       => 'sort',
 					'element_id' => $element_id,
-					'url_key'    => self::url_key( $s, self::default_url_key( 'sort', 'sort', $legacy_key ) ),
+					'url_key'    => self::url_key( $s, self::default_url_key( 'sort', 'sort', $legacy_key ), $legacy_key ),
 					'legacy_key' => $legacy_key,
 					'options'    => $options,
 				];
 		}
 
 		return null;
+	}
+
+	/**
+	 * The Min / Max a builder typed, or nothing.
+	 *
+	 * Both props default to 0, so `is_numeric()` alone reads an untouched pair
+	 * as a real ceiling of zero — which clamps every range filter to "at most
+	 * nothing" and matches no row on the site. The widget already settled the
+	 * convention when it decided whether to draw a slider track
+	 * (`$hi <= $lo` means "not typed"), and this is that same test on the
+	 * authorising side so the track and the gate cannot disagree about whether
+	 * bounds exist.
+	 *
+	 * @return array{0: ?float, 1: ?float}
+	 */
+	private static function authored_bounds( array $s ): array {
+		$min = isset( $s['min'] ) && is_numeric( $s['min'] ) ? (float) $s['min'] : null;
+		$max = isset( $s['max'] ) && is_numeric( $s['max'] ) ? (float) $s['max'] : null;
+
+		if ( null !== $max && null !== $min && $max <= $min ) {
+			return [ null, null ];
+		}
+		if ( null !== $max && null === $min && $max <= 0.0 ) {
+			return [ null, null ];
+		}
+
+		return [ $min, $max ];
 	}
 
 	private static function declare_meta( array $s, string $element_id ): ?array {
@@ -288,12 +634,23 @@ final class Loop_Filter_Auth {
 				return null;
 			}
 			$legacy_key = 'aae_' . $field;
+			$bounds     = self::authored_bounds( $s );
 			return [
 				'type'       => 'woo',
 				'element_id' => $element_id,
-				'url_key'    => self::url_key( $s, self::default_url_key( 'woo', $field, $legacy_key ) ),
+				'url_key'    => self::url_key( $s, self::default_url_key( 'woo', $field, $legacy_key ), $legacy_key ),
 				'legacy_key' => $legacy_key,
 				'field'      => $field,
+				// A WooCommerce price is a RANGE, so it has the same gate every
+				// other range has — and until this it had none: the woo branch
+				// returned before the bounds were read, and a price filter never
+				// reaches meta_clause(), where the clamp lives. The panel calls
+				// these fields the gate and the slider draws its track from
+				// them, so a shop capped at 200 answered a hand-typed
+				// ?price=300..400 with the products above it. Measured on the
+				// shop demo.
+				'min'        => $bounds[0],
+				'max'        => $bounds[1],
 			];
 		}
 
@@ -310,6 +667,7 @@ final class Loop_Filter_Auth {
 			'min'            => null,
 			'max'            => null,
 			'choices'        => [],
+			'choice_labels'  => [],
 			'multi_stored'   => ! empty( $s['multi_stored'] ),
 			'toggle_compare' => (string) ( $s['toggle_compare'] ?? 'exists' ),
 			'toggle_value'   => (string) ( $s['toggle_value'] ?? '1' ),
@@ -323,19 +681,34 @@ final class Loop_Filter_Auth {
 			$decl = array_merge( $decl, $acf );
 		} else {
 			$decl['key'] = sanitize_text_field( (string) ( $s['meta_key'] ?? '' ) );
-			if ( isset( $s['min'] ) && is_numeric( $s['min'] ) ) {
-				$decl['min'] = (float) $s['min'];
+			[ $decl['min'], $decl['max'] ] = self::authored_bounds( $s );
+			// One value per line, or an array of them. The panel's textarea
+			// gives a string; a preset JSON and the documented contract give an
+			// array. Casting a newline string with (array) would make the whole
+			// block ONE choice, which matches nothing and says nothing.
+			$choice_lines = $s['choices'] ?? [];
+			if ( is_string( $choice_lines ) ) {
+				$choice_lines = preg_split( '/
+|
+|
+/', $choice_lines );
 			}
-			if ( isset( $s['max'] ) && is_numeric( $s['max'] ) ) {
-				$decl['max'] = (float) $s['max'];
-			}
-			foreach ( (array) ( $s['choices'] ?? [] ) as $line ) {
+
+			foreach ( (array) $choice_lines as $line ) {
 				if ( ! is_string( $line ) ) {
 					continue;
 				}
 				$value = trim( (string) strtok( $line, '|' ) );
-				if ( '' !== $value ) {
-					$decl['choices'][] = $value;
+				if ( '' === $value ) {
+					continue;
+				}
+				$decl['choices'][] = $value;
+				// "value|Label" — the label half, kept for the readouts only.
+				// Authorisation still matches on the VALUE; a label can never
+				// widen what is allowed.
+				$label = trim( (string) substr( (string) $line, strlen( $value ) + 1 ) );
+				if ( '' !== $label ) {
+					$decl['choice_labels'][ $value ] = sanitize_text_field( $label );
 				}
 			}
 		}
@@ -354,7 +727,7 @@ final class Loop_Filter_Auth {
 		}
 
 		$legacy_key         = 'aae_meta_' . sanitize_key( $decl['key'] );
-		$decl['url_key']    = self::url_key( $s, self::default_url_key( 'meta', sanitize_key( $decl['key'] ), $legacy_key ) );
+		$decl['url_key']    = self::url_key( $s, self::default_url_key( 'meta', sanitize_key( $decl['key'] ), $legacy_key ), $legacy_key );
 		$decl['legacy_key'] = $legacy_key;
 		return $decl;
 	}
@@ -365,7 +738,7 @@ final class Loop_Filter_Auth {
 		$decl       = [
 			'type'       => 'date',
 			'element_id' => $element_id,
-			'url_key'    => self::url_key( $s, self::default_url_key( 'date', 'date', $legacy_key ) ),
+			'url_key'    => self::url_key( $s, self::default_url_key( 'date', 'date', $legacy_key ), $legacy_key ),
 			'legacy_key' => $legacy_key,
 			'source'     => $source,
 			'key'        => '',
@@ -468,9 +841,115 @@ final class Loop_Filter_Auth {
 		return null; // taxonomy (use the Taxonomy Filter), repeater, group, flexible, …
 	}
 
-	private static function url_key( array $s, string $default ): string {
+	private static function url_key( array $s, string $default, string $legacy = '' ): string {
 		$key = isset( $s['url_key'] ) && is_string( $s['url_key'] ) ? sanitize_key( $s['url_key'] ) : '';
-		return '' !== $key ? $key : $default;
+		return self::reserve_key( '' !== $key ? $key : $default, $legacy );
+	}
+
+	/**
+	 * WordPress owns a great many query-string names, and a filter that borrows
+	 * one does not merely fail to work — it hijacks the page it is standing on.
+	 * `?author=2` adds post_author to the MAIN query, which a page cannot
+	 * satisfy, so the request 404s before the grid renders at all (measured on
+	 * a plain page: /sample-page/ answers 200, /sample-page/?author=2 answers
+	 * 404). `search` is on that list too, and register_taxonomy() defaults
+	 * `query_var` to the taxonomy NAME — which is exactly the spelling a clean
+	 * mode taxonomy filter wants (`?product_cat=hoodies`).
+	 *
+	 * So every key comes through here: the clean defaults, a custom mode key and
+	 * a builder's own `url_key` field alike. A reserved name falls back to the
+	 * prefixed `aae_*` spelling, which is namespaced by construction and cannot
+	 * collide. The fallback is deterministic per request, and both the URL and
+	 * the AJAX body resolve through this same function, so the two never
+	 * disagree about which key a filter answers to.
+	 */
+	private static function reserve_key( string $key, string $legacy ): string {
+		$key = sanitize_key( $key );
+		if ( '' === $key ) {
+			return $legacy;
+		}
+		if ( ! self::is_reserved_key( $key ) ) {
+			return $key;
+		}
+		return '' !== $legacy ? $legacy : 'aae_' . $key;
+	}
+
+	/** Is this query-string name one WordPress (or this plugin) already answers to? */
+	public static function is_reserved_key( string $key ): bool {
+		$key = sanitize_key( $key );
+		return '' === $key || isset( self::reserved_keys()[ $key ] );
+	}
+
+	/**
+	 * The reserved set, as a lookup map. Read from WordPress itself wherever
+	 * possible so a core addition is covered without a release here; the
+	 * hardcoded floor keeps an early or CLI call from being LESS safe than a
+	 * real request, which is the direction that fails silently.
+	 *
+	 * @return array<string, true>
+	 */
+	private static function reserved_keys(): array {
+		static $map = null;
+		if ( null !== $map ) {
+			return $map;
+		}
+
+		$names = [
+			// WP::$public_query_vars, as of 7.1 — the floor, not the answer.
+			'm', 'p', 'posts', 'w', 'cat', 'withcomments', 'withoutcomments', 's',
+			'search', 'exact', 'sentence', 'calendar', 'page', 'paged', 'more',
+			'tb', 'pb', 'author', 'order', 'orderby', 'year', 'monthnum', 'day',
+			'hour', 'minute', 'second', 'name', 'category_name', 'tag', 'feed',
+			'author_name', 'pagename', 'page_id', 'error', 'attachment',
+			'attachment_id', 'subpost', 'subpost_id', 'preview', 'robots',
+			'favicon', 'taxonomy', 'term', 'cpage', 'post_type', 'embed',
+			// Ours: the Loop Grid's own pagination key.
+			'aae_page',
+		];
+
+		if ( isset( $GLOBALS['wp'] ) && $GLOBALS['wp'] instanceof \WP ) {
+			$names = array_merge(
+				$names,
+				(array) $GLOBALS['wp']->public_query_vars,
+				(array) $GLOBALS['wp']->private_query_vars
+			);
+		}
+
+		// A taxonomy's or post type's own query var. Only the REGISTERED
+		// query_var, never the object name: `category` registers as
+		// `category_name`, so `?category=x` is free and clean mode may use it —
+		// reserving the name instead would take the readable spelling away from
+		// the taxonomies that can safely have it.
+		if ( function_exists( 'get_taxonomies' ) ) {
+			foreach ( get_taxonomies( [], 'objects' ) as $tax ) {
+				if ( ! empty( $tax->query_var ) && is_string( $tax->query_var ) ) {
+					$names[] = $tax->query_var;
+				}
+			}
+		}
+		if ( function_exists( 'get_post_types' ) ) {
+			foreach ( get_post_types( [], 'objects' ) as $type ) {
+				if ( ! empty( $type->query_var ) && is_string( $type->query_var ) ) {
+					$names[] = $type->query_var;
+				}
+			}
+		}
+
+		/**
+		 * Query-string names a Loop Filter may never claim.
+		 *
+		 * @param string[] $names Reserved names.
+		 */
+		$names = (array) apply_filters( 'aae/loop_grid/reserved_url_keys', $names );
+
+		$map = [];
+		foreach ( $names as $name ) {
+			$name = sanitize_key( (string) $name );
+			if ( '' !== $name ) {
+				$map[ $name ] = true;
+			}
+		}
+		return $map;
 	}
 
 	/**
@@ -494,23 +973,18 @@ final class Loop_Filter_Auth {
 	}
 
 	/**
-	 * Reset the cached settings (useful during tests or after updates).
-	 */
-	public static function reset_settings(): void {
-		self::$settings = null;
-	}
-
-	/**
-	 * Resolve the default URL parameter key based on dashboard settings.
+	 * The URL parameter key a filter answers to, before the reservation check.
 	 *
-	 * Supported modes:
-	 * - 'clean' (default): natural, human-friendly parameter names without prefixes (e.g. price, rating, sort, search, taxonomy slug).
-	 * - 'prefixed': plugin-prefixed parameters (aae_price, aae_sort, aae_tax_*, etc.).
-	 * - 'custom': user-configured parameter names and/or custom prefix.
+	 * Three modes, set once for the site on the Loop Grid dashboard card:
+	 * - 'clean' (default): the subject's own readable name — `price`, `sort`,
+	 *   `product_cat`. Reserved names still fall back; see reserve_key().
+	 * - 'prefixed': the plugin-namespaced spelling, `aae_price` / `aae_tax_*`.
+	 * - 'custom': a per-subject key the user typed, else a shared prefix.
 	 *
 	 * @param string $type            Filter type ('woo', 'tax', 'search', 'sort', 'author', 'date', 'meta').
-	 * @param string $subject         Specific field, taxonomy, or meta key name.
-	 * @param string $legacy_fallback The original prefixed fallback ('aae_price', etc.).
+	 * @param string $subject         Field, taxonomy or meta key. Equal to $type
+	 *                                for the filters that have only one subject.
+	 * @param string $legacy_fallback The prefixed spelling ('aae_price', …).
 	 * @return string Sanitized URL parameter key.
 	 */
 	public static function default_url_key( string $type, string $subject, string $legacy_fallback ): string {
@@ -522,19 +996,24 @@ final class Loop_Filter_Auth {
 		}
 
 		if ( 'custom' === $mode ) {
-			$custom_key = '';
-			if ( 'woo' === $type && ! empty( $settings[ 'custom_' . $subject ] ) ) {
-				$custom_key = sanitize_key( (string) $settings[ 'custom_' . $subject ] );
-			} elseif ( ! empty( $settings[ 'custom_' . $type ] ) ) {
-				$custom_key = sanitize_key( (string) $settings[ 'custom_' . $type ] );
-			}
+			// Keyed by SUBJECT, never by type. A `custom_tax` would hand every
+			// taxonomy on the site the same URL key and silently merge Colour
+			// and Size into one filter; the same for `custom_meta`. Only the
+			// single-subject filters (search, sort, author, date) can be named
+			// this way, and for those the subject IS the type.
+			$custom_key = ! empty( $settings[ 'custom_' . $subject ] ) && is_string( $settings[ 'custom_' . $subject ] )
+				? sanitize_key( $settings[ 'custom_' . $subject ] )
+				: '';
 
 			if ( '' !== $custom_key ) {
 				return $custom_key;
 			}
 
+			// A blank per-subject key is the normal case, and it is what lets
+			// the prefix apply: a pre-filled one would always win and the
+			// prefix would appear to do nothing.
 			$prefix = isset( $settings['custom_prefix'] ) && is_string( $settings['custom_prefix'] )
-				? sanitize_key( $settings['custom_prefix'] )
+				? trim( sanitize_key( $settings['custom_prefix'] ), '_' )
 				: '';
 
 			if ( '' !== $prefix ) {
@@ -542,25 +1021,11 @@ final class Loop_Filter_Auth {
 			}
 		}
 
-		// 'clean' mode (default):
-		switch ( $type ) {
-			case 'woo':
-				return sanitize_key( $subject ); // price, rating, stock, onsale, featured
-			case 'search':
-				return 'search';
-			case 'sort':
-				return 'sort';
-			case 'author':
-				return 'author';
-			case 'date':
-				return 'date';
-			case 'tax':
-				return sanitize_key( $subject ); // category, product_cat, etc.
-			case 'meta':
-				return sanitize_key( $subject );
-			default:
-				return $legacy_fallback;
-		}
+		// 'clean', and the fallback for a custom mode with nothing filled in:
+		// price, rating, sort, search, author, date, the taxonomy slug, the
+		// meta key. All seven types resolve the same way — the subject IS the
+		// readable name — so there is nothing to branch on.
+		return sanitize_key( $subject );
 	}
 
 	/* ------------------------------------------------------------------ */
@@ -573,9 +1038,20 @@ final class Loop_Filter_Auth {
 	 *
 	 * Supports legacy fallback keys for backward compatibility with older URLs.
 	 *
+	 * $slashed says which of the two shapes this is, and it matters: WordPress
+	 * slash-escapes the superglobals, so $_GET needs one wp_unslash() — but the
+	 * AJAX body was already unslashed whole before being JSON-decoded, and
+	 * stripping it a second time eats a real backslash. Measured: a search for
+	 * `a` arrived as `ab` on a page change, so page 2 queried a different set
+	 * than page 1.
+	 *
+	 * @param array $declarations From declarations().
+	 * @param array $request      url_key => value.
+	 * @param bool  $slashed      True for a raw superglobal, false for a value
+	 *                            the caller already unslashed.
 	 * @return array<string, string> url_key => raw string
 	 */
-	public static function raw_from_request( array $declarations, array $request ): array {
+	public static function raw_from_request( array $declarations, array $request, bool $slashed = true ): array {
 		$raw = [];
 		foreach ( $declarations as $d ) {
 			$k = $d['url_key'];
@@ -596,18 +1072,50 @@ final class Loop_Filter_Auth {
 						$scalars[] = (string) $item;
 					}
 				}
-				$v = implode( ',', $scalars );
+				$v = implode( self::join_separator( $d ), $scalars );
 			}
 			if ( ! is_scalar( $v ) ) {
 				continue;
 			}
-			$v = (string) wp_unslash( $v );
+			$v = $slashed ? (string) wp_unslash( $v ) : (string) $v;
 			if ( '' === $v ) {
 				continue;
 			}
 			$raw[ $k ] = $v;
 		}
 		return $raw;
+	}
+
+	/**
+	 * How several values sent under one key are joined into this declaration's
+	 * own wire format.
+	 *
+	 * This exists so a plain HTML FORM can express a range. A range is one key
+	 * holding `min..max`, but a form has two boxes, and two boxes named
+	 * `price[]` arrive here as an array — which joined with a comma becomes
+	 * `10,500`, a value `parse_range()` refuses. So the widget would submit,
+	 * the page would reload, and the filter would be dropped in total silence:
+	 * exactly the failure mode a link-shaped control was chosen to avoid.
+	 *
+	 * Joining a RANGE declaration's array with `..` instead makes the form's
+	 * natural output the value the authoriser already understands, with no
+	 * second URL spelling to reserve, explain, or keep in step. It is also why
+	 * the range slider needs nothing of its own here: it writes the same two
+	 * boxes.
+	 *
+	 * Anything else still joins with a comma — a taxonomy or choice filter's
+	 * `?cat[]=a&cat[]=b` is a LIST, and it always has been.
+	 */
+	private static function join_separator( array $d ): string {
+		switch ( (string) ( $d['type'] ?? '' ) ) {
+			case 'date':
+				return '..';
+			case 'meta':
+				return 'range' === (string) ( $d['mode'] ?? '' ) ? '..' : ',';
+			case 'woo':
+				return 'price' === (string) ( $d['field'] ?? '' ) ? '..' : ',';
+		}
+		return ',';
 	}
 
 	/**
@@ -689,7 +1197,7 @@ final class Loop_Filter_Auth {
 					break;
 
 				case 'woo':
-					$woo = Loop_Query_Woo::authorize_field( $d['field'], $value );
+					$woo = Loop_Query_Woo::authorize_field( $d['field'], $value, $d );
 					if ( null !== $woo ) {
 						$f['woo'][ $d['field'] ] = $woo['value'];
 						$f['active'][ $key ]     = $woo['active'];
@@ -742,13 +1250,21 @@ final class Loop_Filter_Auth {
 		return $f['active'] ? $f : [];
 	}
 
-	/** The saved-page filters for a grid rendered on the frontend: URL -> authorised. */
-	public static function current( int $post_id, string $grid_id, string $post_type, array $request ): array {
+	/**
+	 * The saved-page filters for one grid: request in, authorised filters out.
+	 * The ONE pipeline — the first server render (URL) and the AJAX page change
+	 * (decoded body) both come through here, so a rule added to it holds on both
+	 * and page 2 can never be authorised on different terms than page 1.
+	 *
+	 * @param bool $slashed See raw_from_request(). $_GET is slashed; a decoded
+	 *                      AJAX payload is not.
+	 */
+	public static function current( int $post_id, string $grid_id, string $post_type, array $request, bool $slashed = true ): array {
 		$decls = self::declarations_for_document( $post_id, $grid_id );
 		if ( ! $decls ) {
 			return [];
 		}
-		return self::authorize( $decls, self::raw_from_request( $decls, $request ), $post_type );
+		return self::authorize( $decls, self::raw_from_request( $decls, $request, $slashed ), $post_type );
 	}
 
 	/* ------------------------------------------------------------------ */
@@ -891,6 +1407,7 @@ final class Loop_Filter_Auth {
 
 			case 'choice':
 				$picked = [];
+				$active = [];
 				foreach ( self::parts( $value ) as $v ) {
 					$v = sanitize_text_field( mb_substr( $v, 0, self::MAX_VALUE_LENGTH ) );
 					if ( '' === $v ) {
@@ -903,12 +1420,19 @@ final class Loop_Filter_Auth {
 						$exists = 'user' === $d['open_choice']
 							? get_user_by( 'id', (int) $v ) instanceof \WP_User
 							: ( ( $p = get_post( (int) $v ) ) && 'publish' === $p->post_status );
-						if ( ! $exists ) {
-							continue;
-						}
-					} elseif ( ! in_array( $v, $d['choices'], true ) ) {
+						// NOT `continue` — see NO_MATCH_ID. Dropping the only
+						// value sent drops the whole filter, and an unfiltered
+						// grid looks nothing like the empty one a valid-but-unused
+						// id produces, so the two answers together tell an
+						// anonymous visitor whether user id N exists.
+						$active[] = $v;
+						$picked[] = $exists ? $v : self::NO_MATCH_ID;
 						continue;
 					}
+					if ( ! in_array( $v, $d['choices'], true ) ) {
+						continue;
+					}
+					$active[] = $v;
 					$picked[] = $v;
 				}
 				if ( ! $picked ) {
@@ -925,7 +1449,11 @@ final class Loop_Filter_Auth {
 				} else {
 					$clause = [ 'key' => $d['key'], 'value' => $picked, 'compare' => 'IN', 'type' => $type ];
 				}
-				return [ 'clause' => $clause, 'active' => implode( ',', $picked ) ];
+				// `$active`, not `$picked`: for an open-choice filter the two
+				// differ exactly when an id did not resolve, and the chip should
+				// name what the visitor asked for rather than the sentinel that
+				// replaced it.
+				return [ 'clause' => $clause, 'active' => implode( ',', $active ) ];
 
 			case 'toggle':
 				if ( '1' !== $value && 'true' !== $value && 'on' !== $value ) {

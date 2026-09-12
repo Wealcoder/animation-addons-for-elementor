@@ -198,26 +198,20 @@ class AAE_A_Loop_Pagination extends Atomic_Element_Base {
 		$method  = isset( $s['load_method'] ) ? $s['load_method'] : 'ajax';
 		$current = isset( $ctx['paged'] ) ? (int) $ctx['paged'] : 1;
 		$total   = isset( $ctx['max_num_pages'] ) ? (int) $ctx['max_num_pages'] : 1;
-		$query   = isset( $ctx['query'] ) ? $ctx['query'] : [];
-		$grid_id = isset( $ctx['grid_id'] ) ? $ctx['grid_id'] : '';
 
-		$cfg = [
-			'method'  => $method,
-			'current' => $current,
-			'total'   => $total,
-			'grid'    => $grid_id,
-			// The document the grid was rendered from — the one whose saved data
-			// the AJAX handler searches for this grid id. get_the_ID() is only
-			// right when the grid sits in the queried post itself.
-			'postId'  => ! empty( $ctx['document_id'] ) ? (int) $ctx['document_id'] : get_the_ID(),
-			'query'   => $query,
-			// Active visitor filters (url_key => value): posted back on every
-			// page change so page 2 is page 2 OF THE FILTERED SET.
-			// (object) so an empty map encodes as {} — JS reads it as an object.
-			'filters' => (object) ( isset( $ctx['filters'] ) && is_array( $ctx['filters'] ) ? $ctx['filters'] : [] ),
-			'nonce'   => wp_create_nonce( 'aae_loop_grid_front' ),
-			'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-		];
+		// Identity (grid id, the declaring document, the viewed post, the
+		// captured query vars, the active filters, nonce + endpoint) comes from
+		// the grid's own builder — the same one the grid element publishes, so
+		// the two can never disagree about which grid they address. Only the
+		// three pagination-specific keys are added here.
+		$cfg = array_merge(
+			AAE_A_Loop_Grid::endpoint_config( $ctx ),
+			[
+				'method'  => $method,
+				'current' => $current,
+				'total'   => $total,
+			]
+		);
 
 		return array_merge( $this->build_base_template_context(), [
 			'pg_method'  => $method,

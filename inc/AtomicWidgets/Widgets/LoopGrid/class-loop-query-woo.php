@@ -48,24 +48,22 @@ final class Loop_Query_Woo {
 	/** Sort orderby values that only the lookup table can answer. */
 	public const SORT_KEYS = [ 'price', 'popularity', 'rating' ];
 
-	private const QV_PRICE = 'aae_woo_price';
-	private const QV_SORT  = 'aae_woo_sort';
-
-	private static bool $registered = false;
+	/**
+	 * The private query vars that carry a price range and a lookup-table sort
+	 * into posts_clauses. PUBLIC because the gate that decides whether to load
+	 * this class at all lives in Atomic::init_hooks(). That gate spells both
+	 * names as literals — reading a constant would mean loading this class on
+	 * every WP_Query on the site — so the two are a MIRROR: rename one and the
+	 * gate goes silently dead, the JOIN is never added and the visitor's price
+	 * range is simply ignored. verify-loop-filter-seam.php asserts they match.
+	 */
+	public const QV_PRICE = 'aae_woo_price';
+	public const QV_SORT  = 'aae_woo_sort';
 
 	public static function active(): bool {
 		return class_exists( 'WooCommerce' )
 			&& function_exists( 'wc_get_product_visibility_term_ids' )
 			&& taxonomy_exists( 'product_visibility' );
-	}
-
-	/** Hook the lookup-table clauses. Safe to call more than once. */
-	public static function register(): void {
-		if ( self::$registered ) {
-			return;
-		}
-		self::$registered = true;
-		add_filter( 'posts_clauses', [ self::class, 'posts_clauses' ], 10, 2 );
 	}
 
 	/** Is this args array a product query (string or array post_type)? */
@@ -99,6 +97,63 @@ final class Loop_Query_Woo {
 		return $out;
 	}
 
+	/** Memoised store-wide price bounds. @see price_bounds() */
+	private static $price_bounds = null;
+
+	/**
+	 * The cheapest and dearest effective price in the catalogue.
+	 *
+	 * Only a range SLIDER needs this: a slider has to know where its track
+	 * starts and ends before a visitor has chosen anything, and a builder who
+	 * has not typed bounds should still get a usable one rather than two bare
+	 * number boxes that read as the slider being broken.
+	 *
+	 * It is NOT the gate, and must never become it. `Loop_Filter_Auth` clamps an
+	 * incoming range to the WIDGET's own Min/Max exactly as before, so a
+	 * hand-typed `?price=0..999999` is bounded by the builder's decision and not
+	 * by whatever happens to be in stock today. This answers a drawing question
+	 * only.
+	 *
+	 * Deliberately store-wide rather than scoped to the grid's current filters:
+	 * a track whose ends move every time a category is picked makes the handle
+	 * positions mean something different on each render, and the visitor's own
+	 * selection appears to jump. One aggregate over the price index, memoised
+	 * per request, and only ever asked for by a page that draws a slider.
+	 *
+	 * @return array{0: float, 1: float}|null Null when unanswerable.
+	 */
+	public static function price_bounds(): ?array {
+		if ( null !== self::$price_bounds ) {
+			return self::$price_bounds ?: null;
+		}
+		self::$price_bounds = false;
+
+		if ( ! self::active() ) {
+			return null;
+		}
+
+		global $wpdb;
+		$table = $wpdb->prefix . 'wc_product_meta_lookup';
+
+		// The same index every price filter and price sort already reads, so a
+		// store whose prices work at all can answer this.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$row = $wpdb->get_row( "SELECT MIN(min_price) AS lo, MAX(max_price) AS hi FROM {$table} WHERE min_price IS NOT NULL" );
+
+		if ( ! $row || null === $row->lo || null === $row->hi ) {
+			return null;
+		}
+
+		$lo = (float) $row->lo;
+		$hi = (float) $row->hi;
+		if ( $hi <= $lo ) {
+			return null;
+		}
+
+		self::$price_bounds = [ $lo, $hi ];
+		return self::$price_bounds;
+	}
+
 	/**
 	 * Authorise one visitor value for a WC field (Loop_Filter_Auth rule 3: the
 	 * widget fixes the field, the visitor supplies a value, and that value is
@@ -106,7 +161,7 @@ final class Loop_Query_Woo {
 	 *
 	 * @return array{value: mixed, active: string}|null
 	 */
-	public static function authorize_field( string $field, string $value ): ?array {
+	public static function authorize_field( string $field, string $value, array $decl = [] ): ?array {
 		switch ( $field ) {
 			case 'price':
 				$range = Loop_Filter_Auth::parse_range( $value );
@@ -116,6 +171,30 @@ final class Loop_Query_Woo {
 				[ $min, $max ] = $range;
 				$min = null === $min ? null : max( 0.0, $min );
 				$max = null === $max ? null : max( 0.0, $max );
+
+				// The builder's own bounds, when they typed any. A price filter
+				// is the one range that never passed through meta_clause(),
+				// where every other range is clamped, so it accepted anything
+				// until this — including a hand-typed span entirely outside the
+				// track its own slider draws.
+				//
+				// An OPEN end is clamped too, and that is the half worth being
+				// deliberate about: `?price=200..` on a shop capped at 200 means
+				// "everything above the ceiling", which is not a narrower
+				// question than the builder allowed — it is the one they
+				// excluded. Closing it against the ceiling turns it into a
+				// filter that matches the top of the allowed range instead.
+				$lo = isset( $decl['min'] ) && is_numeric( $decl['min'] ) ? (float) $decl['min'] : null;
+				$hi = isset( $decl['max'] ) && is_numeric( $decl['max'] ) ? (float) $decl['max'] : null;
+				if ( null !== $lo ) {
+					$min = null === $min ? null : max( $min, $lo );
+					$max = null === $max ? null : max( $max, $lo );
+				}
+				if ( null !== $hi ) {
+					$min = null === $min ? null : min( $min, $hi );
+					$max = null === $max ? $hi : min( $max, $hi );
+				}
+
 				if ( null !== $min && null !== $max && $min > $max ) {
 					return null;
 				}
@@ -159,10 +238,24 @@ final class Loop_Query_Woo {
 		$terms     = wc_get_product_visibility_term_ids();
 		$tax_query = [];
 
-		// --- visibility, always ---------------------------------------------
-		$not_in = [ ! empty( $args['s'] ) ? ( $terms['exclude-from-search'] ?? 0 ) : ( $terms['exclude-from-catalog'] ?? 0 ) ];
-		if ( 'yes' === get_option( 'woocommerce_hide_out_of_stock_items' ) && ! empty( $terms['outofstock'] ) ) {
-			$not_in[] = $terms['outofstock'];
+		// --- visibility, on every product query ------------------------------
+		// WC_Query only shapes the MAIN query, so without this a Loop Grid shows
+		// catalog-hidden and (where the store hides them) out-of-stock products
+		// that no other listing on the site would show.
+		//
+		// It is applied unconditionally, which does change what an existing grid
+		// renders — a strip deliberately pinning hidden products, say. The
+		// filter is the way back for that site; the default matches every other
+		// product listing WooCommerce draws.
+		//
+		// @param bool  $apply Whether to exclude hidden / out-of-stock products.
+		// @param array $args  The query args being built.
+		$not_in = [];
+		if ( (bool) apply_filters( 'aae/loop_grid/woo_visibility', true, $args ) ) {
+			$not_in = [ ! empty( $args['s'] ) ? ( $terms['exclude-from-search'] ?? 0 ) : ( $terms['exclude-from-catalog'] ?? 0 ) ];
+			if ( 'yes' === get_option( 'woocommerce_hide_out_of_stock_items' ) && ! empty( $terms['outofstock'] ) ) {
+				$not_in[] = $terms['outofstock'];
+			}
 		}
 		$not_in = array_values( array_filter( array_map( 'intval', $not_in ) ) );
 		if ( $not_in ) {

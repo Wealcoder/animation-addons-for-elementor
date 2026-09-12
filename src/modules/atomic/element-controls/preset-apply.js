@@ -105,8 +105,17 @@ export function isAutoPresetSuppressed(elementId) {
   return _autoPresetSuppressed.has(elementId);
 }
 
-/** Cache key for a type, honouring the alias table. */
-function presetCacheKey(type) {
+/**
+ * Cache key for a type, honouring the alias table.
+ *
+ * Exported because it is also the `element_type` the SERVER resolved a preset
+ * under: the requirements installer names a preset by (type, id) and the server
+ * re-reads that preset's own requires block, so it has to be handed the key the
+ * list was fetched with. Sending the element's raw type instead would find
+ * nothing for an aliased type (a slide item), and the install would 404 on a
+ * preset that is plainly on screen.
+ */
+export function presetCacheKey(type) {
   return _fetchedPresetsByType[type] !== undefined ? type : PRESET_TYPE_ALIASES[type] || type;
 }
 
@@ -121,6 +130,30 @@ function presetCacheKey(type) {
 export function getCachedPresetsForType(type) {
   const list = _fetchedPresetsByType[presetCacheKey(type)];
   return Array.isArray(list) ? list : [];
+}
+
+/**
+ * Replace one cached preset's `requires_status` in place.
+ *
+ * After an install the panel holds a list that says this design still needs a
+ * post type the site now has. Re-fetching the whole type would be the obvious
+ * fix and is the wrong one: the list is memoised per session and shared with
+ * the auto-preset watcher, so a refetch would drop every entry's identity
+ * mid-dialog. The endpoint already returns the freshly re-read status — the
+ * only true thing about the row that changed — so that is what is written back.
+ *
+ * A no-op when the type was never cached (a failed read is never memoised).
+ */
+export function updateCachedPresetStatus(type, presetId, status) {
+  const list = _fetchedPresetsByType[presetCacheKey(type)];
+  if (!Array.isArray(list)) {
+    return;
+  }
+
+  const entry = list.find((p) => p && p.id === presetId);
+  if (entry) {
+    entry.requires_status = status;
+  }
 }
 
 /**

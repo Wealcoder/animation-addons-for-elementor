@@ -826,6 +826,17 @@ class WCF_Admin_Init
 		wp_send_json($return_message);
 	}
 
+	/**
+	 * Forget taxonomies the Loop Grid remembers but nothing can use any more.
+	 *
+	 * NOT a cache flush, however much the shape suggests one. The remembered
+	 * list is what keeps a `tax_<slug>` prop declared while its taxonomy's
+	 * plugin is switched off, and Elementor erases any prop the schema does not
+	 * declare on the next save — so deleting the row outright would destroy
+	 * every saved filter for that taxonomy on every page, silently. Only a slug
+	 * that is BOTH unregistered and unreferenced by any saved document is
+	 * dropped; the response says what was kept and why.
+	 */
 	public function flush_known_taxonomies()
 	{
 		check_ajax_referer('wcf_admin_nonce', 'nonce');
@@ -834,12 +845,40 @@ class WCF_Admin_Init
 			wp_send_json_error(esc_html__('Permission denied.', 'animation-addons-for-elementor'));
 		}
 
-		delete_option('aae_loop_grid_known_taxonomies');
-		if (class_exists('\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid')) {
-			\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::flush_taxonomy_memo();
+		// Element classes are require'd during Elementor's element registration,
+		// which does not run on a plain admin-ajax request.
+		if (! class_exists('\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid')) {
+			$file = WCF_ADDONS_PATH . 'inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php';
+			if (file_exists($file)) {
+				require_once $file;
+			}
 		}
 
-		wp_send_json_success(array('message' => esc_html__('Taxonomy cache flushed successfully.', 'animation-addons-for-elementor')));
+		if (! class_exists('\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid')) {
+			wp_send_json_error(array('message' => esc_html__('The Loop Grid widget is not available.', 'animation-addons-for-elementor')));
+		}
+
+		$result  = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::forget_unused_taxonomies();
+		$removed = count($result['removed']);
+		$in_use  = count($result['kept_in_use']);
+
+		if ($removed) {
+			/* translators: %d: number of taxonomies forgotten. */
+			$message = sprintf(_n('Forgot %d unused taxonomy.', 'Forgot %d unused taxonomies.', $removed, 'animation-addons-for-elementor'), $removed);
+		} else {
+			$message = esc_html__('Nothing to forget — every remembered taxonomy is either registered or still used by a page.', 'animation-addons-for-elementor');
+		}
+
+		if ($in_use) {
+			/* translators: %d: number of taxonomies kept because pages still use them. */
+			$message .= ' ' . sprintf(_n('%d was kept because a page still filters by it.', '%d were kept because pages still filter by them.', $in_use, 'animation-addons-for-elementor'), $in_use);
+		}
+
+		wp_send_json_success(array(
+			'message' => $message,
+			'removed' => $result['removed'],
+			'kept'    => $result['kept_in_use'],
+		));
 	}
 
 	public function notice_store()

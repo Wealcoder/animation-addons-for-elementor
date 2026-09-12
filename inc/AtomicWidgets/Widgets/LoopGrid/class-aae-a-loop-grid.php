@@ -79,6 +79,15 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 	 */
 	public const KNOWN_TAXONOMIES_OPTION = 'aae_loop_grid_known_taxonomies';
 
+	/**
+	 * The element types that ARE a loop grid.
+	 *
+	 * The slider extends this class and carries its own type, so anything
+	 * looking for "the grid on this page" has to accept both — matching the
+	 * plain one alone is how a slider silently reports no grid at all.
+	 */
+	public const GRID_TYPES = [ 'e-aae-a-loop-grid', 'e-aae-a-loop-grid-slider' ];
+
 	/** Per-request memo for get_query_taxonomies(). */
 	private static ?array $taxonomy_memo = null;
 
@@ -284,12 +293,24 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 				'label'       => (string) ( $tax->label ?? $name ),
 				'object_type' => array_values( array_map( 'strval', (array) ( $tax->object_type ?? [] ) ) ),
 			];
-			if ( ( $known[ $name ] ?? null ) !== $entry ) {
+			$prev = $known[ $name ] ?? null;
+			// Compare the object_type ONLY. `label` is display-only — it is read
+			// back just to name a stub whose taxonomy is gone — and it is
+			// LOCALISED, so comparing it turns every request served in a
+			// different language into an update_option(): a bilingual site would
+			// write this row on every anonymous page view that holds a grid,
+			// flip-flopping between the two spellings forever.
+			if ( null === $prev || ( $prev['object_type'] ?? null ) !== $entry['object_type'] ) {
 				$known[ $name ] = $entry;
 				$changed        = true;
 			}
 		}
-		if ( $changed ) {
+		// Only ever write from a context where a filter could actually be SAVED.
+		// The evidence exists to keep a saved `tax_*` prop declared, and a prop
+		// can only be saved through the editor, which is an admin request — so a
+		// visitor's page view has nothing to contribute and should not be paying
+		// for a DB write.
+		if ( $changed && self::may_record_taxonomies() ) {
 			update_option( self::KNOWN_TAXONOMIES_OPTION, $known, false );
 		}
 		foreach ( $known as $name => $entry ) {
@@ -326,6 +347,77 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 	/** Forget the per-request taxonomy memo (a test registering a taxonomy mid-run). */
 	public static function flush_taxonomy_memo(): void {
 		self::$taxonomy_memo = null;
+	}
+
+	/** Is this a request in which the ratchet may record what it sees? */
+	private static function may_record_taxonomies(): bool {
+		if ( is_admin() ) {
+			return true;
+		}
+		if ( class_exists( '\Elementor\Plugin' ) ) {
+			$editor = \Elementor\Plugin::$instance->editor ?? null;
+			if ( $editor && method_exists( $editor, 'is_edit_mode' ) && $editor->is_edit_mode() ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Prune remembered taxonomies that are BOTH unregistered and unreferenced.
+	 *
+	 * Deliberately not a "clear the option" button. This row is not a cache: it
+	 * is the evidence that keeps a `tax_<slug>` prop declared while its taxonomy
+	 * is away, and Props_Parser::validate() erases any prop the schema does not
+	 * declare on the next save — so dropping a slug some page still references
+	 * destroys that page's saved filter, silently, which is the exact bug the
+	 * ratchet was written to prevent. A slug is therefore only forgotten when
+	 * its taxonomy is gone AND no saved document mentions its prop.
+	 *
+	 * @return array{removed: string[], kept_registered: string[], kept_in_use: string[]}
+	 */
+	public static function forget_unused_taxonomies(): array {
+		global $wpdb;
+
+		$known   = self::known_taxonomies();
+		$removed = [];
+		$live    = [];
+		$in_use  = [];
+
+		foreach ( array_keys( $known ) as $name ) {
+			$name = (string) $name;
+			if ( taxonomy_exists( $name ) ) {
+				$live[] = $name;
+				continue;
+			}
+
+			$needle = '"' . self::tax_prop_name( $name ) . '"';
+			$hit    = $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT meta_id FROM {$wpdb->postmeta} WHERE meta_key = '_elementor_data' AND meta_value LIKE %s LIMIT 1",
+					'%' . $wpdb->esc_like( $needle ) . '%'
+				)
+			);
+
+			if ( $hit ) {
+				$in_use[] = $name;
+				continue;
+			}
+
+			unset( $known[ $name ] );
+			$removed[] = $name;
+		}
+
+		if ( $removed ) {
+			update_option( self::KNOWN_TAXONOMIES_OPTION, $known, false );
+			self::flush_taxonomy_memo();
+		}
+
+		return [
+			'removed'         => $removed,
+			'kept_registered' => $live,
+			'kept_in_use'     => $in_use,
+		];
 	}
 
 	/** Prop name for a taxonomy's term filter, e.g. `tax_category`. */
@@ -595,7 +687,7 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 		$per_page  = isset( $s['posts_per_page'] ) ? (int) $s['posts_per_page'] : 6;
 		$paged     = self::current_page();
 		$is_editor = \Elementor\Plugin::$instance->editor->is_edit_mode();
-		$post_type = isset( $s['post_type'] ) && is_string( $s['post_type'] ) ? $s['post_type'] : 'post';
+		$post_type = self::effective_post_type( $s );
 
 		// Visitor filters off the URL, authorised against the filter widgets the
 		// SAVED document declares for this grid. The editor never filters: the
@@ -623,9 +715,33 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 		// for the Result Count widget, and the first paint must match it.
 		$total     = null;
 		$max_pages = 1;
-		if ( ! $is_editor && ( $filters || $this->has_pagination_child() ) ) {
+		$primed = $is_editor ? null : self::peek_summary( $document_id, $this->get_id() );
+		if ( $primed ) {
+			// A readout ABOVE the grid has already asked, and it computed from
+			// these same saved settings through this same builder. Re-counting
+			// would only risk the two disagreeing.
+			$total     = (int) $primed['total'];
+			$max_pages = (int) $primed['max_pages'];
+		} elseif ( ! $is_editor && ( $filters || $this->has_pagination_child() || $this->has_readout_sibling( $document_id ) ) ) {
 			$total     = self::count_total( (array) $this->get_data( 'settings' ), $query_args );
 			$max_pages = self::pages_for_total( $total, $query_args );
+
+			// A Result Count sitting BELOW the grid then costs nothing — and one
+			// sitting above has already primed this, so the two always show the
+			// same number.
+			self::prime_summary(
+				$document_id,
+				$this->get_id(),
+				[
+					'grid_id'   => $this->get_id(),
+					'post_type' => $post_type,
+					'filters'   => $filters['active'] ?? [],
+					'total'     => $total,
+					'max_pages' => $max_pages,
+					'paged'     => $paged,
+					'per_page'  => max( 1, (int) ( $query_args['posts_per_page'] ?? 6 ) ),
+				]
+			);
 		}
 
 		return [
@@ -641,6 +757,11 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 					// Active Filters / Result Count widgets read them.
 					'filters'       => $filters['active'] ?? [],
 					'document_id'   => $document_id,
+					// The VIEWED post, which is not the document once a grid
+					// sits in a theme-builder template. The Related source
+					// anchors relatedness on this one; the AJAX handler needs
+					// the document to find the grid, so both have to travel.
+					'context_id'    => (int) get_the_ID(),
 					// The load_method setting is the Pagination child's own —
 					// intentionally NOT published here, so changing it doesn't
 					// invalidate this element's render context (which would re-render
@@ -660,6 +781,540 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 				],
 			],
 		];
+	}
+
+	/**
+	 * Everything a browser needs to ask the server for this grid again.
+	 *
+	 * Published on the grid ITSELF as well as on the Pagination child, because
+	 * a grid that carries a filter but no pagination is an ordinary shape — a
+	 * six-item portfolio with a category filter and no second page — and until
+	 * this existed, such a grid had no identity anywhere in the DOM and nothing
+	 * could address it. One builder for both so the two can never describe the
+	 * same grid differently.
+	 *
+	 * Carries no secrets: the nonce is the front-end read nonce the endpoint
+	 * already checks, and every value is something the page just rendered from.
+	 *
+	 * @param array $ctx The Loop Grid render context.
+	 * @return array<string, mixed>
+	 */
+	public static function endpoint_config( array $ctx ): array {
+		return [
+			'grid'      => isset( $ctx['grid_id'] ) ? (string) $ctx['grid_id'] : '',
+			// The document whose saved data DECLARES this grid — not the post
+			// being read, which is a different thing inside a theme-builder
+			// template and is carried separately.
+			'postId'    => ! empty( $ctx['document_id'] ) ? (int) $ctx['document_id'] : (int) get_the_ID(),
+			'contextId' => ! empty( $ctx['context_id'] ) ? (int) $ctx['context_id'] : (int) get_the_ID(),
+			'query'     => isset( $ctx['query'] ) ? $ctx['query'] : [],
+			// (object) so an empty map encodes as {} — JS reads it as an object.
+			'filters'   => (object) ( isset( $ctx['filters'] ) && is_array( $ctx['filters'] ) ? $ctx['filters'] : [] ),
+			'nonce'     => wp_create_nonce( 'aae_loop_grid_front' ),
+			'ajaxUrl'   => admin_url( 'admin-ajax.php' ),
+		];
+	}
+
+	/* ------------------------------------------------------------------ */
+	/* What a SIBLING widget can learn about a grid                        */
+	/* ------------------------------------------------------------------ */
+
+	/**
+	 * Per-request summary cache: "<document id>|<grid id>" => summary.
+	 *
+	 * @var array<string, array>
+	 */
+	private static array $summaries = [];
+
+	/** Facet counts, memoised per grid and per EXCLUDED filter key. */
+	private static array $facets = [];
+
+	/**
+	 * The largest result set a facet count will resolve to an id list for.
+	 *
+	 * Above it `facet_counts()` answers null — no count at all — rather than
+	 * loading tens of thousands of ids to draw a sidebar. A ceiling that
+	 * refuses is honest; one that silently falls back to the site-wide term
+	 * counts would change what the numbers MEAN halfway up a collection, which
+	 * nobody would ever notice.
+	 */
+	public const MAX_FACET_SCOPE = 3000;
+
+	/**
+	 * What a widget standing OUTSIDE the grid can know about it — the filtered
+	 * total, the page count, and which filters are active.
+	 *
+	 * The Render_Context stack cannot answer this: it reaches DESCENDANTS only,
+	 * and a Result Count or an Active Filters bar is a sibling — usually ABOVE
+	 * the grid, so it renders before the grid has computed anything at all.
+	 *
+	 * Both paths therefore go through one memo. The grid primes it from
+	 * define_render_context() with the numbers it already paid for, and a
+	 * sibling that asks first computes them from the SAME saved settings
+	 * through the SAME builder, so whichever runs first, the readout and the
+	 * grid can never disagree — and the count is paid for at most once per
+	 * request per grid.
+	 *
+	 * @return array{grid_id: string, post_type: string, filters: array, total: int, max_pages: int, paged: int, per_page: int}|null
+	 */
+	public static function summary_for( int $document_id, string $grid_id ): ?array {
+		if ( $document_id < 1 || '' === $grid_id ) {
+			return null;
+		}
+
+		$memo_key = $document_id . '|' . $grid_id;
+		if ( array_key_exists( $memo_key, self::$summaries ) ) {
+			return self::$summaries[ $memo_key ];
+		}
+
+		$raw = self::grid_settings_in_document( $document_id, $grid_id );
+		if ( null === $raw ) {
+			self::$summaries[ $memo_key ] = null;
+			return null;
+		}
+
+		$post_type = self::effective_post_type( $raw );
+		$paged     = self::current_page();
+
+		// request_args(), not $_GET: on an AJAX re-render the live request is
+		// admin-ajax.php and carries none of the visitor's filter state, and the
+		// endpoint has already told the authoriser which page it is rendering.
+		// It is ALWAYS unslashed, hence $slashed = false.
+		$filters = Loop_Filter_Auth::current(
+			$document_id,
+			$grid_id,
+			$post_type,
+			Loop_Filter_Auth::request_args(),
+			false
+		);
+
+		$query_args = self::build_query_args( $raw, $paged, $filters );
+		$total      = self::count_total( $raw, $query_args );
+
+		$summary = [
+			'grid_id'   => $grid_id,
+			'post_type' => $post_type,
+			'filters'   => $filters['active'] ?? [],
+			'total'     => $total,
+			'max_pages' => self::pages_for_total( $total, $query_args ),
+			'paged'     => $paged,
+			'per_page'  => max( 1, (int) ( $query_args['posts_per_page'] ?? 6 ) ),
+		];
+
+		self::$summaries[ $memo_key ] = $summary;
+		return $summary;
+	}
+
+	/**
+	 * How many results each option of ONE filter would leave, given every
+	 * OTHER filter currently applied.
+	 *
+	 * This is the difference between a count that helps and a count that lies.
+	 * A taxonomy term's own `count` is site-wide: it says how many posts carry
+	 * the term anywhere, not how many are in this grid, and certainly not how
+	 * many survive the three filters the visitor has already set. "Footwear
+	 * (12)" beside a result set of four is not a number anyone can act on.
+	 *
+	 * The rule is the standard one for faceted search and it is worth stating
+	 * because it looks like a bug until you know it: a filter's own key is
+	 * EXCLUDED from the scope it counts against. Otherwise picking Footwear
+	 * would drop every other category to zero — each option has to answer "what
+	 * if I picked this instead", not "what is true now".
+	 *
+	 * COST, and why this is opt-in. It resolves the scope to an id list, which
+	 * is a full query with no LIMIT, then one grouped count over it — per filter
+	 * widget, per request. That is affordable on the collections these grids are
+	 * usually pointed at and is not affordable on a very large one, so it is off
+	 * unless a builder asks, and `MAX_FACET_SCOPE` is a hard ceiling above which
+	 * this returns NULL rather than an answer.
+	 *
+	 * NULL means "not answerable", never zero. A widget must render no count at
+	 * all rather than a confident 0 — the same distinction the extension usage
+	 * scan draws, and for the same reason: absent is a fact, zero is a claim.
+	 *
+	 * @param array $decl One declaration from Loop_Filter_Auth.
+	 * @return array<string, int>|null value => count, keyed by the slug or
+	 *                                 nicename the filter puts in the URL.
+	 */
+	public static function facet_counts( int $document_id, string $grid_id, array $decl ): ?array {
+		$type = (string) ( $decl['type'] ?? '' );
+		if ( ! in_array( $type, [ 'tax', 'author' ], true ) ) {
+			// A range, a search and a sort have no enumerable options to count.
+			return null;
+		}
+
+		$key      = (string) ( $decl['url_key'] ?? '' );
+		$memo_key = $document_id . '|' . $grid_id . '|' . $key;
+		if ( array_key_exists( $memo_key, self::$facets ) ) {
+			return self::$facets[ $memo_key ];
+		}
+		self::$facets[ $memo_key ] = null;
+
+		$ids = self::facet_scope_ids( $document_id, $grid_id, $key );
+		if ( null === $ids ) {
+			return null;
+		}
+		if ( ! $ids ) {
+			// A genuinely empty scope IS answerable: every option would leave
+			// nothing, and saying so is more useful than saying nothing.
+			self::$facets[ $memo_key ] = [];
+			return [];
+		}
+
+		$counts = 'tax' === $type
+			? self::count_by_term( $ids, (string) $decl['taxonomy'] )
+			: self::count_by_author( $ids );
+
+		self::$facets[ $memo_key ] = $counts;
+		return $counts;
+	}
+
+	/**
+	 * The post ids this grid would show with every filter applied EXCEPT one.
+	 *
+	 * @return int[]|null Null when the scope is too large to count against.
+	 */
+	private static function facet_scope_ids( int $document_id, string $grid_id, string $except_key ): ?array {
+		$raw = self::grid_settings_in_document( $document_id, $grid_id );
+		if ( null === $raw ) {
+			return null;
+		}
+
+		$post_type = self::effective_post_type( $raw );
+		$args      = Loop_Filter_Auth::request_args();
+		unset( $args[ $except_key ] );
+
+		$filters = Loop_Filter_Auth::current( $document_id, $grid_id, $post_type, $args, false );
+
+		$query_args                   = self::build_query_args( $raw, 1, $filters );
+		$query_args['fields']         = 'ids';
+		$query_args['posts_per_page'] = self::MAX_FACET_SCOPE + 1;
+		$query_args['no_found_rows']  = true;
+		// A visitor-chosen sort cannot change WHICH posts match, only their
+		// order, and ordering a list we are about to count is pure cost.
+		unset( $query_args['orderby'], $query_args['order'], $query_args['meta_key'] );
+
+		$ids = get_posts( $query_args );
+		if ( ! is_array( $ids ) ) {
+			return null;
+		}
+
+		// Over the ceiling: refuse rather than answer slowly. The extra row
+		// requested above is what makes "more than the ceiling" detectable
+		// without a second count.
+		return count( $ids ) > self::MAX_FACET_SCOPE ? null : array_map( 'intval', $ids );
+	}
+
+	/**
+	 * @param int[] $ids
+	 * @return array<string, int> term slug => count
+	 */
+	private static function count_by_term( array $ids, string $taxonomy ): array {
+		global $wpdb;
+
+		$placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
+
+		// One grouped query rather than a count per term: a sidebar with thirty
+		// categories would otherwise issue thirty queries to draw one list.
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT t.slug, COUNT(*) AS n
+				 FROM {$wpdb->term_relationships} tr
+				 INNER JOIN {$wpdb->term_taxonomy} tt ON tt.term_taxonomy_id = tr.term_taxonomy_id
+				 INNER JOIN {$wpdb->terms} t ON t.term_id = tt.term_id
+				 WHERE tt.taxonomy = %s AND tr.object_id IN ({$placeholders})
+				 GROUP BY t.slug",
+				array_merge( [ $taxonomy ], $ids )
+			)
+		);
+		// phpcs:enable
+
+		$out = [];
+		foreach ( (array) $rows as $row ) {
+			$out[ (string) $row->slug ] = (int) $row->n;
+		}
+		return $out;
+	}
+
+	/**
+	 * @param int[] $ids
+	 * @return array<string, int> user_nicename => count
+	 */
+	private static function count_by_author( array $ids ): array {
+		global $wpdb;
+
+		$placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
+
+		// Keyed by NICENAME, because that is what the author filter puts in the
+		// URL — ids are refused on both sides so the endpoint cannot become a
+		// user-enumeration oracle, and a count keyed by id would have to be
+		// translated back by whoever read it.
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT u.user_nicename AS slug, COUNT(*) AS n
+				 FROM {$wpdb->posts} p
+				 INNER JOIN {$wpdb->users} u ON u.ID = p.post_author
+				 WHERE p.ID IN ({$placeholders})
+				 GROUP BY u.user_nicename",
+				$ids
+			)
+		);
+		// phpcs:enable
+
+		$out = [];
+		foreach ( (array) $rows as $row ) {
+			$out[ (string) $row->slug ] = (int) $row->n;
+		}
+		return $out;
+	}
+
+	/** Drop the facet memo (tests, or a second render inside one request). */
+	public static function reset_facets(): void {
+		self::$facets = [];
+	}
+
+	/**
+	 * Hand the memo the numbers the grid has already computed, so a readout
+	 * below it costs nothing. Never overwrites: a summary already in the memo
+	 * was built from the same settings and is the one a readout above the grid
+	 * has already rendered from.
+	 */
+	public static function prime_summary( int $document_id, string $grid_id, array $summary ): void {
+		if ( $document_id < 1 || '' === $grid_id ) {
+			return;
+		}
+		$memo_key = $document_id . '|' . $grid_id;
+		if ( ! array_key_exists( $memo_key, self::$summaries ) ) {
+			self::$summaries[ $memo_key ] = $summary;
+		}
+	}
+
+	/**
+	 * The memoised summary for a grid, WITHOUT computing one.
+	 *
+	 * The grid itself asks this so that a readout rendered above it does not
+	 * make the page pay for the same count twice.
+	 */
+	public static function peek_summary( int $document_id, string $grid_id ): ?array {
+		$memo_key = $document_id . '|' . $grid_id;
+		return self::$summaries[ $memo_key ] ?? null;
+	}
+
+	/** Drop the summary memo (tests, or a second render inside one request). */
+	public static function reset_summaries(): void {
+		self::$summaries = [];
+	}
+
+	/**
+	 * Does anything on this page READ this grid's total?
+	 *
+	 * The count is a second scan of the result set, so it is only paid for when
+	 * something will display it. Pagination was the original reason; a Result
+	 * Count widget is the other one, and it is usually not a descendant, so
+	 * has_pagination_child() cannot see it.
+	 */
+	private function has_readout_sibling( int $document_id ): bool {
+		if ( $document_id < 1 ) {
+			return false;
+		}
+
+		static $memo = [];
+		$key = $document_id . '|' . $this->get_id();
+		if ( isset( $memo[ $key ] ) ) {
+			return $memo[ $key ];
+		}
+
+		$grid_id = $this->get_id();
+		$hit     = false;
+		$walk    = static function ( $els ) use ( &$walk, &$hit, $grid_id ) {
+			foreach ( (array) $els as $el ) {
+				if ( $hit || ! is_array( $el ) ) {
+					continue;
+				}
+				$type = (string) ( $el['widgetType'] ?? ( $el['elType'] ?? '' ) );
+				if ( Loop_Filter_Auth::TYPE_RESULT_COUNT === $type ) {
+					$s      = self::unwrap( (array) ( $el['settings'] ?? [] ) );
+					$target = trim( (string) ( $s['target_grid'] ?? '' ) );
+					if ( '' === $target || $target === $grid_id ) {
+						$hit = true;
+						return;
+					}
+				}
+				if ( ! empty( $el['elements'] ) ) {
+					$walk( $el['elements'] );
+				}
+			}
+		};
+
+		if ( class_exists( '\Elementor\Plugin' ) ) {
+			$doc = \Elementor\Plugin::$instance->documents->get( $document_id );
+			if ( $doc ) {
+				$walk( (array) $doc->get_elements_data() );
+			}
+		}
+
+		$memo[ $key ] = $hit;
+		return $hit;
+	}
+
+	/**
+	 * The post type a grid's query really targets, asked from OUTSIDE it.
+	 *
+	 * Cheaper than summary_for() and answers a different question: a widget that
+	 * only needs to know "posts or products" — an Author filter listing the
+	 * people who publish this type — should not trigger a count of the result
+	 * set to find out.
+	 */
+	public static function post_type_for( int $document_id, string $grid_id ): string {
+		$primed = self::peek_summary( $document_id, $grid_id );
+		if ( $primed ) {
+			return (string) $primed['post_type'];
+		}
+		$raw = self::grid_settings_in_document( $document_id, $grid_id );
+		return null === $raw ? 'post' : self::effective_post_type( $raw );
+	}
+
+	/**
+	 * The raw ($$type-wrapped) settings of one Loop Grid inside a saved
+	 * document, or null when that id is not a grid on that page.
+	 *
+	 * @return array|null
+	 */
+	private static function grid_settings_in_document( int $document_id, string $grid_id ): ?array {
+		$found = null;
+		$walk  = static function ( $els ) use ( &$walk, &$found, $grid_id ) {
+			foreach ( (array) $els as $el ) {
+				if ( null !== $found ) {
+					return;
+				}
+				if ( ! is_array( $el ) ) {
+					continue;
+				}
+				$type = (string) ( $el['widgetType'] ?? ( $el['elType'] ?? '' ) );
+				if ( (string) ( $el['id'] ?? '' ) === $grid_id
+					&& in_array( $type, self::GRID_TYPES, true ) ) {
+					$found = (array) ( $el['settings'] ?? [] );
+					return;
+				}
+				if ( ! empty( $el['elements'] ) ) {
+					$walk( $el['elements'] );
+				}
+			}
+		};
+
+		if ( class_exists( '\Elementor\Plugin' ) ) {
+			$doc = \Elementor\Plugin::$instance->documents->get( $document_id );
+			if ( $doc ) {
+				$walk( (array) $doc->get_elements_data() );
+			}
+		}
+
+		return $found;
+	}
+
+	/**
+	 * The id of the page's ONLY Loop Grid, or '' when there is none or several.
+	 *
+	 * This is what makes a filter or a readout work the moment it is dropped:
+	 * the common page has one grid, and asking a builder to copy an element id
+	 * before anything renders is a setup step for a case that usually does not
+	 * exist. A page with two grids is exactly where the field gets filled in.
+	 *
+	 * Lives here rather than in each widget because every filter and readout
+	 * asks the same question, and two implementations of "which grid" is a
+	 * control that points at a different grid than the one it reports on.
+	 */
+	public static function only_grid_id( int $document_id ): string {
+		static $memo = [];
+		if ( isset( $memo[ $document_id ] ) ) {
+			return $memo[ $document_id ];
+		}
+
+		$found = [];
+		$walk  = static function ( $els ) use ( &$walk, &$found ) {
+			foreach ( (array) $els as $el ) {
+				if ( ! is_array( $el ) ) {
+					continue;
+				}
+				$type = (string) ( $el['widgetType'] ?? ( $el['elType'] ?? '' ) );
+				if ( in_array( $type, self::GRID_TYPES, true ) ) {
+					$found[] = (string) ( $el['id'] ?? '' );
+				}
+				if ( ! empty( $el['elements'] ) ) {
+					$walk( $el['elements'] );
+				}
+			}
+		};
+
+		if ( class_exists( '\Elementor\Plugin' ) ) {
+			$doc = \Elementor\Plugin::$instance->documents->get( $document_id );
+			if ( $doc ) {
+				$walk( (array) $doc->get_elements_data() );
+			}
+		}
+
+		$memo[ $document_id ] = ( 1 === count( $found ) ) ? $found[0] : '';
+		return $memo[ $document_id ];
+	}
+
+	/**
+	 * The post type the grid's query actually targets.
+	 *
+	 * This is NOT the `post_type` SETTING for the two special sources: those
+	 * store the literal 'related' / 'current_query'. The authoriser needs the
+	 * real one — it refuses WooCommerce sort keys unless the type is 'product'
+	 * and counts an author's published posts OF that type — so handing it
+	 * 'current_query' silently drops both on a shop archive, which is exactly
+	 * where visitor filtering matters most.
+	 *
+	 * @param array $raw_settings The grid's settings (wrapped or plain), incl.
+	 *                            the internal `_context_post_id` / `_qv` the
+	 *                            AJAX handler adds.
+	 */
+	public static function effective_post_type( array $raw_settings ): string {
+		$s    = self::unwrap( $raw_settings );
+		$type = isset( $s['post_type'] ) && is_string( $s['post_type'] ) && '' !== $s['post_type']
+			? sanitize_key( $s['post_type'] )
+			: 'post';
+
+		if ( 'related' === $type ) {
+			$anchor = self::resolve_context_post_id( $s );
+			$post   = $anchor ? get_post( $anchor ) : null;
+			return $post ? (string) $post->post_type : 'post';
+		}
+
+		if ( 'current_query' !== $type ) {
+			return $type;
+		}
+
+		$vars = ( isset( $s['_qv'] ) && is_array( $s['_qv'] ) )
+			? self::sanitize_query_vars( $s['_qv'] )
+			: self::current_query_vars();
+
+		if ( ! empty( $vars['post_type'] ) ) {
+			$types = (array) $vars['post_type'];
+			$first = sanitize_key( (string) reset( $types ) );
+			if ( '' !== $first ) {
+				return $first;
+			}
+		}
+
+		// A taxonomy archive names no post type of its own — /product-category/x/
+		// parses to just [ product_cat => x ] — but the taxonomy is registered
+		// against one, and that is the honest answer for a shop archive.
+		foreach ( $vars as $key => $unused ) {
+			$tax = is_string( $key ) ? get_taxonomy( $key ) : false;
+			if ( $tax && ! empty( $tax->object_type ) ) {
+				$first = sanitize_key( (string) reset( $tax->object_type ) );
+				if ( '' !== $first ) {
+					return $first;
+				}
+			}
+		}
+
+		return 'post';
 	}
 
 	/**
@@ -735,7 +1390,7 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 		// pre-query carries every filter above (tax/include/date/meta AND the
 		// visitor's). An explicit visitor sort wins over pinning for that
 		// request: a pinned-first list sorted by price is neither.
-		$visitor_sorted = ! empty( $filters['sort'] ) || ! empty( $filters['woo']['sort'] );
+		$visitor_sorted = self::sort_overrides_order( $s, $filters );
 		if ( ! in_array( $post_type, [ 'related', 'current_query' ], true ) && ! empty( $s['sticky_first'] ) && ! $visitor_sorted ) {
 			$sticky = array_map( 'intval', (array) get_option( 'sticky_posts', [] ) );
 			if ( $sticky ) {
@@ -797,20 +1452,41 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 			$args['meta_query'] = Loop_Query_Woo::and_group( (array) ( $args['meta_query'] ?? [] ), $meta_new ); // phpcs:ignore WordPress.DB.SlowDBQuery
 		}
 
-		// Search.
+		// Search. Title-only goes through WP's OWN `search_columns` query var
+		// (core since 6.2; this plugin requires 6.6), never a posts_search
+		// rewrite: WP builds the same fragment with one column instead of
+		// three, so everything else it puts there survives — above all the
+		// `AND post_password = ''` guard it appends for a logged-out visitor.
+		// Replacing the fragment dropped that guard, and a password-protected
+		// post's title and link then rendered in the grid for anyone.
 		if ( ! empty( $filters['s'] ) && is_string( $filters['s'] ) ) {
 			$args['s'] = $filters['s'];
 			if ( ! empty( $filters['title_only'] ) ) {
-				$args['aae_title_only'] = true; // honoured by posts_search_title_only()
+				$args['search_columns'] = [ 'post_title' ];
 			}
 		}
 
-		// Authors — the builder's exclude list still wins.
+		// Authors — the builder's own list bounds the visitor's, BOTH ways.
+		//
+		// The exclude list was always subtracted. The include list was not, and
+		// that was the one place in this whole merge where a visitor's value
+		// WIDENED what the saved page allows: a grid scoped to two authors could
+		// be filtered to a third, because this line assigned `author__in` over
+		// the builder's instead of intersecting with it. Every other filter here
+		// can only ever narrow (tax and meta nest under an AND, dates append),
+		// and that is the property the authoriser exists to guarantee.
 		if ( ! empty( $filters['author'] ) ) {
 			$ids = array_map( 'intval', (array) $filters['author'] );
 			if ( ! empty( $args['author__not_in'] ) ) {
 				$ids = array_values( array_diff( $ids, array_map( 'intval', (array) $args['author__not_in'] ) ) );
 			}
+			if ( ! empty( $args['author__in'] ) ) {
+				$ids = array_values( array_intersect( $ids, array_map( 'intval', (array) $args['author__in'] ) ) );
+			}
+			// `[0]` is "no author", i.e. match nothing — the honest answer when
+			// the visitor picked somebody this grid does not offer. Leaving the
+			// key off instead would show every author, which is the failure
+			// being fixed rather than a fallback from it.
 			$args['author__in'] = $ids ? $ids : [ 0 ];
 		}
 
@@ -845,38 +1521,30 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 	}
 
 	/**
-	 * Title-only search: replaces WP's title + excerpt + content LIKE with a
-	 * title-only one for a query carrying `aae_title_only`. Registered once by
-	 * register_query_hooks(); a no-op for every other query.
+	 * Has the visitor's sort actually CHANGED the order the builder saved?
 	 *
-	 * @param string    $search The WHERE fragment WP built.
-	 * @param \WP_Query $query
+	 * Not merely "is a sort key present": a Sort widget writes its selected
+	 * option into the URL on every render, including the option that matches the
+	 * grid's own order, so testing for presence would switch Sticky First off on
+	 * every page that carries a Sort widget — even for a visitor who never
+	 * touched it. A pinned list re-sorted by price is neither pinned nor sorted,
+	 * which is the case this exists for; a sort that asks for the order the grid
+	 * already had asks for nothing.
 	 */
-	public static function posts_search_title_only( $search, $query ) {
-		if ( ! $query instanceof \WP_Query || ! $query->get( 'aae_title_only' ) ) {
-			return $search;
+	private static function sort_overrides_order( array $s, array $filters ): bool {
+		// A lookup-table sort (price / popularity / rating) has no builder
+		// equivalent at all, so it always overrides.
+		if ( ! empty( $filters['woo']['sort'] ) ) {
+			return true;
 		}
-		$terms = (array) $query->get( 'search_terms' );
-		if ( ! $terms ) {
-			return $search;
+		if ( empty( $filters['sort']['orderby'] ) ) {
+			return false;
 		}
-		global $wpdb;
-		$parts = [];
-		foreach ( $terms as $term ) {
-			$parts[] = $wpdb->prepare( "{$wpdb->posts}.post_title LIKE %s", '%' . $wpdb->esc_like( (string) $term ) . '%' );
-		}
-		return ' AND (' . implode( ' AND ', $parts ) . ') ';
-	}
 
-	/** Query-level hooks the seam relies on. Idempotent. */
-	public static function register_query_hooks(): void {
-		static $done = false;
-		if ( $done ) {
-			return;
-		}
-		$done = true;
-		add_filter( 'posts_search', [ self::class, 'posts_search_title_only' ], 10, 2 );
-		Loop_Query_Woo::register();
+		$orderby = (string) $filters['sort']['orderby'];
+		$order   = 'ASC' === strtoupper( (string) ( $filters['sort']['order'] ?? 'DESC' ) ) ? 'ASC' : 'DESC';
+
+		return $orderby !== self::sanitize_order_by( $s ) || $order !== self::sanitize_order( $s );
 	}
 
 	/** The builder's own query for a plain post-type Source, up to and including the offset. */

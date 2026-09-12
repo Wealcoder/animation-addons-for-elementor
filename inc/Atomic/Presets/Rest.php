@@ -56,6 +56,31 @@ final class Rest {
 		);
 	}
 
+	/**
+	 * Attach "what does this site still need for this design to work".
+	 *
+	 * Computed here rather than fetched by the panel on demand, because the
+	 * answer is what decides whether a card is offered plainly or with a
+	 * requirement line, and a second round trip per card would arrive after the
+	 * list had already painted. Every value it reads is a local lookup — an
+	 * active-plugin check, post_type_exists(), ACF's own — so this costs no
+	 * query and no request.
+	 *
+	 * The RAW `requires` is replaced by its normalised form on the way out: the
+	 * panel and the installer must not be looking at two different readings of
+	 * the same untrusted block.
+	 */
+	private function with_requires_status( array $entry ): array {
+		if ( empty( $entry['requires'] ) ) {
+			return $entry;
+		}
+
+		$entry['requires']        = Requires::normalize( $entry['requires'] );
+		$entry['requires_status'] = Requires::status( $entry['requires'] );
+
+		return $entry;
+	}
+
 	public function get_presets( \WP_REST_Request $request ): \WP_REST_Response {
 		$type     = (string) $request->get_param( 'element_type' );
 		$category = (string) $request->get_param( 'category' );
@@ -77,7 +102,10 @@ final class Rest {
 
 		return new \WP_REST_Response(
 			[
-				'presets' => array_values( $result['presets'] ),
+				'presets' => array_values( array_map(
+					[ $this, 'with_requires_status' ],
+					$result['presets']
+				) ),
 				/*
 				 * A remote outage and a type that genuinely has no presets both
 				 * produce an empty `presets` array on a 200 response, so the
