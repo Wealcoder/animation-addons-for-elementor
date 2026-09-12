@@ -3500,6 +3500,87 @@ atomic style can carry:
 Both were applied to the shared `ui_card_grid()` / `ui_hero()`, so all three
 demos got them.
 
+### What WooCommerce 11.1.0 already does that we can use — surveyed 2026-09-12
+
+Read out of the INSTALLED plugin, which is the runtime. A GitHub trunk clone was
+attempted and is not worth retrying on this machine: `git clone` of
+woocommerce/woocommerce dies with *"cannot write keep file … Filename too long"*
+under the scratchpad path. The installed copy is the honest source anyway — the
+same rule the Elementor clone carries.
+
+**1. Native colour/image swatches exist, and we now read them.** SHIPPED — see
+the Woo family section above. `wc-visual` since 10.9.0, term meta `color` +
+`image`. `wc_get_attribute_types()` returns `select` alone until the
+`wc-visual-attribute` feature is on AND the theme is a block theme
+(`FeaturesController` sets `disable_ui` otherwise), so most shops with swatches
+today have them from a plugin — which writes the same two keys.
+
+**2. Our price clause agrees with WooCommerce's, exactly.** Worth recording
+because the two are written differently and look like they might not.
+
+| | |
+|---|---|
+| `WC_Query::price_filter_post_clauses()` | `AND NOT ( filterMax < min_price OR filterMin > max_price )` |
+| `Loop_Query_Woo` | `AND max_price >= filterMin AND min_price <= filterMax` |
+
+De Morgan says those are one overlap test, and counting real lookup rows agrees:
+0–100 → 21/21, 150–250 → 17/17, 300+ → 9/9. Both are an OVERLAP, not a
+"cheapest variation under X" — which is the right answer for a variable product
+and the thing a hand-rolled price filter usually gets wrong.
+
+**3. WooCommerce's own layered-nav keys are FREE for us to adopt.** Measured:
+`min_price`, `max_price`, `rating_filter` and `filter_stock_status` are **not**
+registered query vars (`WC_Query` reads them straight out of `$_GET`), so
+`Loop_Filter_Auth::reserve_key()` returns every one of them unchanged. WC also
+applies them to the MAIN query only — `pre_get_posts` bails on
+`! is_main_query()` — so today a `?min_price=10` on a page carrying our grid
+does nothing to it.
+
+That is a concrete, un-built interop feature: accepting WooCommerce's own
+spellings as ALIASES would make an existing shop's bookmarked and marketed URLs
+drive our grid, and would let WooCommerce's own filter widgets and blocks sit on
+the same page as ours without the two disagreeing. The full contract is
+`min_price` · `max_price` · `rating_filter` (comma list) ·
+`filter_stock_status` · `filter_<attribute>` + `query_type_<attribute>`
+(`and`/`or`) · `orderby`.
+
+**4. `product_brand` already works and nothing had to change.** It is registered
+and public in 11.1.0, so `get_query_taxonomies()` unions it in on its own —
+measured: `category, pa_colour, pa_size, post_tag, product_brand, product_cat,
+product_tag`. A Brand facet is a Taxonomy Filter with `taxonomy = product_brand`
+and no code at all. `product_shipping_class` is registered but NOT public, so it
+is correctly absent — it would need the `pa_*` treatment to be offered.
+
+**5. Every one of our nine Loop Filter widgets now has a WooCommerce block
+counterpart** — `ProductFilterTaxonomy`, `ProductFilterAttribute`,
+`ProductFilterPrice`, `ProductFilterPriceSlider`, `ProductFilterRating`,
+`ProductFilterStatus`, `ProductFilterActive`, `ProductFilterChips`,
+`ProductFilterClearButton`, plus `ProductCollection` and
+`AddToCartWithOptions`. All present in 11.1.0.
+
+That is competitive context, not a threat: they are BLOCKS, for a block theme's
+Product Collection. They cannot be placed on an Elementor Loop Grid, they only
+filter products, and our family filters any post type. Two things in them are
+worth borrowing rather than the whole shape:
+
+- `AddToCartWithOptions\VariationSelectorAttribute::get_available_variation_values_by_attribute_slug()`
+  is the same technique as our `paintAvailability()` — resolve which values are
+  still reachable given the other rows' picks. Confirms the approach.
+- They drive the client through the **WP Interactivity API**
+  (`wp_interactivity_state()` / `data-wp-interactive`), and their cart button is
+  marked `wc-interactive` precisely so WooCommerce's own legacy jQuery handler
+  skips it (`.add_to_cart_button:not(.wc-interactive)`). Our swatch button
+  deliberately does NOT carry that class, which is what keeps it on the legacy
+  handler's path and is why it needs no runtime of WooCommerce's.
+
+**6. The Store API is the route to a richer cart, and is not free.**
+`/wc/store/v1/cart/*` carries `CartAddItem`, `CartUpdateItem`,
+`CartRemoveItem`, coupons and shipping — everything a mini-cart or a quantity
+stepper that reflects the real cart would need. The cost is a nonce header
+(`X-WC-Store-API-Nonce`), which is exactly what `?wc-ajax=add_to_cart` does not
+require and why the current path adds no new surface. Worth it for a Mini Cart
+widget; not worth it for an Add to Cart button.
+
 ### Fixtures and testing
 
 - `verify-woo-widgets.php` (57) — registration, both Twig traps across both
