@@ -250,6 +250,17 @@
 		pagination.classList.toggle('aae-pg-last', current >= total);
 	}
 
+	// The RESULT count, not the page count: with nothing found max_pages is
+	// still 1, so a bar reading "1" would sit under an empty grid. Only called
+	// where the count is actually known — a number we were not given must not
+	// be guessed at, or a working bar disappears.
+	function updateEmptyState(pagination, found) {
+		if (typeof found !== 'number') {
+			return;
+		}
+		pagination.classList.toggle('aae-pg-empty', found === 0);
+	}
+
 	function goToPage(ctx, paged) {
 		var cfg = ctx.cfg;
 		if (paged < 1 || paged > ctx.total || paged === ctx.current || ctx.busy) {
@@ -382,6 +393,10 @@
 			}
 			rebuildNumbers(ctx.numbersEl, ctx.current, ctx.total);
 			updatePrevNextState(ctx.pagination, ctx.current, ctx.total);
+			// `total` in this event is the RESULT count (max_pages is carried
+			// separately as `maxPages`), which is exactly what decides whether
+			// the bar has anything to page through.
+			updateEmptyState(ctx.pagination, d.total);
 			if (ctx.loadMoreEl) {
 				// Load More hides itself on the last page; a narrower filter can
 				// put us back on a set that HAS more, so this restores it too.

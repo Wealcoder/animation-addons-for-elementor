@@ -4,7 +4,7 @@
    editor keeps every piece visible/styleable). NO ternary — Twing breaks. #}
 {% set pg_c = pg_current | default(1) %}
 {% set pg_t = pg_total | default(1) %}
-<div class="{{ classes }} {{ editor_classes | default('') }}{% if pg_c <= 1 %} aae-pg-first{% endif %}{% if pg_c >= pg_t %} aae-pg-last{% endif %}"
+<div class="{{ classes }} {{ editor_classes | default('') }}{% if pg_c <= 1 %} aae-pg-first{% endif %}{% if pg_c >= pg_t %} aae-pg-last{% endif %}{% if pg_empty | default(false) %} aae-pg-empty{% endif %}"
     data-id="{{ id }}"
     data-element_type="{{ type }}"
     data-e-type="{{ type }}"

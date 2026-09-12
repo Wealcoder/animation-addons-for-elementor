@@ -217,6 +217,11 @@ class AAE_A_Loop_Pagination extends Atomic_Element_Base {
 			'pg_method'  => $method,
 			'pg_current' => $current,
 			'pg_total'   => $total,
+			// A page bar over an EMPTY result set is noise — and after an
+			// instant filter it is the commonest way to reach this state. The
+			// result COUNT, not the page count: with nothing found max_pages is
+			// still 1, so a bar reading "1" sat under every empty grid.
+			'pg_empty'   => 0 === (int) ( $ctx['total'] ?? 1 ),
 			'pg_config'  => wp_json_encode( $cfg ),
 		] );
 	}

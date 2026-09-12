@@ -233,6 +233,26 @@ final class Loop_Filter_Auth {
 		'meta_value_num',
 	];
 
+	/**
+	 * WooCommerce's own `?orderby=` values, mapped onto our sort catalogue.
+	 *
+	 * Deliberately ONLY the four that are WooCommerce's and nobody else's.
+	 * `orderby` is a WordPress public query var, so `date` / `title` /
+	 * `menu_order` already mean something on any archive and are read by other
+	 * plugins too — adopting those would let an unrelated `?orderby=title` drive
+	 * a blog's Sort widget, which is a surprise, not interoperability. These
+	 * four can only have come from a WooCommerce catalog-ordering control.
+	 *
+	 * `rand` and `relevance` are absent: `resolve_sort()` refuses `rand`
+	 * outright, and relevance without a search term orders nothing.
+	 */
+	private const WC_ORDERBY = [
+		'popularity' => 'popularity',
+		'rating'     => 'rating',
+		'price'      => 'price_asc',
+		'price-desc' => 'price_desc',
+	];
+
 	/** Per-document declaration cache: post id => [ grid id => declarations ]. */
 	private static array $memo = [];
 
@@ -1029,6 +1049,266 @@ final class Loop_Filter_Auth {
 	}
 
 	/* ------------------------------------------------------------------ */
+	/* WooCommerce URL compatibility                                       */
+	/* ------------------------------------------------------------------ */
+
+	/**
+	 * Should WooCommerce's own layered-nav URL keys be read as aliases?
+	 *
+	 * ON by default, and that is safe for one specific reason: an alias only
+	 * ever feeds a filter the SAVED PAGE already declares, and the value still
+	 * passes through the same authoriser as any other. It adds a spelling, not
+	 * a capability — so a URL that previously did nothing now drives the filter
+	 * the visitor was plainly asking for, and nothing that was not already
+	 * filterable becomes filterable.
+	 *
+	 * The switch exists for the site that deliberately wants its grid to ignore
+	 * the shop's own filter UI — a hand-picked strip on a shop page, say.
+	 */
+	private static function wc_aliases_enabled(): bool {
+		$settings = self::get_settings();
+		$on       = ! isset( $settings['wc_aliases'] ) || ! empty( $settings['wc_aliases'] );
+
+		/**
+		 * Filter whether WooCommerce's own URL keys drive our filters.
+		 *
+		 * @param bool $on Default true.
+		 */
+		return (bool) apply_filters( 'aae/loop_grid/wc_url_aliases', $on );
+	}
+
+	/**
+	 * One scalar out of a request array, unslashed and capped.
+	 *
+	 * $slashed is threaded through for the same reason raw_from_request() takes
+	 * it: $_GET is slash-escaped by WordPress and a decoded AJAX payload is not,
+	 * and stripping the second one twice eats a real backslash.
+	 */
+	private static function request_scalar( array $request, string $key, bool $slashed ): string {
+		if ( ! isset( $request[ $key ] ) || ! is_scalar( $request[ $key ] ) ) {
+			return '';
+		}
+		$v = (string) $request[ $key ];
+		$v = $slashed ? (string) wp_unslash( $v ) : $v;
+		return mb_substr( trim( $v ), 0, self::MAX_VALUE_LENGTH );
+	}
+
+	/**
+	 * WooCommerce's URL key for an attribute taxonomy.
+	 *
+	 * `WC_Query` builds it as `filter_` . sanitize_title( attribute_name ), and
+	 * attribute_name is the slug WITHOUT the `pa_` prefix — so `pa_colour`
+	 * answers to `filter_colour`, not `filter_pa_colour`. Only `pa_*` has one;
+	 * `product_cat` and `product_tag` are ordinary registered query vars that
+	 * WordPress itself resolves.
+	 */
+	private static function wc_attribute_key( string $taxonomy ): string {
+		if ( 0 !== strpos( $taxonomy, 'pa_' ) || strlen( $taxonomy ) < 4 ) {
+			return '';
+		}
+		return 'filter_' . sanitize_title( substr( $taxonomy, 3 ) );
+	}
+
+	/**
+	 * This declaration's value, read from WooCommerce's own spelling.
+	 *
+	 * Returns it in OUR wire format, so everything downstream — parse_range(),
+	 * the builder's bounds clamp, resolve_terms(), resolve_sort() — is
+	 * unchanged and no rule has a second implementation.
+	 *
+	 * @return string|null null = WooCommerce said nothing we can express.
+	 */
+	public static function alias_value( array $decl, array $request, bool $slashed = false ): string {
+		if ( ! self::wc_aliases_enabled() ) {
+			return '';
+		}
+		return (string) ( self::wc_alias_value( $decl, $request, $slashed ) ?? '' );
+	}
+
+	private static function wc_alias_value( array $d, array $request, bool $slashed ): ?string {
+		switch ( (string) ( $d['type'] ?? '' ) ) {
+			case 'tax':
+				$key = self::wc_attribute_key( (string) ( $d['taxonomy'] ?? '' ) );
+				if ( '' === $key ) {
+					return null;
+				}
+				// A comma list of term slugs, which is already our own shape.
+				$v = self::request_scalar( $request, $key, $slashed );
+				return '' === $v ? null : $v;
+
+			case 'sort':
+				$v = self::request_scalar( $request, 'orderby', $slashed );
+				return self::WC_ORDERBY[ $v ] ?? null;
+
+			case 'woo':
+				return self::wc_alias_woo( $d, $request, $slashed );
+		}
+
+		return null;
+	}
+
+	/** The three WooCommerce product facts that have a layered-nav spelling. */
+	private static function wc_alias_woo( array $d, array $request, bool $slashed ): ?string {
+		switch ( (string) ( $d['field'] ?? '' ) ) {
+			case 'price':
+				$min = self::request_scalar( $request, 'min_price', $slashed );
+				$max = self::request_scalar( $request, 'max_price', $slashed );
+				if ( '' === $min && '' === $max ) {
+					return null;
+				}
+				// TWO keys composing ONE range — exactly what the two-box
+				// slider form already posts, so parse_range() and the
+				// builder's own bounds clamp both apply untouched. An open
+				// end (`?max_price=50`) is legal and stays open.
+				return $min . '..' . $max;
+
+			case 'rating':
+				// `rating_filter=4,5` is a comma list of stars, and so is ours.
+				$v = self::request_scalar( $request, 'rating_filter', $slashed );
+				return '' === $v ? null : $v;
+
+			case 'stock':
+				// WooCommerce's is a multi-select over instock / outofstock /
+				// onbackorder; ours is a single "in stock only" toggle. Only
+				// the one selection that means the same thing is translated.
+				// Anything else — "out of stock", or two statuses at once —
+				// has no honest equivalent here, and answering it with the
+				// nearest filter would show a narrower set than the URL says.
+				$v = strtolower( self::request_scalar( $request, 'filter_stock_status', $slashed ) );
+				return 'instock' === $v ? '1' : null;
+		}
+
+		return null;
+	}
+
+	/**
+	 * The WooCommerce keys that actually fed a declaration on this request.
+	 *
+	 * Read by the filter widgets, which must DROP them from every link they
+	 * build. Without that the interop is half-done in the worst way: landing on
+	 * `?min_price=10`, the Active Filters chip's remove-link clears our own
+	 * `price` key, `min_price=10` survives in the URL, and the filter the
+	 * visitor just removed comes straight back.
+	 *
+	 * Only the CONSUMED ones — an `?orderby=` on a page with no Sort widget is
+	 * not ours to strip, and on a WooCommerce shop archive it is what drives
+	 * the store's own ordering.
+	 *
+	 * @return string[]
+	 */
+	public static function consumed_alias_keys( array $declarations, array $request, bool $slashed = true ): array {
+		if ( ! $declarations || ! self::wc_aliases_enabled() ) {
+			return [];
+		}
+
+		$keys = [];
+		foreach ( $declarations as $d ) {
+			// Our own spelling wins, and then nothing of theirs was consumed.
+			if ( isset( $request[ $d['url_key'] ] )
+				|| ( ! empty( $d['legacy_key'] ) && isset( $request[ $d['legacy_key'] ] ) ) ) {
+				continue;
+			}
+			if ( null === self::wc_alias_value( $d, $request, $slashed ) ) {
+				continue;
+			}
+
+			switch ( (string) ( $d['type'] ?? '' ) ) {
+				case 'tax':
+					$attr   = self::wc_attribute_key( (string) $d['taxonomy'] );
+					$keys[] = $attr;
+					$keys[] = 'query_type_' . substr( $attr, 7 );
+					break;
+				case 'sort':
+					$keys[] = 'orderby';
+					break;
+				case 'woo':
+					if ( 'price' === ( $d['field'] ?? '' ) ) {
+						$keys[] = 'min_price';
+						$keys[] = 'max_price';
+					} elseif ( 'rating' === ( $d['field'] ?? '' ) ) {
+						$keys[] = 'rating_filter';
+					} elseif ( 'stock' === ( $d['field'] ?? '' ) ) {
+						$keys[] = 'filter_stock_status';
+					}
+					break;
+			}
+		}
+
+		return array_values( array_unique( array_filter( $keys, 'strlen' ) ) );
+	}
+
+	/**
+	 * This page with EVERY filter this grid declares removed.
+	 *
+	 * The "Clear" link each widget renders clears its own key, which is right
+	 * for a widget and useless as a way out of an empty result set: a visitor
+	 * who narrowed three facets to nothing would have to find and clear three
+	 * separate controls, and on a drawer layout those are behind a toggle.
+	 *
+	 * Every SPELLING goes, not just the resolved key — the legacy `aae_*` one
+	 * parses in every URL mode, and a WooCommerce alias that fed this request
+	 * would otherwise survive "Clear all" and put the filter straight back.
+	 */
+	public static function clear_all_url( int $post_id, string $grid_id ): string {
+		$url = self::request_url();
+		if ( '' === $url || $post_id < 1 || '' === $grid_id ) {
+			return '';
+		}
+
+		$decls = self::declarations_for_document( $post_id, $grid_id );
+		$drop  = [ 'aae_page', 'paged' ];
+
+		foreach ( $decls as $d ) {
+			$drop[] = (string) ( $d['url_key'] ?? '' );
+			if ( ! empty( $d['legacy_key'] ) ) {
+				$drop[] = (string) $d['legacy_key'];
+			}
+		}
+
+		$drop = array_merge( $drop, self::consumed_alias_keys( $decls, self::request_args(), false ) );
+		$drop = array_values( array_unique( array_filter( $drop, 'strlen' ) ) );
+
+		// esc_url_raw, not esc_url: a twig or an attribute escape runs after
+		// this, and esc_url has already turned every `&` into `&#038;`.
+		return esc_url_raw( remove_query_arg( $drop, $url ) );
+	}
+
+	/**
+	 * WooCommerce's `query_type_<attribute>` — `and` / `or` — applied to the
+	 * declaration it belongs to.
+	 *
+	 * Only when the VALUE itself arrived through the alias. On our own URLs the
+	 * builder's Match setting is the answer, and a `query_type_` left behind
+	 * from an earlier WooCommerce-spelled link must not quietly re-narrow it.
+	 *
+	 * Ignoring it would not be the safe option: WooCommerce's own widget
+	 * defaults to OR but can be set to AND, and reading the terms while
+	 * discarding the operator gives the visitor a wider set than the page they
+	 * came from showed — a wrong result, not a missing feature.
+	 */
+	private static function apply_wc_query_type( array $decls, array $request, bool $slashed ): array {
+		foreach ( $decls as $i => $d ) {
+			if ( 'tax' !== ( $d['type'] ?? '' ) ) {
+				continue;
+			}
+			if ( isset( $request[ $d['url_key'] ] )
+				|| ( ! empty( $d['legacy_key'] ) && isset( $request[ $d['legacy_key'] ] ) ) ) {
+				continue;
+			}
+			$attr = self::wc_attribute_key( (string) $d['taxonomy'] );
+			if ( '' === $attr || ! isset( $request[ $attr ] ) ) {
+				continue;
+			}
+			$qt = strtolower( self::request_scalar( $request, 'query_type_' . substr( $attr, 7 ), $slashed ) );
+			if ( 'and' === $qt || 'or' === $qt ) {
+				$decls[ $i ]['all'] = ( 'and' === $qt );
+			}
+		}
+
+		return $decls;
+	}
+
+	/* ------------------------------------------------------------------ */
 	/* Raw input                                                           */
 	/* ------------------------------------------------------------------ */
 
@@ -1052,13 +1332,23 @@ final class Loop_Filter_Auth {
 	 * @return array<string, string> url_key => raw string
 	 */
 	public static function raw_from_request( array $declarations, array $request, bool $slashed = true ): array {
-		$raw = [];
+		$raw     = [];
+		$aliases = self::wc_aliases_enabled();
 		foreach ( $declarations as $d ) {
 			$k = $d['url_key'];
 			if ( ! isset( $request[ $k ] ) ) {
 				if ( ! empty( $d['legacy_key'] ) && isset( $request[ $d['legacy_key'] ] ) ) {
 					$raw_key = $d['legacy_key'];
 				} else {
+					// Last: WooCommerce's own spelling of this same filter,
+					// already translated into our wire format. Ours wins over
+					// theirs whenever both are present — a page's own links are
+					// the ones its widgets actually render.
+					$alias = $aliases ? self::wc_alias_value( $d, $request, $slashed ) : null;
+					if ( null === $alias ) {
+						continue;
+					}
+					$raw[ $k ] = $alias;
 					continue;
 				}
 			} else {
@@ -1264,6 +1554,9 @@ final class Loop_Filter_Auth {
 		if ( ! $decls ) {
 			return [];
 		}
+		// WooCommerce's AND/OR operator rides beside its `filter_<attr>` value,
+		// so it has to reach the declaration before the terms are resolved.
+		$decls = self::apply_wc_query_type( $decls, $request, $slashed );
 		return self::authorize( $decls, self::raw_from_request( $decls, $request, $slashed ), $post_type );
 	}
 

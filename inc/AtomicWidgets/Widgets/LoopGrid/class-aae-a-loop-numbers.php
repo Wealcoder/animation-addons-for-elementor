@@ -21,6 +21,9 @@ use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
 require_once __DIR__ . '/class-aae-a-loop-number.php';
+// Same namespace, so no import is needed — but page_url() calls it and
+// nothing else on this path guarantees it has been loaded.
+require_once __DIR__ . '/class-loop-filter-auth.php';
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -114,12 +117,62 @@ class AAE_A_Loop_Numbers extends Atomic_Element_Base {
 		];
 	}
 
-	public static function page_url( int $page ): string {
-		if ( 1 === $page ) {
-			return remove_query_arg( 'aae_page' );
+	/**
+	 * This page's URL at page $page, in OUR filter spelling.
+	 *
+	 * Two things it has to get right, both invisible when wrong:
+	 *
+	 * The BASE is `request_url()`, not the default. With no base argument
+	 * `add_query_arg()` reads `$_SERVER['REQUEST_URI']`, which inside an AJAX
+	 * re-render is admin-ajax.php — so every page link would point at the
+	 * endpoint instead of at the page.
+	 *
+	 * And a WooCommerce-spelled arrival (`?min_price=200`) is rewritten into
+	 * the canonical keys the rest of the page's links already use. Measured:
+	 * without this the page-2 link kept `min_price` while every filter widget
+	 * beside it had switched to `price`. Both resolve to the same set today,
+	 * because the alias is read on every request — so this is one page
+	 * disagreeing with itself about which spelling the site uses, which is the
+	 * state that becomes a real bug the day the alias switch is turned off.
+	 *
+	 * @param array $ctx The grid's render context, when the caller has one.
+	 */
+	public static function page_url( int $page, array $ctx = [] ): string {
+		$url = Loop_Filter_Auth::request_url();
+		if ( '' === $url ) {
+			// No captured URL (a bare render, or a very early call): the old
+			// behaviour, which is right everywhere except inside admin-ajax.
+			return 1 === $page ? remove_query_arg( 'aae_page' ) : add_query_arg( 'aae_page', $page );
 		}
 
-		return add_query_arg( 'aae_page', $page );
+		$filters = (array) ( $ctx['filters'] ?? [] );
+		if ( $filters ) {
+			$aliases = Loop_Filter_Auth::consumed_alias_keys(
+				Loop_Filter_Auth::declarations_for_document(
+					(int) ( $ctx['document_id'] ?? 0 ),
+					(string) ( $ctx['grid_id'] ?? '' )
+				),
+				Loop_Filter_Auth::request_args(),
+				false
+			);
+			if ( $aliases ) {
+				$url = remove_query_arg( $aliases, $url );
+				// The authorised map, which is already keyed by our own url_key
+				// — so this restates exactly what the alias resolved to, never
+				// a re-reading of it.
+				foreach ( $filters as $key => $value ) {
+					if ( '' !== (string) $value ) {
+						$url = add_query_arg( (string) $key, (string) $value, $url );
+					}
+				}
+			}
+		}
+
+		$url = 1 === $page ? remove_query_arg( 'aae_page', $url ) : add_query_arg( 'aae_page', $page, $url );
+
+		// esc_url_raw, not esc_url: the twig escapes for the attribute itself
+		// and esc_url has already turned every `&` into `&#038;`.
+		return esc_url_raw( $url );
 	}
 
 	/**
