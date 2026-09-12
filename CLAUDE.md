@@ -3258,6 +3258,269 @@ Suite counts after this pass: seam **129**, frontend 25, widget 22, instant 25,
 editor 9, settings UI 9, readouts **82**, forms 35, forms-editor 9,
 **marker 15**, **date 16**, **counts 13**, **drawer 27**, grid-perf **15**.
 
+## WooCommerce product widgets — the Woo family (PRO, 2026-09-12)
+
+Six atomic leaf widgets, all **PRO-owned** in
+`animation-addons-for-elementor-pro/inc/AtomicV4/Widgets/Woo/`, plus the store
+demo they were built to render: **`/aae-demo-store/`**.
+
+| Widget | Type | What it reads |
+|---|---|---|
+| Product Price | `e-aae-a-woo-price` | `get_price_html()`, plus a range or "From x" for a variable product |
+| Product Rating | `e-aae-a-woo-rating` | the average, drawn as its own SVG stars sized in `em` |
+| Product Badge | `e-aae-a-woo-badge` | stock → sale → featured → new, in that fixed priority |
+| Product Stock | `e-aae-a-woo-stock` | `wc_get_stock_html()` |
+| Add to Cart | `e-aae-a-woo-add-to-cart` | `woocommerce_template_loop_add_to_cart()` |
+| Product Variation | `e-aae-a-woo-variation` | a compact swatch map, or WC's own form |
+
+Registered from Pro through free's `aae/atomic/*` filters, exactly as the Loop
+Filter family is — `AtomicV4\Widgets\Bootstrap::WIDGETS` + `cards()`. Free adds
+only two things: the `aae-atomic-woo` Elementor panel category (an unregistered
+category fails SILENTLY — the widget lands under Elementor's own "Atomic
+Elements") and the `woocommerce` dashboard category in `atomicWidgetService.js`
+(`CATEGORY_LABELS` + `CATEGORY_ORDER`, and that file needs `npm run build`).
+
+### THE WHOLE FAMILY ADDS NO CART CODE AND NO ENDPOINT
+
+This is the design, not a happy accident, and it is what answers both "no
+duplicate code" and "loophole check" at once. Measured against WooCommerce
+11.1.0's own source and then driven on a real page:
+
+- **`add_action( 'the_post', 'wc_setup_product_data' )`** means the global
+  `$product` is ALREADY correct inside a Loop Grid card. No widget here resolves
+  a product from an id, so there is no id to get wrong.
+- **`?wc-ajax=add_to_cart` resolves a VARIATION posted as `product_id`** to its
+  parent plus attributes by itself, runs `woocommerce_add_to_cart_validation`,
+  clamps through `wc_stock_amount()` and checks post status. Verified end to
+  end: posting variation `#4242` stored `product_id=4028, variation_id=4242,
+  variation={attribute_pa_colour: tan, attribute_pa_size: l}`.
+- **WooCommerce binds its cart button delegated** from
+  `$(document.body).on('click', '.add_to_cart_button:not(.wc-interactive)')`,
+  and `onAddToCart` needs only the `.ajax_add_to_cart` class and
+  `data-product_id`. So the swatch runtime can turn an inert button into a real
+  cart button by adding a class and an attribute — nothing is re-implemented.
+
+`verify-woo-widgets.php` asserts the negative directly: no `register_rest_route`,
+no `wp_ajax_*`, no `WC()->cart` anywhere in the family.
+
+### The Variation widget is SWATCHES because the form does not fit in a grid
+
+WooCommerce's own `woocommerce_variable_add_to_cart()` inlines every variation's
+price, availability, image AND description — everything a single-product page
+swaps in. Measured on this site: **8,985 bytes for ONE four-variation product**,
+so twelve in a grid is over 100 KB before an image loads. (`woocommerce_ajax_variation_threshold`
+defaults to 30, so the inlining is on for any normal product.)
+
+The swatch map carries the id, the combination, a price and whether it can be
+bought. It rides a `<script type="application/json">`, not a data attribute — a
+data attribute entity-escapes every `"`, so a card with a dozen variations
+spends a third of its bytes on `&quot;`. `form` mode is still there for a
+product template or a quick-view, where the full form is the right control.
+
+Two rules inside the map, both of which read as bugs until you know them:
+
+- **An empty attribute value means ANY.** A variation that varies only by Size
+  carries `pa_colour => ''`, which matches every colour. Treating `''` as a
+  literal makes such a variation unreachable and the row looks broken for
+  exactly the products whose author took the shortcut.
+- **A colour chip is painted only for a SHORT allow-list plus a literal hex.**
+  Painting "Forest Camo" an arbitrary green tells a shopper something untrue
+  about the product, so anything unrecognised stays a word.
+
+### Add to Cart stands down for the Variation widget — `when_variable`
+
+Found by building the card, not by reading: a variable product renders the
+swatch picker AND this widget's "Select options" link, so one card carried two
+controls for the same job. `when_variable` (`link` default / `hide`) makes the
+pair composable. Resolved in PHP (`_stand_down`), never in the twig — the twig
+also renders in the editor canvas where no product exists, and a type test there
+would hide the widget a builder is trying to style. Grouped and external
+products keep their link either way: nothing offers their choice in place, and
+hiding the link would leave the card with no purchase path at all.
+
+### DANGER — `X | default(true)` in a Twig template has NO off position
+
+Measured through Elementor's own vendored Twig (`ElementorDeps\Twig` 3.x):
+
+```
+true  | default(true)   -> 1        {% if false|default(true) %}  ->  FIRES
+false | default(true)   -> 1        {% if false ?? true %}        ->  does not
+false ?? true           -> (false)
+undefined ?? true       -> 1
+```
+
+Twig's `default` filter substitutes for anything **EMPTY**, and `false` is
+empty. So every `{% if settings.x | default(true) %}` is a switch that can never
+be switched off — and it is silent, because the page renders perfectly in the
+default position. **Use `?? true`**, which substitutes for null/undefined only.
+
+Three shipped switches were inert: the Variation widget's *Show the attribute
+name*, the Rating widget's *Show the count*, and the Filter Drawer's badge.
+
+### DANGER — `{{ true }}` prints "1", not "true"
+
+The same measurement, one line further. A runtime that reads the attribute back
+as `v === 'true'` therefore **never matches**, whatever the builder chose.
+
+`ImageHotspot`'s five `data-aae-hsp-tour-*` attributes were written this way and
+its `boolAttr()` is exactly that comparison, so **the whole Tour feature never
+ran on the front end** — while working perfectly in the editor canvas, where the
+same template is rendered by Twing and JavaScript's `String(true)` is `"true"`.
+The classic works-in-the-editor shape, shipped in FREE.
+
+Write `{{ (settings.x ?? false) ? 'true' : 'false' }}`, which is the shape
+`aae-a-menu` and `aae-a-nav` already use. `verify-woo-widgets.php` greps for
+both defects across BOTH plugins' twig trees, with Twig comments stripped first
+— its own first run failed on the comments explaining the rule.
+
+### DANGER — a `background` in a base style kills every per-kind class colour
+
+The badge's four kinds are coloured from `woo.scss` (`--sale` red, `--stock`
+grey, `--featured` violet, `--new` green) at **(0,1,0)**. Its
+`define_base_styles()` set `background: #0c0d0e`, which compiles to
+`.elementor .e-aae-a-woo-badge-base` at **(0,2,0)** and won every tie — so every
+badge rendered near-black whatever it said. Measured in the browser:
+`getComputedStyle(saleBadge).backgroundColor === 'rgb(12, 13, 14)'`.
+
+**Raising the stylesheet is the WRONG fix.** The builder's own Style-panel
+background is also (0,2,0), so anything that outranks the base outranks the
+panel too and the colour picker stops working. Leaving the slot empty is what
+keeps the order right: class default, then panel override. The general rule —
+**a base style must not set a property that a per-variant CLASS is the real
+source of.**
+
+### A stored WordPress name is entity-encoded; an atomic twig escapes again
+
+`WCFAddonsPro\AtomicV4\Support\Widget_Text::plain()`, exposed on both widget
+bases as `self::plain()` so no subclass needs an import (`use` is per FILE, and
+four subclasses each needing the same one is four chances for the next widget to
+be written without it).
+
+WordPress stores `Bags & Belts` as `Bags &amp; Belts`, because the classic path
+for a term name, a user's display name and a WooCommerce attribute label is a
+bare `echo`. An atomic twig auto-escapes, so the visitor reads the literal
+`Bags &amp; Belts`. It had never shown up before because no demo term had ever
+contained an `&` — which is not a rare shape in a real shop.
+
+`wp_specialchars_decode( …, ENT_QUOTES )` is the exact inverse of the encode, so
+it composes with Twig's escape to one round trip. Deliberately **not**
+`html_entity_decode()`, which also decodes entities a user typed on purpose.
+
+### FIXED — a dynamic facet counted against its OWN filter
+
+`AAE_A_Loop_Grid::facet_scope_ids()` removed the declaration's resolved
+`url_key` and nothing else. `Loop_Filter_Auth` honours the `aae_tax_*` LEGACY
+key **in every URL mode** — that is what keeps a link shared before the clean
+spelling from breaking — so the legacy arg survived the unset and was re-applied,
+which is precisely the "count against yourself" failure dynamic counts exist to
+prevent: every unselected option collapses toward zero the moment one is picked.
+
+Measured on the store demo at `?aae_tax_pa_colour=olive`:
+
+| | Colour facet counts |
+|---|---|
+| before | `{black: 2, olive: 2, tan: 1}` — the olive subset |
+| after | `{black: 3, cream: 3, maroon: 2, navy: 3, olive: 2, tan: 2}` |
+
+**It stayed hidden because the two keys are usually IDENTICAL.** `product_cat`
+resolves to `aae_tax_product_cat` for both, so the Category facet beside it was
+always right. Only a taxonomy whose readable spelling is NOT reserved exposes
+it — and that is exactly a WooCommerce attribute (see below).
+
+### Which URL key a WooCommerce facet answers to — both cases on one page
+
+`reserve_key()` reserves a name that WordPress already answers to. The store
+demo shows the rule discriminating between two taxonomies in the same sidebar,
+all four measured against the live page:
+
+| URL | result |
+|---|---|
+| `?pa_colour=olive` | **2** — an attribute with archives off registers `query_var => false`, so nothing owns the readable spelling |
+| `?aae_tax_pa_colour=olive` | **2** — the legacy key always parses |
+| `?product_cat=aae-store-shoes` | **12** (unfiltered) — WooCommerce registers a query var of that name, so it is RESERVED |
+| `?aae_tax_product_cat=aae-store-shoes` | **3** |
+
+### The store demo — `/aae-demo-store/`
+
+`E:\Local Testing\demo-store.php`, loaded by `make-loop-demo-pages.php` (mode
+`store`), which owns the design system so nothing is a second copy of `pal_*`,
+`ui_*`, `demo_post` or `demo_page`. Third identity, same keys.
+
+**Why it is a separate page from `/aae-demo-shop/`.** The shop page is the
+FILTER family pointed at a product catalogue — its cards are a Post Image and a
+Post Title, and the price is a string baked into the post content, because there
+was no atomic price widget when it was built. This page is the other half: every
+figure comes from a widget reading WooCommerce, and the page stores no product
+copy at all. It also carries five VARIABLE products, which the shop page has
+none of, so the attribute facets and the swatch picker have something real.
+
+Things the demo had to get right, each of which was wrong first:
+
+- **A demo's grid must state its own scope.** Both pages query `product`, so the
+  store page reported 24 products and the shop page's suite started failing with
+  "21 in stock" and a price order reading 28 < 86 < 34 — two catalogues
+  interleaved. Both grids now carry `tax_product_cat` chips, and
+  `verify-loop-readouts.php` derives its comparison query from the SAVED
+  document rather than from every marked product on the site.
+- **The array's order IS the page's order.** `store_product()` stamps a date two
+  days apart down the catalogue, so the first six rows are what a visitor sees:
+  three variable products, one sold out, one unrated, two reduced, two inside
+  the badge's "New in" window. The first build put all five variable products on
+  page two and page one demonstrated nothing.
+- **An HTML entity in a widget PROP is printed literally.** These are plain
+  strings the twig escapes, so `&minus;` reached the page as eight characters.
+  Literal characters (`−`, `↑`, `–`) in props; entities only in the hero and
+  footnotes, which take real HTML.
+- **`format => range` reads `text_range`.** `text_many` is the `total` format's
+  string and setting it alongside `range` does nothing at all.
+- **Size chips need `offer => chosen`.** `get_terms()` orders by name, so S, M,
+  L, XL renders as "L M S XL" — read as a bug by anyone who has ever bought a
+  shirt. `chosen` orders by the builder's own list (`orderby => include`).
+- **Two badge widgets, not one.** A single badge shows the highest-priority
+  thing that is true, which is right — a sold-out product must not lead with a
+  discount. Splitting them across two corners lets a card say "Sold out" and
+  "Pick of the season" at once, and costs nothing because a badge with nothing
+  to report renders `hidden`.
+
+### The demos were never responsive, and an atomic style has no breakpoint here
+
+Measured at 390px: `repeat(3, minmax(0, 1fr))` gave **91px cards**, and the hero
+was a 46px headline over six lines inside 52px of side padding on a 375px body.
+
+Both fixes put the responsive behaviour in the VALUE, because that is what an
+atomic style can carry:
+
+- `repeat(auto-fill, minmax(240px, 1fr))` — 3 columns in the ~900px content
+  column, 2 on a tablet, 1 on a phone, no media query. **`auto-fill`, never
+  `auto-fit`**: auto-fit collapses empty tracks, so filtering to one product
+  would stretch that card across the whole row.
+- `clamp()` through `Size_Prop_Type`'s `custom` unit, which emits its `size`
+  verbatim — the documented way to put a CSS function in an atomic style.
+
+Both were applied to the shared `ui_card_grid()` / `ui_hero()`, so all three
+demos got them.
+
+### Fixtures and testing
+
+- `verify-woo-widgets.php` (57) — registration, both Twig traps across both
+  plugins' twig trees, the badge's base style, `[hidden]` re-statements, the
+  live store page, every facet against a hand-written query, the facet
+  legacy-key regression, and the four "no new cart surface" negatives.
+- `make-loop-demo-pages.php store` builds the page; `cleanup` removes all three
+  demos, a variable product's `product_variation` children (deleting a parent
+  does NOT take them) and the store's two attributes — attributes LAST, since a
+  term deleted from under a live product leaves the facet offering nothing.
+- `enable-loop-filter-widgets.php [filters|woo|all] [off]` switches the widgets
+  on. A new widget arrives INACTIVE; `'default' => true` is documentation only.
+- `make-woo-variable-fixture.php` was the measurement fixture that answered
+  "will variation filtering work". The store demo supersedes it.
+
+**Attribute taxonomies register on `init` from a DB table**, so one created in
+this process does not exist in this process and `wp_set_object_terms()` against
+it fails SILENTLY — a variable product whose parent carries no terms and facets
+that match nothing. `store_ensure_attributes()` registers them by hand so one
+run can build the whole page; a later process sees them normally.
+
 ## Caching computed artifacts — and why option VALUES are not one (2026-08-06)
 
 Asked directly: "what would we gain by file-caching the option values?" The

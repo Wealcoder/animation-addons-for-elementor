@@ -950,7 +950,16 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 		}
 		self::$facets[ $memo_key ] = null;
 
-		$ids = self::facet_scope_ids( $document_id, $grid_id, $key );
+		// BOTH spellings, not just the resolved one. `Loop_Filter_Auth` parses
+		// the `aae_tax_*` legacy key whatever the site's URL mode, so removing
+		// only `url_key` left the legacy arg in place and the facet counted
+		// against its own filter — measured on a WooCommerce attribute facet,
+		// where the two keys differ.
+		$ids = self::facet_scope_ids(
+			$document_id,
+			$grid_id,
+			array_filter( array( $key, (string) ( $decl['legacy_key'] ?? '' ) ) )
+		);
 		if ( null === $ids ) {
 			return null;
 		}
@@ -972,9 +981,14 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 	/**
 	 * The post ids this grid would show with every filter applied EXCEPT one.
 	 *
+	 * @param string[] $except_keys EVERY spelling the excluded filter answers
+	 *                              to — its resolved `url_key` AND its `aae_*`
+	 *                              legacy key, which the authoriser reads in
+	 *                              every URL mode. Removing one and not the
+	 *                              other lets the filter count against itself.
 	 * @return int[]|null Null when the scope is too large to count against.
 	 */
-	private static function facet_scope_ids( int $document_id, string $grid_id, string $except_key ): ?array {
+	private static function facet_scope_ids( int $document_id, string $grid_id, array $except_keys ): ?array {
 		$raw = self::grid_settings_in_document( $document_id, $grid_id );
 		if ( null === $raw ) {
 			return null;
@@ -982,7 +996,9 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 
 		$post_type = self::effective_post_type( $raw );
 		$args      = Loop_Filter_Auth::request_args();
-		unset( $args[ $except_key ] );
+		foreach ( $except_keys as $except_key ) {
+			unset( $args[ $except_key ] );
+		}
 
 		$filters = Loop_Filter_Auth::current( $document_id, $grid_id, $post_type, $args, false );
 
