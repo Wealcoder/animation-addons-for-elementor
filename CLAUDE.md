@@ -3602,6 +3602,242 @@ it fails SILENTLY — a variable product whose parent carries no terms and facet
 that match nothing. `store_ensure_attributes()` registers them by hand so one
 run can build the whole page; a later process sees them normally.
 
+## WooCommerce URL interop — their spellings, our filters (2026-09-12)
+
+The un-built item from the 11.1.0 survey, now shipped. `min_price`, `max_price`,
+`rating_filter`, `filter_stock_status`, `filter_<attribute>` +
+`query_type_<attribute>`, and the four WooCommerce-only `orderby` values now
+drive our grid.
+
+| Piece | Where |
+|---|---|
+| The translation | **FREE** `Loop_Filter_Auth::wc_alias_value()` / `wc_alias_woo()` |
+| The operator | `apply_wc_query_type()`, called from `current()` |
+| What our links must drop | `consumed_alias_keys()` (public) |
+| The widget half | **PRO** `request_value()` fallback + `dropped_alias_keys()` in the base |
+| Off switch | `aae/loop_grid/wc_url_aliases`, or `wc_aliases` in the dashboard settings |
+
+**It is ON by default, and exactly one property makes that safe: an alias only
+ever feeds a filter the SAVED PAGE already declares, and the value still passes
+through the same authoriser.** It adds a SPELLING, not a capability — nothing
+that was not already filterable becomes filterable, so the only behaviour change
+is that a URL which used to do nothing now drives the filter the visitor was
+plainly asking for.
+
+**Aliases are READ-ONLY. We never emit those keys**, which is why
+`reserve_key()` needed no change and no 404 risk is introduced. It is also why
+`consumed_alias_keys()` exists: every link and form drops the WooCommerce keys
+that fed THIS request, because our links speak our spelling. Without that the
+interop is half-done in the worst way — land on `?min_price=10`, press the
+Active Filters chip's remove-link, our `price` key clears, `min_price=10`
+survives, and the filter comes straight back. Only the CONSUMED ones: an
+`?orderby=` on a page with no Sort widget belongs to the shop archive.
+
+Three translations are not renames and are the part to re-read before changing:
+
+- **price is TWO keys composing ONE range.** `min_price` + `max_price` become
+  `min..max` — the same value the two-box slider form already posts, so
+  `parse_range()` and the builder's own bounds clamp apply untouched. Measured:
+  `?min_price=0&max_price=9999999` still lands as `price=0..450` on a shop
+  capped at 450.
+- **stock has no honest equivalent for most of its values.** WooCommerce's is a
+  multi-select over instock / outofstock / onbackorder; ours is a single "in
+  stock only" toggle. Only `instock` alone translates. `outofstock`, or two
+  statuses at once, is REFUSED rather than mistranslated — answering it with the
+  nearest filter would show a narrower set than the URL says.
+- **`orderby` adopts only the four values that are WooCommerce's and nobody
+  else's** (`popularity`, `rating`, `price`, `price-desc`). `orderby` is a
+  WordPress public query var, so `date` / `title` / `menu_order` already mean
+  something on any archive and are read by other plugins — adopting those would
+  let an unrelated `?orderby=title` drive a blog's Sort widget.
+
+**`query_type_<attr>` is honoured, and ignoring it would not have been the safe
+option.** WooCommerce's own widget defaults to OR but can be set to AND; reading
+the terms while discarding the operator gives the visitor a WIDER set than the
+page they came from showed — a wrong result, not a missing feature. It is
+applied only when the value itself arrived through the alias: on our own URLs
+the builder's Match setting is the answer, and a `query_type_` left behind from
+an earlier link must not quietly re-narrow it.
+
+**`wc_attribute_key()` — `pa_colour` answers to `filter_colour`, not
+`filter_pa_colour`.** `WC_Query` builds it from `attribute_name`, which is the
+slug WITHOUT the `pa_` prefix. Only `pa_*` has one; `product_cat` and
+`product_tag` are ordinary registered query vars WordPress resolves itself.
+
+Test: `verify-loop-filter-interop.php` (31). Almost every assertion is an
+EQUALITY — theirs against ours — rather than a number typed into the suite: a
+suite that froze the counts would keep passing if both sides drifted together.
+
+### An empty RESULT is not an empty collection
+
+Measured on the store demo at `?rating=1&price=..5&pa_colour=olive`: 0 items,
+the words "No posts found.", and a page bar reading "1" underneath.
+
+- "No posts found" reads as *this site has nothing*, not *your filters are too
+  narrow*. It now says "Nothing matches those filters" when
+  `$ctx['filters']` is non-empty. The UNFILTERED message is deliberately
+  unchanged — it is correct and shipped, and rewording it would churn every
+  translation to say the same thing.
+- **There was no way back.** Each widget's Clear link clears only its own key, so
+  three narrowed facets meant finding and clearing three controls — which on a
+  mobile drawer are behind a toggle the visitor has to reopen.
+  `Loop_Filter_Auth::clear_all_url()` drops EVERY spelling (resolved, legacy,
+  and any consumed WooCommerce alias) and the empty state renders one link.
+- **The page bar is hidden on a real result count of 0**, not on a page count:
+  `max_pages` is still 1 when nothing is found, which is why the existing
+  `aae-pg-last` could never have caught it. `aae-pg-empty` from the twig, and
+  from `aae:loop-grid:updated`'s `total` in the runtime — which Pro was already
+  sending and free was not reading.
+- `aae/loop_grid/empty_message` is the seam; it runs through `wp_kses_post()`.
+
+**`AAE_A_Loop_Numbers::page_url()` builds from `request_url()`, not
+`$_SERVER`** — which inside an AJAX re-render is admin-ajax.php — and restates
+an aliased arrival in our own spelling. Found by measuring: the page-2 link kept
+`min_price` while every filter widget beside it had switched to `price`.
+
+## Loop Filters — stars, swatches, Show all, and a dropdown (2026-09-12)
+
+- **The rating filter draws stars**, the same drawn star as the Product Rating
+  widget, sized in `em` (atomic styles have no descendant selector, so the
+  option's own font-size is the only control a builder has over them). The WORDS
+  are kept, visually clipped, as the link's accessible name: an `<a>` holding
+  only aria-hidden stars has no name at all. Clipped, never `display: none` —
+  hidden takes it out of the accessibility tree and the name with it. Only
+  WooCommerce's rating gets them; an ACF select whose values happen to be 1–5 is
+  not a star count.
+- **The Taxonomy Filter draws a term's stored swatch**, from the `color` /
+  `image` term meta the Variation picker reads. That reader moved into
+  **`AtomicV4\Support\Term_Swatch`** so there is ONE answer to "what colour is
+  this term" — two would be two chances for a card and the sidebar beside it to
+  disagree, reported as "the colours are wrong" with neither widget looking
+  broken. Here the swatch sits BESIDE the label, never instead of it: in the
+  picker the swatch IS the control, in a sidebar the visitor is reading names.
+  Self-gating, hence on by default.
+- **"Show all" is a visually-hidden CHECKBOX with a `<label>`**, and the overflow
+  rows are hidden by a sibling selector — pure CSS, keyboard-operable, no
+  JavaScript in the path. A `<button>` was the obvious shape and the wrong one.
+  Clipped rather than `display: none`, because a hidden input is not focusable
+  and that would make it mouse-only. **It starts OPEN when something already
+  picked is in the hidden half**: the runtime re-renders every filter widget
+  after a filter change, so without that, clicking an option in the tail
+  collapses the list over the selection just made and reads as the click not
+  having worked. The runtime also carries the open state, but only ever in the
+  re-OPEN direction.
+- **The Sort dropdown is a `<form method="get">`**, which IS the link-equivalent
+  for a single choice: the browser composes the same URL a link would have
+  carried. The Apply button is RENDERED, not injected, because it is what commits
+  the choice without a script; the runtime submits on `change` and only then adds
+  `is-enhanced`, which takes the button out of the flow — the same inversion the
+  Filter Drawer uses. It submits with `requestSubmit()`, never `submit()`: the
+  latter bypasses the `submit` event the delegated handler listens for and the
+  page hard-navigates on every change.
+
+The demos show both shapes: the store's Colour facet is 6 terms with 4 shown,
+the shop's Sort is a dropdown.
+
+## The editor bridge's CodeMirror split (2026-09-12)
+
+**778 KB → 408 KB.** Measured from webpack's own module stats, not guessed:
+CodeMirror and its Lezer parsers were **1,053 KB of 2,089 KB** — more than half
+the bundle — for ONE panel control, on ONE extension, that most editor sessions
+never open.
+
+`responsive-section/inputs/CodeInput.jsx` now loads them with `import()`. Three
+things worth keeping:
+
+- **The fallback is a `<textarea>`, not a spinner.** Until the chunk lands — and
+  permanently if it never does, which is real on a slow connection or behind a
+  CSP that blocks the fetch — the builder edits the same value through the same
+  `onChange` and drives the same live preview. A worse editor, not a broken one.
+  It is also what makes the swap safe: the value lives in the parent's state, so
+  whatever was typed before CodeMirror arrived is the doc it opens on.
+- **The promise is per SESSION, not per mount.** Custom CSS can be opened on
+  several elements in one sitting; re-fetching a megabyte each time would be
+  worse than shipping it eagerly. A failed load clears it so a later mount
+  retries.
+- **`publicPath` resolves itself.** The runtime computes
+  `dir(currentScript) + "../../"`, so a chunk emitted to `assets/build/` is
+  found from an entry at `assets/build/modules/atomic/`. Nothing in
+  `webpack.config.js` had to change.
+
+Test: `verify-editor-codemirror.mjs` (10). It asserts the two ways a code split
+fails while the NUMBER looks right — a chunk whose URL the runtime computes
+wrongly 404s, and a control that never finishes mounting leaves an empty box —
+so it drives the real editor: no CodeMirror chunk on boot, a real `.cm-editor`
+with its gutter after the section is opened, the textarea gone, and the chunk
+fetched at that moment.
+
+**Trap when driving that panel:** the code control is gated behind the *Enable
+Custom CSS* switch, and `panel.querySelector('input[type=checkbox]')` grabs
+whichever switch is first in the panel — Conditional Display's, on a paragraph.
+Find it by its label. Also: clicking an element in the canvas is the faithful
+gesture and is not usable here, because this theme's preloader overlay sits over
+the iframe; select through `$e.run('document/elements/select')`.
+
+## Base styles that never reached the page (2026-09-12)
+
+`verify-atomic-base-styles.php` resolves every declared key through Elementor's
+REAL props resolver rather than trusting that a valid-looking key works. It was
+reporting **34 dead declarations across 24 widgets**; 13 are now fixed and 21
+remain, and the split between them is deliberate.
+
+**Fixed — the repair provably changes nothing that renders.** `width` is a
+`Size_Prop_Type` and eleven base styles declared it as a `String`, which the
+resolver drops in silence, so `width: 100%` had never once reached the page on
+post-title, post-image, post-content, posts, search-query, post-pagination,
+accordion, accordion-item, image-hotspot, the nested slider or the loop grid
+slider — plus Pro's stack-cards pair. Verified rather than assumed: **555
+elements across the three demo pages, before and after, identical to the pixel.**
+That is what you expect — `width: 100%` on a block-level element is what it
+already computed to.
+
+Also fixed: the Icon List's `list-style: none`, which is **not a schema key at
+all** and was dropped outright. That one was visible — the widget renders a real
+`<ul>`, and a theme's own content CSS outranks a widget's by a lot (this site's
+is `.page-template-default .builder--page-details ul li { list-style: disc }` at
+(0,3,1)), so an icon list inside page content rendered with BULLETS beside its
+icons and nothing in the panel could switch them off. Moved to
+`icon-list.scss` at armour specificity. **Any atomic widget rendering a `ul`
+needs the same treatment** — this is the third time that rule has been paid for.
+
+**NOT fixed — every one of these changes what existing pages render, and that is
+a decision, not a cleanup:**
+
+| | |
+|---|---|
+| `aae-a-accordion-item` (10) | most of its background / border / padding / colour is dead across all three variants of four style keys |
+| the nested slider's five text and dot parts | `color`, `line-height`, `opacity`, `border`, `box-sizing` — all declared as Strings where the schema wants typed props, same root cause as `width` |
+| `aae-a-menu` | `width: fit-content` would SHRINK a nav that is full width today |
+| `aae-a-post-pagination-preview-image` | `calc(100% + 24px)` is a deliberate bleed that has never bled |
+| `social-share-item`, `progressbar-fill` | see below |
+
+**`transition` accepts only `all`.** Read out of
+`Transition_Transformer::get_allowed_properties()`: the core list is literally
+`[ 'all' ]`, widened only through
+`elementor/atomic-widgets/styles/transitions/allowed-properties`. So
+`background-color`, `opacity` and every other property is dropped — which is why
+`toggle-switcher-tab`'s transition works (`value => 'all'`) and
+`social-share-item`'s, with an identical shape, does not. Either declare `all`
+or register the filter; do not spend time looking for a shape bug.
+
+## DO NOT move `Loop_Query_Woo` to Pro (decided 2026-09-12)
+
+It was on the backlog and it is the wrong move. Free's Loop Grid calls it in ten
+places across `class-atomic.php`, `class-loop-filter-auth.php` and
+`class-aae-a-loop-grid.php` to build a correct product query at all — catalog
+visibility, the price lookup-table clause, the lookup-table sorts, the rating and
+stock rules.
+
+Measured on the store demo with the shop's own *Hide out of stock items* setting
+on: **the grid shows 11 products with the adapter and 12 without** — the twelfth
+being the one the shop owner told WooCommerce to hide. Gating that behind a
+licence is a correctness regression, not a feature gate: a free site's product
+grid would contradict every other product listing on the same shop.
+
+It is the same argument already written down for keeping `Loop_Filter_Auth`
+free — *"the Loop Grid itself depends on it, so it must keep working whatever
+happens to a licence"* — and it applies here word for word.
+
 ## Caching computed artifacts — and why option VALUES are not one (2026-08-06)
 
 Asked directly: "what would we gain by file-caching the option values?" The
