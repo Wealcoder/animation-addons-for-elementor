@@ -567,6 +567,13 @@ final class Atomic
 		'aae-a-loop-loadmore'          => 'aae-a-loop-grid',
 		'aae-a-loop-arrow'             => 'aae-a-loop-grid',
 		'aae-a-loop-nav-wrap'          => 'aae-a-loop-grid',
+		// Advanced Portfolio
+		'aae-a-portfolio-title'        => 'aae-a-advance-portfolio',
+		'aae-a-portfolio-list'         => 'aae-a-advance-portfolio',
+		'aae-a-portfolio-item'         => 'aae-a-advance-portfolio',
+		'aae-a-portfolio-content'      => 'aae-a-advance-portfolio',
+		'aae-a-portfolio-date'         => 'aae-a-advance-portfolio',
+
 		'aae-a-loop-slide-track'       => 'aae-a-loop-grid-slider',
 		'aae-a-loop-slide-item'        => 'aae-a-loop-grid-slider',
 		'aae-a-loop-slide-pagination'  => 'aae-a-loop-grid-slider',
@@ -1124,6 +1131,72 @@ final class Atomic
 				'order'        => 0,
 				'demo_url'     => '',
 				'doc_url'      => '',
+			],
+
+			'aae-a-advance-portfolio' => [
+				'is_internal'  => false,
+				'label'        => 'Advanced Portfolio',
+				'description'  => 'Post/project grid with a section title. Atomic port of the Pro Advanced Portfolio widget: its Portfolio Three skin is the seeded shape, and the other skins ship as presets.',
+				'icon'         => 'eicon-gallery-grid',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\AdvancePortfolio\AAE_A_Advance_Portfolio',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'portfolio',
+					'project',
+					'work',
+					'post',
+					'loop',
+					'grid',
+					'atomic',
+				],
+				'category'     => 'blog',
+				'order'        => 0,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+			'aae-a-portfolio-title' => [
+				'is_internal'  => true,
+				'label'        => 'Portfolio Section Title',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\AdvancePortfolio\AAE_A_Portfolio_Title',
+				'icon'         => 'eicon-heading',
+				'keywords'     => [ 'portfolio', 'section', 'title' ],
+				'hide_from_panel' => true,
+			],
+			'aae-a-portfolio-list' => [
+				'is_internal'  => true,
+				'label'        => 'Portfolio Posts List',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\AdvancePortfolio\AAE_A_Portfolio_List',
+				'icon'         => 'eicon-gallery-grid',
+				'keywords'     => [ 'portfolio', 'list', 'grid' ],
+				'hide_from_panel' => true,
+			],
+			'aae-a-portfolio-item' => [
+				'is_internal'  => true,
+				'label'        => 'Portfolio Item',
+				'description'  => 'Repeats once per queried post. Reads the query the Advanced Portfolio root publishes on the Render_Context stack.',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\AdvancePortfolio\AAE_A_Portfolio_Item',
+				'icon'         => 'eicon-post',
+				'keywords'     => [ 'portfolio', 'item', 'post' ],
+				'hide_from_panel' => true,
+			],
+			'aae-a-portfolio-content' => [
+				'is_internal'  => true,
+				'label'        => 'Portfolio Content',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\AdvancePortfolio\AAE_A_Portfolio_Content',
+				'icon'         => 'eicon-text-align-left',
+				'keywords'     => [ 'portfolio', 'content' ],
+				'hide_from_panel' => true,
+			],
+			'aae-a-portfolio-date' => [
+				'is_internal'  => true,
+				'label'        => 'Portfolio Date',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\AdvancePortfolio\AAE_A_Portfolio_Date',
+				'icon'         => 'eicon-calendar',
+				'keywords'     => [ 'portfolio', 'date' ],
+				'hide_from_panel' => true,
 			],
 
 			'aae-a-loop-item' => [
@@ -4625,6 +4698,45 @@ final class Atomic
 				// so the shipped loop-grid.css stays lean.
 				'editor_style_handle' => 'aae-a-loop-grid-editor-css',
 				'editor_style_path'   => '/assets/atomic/css/loop-grid-editor.css',
+			],
+
+			'aae-a-advance-portfolio' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\AdvancePortfolio\AAE_A_Advance_Portfolio',
+				'file' => 'Widgets/AdvancePortfolio/class-aae-a-advance-portfolio.php',
+				'script_handle' => 'aae-a-advance-portfolio-js',
+				'script_path' => '/assets/atomic/js/advance-portfolio.js',
+				// Pro-only handles; advance-portfolio.js already returns early
+				// when window.gsap / window.ScrollTrigger are absent, so the grid
+				// still renders on a free-only install, just unanimated.
+				'script_deps' => defined( 'WCF_ADDONS_PRO_VERSION' ) ? [ 'gsap', 'ScrollTrigger' ] : [],
+				'has_script' => true,
+				'style_handle' => 'aae-a-advance-portfolio-css',
+				'style_path' => '/assets/atomic/css/advance-portfolio.css',
+			],
+			'aae-a-portfolio-title' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\AdvancePortfolio\AAE_A_Portfolio_Title',
+				'file' => 'Widgets/AdvancePortfolio/class-aae-a-portfolio-title.php',
+				'has_script' => false,
+			],
+			'aae-a-portfolio-list' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\AdvancePortfolio\AAE_A_Portfolio_List',
+				'file' => 'Widgets/AdvancePortfolio/class-aae-a-portfolio-list.php',
+				'has_script' => false,
+			],
+			'aae-a-portfolio-item' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\AdvancePortfolio\AAE_A_Portfolio_Item',
+				'file' => 'Widgets/AdvancePortfolio/class-aae-a-portfolio-item.php',
+				'has_script' => false,
+			],
+			'aae-a-portfolio-content' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\AdvancePortfolio\AAE_A_Portfolio_Content',
+				'file' => 'Widgets/AdvancePortfolio/class-aae-a-portfolio-content.php',
+				'has_script' => false,
+			],
+			'aae-a-portfolio-date' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\AdvancePortfolio\AAE_A_Portfolio_Date',
+				'file' => 'Widgets/AdvancePortfolio/class-aae-a-portfolio-date.php',
+				'has_script' => false,
 			],
 
 			'aae-a-loop-item' => [
