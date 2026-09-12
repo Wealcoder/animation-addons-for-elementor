@@ -6375,6 +6375,7 @@ final class Atomic
 		'aae-atomic-general',
 		'aae-atomic-form',
 		'aae-atomic-post',
+		'aae-atomic-woo',
 		'wcf-hf-addon',
 	];
 
@@ -6411,6 +6412,17 @@ final class Atomic
 
 		$elements_manager->add_category('aae-atomic-post', [
 			'title' => esc_html__('AAE Post', 'animation-addons-for-elementor'),
+			'icon'  => 'fa fa-plug',
+		]);
+
+		// Registered here even though every widget that uses it is PRO-owned:
+		// add_category() runs on an Elementor hook the free plugin already
+		// answers, and a widget returning a slug nobody registered lands under
+		// Elementor's own "Atomic Elements" with no error to explain it. Costs
+		// nothing on a site without Pro — an empty category is not rendered,
+		// and promote_panel_categories() skips a slug that is not in the map.
+		$elements_manager->add_category('aae-atomic-woo', [
+			'title' => esc_html__('AAE WooCommerce', 'animation-addons-for-elementor'),
 			'icon'  => 'fa fa-plug',
 		]);
 	}
