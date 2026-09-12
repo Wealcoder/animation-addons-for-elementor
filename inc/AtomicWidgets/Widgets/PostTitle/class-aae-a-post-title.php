@@ -17,6 +17,7 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\AtomicWidgets\PropTypes\Color_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropDependencies\Manager as Dependency_Manager;
 
 if (! defined('ABSPATH')) {
@@ -141,7 +142,7 @@ class AAE_A_Post_Title extends Atomic_Widget_Base
 	{
 		$wrapper_styles = [
 			'display' => String_Prop_Type::generate('block'),
-			'width' => String_Prop_Type::generate('100%'),
+			'width' => Size_Prop_Type::generate( array( 'size' => 100, 'unit' => '%' ) ),
 			'margin' => \Elementor\Modules\AtomicWidgets\PropTypes\Dimensions_Prop_Type::generate([
 				'block-start' => \Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type::generate(['size' => 0, 'unit' => 'px']),
 				'block-end' => \Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type::generate(['size' => 0, 'unit' => 'px']),

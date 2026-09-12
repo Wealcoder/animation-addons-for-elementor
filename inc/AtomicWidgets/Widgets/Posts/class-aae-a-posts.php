@@ -14,6 +14,7 @@ use Elementor\Modules\AtomicWidgets\Controls\Types\Number_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Switch_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 
@@ -168,7 +169,7 @@ class AAE_A_Posts extends Atomic_Element_Base {
 			'base' => Style_Definition::make()
 				->add_variant( Style_Variant::make()->add_props( [
 					'display' => String_Prop_Type::generate( 'block' ),
-					'width'   => String_Prop_Type::generate( '100%' ),
+					'width'   => Size_Prop_Type::generate( array( 'size' => 100, 'unit' => '%' ) ),
 				] ) ),
 		];
 	}

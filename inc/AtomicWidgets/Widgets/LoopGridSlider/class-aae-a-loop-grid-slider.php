@@ -169,7 +169,7 @@ class AAE_A_Loop_Grid_Slider extends AAE_A_Loop_Grid {
 		$wrapper_styles = [
 			'display'  => String_Prop_Type::generate( 'block' ),
 			'position' => String_Prop_Type::generate( 'relative' ),
-			'width'    => String_Prop_Type::generate( '100%' ),
+			'width'    => Size_Prop_Type::generate( array( 'size' => 100, 'unit' => '%' ) ),
 			// Default the slider wrapper to zero padding. It carries `e-con`, whose
 			// default 10px padding offsets the slide-width reference box away from
 			// the runtime's positioning box (see AAE_A_Loop_Slide_Track), clipping

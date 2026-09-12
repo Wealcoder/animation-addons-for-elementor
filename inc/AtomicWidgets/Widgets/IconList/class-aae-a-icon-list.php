@@ -109,7 +109,10 @@ class AAE_A_Icon_List extends Atomic_Element_Base {
 			'align-items' => String_Prop_Type::generate( 'flex-start' ),
 			// 10px matches native Elementor Icon List's default "Space Between".
 			'gap' => \Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
-			'list-style' => String_Prop_Type::generate( 'none' ),
+			// `list-style` is NOT a key in Elementor's atomic style schema, so it
+			// was dropped here in silence and an icon list inside page content
+			// rendered with the theme's bullets. It lives in icon-list.scss now,
+			// at the armour specificity a theme's own `ul li` rule demands.
 			'width' => \Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type::generate( [ 'size' => 100, 'unit' => '%' ] ),
 			'margin' => \Elementor\Modules\AtomicWidgets\PropTypes\Dimensions_Prop_Type::generate([
 				'block-start' => \Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type::generate(['size' => 0, 'unit' => 'px']),

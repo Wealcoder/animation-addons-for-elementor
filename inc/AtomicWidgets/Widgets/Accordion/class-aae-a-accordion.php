@@ -153,7 +153,7 @@ class AAE_A_Accordion extends Atomic_Element_Base {
 		$wrapper_styles = [
 			'display' => String_Prop_Type::generate( 'flex' ),
 			'flex-direction' => String_Prop_Type::generate( 'column' ),
-			'width' => String_Prop_Type::generate( '100%' ),
+			'width' => Size_Prop_Type::generate( array( 'size' => 100, 'unit' => '%' ) ),
 			'gap' => Size_Prop_Type::generate( [
 				'size' => 10,
 				'unit' => 'px',

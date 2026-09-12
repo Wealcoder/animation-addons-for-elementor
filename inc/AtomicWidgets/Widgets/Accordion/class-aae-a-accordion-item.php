@@ -247,7 +247,7 @@ class AAE_A_Accordion_Item extends Atomic_Element_Base {
 		// from the Style panel; these are just sane, good-looking resting values.
 		$wrapper_styles = [
 			'display' => String_Prop_Type::generate( 'block' ),
-			'width' => String_Prop_Type::generate( '100%' ),
+			'width' => Size_Prop_Type::generate( array( 'size' => 100, 'unit' => '%' ) ),
 			'overflow' => String_Prop_Type::generate( 'hidden' ),
 			'background' => Background_Prop_Type::generate( [
 				'color' => Color_Prop_Type::generate( '#ffffff' ),

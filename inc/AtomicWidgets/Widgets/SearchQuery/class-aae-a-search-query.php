@@ -27,6 +27,7 @@ use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Select_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 
@@ -114,7 +115,7 @@ class AAE_A_Search_Query extends Atomic_Widget_Base {
 	protected function define_base_styles(): array {
 		$wrapper = [
 			'display' => String_Prop_Type::generate( 'block' ),
-			'width'   => String_Prop_Type::generate( '100%' ),
+			'width'   => Size_Prop_Type::generate( array( 'size' => 100, 'unit' => '%' ) ),
 		];
 
 		return [

@@ -28,6 +28,7 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Plugin;
 use Elementor\Utils;
 use WCF_ADDONS\WCF_Theme_Builder;
@@ -196,7 +197,7 @@ class AAE_A_Post_Content extends Atomic_Widget_Base {
 				->add_variant(
 					Style_Variant::make()->add_props( [
 						'display' => String_Prop_Type::generate( 'block' ),
-						'width'   => String_Prop_Type::generate( '100%' ),
+						'width'   => Size_Prop_Type::generate( array( 'size' => 100, 'unit' => '%' ) ),
 					] )
 				),
 		];
