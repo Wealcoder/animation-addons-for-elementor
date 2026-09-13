@@ -31,6 +31,7 @@ import {
 	handleCreateLikeCommand,
 } from './slider-refresh.js';
 import { schedulePostTitleScan } from './post-title-limit.js';
+import { schedulePostExcerptScan } from './post-excerpt-limit.js';
 
 // Structural commands we post-process for slider refresh.
 function shouldHandleCommand(command) {
@@ -155,6 +156,7 @@ export function installRunWrapper() {
 			// Post-title limit mirror: a limit change may not re-render the
 			// widget (no DOM mutation), so nudge the scan directly.
 			schedulePostTitleScan();
+			schedulePostExcerptScan();
 
 			const handled = maybeHandleAccordionLiveSettings(args);
 			if (handled) {

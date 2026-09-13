@@ -1,0 +1,18 @@
+{% import 'elementor/macros' as m %}
+{# The excerpt is PLAIN TEXT computed in get_atomic_settings() (word / char
+   trims already applied there), so it is escaped here, never | raw.
+
+   Line Clamp is pure CSS, emitted inline from the settings so it behaves
+   IDENTICALLY in the editor's client-side render and the front end — no
+   re-render, no JS mirror. It is inline rather than a base style because the
+   atomic style schema has no `-webkit-line-clamp` key. #}
+{% set tag = settings.tag | default('p') %}
+{% set classes = settings.classes | merge([ base_styles.base ]) | join(' ') %}
+{% set clamp = 0 %}
+{% if settings.limit_by is defined and settings.limit_by == 'line' %}
+    {% set clamp = settings.limit | default(3) %}
+{% endif %}
+<{{ tag | e('html_tag') }} class="{{ classes }}" data-interaction-id="{{ interaction_id | default('') }}"
+    {%- if clamp %} style="display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:{{ clamp }};overflow:hidden;"{% endif %} {{- m.render_custom_attributes(settings) }}>
+    {{- settings.post_excerpt | default('') -}}
+</{{ tag | e('html_tag') }}>

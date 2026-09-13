@@ -13,7 +13,7 @@
  */
 
 import { controlsRegistry } from '@elementor/editor-editing-panel';
-import { htmlV3PropTypeUtil, stringArrayPropTypeUtil, stringPropTypeUtil } from '@elementor/editor-props';
+import { colorPropTypeUtil, htmlV3PropTypeUtil, stringArrayPropTypeUtil, stringPropTypeUtil } from '@elementor/editor-props';
 
 import { SlidesControl } from './SlidesControl';
 import { AccordionItemsControl } from './AccordionItemsControl';
@@ -34,6 +34,8 @@ import { StackPreviewControl } from './StackPreviewControl';
 import { BtnHoverStyleControl } from './BtnHoverStyleControl';
 import { ProNoticeControl } from './ProNoticeControl';
 import { NoticeControl } from './NoticeControl';
+import { AaeColorControl } from './ColorControl';
+import { AcfFieldControl } from './AcfFieldControl';
 
 const ELEMENT_CONTROLS = [
 	{ type: 'aae-slides', component: SlidesControl, layout: 'full' },
@@ -71,6 +73,14 @@ const ELEMENT_CONTROLS = [
 	// picker, which additionally hides its own row unless a sibling boolean
 	// prop is set — see BtnHoverStyleControl.jsx.
 	{ type: 'aae-btn-hover-style', component: BtnHoverStyleControl, layout: 'full', propTypeUtil: stringPropTypeUtil },
+	// Prop-bound to a Color_Prop_Type: Elementor's own picker on the Content
+	// tab, for a part whose colours are not its root box (a slider's rail /
+	// fill / thumb). inc/AtomicWidgets/Controls/class-aae-color-control.php.
+	{ type: 'aae-color', component: AaeColorControl, layout: 'two-columns', propTypeUtil: colorPropTypeUtil },
+	// Prop-bound to a plain String (an ACF field KEY): a dropdown of the
+	// site's ACF fields, narrowed to the post type of the Loop Grid the
+	// filter targets. inc/AtomicWidgets/Controls/class-aae-acf-field-control.php.
+	{ type: 'aae-acf-field', component: AcfFieldControl, layout: 'full', propTypeUtil: stringPropTypeUtil },
 ];
 
 let registered = false;

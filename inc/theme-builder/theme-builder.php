@@ -380,7 +380,7 @@ class WCF_Theme_Builder
 		// registering them anyway ships the whole header+footer asset set to a
 		// page that renders neither. Measured on /aae-blank/ (canvas): ~20 dead
 		// files — aae-a-menu-js/css, aae-a-nav-js/css, and every
-		// local-<header id>-* / local-<footer id>-* / aae_utility_styles-* file
+		// local-<header id>-* / local-<footer id>-* file
 		// for both templates.
 		if ($this->renders_theme_parts()) {
 			foreach (array('header', 'footer') as $template_type) {

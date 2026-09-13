@@ -699,36 +699,26 @@ final class Loop_Filter_Auth {
 				return null; // ACF off or the field is gone: no fallback to a wider rule.
 			}
 			$decl = array_merge( $decl, $acf );
+
+			// The builder may still RE-WORD ACF's choices ("To let" for `rent`)
+			// through the same "value|Label" lines the plain-meta source uses.
+			// Wording only: a value ACF does not know is dropped, because the
+			// whitelist is ACF's and a label without a value is a dead row.
+			foreach ( self::choice_lines( $s['choices'] ?? [] ) as $value => $label ) {
+				if ( '' !== $label && in_array( $value, (array) $decl['choices'], true ) ) {
+					$decl['choice_labels'][ $value ] = $label;
+				}
+			}
 		} else {
 			$decl['key'] = sanitize_text_field( (string) ( $s['meta_key'] ?? '' ) );
 			[ $decl['min'], $decl['max'] ] = self::authored_bounds( $s );
-			// One value per line, or an array of them. The panel's textarea
-			// gives a string; a preset JSON and the documented contract give an
-			// array. Casting a newline string with (array) would make the whole
-			// block ONE choice, which matches nothing and says nothing.
-			$choice_lines = $s['choices'] ?? [];
-			if ( is_string( $choice_lines ) ) {
-				$choice_lines = preg_split( '/
-|
-|
-/', $choice_lines );
-			}
-
-			foreach ( (array) $choice_lines as $line ) {
-				if ( ! is_string( $line ) ) {
-					continue;
-				}
-				$value = trim( (string) strtok( $line, '|' ) );
-				if ( '' === $value ) {
-					continue;
-				}
+			foreach ( self::choice_lines( $s['choices'] ?? [] ) as $value => $label ) {
 				$decl['choices'][] = $value;
 				// "value|Label" — the label half, kept for the readouts only.
 				// Authorisation still matches on the VALUE; a label can never
 				// widen what is allowed.
-				$label = trim( (string) substr( (string) $line, strlen( $value ) + 1 ) );
 				if ( '' !== $label ) {
-					$decl['choice_labels'][ $value ] = sanitize_text_field( $label );
+					$decl['choice_labels'][ $value ] = $label;
 				}
 			}
 		}
@@ -828,6 +818,11 @@ final class Loop_Filter_Auth {
 				$out['mode']         = 'choice';
 				$out['value_type']   = 'char';
 				$out['choices']      = array_map( 'strval', array_keys( (array) ( $field['choices'] ?? [] ) ) );
+				// ACF's own wording, so a chip and an option row say "For rent"
+				// where the URL says `rent`. The Field filter reads exactly this
+				// key and had been reading an empty map — a select's every value
+				// leaked through as its slug.
+				$out['choice_labels'] = array_map( 'strval', (array) ( $field['choices'] ?? [] ) );
 				$out['multi_stored'] = 'checkbox' === $field['type'] || ! empty( $field['multiple'] );
 				return $out['choices'] ? $out : null;
 
@@ -859,6 +854,138 @@ final class Loop_Filter_Auth {
 		}
 
 		return null; // taxonomy (use the Taxonomy Filter), repeater, group, flexible, …
+	}
+
+	/**
+	 * Every ACF field a POST can carry, for the panel's field dropdown.
+	 *
+	 * Read live from ACF — never a snapshot — so a field added to a group is
+	 * offered on the next panel open. Each entry names the field group it
+	 * belongs to and the post types the group is located on, which is what
+	 * lets the panel narrow the list to the grid's own post type: a field on
+	 * `property` can never match a grid of `post`, and offering it would be a
+	 * filter that looks configured and applies nothing.
+	 *
+	 * Groups located on a taxonomy, a user, an options page, a comment, a
+	 * widget, a menu or a block are LEFT OUT — they write term/user/option
+	 * meta, and the Field filter compares post meta. Inactive groups too.
+	 *
+	 * A select-like field carries its `choices` (value => label), so the
+	 * editor canvas can draw the real rows a visitor will see.
+	 *
+	 * @return array<int, array{key:string,name:string,label:string,type:string,group:string,post_types:string[],choices:array}>
+	 */
+	public static function acf_field_catalogue(): array {
+		if ( ! function_exists( 'acf_get_field_groups' ) || ! function_exists( 'acf_get_fields' ) ) {
+			return [];
+		}
+		$out = [];
+		foreach ( (array) acf_get_field_groups() as $group ) {
+			if ( ! is_array( $group ) || ( isset( $group['active'] ) && ! $group['active'] ) ) {
+				continue;
+			}
+			$post_types = self::acf_group_post_types( (array) ( $group['location'] ?? [] ) );
+			if ( null === $post_types ) {
+				continue;
+			}
+			foreach ( (array) acf_get_fields( $group ) as $field ) {
+				if ( ! is_array( $field ) || empty( $field['key'] ) || empty( $field['name'] ) ) {
+					continue;
+				}
+				$out[] = [
+					'key'        => (string) $field['key'],
+					'name'       => (string) $field['name'],
+					'label'      => (string) ( $field['label'] ?? $field['name'] ),
+					'type'       => (string) ( $field['type'] ?? '' ),
+					'group'      => (string) ( $group['title'] ?? '' ),
+					'post_types' => $post_types,
+					'choices'    => array_map( 'strval', (array) ( $field['choices'] ?? [] ) ),
+					'min'        => is_numeric( $field['min'] ?? null ) ? (float) $field['min'] : null,
+					'max'        => is_numeric( $field['max'] ?? null ) ? (float) $field['max'] : null,
+				];
+			}
+		}
+		return $out;
+	}
+
+	/**
+	 * The post types an ACF location rule set puts a group on.
+	 *
+	 * `$location` is OR-groups of AND-rules. A group holding a `post_type ==`
+	 * rule names that type; a `page_*` rule means `page`; any other post-side
+	 * rule (`post_status`, `post_taxonomy`, `post_type !=`, …) means ANY post
+	 * type, spelled `*`. An OR-group made only of non-post rules (taxonomy,
+	 * user_form, options_page, comment, widget, nav_menu, block, attachment)
+	 * contributes nothing; a location made only of those returns NULL — the
+	 * group is not post meta at all.
+	 *
+	 * @return string[]|null
+	 */
+	private static function acf_group_post_types( array $location ): ?array {
+		$non_post = [ 'taxonomy', 'user_form', 'user_role', 'options_page', 'comment', 'widget', 'nav_menu', 'nav_menu_item', 'block', 'attachment' ];
+		$types    = [];
+		$any_post = false;
+
+		foreach ( $location as $and_rules ) {
+			$group_types = [];
+			$group_post  = false;
+			foreach ( (array) $and_rules as $rule ) {
+				$param = (string) ( $rule['param'] ?? '' );
+				if ( '' === $param || in_array( $param, $non_post, true ) ) {
+					continue;
+				}
+				$group_post = true;
+				if ( 'post_type' === $param && '==' === ( $rule['operator'] ?? '==' ) ) {
+					$group_types[] = sanitize_key( (string) ( $rule['value'] ?? '' ) );
+				} elseif ( 0 === strpos( $param, 'page' ) ) {
+					$group_types[] = 'page';
+				}
+			}
+			if ( ! $group_post ) {
+				continue;
+			}
+			$any_post = true;
+			// An AND-group naming no type applies to every post type.
+			$types = array_merge( $types, $group_types ? $group_types : [ '*' ] );
+		}
+
+		if ( ! $any_post ) {
+			return null;
+		}
+		$types = array_values( array_unique( array_filter( $types ) ) );
+		return in_array( '*', $types, true ) ? [ '*' ] : $types;
+	}
+
+	/**
+	 * "value|Label" lines → value => label ('' when no label was typed).
+	 *
+	 * One value per line, or an array of them. The panel's textarea gives a
+	 * string; a preset JSON and the documented contract give an array. Casting
+	 * a newline string with (array) would make the whole block ONE choice,
+	 * which matches nothing and says nothing.
+	 */
+	private static function choice_lines( $raw ): array {
+		if ( is_string( $raw ) ) {
+			$raw = preg_split( '/
+|
+|
+/', $raw );
+		}
+
+		$out = [];
+		foreach ( (array) $raw as $line ) {
+			if ( ! is_string( $line ) ) {
+				continue;
+			}
+			$value = trim( (string) strtok( $line, '|' ) );
+			if ( '' === $value ) {
+				continue;
+			}
+			$label         = trim( (string) substr( (string) $line, strlen( $value ) + 1 ) );
+			$out[ $value ] = sanitize_text_field( $label );
+		}
+
+		return $out;
 	}
 
 	private static function url_key( array $s, string $default, string $legacy = '' ): string {

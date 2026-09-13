@@ -25,6 +25,7 @@
 import { state } from './state.js';
 import { getPreviewWindow } from './preview.js';
 import { applyTitleLimit, readTitleLimit } from './post-title-limit.js';
+import { excerptForPost, readExcerptLimit } from './post-excerpt-limit.js';
 
 const WRAP_SELECTOR = '.aae-a-loop-grid-wrap';
 
@@ -245,6 +246,14 @@ function fillClone(clone, post) {
 		// data-id and we can read its live settings.
 		const { by, n } = readTitleLimit(titleEl.getAttribute('data-id'));
 		target.textContent = applyTitleLimit(post.title, by, n);
+	}
+	// Excerpt: the per-post text under the widget's live limit (the clone is a
+	// copy of the authored card, so without this every card shows one excerpt).
+	const excerptEl = clone.querySelector('[data-widget_type^="e-aae-a-post-excerpt"]');
+	if (excerptEl && (post.excerpt || post.excerpt_full)) {
+		const target = excerptEl.querySelector('p,div,span') || excerptEl;
+		const { by, n, more } = readExcerptLimit(excerptEl.getAttribute('data-id'));
+		target.textContent = excerptForPost(post, by, n, more);
 	}
 	// Image: swap the featured-image src (post-image widget, or any img fallback).
 	const imgEl = clone.querySelector('[data-widget_type^="e-aae-a-post-image"] img, img');
@@ -530,6 +539,12 @@ async function fillAuthoredSample(pdoc) {
 			const target = titleEl.querySelector('h1,h2,h3,h4,h5,h6,a,span,p') || titleEl;
 			// Plain full text — the post-title-limit module captures + trims it.
 			target.textContent = data.title;
+		}
+		const excerptEl = item.querySelector('[data-widget_type^="e-aae-a-post-excerpt"]');
+		if (excerptEl && data.excerpt) {
+			const target = excerptEl.querySelector('p,div,span') || excerptEl;
+			// Plain full text — the post-excerpt-limit module captures + trims it.
+			target.textContent = data.excerpt_full || data.excerpt;
 		}
 		const img = item.querySelector('[data-widget_type^="e-aae-a-post-image"] img, img');
 		if (img && data.image) {

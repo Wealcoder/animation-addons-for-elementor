@@ -3735,6 +3735,899 @@ an aliased arrival in our own spelling. Found by measuring: the page-2 link kept
 The demos show both shapes: the store's Colour facet is 6 terms with 4 shown,
 the shop's Sort is a dropdown.
 
+## Loop Filters — every part is an ELEMENT now (2026-09-12)
+
+"How do I give the Apply button a background colour?" had no answer. An atomic
+style has no descendant selector and the Style tab reaches only an element's own
+root class; measured against 4.2.4, `modules/atomic-widgets/controls/types/` has
+**no colour control**, so a Content-tab prop is not a fallback either. A part
+that is markup inside a widget's twig can therefore NEVER be styled, and the
+only remedy is to make the part its own element — the Nested Slider pattern.
+
+So all nine filters are CONTAINERS (`Loop_Filter_Element_Base` =
+`Atomic_Element_Base` + `Has_Element_Template`, `is_container`), and their
+visible parts are 17 elements in `pro/inc/AtomicV4/Widgets/LoopFilters/Parts/`:
+
+| container parts | `e-aae-a-loop-filter-options` (the `<ul>`), `-option` (one row), `e-aae-a-loop-range` (the slider `<form>`), `e-aae-a-loop-filter-form` (the search / sort `<form>`) |
+|---|---|
+| leaf parts | `-label`, `-apply`, `-clear`, `-more`, `-mark`, `-text`, `-swatch`, `-count`, `-stars`, `e-aae-a-loop-range-box`, `e-aae-a-loop-search-input`, `e-aae-a-loop-sort-select`, `e-aae-a-loop-result-text` |
+
+**A changed elType is not backwards compatible.** A page saved with the old
+`elType: widget` + `widgetType` shape renders NOTHING (the type is no longer
+registered) and loses the element on its next save. There were no shipped
+instances; the demo pages and the 24 presets were regenerated.
+
+### The mechanism
+
+- **`define_render_context()` returns a LIST of pairs**, `[['context_key' =>
+  …, 'context' => …]]` — a map fatals inside Elementor's `set_render_context()`
+  naming neither the class nor the key. Keyed by STRINGS
+  (`Loop_Filter_Context::FILTER` / `::ROW`), not class names, because the parts
+  are shared by all nine filters.
+- **The Option row REPEATS** the way a Loop Item does: `print_content()` reads
+  the parent's `rows`, pushes one `ROW` context per row and calls
+  `$this->render()` — never `parent::print_content()`, which skips the
+  element's own wrapper and drops the atomic style class. Style ONE row; every
+  term follows.
+- **Every part self-gates** on its context (a swatch with no colour renders
+  nothing), which is what lets the Option seed all five row parts on drop and
+  why that is the only way a builder can HAVE them — parts are hidden from the
+  panel (`show_in_panel()` on a widget, `should_show_in_panel()` on an element)
+  and from the dashboard (`is_internal => true` drops the card server-side, so
+  `INTERNAL_WIDGET_SLUGS` decides nothing and **no `npm run build` is needed to
+  register one**). Shared parts belong in `ALWAYS_ACTIVE`, never `PARENT_MAP` —
+  one parent per child there, and naming any one would blank the part in every
+  other filter when that widget is switched off. `config.php` is V3-only.
+- **The row renders `e--selected`** beside the legacy `is-selected`.
+  `Style_States::SELECTED` is a CLASS state, and rendering it plus declaring it
+  in `define_atomic_style_states()` puts a real "Selected" tab in the Style
+  panel next to Hover. `DISABLED` is the other class state; everything else is a
+  pseudo-state.
+- **DANGER — `define_atomic_style_states()` returns `{name,value}` MAP ENTRIES,
+  class states ONLY** (fixed 2026-09-13, "filter option states … 2 option show
+  kore, text nai, empty"). The editor destructures each entry into `{name,
+  value}` to label the state dropdown under Style → Classes (its label is
+  `CLASS_STATES_MAP[value]?.label ?? name`), so a bare constant like
+  `Style_States::SELECTED` — a plain string — destructures to
+  `{value: undefined, name: undefined}` and renders an **empty, label-less
+  option**. Return `Style_States::get_class_states_map()['selected']` (the core
+  atomic Tab does exactly this), never the bare constant. And put ONLY class
+  states here: `HOVER` / `FOCUS` / `ACTIVE` are DEFAULT pseudo states the panel
+  always offers, so declaring one here added a *second* empty option — the
+  Option part had listed `[HOVER, SELECTED]` (two empties) and the Search Input
+  `[FOCUS]` (one). Additional pseudo states, if ever needed, go through
+  `define_atomic_pseudo_states()`; a base-style `->set_state( HOVER )` /
+  `set_state( FOCUS )` variant works regardless, because those pseudo states are
+  offered by default.
+- **A shared Form seeds nothing of its own** — it cannot know whether it is
+  under Search or Sort — so the PARENT seeds it `->children([...])`. Shipped one
+  revision with a bare form: a Search dropped with no box to type in.
+- **The parent's wording still flows to the part.** Search's Placeholder,
+  Button and Button text, a Field/Date filter's Apply text, ride the form/range
+  context; the part's own Text control wins when typed, the parent's is the
+  fallback. Search `button_mode = none` makes the Apply render nothing (resolved
+  in PHP, never in Twig — the twig also renders client-side where the context
+  does not exist); `icon` draws the magnifier with a clipped accessible name.
+- **The canvas placeholder is CANVAS-only.** An Option with no rows renders
+  once when detached (so it can be selected and styled) and nothing on the
+  front end; it shipped drawing a live `href="#"` "Option" link under every
+  slider-shaped filter. The Options `<ul>` likewise needs rows.
+
+### Schema traps measured while writing 17 base styles
+
+`opacity` is a `Size_Prop_Type` in PERCENT (a String resolves to nothing);
+`flex` wants `Number_Prop_Type::generate(n)` for grow/shrink;
+**`margin-inline-start` is not a key** (use the `margin` Dimensions prop with
+`inline-start => auto`); **`font-variant-numeric` is not a key** (it lives in
+`loop-filters.scss`); there is no `border` shorthand. Any one of these voids the
+whole definition in silence.
+
+### A chip IS an option row — and the chip look moved with it
+
+Active Filters maps each chip onto the shared row shape (an href that REMOVES),
+so `.aae-a-loop-active-chip` / `-chip-label` / `-chip-x` / `-active-clear` no
+longer exist in the markup. The pill, the border and the drawn `×` now hang off
+the bar — `.aae-a-loop-active-filters .aae-a-loop-filter-link` at (0,2,0),
+exactly as list/chips/inline hang off the filter's display class. The `×` is a
+`::after`, decorative on purpose. `verify-loop-readouts.php` reads chips inside
+the bar's `<ul>` and asserts `chip_names()` (substring), because the group
+prefix is part of the one string now — "TOPIC: Design" — and a slug leaking
+where a name belongs is still caught. The Result Count's sentence is the
+`e-aae-a-loop-result-text` element and carries `aria-live="polite"`; the suite
+reads that class, not the attribute order.
+
+### Presets are the WHOLE subtree, asked for, not written
+
+`E:\Local Testing\make-loop-filter-presets.php` now needs WordPress: for each
+type it reads `default_children` off the class and expands every container
+child recursively (`expand_child()`), so a preset carries the Options → Option
+→ five row parts tree a real drop gets. A preset that carried only the root
+would replace a working filter with an empty box. Two more arguments per
+preset:
+
+- **`$parts`** — PART TYPE ⇒ style props, applied to every matching element.
+  Deliberately limited to parts the stylesheet names with a SINGLE class
+  (label, count, clear, more, apply, the boxes/inputs): a local class is
+  `.elementor .e-<id>` at (0,2,0), which merely TIES the display-mode rules on
+  the option row, so a preset that styled rows would be decided by document
+  order — a coin toss, not a design. `states()` wraps a `'' / hover /
+  e--selected` map into variants.
+- **`$extras`** — subtrees the widget does not seed: the slider presets carry
+  `e-aae-a-loop-range` (the Field filter deliberately drops without one — two
+  dead number boxes beside a term list read as broken). `demo_widget()` does
+  the same when `range_style = slider`. A Drawer preset (`drawer-mobile-set`,
+  the first) seeds a whole filter set through it, each with a title, because a
+  filter with no title renders no heading.
+
+24 presets. `verify-loop-readouts.php` asserts the model is `elType`-keyed and
+non-empty `elements`.
+
+### The ACF demo — `/aae-demo-properties/`
+
+`demo-acf.php` (mode `acf`), the fourth page, and the one that filters by fields
+a SITE OWNER wrote: an ACF number as a slider AND as brackets, a select, a
+true/false. It is built on the presets' own content model — it reads the
+`requires` block out of `property-type-list.json` / `property-price-slider.json`
+and installs it through `aae/preset/requires/install`, the filter the panel's
+Install button fires, then registers the type in-process (the builder registers
+at `init`, already passed — the `store_ensure_attributes()` trap). Cleanup drops
+the model LAST, after the posts of that type are gone.
+
+Three product gaps it found, all fixed: **`resolve_acf()` returned no
+`choice_labels`**, so every ACF select value reached the rows and the chips as
+its slug (`rent`), while the Field filter's own code said "labelled by ACF"; the
+builder's `value|Label` lines now re-word an ACF choice too (wording only —
+the whitelist stays ACF's). **A slider over an ACF number drew a 0..0 track** —
+the field's own min/max are the authoriser's clamp and are now the track as
+well. And `demo_post()`'s existing-post scan was a fixed `post`/`product` list
+read once, so a demo with its own post type duplicated every row on rebuild; it
+is per type now.
+
+**Trap:** `update_field( $key, … )`, never `update_post_meta()` — ACF resolves
+a field through the hidden `_<name>` reference, and a bare meta write leaves the
+value visible to a meta query and invisible to `acf_get_field()`, which is what
+the filter resolves by.
+
+Suites: parts probe **84**, base styles 497/21 (the 21 deliberate), seam 139,
+readouts **85**, woo 57, interop 31.
+
+### What the Playwright suites found that the PHP ones could not
+
+Every hook the runtime and the stylesheet keyed on had to be re-checked against
+markup that is now produced by the PARTS, and four of them had silently moved:
+
+- **`data-aae-search-live` goes on the FORM**, not the box: the runtime finds
+  the form with `input.closest('[data-aae-search-live]')`, and `closest()`
+  matches the element itself first — on the input it "submitted" the input and
+  search-as-you-type did nothing.
+- **The Sort dropdown enhances by KIND** — `form[data-aae-filter-form="sort"]`
+  — because the shared Form part carries no `.aae-a-loop-sort-form`; the old
+  selector matched nothing, so `change` never submitted and the Apply button
+  stayed on screen with the runtime live. The hide rule is `.elementor
+  .aae-a-loop-sort.is-enhanced .aae-a-loop-filter-apply`.
+- **An author avatar is drawn by the Swatch part** (transparent fill, the
+  avatar as the image, a 24px box through `--aae-filter-swatch-size`, which the
+  base style reads via the `custom` unit so the Style panel still wins).
+  `show_avatar` computed a URL nothing rendered.
+- **The Date filter's custom range goes through the Range parts**, with
+  `kind => 'date'` (the Range Box renders `type="date"`, no bounds/step) and
+  `min`/`max` — it had been emitting `from`/`to` that no part read, so the
+  boxes were empty number inputs. A third context key, `Loop_Filter_Context::
+  RANGE`, is pushed by the Range Form around its children so the Label part
+  inside it draws the form's caption ("Or pick your own") rather than the
+  filter's title; the Date filter seeds that Label in front of the form's own
+  boxes.
+
+The `.aae-a-loop-daterange`, `-search-form`, `-search-submit`, `-sort-form`
+and `-sort-apply` CSS blocks are gone with the markup; the theme armour names
+`form.aae-a-loop-filter-form` and `button.aae-a-loop-filter-apply` now.
+`make-loop-filter-page.php` writes its filters through `aae_node()` like the
+demos. Playwright after this pass: widget 22 · instant 25 · forms 35 · marker
+16 · date 16 · counts 13 · drawer 27 · frontend 25.
+
+## Loop Filters — the modern pass: calendar, slider, dropdown, motion (2026-09-13)
+
+"Blog demo should feel more modern; the dropdown, the date and the range
+slider too; and filtering should feel smooth." Four product changes and a
+demo redesign, and the product half found a bug the rework had shipped with.
+
+### DANGER — the theme armour was beating the Style panel
+
+`.elementor .e-atomic-element.aae-a-loop-filter button.aae-a-loop-filter-apply
+{ color: inherit; font: inherit }` is (0,4,2). The builder's own Style-panel
+class is `.elementor .e-<id>` at (0,2,0). So an Apply painted white-on-teal in
+the panel rendered **teal-on-teal** — measured on the blog demo — and the
+Search Input, which is its own root too, was locked the same way. The armour
+was written when those were markup inside a widget's twig; once they became
+elements it was shielding them from the one thing that is supposed to reach
+them. The three list-mode padding re-assertions at (0,5,3) had the same
+effect on the Option row's padding.
+
+The armour now has **two tiers**, and the split is the rule to keep:
+
+| markup | specificity | why |
+|---|---|---|
+| the `<ul>`/`<li>`, the `<input>` inside a Range Box, the drawer's buttons | (0,4,2), as before | the panel cannot reach them, so nothing a builder can set is lost |
+| Apply, Search Input, Sort Select, the two forms — parts that ARE elements | **exactly (0,2,0)**, `.elementor .<part>` | beats a theme's `button` / `.theme select`, TIES the panel — and the tie goes to the panel because Elementor prints `local-<id>-frontend.css` after `loop-filters.css` |
+
+Tier 2 names only properties the part's **base style does not set** (the base
+is also (0,2,0), printed earlier, and must keep winning over the family
+stylesheet). A theme rule at (0,2,1) or above beats the panel with or without
+us; there is nothing a stylesheet can do about that, and `!important` would
+beat the panel too. The chevron on the Sort Select lives in tier 2 for the
+same reason: this theme's `.theme select { background: url(arrow.svg) }` is
+(0,1,1), and the family's (0,1,0) rule left the theme's 24px SVG under our
+6px sizing — a dot.
+
+### The date boxes take a calendar — Elementor's own flatpickr
+
+`enhanceDates()` in `loop-filters.js`, over
+`form[data-aae-filter-form="range"] input[type="date"]`. Same library, same
+`.aae-fp` skin and same config helper as the Form Builder's date field
+(`FormDatepicker\Assets`), so a site with both shows one calendar; the
+LoopFilters `Renderer` enqueues it **only when a Date filter with
+`show_custom` renders**, and `Assets::enqueue_datepicker()` prints
+`AAE_PRO_LOOP_DATEPICKER` (`wp_json_encode`, never `wp_localize_script` —
+the week-start integer). `altInput` mode: the REAL box keeps its `name` and
+keeps posting `Y-m-d` (it becomes `type=hidden`), the twin shows the site's
+`date_format`. Picking From bounds the To calendar and vice versa, so a range
+the server would drop cannot be composed. With flatpickr absent — or before
+it has run, since both print in the footer — the boxes stay native, which is
+the no-script rendering anyway; the runtime retries once at `load`.
+
+**Trap for suites:** `fill('[data-aae-range-role="min"]')` targets the hidden
+original and fails. Drive `input.__aaeFp.setDate(v, true, 'Y-m-d')` and
+`requestSubmit()` the form; `verify-loop-filter-date.mjs` does, and asserts the
+hidden original still carries the `Y-m-d`.
+
+### The slider, the dropdown, the motion
+
+- **Slider**: 6px rail, fill, 20px ringed thumbs, and a value bubble over
+  each thumb (`prefix + value + suffix`, fed from `paintTrack()`) shown on
+  hover, focus and while a handle moves. **Superseded 2026-09-13**: those are
+  six ELEMENTS now, painted by their base styles — see *the slider is SIX
+  ELEMENTS* below; the gradient and the `currentColor` bubble scheme went
+  with the stylesheet paint.
+- **Dropdown**: `appearance: none` and a chevron drawn from two gradient
+  strokes — `currentColor`, which an SVG data URI cannot be — as
+  `background-image`, never the shorthand, so a builder painting the box in
+  the panel (`background-color`) keeps the arrow. The Sort Select's base
+  padding-inline-end is 34px for the same reason.
+- **Motion** — all transform/opacity, all off under `prefers-reduced-motion`:
+  a pressed link/button squashes to 0.97; after an instant filter the runtime
+  marks the layout `aae-lf-enter`, numbers each cell in `--aae-lf-i`, and the
+  stylesheet staggers them in (capped at the tenth cell, class removed after
+  the last lands so Load More does not replay it); a re-rendered filter widget
+  gets `aae-lf-swap`, a 220 ms fade.
+
+### The blog demo
+
+Palette key `soft => true` (blog only): panels, cards and the toolbar drop
+their hairline for a two-layer shadow; cards lift 4px on hover through
+`transform` + `transition: all` (the only transition property Elementor's
+transformer lets through). The periods are pills, the custom range is
+"From / To" boxes over a full-width filled Apply, Sort is a dropdown in the
+toolbar with its label beside it (`flex-wrap: nowrap` on the root — the base
+wraps — and `flex: 0 0 auto` on the label; **`white-space` is not a schema
+key**, and voided the whole label definition when tried). `demo_style_nth()`
+/ `demo_style_parts()` style a part inside a filter's subtree the way a
+builder would — never an Option row (the display-mode tie).
+
+Suites after this pass: date **19**, forms 35, instant 25, widget 22, marker
+16, counts 13, drawer 27, frontend 25, readouts 85, seam 139, woo 57.
+
+## Loop Filters — "the editor and the front end don't match" (2026-09-13)
+
+Reported on the store demo, and it was three things wearing one symptom. The
+first is the one to remember: it made the other two look worse than they were.
+
+### DANGER — a fixture that renders is not a fixture that PUBLISHES
+
+`demo_chips()` wrote a `string-array` whose ITEMS were bare JSON strings. The
+front end unwraps everything recursively and rendered it perfectly; Elementor's
+save path does not. `Array_Prop_Type::validate_value()` runs every item through
+the item type, and `String_Prop_Type::validate()` requires the
+`{ $$type: 'string', value }` envelope — a bare string fails `is_transformable()`.
+`Has_Atomic_Base::parse_atomic_settings()` then THROWS, `save_builder` answers
+`success: false`, and the page keeps its old content. The only trace is a
+console line: `Settings validation failed. terms_product_cat: invalid_value`.
+So every edit made in the editor "did nothing", and the front end being
+compared against was the previous build. `QueryChipsControl.jsx` had said so all
+along — "the save-time schema validation rejects bare strings".
+
+`aae_str_array()` in `aae-v4-lib.php` is now the one writer; `demo_chips()`,
+`include_posts`, the ACF sort `options` and the two fixture chips go through it.
+
+**The styles half fails the OTHER way.** `parse_atomic_styles()` drops an
+invalid style DEFINITION in silence (logged, `continue`), so a page can publish
+fine and lose a look. `verify-loop-demo-publishable.php` (10) asks Elementor's
+own `get_data_for_save()` for every element on all four demos and requires the
+same settings keys and the same style props back — the parser that refuses a
+real publish is the one doing the refusing. Measured lossless on all four
+(119 / 140 / 179 / 132 elements) and confirmed with a real `$e.run(
+'document/save/publish')` on the store page: `save_builder` 200, 179 elements
+before and after, nothing dropped but Elementor's own `isLocked` flag.
+
+### DANGER — a base-vs-stylesheet tie resolves the OPPOSITE way in the canvas
+
+The front end prints `loop-filters.css` after `base-desktop.css`
+(`fix_frontend_atomic_css_order()`), so on a (0,2,0) tie the family stylesheet
+wins. The editor appends the base styles to the canvas head AFTER every
+stylesheet, so there the base wins. Every property a display mode varies at
+(0,2,0) — `--list` / `--chips` / `--inline` padding on the Option row, the
+chips and Active Filters bar turning the list into a row — flipped between the
+two: rows 7px/10px on the front end and 4px/0 in the canvas, chips in a column.
+
+The rule: **a base style must not set a property the family stylesheet varies
+at the same specificity.** The Option row's `padding` and the Options list's
+`flex-direction` / `gap` moved out of `define_base_styles()` and are stated
+once at the top of `loop-filters.scss` as `.elementor .aae-a-loop-filter-link`
+/ `.elementor .aae-a-loop-filter-list` (0,2,0), AHEAD of the mode rules that
+override them. Same specificity, same file, so document order is fixed in both
+environments, and the Style panel — printed after either — still wins. The
+scripted audit that found them is worth re-running after any base-style edit:
+parse the built CSS for rules whose last compound is a part class and intersect
+their props with that part's base keys.
+
+### The canvas mirror — `loop-filters-editor.js` (PRO)
+
+An atomic twig renders client-side in the canvas with its own settings only,
+and every part takes what it shows from the parent filter's PHP render
+context. So the canvas showed "Filter heading" eight times, stars + swatch +
+count on every row whatever the filter, Sort drawing both its list and its
+dropdown, Search's icon button as a text button — and no checkbox at all,
+because the Mark twig's `_shape | default('none')` rendered nothing without
+PHP, so the marker could never be styled.
+
+`src/modules/atomic-v4/loop-filters-editor.js` (enqueued by
+`LoopFilters\Assets::enqueue_editor()` on `elementor/editor/after_enqueue_scripts`,
+type lists from free's `Loop_Filter_Auth` via an inline script) runs in the
+editor window, reads the parent filter's settings off the live model, and
+paints the canvas nodes: the heading's words (hidden when the title is empty,
+as on the front end), which row parts show, marker shape via the same
+`resolve_marker()` rule, list vs dropdown, the Apply button's word or
+magnifier, the search placeholder, `type=date` boxes under a Date filter. It
+mirrors the gates in the parts' `get_atomic_settings()`; change one, change
+both. Three rules keep it safe: it never writes a model (DOM paints only, so
+nothing can reach a save); every write checks the current value first (the
+canvas body is under a childList observer, and re-setting textContent would
+replace the node and loop); hiding is an inline `display:none` tagged with
+`data-aae-lf-canvas-hidden`, so an un-hide only undoes its own work.
+
+Measured after: panel, list, rows, Apply, cards and badge compute identically
+in both environments on the store demo. What still differs is what the canvas
+cannot know — a term's swatch colour, a real count, the runtime's slider track.
+
+### DANGER — the editor opens the AUTOSAVE, not the post
+
+`Document::get_autosave()` wins whenever the autosave is newer than
+`post_modified`. Writing `_elementor_data` by hand never bumps
+`post_modified`, so a page rebuilt today still opens on an autosave left by
+someone opening the editor last week — the shop demo's canvas came up with
+five EMPTY panels (an autosave from before the container rework, whose filter
+widgets no longer existed) while the front end rendered today's build.
+`demo_page()` now deletes the Elementor autosave and bumps the modified date
+on every rebuild. `verify-loop-filter-forms-editor.mjs` had been failing on
+exactly this since the rework, unnoticed; its selectors are the part markup
+now (`.aae-a-loop-filter-form`, `.aae-a-loop-search-input`).
+
+### Two Woo-family defects the same comparison found
+
+- **WooCommerce's own `<a class="button add_to_cart_button">` never carried the
+  widget's `button` base-style class.** Only the canvas placeholder did — the
+  twig printed `data-aae-woo-button-class` and nothing read it — so a builder
+  styled a black pill in the editor and the front end rendered the theme's
+  bare link. `add_button_class()` splices the class onto WC's markup.
+- **The canvas placeholder anchor has no href, and Bootstrap's reboot has
+  `a:not([href]):not([tabindex]) { color: inherit }`**, which beat the white
+  ink in the canvas: black-on-black. `tabindex="-1"` on the placeholder. The
+  Badge's placeholder had no kind class either and drew an empty transparent
+  box; it now previews the Sale flag from the builder's own `sale_text`.
+
+Suites: publishable **10** (new), woo 57, marker 16, widget 22, forms 35,
+date 19, forms-editor 9.
+
+## Loop Filters — the CSS dedupe pass (2026-09-13)
+
+Asked for before the premium demo rebuild: "duplicate css, redundant css check
+dio. performance matter." Two findings, both measured on the store demo.
+
+### A family stylesheet must not RESTATE a part's base style
+
+Since the parts became elements, every one of them carries a base style at
+(0,2,0), and `loop-filters.scss` was still written as if they were markup
+inside a widget's twig. Audited by dumping every part's base keys
+(`Style_Definition::build()` — there is no `get_variants()`) and intersecting
+them with the stylesheet's rules for that part's root class: **~90
+declarations could never win** (a (0,1,0) restatement of a (0,2,0) base), and
+eleven whole blocks addressed classes the container rework had deleted
+(`-placeholder`, `-avatar`, `-search-box/-submit`, `-range-boxes/-field/-dash/
+-apply`, `-result-count-heading`, `-active-filters-heading`, `-active-empty`).
+The dead-class half is a one-liner worth re-running after any markup change:
+intersect the class selectors in the built CSS with every class the twigs, PHP
+and runtime name, remembering that `-mark--`, `--list` and `drawer--` are built
+by concatenation.
+
+Three real defects were hiding in the redundancy, which is the reason to keep
+the rule rather than tolerate the bytes:
+
+- the Count was dimmed TWICE — base colour at 55% ink AND `opacity: 0.55`;
+- the Active Filters bar restated `font-size` and `gap` at (0,2,0) — exactly
+  the canvas/front-end tie flip the previous section documents;
+- the Clear part's base said `text-decoration: underline` (plus a hover
+  variant) while the theme armour strips it from every `a` — the panel's Text
+  Decoration control disagreed with the page. The base now says `none`.
+
+25.3 KB → 20.4 KB minified, 1482 → 1200 source lines, four copies of the
+sr-only rule folded into one, five `prefers-reduced-motion` blocks into one.
+Verified with `E:\Local Testing\_css-regress.mjs`: every computed property of
+every part on all four demos, before and after — **the only differences were
+the three above, and no rect moved.** That snapshot-diff is the honest test for
+a CSS cleanup; a suite that clicks things cannot see a wash go missing.
+
+### DANGER — the utility stylesheet was emitted once PER DOCUMENT
+
+`Atomic\StyleManager\Manager` registers nineteen constant utility classes
+(`aae-flex`, `aae-a-svg`, …) through Elementor's atomic styles pipeline, which
+writes and links **one file per cache key per breakpoint**. Keyed by post id,
+a page with a builder header and footer linked NINE byte-identical files —
+`aae_utility_styles-{4088,236,1457}-frontend-{desktop,tablet,mobile}.css` —
+9 requests and ~11 KB for 841 bytes of CSS, on every page of the site. It is
+keyed by context alone now (`[ 'aae_utility_styles', 'frontend' | 'preview' ]`,
+the shape Elementor's own `Atomic_Widget_Base_Styles` uses), which gives three
+files shared by every page; the `after_save` / `deleted_post` invalidations
+went with it, since nothing a save can change is in the sheet. 44 → 38
+stylesheet links on the store demo. Test: `verify-utility-styles-once.mjs` (9).
+
+Two things on that page that are NOT ours, for the next person who measures it:
+the four Google Fonts requests (Roboto, Roboto Slab, DM Sans, Work Sans — the
+site KIT's typography and global variables, each asked for in all 18 variants
+by Elementor's loader), and the free plugin serving unminified `nav.css`
+(40 KB) — `is_dev_environment()` picks `.css` over `.min.css` on a `.local`
+host, and production serves the 25 KB minified file.
+
+## The demo pages, rebuilt as a design system (2026-09-13)
+
+"demo page gula remove kore new demo page banao. premium look hote hobe." The
+four Loop Filter demos were rebuilt on one design system, in a file of its own:
+`E:\Local Testing\demo-system.php`, loaded by `make-loop-demo-pages.php`. The
+page files (`make-loop-demo-pages.php`, `demo-store.php`, `demo-acf.php`) own
+CONTENT and widget configuration and never name a colour, a size or a font.
+
+What the system is, and why each choice is the one that reads as designed:
+
+- **A type pairing through the `font-family` prop.** `Fraunces` for the
+  headline, the card titles and the figures; `Instrument Sans` for everything
+  a visitor operates. Both are in Elementor's own Google list, so the atomic
+  prop is enough — `Atomic_Styles_Manager::enqueue_fonts()` requests them.
+  The prop's `$$type` is **`font-family`**, not `string` (`demo_font()`);
+  `aae_str()` there is refused at publish as `invalid_value`. One pair per
+  page, because Elementor asks Google for all 18 variants of every family it
+  enqueues and this site's kit already asks for four.
+- **Type on the ground, hairlines instead of boxes.** No hero band, no discs,
+  no white panels, no card borders or shadows: the sidebar groups, the toolbar,
+  the page bar and the footnote all sit under the SAME 1px rule
+  (`demo_rule_props()`), which is what makes the page one thing. A top-only
+  rule needs the four-side **`border-width-v2`** object (`demo_border()`); the
+  single-Size form is all four sides.
+- **Cool stone, one accent per page** — deliberately not the warm-cream-and-
+  serif default. The store is bone and brass, and is NOT dark: the Add to Cart
+  widget's button is a base style (`#0c0d0e` on white) that no panel control
+  reaches, so a dark ground put a black pill on a black page. That is a
+  product gap of exactly the "part inside a twig cannot be styled" class the
+  filters were rebuilt for — the button wants to be a part element.
+- **Elementor Full Width** (`_wp_page_template = elementor_header_footer`),
+  so the theme prints no title above the hero and no `.builder--page-details`
+  wrapper whose own CSS outranks a widget's.
+- **The page bar is designed, not defaulted** (`ui_pagination()`): numbers
+  left, previous/next right, under the rule, Load More dropped. The widget's
+  default tree seeds all three controls stacked, which is a fixture.
+- **Responsive without breakpoints where possible, with one where not.** The
+  card grid is `repeat(auto-fill, minmax(280px, 1fr))`; the sidebar/content
+  pair is `flex: 1 0 268` beside `flex: 999 1 0` with `min-width: min(100%,
+  480px)` on the content, so on a phone the content drops to its own line and
+  the sidebar grows to full width. The sidebar's `position: sticky` is switched
+  off on the phone view — a sticky column taller than the screen pins itself
+  and the grid scrolls over it — which is the one breakpoint variant in the
+  system: `aae_style()` now treats a `tablet` / `mobile` key in its `$states`
+  as a breakpoint variant, the shape the panel writes.
+- **A figure is not a heading.** `e-heading`'s `tag` enum is h1–h6; a `p`
+  fails publish (`tag: invalid_value`). `ui_display()` builds an
+  `e-paragraph` for `p`.
+
+Two suites had gone stale under the demos and were reporting the plugin
+broken: `verify-loop-readouts.php` still read the grid's chips as bare strings
+(they have been wrapped since the publish fix), and `verify-loop-demo-shop.php`
+(2026-09-12 00:40, before the store demo) counted a site-wide catalogue of 24
+where the page is scoped to 12, and looked for `.aae-a-loop-active-chip`, a
+class the container rework removed. Both read the current shapes now. The
+shop's category facet also gained `offer => chosen`: with the store's four
+categories on the same site it was offering live controls that could only
+return nothing — the exact failure the blog's `chosen` note warns about.
+
+Suites after the rebuild: publishable 10, readouts 85, **shop 72**, woo 57,
+interop 31, forms 35, date 19, counts 13, drawer 27, marker 16, forms-editor
+9, instant 25, widget 22.
+
+## Post Excerpt — an atomic widget with word / char / line limits (FREE, 2026-09-13)
+
+`e-aae-a-post-excerpt` (`inc/AtomicWidgets/Widgets/PostExcerpt/`), category
+`aae-atomic-post`, dashboard card under `blog`. Same three modes as the Post
+Title's `limit_by` — `none` / `word` / `char` / `line` (a pure-CSS clamp
+emitted inline from the twig, so it holds identically in the canvas) — plus
+`tag` (p / div / span) and `more`, the ending a word/char trim appends.
+
+**Where the text comes from depends on the mode, and that is the point.**
+`none` / `line` read `get_the_excerpt()` — WordPress's own excerpt, every
+filter honoured, capped at the site's `excerpt_length`. `word` / `char` read
+the manual excerpt when there is one and otherwise the CONTENT as plain text
+(`full_text()`), because a limit of 80 words on a post with no manual excerpt
+would otherwise be silently capped at 55 with nothing to say so.
+
+Three things measured while building it:
+
+- **Decode EVERY entity, not `wp_specialchars_decode()`'s five.** WordPress's
+  excerpt ends in ` [&hellip;]`; the twig escapes plain text on output, so an
+  undecoded entity reaches the visitor as the literal characters `[&hellip;]`.
+  `html_entity_decode( …, ENT_QUOTES | ENT_HTML5 )` is safe here because
+  nothing is printed raw — the opposite call from `Widget_Text::plain()`,
+  which protects names a user typed on purpose.
+- **Under `WP_ADMIN`, core's Post Excerpt BLOCK hooks `excerpt_length`** (101
+  on this site). A suite asserting a literal 55 fails on a correct widget;
+  `verify-post-excerpt.php` asserts relative to `apply_filters( 'excerpt_length', 55 )`.
+- **Chromium computes `display: flow-root` for a clamped `-webkit-box`.**
+  Assert `-webkit-line-clamp` itself, never `display === '-webkit-box'`.
+
+**The editor canvas needed the same mirror the Post Title has** —
+`inc/AtomicWidgets/assets/js/atomic-editor/post-excerpt-limit.js`, installed
+from `atomic-editor.js`, nudged from `command-bridge.js` on every settings
+write. The canvas renders the widget client-side from the schema default (the
+sample post's excerpt) and PHP never runs, so without it the panel's limit did
+nothing live. Loop-grid CLONES are painted by `fillClone()` from a per-post
+`excerpt` / `excerpt_full` pair `ajax_loop_post_data` / `ajax_loop_sample_post`
+now return (`Atomic::excerpt_preview_data()`, empty when the widget is off) —
+the same two sources the PHP trims from, so the canvas ends on the same word.
+Measured: five of six blog-demo cards read identically to the front end, card
+for card; card 0 is the authored item and previews the sample post, as the
+Post Title beside it does.
+
+The four demos' cards carried a Post CONTENT widget as their excerpt — the
+whole article in every card. `ui_card_add_excerpt()` seeds this widget with a
+3-line clamp now. Tests: `verify-post-excerpt.php` (27), `verify-post-excerpt.mjs`
+(18 — front end, canvas, and the panel driven through the real controls).
+
+## Loop Filters — a part could not be CLICKED in the canvas (2026-09-13)
+
+"checkbox still not editable/styleable, backend e radio show kore, frontend e
+checkbox." Three separate causes, all in Pro, all measured on the properties
+demo's Property Type facet.
+
+**1. The Option twig's root was the `<li>`, and Elementor attaches children
+only where the placeholder is a DIRECT child of the root.** `editor-canvas`'s
+`attachBuffer` walks `root.childNodes` for the `elementor-children-placeholder`
+comment and otherwise APPENDS the children to the root. Our placeholder sat
+inside the `<a>`, so the canvas rendered an empty 14px link with every part
+after it. The `<li>` is written by `print_content()` per repeat now, with the
+row's state classes (`is-selected` / `is-empty` / `is-overflow`); the twig's
+root is the `<a>`. The canvas therefore shows `ul > a` (one placeholder row,
+no state to carry) and the front end `ul > li > a` — the same link either way.
+**A container template whose children placeholder is not a direct child of
+the root renders its children outside their wrapper in the canvas, silently.**
+
+**2. Elementor draws the overlay handles of EVERY hovered ancestor, each at
+its own top-left corner.** The list starts at its corner, the row at the
+list's, the 16px marker at the row's: three handle stacks over one checkbox,
+and the topmost took the click — measured, the click target was the `<ul>`'s
+`eicon-handle`. `loop-filters.scss` now hides a container's handles while
+something inside it is hovered (`.elementor-element:has(.elementor-element:hover)
+> .elementor-element-overlay …`, canvas only); its padding and the Structure
+panel still select it. The `display: contents` wrappers of atomic parts take
+`:hover`, which is what makes the selector work.
+
+**3. The "radio" was the Swatch part.** The canvas drew a neutral `#c9ccd1`
+chip beside every option of any taxonomy facet with `swatches` on; the front
+end draws one only for a term with a stored colour. `Assets::enqueue_editor()`
+now ships `swatch_taxonomies` (one query over `color` / `image` term meta) and
+the mirror gates the chip on it — the store's Colour facet keeps its chip,
+every other facet on the site hides it. What a term's colour IS stays
+unknowable in the canvas; that the taxonomy has none is not.
+
+Also found: **a bare `href="#"` throws in the editor on every click.**
+`handleAnchorClick` runs `document.querySelector( href )` on any hash href and
+`querySelector( '#' )` is a SyntaxError — one per element view the click
+bubbled through (22 on one click). The Option and Clear placeholders carry
+`#aae-option` / `#aae-clear`; any valid, unmatched fragment is fine.
+
+Test: `verify-loop-filter-canvas-parts.mjs` (15) — real clicks on the marker,
+label and clear each select their own part; the swatch gate on both a
+swatch-less and a swatch taxonomy; the front end's `li > a` intact.
+
+## Loop Filters — the readouts never followed an instant filter (2026-09-13)
+
+"page reload dile Filtering by show kore" — the Active Filters bar (and the
+Result Count) only updated on a full page load. The endpoint had re-rendered
+both since M2 (`RERENDER_TYPES`, and the response's `filters_html` carried
+their ids — measured), but Pro's `swapFilters()` looked the replacement up
+with `[data-aae-loop-filter][data-id=…]`, and a readout carries
+`data-aae-loop-readout`. So the bar stayed `hidden` and the count kept saying
+"1–6 of 12" over a grid of 4, with nothing in the console. The bar's own
+chip-remove and Clear links were never intercepted either (`onClick` matched
+links under `[data-aae-loop-filter]` only), so they hard-navigated.
+
+Three selectors in `loop-filters.js` now match BOTH attributes: `swapFilters()`,
+`onClick()` and `filterRootsFor()` (the loading dim). **Two attributes, one
+runtime: anything that walks "the widgets a filter change touches" must name
+`[data-aae-loop-filter], [data-aae-loop-readout]`** — the readout attribute
+exists so the authoriser never reads a value from a widget that offers no
+choices, not so the runtime can skip it. `verify-loop-filter-instant.mjs`
+gained an act on the blog demo (28): bar revealed with the chip, count
+changed, chip removed instantly, no reload at any step.
+
+## Loop Filters — the chip ✕ and the Clear label (2026-09-13)
+
+"why filter clear cross ✕ and html code not accept" — three things, all in Pro.
+
+**A `String_Prop_Type` runs `sanitize_text_field()` at SAVE.** So `<b>` typed
+into the Clear part's Label was stripped before the twig ever saw it, and
+`&times;` survived as six characters the twig then escaped — the visitor read
+`&times;`. The label is `Support\Inline_Text_Prop_Type` now: still
+`$$type: string` on the wire, but its save keeps Elementor's inline allow-list
+(`Html_Prop_Type::get_base_allowed_tags()` through `wp_kses`: b/i/em/strong/
+span/br…, `<svg onload>` and `onclick` measured gone) and the twig prints
+`| raw` behind a `striptags` allow-list.
+
+**DANGER — do NOT switch a shipped prop to `Html_Prop_Type`.** That was the
+first version, and it refused every publish of the properties demo: `html` is
+a different `$$type`, so every value already saved as `{ $$type: 'string' }`
+failed `is_transformable()` — `Settings validation failed. text: invalid_value`
+— and the panel's `Text_Control` logged `Prop type is missing` from
+`resolveUnionPropType`, because the control is typed for `string`. Changing a
+prop's `$$type` is a data migration; changing what its sanitiser keeps is not.
+
+**A ✕ is an icon, not a character.** The Clear part has `icon_position`
+(none / before / after, `none` by default so no page changes) and an `icon`
+Svg control — an uploaded, sanitised SVG as an `<img>`, or the drawn ✕ in
+`currentColor` when empty. An empty Label with an icon keeps "Clear" as the
+link's clipped accessible name. That is the route for "html code": the media
+library's SVG sanitiser, not a text field.
+
+**The Active Filters chip's ✕ was a `::after` — nothing in the panel could
+reach it.** It is the row's Mark part in a new **`remove`** shape now: the bar's
+context resolves `marker => 'remove'`, the Mark twig prints the ✕ (or its own
+uploaded `icon`), and the stylesheet gives that shape no box, `order: 10` (the
+Option row seeds the Mark FIRST; a removal control sits after its label) and
+the dim-until-hover the pseudo-element had. Its `is-selected` chain rule is
+restated for `--remove` at the same specificity so the chip keeps no border.
+The bold-suppression rule (`:has(.aae-a-loop-filter-mark)`) excludes the
+remove shape, so a chip stays 600 as before.
+
+**And the bar was INVISIBLE in the canvas.** It renders `hidden` whenever
+nothing is applied, and in the canvas nothing ever is — so its chip, ✕ and
+Clear could never be selected or styled. `loop-filters-editor.js` un-hides
+that one node (DOM only, never saved) and paints the `remove` glyph the canvas
+twig cannot know about. `verify-loop-filter-canvas-parts.mjs` asserts it (16).
+
+## Loop Filters — the slider is SIX ELEMENTS (PRO, 2026-09-13)
+
+Three asks in one afternoon — "why is the slider not in the editor", "colour
+option chai", "atomic support dao" — and the third is the one that was right
+all along. The rail, fill, thumbs and value bubbles were markup the runtime
+appended to the Range Form, so nothing in the Style tab could reach them; the
+first two answers (a canvas preview drawn by the twig, then Content-tab
+colour pickers) treated the symptom. They are gone. The slider is now the
+Range Form's **Slider** child (`e-aae-a-loop-range-track`, a container) holding
+six LEAF parts — `-rail`, `-fill`, `-thumb` ×2 (`role` min/max), `-bubble` ×2
+(`role`) — each with a Style tab. `pro/inc/AtomicV4/Widgets/LoopFilters/Parts/`.
+
+**The runtime MOVES what the builder styled; it no longer draws a slider.** It
+still appends the two native `<input type="range">` handles (keyboard, screen
+reader) but their thumbs are transparent and sized to the Thumb element
+through `--aae-range-thumb-size`, which the runtime measures off the real
+thumb — a builder who makes the circle 28px in the panel gets a 28px hit
+target under it, same centre. Thumb and bubble get the same inline
+`inset-inline-start` (the browser's own centre arithmetic, half a thumb pulled
+in at the ends); PHP writes the visitor's current range for the first paint,
+the canvas draws 25–75%.
+
+**Paint in the base style, placement in the stylesheet, never both.** Every
+colour, size, radius, border and shadow is the part's `define_base_styles()`
+(that is what the panel overrides); `loop-filters.scss` carries only what a
+base style must not — absolute positioning, `display: none` until `is-live`,
+and the hover/focus/moving states, which key on the NATIVE handle through
+`:has()` on the track (`.aae-a-loop-range-track:has(> .aae-a-loop-range-handle--min:hover)
+.aae-a-loop-range-bubble--min`) because the handle is appended AFTER the parts
+and a sibling selector cannot reach back. `is-active` from the runtime covers a
+keyboard user mid-adjustment. The fill lost its stylesheet gradient: a
+`background-image` there would have painted OVER any colour picked in the
+panel. Rail/fill default to `currentColor` mixes (Color_Prop_Type is a plain
+string and passes `color-mix(...)` through), so an untouched slider still
+inherits the form's ink.
+
+**DANGER — a container part cannot be selected by a click on it.** The Thumb
+shipped for one revision as a container holding its bubble (the bubble then
+follows for free). Measured: a real mouse click on an atomic container's own
+box — a stock `e-div-block` included — selects NOTHING; containers select
+through their overlay handle, and a 20px circle under a handle toolbar is the
+"cannot click the checkbox" complaint again. Leaves select on a direct click.
+So thumb and bubble are both leaves of the track, and the bubble is placed by
+the same arithmetic instead of by nesting. `verify-loop-filter-forms-editor.mjs`
+clicks Fill, Thumb and Bubble with `page.mouse` at page coordinates — NOT
+`locator.click({ force })`, which lands on the element whatever covers it and
+so cannot detect this.
+
+Two smaller ones: `e-con` is NOT on these containers — Elementor's own
+`.e-con` rules (`position: var(--position)`, `width: 100%`, `border-radius: 0`)
+would fight the parts' placement at (0,1,0) by load order; the Option row
+never carried it either. And the Date filter seeds its custom-range form
+WITHOUT the slider (`default_children_list( false )`) — two dates have no
+track, and the Track renders nothing on a live render whose range has no
+`has_track` anyway.
+
+The Content-tab **Slider colours** section and the twig-drawn preview are
+gone; free's `aae-color` control (below) stays as infrastructure. Suites:
+forms **41**, forms-editor **16** (a Style-tab write through
+`elementorV2.editorElements.createElementStyle`, the call the panel makes,
+paints the canvas Fill and resizes a Thumb), a real `document/save/publish`
+of the properties demo kept all six parts.
+
+Doc for builders: `pro/docs/atomic-v4/loop-filters-manual-setup.md` — the page
+by hand, which widget for which question, and how the Field filter finds an
+ACF field (paste the FIELD KEY; type/mode/choices/bounds come from ACF at
+render time) or a plain meta key (Compare as / Stored as decide the SQL cast).
+Known gap it records: a sort by an ACF number is only reachable through the
+Sort widget's `options` JSON prop, which has no panel control.
+
+## Loop Filters — the ACF dropdown, and REAL rows in the canvas (2026-09-13)
+
+"acf field key dropdown chai … real filter options value o show korte parbo
+editor e." Two halves; the second was only possible once the first had told
+the editor which post type it was looking at.
+
+### The ACF field is picked, not pasted — `aae-acf-field` (FREE)
+
+`inc/AtomicWidgets/Controls/class-aae-acf-field-control.php` +
+`src/modules/atomic/element-controls/AcfFieldControl.jsx`, prop-bound to the
+SAME String prop the `Text_Control` wrote (`acf_field`, the `field_…` key), so
+no saved page changed shape and `Loop_Filter_Auth::resolve_acf()` is untouched.
+The Field and Date filters (Pro) bind it; the Date filter offers only
+`date_picker` / `date_time_picker`, the Field filter the ten types
+`resolve_acf()` answers for (`AAE_A_Loop_Filter_Meta::ACF_FIELD_TYPES`).
+
+**The list is narrowed to ONE post type, resolved per ELEMENT in the
+browser** — controls are built once per widget TYPE, so PHP cannot do it:
+
+1. the sibling `acf_post_type` (a plain `Select_Control`, "From the Loop
+   Grid" by default — `Loop_Filter_Widget_Base::acf_post_type_control()`);
+2. the Loop Grid this filter targets — `target_grid` is the grid's ELEMENT
+   id, empty means the page's only grid — and its `post_type`, unless that is
+   `related` / `current_query`;
+3. the document's Preview Settings (`elementor.settings.page` →
+   `preview_type`, `single/<type>` or `post_type_archive/<type>`), for a
+   theme-builder or loop template.
+
+Re-read on every `document/elements/settings` (useListenTo, the
+BtnHoverStyleControl pattern), so changing the grid's post type re-scopes the
+list live. **A key not in the narrowed list is never blanked** — the control
+falls back to a text box holding it, and "Type a key…" opens that box on
+purpose. `resolvePostType()` is exported on `window.AAEAcfField` so a canvas
+mirror can ask the same question and never disagree with the panel.
+
+The catalogue is `Loop_Filter_Auth::acf_field_catalogue()` (free, beside
+`resolve_acf()`): every top-level field of every active group, with `key /
+name / label / type / group / post_types / choices / min / max`. Served by
+`aae_loop_query_options` with `kind=acf_field`, fetched once per editor
+session. `acf_group_post_types()` reads ACF's location rules: `post_type ==`
+names the type, a `page_*` rule means `page`, any other post-side rule means
+ANY (`*`), and a group whose every OR-branch is a taxonomy / user / options
+page / comment / widget / menu / block rule is LEFT OUT — that is term or
+user meta, and the Field filter compares post meta. Inactive groups too.
+
+**The panel prints a prop-bound control's label itself** (SettingsField), so
+the component must not — it shipped one revision reading "ACF field / ACF
+field". And `set_description()` on an `Atomic_Control_Base` subclass renders
+nothing for a custom type; the component's own caption is the description.
+
+### The canvas draws the rows a visitor will see — `aae_loop_filter_preview` (PRO)
+
+`pro/inc/AtomicV4/LoopFilters/Preview.php`. The mirror
+(`loop-filters-editor.js`) sends, per filter, a MINIMAL tree off the live
+model — every Loop Grid on the page and the one filter, each `{ id, elType,
+settings }` — and the endpoint PRIMES that tree into the authoriser in place
+of the saved document (`prime_document()`), switches to the document,
+instantiates the filter from the same data and returns
+`preview_rows()` = its own `filter_context()['rows']`. Same code as the front
+end, computed from UNSAVED settings; nothing here is a second row builder.
+`edit_post` on the document is required; a half-configured filter answers
+`[]`, never a 500, because it is asked on every keystroke. **Require the grid
+class before touching the authoriser in admin-ajax** — `reset_memo()` calls
+`AAE_A_Loop_Grid::reset_summaries()`, and admin-ajax has loaded neither.
+
+In the canvas the Options list keeps its ONE real Option row (the element a
+builder styles) and paints the first row's words into it; the rest are deep
+CLONES of that row, tagged `data-aae-lf-canvas-clone`, stripped of `data-id`
+/ `data-interaction-id` / `href` / the `elementor-element*` classes,
+`pointer-events: none`, `aria-hidden` — nothing in Elementor can select or
+save them, and a re-render simply drops them until the next paint. **The
+overlay is REMOVED from a clone, not declassed** (2026-09-13, "first option
+er sathe other option left alignment not okay"): a row's
+`.elementor-element-overlay` — the handle toolbar — is `position: absolute`,
+out of flow, but a clone that merely lost the overlay's CLASS kept the div as
+a flex item in front of the marker, so every clone sat one `gap` (8px) right
+of the first. `cloneRow()` deletes the `.elementor-element-overlay` /
+`.elementor-editor-element-settings` nodes outright. Painting is idempotent
+by a signature on the `<ul>` (`data-aae-lf-rows`) so the childList observer
+settles; that signature now also carries the real row's SHAPE — every part's
+classes and inline styles (`shapeSig()`, the overlay excluded) — because the
+first Style-tab write on a row or one of its parts adds a local style class,
+and a clone taken before it would keep the unstyled look. Re-cloning when the
+shape changes is what makes "style one row, every row follows" hold in the
+canvas the way it does on the front end. Requests are debounced per filter by
+a signature of the whole tree, so a grid post-type change re-asks every
+filter. A filter
+whose rows go away gets its placeholder words back (`data-aae-lf-orig`) — the
+first version kept the last real label it had shown. Rows past the filter's
+own Limit are not drawn (they sit behind "Show all"); the Search widget and a
+list-less filter (slider, dropdown Sort) are never asked. `window.
+__aaeLoopFilterRows` exposes the cache for a suite.
+
+Measured on the properties demo: Houses / Flats / Cottages with their real
+counts, For sale / To let from ACF's own labels, the four bedroom brackets,
+Furnished only — and a Field filter whose picked field has nothing to list
+shows "Option" again, not "For sale".
+
+**Suite trap:** the rows land a moment AFTER the document loads and push
+everything below them down, so a `boundingBox()` measured before that clicks
+the wrong part — `verify-loop-filter-forms-editor.mjs` lost its Fill click
+this way. Wait on `window.__aaeLoopFilterRows` settling before a real-mouse
+click in the canvas. And write ONE `createElementStyle` per tick when driving
+the Style tab from a suite: the first write re-renders the row and destroys
+its part views, so a second call in the same tick hits a destroyed view
+(Elementor's own `ViewDestroyedError`, not ours) — space them with a wait.
+
+**A Sort DROPDOWN is mirrored ENHANCED** (2026-09-13, "editor mode e sort by
+er dan pase apply button ase, frontend e show kore na"): a dropdown submits on
+`change` and the front-end runtime adds `is-enhanced` to the `.aae-a-loop-sort`
+root, which the stylesheet uses to hide the Apply button — so a real visitor
+never sees it. The mirror does not run that runtime, so the canvas kept the
+Apply. `walk()` now toggles `is-enhanced` on the sort root for a dropdown
+(DOM-only, nothing saves it; removed for an inline/list Sort, which keeps its
+Apply). The Apply part stays reachable in the Structure panel for the
+no-script fallback. Same principle as every other mirror gate — show what the
+visitor sees — with the Drawer the one deliberate exception (its enhanced
+state is CLOSED, which would hide the filters a builder must style, so the
+canvas leaves it open).
+
+Tests: `verify-loop-filter-acf-dropdown.mjs` (29 — the canvas rows and their
+inertness, the marker/label at the same x on the real row and every clone, a
+Style-tab background on the Option row and a border on the Mark part reaching
+every clone and clearing on delete, the panel's grouped menu, a pick writing
+the KEY and the rows following, the Post type override keeping the key in a
+text box, undo) and
+seven catalogue checks in `verify-loop-filter-seam.php` (146), which register
+three throwaway local groups — post-type / status-only / taxonomy — rather
+than asserting on whatever the site happens to hold.
+
+## A colour picker on the CONTENT tab — `aae-color` (FREE, 2026-09-13)
+
+Measured against 4.2.4: the atomic panel registers NO colour control type for
+the Content tab (`controlTypes` in `editor-editing-panel` is image / svg-media
+/ text / textarea / size / select / chips / link / query / … / email); every
+picker Elementor draws is a Style-tab control.
+`inc/AtomicWidgets/Controls/class-aae-color-control.php` (`aae-color`) +
+`src/modules/atomic/element-controls/ColorControl.jsx` register Elementor's
+OWN `ColorControl` (from `@elementor/editor-controls`) as a prop-bound control
+with `propTypeUtil: colorPropTypeUtil`, layout `two-columns`. Bind it to a
+`Color_Prop_Type::make()->default( '' )` and the value is the same
+`{ $$type: 'color', value: '#hex' }` a style colour stores — a real publish
+accepted it. The twig decides what the colour paints; emit a CSS custom
+property and have the stylesheet read it with a fallback, so an untouched
+control changes nothing.
+
+**Nothing uses it today.** Its first use was the slider's colours, and the
+slider became elements the same day (above) — a Content-tab colour is the
+answer only for something that genuinely cannot be an element. Reach for it
+before reaching for a twig-drawn part, never instead of making the part one.
+
 ## The editor bridge's CodeMirror split (2026-09-12)
 
 **778 KB → 408 KB.** Measured from webpack's own module stats, not guessed:

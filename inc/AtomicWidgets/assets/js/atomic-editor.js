@@ -29,6 +29,7 @@ import { installRunWrapper } from './atomic-editor/command-bridge.js';
 import { installLoopGrid } from './atomic-editor/loop-grid.js';
 import { installLoopGridEditToggle } from './atomic-editor/loop-grid-edit-toggle.js';
 import { installPostTitleLimit } from './atomic-editor/post-title-limit.js';
+import { installPostExcerptLimit } from './atomic-editor/post-excerpt-limit.js';
 
 function boot() {
 	if (isInitialized()) {
@@ -49,4 +50,5 @@ boot();
 installLoopGrid();
 installLoopGridEditToggle();
 installPostTitleLimit();
+installPostExcerptLimit();
 

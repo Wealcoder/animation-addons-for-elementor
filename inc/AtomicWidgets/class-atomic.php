@@ -1112,6 +1112,27 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			'aae-a-post-excerpt' => [
+				'label'        => 'Post Excerpt',
+				'description'  => 'Dynamically displays the current post excerpt, limited by words, characters or a CSS line clamp.',
+				'icon'         => 'eicon-post-excerpt',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'post',
+					'excerpt',
+					'summary',
+					'atomic',
+					'dynamic',
+				],
+				'category'     => 'blog',
+				'order'        => 0,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
 			'aae-a-post-image' => [
 				'label'        => 'Post Image',
 				'description'  => 'Dynamically displays the current post featured image natively in Elementor V4.',
@@ -4666,6 +4687,12 @@ final class Atomic
 				'has_script' => false,
 			],
 
+			'aae-a-post-excerpt' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostExcerpt\AAE_A_Post_Excerpt',
+				'file' => 'Widgets/PostExcerpt/class-aae-a-post-excerpt.php',
+				'has_script' => false,
+			],
+
 			'aae-a-post-image' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostImage\AAE_A_Post_Image',
 				'file' => 'Widgets/PostImage/class-aae-a-post-image.php',
@@ -5620,10 +5647,33 @@ final class Atomic
 			wp_send_json_error(['message' => 'Invalid sample post.'], 404);
 		}
 
-		wp_send_json_success([
+		wp_send_json_success(array_merge([
 			'title' => get_the_title($post),
 			'image' => get_the_post_thumbnail_url($post, 'large') ?: '',
-		]);
+		], self::excerpt_preview_data($post)));
+	}
+
+	/**
+	 * The two texts the editor's Post Excerpt mirror needs for one post: the
+	 * WordPress excerpt (what `none` / a line clamp shows) and the full plain
+	 * text a word / char limit trims from — the SAME two sources the widget's
+	 * PHP uses, so the canvas and the page trim the same words. Empty when the
+	 * widget is switched off (its class is only loaded while it registers).
+	 *
+	 * @param \WP_Post|null $post The post.
+	 * @return array{excerpt?: string, excerpt_full?: string}
+	 */
+	private static function excerpt_preview_data($post): array
+	{
+		$cls = '\WCF_ADDONS\AtomicWidgets\Widgets\PostExcerpt\AAE_A_Post_Excerpt';
+		if (! $post instanceof \WP_Post || ! class_exists($cls)) {
+			return [];
+		}
+
+		return [
+			'excerpt'      => $cls::excerpt_for($post, 'none', 0, ''),
+			'excerpt_full' => $cls::full_text($post),
+		];
 	}
 
 	/**
@@ -5719,6 +5769,17 @@ final class Atomic
 				}
 				$options[] = ['id' => (int) $u->ID, 'label' => $u->display_name];
 			}
+		} elseif ('acf_field' === $kind) {
+			// The Field / Date filters' ACF dropdown (AcfFieldControl.jsx). The
+			// whole catalogue at once — a site has tens of fields, not
+			// thousands — and the control narrows it to the grid's post type
+			// itself. `acf` says whether ACF is running at all, so an empty
+			// list can be told apart from "no ACF here".
+			self::load_loop_grid_class();
+			wp_send_json_success([
+				'acf'     => function_exists('acf_get_field_groups'),
+				'options' => Widgets\LoopGrid\Loop_Filter_Auth::acf_field_catalogue(),
+			]);
 		} elseif ('term' === $kind) {
 			$taxonomy = isset($_POST['taxonomy']) ? sanitize_key(wp_unslash($_POST['taxonomy'])) : '';
 			if (! $taxonomy || ! taxonomy_exists($taxonomy)) {
@@ -5832,12 +5893,12 @@ final class Atomic
 		if ($query->have_posts()) {
 			while ($query->have_posts()) {
 				$query->the_post();
-				$posts[] = [
+				$posts[] = array_merge([
 					'title'   => get_the_title(),
 					'url'     => get_permalink(),
 					'image'   => get_the_post_thumbnail_url(null, 'large') ?: '',
 					'excerpt' => wp_strip_all_tags(get_the_excerpt()),
-				];
+				], self::excerpt_preview_data(get_post()));
 			}
 			wp_reset_postdata();
 		}
