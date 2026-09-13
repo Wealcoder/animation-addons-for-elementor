@@ -434,6 +434,28 @@ final class Assets
 				'nonce'            => wp_create_nonce( 'wp_rest' ),
 				'proActive'        => defined( 'WCF_ADDONS_PRO_VERSION' ),
 
+				// What a preset is WIRED TO, and who may set it up.
+				//
+				// `canInstall` mirrors the endpoint's own capability check, and
+				// it is deliberately NOT the `edit_posts` that opens the preset
+				// picker: a contributor who could make this site install a
+				// plugin the remote preset server named would be remote code
+				// execution by proxy. The panel only PAINTS a button on this —
+				// Presets\Requires::ajax_install() re-checks it, and Pro
+				// re-checks `install_plugins` on top per plugin — so nothing is
+				// gated by the value being here. What it buys is an editor
+				// seeing the requirement with an honest explanation instead of
+				// a button that would 403.
+				//
+				// The nonce is withheld from everyone else for the same reason
+				// a UI must never offer a control the server would refuse.
+				'canInstall'       => current_user_can( 'manage_options' ),
+				'adminNonce'       => current_user_can( 'manage_options' )
+					? wp_create_nonce( 'wcf_admin_nonce' )
+					: '',
+				'ajaxUrl'          => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
+				'requiresAction'   => \WCF_ADDONS\Atomic\Presets\Requires::ACTION,
+
 				// proActive says a Pro plugin is INSTALLED; this says its licence
 				// is valid, i.e. whether the customer has actually paid. The
 				// slide limit below is gated on this one — an expired licence

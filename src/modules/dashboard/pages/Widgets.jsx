@@ -217,6 +217,7 @@ const Widgets = () => {
               filterKey={atomicFilterKey}
               searchKey={atomicSearchKey}
               setWidgetCount={setAtomicWidgetCount}
+              settingOpen={settingOpen}
               usage={usage?.atomic || null}
             />
           ) : (

@@ -2097,6 +2097,1167 @@ loads every matching id. Only runs when Sticky First is on.
 the SQL WordPress actually emits, not on the args array, since a flag that never
 reaches the query is worth nothing.
 
+## Loop Filters — M1: the seam, the authoriser, the ratchet (FREE, 2026-09-10)
+
+Visitor-driven filtering of a Loop Grid (taxonomy · meta · search · author ·
+date · sort), the way a shop or classified board filters. Spec + prototype:
+https://claude.ai/code/artifact/16939c90-99e3-4d07-baec-5f0a960ff3b7. M1 is the
+half nobody sees: the free plugin now ACCEPTS filters from the URL and the AJAX
+body and applies them safely; the widgets a visitor clicks are M2 (Pro-facing,
+widgets are PRO-owned — see M2 below). Everything below is in
+`inc/AtomicWidgets/Widgets/LoopGrid/`.
+
+| Piece | Where |
+|---|---|
+| The gate | `class-loop-filter-auth.php` — `Loop_Filter_Auth` |
+| WooCommerce rules | `class-loop-query-woo.php` — `Loop_Query_Woo` |
+| The seam | `AAE_A_Loop_Grid::build_query_args( $raw, $paged, array $filters = [] )` |
+| URL → filters on first render | `define_render_context()` → `Loop_Filter_Auth::current()` |
+| AJAX → filters | `Atomic::ajax_loop_grid_page()`, body field `filters` (JSON) |
+| Panel instructions | `inc/AtomicWidgets/Controls/class-aae-notice-control.php` + `NoticeControl.jsx` |
+
+**The visitor sends choices. The saved page says which choices exist.** A url
+key (`aae_tax_area`, `aae_meta_price`, `aae_s`, `aae_author`, `aae_date`,
+`aae_sort` — and, depending on the site's URL mode, the readable spelling
+beside it; see M1.5 below) is honoured only when a filter widget in the saved `_elementor_data`
+targets this grid and declares it — `Loop_Filter_Auth::declarations()` walks the
+tree once and reads the M2 prop contract (documented in the class header). The
+value is then resolved INSIDE that declaration: a slug inside the widget's
+taxonomy (`get_term_by`, ids from the wire refused), a value from the widget's
+authored list, a range clamped to the widget's bounds, a sort KEY into the
+widget's option list (`rand` / `post__in` refused, `meta_value_num` only with a
+meta_key), an author nicename who publishes this post type (ids refused — the
+endpoint must not become a user-enumeration oracle). Undeclared keys are not
+even read. Caps: 4 KB body, 20 keys, 50 values, 200-char search; over → 400.
+
+**URL and AJAX carry the SAME shape** — a map of url_key => string
+(`slug1,slug2`, `10..500`, `2026-01-01..2026-03-31`, a sort key) — so there is
+one parser and one authoriser, and a rule added once holds on both. The active
+map is echoed into the pagination config (`cfg.filters`) and the AJAX response,
+and `loop-grid.js` posts it back on every page change: page 2 is page 2 OF THE
+FILTERED SET. The pagination's `postId` is now the render context's
+`document_id` (the document whose saved data declares the widgets), falling
+back to `get_the_ID()`.
+
+Four decisions that were wrong in the spec and are right in the code:
+
+- **`$filters` is its own argument, never a key in the settings blob.**
+  `ajax_loop_post_data()` (editor preview) passes CLIENT-SENT settings straight
+  into `build_query_args()`; a `_filters` key there would let any `edit_posts`
+  user hand-write a `meta_query`. Asserted: a `_filters` key in `$raw_settings`
+  changes nothing.
+- **All three sources get the visitor's filters**, not just the plain post-type
+  branch. A WooCommerce shop page is an archive = Current Query source — exactly
+  where filtering matters most — and the spec's merge sat after an early
+  `return`. The builder's manual filters still skip Related / Current Query;
+  the visitor's do not. Related's OR term group is NESTED under the AND
+  (`Loop_Query_Woo::and_group()`), never flattened into it.
+- **A choice compares as CHAR unless told otherwise.** The first cut defaulted
+  every meta filter to NUMERIC, so `CAST('red' AS SIGNED) = 0` matched every
+  row — caught by the suite (3 rows, not 2). Range → numeric, choice/toggle →
+  char, ACF/`value_type` override both.
+- **Sticky pinning yields to an explicit visitor sort.** `sticky_first` still
+  runs last (its id pre-query carries the visitor's tax/meta), but a sort key
+  switches it off for that request — a pinned-first list sorted by price is
+  neither.
+
+**The known-taxonomy ratchet is shipped** (`aae_loop_grid_known_taxonomies`).
+`get_query_taxonomies()` unions public+UI taxonomies, WooCommerce attribute
+taxonomies (`pa_*` register `public => false` unless "Enable archives" — the
+Color/Size filters a shop needs most were invisible), the
+`aae/loop_grid/query_taxonomies` filter, and every slug the option has ever
+seen. An unregistered slug comes back as a stub flagged `aae_unregistered`: the
+schema keeps its `tax_*` prop (so `Props_Parser::validate()` no longer erases
+the saved value on the next save — the measured data-loss bug), the panel shows
+no control for it, the query skips it. Evidence only ever adds; the escape
+hatch is `aae/loop_grid/known_taxonomies`.
+
+**DANGER — the ratchet remembers TEST taxonomies too.** The seam suite's first
+run fatalled inside its shutdown handler (before restoring the option), and
+every builder on the dev site then met "T Area, T Other: not registered right
+now" in the panel. Restore one-way options FIRST in a shutdown handler, before
+anything that can fatal; `set-known-taxonomy.php remove <slug>` cleans up.
+
+**`Section::set_description()` renders NOTHING in the installed panel** (4.2.x;
+the string never reaches the DOM — measured). Builder-facing copy goes through
+`AAE_Notice_Control`, an element-control the panel routes to `NoticeControl.jsx`.
+Static copy in props; instance-specific copy through a `source` the component
+resolves against the ELEMENT (controls are built once per widget TYPE, not per
+instance) and a data map PHP localizes — `AAE_LOOP_GRID.notices.taxonomies`,
+per post type: count / unregistered / nonPublic. Same lazy-read pattern as
+`ProNoticeControl` and the same trap: `make()` sets label + meta, because
+`Element_Control_Base` types both non-null while defaulting them to null and
+`jsonSerialize()` takes the editor down otherwise. A resolver returning null
+renders nothing — a notice with nothing to say takes no space.
+
+**WooCommerce (`Loop_Query_Woo`), mirrored from WC 10.0.4's own
+`ProductCollection/QueryBuilder.php`, inert without WC.** WC shapes only the
+main query (`WC_Query::pre_get_posts` bails on `! is_main_query()`), so a
+product Loop Grid showed catalog-hidden and out-of-stock products; now every
+product query gets `product_visibility NOT IN exclude-from-catalog` (or
+`-search` when searching) + `outofstock` when the store hides them. Price goes
+through `wc_product_meta_lookup.min_price/max_price` with the tax-display
+adjustment (a variable product carries one `_price` row per variation price;
+an `incl`-display store must convert the filter amount) — never `_price` meta.
+Sort keys `price` / `popularity` / `rating` are the lookup-table ORDER BYs
+WC_Query emits; rating filter = `rated-N` visibility terms; on sale =
+`wc_get_product_ids_on_sale()`; featured / stock as WC does. The lookup work
+rides `posts_clauses` scoped by private query vars (`aae_woo_price`,
+`aae_woo_sort`) — WC's own `isProductCollection` trick — hooked from
+`class-atomic.php` so the element class is only loaded when a query carries one.
+A Meta Filter widget with `source = woo` declares a `woo` field; the authoriser
+puts it in `$filters['woo']`, not `meta_query`. **Unverified live: WooCommerce
+is not installed on any running Local site** (development-2 has the source on
+disk, not in Local). The adapter's SQL and rules are read from that source;
+before M2 install WC on development.local with attributes (archives off), a
+variable product, a hidden + an out-of-stock product and one tax rate under
+`incl` display.
+
+Also in M1: `authors` / `exclude_authors` chips on the grid (`user` kind on
+`aae-query-chips` → `ajax_loop_query_options kind=user`, people with
+`edit_posts` only), `count_total()` / `pages_for_total()` (the Result Count
+widget's number; `compute_max_pages()` now derives from them), `total` in the
+render context and the AJAX response, `aae_title_only` search via
+`posts_search_title_only()`.
+
+Tests (`E:\Local Testing`, counts as of M1.5): `verify-loop-filter-seam.php` (103 — hostile
+payloads, honest values vs hand-written WP_Query, all three sources, sticky vs
+sort, the ratchet through schema + panel + query, WC inert, the notice map),
+`verify-loop-filter-frontend.mjs` (25 — a real page: URL params, filtered page
+2, range/sort/search, undeclared keys, the AJAX endpoint incl. the 400s),
+`verify-loop-filter-editor.mjs` (9 — panel opens, chips present, the notice
+names a ghost taxonomy, `kind=user` search). Fixture
+`make-loop-filter-page.php` writes RAW `_elementor_data` (the filter widget
+types do not exist yet and `Document::save()` would drop them; the frontend
+skips an unknown child type silently, the editor does not — `nofilters` builds
+the editor variant). Legacy `wp eval-file` suites run with
+`-d auto_prepend_file=<scratch>/_wp-bootstrap.php`.
+
+### M1.5 — what the review of M1 found, and what changed (2026-09-10)
+
+A high-effort review of the three M1 commits found five real defects. All are
+fixed; the numbers below were measured on this site, not reasoned about.
+
+**A filter's URL key may never be one WordPress already answers to.** M1 shipped
+a dashboard setting whose default (`clean`) emitted the readable name — `author`,
+`search`, and for a taxonomy its own slug. Those are `$wp->public_query_vars`
+entries, and `register_taxonomy()` defaults `query_var` to the taxonomy NAME, so
+`?product_cat=hoodies` is a WordPress query var before it is ours. Borrowing one
+does not fail quietly, it takes the page down: WP folds the key into the MAIN
+query, the page cannot satisfy it, and the request 404s **before the grid
+renders at all**. Measured on a plain page: `/sample-page/` answers 200,
+`/sample-page/?author=2` answers 404.
+
+`Loop_Filter_Auth::reserve_key()` now sits at the end of key resolution, and
+EVERY key goes through it — the clean defaults, a custom-mode key, and a
+builder's own `url_key` field. A reserved name falls back to the prefixed
+`aae_*` spelling, which is namespaced by construction. The reserved set is read
+from WordPress itself (`public_query_vars` + `private_query_vars` + every
+taxonomy's and post type's registered `query_var`), with a hardcoded floor so a
+CLI or early call is never LESS safe; `aae/loop_grid/reserved_url_keys` is the
+escape hatch.
+
+**Only the registered `query_var`, never the object name.** `category`
+registers as `category_name`, so `?category=hoodies` is free and clean mode may
+have it. Reserving names instead of query vars would take the readable spelling
+away from the taxonomies that can safely hold it, which is the whole point of
+clean mode.
+
+**`aae_tax_*` and friends still parse, always** — `legacy_key` is checked
+whatever the mode, so a shared link from before the setting existed keeps
+working. What the config ECHOES is the resolved key, and the runtime posts that
+map back, so the URL and the AJAX body never disagree about which key a filter
+answers to.
+
+**One unslash, not two.** `ajax_loop_grid_page()` unslashed the body before
+decoding it and `raw_from_request()` unslashed every decoded value again.
+Measured through the live stack: a search for `a\b` became `ab`, so page 2
+queried a different set than page 1, and a meta choice value with a backslash
+stopped matching its own authored list. `raw_from_request()` and `current()`
+now take `$slashed` — true for a superglobal, false for a decoded payload.
+
+**The AJAX handler goes through `current()` like the first render does.** It
+used to re-assemble `declarations()` → `raw_from_request()` → `authorize()` by
+hand, which is two copies of the authorisation pipeline that can drift. It
+hands its already-decoded tree over with `prime_document()` so nothing is read
+twice; `elements_for()` memoises the decoded tree per post id, because
+`Document::get_elements_data()` is a `get_post_meta` plus a `json_decode` every
+call and Elementor memoises neither — a page with three grids decoded the whole
+blob three extra times.
+
+**Title-only search rides WP's own `search_columns`.** The `posts_search`
+rewrite REPLACED core's fragment, and core's fragment also carries
+`AND (post_password = '')` for a logged-out visitor plus the `-term` exclusion
+handling. A password-protected post's title and permalink therefore rendered in
+the grid for anyone searching a word in its title. `search_columns` is a core
+query var since 6.2 (this plugin requires 6.6): WP builds the same fragment with
+one column instead of three and every guard survives. `posts_search_title_only()`
+and the `posts_search` hook are both gone.
+
+**The authoriser is told the post type the query really targets.** Both call
+sites passed the raw `post_type` SETTING, which for the two special sources is
+the literal `'related'` / `'current_query'`. `resolve_sort()` refuses
+WooCommerce sort keys unless the type is `product` and `resolve_authors()` calls
+`count_user_posts( $id, $post_type )` — so on a WooCommerce shop archive, a
+Current Query grid and the case the code's own comments call out as mattering
+most, a price sort and an author filter were both dropped in silence.
+`AAE_A_Loop_Grid::effective_post_type()` resolves `related` through the anchor
+post and `current_query` through the query vars, falling back to the taxonomy's
+own `object_type` — `/product-category/x/` parses to just `[product_cat => x]`
+and names no post type at all.
+
+**`postId` is the document; `contextId` is the post being read.** M1 changed
+pagination's `postId` from `get_the_ID()` to the render context's
+`document_id`, which is right for finding the grid in saved data and wrong for
+the Related source's anchor. The two were the same value until a grid sat in a
+theme-builder template, where relatedness would have anchored on the template.
+The render context, the pagination config and `loop-grid.js` now carry both.
+
+**Sticky First yields only to a sort that actually CHANGES the order.** The
+bypass tested for a sort key being present, and a Sort widget writes its
+selected option into the URL on every render — including the option that
+matches the grid's own order. So the Sticky First switch silently did nothing on
+any page carrying a Sort widget, even for a visitor who never touched it.
+`sort_overrides_order()` compares the resolved orderby and order against what
+the builder saved; a lookup-table sort (price / popularity / rating) has no
+builder equivalent and always wins.
+
+#### DANGER — the dashboard button is a PRUNE, and must never become a flush
+
+`flush_known_taxonomies()` shipped as `delete_option( 'aae_loop_grid_known_taxonomies' )`
+behind a button labelled "Flush Cache". That row is not a cache. It is the
+add-only evidence that keeps a `tax_<slug>` prop declared while its taxonomy's
+plugin is off, and `Props_Parser::validate()` erases any prop the schema does
+not declare on the next save — so one click on a control that reads as harmless
+re-armed the measured data-loss bug the ratchet exists to prevent.
+
+`AAE_A_Loop_Grid::forget_unused_taxonomies()` replaces it: a slug is forgotten
+only when it is **unregistered AND unreferenced**, the second half being one
+`LIKE '%"tax_<slug>"%'` against `_elementor_data` per candidate (candidates are
+the unregistered ones only, so the scan is small). The response says what was
+kept and why, and the card now reads **Remembered Taxonomies / Forget Unused**.
+Newly registered taxonomies need no button at all — `get_query_taxonomies()`
+unions them live and the memo is per request.
+
+**The ratchet no longer writes from a visitor's page view, and no longer
+compares labels.** `$tax->label` is localised, so a bilingual site rewrote the
+row on every request served in the other language, flip-flopping forever — and
+the WPML/Polylang commit landed in the same release. Only `object_type` is
+compared now, and the write is gated on `may_record_taxonomies()`: admin or the
+Elementor editor. A prop can only be SAVED from there, so a visitor's request
+has nothing to contribute.
+
+**Two smaller ones, both in the settings form.** The panel documented a range as
+`?price=10-50` while `parse_range()` only accepts `min..max`, so anyone
+following the shipped example got a filter that was dropped in silence. And
+every custom-key field was pre-filled, which meant a per-key value always won
+over the Prefix field beside it and the prefix could never apply to anything the
+form displayed. The fields are built from one `CUSTOM_KEYS` table now, start
+EMPTY with the fallback as a placeholder, and include the `onsale` / `featured`
+keys the PHP always supported. A per-TYPE override (`custom_tax`, `custom_meta`)
+is deliberately NOT read: it would hand every taxonomy on the site one key and
+merge Colour and Size into a single filter.
+
+**WooCommerce catalog visibility stays unconditional, with a way out.** Applying
+it to every product query is what makes a Loop Grid agree with every other
+product listing WooCommerce draws, but it does change what an existing grid
+renders — a strip deliberately pinning catalog-hidden products, say.
+`aae/loop_grid/woo_visibility` is the filter for that site.
+
+**`register_query_hooks()` and `Loop_Query_Woo::register()` are deleted.** They
+were a second, never-called registration path for filters `Atomic::init_hooks()`
+already hooks, and `posts_search_title_only()`'s docblock claimed they were the
+live one. The first person to follow that comment would have double-registered
+`posts_clauses` and appended the lookup-table JOIN twice. `QV_PRICE` / `QV_SORT`
+are public now; the gate still spells them as LITERALS, because reading the
+constant would mean loading the element class on every WP_Query on the site, and
+`verify-loop-filter-seam.php` asserts the pair still matches.
+
+Suites after M1.5: `verify-loop-filter-seam.php` (103), `verify-loop-filter-frontend.mjs`
+(25), `verify-loop-filter-editor.mjs` (9), plus `verify-loop-grid-settings-ui.mjs`
+(9 — the dashboard popup; needs a fresh `auth-aae.json`, and landing on wp-login
+means run `refresh-auth.mjs` first, not that the dashboard is broken).
+
+
+## Loop Filters — M2: the Taxonomy Filter, the first widget a visitor touches (2026-09-11)
+
+M1 left the server able to accept a filter and nothing able to send one. This is
+the first of the visible half: `e-aae-a-loop-filter-tax`, and it is **PRO-owned**
+— it lives in `animation-addons-for-elementor-pro/inc/AtomicV4/Widgets/LoopFilters/`.
+
+| Piece | Where |
+|---|---|
+| The widget | **PRO** `inc/AtomicV4/Widgets/LoopFilters/class-aae-a-loop-filter-tax.php` + its twig |
+| Its styling | **PRO** `assets/scss/loop-filters.scss` → `assets/atomic/css/loop-filters.css` (webpack) |
+| Registration | **PRO** `AtomicV4\Widgets\Bootstrap::WIDGETS` + `cards()`, through free's `aae/atomic/*` filters |
+| What it declares against | **FREE** `Loop_Filter_Auth` — the authoriser, which decides whether a URL is honoured at all |
+
+**Free registers nothing for it, and there is no `Pro_Gate` entry.** An earlier
+revision of this section put the widget in free with the `Pro_Gated` trait,
+citing the old rule that Elementor's atomic registry is free-plugin territory.
+**That rule is out of date** — `AtomicV4\Widgets\Bootstrap` has owned twelve
+atomic slugs from Pro since free 4.1.0, through four `aae/atomic/*` filters, and
+none of them uses `Pro_Gated` because a Pro-owned widget is simply absent
+without a licence. Read that class's header before re-litigating this.
+
+**What the split buys, and what it costs.** The AUTHORISER stays free on purpose:
+it is what makes a filtered URL safe, and the Loop Grid itself depends on it, so
+it must keep working whatever happens to a licence. The widget being Pro means a
+lapsed licence costs the filter UI and the saved instances of it — see the
+data-loss WARNING in `AtomicV4\Widgets\Bootstrap`'s header, which applies here
+word for word and is inherent to any Pro-owned element type.
+
+**It renders LINKS, not a form, and that is the design.** Every term is an `<a>`
+whose href is this page's URL with that term toggled into the widget's url_key.
+So the base feature needs no JavaScript at all: the link is shareable,
+crawlable, survives the back button, and lands on the same server render the M1
+authoriser already filters. Pro's runtime will upgrade the same links to instant
+AJAX by intercepting the click; with Pro's script absent they still navigate. A
+control that only works once a script has arrived is a control that silently
+does nothing on the pages where it did not — and `verify-loop-filter-widget.mjs`
+runs one case with scripting switched off for exactly that reason.
+
+**The url_key is READ BACK from the authoriser, never recomputed.** The widget
+asks `Loop_Filter_Auth::declarations_for_document()` for its own entry and takes
+the `url_key` from there. Recomputing it here would be a second copy of the
+rule — including the reservation fallback — and a disagreement between the key a
+link is built with and the key the authoriser reads is a filter that looks
+perfect and never applies.
+
+**An empty `target_grid` means "the grid on this page".** `declarations()` now
+matches an empty target against any grid, and the widget resolves the page's
+only grid for its own link-building. That is what makes the widget work the
+moment it is dropped; a page with two grids is exactly where a builder fills the
+field in. It is not a loosening of the gate — the declaration still offers only
+what the widget itself declares.
+
+**The Chosen list is `terms_<taxonomy>`, one prop per offered taxonomy.** The
+chips control resolves its taxonomy when controls are built, which happens once
+per widget TYPE and not per instance, so a single shared `terms` control could
+never know which taxonomy this instance picked. Same shape the Loop Grid already
+uses, same `'in' + hide` dependency polarity (the 4.1.x evaluator applies the
+effect when the clause is NOT met, so it reads as "hidden unless"). `declare()`
+reads `terms_<taxonomy>` and falls back to a plain `terms`.
+
+**The term list is computed in `get_atomic_settings()`, and the twig assumes it
+may be missing.** An atomic twig also renders CLIENT-SIDE in the editor canvas
+through Twing, where nothing PHP computed exists; `get_atomic_settings()` is the
+only seam a LEAF widget has. `settings._ready` is what tells "PHP ran and this
+taxonomy genuinely has no terms" apart from "this is the canvas", and the canvas
+branch draws three pulsing dots so the element stays visible and selectable
+instead of collapsing to a zero-height box nobody can click.
+
+**`esc_url_raw`, never `esc_url`, for an href a twig will print.** Twig escapes
+for the attribute itself, and `esc_url` has already turned every `&` into
+`&#038;` — the two passes compose into a literal `&amp;#038;` that no browser
+reads as a separator. Measured on the fixture before the fix.
+
+**A term link never carries the page number.** `href_for()` strips `aae_page`
+and `paged`: page 4 of the old result set is meaningless once the set changes,
+and usually does not exist.
+
+### DANGER — `_elementor_element_cache` replays a page without your new widget
+
+Registering the widget, enabling it, and confirming through three separate
+probes that Elementor knew the type still left the front end rendering nothing,
+because Elementor keeps a RENDER cache in `_elementor_element_cache` post meta
+and replays the previous HTML with no page cache involved at all. A page saved
+before a type existed therefore keeps rendering without it, and the widget looks
+broken when it is merely absent from a stale copy. `do_action(
+'elementor/core/files/clear_cache' )` does NOT clear it — that is the CSS cache.
+`make-loop-filter-page.php` now deletes the meta explicitly. Cost an hour.
+
+Two smaller traps from the same session:
+
+- **A leaf widget saves as `elType: 'widget'` plus a `widgetType`**, not as a
+  bare elType. The authoriser reads `widgetType ?? elType` and sees both shapes;
+  the RENDERER does not, so a filter written as a bare elType is skipped in
+  silence. The fixture wrote the wrong shape and the widget drew nothing.
+- **A new widget arrives INACTIVE.** `'default' => true` in the registry is
+  documentation only — nothing seeds `aae_atomic_widgets` — so a fixture page
+  holding one renders nothing until it is switched on.
+  `enable-loop-filter-widgets.php` does that for the suites.
+
+### Testing it
+
+`verify-loop-filter-widget.mjs` (22 checks) builds its own fixture and switches
+the widget on, because the sibling suites DELETE the page when they finish — a
+suite that assumed it was already there measured an empty document and reported
+the widget as broken.
+
+Two assertion traps it documents. Its no-JavaScript case filters by the BETA
+term, not ALPHA: the unfiltered first page already happens to be the two Alpha
+posts, so asserting on Alpha would pass whether or not anything had happened.
+And it FOLLOWS the href rather than clicking it — `force: true` only skips the
+actionability wait, the event still lands at the element's centre point where
+this theme's preloader overlay is sitting, so the overlay eats the click and the
+page never navigates.
+
+Suite counts after M2 slice 1: seam 103, frontend 25, widget 22, editor 9,
+settings UI 9.
+
+## Loop Filters — M2 slice 2: instant filtering, and where the PRO half lives (2026-09-11)
+
+The term links work on their own. This is the licence's half: the same links,
+applied without a reload. It lives in
+`animation-addons-for-elementor-pro/inc/AtomicV4/LoopFilters/` +
+`pro/src/modules/atomic-v4/loop-filters.js`.
+
+| Piece | Plugin | Why there |
+|---|---|---|
+| the widget class, props, panel, twig, CSS | **PRO** | `AtomicV4\Widgets\Bootstrap` registers it through free's `aae/atomic/*` filters, the same route twelve other Pro widgets already take |
+| the runtime that makes it instant | **PRO** | beside the widget it enhances |
+| `Loop_Filter_Auth`, the authoriser | **free** | it decides whether a filtered URL is honoured AT ALL, and the Loop Grid depends on it — it has to keep working whatever happens to a licence |
+| the endpoint, the grid config, the events | **free** | plumbing the Loop Grid owns; all of it inert with no filter widget on the page |
+
+**POST a URL, get back that URL's render.** The runtime decides no filter state
+of its own. It takes the href the SERVER built, hands the endpoint
+`path=/page/?category=x`, and swaps in what comes back — grid cells AND filter
+widgets. So an instant filter and a full page load of the same link are the
+same render by construction, not by two implementations agreeing. Every rule
+about which terms read as selected, where a link points next, whether Clear
+appears, what the counts say and which values are allowed stays in PHP, stated
+once. `verify-loop-filter-instant.mjs` asserts exactly that: filter instantly,
+snapshot everything, hard-navigate to the identical URL, snapshot again, require
+the two to be identical.
+
+Three free-side seams were needed, all neutral, all inert without Pro:
+
+- **`Loop_Filter_Auth::set_request_url()` / `request_url()` / `request_args()`.**
+  A filter widget re-rendered inside admin-ajax reads `$_SERVER['REQUEST_URI']`
+  = `/wp-admin/admin-ajax.php` and an empty `$_GET`, so it would find no active
+  terms and point every link at the endpoint. One value answers both halves of
+  that question. `request_args()` is ALWAYS unslashed — including the `$_GET`
+  case, which WordPress leaves slashed — so a caller cannot get it right for one
+  source and wrong for the other. `set_request_url()` accepts same-host only,
+  caps length, refuses traversal, and RETURNS whether it took the value: a
+  caller handed a URL it rejected must refuse the request, because silently
+  rendering a different page than the one asked for is the confusing failure.
+- **The grid publishes its own identity.** `AAE_A_Loop_Grid::endpoint_config()`
+  is now the one builder for grid id / declaring document / viewed post /
+  captured query vars / active filters / nonce / endpoint, used by BOTH the
+  Pagination child and the Loop Layout element. Until this existed a grid with a
+  filter and NO pagination — a six-item portfolio with a category filter — had
+  no identity anywhere in the DOM and nothing could address it.
+  **The layout's attribute is `data-aae-grid-config`, NOT `data-aae-config`**:
+  the pagination already uses that name for a different shape (it carries
+  method/current/total too), and two elements answering one attribute name with
+  two contracts breaks anything selecting on the name alone. It broke four
+  assertions in `verify-loop-filter-frontend.mjs` within the hour.
+- **`filters_html` in the AJAX response**, behind `with_filters=1` so the
+  pagination runtime — which changes the page, never the filter state — pays
+  nothing for it. `Atomic::render_loop_filters()` renders them.
+  **It must `switch_to_document()` first**: a filter widget asks
+  `current_document_id()` which document declares it, and admin-ajax has neither
+  a current document nor a global post, so without the switch every widget
+  resolves nothing and renders an empty list. `switch_to_document()` only swaps
+  Elementor's own pointer — it touches no post globals, so it cannot disturb
+  anything around it.
+- **`aae:loop-grid:updated`**, a CustomEvent free's `loop-grid.js` listens for
+  (`{ grid, filters, paged, maxPages }`). A filter changes the result SET, so
+  the bar is now paging a different list: new page count, and new filters to
+  carry or page 2 comes back from the unfiltered set. Pro fires it; with Pro
+  absent it never fires.
+
+**The runtime keeps exactly one piece of state, and it is not a filter.**
+`CURRENT` is the URL whose render is on screen. On `popstate` the browser has
+ALREADY moved the location to the entry being restored, so diffing against
+`window.location` compares the new URL with itself, finds nothing changed, and
+the back button silently does nothing. Measured — the back-button case failed
+until `CURRENT` existed.
+
+**Only the grids whose own filter keys changed are re-rendered.** `aae_page` is
+shared across the page, so refreshing a second, unrelated grid would quietly
+throw away the page its visitor was on.
+
+**Every failure path ends in following the link.** A network error, a non-2xx, a
+cross-origin href, a modified click, a missing grid config, an ambiguous target
+with several grids: all fall through to an ordinary navigation. The control is a
+link, so the worst case is that it behaves like one. `verify-loop-filter-instant.mjs`
+runs a case with the Pro script's request ABORTED to prove it.
+
+The Renderer splices nothing — the widget already renders every hook the runtime
+keys on, because those hooks are what make it work with no JavaScript. The only
+decision left is whether the page gets the runtime, and it reads the type list
+from **`Loop_Filter_Auth::FILTER_TYPES`** (free) rather than carrying a copy.
+That constant is already the canonical answer to "what is a filter widget" — it
+is the list the SERVER will accept a filter from — so every filter widget added
+later is picked up with no change on the runtime side at all.
+**No dependency is declared on `aae-a-loop-grid-js`**: WordPress silently skips
+printing a script whose declared dependency was never registered, and nothing
+crosses the boundary until a visitor clicks.
+
+### WooCommerce and ACF are installed now (2026-09-11)
+
+`development.local` runs **WooCommerce 11.1.0** and **ACF 6.8.10**. The M1 note
+that the WC adapter was "unverified live" no longer holds — `verify-loop-filter-seam.php`
+now exercises it for real: catalog visibility on every product query, price
+through the lookup-table query var rather than `_price` meta, in-stock as a
+`_stock_status` clause, the `aae/loop_grid/woo_visibility` escape hatch, and a
+non-product query left untouched.
+
+Two traps from installing it without WP-CLI (`install-test-plugins.php` drives
+WordPress's own `Plugin_Upgrader`):
+
+- **`activate_plugin()` reported "The plugin generated unexpected output" and
+  the plugin was active anyway.** Core appends to `active_plugins` BEFORE firing
+  the activation hook, and the "output" was WP_DEBUG's own
+  `_load_textdomain_just_in_time` notice. Check the state, do not trust the
+  return.
+- **A CLI activation does not finish the install.** `wp_woocommerce_attribute_taxonomies`
+  did not exist and every request logged a DB error. `WC_Install::install()`
+  finishes it.
+
+**The suite must branch on whether WooCommerce is running, not assume.** Five
+assertions read "WooCommerce not installed here" and started failing the moment
+it was — while the block they lived in stopped testing the adapter at all, which
+is the half that only exists on a site that has it. Same lesson as the kit-import
+suites: assert relative to what the site actually has.
+
+Suite counts after M2 slice 2: seam **107**, frontend 25, widget 22, **instant
+25**, editor 9, settings UI 9.
+
+> Unrelated, found while sweeping: `verify-loop-grid-perf.php` wraps its slider
+> page-count regression in `if ( $page )` against the `aae-v4-widgets` fixture,
+> which no longer exists — so three assertions silently vanished and the run
+> still printed a clean 12/12. It now fails loudly instead. Check for this shape
+> whenever a suite's count drops.
+
+## Loop Filters — M2 rest + the link-shaped M3 half (2026-09-11)
+
+Five more widgets, all **PRO-owned** in `pro/inc/AtomicV4/Widgets/LoopFilters/`,
+and the two demo pages that prove the feature is finished enough to build a site
+with: `/aae-demo-blog/` and `/aae-demo-shop/`.
+
+| Widget | Type | What it is |
+|---|---|---|
+| Loop Filter: Author | `e-aae-a-loop-filter-author` | filter |
+| Loop Filter: Field | `e-aae-a-loop-filter-meta` | filter — price, rating, stock, on sale, ACF, custom field |
+| Loop Sort | `e-aae-a-loop-sort` | filter |
+| Loop Result Count | `e-aae-a-loop-result-count` | **readout** |
+| Loop Active Filters | `e-aae-a-loop-active-filters` | **readout** |
+
+**Sort and the Field filter are M3 work brought forward, because a shop page
+cannot exist without them** — the M2-rest widgets alone would have produced a
+catalogue, not a shop. Both turned out to be link-shaped after all, which is why
+neither had to wait for the runtime's submit path (see the price note below).
+
+All five extend `Loop_Filter_Widget_Base` (Pro), which owns the four questions
+every one of them asks — which grid, which url_key, what is selected, where does
+this link go next. Answering those five times is how a control ends up building
+links with a key the authoriser does not read. The Taxonomy Filter was refactored
+onto it in the same pass.
+
+### A READOUT is not a filter, and the difference is load-bearing
+
+Result Count and Active Filters declare nothing and are deliberately **absent
+from `FILTER_TYPES`** — the authoriser must never read a value for a widget that
+offers no choices to legitimise it. But they describe the filtered result, so a
+filter change makes them stale exactly as it makes a filter widget stale. Hence
+a second list:
+
+- `Loop_Filter_Auth::READOUT_TYPES` — the two of them.
+- `Loop_Filter_Auth::RERENDER_TYPES` — filters **plus** readouts, and the single
+  answer to "what does a filter change invalidate". Two consumers read it and
+  neither re-derives it: free's `render_loop_filters()` (via `rerender_ids()`,
+  which matches a readout by its `target_grid` the way `declarations()` matches a
+  filter's) and Pro's `Renderer`, which now decides on it whether a page gets the
+  instant runtime — an Active Filters bar renders removal LINKS, so it needs the
+  runtime as much as any filter does.
+
+Active Filters shows the **authorised** state, never the URL: its chips come from
+the summary's `filters` map, which is what came back OUT of the authoriser. A
+"remove" control for a filter that was never applied tells the visitor the result
+set is narrower than it is.
+
+### The shared grid summary — the seam a sibling widget needed
+
+`Render_Context` reaches DESCENDANTS of the grid only. A Result Count is a
+sibling, and on every real page it sits ABOVE the grid, so at the moment it
+renders the grid has computed nothing at all.
+
+`AAE_A_Loop_Grid::summary_for( $document_id, $grid_id )` is the answer, memoised
+per request: total, max_pages, paged, per_page, post_type and the active filter
+map, built from the SAME saved settings through the SAME builder the grid uses.
+Whichever of the two asks first pays for the count and the other reads it back,
+so **the caption can never claim a different total than the grid beneath it** —
+and the count is paid for at most once per grid per request (asserted: a second
+ask issues 0 SQL).
+
+Three places prime or read it, and all three matter:
+
+- `define_render_context()` **peeks first** (`peek_summary()`) and reuses a
+  readout's numbers rather than re-counting; otherwise it computes and primes.
+- It also counts when `has_readout_sibling()` — a Result Count with no pagination
+  and no active filter was the one shape where nothing had asked for a total, so
+  the widget would have had to run its own second scan.
+- `ajax_loop_grid_page()` primes from the numbers the request already paid for,
+  so a re-rendered readout cannot answer a *different* count inside one response.
+
+`only_grid_id()` and `post_type_for()` moved into the grid class for the same
+reason: every filter and every readout asks "which grid", and two implementations
+of that is a control reporting on a different grid than the one beside it.
+
+### A price filter with no slider, and why that was the right call
+
+> **Superseded in part (2026-09-11).** The slider shipped — see *M3: the two
+> controls that are FORMS* below. Everything this section says about BUCKETS
+> still holds and buckets are still the default; what changed is that a form
+> turned out to be a perfectly honest no-JavaScript control, which is what the
+> last paragraph here was waiting for.
+
+A two-handled range slider is a FORM CONTROL: no href, so it cannot be a link,
+and it does nothing until a script binds it. **Buckets** — "Under 50", "50 –
+120", "200 and up" — are ordinary links, are what visitors actually click on most
+shops, and are shareable and crawlable. They go through the existing `mode=range`
+path and send the identical `min..max` value a slider eventually will.
+
+**The buckets are display; the BOUNDS are the gate.** `Loop_Filter_Auth` still
+clamps any incoming range to the widget's own Min/Max, so a hand-typed
+`?price=0..999999` is bounded whether or not a bucket for it was ever drawn.
+Never move the bounds into the bucket list.
+
+The widget's SHAPE (range / choice / toggle) is read from the DECLARATION, not
+the panel: an ACF field resolves its own mode, so trusting the panel's `mode`
+would draw price buckets over a true/false field.
+
+### The sort catalogue lives in the authoriser
+
+A Sort panel that makes a builder hand-write `{"key":…,"orderby":…}` JSON is not
+a panel. `Loop_Filter_Auth::SORT_CATALOGUE` names ten sorts, the widget offers
+them as switches (`sort_<key>` plus an optional `label_<key>`), and
+`declare_type()` builds the option list from them. The `options` JSON contract
+still works and still **wins on a key collision** — it is the more specific
+statement, and it is the only way to sort by an arbitrary meta key.
+
+It lives in free beside the whitelist it draws from because "which sorts exist"
+is an authorisation question before it is a panel question: a key the visitor
+sends has to mean the same thing on the server as it did in the switch. Only the
+WORDING is in Pro (`AAE_A_Loop_Sort::catalogue()`, public so the Active Filters
+chip can name an applied sort — otherwise a chip reads `price_asc` beside a
+control reading "Price: low to high").
+
+price / popularity / rating are `Loop_Query_Woo::SORT_KEYS` and are refused
+unless WooCommerce is running AND the grid queries products, so offering them on
+a blog grid costs nothing but an option that never resolves.
+
+### Things that will bite
+
+- **A widget that renders NO NODE when empty can never be brought back.** The
+  runtime finds an element by id and replaces it; Active Filters therefore always
+  renders its wrapper and uses the `hidden` attribute for "hide when nothing is
+  applied". That needs an explicit `.elementor .aae-a-loop-active-filters[hidden]
+  { display: none !important }` — the atomic base style sets `display: flex` at
+  (0,2,0) and beats the user-agent `[hidden]` rule on a tie, the same trap the
+  form's nav buttons already document.
+- **`Textarea_Control` binds to a STRING prop, not a String_Array** (see
+  `AAE_A_Form_Country`'s option list). The Field filter's `choices` / `buckets`
+  are strings for that reason, and the authoriser splits either form — a newline
+  string cast with `(array)` becomes ONE choice containing newlines, which
+  matches nothing and says nothing.
+- **A `private` method in a subclass cannot narrow a `protected` one in the
+  base.** Refactoring the Taxonomy Filter onto `Loop_Filter_Widget_Base` fataled
+  on `own_declaration()` for exactly that, and the fatal is at CLASS LOAD, so
+  every page carrying the widget 500s at once.
+- **Do not assert that `price_desc` is the reverse of `price_asc`.** A 6-of-12
+  grid shows two different HALVES of the catalogue, not mirrored lists. Assert
+  the head of each order against the real cheapest/dearest, and that the page is
+  monotonic.
+- **A control bound to a prop the schema does not declare is erased by
+  `Props_Parser` on the next save**, so panel copy goes through
+  `AAE_Notice_Control`, never a `Text_Control` bound to some `_note` key.
+  `Section::set_description()` renders nothing at all in the shipped panel.
+- The Author filter offers only people who have **published** the grid's post
+  type — the same test the authoriser applies to an incoming nicename, so the
+  list and the gate cannot disagree. Ids are refused on both sides: an endpoint
+  that turns `?author=7` into a result set is a user-enumeration oracle.
+
+### Presets
+
+16, in `pro/inc/AtomicV4/Widgets/LoopFilters/presets/`, generated by
+`E:\Local Testing\make-loop-filter-presets.php` rather than hand-written — the
+atomic style envelope is the half that fails silently (one invalid key voids the
+WHOLE definition with no error), so the shapes are declared once there and every
+file is built from them. All six widgets get a Presets section from
+`Loop_Filter_Widget_Base::presets_section()`; one picker stub serves the family
+because the picker is passed nothing from PHP and fetches by the SELECTED
+element's type. Verified resolving through the real `Local_Fallback`, which
+derives a Pro widget's preset directory from its absolute registry `file`.
+
+### The demo pages
+
+`E:\Local Testing\make-loop-demo-pages.php` (`blog` / `shop` / `cleanup`) builds
+`/aae-demo-blog/` — 12 articles, 3 categories, 3 real authors, with category +
+author + sort + count + chips — and `/aae-demo-shop/` — 12 WooCommerce products
+with prices, sale prices, stock states, featured flags and ratings, filtered by
+category, price, rating, stock and on-sale.
+
+**Writing the product meta is not enough.** Featured, rating and out-of-stock are
+recorded in the `product_visibility` taxonomy, which is what `Loop_Query_Woo`
+reads, and the price filter reads ONLY `wc_product_meta_lookup` — so the fixture
+sets the visibility terms explicitly and calls `$product->save()` to rebuild the
+lookup row. Without that the filters agree with nothing, which reads as a broken
+filter rather than a missing index row.
+
+Measured on the shop page: 12 products, `?price=..50` → 3, `?onsale=1` → 4,
+`?stock=1` → 10, `?rating=5` → 3, and `price_asc` orders 28 < 38 < 45 < 52 < 89 <
+116 — the sale price, not the regular one, because the lookup table holds the
+effective price. That is what a shop should do.
+
+Note the shop's category filter answers to `aae_tax_product_cat`, not
+`product_cat`: `register_taxonomy()` defaults `query_var` to the taxonomy name,
+so the readable spelling is RESERVED and borrowing it would 404 the page before
+the grid rendered. Price, rating, stock, onsale and sort all keep their readable
+keys. That is the M1.5 reservation rule doing its job on a real page.
+
+Suites after this slice: seam 107, frontend 25, widget 22, instant 25, editor 9,
+settings UI 9, **readouts 75** (`verify-loop-readouts.php`, which asserts against
+the demo pages themselves and checks every count against a hand-written WP_Query
+— a readout and a grid agreeing on a wrong number must not pass).
+
+### Designing the demo pages — four things that were wrong everywhere (2026-09-11)
+
+The demo pages were rebuilt as real designs (`make-loop-demo-pages.php` +
+`demo-art.php`), and the exercise found four defects that a bare fixture can
+never surface. Three of them are in the PRODUCT, not the demo.
+
+**`e-div-block` ships `padding: 10px`, and nothing says so.** Every wrapper that
+does not set padding quietly gains 10px on all four sides. It shows up as a
+nested group sitting 10px right of its siblings, and otherwise as a slackness
+across the whole layout that reads as "not quite aligned" rather than as any one
+thing being wrong. **Any programmatic atomic layout must set `padding` explicitly
+on every structural div**; `ui_stack()` / `ui_row()` in the demo builder do it
+once so no caller has to remember.
+
+**A theme's content CSS outranks a widget's own, and by a lot.** Measured on this
+site's theme: `.page-template-default .builder--page-details ul li { list-style:
+disc }` is (0,3,1) and `… a { text-decoration: underline }` is (0,2,1), while the
+filter family's rules were single classes at (0,1,0). Every filter rendered
+bulleted, underlined and indented 20px. `loop-filters.scss` now ends in a
+**theme-armour block** scoped `.elementor .e-atomic-element.<root> ul.<list> > li`
+(0,4,2) whose every declaration merely re-states a value set above. No
+`!important` — that would also beat the builder's Style-panel output, which must
+always win. **Any atomic widget rendering `ul`/`li`/`a` needs the same armour.**
+
+**A filter heading is a LABEL, and the Style panel cannot reach it.** Atomic
+styles have no descendant selector, so the heading's typography is decided in the
+stylesheet or nowhere; 600-weight body text was the weakest possible reading of
+the role. It is now a real label — but deliberately NOT `text-transform:
+uppercase`, because a transform rewrites the builder's own words with no way to
+switch it off. The demo types its titles in the case it wants.
+
+**One label, one owner.** The demo first rendered its own eyebrow headings and
+set every widget's `title` to `''`. That looked identical and broke four
+assertions, because the heading the authoriser records in its declaration — the
+text an Active Filters chip groups by — was no longer the text on screen. The
+widget's `title` is the label; a second one beside it is a second source of
+truth.
+
+#### The art generator, and the staleness trap it walked straight into
+
+`demo-art.php` draws every cover with GD at 2× and downsamples (GD does not
+antialias filled shapes, so a circle drawn at final size has stepped edges).
+Covers are deterministic per title, so a rebuild is a no-op.
+
+**"The file exists" is not "the art is current".** `art_attach()` originally
+skipped drawing whenever the JPEG was on disk, so every change to a drawing
+routine was invisible until someone cleared the uploads folder by hand — the page
+kept showing the previous art while the source said otherwise, which reads as the
+new code not working rather than as never having run. It now redraws whenever
+`filemtime( art file ) < filemtime( __FILE__ )`. `art_cleanup()` also sweeps
+orphan JPEGs by glob, because `wp_delete_attachment()` only removes what
+`_wp_attached_file` points at and a file written but never attached survives.
+
+Two drawing bugs worth not repeating: a gradient that offsets each row sideways
+to fake a diagonal leaves the canvas **unpainted at two corners** — black wedges
+that read as a broken image; and one palette per category makes four articles in
+that category look identical, so the palette is rotated around the colour wheel
+by a per-TITLE amount and the composition is one of three genuinely different
+layouts rather than one layout with the shapes moved about.
+
+#### A suite must not hardcode its fixture's copy
+
+`verify-loop-readouts.php` asserted `'Topic' === $decl['label']` and grepped for
+`'Price: low to high'`. Redesigning the demo — changing only wording — produced
+four failures on a completely correct plugin. The assertions now read the
+expected value out of the saved document (`setting_of()`) and compare it against
+what the authoriser recorded, which still catches the real regressions (label
+dropped, wrong source, a slug leaking through where a name belongs) while
+surviving a copy change. **Assert the relationship, not the string.**
+
+Suites after this pass: seam 107, frontend 25, widget 22, instant 25, editor 9,
+settings UI 9, **readouts 76**.
+
+## Loop Filters — M3: the two controls that are FORMS (2026-09-11)
+
+The last two of the nine widgets, and the only two that cannot be links:
+**Loop Search** (`e-aae-a-loop-search`, PRO, new) and the **range SLIDER**
+(`range_style = slider` on the existing Field filter). Both were blocked on the
+same thing — a submit path in `pro/src/modules/atomic-v4/loop-filters.js` — and
+both land with it.
+
+| Piece | Where |
+|---|---|
+| The Search widget | **PRO** `inc/AtomicV4/Widgets/LoopFilters/class-aae-a-loop-search.php` + twig |
+| The slider | **PRO** same folder, `range_style` / `step` / `range_prefix` / `apply_text` on `class-aae-a-loop-filter-meta.php` |
+| Shared form plumbing | **PRO** `Loop_Filter_Widget_Base::form_action()` + `carry_fields()` |
+| Submit + slider runtime | **PRO** `loop-filters.js` — `formTarget()`, `onSubmit()`, `onInput()`, `enhanceRanges()` |
+| The wire format | **FREE** `Loop_Filter_Auth::join_separator()` |
+| Slider track bounds | **FREE** `Loop_Query_Woo::price_bounds()` |
+
+**A `<form method="get">` IS the link-equivalent for typed input**, and that is
+the whole design. The browser composes exactly the URL a link would have
+carried and navigates to it, so with no JavaScript the control lands on the same
+server render the M1 authoriser already filters — it is not a degraded path, it
+is the same path. Pro's runtime then intercepts the submit the way it already
+intercepts a click. `e-aae-a-loop-search` was already in `FILTER_TYPES` from M1,
+so the authoriser, `RERENDER_TYPES` and Pro's `Renderer` all picked it up with
+no change: the runtime enqueues itself on a page carrying one.
+
+### How a form expresses a range — one key, two boxes
+
+A range is ONE url_key holding `min..max`. A form has TWO boxes. There is no
+way to compose the one from the other in HTML, and every obvious answer is
+worse than it looks:
+
+- a second URL spelling (`price_min` / `price_max`) has to be reserved against
+  WordPress's own query vars, explained, and kept in step with the first;
+- one text box the visitor types `10..50` into is not a control anybody uses;
+- a hidden field written by JavaScript is not a control at all without it.
+
+So both boxes carry **`name="<key>[]"`**, which arrives as an ARRAY, and
+`Loop_Filter_Auth::join_separator()` joins a RANGE declaration's array with
+`..` instead of a comma. `?price[]=&price[]=50` and `?price=..50` are then the
+same filter, proven against the live page. A taxonomy or choice array keeps its
+comma — that is a LIST and always has been.
+
+Three properties fall out of that and are asserted:
+
+- **empty boxes clear the filter** rather than sending a bare `..`, which
+  `parse_range()` refuses (so the key is simply dropped);
+- **a third value is refused, not truncated** — inventing a meaning for it is
+  how an array key becomes a way past `parse_range()`;
+- **the bounds are still the gate.** The slider's `lo`/`hi` decide where the
+  track is DRAWN. Whatever arrives is clamped to the widget's own Min/Max
+  exactly as a hand-typed URL is, and the form shape changes nothing about it.
+  Never move the gate into the drawing.
+
+The runtime's enhanced submit writes the canonical single-key spelling
+(`price=10..50`) so the URL bar and a shared link stay readable. Both spellings
+reach an identical filter; that equality is a test, not a convention.
+
+### DANGER — a GET form REPLACES the whole query string
+
+This is the one thing a form does that a link never could, and it fails
+silently: submit a search and every other filter on the page is gone, with the
+page looking like it worked. `carry_fields()` re-states the rest of the current
+query as hidden inputs on every form (dropping `aae_page`/`paged`, for the same
+reason a term link does). **The widget's own key AND its legacy `aae_*` spelling
+are both excluded** — the authoriser reads the legacy key whatever the site's
+URL mode, so a stale `?aae_s=` re-posted as a hidden field beside the live box
+would beat what the visitor just typed.
+
+`form_action()` is the PATH alone for the same reason: an action carrying a
+query string would fight the hidden fields.
+
+### The slider is enhancement, and the number boxes are the control
+
+With no script the slider renders as two number boxes and an Apply button —
+usable, and posting the identical value. The runtime then appends two real
+`<input type="range">` handles over the track (real range inputs, so keyboard
+operation and screen-reader announcement come free) and reveals the track,
+which is `display: none` until a handle exists. Rules worth keeping:
+
+- **Handles may meet but never cross.** An inverted range matches nothing and
+  the server drops it, leaving a slider that visibly moved and did nothing.
+- **A handle left at its own bound writes an EMPTY box**, not that number —
+  otherwise every drag pins both ends into the URL and `?price=0..200` reads as
+  a filter when it is the whole catalogue.
+- **`change`, not `input`, submits** — once per drag or arrow-key settle, never
+  per frame. Typed values still wait for Apply or Enter.
+- **The number boxes are the source of truth** in both directions; the handles
+  mirror them. One state, not two.
+
+**`Loop_Query_Woo::price_bounds()` answers a DRAWING question only.** A builder
+who has not typed bounds should still get a usable track rather than two bare
+boxes that read as the slider being broken, so a WooCommerce price slider asks
+the catalogue (one memoised aggregate over `wc_product_meta_lookup`, paid only
+by a page that draws one). Deliberately store-wide rather than scoped to the
+grid's current filters: a track whose ends move on every category click makes
+the handle positions mean something different on each render, and the visitor's
+own selection appears to jump.
+
+### Search as you type replaces its history entry
+
+`live` is off by default: applying on every keystroke is a request per
+character. When on, the runtime debounces ~420 ms and calls
+`history.replaceState`, not `pushState` — one entry per pause in typing turns
+the back button into a character-by-character rewind of a word nobody wants to
+revisit. An explicit submit still pushes.
+
+**DANGER — the re-render replaces the input being typed into.** Every filter
+widget is re-rendered after a filter change, which is what keeps selected
+states, counts and carried hidden fields honest; for a list of links that costs
+nothing, and for a search box it is destructive. `captureFocus()` /
+`restoreFocus()` in `swapFilters()` identify the control by its ROLE within the
+widget (`data-aae-range-role`, `.aae-a-loop-search-input`) rather than by node,
+and restore focus, caret and — importantly — **the visitor's own value over the
+server's echo of it**. The request was sent some keystrokes ago; painting what
+was true then is the classic laggy-search bug.
+
+### Things that will bite
+
+- **`range` is a Twig FUNCTION.** The slider's twig variable is `slider` for
+  that reason. A `{% set range = … %}` is asking for a collision that reports as
+  a template error with no obvious cause.
+- **The canvas needs its own render, and a slider CAN have one.** A term list
+  cannot be drawn client-side (the terms come from PHP), which is what the
+  placeholder dots are for — but a slider's bounds and step ARE panel props, so
+  the twig builds a preview from them. It renders as a `<div>` with **nameless**
+  inputs and a `type="button"` Apply, because a stray Enter inside the canvas
+  would navigate the iframe away from the document being edited. The search box
+  does the same. The runtime never binds handles in the editor: a live slider
+  would fire filter requests while somebody is styling it.
+- **Themes style form controls at least as hard as they style lists.** The
+  theme-armour block at the end of `loop-filters.scss` grew `form`, `input` and
+  `button` selectors for the same (0,2,1)-beats-(0,1,0) reason the `ul`/`li`/`a`
+  ones exist. Still no `!important` — that would beat the Style panel too.
+- **A search box must not dim under its own cursor.** The family's `is-loading`
+  state fades every widget; `.aae-a-loop-search.is-loading:focus-within` opts
+  out, because the text being read back while typing is the one thing that has
+  to stay crisp.
+- **Chrome draws its own ✕ in a `type="search"` input.** It sits beside ours and
+  clears the field without submitting — two controls that look alike and do
+  different things. `appearance: none` on `::-webkit-search-cancel-button`.
+- **The focus ring goes on the BOX, not the input.** The wrapper has
+  `overflow: hidden`, so the input's own outline is clipped and a keyboard user
+  gets no indicator at all.
+
+### Testing it
+
+`verify-loop-filter-forms.mjs` (35) and `verify-loop-filter-forms-editor.mjs`
+(9), both driving the DEMO PAGES, which they rebuild first. The front-end suite
+runs its whole first act in a context with **`javaScriptEnabled: false`** —
+that is the claim, so it is tested rather than reasoned about — and ends by
+aborting `admin-ajax.php` to prove the enhanced submit still falls back to a
+real navigation.
+
+Three traps it documents, each of which reads as a product bug:
+
+- **With scripting off, this theme's preloader is never removed** (the script
+  that removes it never runs), so it covers the page and swallows every CLICK.
+  Keyboard events are not hit-tested, so `press(…, 'Enter')` reaches the control
+  the overlay is covering. Clicking Apply there fails exactly like a broken
+  submit button.
+- **`waitForNavigation` resolves on a same-document History API navigation.**
+  The runtime pushes state BEFORE it discovers a request has failed, so the wait
+  settles on the pushState, the assertion reads the pre-navigation DOM, and a
+  working fallback reports as "still unfiltered" while the real navigation lands
+  a moment later. Use `waitForEvent('load')`, which only fires for a real
+  document load — the thing actually being claimed.
+- **`wp-emoji-loader` logs a missing-settings error inside the editor** on this
+  WP build. Core noise, present with the plugin deactivated.
+
+#### A suite must not freeze a COUNT either
+
+Two more assertions in `verify-loop-readouts.php` failed on a correct plugin
+this pass, both by naming a number the fixture happened to have: the blog page's
+declaration types (`tax + author + sort`, until Search joined them) and the
+preset count per widget type. Same lesson as the copy assertions before them,
+one level up — they now assert the RELATIONSHIP:
+
+- every filter widget saved in the document produces exactly one declaration,
+  and each declaration's `element_id` is one of those widgets;
+- the resolver finds exactly as many presets as there are JSON files on disk for
+  that type.
+
+Both still catch what they were written for (a dropped declaration, a Pro
+widget whose absolute preset path stops resolving) and survive shipping another
+widget or another preset.
+
+Suites after M3: seam **120**, frontend 25, widget 22, instant 25, editor 9,
+settings UI 9, readouts **80**, **forms 35**, **forms-editor 9**.
+
+## Loop Filters — the checkbox, the Date filter, and M5 (2026-09-11)
+
+Four more slices, after which the only outstanding item in the whole feature is
+publishing the presets to the remote server.
+
+| Piece | Where |
+|---|---|
+| Selection marker | **PRO** `Loop_Filter_Widget_Base::marker_props()` / `marker_control()` / `resolve_marker()` |
+| Date filter | **PRO** `class-aae-a-loop-filter-date.php` + twig |
+| Dynamic counts | **FREE** `AAE_A_Loop_Grid::facet_counts()`; **PRO** `count_mode` on Taxonomy + Author |
+| Filter drawer | **PRO** `class-aae-a-loop-filter-drawer.php` + twig + `enhanceDrawers()` in the runtime |
+
+### The checkbox is a MARKER, not a control
+
+The most-requested thing in the family, and the one easiest to build wrongly.
+Every option here is a LINK — that is what makes a filter work before any
+script loads and what makes a filtered page shareable — so an
+`<input type="checkbox">` beside it would be a control that submits nothing and
+does nothing without JavaScript. The box is a decorative span INSIDE the link,
+`aria-hidden`, and the link's own `aria-pressed` carries the state.
+
+`marker` is off by default so no existing page changes. The value to recommend
+is **`auto`**, because the shape is a promise about the next click that a
+builder should not have to think about: **a checkbox says picking a second
+option ADDS to the first, a radio says it REPLACES it**, and the widget already
+knows which it is. Additive: taxonomy, author, a choice-mode field. Exclusive:
+a price bracket, a sort, a date period.
+
+The tick and the dot are **drawn** (a rotated border, an inset circle), never
+typed. A text glyph inherits the option's font, so a theme with a display face
+hands the list a serif check mark at whatever size that face happens to be.
+
+**Found while wiring it: Match All was single-select.**
+`$multi = 'all' !== $match` meant that under AND a click REPLACED the selection,
+so two terms could never both be chosen and the AND mode was unreachable from
+the UI — an AND of one term is just that term. The comment beside it already
+said both modes take a list.
+
+### The Date filter — the widget the server was already waiting for
+
+`TYPE_DATE` has been in `FILTER_TYPES` since M1, with `declare_date()` and
+`date_clause()` behind it. Nothing ever rendered one, so the server would have
+honoured a date filter all along and no builder could reach it. Worth knowing as
+a shape: the registration checklist warns about a widget missing from a list;
+this was the far end of the same failure.
+
+Two controls, the same split as the Field filter. **Periods** ("Last 7 days",
+"This month") are links. The optional **custom range** is two
+`<input type="date">` sharing one `name="<key>[]"` — `join_separator()` already
+returned `..` for a date declaration, so it needed nothing new on the server.
+
+**A period's href carries ABSOLUTE dates, never a relative token.** The range is
+computed at render time, so `7d` in the URL would silently slide: a link shared
+today would mean a different week next week. The cost is that a full-page cache
+serves yesterday's "Last 7 days" until purged — inherent to a relative period,
+and the reason the URL is absolute rather than the reverse.
+
+`current_datetime()`, not `date()`. In UTC+6 "Today" returns yesterday for the
+first six hours of every day — a bug nobody reports because it fixes itself by
+lunchtime.
+
+### Dynamic counts — count against the OTHERS, never against yourself
+
+A term's own `count` is site-wide. "Footwear (12)" beside a result set of four
+is not a number anyone can act on. `AAE_A_Loop_Grid::facet_counts()` resolves
+the grid's scope with every filter applied EXCEPT this one, then counts over it
+in a single grouped query.
+
+**Excluding a filter's own key is the rule that looks like a bug until you know
+it.** Counting against itself drops every unselected option to zero the moment
+one is picked. Each option answers "what if I picked this INSTEAD", not "what is
+true now". Measured on the blog demo: unfiltered 4/5/3 by topic and 4/4/4 by
+author; with one author picked the topics become 3/1/0 while the author counts
+stay 4/4/4; with a date range on top, 1/1/0.
+
+**Opt-in, because it costs.** One id-list query plus one grouped count, per
+filter widget, per request. `MAX_FACET_SCOPE` is a hard ceiling above which it
+returns **NULL — no count at all** rather than an answer. Null means
+unanswerable, never zero, the same distinction the extension usage scan draws;
+a ceiling that silently fell back to the site-wide numbers would change what
+they MEAN halfway up a collection, which nobody would notice.
+
+An option absent from the facet map is a real 0 and renders as one, with
+`is-empty` on the row. It stays a LINK rather than being hidden or disabled:
+"Field Notes (0)" is a real answer to "what else is there", and removing the
+option leaves the visitor unable to see it exists.
+
+Authors are keyed by **nicename**, matching what the filter puts in the URL —
+ids are refused on both sides so the endpoint cannot become a user-enumeration
+oracle.
+
+### The drawer — OPEN is the no-script state
+
+On a desktop sidebar a filter set is a column; on a phone it is a wall between
+the visitor and the products. `e-aae-a-loop-filter-drawer` is a CONTAINER
+holding whatever filter set the builder designed.
+
+**The inversion is the whole design.** A drawer is a script-driven control: a
+panel that only opens on a click is a panel nobody can open if the handler never
+arrived, and hiding a page's only filters behind it would be the worst failure
+this family could ship. So the panel renders OPEN with the toggle hidden, and
+the runtime adds `is-enhanced`, which reveals the toggle and closes the panel.
+With no JavaScript the visitor gets the plain column they would have had without
+the drawer.
+
+**Above the breakpoint it stops being a drawer** — toggle gone, panel back in
+the flow. That is what makes one page a sidebar on desktop and a drawer on a
+phone, and it is why this exists rather than the generic Offcanvas widget (which
+a builder may still use, and which can do neither this nor the badge).
+`is-wide` is toggled by a **matchMedia in the runtime**, because a media query
+cannot read a custom property and the breakpoint is a per-widget setting.
+
+**The badge counts the APPLIED filters**, from the grid summary, not the URL: a
+key the authoriser refused is not a filter the visitor has, and counting it says
+"3 applied" over a grid filtered by two. After an instant filter the runtime
+re-derives the number from the URL it just applied — the drawer is a CONTAINER
+and is deliberately NOT in `RERENDER_TYPES`, because re-rendering it would
+replace the filter widgets inside it that the runtime has just replaced
+individually.
+
+A resize past the breakpoint while open unlocks `body` scroll; otherwise a page
+with no drawer on it stays frozen.
+
+### Testing it
+
+New suites, all with a JavaScript-disabled act:
+`verify-loop-filter-marker.mjs` (15), `verify-loop-filter-date.mjs` (16),
+`verify-loop-filter-counts.mjs` (13), `verify-loop-filter-drawer.mjs` (27).
+
+**Three Playwright traps, each of which reads as a product bug:**
+
+- **A fixed panel plus Playwright's auto-scroll.** "Scroll into view if needed"
+  scrolls the DOCUMENT, which moves the page under a `position: fixed` drawer
+  that stays put, so the click lands on whatever the hero scrolled to that
+  point. The interception message names the hero and looks exactly like a
+  stacking-context bug. It is not — `elementFromPoint` inside the panel's rect
+  returns the filter link. Dispatch a bubbling MouseEvent (the runtime's handler
+  is delegated from `document`, so it is the same path) and verify hit-testing
+  separately.
+- **Clicking a scrim at the origin hits the panel.** The panel covers the
+  leading edge; aim past its measured width.
+- **`page.goto` cannot navigate a relative href.** These links are built
+  relative; read `a.href`, not `getAttribute('href')`.
+
+#### A fixture the suite only BORROWED
+
+`verify-loop-grid-perf.php` read `aae-v4-widgets`, a large general fixture built
+for something else. Deleting that page silently took three assertions with it —
+the only guard on the slider page-count regression. It now has
+`make-loop-pagination-page.php`: nine posts, three per page, one Loop Grid and
+one Loop Grid Slider, which is the smallest thing that can hold the regression
+and cannot be lost to somebody tidying a page it borrowed. Back to 15/15.
+
+**The same staleness trap appeared in `make-loop-demo-pages.php`.** `demo_post()`
+updated an existing post's content but not its DATE, so re-anchoring the demo
+articles to today did nothing and every relative period answered zero — on a
+rebuild that had plainly just run. "The post exists" is not "the post is
+current", exactly as "the file exists" was not "the art is current". Note
+`wp_update_post` ignores `post_date` on a published post unless `edit_date` is
+also set, so the write fails silently without it.
+
+### Remote presets — prepared, NOT published
+
+The last M5 item, and the one that cannot be done from here: it is a write to
+crowdytheme.com's preset server. `E:\Local Testing\export-loop-filter-presets.php`
+produces the payload in the shape `Remote_Client::fetch_presets_for_type()`
+consumes (21 entries across 8 element types).
+
+**Read that file's header before uploading.** `Cache::drop_shadowed_remote()`
+de-duplicates local against remote BY SLUG OF THE NAME, and on an overlap the
+LOCAL file wins — so uploading while the bundled files are still on disk makes
+the upload invisible, and uploading under different names lists every design
+twice. `pro` is false on every exported entry because `Local_Fallback` hardcodes
+that for a bundled file; only a remote entry can carry its own flag, and that is
+the decision to make per preset on the server.
+
+Suite counts after this pass: seam **129**, frontend 25, widget 22, instant 25,
+editor 9, settings UI 9, readouts **82**, forms 35, forms-editor 9,
+**marker 15**, **date 16**, **counts 13**, **drawer 27**, grid-perf **15**.
+
 ## Caching computed artifacts — and why option VALUES are not one (2026-08-06)
 
 Asked directly: "what would we gain by file-caching the option values?" The
@@ -5641,8 +6802,17 @@ Previous appeared):
    `step_title` clearly (shown in the step-nav progress indicator, not
    inside the step itself).
 
+> **SUPERSEDED — do not carry this rule into new work (noted 2026-09-11).**
+> The claim below, that a Pro plugin cannot own an atomic element type, was
+> true when `e-aae-a-form-step` was built and is not true now.
+> `WCFAddonsPro\AtomicV4\Widgets\Bootstrap` owns twelve slugs from Pro via four
+> `aae/atomic/*` filters free exposes, and `e-aae-a-loop-filter-tax` joined
+> them. It cost a wrong decision once: read that class's header — including its
+> data-loss WARNING — before deciding where a new atomic widget lives. What
+> follows is still the correct description of why the FORM STEP is in free.
+
 **Architecture decision (verified via Explore agent before building — see
-also `AAE_A_Btn_Pro` precedent, `Widgets/BtnPro/class-aae-a-btn-pro.php`):
+also `AAE_A_Btn_Pro` precedent, which has since MOVED to Pro):
 Elementor's atomic widget registry (`inc/AtomicWidgets/class-atomic.php`'s
 `get_available_widgets()`) is 100% free-plugin territory — a Pro plugin
 cannot register a brand-new element TYPE from outside it.** So

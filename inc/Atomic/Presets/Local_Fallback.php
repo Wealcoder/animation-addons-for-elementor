@@ -112,7 +112,9 @@ final class Local_Fallback {
 						'source'        => 'local',
 						'category'      => $category,
 						'thumbnail_url' => '',
-						'pro'           => false,
+						// The file's own flag, not a hardcoded false — see
+						// parse_preset_file(). Absent still means free.
+						'pro'           => ! empty( $preset['pro'] ),
 					]
 				);
 			}
@@ -160,7 +162,7 @@ final class Local_Fallback {
 									'source'        => 'local',
 									'category'      => $category,
 									'thumbnail_url' => '',
-									'pro'           => false,
+									'pro'           => ! empty( $preset['pro'] ),
 								]
 							);
 						}
@@ -237,11 +239,33 @@ final class Local_Fallback {
 			return null;
 		}
 
-		return [
+		$entry = [
 			'id'    => sanitize_key( basename( $file, '.json' ) ),
 			'name'  => $name,
 			'model' => $model,
 		];
+
+		// What this design needs before it can work — a post type, an ACF field
+		// group, a plugin. Normalised here rather than passed along raw, so the
+		// one place that understands the shape is the one place that validates
+		// it. A bundled file is plugin-authored and a remote entry is not, but
+		// both reach the installer through the same door and so are read by the
+		// same rules.
+		$requires = Requires::normalize( $data['requires'] ?? null );
+		if ( $requires ) {
+			$entry['requires'] = $requires;
+		}
+
+		// A bundled preset may now declare itself Pro. It could not before —
+		// `pro` was hardcoded false for every local file — which was fine while
+		// local presets existed only to give a free widget its default layout,
+		// and is not once a Pro-owned widget bundles its own designs. The
+		// default is still false, so every file that predates this is unchanged.
+		if ( ! empty( $data['pro'] ) ) {
+			$entry['pro'] = true;
+		}
+
+		return $entry;
 	}
 
 	/**

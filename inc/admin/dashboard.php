@@ -49,6 +49,7 @@ class WCF_Admin_Init
 		'aae_youtube_video_advanced_settings',
 		'aae_anim_builder_settings',
 		'wcf_addon_sl_license_key',
+		'aae_loop_grid_settings',
 	);
 
 	/**
@@ -129,6 +130,7 @@ class WCF_Admin_Init
 		add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
 		add_action('wp_ajax_aae_save_dynamic_settings', array($this, 'save_dynamic_settings'));
 		add_action('wp_ajax_aae_get_dynamic_settings', array($this, 'get_dynamic_settings'));
+		add_action('wp_ajax_aae_flush_known_taxonomies', array($this, 'flush_known_taxonomies'));
 		add_action('wp_ajax_save_settings_with_ajax', array($this, 'save_settings'));
 		add_action('wp_ajax_aae_complete_setup_wizard', array($this, 'complete_setup_wizard'));
 		add_action('wp_ajax_wcf_dashboard_notice_store', array($this, 'notice_store'));
@@ -822,6 +824,61 @@ class WCF_Admin_Init
 			'message' => 'Settings Updated',
 		);
 		wp_send_json($return_message);
+	}
+
+	/**
+	 * Forget taxonomies the Loop Grid remembers but nothing can use any more.
+	 *
+	 * NOT a cache flush, however much the shape suggests one. The remembered
+	 * list is what keeps a `tax_<slug>` prop declared while its taxonomy's
+	 * plugin is switched off, and Elementor erases any prop the schema does not
+	 * declare on the next save — so deleting the row outright would destroy
+	 * every saved filter for that taxonomy on every page, silently. Only a slug
+	 * that is BOTH unregistered and unreferenced by any saved document is
+	 * dropped; the response says what was kept and why.
+	 */
+	public function flush_known_taxonomies()
+	{
+		check_ajax_referer('wcf_admin_nonce', 'nonce');
+
+		if (! current_user_can('manage_options')) {
+			wp_send_json_error(esc_html__('Permission denied.', 'animation-addons-for-elementor'));
+		}
+
+		// Element classes are require'd during Elementor's element registration,
+		// which does not run on a plain admin-ajax request.
+		if (! class_exists('\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid')) {
+			$file = WCF_ADDONS_PATH . 'inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php';
+			if (file_exists($file)) {
+				require_once $file;
+			}
+		}
+
+		if (! class_exists('\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid')) {
+			wp_send_json_error(array('message' => esc_html__('The Loop Grid widget is not available.', 'animation-addons-for-elementor')));
+		}
+
+		$result  = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::forget_unused_taxonomies();
+		$removed = count($result['removed']);
+		$in_use  = count($result['kept_in_use']);
+
+		if ($removed) {
+			/* translators: %d: number of taxonomies forgotten. */
+			$message = sprintf(_n('Forgot %d unused taxonomy.', 'Forgot %d unused taxonomies.', $removed, 'animation-addons-for-elementor'), $removed);
+		} else {
+			$message = esc_html__('Nothing to forget — every remembered taxonomy is either registered or still used by a page.', 'animation-addons-for-elementor');
+		}
+
+		if ($in_use) {
+			/* translators: %d: number of taxonomies kept because pages still use them. */
+			$message .= ' ' . sprintf(_n('%d was kept because a page still filters by it.', '%d were kept because pages still filter by them.', $in_use, 'animation-addons-for-elementor'), $in_use);
+		}
+
+		wp_send_json_success(array(
+			'message' => $message,
+			'removed' => $result['removed'],
+			'kept'    => $result['kept_in_use'],
+		));
 	}
 
 	public function notice_store()

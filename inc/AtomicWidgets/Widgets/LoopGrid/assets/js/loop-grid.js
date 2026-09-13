@@ -60,8 +60,19 @@
 		// Current Query source: the archive's query vars were captured into the
 		// config at render time — post them back so the AJAX request (which has
 		// no archive context) rebuilds the same query.
+		// The post being read, when it differs from the document the grid was
+		// saved in (a theme-builder template). Related posts relate to this one.
+		if (cfg.contextId && cfg.contextId !== cfg.postId) {
+			body.append('context_id', String(cfg.contextId));
+		}
 		if (cfg.query && cfg.query.qv && Object.keys(cfg.query.qv).length) {
 			body.append('qv', JSON.stringify(cfg.query.qv));
+		}
+		// Visitor filters the server authorised for the first render — posted
+		// back as-is so a page change stays inside the filtered set. The filter
+		// runtime (Pro) replaces cfg.filters when the visitor changes a filter.
+		if (cfg.filters && Object.keys(cfg.filters).length) {
+			body.append('filters', JSON.stringify(cfg.filters));
 		}
 		return window.fetch(cfg.ajaxUrl, { method: 'POST', body: body, credentials: 'same-origin' })
 			.then(function (r) { return r.json(); });
@@ -346,6 +357,37 @@
 		};
 
 		updatePrevNextState(pagination, ctx.current, ctx.total);
+
+		// A filter changed the result SET, so this bar is now paging through a
+		// different list: the page count is different, and every later page
+		// change has to carry the new filters or page 2 would come back from the
+		// unfiltered set. The filter runtime ships in Pro and announces itself
+		// here; with Pro absent the event never fires and nothing below runs, so
+		// free behaves exactly as it did.
+		//
+		// Contract: detail = { grid, filters, paged, maxPages }.
+		document.addEventListener('aae:loop-grid:updated', function (e) {
+			var d = (e && e.detail) || {};
+			if (d.grid && cfg.grid && d.grid !== cfg.grid) {
+				return;
+			}
+			if (d.filters) {
+				cfg.filters = d.filters;
+			}
+			if (typeof d.paged === 'number') {
+				ctx.current = d.paged;
+			}
+			if (typeof d.maxPages === 'number') {
+				ctx.total = d.maxPages;
+			}
+			rebuildNumbers(ctx.numbersEl, ctx.current, ctx.total);
+			updatePrevNextState(ctx.pagination, ctx.current, ctx.total);
+			if (ctx.loadMoreEl) {
+				// Load More hides itself on the last page; a narrower filter can
+				// put us back on a set that HAS more, so this restores it too.
+				ctx.loadMoreEl.style.display = ctx.current >= ctx.total ? 'none' : '';
+			}
+		});
 
 		pagination.addEventListener('click', function (e) {
 			// Number link.
