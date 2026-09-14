@@ -213,7 +213,7 @@ final class Render {
 			'effect'          => $effect,
 			'trigger'         => $trigger,
 			'triggerSelector' => $str( 'trigger_selector', '' ),
-			'startPosition'   => $str( 'start_position', 'top center' ),
+			'startPosition'   => $str( 'start_position', 'top 85%' ),
 			'endPosition'     => $str( 'end_position', 'bottom bottom' ),
 			'wrapper'         => $str( 'wrapper', 'default' ),
 			'startTrigger'    => $str( 'start_trigger', '' ),

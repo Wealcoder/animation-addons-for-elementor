@@ -51,6 +51,18 @@ export function modeFor(trigger) {
 }
 
 /**
+ * Modes whose trigger is certain to fire once the element reaches the
+ * viewport, so a kind can safely build its tween PAUSED at bind time and let
+ * the element sit in its start state until then. Without that the element
+ * scrolls in fully visible and only blinks out when the trigger point lands.
+ *
+ * `scrub` is absent because wireTrigger already builds its tween eagerly via
+ * buildScrubbed(). `hover` / `click` / `slide-change` are absent because their
+ * trigger may never fire, and a parked start state would then be permanent.
+ */
+export const PREHIDE_MODES = ['scroll-tied', 'in-view'];
+
+/**
  * Resolve the element a hover/click trigger should listen on.
  *
  * Rule: for click / hover, an empty Trigger Selector means the element

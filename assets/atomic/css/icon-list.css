@@ -10,3 +10,28 @@
    block guaranteed to load after base-desktop.css with matching
    `.elementor`-prefixed specificity) and AAE_A_Icon_List::get_style_depends()
    for why this stylesheet actually loads at all. */
+/* --- list-style ------------------------------------------------------------
+   The base style declares `list-style: none` and it has NEVER applied:
+   `list-style` is not a key in Elementor's atomic style schema, so the props
+   resolver drops it in silence. Found by verify-atomic-base-styles.php, which
+   resolves every declared key through the real resolver instead of trusting
+   that a valid-looking key works.
+
+   That matters here specifically because this widget renders a real <ul>, and a
+   theme's own content CSS outranks a widget's by a lot — this site's is
+   `.page-template-default .builder--page-details ul li { list-style: disc }` at
+   (0,3,1). So an icon list inside page content renders with BULLETS beside its
+   icons, and nothing in the panel can switch them off: atomic styles have no
+   descendant selector, so the <li>'s marker is decided in a stylesheet or
+   nowhere.
+
+   Armour specificity, matching what the Loop Filter family already needed
+   (0,3,1 here): every declaration only re-states what the widget always
+   intended. No !important — that would also beat the builder's own Style-panel
+   output, which must always win. */
+.elementor ul.aae-a-icon-list.e-atomic-element {
+  list-style: none;
+}
+.elementor ul.aae-a-icon-list.e-atomic-element > li {
+  list-style: none;
+}
