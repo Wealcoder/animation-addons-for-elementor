@@ -1,0 +1,28 @@
+{#
+  The wrapper carries BOTH the v3 skin classes and the v3
+  `data-animation-settings` payload.
+
+  `skin-portfolio-three` is on the element deliberately: the ported GSAP keys
+  off it exactly as the v3 JS did, and any existing site CSS written against
+  `.wcf--advance-portfolio.skin-portfolio-three` keeps applying.
+
+  The JSON comes from the root's get_animation_settings_json(), published on the
+  render context, so the attribute is identical in shape to the one
+  Skin_Portfolio_Three::render() emitted.
+#}
+{% set classes = ['wcf--advance-portfolio', 'skin-portfolio-three', 'e-con', 'e-atomic-element', base_styles.base] | merge(settings.classes | default([])) | join(' ') %}
+<div class="{{ classes }} {{ editor_classes | default('') }}"
+    data-id="{{ id }}"
+    data-element_type="{{ type }}"
+    data-e-type="{{ type }}"
+    data-interaction-id="{{ interaction_id | default('') }}"
+    data-animation-settings="{{ settings.anim_settings_json | default('') | e('html_attr') }}"
+    {% if settings._cssid is defined and settings._cssid is not empty %}
+        id="{{ settings._cssid | e('html_attr') }}"
+    {% endif %}
+    {% if settings.attributes is defined and settings.attributes is not empty %}
+        {{ settings.attributes | raw }}
+    {% endif %}
+    {{ editor_attributes | default('') | raw }}>
+    {{ children_placeholder | raw }}
+</div>

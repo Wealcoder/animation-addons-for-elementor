@@ -261,8 +261,14 @@ const focusFirstInvalid = ( form ) => {
 		details.open = true;
 		details = details.parentElement?.closest( 'details:not([open])' );
 	}
-	control.scrollIntoView( { block: 'center', behavior: 'auto' } );
-	control.focus( { preventScroll: true } );
+	// An enhanced control may not be the element the visitor sees: the PRO
+	// date picker turns the real input into type=hidden and shows its own —
+	// focusing a hidden input does nothing, silently, and scrollIntoView on
+	// it scrolls nowhere. Let the enhancement name what should receive focus.
+	// Free stays neutral: with nothing hooked the control itself is used.
+	const target = hooks.applyFilters( 'aae_form/focus_target', control, form ) || control;
+	target.scrollIntoView( { block: 'center', behavior: 'auto' } );
+	target.focus( { preventScroll: true } );
 };
 
 /* ------------------------------------------------------------------ */
