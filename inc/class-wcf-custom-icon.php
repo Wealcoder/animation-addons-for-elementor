@@ -723,7 +723,7 @@ class CustomIcons_Lite
 		}
 		if (isset($current_screen->id) && $current_screen->id == 'wcf-custom-icons') {
 			wp_enqueue_media();
-			wp_enqueue_style('wcf-addon-pro-custom-icons', WCF_ADDONS_URL . 'assets/build/modules/custom-icon/main.css', array(), WCF_ADDONS_VERSION);
+			wp_enqueue_style('wcf-addon-pro-custom-icons', WCF_ADDONS_URL . 'assets/build/modules/custom-icon/main.css', array( \WCF_ADDONS\AAE_Fonts::ensure() ), WCF_ADDONS_VERSION);
 			wp_enqueue_script('wcf-addon-pro-custom-icons', WCF_ADDONS_URL . 'assets/build/modules/custom-icon/main.js', array(
 				'react',
 				'react-dom',

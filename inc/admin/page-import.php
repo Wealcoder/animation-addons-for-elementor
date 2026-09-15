@@ -256,7 +256,7 @@ final class AAE_Admin_Page_Importer
             wp_enqueue_style(
                 'aae-page-importer-admin',
                 WCF_ADDONS_URL . 'assets/build/modules/page-import/index.css',
-                array(),
+                array( \WCF_ADDONS\AAE_Fonts::ensure() ),
                 wcf_asset_version()
             );
 

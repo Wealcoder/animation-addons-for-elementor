@@ -397,7 +397,7 @@ class WCF_Admin_Init
 		wp_enqueue_style(
 			'wcf-admin',
 			WCF_ADDONS_URL . 'assets/build/modules/dashboard/index.css',
-			array(),
+			array( \WCF_ADDONS\AAE_Fonts::ensure() ),
 			wcf_asset_version()
 		);
 

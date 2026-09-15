@@ -72,7 +72,12 @@ class AAE_A_Video_Mask extends Atomic_Element_Base {
 			'attributes' => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
 
 			// Video
-			'vm_video_link'        => String_Prop_Type::make()->default( 'https://wealcoder.com/dev/video/dancer.mp4' ),
+			// Deliberately EMPTY. This used to default to an .mp4 hosted on the
+			// developer's own server, so simply dropping the widget made every
+			// visitor's browser fetch a file from a remote host -- an asset
+			// offload, which WordPress.org does not permit. The twig already
+			// guards `is not empty`, so with no URL it renders no `src` at all.
+			'vm_video_link'        => String_Prop_Type::make()->default( '' ),
 			'vm_video_autoplay'    => Boolean_Prop_Type::make()->default( true ),
 			'vm_video_mute'        => Boolean_Prop_Type::make()->default( true ),
 			'vm_video_playsinline' => Boolean_Prop_Type::make()->default( false ),

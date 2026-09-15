@@ -768,7 +768,7 @@ class CustomCpt_Lite {
             wp_enqueue_style(
                 'wcf-addon-pro-cpt-builder',
                 WCF_ADDONS_URL . 'assets/build/modules/cpt-builder/main.css',
-                array(),
+                array( \WCF_ADDONS\AAE_Fonts::ensure() ),
                 WCF_ADDONS_VERSION
             );
 

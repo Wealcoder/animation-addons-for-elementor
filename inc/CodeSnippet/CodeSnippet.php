@@ -212,7 +212,7 @@ class CodeSnippet {
 	 */
 	public function enqueue_scripts( $hook ) {
 		if ( 'animation-addon_page_wcf-code-snippet' === $hook ) {
-			wp_enqueue_style( 'aae-code-snippet', WCF_ADDONS_URL . 'assets/css/code-snippet.min.css', null, WCF_ADDONS_VERSION, 'all' );
+			wp_enqueue_style( 'aae-code-snippet', WCF_ADDONS_URL . 'assets/css/code-snippet.min.css', array( \WCF_ADDONS\AAE_Fonts::ensure() ), WCF_ADDONS_VERSION, 'all' );
 			wp_enqueue_style( 'aae-code-snippet-ajax', WCF_ADDONS_URL . 'assets/css/code-snippet-ajax.css', null, WCF_ADDONS_VERSION, 'all' );
 			wp_enqueue_style( 'select2', WCF_ADDONS_URL . 'assets/css/select2.min.css', null, WCF_ADDONS_VERSION, 'all' );
 			wp_enqueue_style( 'codemirror-core', WCF_ADDONS_URL . 'assets/css/cs-css/codemirror.min.css', null, WCF_ADDONS_VERSION, 'all' );

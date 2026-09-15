@@ -237,8 +237,14 @@ class AAE_A_Video extends Atomic_Element_Base {
 			// createNativeAdapter and its cfg.type branch), just a bare
 			// Text_Control instead of Video_Src_Prop_Type's Media-Library
 			// picker, since there is nothing in this site's Library to pick.
+			// Deliberately EMPTY. This used to default to an .mp4 on one of the
+			// developer's own sites, which made the plugin serve a remote media
+			// file of its own accord -- an asset offload WordPress.org does not
+			// permit. The YouTube and Dailymotion defaults below are different:
+			// those are PLATFORM watch URLs, the same placeholder Elementor core
+			// itself ships (includes/widgets/video.php), not files we host.
 			'video_external_url' => String_Prop_Type::make()
-				->default( 'https://crowdytheme.com/assets/wp-content/uploads/2024/06/arolux-branding-agency-video.mp4' )
+				->default( '' )
 				->set_dependencies( $when( 'external' ) ),
 
 			'video_vimeo_url' => String_Prop_Type::make()

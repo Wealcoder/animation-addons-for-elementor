@@ -141,7 +141,7 @@ class WCF_Setup_Wizard_Init
 		wp_enqueue_style(
 			'wcf-admin',
 			WCF_ADDONS_URL . 'assets/build/modules/dashboard/wizardSetup.css',
-			array(),
+			array( \WCF_ADDONS\AAE_Fonts::ensure() ),
 			WCF_ADDONS_VERSION
 		);
 

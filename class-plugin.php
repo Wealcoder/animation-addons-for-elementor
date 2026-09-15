@@ -1181,6 +1181,15 @@ class Plugin
 
 		//require_once WCF_ADDONS_PATH . 'config.php';
 		require_once WCF_ADDONS_PATH . 'inc/helper.php';
+
+		// One class, no side effects, no hooks -- it only answers "register the
+		// bundled webfonts and tell me the handle" for the admin stylesheets
+		// that depend on them. Required unconditionally because the screens that
+		// ask for it (notices, code snippet, custom icon, CPT builder) each load
+		// through a different path, and a dependency that is not registered
+		// causes WordPress to silently skip the dependent stylesheet.
+		require_once WCF_ADDONS_PATH . 'inc/admin/class-aae-fonts.php';
+
 		if (is_admin()) {
 			if (get_option('wcf_addons_setup_wizard') !== 'complete') {
 				require_once WCF_ADDONS_PATH . 'inc/admin/setup-wizard.php';

@@ -69,7 +69,7 @@ class Notices {
 	 * @return void
 	 */
 	public function enqueue_scripts() {
-		wp_register_style( 'aae-notice', WCF_ADDONS_URL . 'assets/css/css/notice.css', array(), WCF_ADDONS_VERSION );
+		wp_register_style( 'aae-notice', WCF_ADDONS_URL . 'assets/css/css/notice.css', array( \WCF_ADDONS\AAE_Fonts::ensure() ), WCF_ADDONS_VERSION );
 		wp_register_script( 'aae-notice', WCF_ADDONS_URL . 'assets/js/js/notice.js', array( 'jquery' ), WCF_ADDONS_VERSION, true );
 	}
 
