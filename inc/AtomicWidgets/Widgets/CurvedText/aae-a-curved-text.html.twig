@@ -1,51 +1,6 @@
 {#
   AAE Curved Text — renders a plain <div>, purely decorative (no click
   behavior, no JS at all — see class-aae-a-curved-text.php's docblock).
-
-  Two ways to render the rotator, chosen by `rotator_type`:
-    - text: a curved SVG <textPath> rendered directly below. Its typography
-      (color/font family/font weight/font size) is NOT its own prop or
-      control at all — see the class docblock's "explicit, repeated
-      decision" note. It rides THIS WIDGET'S OWN root Style tab via ordinary
-      CSS inheritance instead: the root's real `base` style (a genuinely
-      editable per-instance style, since the root is a real selectable
-      element) carries `color`/`font-size`, and any Typography property set
-      there (font-family, font-weight, line-height, letter-spacing too)
-      cascades down into this <text> normally. The only thing set here is
-      `fill: currentColor` — fixed, not user-editable — which is the one
-      bridge SVG needs to turn inherited CSS `color` into visible paint
-      (SVG text paints via `fill`, not `color`).
-    - image: the Rotator Image child (a real, locked e-image, always
-      present in the tree via children_placeholder) is shown; hidden by the
-      scoped selector below when text mode is active instead, so switching
-      back and forth never loses the uploaded image.
-  The Center box (a real, locked e-div-block, always present) renders on top
-  of either and always holds BOTH the Icon (e-svg) and the Text (e-paragraph)
-  children; `center_content` chooses which one is visible the same way — a
-  scoped selector below, never removing either child — so switching back and
-  forth never loses the hidden one's settings/content.
-
-  Hidden via `visibility: hidden`, NOT `display: none` — both here and for
-  the Rotator Image's hide-in-text-mode rule above. A `display: none`
-  element collapses to a zero-size box with no real on-screen position, and
-  Elementor's editor scrolls the preview to wherever a just-selected
-  element's box reports itself as being — select a `display: none` child
-  (e.g. via the Navigator) and the canvas jumps to the top of the page
-  instead of to where that child actually is. `visibility: hidden` keeps
-  the element's real layout box (see `define_base_styles()`'s 'icon'/'text'/
-  'rotator--image' keys — each is independently self-positioned now,
-  specifically so hiding one this way never shifts its sibling), so
-  selecting a hidden child scrolls correctly and simply shows nothing.
-
-  Duration/direction ride as CSS custom properties set HERE, on the root
-  element, rather than on the SVG/Image individually — custom properties
-  inherit through the DOM, so curved-text.scss's single keyframe — reading
-  `var(--aae-ct-rot-duration, ...)` off whichever rotator is currently
-  spinning — gets the right value from this one ancestor declaration either
-  way.
-
-  The circular path's id is salted with this element's own `id` so multiple
-  Curved Text instances on one page never collide on the same `<path id>`.
 #}
 {% set classes = ['aae-a-curved-text', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') | trim %}
 {% set rotator_type = settings.rotator_type | default('image') %}
@@ -53,9 +8,6 @@
 {% set direction = (settings.rotation_direction | default('cw') == 'ccw') ? 'reverse' : 'normal' %}
 {% set text_radius = 50 - (settings.rotator_text_padding | default(8)) %}
 {% set rotator_class = type ~ '-rotator' %}
-{% set icon_class = type ~ '-icon' %}
-{% set text_class = type ~ '-text' %}
-{% set center_content = settings.center_content | default('icon') %}
 
 <div
     class="{{ classes }} {{ editor_classes | default('') }}"
@@ -76,11 +28,6 @@
             aria-hidden="true"
             viewBox="0 0 100 100"
         ><defs><path id="aae-ct-circle-{{ id }}" d="M 50,50 m -{{ text_radius }},0 a {{ text_radius }},{{ text_radius }} 0 1,1 {{ text_radius * 2 }},0 a {{ text_radius }},{{ text_radius }} 0 1,1 -{{ text_radius * 2 }},0" /></defs><text style="fill:currentColor;"><textPath href="#aae-ct-circle-{{ id }}" startOffset="0%">{{ settings.rotator_text | default('') }}</textPath></text></svg>
-    {% endif %}
-    {% if center_content == 'text' %}
-        <style>[data-id="{{ id }}"] .{{ icon_class }} { visibility: hidden; }</style>
-    {% else %}
-        <style>[data-id="{{ id }}"] .{{ text_class }} { visibility: hidden; }</style>
     {% endif %}
     {{ children_placeholder | raw }}
 </div>
