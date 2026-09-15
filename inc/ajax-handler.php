@@ -41,6 +41,25 @@ class Ajax_Handler {
 		$post_id    = isset( $_REQUEST['post_id'] ) ? absint( $_REQUEST['post_id'] ) : 0;
 		$element_id = isset( $_REQUEST['element_id'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['element_id'] ) ) : '';
 
+		if ( ! $post_id || '' === $element_id ) {
+			wp_send_json_error( 'Missing post_id or element_id', 400 );
+		}
+
+		// The nonce is printed on every public page, so it proves nothing about
+		// WHICH document this visitor may read -- `post_id` is whatever the
+		// request asked for. Without this check any visitor could name a draft,
+		// pending, private or password-protected post and receive its rendered
+		// popup content. `wcf_addons_get_widget_settings()` reads
+		// `_elementor_data` straight off the document and applies no guard of
+		// its own, so the guard belongs here, at the request boundary.
+		// Same test as `Atomic::ajax_loop_grid_page()`.
+		$post = get_post( $post_id );
+		if ( ! $post
+			|| ( 'publish' !== $post->post_status && ! current_user_can( 'read_post', $post_id ) )
+			|| post_password_required( $post ) ) {
+			wp_send_json_error( 'Access denied', 403 );
+		}
+
 		$settings = wcf_addons_get_widget_settings( $post_id, $element_id );
 
 		// Everything below renders content this plugin does not control -- an
