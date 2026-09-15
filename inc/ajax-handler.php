@@ -4,6 +4,9 @@
 namespace WCF_ADDONS;
 // phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
+use Elementor\Modules\AtomicWidgets\Styles\Atomic_Widget_Styles;
+use Elementor\Modules\AtomicWidgets\Styles\Styles_Renderer;
+use Elementor\Modules\AtomicWidgets\Utils\Utils as Atomic_Utils;
 use Elementor\Plugin;
 use WP_Query;
 
@@ -62,6 +65,36 @@ class Ajax_Handler {
 
 		$settings = wcf_addons_get_widget_settings( $post_id, $element_id );
 
+		// The SAVED document is the authority, and that is what makes this
+		// endpoint safe to serve to the public. But in the Elementor editor
+		// nothing is saved yet: the builder picks a template in the panel and
+		// this request still renders the one on disk, so the canvas keeps
+		// showing the previous popup and the change reads as doing nothing.
+		// Measured on the live editor -- panel said 3270, the response carried
+		// 2745.
+		//
+		// So a live override is accepted, and only from somebody who may EDIT
+		// this document. They can already choose any template from that same
+		// panel, so it grants no reach they did not already have. A visitor
+		// never sends it (the runtime adds it in edit mode only) and would be
+		// refused here in any case.
+		$inline_css    = '';
+		$live_template = isset( $_REQUEST['template_id'] ) ? absint( $_REQUEST['template_id'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- nonce checked above.
+
+		if ( $live_template
+			&& current_user_can( 'edit_post', $post_id )
+			&& get_post( $live_template )
+			&& current_user_can( 'read_post', $live_template ) ) {
+
+			$settings['popup_content_type']        = 'template';
+			$settings['popup_elementor_templates'] = $live_template;
+
+			// A template the page never knew was coming has no stylesheet on
+			// the page and no enqueue pass left to build one, so its CSS has
+			// to travel with the markup. Editor only -- see the helper.
+			$inline_css = self::atomic_inline_css( $live_template );
+		}
+
 		// Everything below renders content this plugin does not control -- an
 		// Elementor template and its widgets, plus every shortcode on the page
 		// -- so the close is in a finally and unwinds only to our own level.
@@ -71,6 +104,14 @@ class Ajax_Handler {
 
 		try {
 			if ( isset( $settings['popup_content_type'] ) && 'template' === $settings['popup_content_type'] ) {
+				if ( '' !== $inline_css ) {
+					printf(
+						'<style id="aae-popup-live-css-%d">%s</style>',
+						(int) $live_template,
+						$inline_css // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built by Elementor's own Styles_Renderer.
+					);
+				}
+
 				echo \Elementor\Plugin::$instance->frontend->get_builder_content( $settings['popup_elementor_templates'], true ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			} else {
 
@@ -99,6 +140,58 @@ class Ajax_Handler {
 				'widget_attr' => 'AAE Popup Content',
 			)
 		);
+	}
+
+	/**
+	 * A document's atomic element styles, rendered as inline CSS.
+	 *
+	 * Used only for the editor's live-template override above. The normal path
+	 * needs nothing like this: the saved document is known before the page
+	 * renders, so `elementor/post/render` gets the template's CSS built and
+	 * linked as an ordinary cached file, which is cheaper and cacheable. A
+	 * template chosen in the panel a second ago has none of that -- no file was
+	 * built because nothing knew it was coming, and admin-ajax has no enqueue
+	 * pass left to run.
+	 *
+	 * `get_builder_content()` does not cover it either. It forces `$with_css`
+	 * under `wp_doing_ajax()`, but what it prints is `Post_CSS`, the CLASSIC
+	 * per-document generator; a template built from V4 atomic elements keeps
+	 * its styles in the atomic pipeline, so that emits an empty `<style></style>`.
+	 * Elementor's own `Styles_Renderer` builds the real thing straight from the
+	 * document's saved element styles.
+	 *
+	 * The atomic BASE styles are deliberately not included: this only ever runs
+	 * inside the editor canvas, which re-renders them itself on every load.
+	 *
+	 * @param int $post_id Document whose styles to render.
+	 * @return string CSS, or '' when there is nothing to say.
+	 */
+	private static function atomic_inline_css( int $post_id ): string {
+		if ( ! class_exists( Styles_Renderer::class ) || ! class_exists( Atomic_Utils::class ) ) {
+			return '';
+		}
+
+		$styles = array();
+
+		Atomic_Utils::traverse_post_elements(
+			(string) $post_id,
+			static function ( $element_data ) use ( &$styles ) {
+				if ( ! empty( $element_data['styles'] ) && is_array( $element_data['styles'] ) ) {
+					$styles = array_merge( $styles, $element_data['styles'] );
+				}
+			}
+		);
+
+		if ( empty( $styles ) ) {
+			return '';
+		}
+
+		if ( class_exists( Atomic_Widget_Styles::class ) ) {
+			$styles = Atomic_Widget_Styles::get_license_based_filtered_styles( $styles );
+		}
+
+		return Styles_Renderer::make( Plugin::$instance->breakpoints->get_breakpoints_config() )
+			->render( array_values( $styles ) );
 	}
 
 	/**
