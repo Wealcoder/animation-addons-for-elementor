@@ -13,7 +13,6 @@
  * Requires at least: 		   6.6
  * Requires PHP:               7.4
  * Requires Plugins:           elementor
- * Tested up to:               7.1
  * Elementor tested up to:     4.2.4
  * Elementor Pro tested up to: 4.2.3
  */
