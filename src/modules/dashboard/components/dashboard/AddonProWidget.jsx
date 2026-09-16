@@ -36,10 +36,10 @@ const AddonProWidget = () => {
       },
 
       body: new URLSearchParams({
-        action: "save_settings_with_ajax_dashboard",
+        action: "aaeaddon_save_settings_dashboard",
         fields: JSON.stringify(result),
         nonce: WCF_ADDONS_ADMIN.nonce,
-        settings: "wcf_save_widgets",
+        settings: "aaeaddon_save_widgets",
       }),
     })
       .then((response) => {

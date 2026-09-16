@@ -2,10 +2,10 @@
 /**
  * The webfonts this plugin's admin screens use, served from this plugin.
  *
- * @package WCF_ADDONS
+ * @package Wealcoder\AnimationAddons
  */
 
-namespace WCF_ADDONS;
+namespace Wealcoder\AnimationAddons;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -24,7 +24,7 @@ defined( 'ABSPATH' ) || exit;
  * Callers add HANDLE to their own stylesheet's dependency array, so the fonts
  * load on exactly the screens that ask for them and nowhere else.
  */
-class AAE_Fonts {
+class Aaeaddon_Fonts {
 
 	const HANDLE = 'aae-fonts';
 
@@ -43,9 +43,9 @@ class AAE_Fonts {
 		if ( ! wp_style_is( self::HANDLE, 'registered' ) ) {
 			wp_register_style(
 				self::HANDLE,
-				WCF_ADDONS_URL . 'assets/fonts/aae-fonts.css',
+				AAEADDON_URL . 'assets/fonts/aae-fonts.css',
 				array(),
-				WCF_ADDONS_VERSION
+				AAEADDON_VERSION
 			);
 		}
 

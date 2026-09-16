@@ -1,7 +1,7 @@
 <?php
-namespace WCF_ADDONS\Atomic\ImageAnimation;
+namespace Wealcoder\AnimationAddons\Atomic\ImageAnimation;
 
-use WCF_ADDONS\Atomic\Bootstrap;
+use Wealcoder\AnimationAddons\Atomic\Bootstrap;
 
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;

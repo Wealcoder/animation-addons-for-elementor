@@ -1,7 +1,7 @@
 <?php
-namespace WCF_ADDONS\Atomic\ImageOverlay;
+namespace Wealcoder\AnimationAddons\Atomic\ImageOverlay;
 
-use WCF_ADDONS\Atomic\InteractionsMap;
+use Wealcoder\AnimationAddons\Atomic\InteractionsMap;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * a bare <img>.
  */
 final class Render {
-	use \WCF_ADDONS\Atomic\Traits\Responsive_Config;
+	use \Wealcoder\AnimationAddons\Atomic\Traits\Responsive_Config;
 
 	public function register(): void {
 		// `elementor/frontend/before_render` fires for widgets AND containers;

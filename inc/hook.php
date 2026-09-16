@@ -1,15 +1,12 @@
 <?php
-/**
- * @phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
- */
 if (! defined('ABSPATH')) {
     exit;
 } // Exit if accessed directly
 
 use Elementor\Plugin;
 
-if (function_exists('wcf_set_postview')) {
-   add_action('wp', 'wcf_set_postview');
+if (function_exists('aaeaddon_set_postview')) {
+   add_action('wp', 'aaeaddon_set_postview');
 }
 
 /**
@@ -20,8 +17,8 @@ if (function_exists('wcf_set_postview')) {
  * "no raw IP without opt-in" rule. Good enough to stop trivial inflation from
  * one client; it is not identity, and is not meant to be.
  */
-if (! function_exists('aae_public_counter_visitor_key')) {
-    function aae_public_counter_visitor_key()
+if (! function_exists('aaeaddon_public_counter_visitor_key')) {
+    function aaeaddon_public_counter_visitor_key()
     {
         $ip = isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])) : '';
         $ua = isset($_SERVER['HTTP_USER_AGENT']) ? sanitize_text_field(wp_unslash($_SERVER['HTTP_USER_AGENT'])) : '';
@@ -45,10 +42,10 @@ if (! function_exists('aae_public_counter_visitor_key')) {
  * @param int    $window  Seconds the vote is remembered for.
  * @return bool
  */
-if (! function_exists('aae_public_counter_throttled')) {
-    function aae_public_counter_throttled($post_id, $bucket, $window = HOUR_IN_SECONDS)
+if (! function_exists('aaeaddon_public_counter_throttled')) {
+    function aaeaddon_public_counter_throttled($post_id, $bucket, $window = HOUR_IN_SECONDS)
     {
-        $key = 'aae_pc_' . md5($post_id . '|' . $bucket . '|' . aae_public_counter_visitor_key());
+        $key = 'aae_pc_' . md5($post_id . '|' . $bucket . '|' . aaeaddon_public_counter_visitor_key());
 
         if (false !== get_transient($key)) {
             return true;
@@ -60,7 +57,8 @@ if (! function_exists('aae_public_counter_throttled')) {
     }
 }
 
-function aae_handle_aae_post_shares_count()
+if ( ! function_exists( 'aaeaddon_handle_post_shares_count' ) ) :
+function aaeaddon_handle_post_shares_count()
 {
     $nonce = isset($_REQUEST['nonce']) ? sanitize_text_field(wp_unslash($_REQUEST['nonce'])) : '';
 
@@ -103,7 +101,7 @@ function aae_handle_aae_post_shares_count()
         // One count per visitor per network per window — a repeat is a graceful
         // no-op returning the current totals, so the UI still reflects state
         // without letting one client inflate the number.
-        if (aae_public_counter_throttled($post_id, 'share:' . $social)) {
+        if (aaeaddon_public_counter_throttled($post_id, 'share:' . $social)) {
             wp_send_json_success(array(
                 'share_count' => array_sum(array_values($current_shares)),
                 'post_shares' => $current_shares,
@@ -137,13 +135,16 @@ function aae_handle_aae_post_shares_count()
     }
 
 }
-add_action('wp_ajax_aae_post_shares', 'aae_handle_aae_post_shares_count'); // For logged-in users
-add_action('wp_ajax_nopriv_aae_post_shares', 'aae_handle_aae_post_shares_count'); // For non-logged-in users
+endif;
+add_action('wp_ajax_aae_post_shares', 'aaeaddon_handle_post_shares_count'); // For logged-in users
+add_action('wp_ajax_nopriv_aae_post_shares', 'aaeaddon_handle_post_shares_count'); // For non-logged-in users
 
+if ( ! function_exists( 'aaeaddon_disable_comments_for_custom_post_type' ) ) :
 function aaeaddon_disable_comments_for_custom_post_type()
 {
     remove_post_type_support('wcf-addons-template', 'comments');
 }
+endif;
 add_action('init', 'aaeaddon_disable_comments_for_custom_post_type', 100);
 
 // Btn / BtnPro / Social Share preset interactions used to load unconditionally
@@ -205,7 +206,7 @@ if (!function_exists('aaeaddon_post_lite_reaction_ajax')) {
 
         // One reaction per visitor per post per window; a repeat returns the
         // current tally unchanged instead of inflating it.
-        if (aae_public_counter_throttled($post_id, 'reaction')) {
+        if (aaeaddon_public_counter_throttled($post_id, 'reaction')) {
             wp_send_json_success($reactions);
         }
 

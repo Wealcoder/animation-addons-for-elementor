@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\AtomicWidgets\Widgets\FlipBox;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\FlipBox;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
@@ -14,8 +14,8 @@ use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
-use WCF_ADDONS\AtomicWidgets\Widgets\FlipBox\AAE_A_Flip_Box_Front;
-use WCF_ADDONS\AtomicWidgets\Widgets\FlipBox\AAE_A_Flip_Box_Back;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\FlipBox\Aaeaddon_A_Flip_Box_Front;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\FlipBox\Aaeaddon_A_Flip_Box_Back;
 
 require_once __DIR__ . '/Parts/class-aae-a-flip-box-front.php';
 require_once __DIR__ . '/Parts/class-aae-a-flip-box-back.php';
@@ -32,7 +32,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * natively-styleable front/back containers.
  *
  * The default front/back faces are each a dedicated sub-widget
- * (AAE_A_Flip_Box_Front/_Back, Widgets/FlipBox/Parts/) carrying real
+ * (Aaeaddon_A_Flip_Box_Front/_Back, Widgets/FlipBox/Parts/) carrying real
  * background/color/radius/padding via their own define_base_styles() — a
  * reused e-flexbox can't express that (base styles are owned by the widget
  * TYPE, not a per-instance override; see the AAE Timeline sub-parts for the
@@ -41,7 +41,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * schema has no backface-visibility key and can't express a parent-hover
  * affecting a descendant's transform.
  */
-class AAE_A_Flip_Box extends Atomic_Element_Base {
+class Aaeaddon_A_Flip_Box extends Atomic_Element_Base {
 	use Has_Element_Template;
 
 	public function __construct( $data = [], $args = null ) {
@@ -123,7 +123,7 @@ class AAE_A_Flip_Box extends Atomic_Element_Base {
 				->set_label( __( 'Presets', 'animation-addons-for-elementor' ) )
 				->set_id( 'aae_presets' )
 				->set_items( [
-					AAE_A_Preset_Picker_Control::make()
+					Aaeaddon_A_Preset_Picker_Control::make()
 						->set_label( __( 'Apply Preset', 'animation-addons-for-elementor' ) )
 						->set_meta( [ 'layout' => 'custom' ] ),
 				] ),
@@ -154,20 +154,20 @@ class AAE_A_Flip_Box extends Atomic_Element_Base {
 
 	/**
 	 * Default drop-in content: a dedicated Front/Back face pair, each
-	 * seeded with its own Title/Text children — see AAE_A_Flip_Box_Front /
-	 * AAE_A_Flip_Box_Back for the styling. Presets can still replace this
+	 * seeded with its own Title/Text children — see Aaeaddon_A_Flip_Box_Front /
+	 * Aaeaddon_A_Flip_Box_Back for the styling. Presets can still replace this
 	 * subtree wholesale with plain e-flexbox faces.
 	 */
 	protected function define_default_children(): array {
 		return [
-			AAE_A_Flip_Box_Front::generate()
+			Aaeaddon_A_Flip_Box_Front::generate()
 				->editor_settings( [ 'title' => 'Front Face' ] )
-				->children( AAE_A_Flip_Box_Front::build_default_inner_children() )
+				->children( Aaeaddon_A_Flip_Box_Front::build_default_inner_children() )
 				->build(),
 
-			AAE_A_Flip_Box_Back::generate()
+			Aaeaddon_A_Flip_Box_Back::generate()
 				->editor_settings( [ 'title' => 'Back Face' ] )
-				->children( AAE_A_Flip_Box_Back::build_default_inner_children() )
+				->children( Aaeaddon_A_Flip_Box_Back::build_default_inner_children() )
 				->build(),
 		];
 	}

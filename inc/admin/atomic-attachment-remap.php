@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\Admin\Base;
+namespace Wealcoder\AnimationAddons\Admin\Base;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * URL re-download — the page-import lane's route — is impossible here: there is
  * no url to download from, and `Image_Src_Import_Transformer` returns null for
  * a url-less value, which would ERASE the image. The only correct fix is the
- * importer's own id map: WXRImporter fires `wp_import_insert_post` for every
+ * importer's own id map: AaeaddonWXRImporter fires `wp_import_insert_post` for every
  * post it creates, attachments included, with the original id alongside the new
  * one. This class records that pair per import and, when `import_end` fires,
  * rewrites every `image-attachment-id` / `video-attachment-id` prop in the
@@ -40,8 +40,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Atomic_Attachment_Remap {
 
-	const MAP_OPTION   = 'aae_import_attachment_map';
-	const POSTS_OPTION = 'aae_import_atomic_posts';
+	const MAP_OPTION   = 'aaeaddon_import_attachment_map';
+	const POSTS_OPTION = 'aaeaddon_import_atomic_posts';
 
 	/**
 	 * Every `$$type` whose `value` is an attachment id.
@@ -64,8 +64,8 @@ class Atomic_Attachment_Remap {
 	 * the obvious hook, and it fires on every chunk.
 	 */
 	public static function reset(): void {
-		delete_option( self::MAP_OPTION );
-		delete_option( self::POSTS_OPTION );
+		\Wealcoder\AnimationAddons\Compat\Key_Bridge::delete_option( self::MAP_OPTION );
+		\Wealcoder\AnimationAddons\Compat\Key_Bridge::delete_option( self::POSTS_OPTION );
 	}
 
 	/**
@@ -121,7 +121,7 @@ class Atomic_Attachment_Remap {
 		// Only the id map is spent. The post list stays until the next fresh
 		// start: Atomic_Kit_Import reads it two steps later to know which posts
 		// the design-system rewrite has to cover.
-		delete_option( self::MAP_OPTION );
+		\Wealcoder\AnimationAddons\Compat\Key_Bridge::delete_option( self::MAP_OPTION );
 
 		return $changed;
 	}

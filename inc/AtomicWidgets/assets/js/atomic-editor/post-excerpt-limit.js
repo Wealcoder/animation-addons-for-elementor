@@ -56,7 +56,7 @@ export function readExcerptLimit(id) {
 }
 
 /**
- * JS mirror of AAE_A_Post_Excerpt::trim(). Word: wp_trim_words. Char: cut at
+ * JS mirror of Aaeaddon_A_Post_Excerpt::trim(). Word: wp_trim_words. Char: cut at
  * the limit, stepping back to the last space when one sits inside the last
  * fifth of the allowance, then trailing punctuation dropped — the same
  * boundary rule as the PHP, so a canvas card ends on the same word.

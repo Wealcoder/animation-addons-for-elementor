@@ -1,8 +1,6 @@
 <?php
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons;
 
 use Elementor\Controls_Manager;
 use Elementor\Group_Control_Background;
@@ -15,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 } // Exit if accessed directly
 
-trait WCF_Slider_Trait {
+trait Aaeaddon_Slider_Trait {
 
 	/**
 	 * Register the slider controls.

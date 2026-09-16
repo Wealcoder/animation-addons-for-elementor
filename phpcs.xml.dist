@@ -19,7 +19,7 @@
 	<config name="testVersion" value="7.4-"/>
 
 	<rule ref="WordPress">
-		<!-- PSR-4 autoloaded classes (WCF_ADDONS\ => inc/) use PSR filenames. -->
+		<!-- PSR-4 autoloaded classes (Wealcoder\AnimationAddons\ => inc/) use PSR filenames. -->
 		<exclude name="WordPress.Files.FileName"/>
 		<!-- Short array syntax is used across the whole plugin. -->
 		<exclude name="Universal.Arrays.DisallowShortArraySyntax"/>

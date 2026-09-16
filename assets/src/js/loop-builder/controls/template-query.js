@@ -211,7 +211,7 @@
                     url: aaeLoopBuilderTemplateQuery.ajax_url,
                     type: 'POST',
                     data: {
-                        action: 'create_loop_template',
+                        action: 'aaeaddon_clb_create_template',
                         nonce: aaeLoopBuilderTemplateQuery.nonce,
                         template_name: 'New Loop Template',
                         source_type: sourceType,

@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\SocialShare;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SocialShare;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -39,19 +39,19 @@ use Elementor\Modules\AtomicWidgets\PropDependencies\Manager as Dependency_Manag
 require_once __DIR__ . '/Parts/class-aae-a-social-share-item-icon.php';
 require_once __DIR__ . '/Parts/class-aae-a-social-share-item-title.php';
 
-use WCF_ADDONS\AtomicWidgets\Widgets\SocialShare\AAE_A_Social_Share_Item_Icon;
-use WCF_ADDONS\AtomicWidgets\Widgets\SocialShare\AAE_A_Social_Share_Item_Title;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SocialShare\Aaeaddon_A_Social_Share_Item_Icon;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SocialShare\Aaeaddon_A_Social_Share_Item_Title;
 
 /**
  * AAE Social Share Item — a single OPEN link container (icon + label) meant
- * to live inside AAE_A_Social_Share, or stand on its own.
+ * to live inside Aaeaddon_A_Social_Share, or stand on its own.
  *
  * Unlike AAE_A_Social_Share_Main_Item (locked, vendor-enum driven, styled from
  * the parent's baked-in preset CSS), nothing here is locked and there is
  * no `vendor` prop — swap the icon, edit the label, or restyle from this
  * item's own Style panel exactly like the AAE Btn wrapper pattern.
  */
-class AAE_A_Social_Share_Item extends Atomic_Element_Base {
+class Aaeaddon_A_Social_Share_Item extends Atomic_Element_Base {
 
 	use Has_Element_Template;
 
@@ -304,7 +304,7 @@ class AAE_A_Social_Share_Item extends Atomic_Element_Base {
 	 * Prefilled icon + label pair. Exposed publicly so the parent's
 	 * define_default_children() can seed each fresh (unlocked) instance.
 	 *
-	 * Both children are AAE's own element types (AAE_A_Social_Share_Item_Icon
+	 * Both children are AAE's own element types (Aaeaddon_A_Social_Share_Item_Icon
 	 * / _Title), not native e-svg/e-paragraph — see those classes' docblocks.
 	 * Neither needs a `classes` entry: the old `aae-a-social-share-item-icon`
 	 * / `-label` hook classes existed only so something could select these
@@ -321,12 +321,12 @@ class AAE_A_Social_Share_Item extends Atomic_Element_Base {
 			] );
 		}
 
-		$icon = AAE_A_Social_Share_Item_Icon::generate()
+		$icon = Aaeaddon_A_Social_Share_Item_Icon::generate()
 			->editor_settings( [ 'title' => 'Icon' ] )
 			->settings( $svg_settings )
 			->build();
 
-		$title = AAE_A_Social_Share_Item_Title::generate()
+		$title = Aaeaddon_A_Social_Share_Item_Title::generate()
 			->editor_settings( [ 'title' => 'Title' ] )
 			->settings( [
 				'paragraph' => Html_V3_Prop_Type::generate( [
@@ -620,10 +620,10 @@ class AAE_A_Social_Share_Item extends Atomic_Element_Base {
 			return '';
 		}
 
-		if ( ! defined( 'WCF_ADDONS_URL' ) ) {
+		if ( ! defined( 'AAEADDON_URL' ) ) {
 			return '';
 		}
 
-		return WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/SocialShare/assets/svg/' . $vendor . '.svg';
+		return AAEADDON_URL . 'inc/AtomicWidgets/Widgets/SocialShare/assets/svg/' . $vendor . '.svg';
 	}
 }

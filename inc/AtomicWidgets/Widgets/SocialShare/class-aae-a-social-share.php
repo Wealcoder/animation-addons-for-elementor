@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\SocialShare;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SocialShare;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -25,10 +25,10 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 require_once __DIR__ . '/class-aae-a-social-share-item.php';
 require_once __DIR__ . '/class-aae-a-social-share-items-control.php';
 
-use WCF_ADDONS\AtomicWidgets\Widgets\SocialShare\AAE_A_Social_Share_Item;
-use WCF_ADDONS\AtomicWidgets\Widgets\SocialShare\AAE_A_Social_Share_Items_Control;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SocialShare\Aaeaddon_A_Social_Share_Item;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SocialShare\Aaeaddon_A_Social_Share_Items_Control;
 
-class AAE_A_Social_Share extends Atomic_Element_Base {
+class Aaeaddon_A_Social_Share extends Atomic_Element_Base {
 
 	use Has_Element_Template;
 
@@ -97,7 +97,7 @@ class AAE_A_Social_Share extends Atomic_Element_Base {
 				->set_label( __( 'Presets', 'animation-addons-for-elementor' ) )
 				->set_id( 'aae_presets' )
 				->set_items( [
-					AAE_A_Preset_Picker_Control::make()
+					Aaeaddon_A_Preset_Picker_Control::make()
 						->set_label( __( 'Apply Preset', 'animation-addons-for-elementor' ) )
 						->set_meta( [ 'layout' => 'custom' ] ),
 				] ),
@@ -112,7 +112,7 @@ class AAE_A_Social_Share extends Atomic_Element_Base {
 				->set_label( __( 'Items', 'animation-addons-for-elementor' ) )
 				->set_id( 'items' )
 				->set_items( [
-					AAE_A_Social_Share_Items_Control::make()
+					Aaeaddon_A_Social_Share_Items_Control::make()
 						->set_label( __( 'Items', 'animation-addons-for-elementor' ) )
 						->set_meta( [ 'layout' => 'custom' ] ),
 				] ),
@@ -160,16 +160,16 @@ class AAE_A_Social_Share extends Atomic_Element_Base {
 
 		$children = [];
 		foreach ( $defaults as $vendor => $label ) {
-			$children[] = AAE_A_Social_Share_Item::generate()
+			$children[] = Aaeaddon_A_Social_Share_Item::generate()
 				->editor_settings( [ 'title' => $label ] )
 				->settings( [
 					// btn_url deliberately left unset — it's the Custom/None
 					// field and is hidden the moment share_vendor is set;
-					// AAE_A_Social_Share_Item::resolve_share_href() auto-fills
+					// Aaeaddon_A_Social_Share_Item::resolve_share_href() auto-fills
 					// the real share link for a known vendor at render time.
 					'share_vendor' => String_Prop_Type::generate( $vendor ),
 				] )
-				->children( AAE_A_Social_Share_Item::build_default_inner_children( $vendor, $label ) )
+				->children( Aaeaddon_A_Social_Share_Item::build_default_inner_children( $vendor, $label ) )
 				->build();
 		}
 

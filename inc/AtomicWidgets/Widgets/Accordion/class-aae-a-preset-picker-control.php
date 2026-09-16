@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Accordion;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Accordion;
 
 use Elementor\Modules\AtomicWidgets\Controls\Base\Element_Control_Base;
 
@@ -21,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * with the preset's design. No props are passed from PHP — the preset list is
  * global.
  */
-class AAE_A_Preset_Picker_Control extends Element_Control_Base {
+class Aaeaddon_A_Preset_Picker_Control extends Element_Control_Base {
 
 	public function get_type(): string {
 		return 'aae-preset-picker';

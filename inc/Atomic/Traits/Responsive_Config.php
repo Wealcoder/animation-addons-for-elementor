@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\Atomic\Traits;
+namespace Wealcoder\AnimationAddons\Atomic\Traits;
 
 if (! defined('ABSPATH')) {
 	exit;

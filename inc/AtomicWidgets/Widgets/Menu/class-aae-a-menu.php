@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Menu;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Menu;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Widget_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Template;
@@ -30,13 +30,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 // required explicitly. Registering here rather than in class-atomic.php keeps
 // the widget self-contained; register() is idempotent.
 require_once __DIR__ . '/class-aae-a-menu-responsive.php';
-AAE_A_Menu_Responsive::register();
+Aaeaddon_A_Menu_Responsive::register();
 
-class AAE_A_Menu extends Atomic_Widget_Base {
+class Aaeaddon_A_Menu extends Atomic_Widget_Base {
 	use Has_Template;
 
 	/**
-	 * Default sub-menu toggle icons, relative to WCF_ADDONS_URL.
+	 * Default sub-menu toggle icons, relative to AAEADDON_URL.
 	 *
 	 * The FILENAMES are load-bearing: aae-a-menu.html.twig decides whether the
 	 * builder picked a custom icon by testing the resolved url against these
@@ -83,7 +83,7 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 		// so an existing menu renders exactly as it did. See
 		// class-aae-a-menu-responsive.php for why retyping them in place would
 		// break both saving and rendering.
-		return AAE_A_Menu_Responsive::props_schema() + [
+		return Aaeaddon_A_Menu_Responsive::props_schema() + [
 			'classes'    => Classes_Prop_Type::make()->default( [] ),
 			'attributes' => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
 
@@ -107,7 +107,7 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 			// default here, so no existing menu shifts. Unlike font_size/font_weight
 			// this one belongs to the widget rather than the Style tab: Typography
 			// there paints the whole list and cannot single out .current-menu-item.
-			'active_weight' => String_Prop_Type::make()->enum( AAE_A_Menu_Responsive::FONT_WEIGHTS )->default( '600' ),
+			'active_weight' => String_Prop_Type::make()->enum( Aaeaddon_A_Menu_Responsive::FONT_WEIGHTS )->default( '600' ),
 			// No font_size / font_weight: typography is the Style tab's job. A
 			// widget-level copy fought it and won — our stylesheet is printed
 			// AFTER Elementor's per-document CSS on purpose (see
@@ -183,9 +183,9 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 			// chevron on flyouts, +/− in Vertical) are untouched until the builder
 			// actually picks a different file. See the `tg_is_custom` note there.
 			'toggle_icon'       => Svg_Src_Prop_Type::make()
-				->default_url( WCF_ADDONS_URL . self::TOGGLE_ICON_DEFAULT ),
+				->default_url( AAEADDON_URL . self::TOGGLE_ICON_DEFAULT ),
 			'toggle_icon_open'  => Svg_Src_Prop_Type::make()
-				->default_url( WCF_ADDONS_URL . self::TOGGLE_ICON_OPEN_DEFAULT ),
+				->default_url( AAEADDON_URL . self::TOGGLE_ICON_OPEN_DEFAULT ),
 			'toggle_color'      => String_Prop_Type::make()->default( '' ),
 			'toggle_bg'         => String_Prop_Type::make()->default( '' ),
 			'toggle_hover_bg'   => String_Prop_Type::make()->default( '' ),
@@ -303,7 +303,7 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 					// CSS variable. Layout, Mobile Hamburger and Mobile Breakpoint are
 					// attribute/JS-driven and stay single-value; the reasons are in
 					// class-aae-a-menu-responsive.php's docblock.
-					Text_Control::bind_to( AAE_A_Menu_Responsive::anchor( 'layout' ) ),
+					Text_Control::bind_to( Aaeaddon_A_Menu_Responsive::anchor( 'layout' ) ),
 				Switch_Control::bind_to( 'hamburger' )
 						->set_label( __( 'Mobile Hamburger', 'animation-addons-for-elementor' ) ),
 					Number_Control::bind_to( 'breakpoint' )
@@ -334,7 +334,7 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 				->set_label( __( 'Menu Items Style', 'animation-addons-for-elementor' ) )
 				->set_id( 'items_style' )
 				->set_items( [
-					Text_Control::bind_to( AAE_A_Menu_Responsive::anchor( 'items' ) ),
+					Text_Control::bind_to( Aaeaddon_A_Menu_Responsive::anchor( 'items' ) ),
 				] ),
 
 			/**
@@ -368,7 +368,7 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 							[ 'value' => 'hover', 'label' => __( 'Hover', 'animation-addons-for-elementor' ) ],
 							[ 'value' => 'click', 'label' => __( 'Click', 'animation-addons-for-elementor' ) ],
 						] ),
-					Text_Control::bind_to( AAE_A_Menu_Responsive::anchor( 'dropdown_panel' ) ),
+					Text_Control::bind_to( Aaeaddon_A_Menu_Responsive::anchor( 'dropdown_panel' ) ),
 				] ),
 
 			Section::make()
@@ -378,7 +378,7 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 					// Row order — resting pair, then the matching hover pair, then
 					// padding -> gap -> radius, mirroring Menu Items Style — is
 					// declared in menu-sections/fields.js now.
-					Text_Control::bind_to( AAE_A_Menu_Responsive::anchor( 'dropdown_items' ) ),
+					Text_Control::bind_to( Aaeaddon_A_Menu_Responsive::anchor( 'dropdown_items' ) ),
 				] ),
 
 			Section::make()
@@ -397,7 +397,7 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 						->set_description( __( 'Optional. Falls back to the collapsed icon when you upload one here.', 'animation-addons-for-elementor' ) ),
 					// The two Icon pickers above stay single-value (media, not
 					// style); everything below them is a CSS variable.
-					Text_Control::bind_to( AAE_A_Menu_Responsive::anchor( 'toggle' ) ),
+					Text_Control::bind_to( Aaeaddon_A_Menu_Responsive::anchor( 'toggle' ) ),
 				] ),
 
 			// Split out of the old combined "Hamburger & Drawer" section. The button
@@ -412,7 +412,7 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 					// per-breakpoint — which matters more here than anywhere else on
 					// the widget: the hamburger only exists below the mobile
 					// breakpoint in the first place.
-					Text_Control::bind_to( AAE_A_Menu_Responsive::anchor( 'hamburger' ) ),
+					Text_Control::bind_to( Aaeaddon_A_Menu_Responsive::anchor( 'hamburger' ) ),
 				] ),
 
 			Section::make()
@@ -433,14 +433,14 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 					// string have no per-breakpoint meaning here. Everything that
 					// sizes or colours them follows, per breakpoint — Logo Width
 					// included, which is the field most likely to need one.
-					Text_Control::bind_to( AAE_A_Menu_Responsive::anchor( 'drawer_header' ) ),
+					Text_Control::bind_to( Aaeaddon_A_Menu_Responsive::anchor( 'drawer_header' ) ),
 				] ),
 
 			Section::make()
 				->set_label( __( 'Drawer', 'animation-addons-for-elementor' ) )
 				->set_id( 'drawer_style' )
 				->set_items( [
-					Text_Control::bind_to( AAE_A_Menu_Responsive::anchor( 'drawer' ) ),
+					Text_Control::bind_to( Aaeaddon_A_Menu_Responsive::anchor( 'drawer' ) ),
 				] ),
 
 			Section::make()
@@ -449,7 +449,7 @@ class AAE_A_Menu extends Atomic_Widget_Base {
 				->set_items( [
 					// Duration only. The two Effect selects below are data-attributes
 					// menu.js branches on, so they cannot vary by media query.
-					Text_Control::bind_to( AAE_A_Menu_Responsive::anchor( 'motion' ) ),
+					Text_Control::bind_to( Aaeaddon_A_Menu_Responsive::anchor( 'motion' ) ),
 					Select_Control::bind_to( 'drawer_animation' )
 						->set_label( __( 'Mobile Drawer Effect', 'animation-addons-for-elementor' ) )
 						->set_options( [

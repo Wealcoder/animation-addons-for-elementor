@@ -58,8 +58,8 @@ const WizFooter = ({ NavigateComponent }) => {
     }).then((response) => response.json());
 
   /*
-   * The v4 path deliberately does NOT write wcf_save_widgets /
-   * wcf_save_extensions — not even as an empty array.
+   * The v4 path deliberately does NOT write aaeaddon_save_widgets /
+   * aaeaddon_save_extensions — not even as an empty array.
    *
    * maybe_enable_used_v3_widgets() (class-animation-settings.php, admin_init
    * prio 12) only rescues a site whose v3 option has NEVER been written; an
@@ -81,10 +81,10 @@ const WizFooter = ({ NavigateComponent }) => {
     }
 
     return post({
-      action: "save_settings_with_ajax",
+      action: "aaeaddon_save_settings",
       fields: JSON.stringify(allWidgets),
       nonce: WCF_ADDONS_ADMIN.nonce,
-      settings: "wcf_save_widgets",
+      settings: "aaeaddon_save_widgets",
     });
   };
 
@@ -98,10 +98,10 @@ const WizFooter = ({ NavigateComponent }) => {
     }
 
     return post({
-      action: "save_settings_with_ajax",
+      action: "aaeaddon_save_settings",
       fields: JSON.stringify(allExtensions),
       nonce: WCF_ADDONS_ADMIN.nonce,
-      settings: "wcf_save_extensions",
+      settings: "aaeaddon_save_extensions",
     });
   };
 
@@ -117,7 +117,7 @@ const WizFooter = ({ NavigateComponent }) => {
         saveWidget();
         saveExtension();
 
-        // save_settings_with_ajax used to flip wcf_addons_setup_wizard as a
+        // aaeaddon_save_settings (was save_settings_with_ajax) used to flip aaeaddon_setup_wizard as a
         // side effect, so the v3 path got this for free. The atomic handlers
         // don't, and an unflipped flag means class-plugin.php redirects the
         // user straight back into the wizard on every admin page load.

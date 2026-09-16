@@ -46,10 +46,11 @@
 	<properties>
 		<!-- Value: replace the function, class, and variable prefixes used. Separate multiple prefixes with a comma. -->
 		<!-- The plugin ships under several established prefixes (matched as "starts with"):
-		     WCF_ADDONS namespaces/constants, and wcf_/wcf_addons/wcfaddon/aae function & hook names.
-		     Renaming these public names would break backward compatibility, so the accepted
-		     prefix list is broadened to recognize them. -->
-		<property name="prefixes" type="array" value="wcf,wcf_addons,WCF_ADDONS,wcfaddon,aae"/>
+		     the Wealcoder\AnimationAddons namespace (4.2+), the WCF_ADDONS_* constants, and
+		     wcf_/wcf_addons/wcfaddon/aae function & hook names. Everything NEW uses aaeaddon_
+		     (see CLAUDE.md "Prefix rules for new code"); the older families stay listed because
+		     renaming those public names would break backward compatibility. -->
+		<property name="prefixes" type="array" value="Wealcoder,aaeaddon,wcf,wcf_addons,WCF_ADDONS,wcfaddon,aae"/>
 	</properties>
 </rule>
 

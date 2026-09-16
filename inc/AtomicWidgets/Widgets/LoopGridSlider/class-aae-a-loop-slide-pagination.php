@@ -2,7 +2,7 @@
 /**
  * AAE Loop Slide Pagination — the Loop Grid Slider's post-paging bar.
  *
- * Subclass of the Loop Grid's AAE_A_Loop_Pagination. It reuses the entire paging
+ * Subclass of the Loop Grid's Aaeaddon_A_Loop_Pagination. It reuses the entire paging
  * engine (load method, AJAX config, edge-state stamping) but drops the Nav Wrap
  * (Prev / Next) from the seeded tree: the slider already has its OWN Prev / Next
  * ARROWS for navigating slides, so the pagination bar's own Prev/Next would be a
@@ -13,10 +13,10 @@
  * @package AnimationAddonsForElementor
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\LoopGridSlider;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGridSlider;
 
-use WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Pagination;
-use WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_LoadMore;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_A_Loop_Pagination;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_A_Loop_LoadMore;
 
 require_once __DIR__ . '/../LoopGrid/class-aae-a-loop-pagination.php';
 
@@ -28,7 +28,7 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Elem
 	return;
 }
 
-class AAE_A_Loop_Slide_Pagination extends AAE_A_Loop_Pagination {
+class Aaeaddon_A_Loop_Slide_Pagination extends Aaeaddon_A_Loop_Pagination {
 
 	public static function get_type() {
 		return 'e-aae-a-loop-slide-pagination';
@@ -47,7 +47,7 @@ class AAE_A_Loop_Slide_Pagination extends AAE_A_Loop_Pagination {
 	 */
 	protected function define_default_children() {
 		return [
-			AAE_A_Loop_LoadMore::generate()
+			Aaeaddon_A_Loop_LoadMore::generate()
 				->editor_settings( [ 'title' => 'Load More' ] )
 				->is_locked( true )
 				->build(),

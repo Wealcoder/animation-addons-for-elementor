@@ -143,7 +143,7 @@ const AUTO_PRESETS = {
     // reasonable thing for a user to export, would be indistinguishable from a
     // fresh drop and the watcher would re-apply to its own output forever
     // (the replacement gets a new id, so `handled` never catches it).
-    // AAE_A_Slider::DEFAULT_CHILD_MARKER stamps this class on every seeded
+    // Aaeaddon_A_Slider::DEFAULT_CHILD_MARKER stamps this class on every seeded
     // child; no preset carries it, so its absence is a definite "already
     // presetted".
     defaultMarker: 'aae-slider-default',

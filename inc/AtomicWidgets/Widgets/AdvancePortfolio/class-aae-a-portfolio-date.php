@@ -14,7 +14,7 @@
  * @package AnimationAddonsForElementor
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\AdvancePortfolio;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\AdvancePortfolio;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Widget_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Template;
@@ -36,7 +36,7 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Widg
 	return;
 }
 
-class AAE_A_Portfolio_Date extends Atomic_Widget_Base {
+class Aaeaddon_A_Portfolio_Date extends Atomic_Widget_Base {
 
 	use Has_Template;
 
@@ -67,7 +67,7 @@ class AAE_A_Portfolio_Date extends Atomic_Widget_Base {
 		// editor's element render does not go through it — it renders from the
 		// model, so a prop left defaulting to '' arrives empty and this element
 		// showed as a blank box in the canvas even though the frontend was
-		// correct. AAE_A_Post_Title solves the same problem the same way: it
+		// correct. Aaeaddon_A_Post_Title solves the same problem the same way: it
 		// resolves its title into the schema default (via Atomic::get_sample_post()
 		// in the editor) rather than relying on get_atomic_settings() alone.
 		//
@@ -77,8 +77,8 @@ class AAE_A_Portfolio_Date extends Atomic_Widget_Base {
 		if ( function_exists( 'get_the_date' ) ) {
 			$date = (string) get_the_date();
 		}
-		if ( '' === $date && class_exists( '\WCF_ADDONS\AtomicWidgets\Atomic' ) ) {
-			$sample = \WCF_ADDONS\AtomicWidgets\Atomic::get_sample_post();
+		if ( '' === $date && class_exists( '\Wealcoder\AnimationAddons\AtomicWidgets\Atomic' ) ) {
+			$sample = \Wealcoder\AnimationAddons\AtomicWidgets\Atomic::get_sample_post();
 			if ( $sample ) {
 				$date = (string) get_the_date( '', $sample );
 			}

@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\AtomicWidgets\Widgets\CurvedText;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\CurvedText;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -45,7 +45,7 @@ use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\AtomicWidgets\PropDependencies\Manager as Dependency_Manager;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
-class AAE_A_Curved_Text extends Atomic_Element_Base {
+class Aaeaddon_A_Curved_Text extends Atomic_Element_Base {
 
 	use Has_Element_Template;
 
@@ -363,7 +363,7 @@ class AAE_A_Curved_Text extends Atomic_Element_Base {
 				'classes' => Classes_Prop_Type::generate( [ $icon_class ] ),
 				'svg'     => Svg_Src_Prop_Type::generate( [
 					'id'  => null,
-					'url' => Url_Prop_Type::generate( WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/CurvedText/assets/icons/icon.svg' ),
+					'url' => Url_Prop_Type::generate( AAEADDON_URL . 'inc/AtomicWidgets/Widgets/CurvedText/assets/icons/icon.svg' ),
 				] ),
 			] )
 			// NOT locked, unlike every other default child here. The Icon is a

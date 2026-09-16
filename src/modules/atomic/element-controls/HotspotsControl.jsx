@@ -5,7 +5,7 @@
  * HotspotsControl — the "Hotspots" element-control for the AAE Image Hotspot.
  *
  * Registered under the type id 'aae-hotspots' (see ./index.js) and rendered by
- * the editing panel where the PHP side places an AAE_A_Hotspots_Control.
+ * the editing panel where the PHP side places an Aaeaddon_A_Hotspots_Control.
  * Mirrors AccordionItemsControl: hotspot points are DIRECT children of the
  * image-hotspot container (no intermediate "track", unlike NestedSlider's
  * slides), so the child list is read straight off the V1 container model via

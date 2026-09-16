@@ -10,7 +10,7 @@
  * @since   4.0.0
  */
 
-namespace WCF_ADDONS\AtomicWidgets;
+namespace Wealcoder\AnimationAddons\AtomicWidgets;
 
 if (! defined('ABSPATH')) {
 	exit; // Exit if accessed directly.
@@ -27,12 +27,12 @@ final class Atomic
 	/**
 	 * WordPress option name for storing atomic widget states.
 	 */
-	const OPTION_NAME = 'aae_atomic_widgets';
+	const OPTION_NAME = 'aaeaddon_atomic_widgets';
 
 	/**
 	 * WordPress option name for storing atomic extension states.
 	 */
-	const EXTENSIONS_OPTION_NAME = 'aae_atomic_extensions';
+	const EXTENSIONS_OPTION_NAME = 'aaeaddon_atomic_extensions';
 
 	/**
 	 * The user's answer to the "Elementor V4 is switched on — want AAE's atomic
@@ -48,7 +48,7 @@ final class Atomic
 	 * That is a different and far more concrete claim, and it earns being made
 	 * once. Never the reverse: a dismissal at 'usage' silences 'experiment' too.
 	 */
-	const OPTIN_OPTION_NAME = 'aae_atomic_optin';
+	const OPTIN_OPTION_NAME = 'aaeaddon_atomic_optin';
 
 	/**
 	 * Cached answer to "does this site's CONTENT use Elementor V4 elements?".
@@ -84,7 +84,7 @@ final class Atomic
 	 * let the migration switch newly-offered extensions on by itself. An undo
 	 * that leaves the site subtly different from where it started is not an undo.
 	 */
-	const UNDO_OPTION_NAME = 'aae_atomic_optin_undo';
+	const UNDO_OPTION_NAME = 'aaeaddon_atomic_optin_undo';
 
 	/**
 	 * How long the undo stays on offer.
@@ -108,7 +108,7 @@ final class Atomic
 	 * off". That ambiguity is why the old default-seeder kept re-enabling things
 	 * people had disabled. Tracking what has been offered separates the two.
 	 */
-	const EXTENSIONS_OFFERED_OPTION_NAME = 'aae_atomic_extensions_offered';
+	const EXTENSIONS_OFFERED_OPTION_NAME = 'aaeaddon_atomic_extensions_offered';
 
 	/**
 	 * Plugin version the newly-offered-extensions migration last completed for.
@@ -119,13 +119,13 @@ final class Atomic
 	 * included. The version — rather than a plain boolean — is what still lets a
 	 * plugin update re-run it when the registry gains an extension.
 	 */
-	const OFFERED_MIGRATION_OPTION_NAME = 'aae_atomic_offered_migration';
+	const OFFERED_MIGRATION_OPTION_NAME = 'aaeaddon_atomic_offered_migration';
 
 	/**
 	 * Marker for the one-time copy of the v3 admin-feature toggles into the
 	 * atomic extension option. See backfill_v3_admin_extensions().
 	 */
-	const V3_ADMIN_BACKFILL_OPTION_NAME = 'aae_atomic_v3_admin_backfill';
+	const V3_ADMIN_BACKFILL_OPTION_NAME = 'aaeaddon_atomic_v3_admin_backfill';
 
 	/**
 	 * Admin-feature extensions that exist in BOTH dashboards.
@@ -499,7 +499,7 @@ final class Atomic
 	 * Marker recording that the FORMERLY_FORCED_WIDGETS backfill has run, so a
 	 * later deliberate switch-off is never undone on the next page load.
 	 */
-	const FORCED_BACKFILL_OPTION_NAME = 'aae_atomic_widgets_forced_backfill';
+	const FORCED_BACKFILL_OPTION_NAME = 'aaeaddon_atomic_widgets_forced_backfill';
 
 	/**
 	 * Maps every purely-internal child widget (`is_internal => true` in
@@ -1159,7 +1159,7 @@ final class Atomic
 				'label'        => 'Advanced Portfolio',
 				'description'  => 'Post/project grid with a section title. Atomic port of the Pro Advanced Portfolio widget: its Portfolio Three skin is the seeded shape, and the other skins ship as presets.',
 				'icon'         => 'eicon-gallery-grid',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\AdvancePortfolio\AAE_A_Advance_Portfolio',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\AdvancePortfolio\Aaeaddon_A_Advance_Portfolio',
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
@@ -1181,7 +1181,7 @@ final class Atomic
 			'aae-a-portfolio-title' => [
 				'is_internal'  => true,
 				'label'        => 'Portfolio Section Title',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\AdvancePortfolio\AAE_A_Portfolio_Title',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\AdvancePortfolio\Aaeaddon_A_Portfolio_Title',
 				'icon'         => 'eicon-heading',
 				'keywords'     => [ 'portfolio', 'section', 'title' ],
 				'hide_from_panel' => true,
@@ -1189,7 +1189,7 @@ final class Atomic
 			'aae-a-portfolio-list' => [
 				'is_internal'  => true,
 				'label'        => 'Portfolio Posts List',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\AdvancePortfolio\AAE_A_Portfolio_List',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\AdvancePortfolio\Aaeaddon_A_Portfolio_List',
 				'icon'         => 'eicon-gallery-grid',
 				'keywords'     => [ 'portfolio', 'list', 'grid' ],
 				'hide_from_panel' => true,
@@ -1198,7 +1198,7 @@ final class Atomic
 				'is_internal'  => true,
 				'label'        => 'Portfolio Item',
 				'description'  => 'Repeats once per queried post. Reads the query the Advanced Portfolio root publishes on the Render_Context stack.',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\AdvancePortfolio\AAE_A_Portfolio_Item',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\AdvancePortfolio\Aaeaddon_A_Portfolio_Item',
 				'icon'         => 'eicon-post',
 				'keywords'     => [ 'portfolio', 'item', 'post' ],
 				'hide_from_panel' => true,
@@ -1206,7 +1206,7 @@ final class Atomic
 			'aae-a-portfolio-content' => [
 				'is_internal'  => true,
 				'label'        => 'Portfolio Content',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\AdvancePortfolio\AAE_A_Portfolio_Content',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\AdvancePortfolio\Aaeaddon_A_Portfolio_Content',
 				'icon'         => 'eicon-text-align-left',
 				'keywords'     => [ 'portfolio', 'content' ],
 				'hide_from_panel' => true,
@@ -1214,7 +1214,7 @@ final class Atomic
 			'aae-a-portfolio-date' => [
 				'is_internal'  => true,
 				'label'        => 'Portfolio Date',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\AdvancePortfolio\AAE_A_Portfolio_Date',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\AdvancePortfolio\Aaeaddon_A_Portfolio_Date',
 				'icon'         => 'eicon-calendar',
 				'keywords'     => [ 'portfolio', 'date' ],
 				'hide_from_panel' => true,
@@ -1225,7 +1225,7 @@ final class Atomic
 				'label'        => 'Loop Item',
 				'description'  => 'Container widget for Loop Grid items with default flex column layout.',
 				'icon'         => 'eicon-container',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Item',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_A_Loop_Item',
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
@@ -1248,7 +1248,7 @@ final class Atomic
 			'aae-a-loop-layout' => [
 				'is_internal'  => true,
 				'label'        => 'Loop Layout',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Layout',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_A_Loop_Layout',
 				'icon'         => 'eicon-loop-builder',
 				'keywords'     => [ 'loop', 'layout' ],
 				'hide_from_panel' => true,
@@ -1256,7 +1256,7 @@ final class Atomic
 			'aae-a-loop-pagination' => [
 				'is_internal'  => true,
 				'label'        => 'Loop Pagination',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Pagination',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_A_Loop_Pagination',
 				'icon'         => 'eicon-ellipsis-h',
 				'keywords'     => [ 'loop', 'pagination' ],
 				'hide_from_panel' => true,
@@ -1264,7 +1264,7 @@ final class Atomic
 			'aae-a-loop-prev' => [
 				'is_internal'  => true,
 				'label'        => 'Loop Previous',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Prev',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_A_Loop_Prev',
 				'icon'         => 'eicon-chevron-left',
 				'keywords'     => [ 'loop', 'prev', 'pagination' ],
 				'hide_from_panel' => true,
@@ -1272,7 +1272,7 @@ final class Atomic
 			'aae-a-loop-next' => [
 				'is_internal'  => true,
 				'label'        => 'Loop Next',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Next',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_A_Loop_Next',
 				'icon'         => 'eicon-chevron-right',
 				'keywords'     => [ 'loop', 'next', 'pagination' ],
 				'hide_from_panel' => true,
@@ -1280,7 +1280,7 @@ final class Atomic
 			'aae-a-loop-numbers' => [
 				'is_internal'  => true,
 				'label'        => 'Loop Page Numbers',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Numbers',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_A_Loop_Numbers',
 				'icon'         => 'eicon-number-field',
 				'keywords'     => [ 'loop', 'numbers', 'pagination' ],
 				'hide_from_panel' => true,
@@ -1288,7 +1288,7 @@ final class Atomic
 			'aae-a-loop-number' => [
 				'is_internal'  => true,
 				'label'        => 'Loop Page Number',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Number',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_A_Loop_Number',
 				'icon'         => 'eicon-number-field',
 				'keywords'     => [ 'loop', 'number', 'pagination' ],
 				'hide_from_panel' => true,
@@ -1296,7 +1296,7 @@ final class Atomic
 			'aae-a-loop-loadmore' => [
 				'is_internal'  => true,
 				'label'        => 'Loop Load More',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_LoadMore',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_A_Loop_LoadMore',
 				'icon'         => 'eicon-plus-circle',
 				'keywords'     => [ 'loop', 'load more', 'pagination' ],
 				'hide_from_panel' => true,
@@ -1304,7 +1304,7 @@ final class Atomic
 			'aae-a-loop-arrow' => [
 				'is_internal'  => true,
 				'label'        => 'Loop Arrow',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Arrow',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_A_Loop_Arrow',
 				'icon'         => 'eicon-chevron-right',
 				'keywords'     => [ 'loop', 'arrow', 'pagination' ],
 				'hide_from_panel' => true,
@@ -1312,7 +1312,7 @@ final class Atomic
 			'aae-a-loop-nav-wrap' => [
 				'is_internal'  => true,
 				'label'        => 'Loop Nav',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Nav_Wrap',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_A_Loop_Nav_Wrap',
 				'icon'         => 'eicon-navigation-horizontal',
 				'keywords'     => [ 'loop', 'nav', 'pagination' ],
 				'hide_from_panel' => true,
@@ -1322,7 +1322,7 @@ final class Atomic
 				'label'        => 'Search Form',
 				'description'  => 'Composite Ajax search form (inline / dropdown / fullscreen) with category & date filters — every part is a styleable atomic element.',
 				'icon'         => 'eicon-search',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Form',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SearchForm\Aaeaddon_A_Search_Form',
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
@@ -1336,7 +1336,7 @@ final class Atomic
 			'aae-a-search-toggle' => [
 				'is_internal'  => true,
 				'label'        => 'Search Toggle',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Toggle',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SearchForm\Aaeaddon_A_Search_Toggle',
 				'icon'         => 'eicon-search',
 				'keywords'     => [ 'search', 'toggle' ],
 				'hide_from_panel' => true,
@@ -1344,7 +1344,7 @@ final class Atomic
 			'aae-a-search-toggle-open' => [
 				'is_internal'  => true,
 				'label'        => 'Open Icon',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Toggle_Open',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SearchForm\Aaeaddon_A_Search_Toggle_Open',
 				'icon'         => 'eicon-search',
 				'keywords'     => [ 'search', 'toggle', 'icon' ],
 				'hide_from_panel' => true,
@@ -1352,7 +1352,7 @@ final class Atomic
 			'aae-a-search-toggle-close' => [
 				'is_internal'  => true,
 				'label'        => 'Close Icon',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Toggle_Close',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SearchForm\Aaeaddon_A_Search_Toggle_Close',
 				'icon'         => 'eicon-close',
 				'keywords'     => [ 'search', 'toggle', 'icon', 'close' ],
 				'hide_from_panel' => true,
@@ -1360,7 +1360,7 @@ final class Atomic
 			'aae-a-search-panel' => [
 				'is_internal'  => true,
 				'label'        => 'Search Panel',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Panel',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SearchForm\Aaeaddon_A_Search_Panel',
 				'icon'         => 'eicon-container',
 				'keywords'     => [ 'search', 'panel' ],
 				'hide_from_panel' => true,
@@ -1368,7 +1368,7 @@ final class Atomic
 			'aae-a-search-field' => [
 				'is_internal'  => true,
 				'label'        => 'Search Field',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Field',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SearchForm\Aaeaddon_A_Search_Field',
 				'icon'         => 'eicon-form-horizontal',
 				'keywords'     => [ 'search', 'field', 'form' ],
 				'hide_from_panel' => true,
@@ -1376,7 +1376,7 @@ final class Atomic
 			'aae-a-search-input' => [
 				'is_internal'  => true,
 				'label'        => 'Search Input',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Input',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SearchForm\Aaeaddon_A_Search_Input',
 				'icon'         => 'eicon-form-horizontal',
 				'keywords'     => [ 'search', 'input' ],
 				'hide_from_panel' => true,
@@ -1384,7 +1384,7 @@ final class Atomic
 			'aae-a-search-filter-date' => [
 				'is_internal'  => true,
 				'label'        => 'Date Filter',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Filter_Date',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SearchForm\Aaeaddon_A_Search_Filter_Date',
 				'icon'         => 'eicon-calendar',
 				'keywords'     => [ 'search', 'filter', 'date' ],
 				'hide_from_panel' => true,
@@ -1392,7 +1392,7 @@ final class Atomic
 			'aae-a-search-filter-category' => [
 				'is_internal'  => true,
 				'label'        => 'Category Filter',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Filter_Category',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SearchForm\Aaeaddon_A_Search_Filter_Category',
 				'icon'         => 'eicon-folder',
 				'keywords'     => [ 'search', 'filter', 'category' ],
 				'hide_from_panel' => true,
@@ -1400,7 +1400,7 @@ final class Atomic
 			'aae-a-search-submit' => [
 				'is_internal'  => true,
 				'label'        => 'Search Submit',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Submit',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SearchForm\Aaeaddon_A_Search_Submit',
 				'icon'         => 'eicon-button',
 				'keywords'     => [ 'search', 'submit', 'button' ],
 				'hide_from_panel' => true,
@@ -1408,7 +1408,7 @@ final class Atomic
 			'aae-a-search-results' => [
 				'is_internal'  => true,
 				'label'        => 'Search Results',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Results',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SearchForm\Aaeaddon_A_Search_Results',
 				'icon'         => 'eicon-post-list',
 				'keywords'     => [ 'search', 'results', 'ajax' ],
 				'hide_from_panel' => true,
@@ -1498,7 +1498,7 @@ final class Atomic
 			'aae-a-loop-slide-track' => [
 				'is_internal'  => true,
 				'label'        => 'Slider Track',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGridSlider\AAE_A_Loop_Slide_Track',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGridSlider\Aaeaddon_A_Loop_Slide_Track',
 				'icon'         => 'eicon-slider-push',
 				'keywords'     => [ 'loop', 'slider', 'track' ],
 				'hide_from_panel' => true,
@@ -1506,7 +1506,7 @@ final class Atomic
 			'aae-a-loop-slide-item' => [
 				'is_internal'  => true,
 				'label'        => 'Loop Slide Item',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGridSlider\AAE_A_Loop_Slide_Item',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGridSlider\Aaeaddon_A_Loop_Slide_Item',
 				'icon'         => 'eicon-container',
 				'keywords'     => [ 'loop', 'slide', 'item' ],
 				'hide_from_panel' => true,
@@ -1514,7 +1514,7 @@ final class Atomic
 			'aae-a-loop-slide-pagination' => [
 				'is_internal'  => true,
 				'label'        => 'Slider Pagination',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\LoopGridSlider\AAE_A_Loop_Slide_Pagination',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGridSlider\Aaeaddon_A_Loop_Slide_Pagination',
 				'icon'         => 'eicon-ellipsis-h',
 				'keywords'     => [ 'loop', 'slider', 'pagination' ],
 				'hide_from_panel' => true,
@@ -1546,7 +1546,7 @@ final class Atomic
 			'aae-a-post-pagination-prev' => [
 				'is_internal'  => true,
 				'label'        => 'Previous Post',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Prev',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\PostPagination\Aaeaddon_A_Post_Pagination_Prev',
 				'icon'         => 'eicon-chevron-left',
 				'keywords'     => [ 'post', 'nav', 'prev' ],
 				'hide_from_panel' => true,
@@ -1555,7 +1555,7 @@ final class Atomic
 			'aae-a-post-pagination-next' => [
 				'is_internal'  => true,
 				'label'        => 'Next Post',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Next',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\PostPagination\Aaeaddon_A_Post_Pagination_Next',
 				'icon'         => 'eicon-chevron-right',
 				'keywords'     => [ 'post', 'nav', 'next' ],
 				'hide_from_panel' => true,
@@ -1564,7 +1564,7 @@ final class Atomic
 			'aae-a-post-pagination-preview' => [
 				'is_internal'  => true,
 				'label'        => 'Hover Preview Card',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\PostPagination\Aaeaddon_A_Post_Pagination_Preview',
 				'icon'         => 'eicon-post-navigation',
 				'keywords'     => [ 'post', 'preview', 'hover', 'card' ],
 				'hide_from_panel' => true,
@@ -1573,7 +1573,7 @@ final class Atomic
 			'aae-a-post-pagination-preview-image' => [
 				'is_internal'  => true,
 				'label'        => 'Thumbnail',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Image',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\PostPagination\Aaeaddon_A_Post_Pagination_Preview_Image',
 				'icon'         => 'eicon-image',
 				'keywords'     => [ 'post', 'pagination', 'preview', 'thumbnail', 'image' ],
 				'hide_from_panel' => true,
@@ -1582,7 +1582,7 @@ final class Atomic
 			'aae-a-post-pagination-preview-category' => [
 				'is_internal'  => true,
 				'label'        => 'Category',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Category',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\PostPagination\Aaeaddon_A_Post_Pagination_Preview_Category',
 				'icon'         => 'eicon-tags',
 				'keywords'     => [ 'post', 'pagination', 'preview', 'category' ],
 				'hide_from_panel' => true,
@@ -1591,7 +1591,7 @@ final class Atomic
 			'aae-a-post-pagination-preview-title' => [
 				'is_internal'  => true,
 				'label'        => 'Title',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Title',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\PostPagination\Aaeaddon_A_Post_Pagination_Preview_Title',
 				'icon'         => 'eicon-t-letter',
 				'keywords'     => [ 'post', 'pagination', 'preview', 'title' ],
 				'hide_from_panel' => true,
@@ -1600,7 +1600,7 @@ final class Atomic
 			'aae-a-post-pagination-preview-date' => [
 				'is_internal'  => true,
 				'label'        => 'Date',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Date',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\PostPagination\Aaeaddon_A_Post_Pagination_Preview_Date',
 				'icon'         => 'eicon-calendar',
 				'keywords'     => [ 'post', 'pagination', 'preview', 'date' ],
 				'hide_from_panel' => true,
@@ -1609,7 +1609,7 @@ final class Atomic
 			'aae-a-post-pagination-preview-author' => [
 				'is_internal'  => true,
 				'label'        => 'Author',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Author',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\PostPagination\Aaeaddon_A_Post_Pagination_Preview_Author',
 				'icon'         => 'eicon-user-circle-o',
 				'keywords'     => [ 'post', 'pagination', 'preview', 'author' ],
 				'hide_from_panel' => true,
@@ -1618,7 +1618,7 @@ final class Atomic
 			'aae-a-post-pagination-preview-excerpt' => [
 				'is_internal'  => true,
 				'label'        => 'Excerpt',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Excerpt',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\PostPagination\Aaeaddon_A_Post_Pagination_Preview_Excerpt',
 				'icon'         => 'eicon-text-align-left',
 				'keywords'     => [ 'post', 'pagination', 'preview', 'excerpt' ],
 				'hide_from_panel' => true,
@@ -1659,7 +1659,7 @@ final class Atomic
 			'aae-a-comment-list' => [
 				'is_internal'  => true,
 				'label'        => 'Comment List',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\Comments\AAE_A_Comment_List',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Comments\AAE_A_Comment_List',
 				'icon'         => 'eicon-comments',
 				'keywords'     => [ 'comment', 'list' ],
 				'hide_from_panel' => true,
@@ -1670,7 +1670,7 @@ final class Atomic
 				'label'        => 'Comment Item',
 				'description'  => 'Container widget for Post Comments items with default flex column layout.',
 				'icon'         => 'eicon-container',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\Comments\AAE_A_Comment_Item',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Comments\AAE_A_Comment_Item',
 				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
@@ -1827,7 +1827,7 @@ final class Atomic
 
 			'aae-a-slider' => [
 				'label'        => 'Nested Slider',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slider',
 				'keywords'     => ['atomic', 'slider', 'carousel'],
 				'icon'         => 'eicon-slider-push',
 				'is_pro'       => false,
@@ -1843,7 +1843,7 @@ final class Atomic
 				'is_internal'  => true,
 				'label'        => 'Slide (Internal)',
 				'description'  => 'Internal child container for Nested Slider.',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slide',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slide',
 				'keywords'     => ['atomic', 'slide', 'internal'],
 				'icon'         => 'eicon-slide',
 				'hide_from_panel' => true,
@@ -1851,7 +1851,7 @@ final class Atomic
 			'aae-a-slider-track' => [
 				'is_internal'  => true,
 				'label'        => 'Slider Track',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Track',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slider_Track',
 				'keywords'     => ['atomic', 'slider', 'track'],
 				'icon'         => 'eicon-slider-push',
 				'hide_from_panel' => true,
@@ -1859,7 +1859,7 @@ final class Atomic
 			'aae-a-slider-nav-prev' => [
 				'is_internal'  => true,
 				'label'        => 'Slider Prev Nav',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Nav_Prev',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slider_Nav_Prev',
 				'keywords'     => ['atomic', 'slider', 'navigator', 'prev'],
 				'icon'         => 'eicon-chevron-left',
 				'hide_from_panel' => true,
@@ -1867,7 +1867,7 @@ final class Atomic
 			'aae-a-slider-nav-next' => [
 				'is_internal'  => true,
 				'label'        => 'Slider Next Nav',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Nav_Next',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slider_Nav_Next',
 				'keywords'     => ['atomic', 'slider', 'navigator', 'next'],
 				'icon'         => 'eicon-chevron-right',
 				'hide_from_panel' => true,
@@ -1875,7 +1875,7 @@ final class Atomic
 			'aae-a-slider-pagination' => [
 				'is_internal'  => true,
 				'label'        => 'Slider Pagination',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Pagination',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slider_Pagination',
 				'keywords'     => ['atomic', 'slider', 'pagination', 'dots'],
 				'icon'         => 'eicon-ellipsis-h',
 				'hide_from_panel' => true,
@@ -1889,7 +1889,7 @@ final class Atomic
 			'aae-a-slider-dot' => [
 				'is_internal'  => true,
 				'label'        => 'Slider Dot',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Dot',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slider_Dot',
 				'keywords'     => ['atomic', 'slider', 'dot', 'bullet'],
 				'icon'         => 'eicon-dot-circle-o',
 				'hide_from_panel' => true,
@@ -1898,7 +1898,7 @@ final class Atomic
 			'aae-a-slider-indicators' => [
 				'is_internal'  => true,
 				'label'        => 'Slider Indicators',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Indicators',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slider_Indicators',
 				'keywords'     => ['atomic', 'slider', 'indicators'],
 				'icon'         => 'eicon-ellipsis-h',
 				'hide_from_panel' => true,
@@ -1907,7 +1907,7 @@ final class Atomic
 			'aae-a-slider-current' => [
 				'is_internal'  => true,
 				'label'        => 'Slider Current Index',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Current',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slider_Current',
 				'keywords'     => ['atomic', 'slider', 'current', 'index'],
 				'icon'         => 'eicon-number-field',
 				'hide_from_panel' => true,
@@ -1916,7 +1916,7 @@ final class Atomic
 			'aae-a-slider-total' => [
 				'is_internal'  => true,
 				'label'        => 'Slider Total',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Total',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slider_Total',
 				'keywords'     => ['atomic', 'slider', 'total', 'count'],
 				'icon'         => 'eicon-number-field',
 				'hide_from_panel' => true,
@@ -1925,7 +1925,7 @@ final class Atomic
 			'aae-a-slider-percentage' => [
 				'is_internal'  => true,
 				'label'        => 'Slider Percentage',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Percentage',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slider_Percentage',
 				'keywords'     => ['atomic', 'slider', 'percentage', 'progress'],
 				'icon'         => 'eicon-number-field',
 				'hide_from_panel' => true,
@@ -1934,7 +1934,7 @@ final class Atomic
 			'aae-a-slider-progress' => [
 				'is_internal'  => true,
 				'label'        => 'Slider Progress',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Progress',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slider_Progress',
 				'keywords'     => ['atomic', 'slider', 'progress', 'bar'],
 				'icon'         => 'eicon-skill-bar',
 				'hide_from_panel' => true,
@@ -1943,7 +1943,7 @@ final class Atomic
 			'aae-a-slider-progress-fill' => [
 				'is_internal'  => true,
 				'label'        => 'Slider Progress Fill',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Progress_Fill',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slider_Progress_Fill',
 				'keywords'     => ['atomic', 'slider', 'progress', 'fill'],
 				'icon'         => 'eicon-skill-bar',
 				'hide_from_panel' => true,
@@ -1952,7 +1952,7 @@ final class Atomic
 			'aae-a-slider-counter' => [
 				'is_internal'  => true,
 				'label'        => 'Slider Counter',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Counter',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slider_Counter',
 				'keywords'     => ['atomic', 'slider', 'counter'],
 				'icon'         => 'eicon-counter',
 				'hide_from_panel' => true,
@@ -1961,7 +1961,7 @@ final class Atomic
 			'aae-a-slider-divider' => [
 				'is_internal'  => true,
 				'label'        => 'Slider Divider',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Divider',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slider_Divider',
 				'keywords'     => ['atomic', 'slider', 'divider', 'separator'],
 				'icon'         => 'eicon-divider',
 				'hide_from_panel' => true,
@@ -3056,7 +3056,7 @@ final class Atomic
 			'aae-a-nav-sub-item' => [
 				'is_internal'  => true,
 				'label'        => 'Nav Sub Item',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\Nav\AAE_A_Nav_Sub_Item',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Nav\Aaeaddon_A_Nav_Sub_Item',
 				'keywords'     => [ 'nav', 'submenu', 'dropdown', 'internal' ],
 				'icon'         => 'eicon-nav-menu',
 				'hide_from_panel' => true,
@@ -3065,7 +3065,7 @@ final class Atomic
 			'aae-a-mobile-nav' => [
 				'is_internal'  => true,
 				'label'        => 'Mobile Nav',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\Nav\AAE_A_Mobile_Nav',
+				'class_name'   => 'Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Nav\Aaeaddon_A_Mobile_Nav',
 				'keywords'     => [ 'nav', 'mobile', 'responsive', 'internal' ],
 				'icon'         => 'eicon-menu-bar',
 				'hide_from_panel' => true,
@@ -3843,7 +3843,7 @@ final class Atomic
 			 * that works: class-plugin.php::include_files() gates the require of
 			 * inc/class-wcf-template-library.php on it, which in turn is what
 			 * defines Library_Source and therefore satisfies the two
-			 * class_exists('\WCF_ADDONS\Library_Source') checks that register the
+			 * class_exists('\Wealcoder\AnimationAddons\Library_Source') checks that register the
 			 * editor script and the modal's Underscore templates.
 			 *
 			 * `default` is false on purpose. Unlike the Pro AtomicV4 modules
@@ -3999,7 +3999,7 @@ final class Atomic
 		// Import-time data-loss guard, the V4 twin of
 		// Animation_Settings::maybe_enable_used_v3_widgets(): switch on every atomic
 		// widget/extension the content that just arrived uses. `import_end` is fired
-		// once by WXRImporter when a content file has been fully imported; the
+		// once by AaeaddonWXRImporter when a content file has been fully imported; the
 		// starter-template step hook is the belt for a run that ends there without
 		// a WXR pass. Both are idempotent (one LIKE query, a no-op once enabled).
 		add_action('import_end', [$this, 'enable_used_atomic_after_import']);
@@ -4015,7 +4015,7 @@ final class Atomic
 		// register is exactly what Pro_Promotion advertises. Hand-required — the
 		// PSR-4 map expects a class-named file, and this one follows the
 		// class-*.php convention its neighbours use.
-		require_once WCF_ADDONS_PATH . 'inc/AtomicWidgets/class-pro-promotion.php';
+		require_once AAEADDON_PATH . 'inc/AtomicWidgets/class-pro-promotion.php';
 		(new Pro_Promotion())->register();
 
 		// Advanced Heading's `content` prop changed shape (string → html-v3) on
@@ -4024,7 +4024,7 @@ final class Atomic
 		// off, or turning it off and on again is enough to erase every heading
 		// on the site the next time a page is saved. See the class docblock.
 		require_once __DIR__ . '/Widgets/AdvancedHeading/class-aae-advanced-heading-migration.php';
-		\WCF_ADDONS\AtomicWidgets\Widgets\AdvancedHeading\AAE_Advanced_Heading_Migration::register();
+		\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\AdvancedHeading\Aaeaddon_Advanced_Heading_Migration::register();
 
 		// A Mobile Nav is a SIBLING of its Nav, so Elementor never cascade-deletes
 		// it. The editor sweeps are best-effort JS; this is the save-time belt that
@@ -4032,12 +4032,12 @@ final class Atomic
 		// unconditionally for the same reason as the migration above — the guard
 		// must hold even while the widget is switched off.
 		require_once __DIR__ . '/Widgets/Nav/class-aae-a-nav-companion-sweep.php';
-		\WCF_ADDONS\AtomicWidgets\Widgets\Nav\AAE_A_Nav_Companion_Sweep::register();
+		\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Nav\Aaeaddon_A_Nav_Companion_Sweep::register();
 
 		// Rewrites saved pages when a WP menu changes, so an imported Nav updates on
 		// the FRONTEND without anyone opening Elementor.
 		require_once __DIR__ . '/Widgets/Nav/class-aae-a-nav-menu-sync.php';
-		\WCF_ADDONS\AtomicWidgets\Widgets\Nav\AAE_A_Nav_Menu_Sync::register();
+		\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Nav\Aaeaddon_A_Nav_Menu_Sync::register();
 
 		// Panel grouping: AAE's atomic widgets otherwise inherit Elementor's
 		// generic "Atomic Elements" (v4-elements) category and all land in one
@@ -4132,7 +4132,7 @@ final class Atomic
 				return $clauses;
 			}
 			self::load_loop_grid_class();
-			return \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\Loop_Query_Woo::posts_clauses($clauses, $query);
+			return \Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Loop_Query_Woo::posts_clauses($clauses, $query);
 		}, 10, 2);
 
 		// AAE Post Pagination: invalidate the cached ordered-id lists for a post
@@ -4380,7 +4380,7 @@ final class Atomic
 			return;
 		}
 
-		$legacy  = get_option('wcf_save_extensions');
+		$legacy  = get_option('aaeaddon_save_extensions');
 		$legacy  = is_array($legacy) ? $legacy : [];
 		$changed = false;
 
@@ -4428,7 +4428,7 @@ final class Atomic
 		// is the precise axis the wizard bug lived on; it would also break the
 		// documented "must run AFTER the migration" ordering with
 		// backfill_v3_admin_extensions().
-		if (WCF_ADDONS_VERSION === get_option(self::OFFERED_MIGRATION_OPTION_NAME)) {
+		if (AAEADDON_VERSION === get_option(self::OFFERED_MIGRATION_OPTION_NAME)) {
 			return;
 		}
 
@@ -4456,7 +4456,7 @@ final class Atomic
 
 		// Stamped only after the work above completed, so an interrupted request
 		// re-runs rather than recording a migration that never finished.
-		update_option(self::OFFERED_MIGRATION_OPTION_NAME, WCF_ADDONS_VERSION);
+		update_option(self::OFFERED_MIGRATION_OPTION_NAME, AAEADDON_VERSION);
 	}
 
 	/* =====================================================================
@@ -4471,7 +4471,7 @@ final class Atomic
 	 * register_widget_definitions()).
 	 *
 	 *   'aae-a-<slug>' => [
-	 *       'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\<PascalName>\AAE_A_<PascalSlug>',
+	 *       'class'         => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\<PascalName>\AAE_A_<PascalSlug>',
 	 *       'file'          => 'Widgets/<PascalName>/class-aae-a-<slug>.php',
 	 *       'script_handle' => 'aae-a-<slug>-js',
 	 *       'script_path'   => '/assets/atomic/js/<slug>.js',
@@ -4575,91 +4575,91 @@ final class Atomic
 			// Pro plugin registers it AND the `wcf_save_extensions` option is set,
 			// which made a GSAP-driven counter fire on some pages and not others.
 			'aae-a-counter' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Counter\AAE_A_Counter',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Counter\Aaeaddon_A_Counter',
 				'file' => 'Widgets/Counter/class-aae-a-counter.php',
 				'script_handle' => 'aae-a-counter-js',
 				'script_path' => '/assets/atomic/js/counter.js',
 				'has_script' => true,
 			],
 			'aae-a-slider' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slider',
 				'file' => 'Widgets/NestedSlider/class-aae-a-slider.php',				
 				'style_handle' => 'aae-a-slider-css',
 				'style_path' => '/assets/atomic/css/nestedslider.css',
 				'has_script' => false,
 			],
 			'aae-a-slide' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slide',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slide',
 				'file' => 'Widgets/NestedSlider/class-aae-a-slide.php',
 				'has_script' => false,
 			],
 			'aae-a-slider-track' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Track',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slider_Track',
 				'file' => 'Widgets/NestedSlider/class-aae-a-slider-track.php',
 				'has_script' => false,
 			],
 			'aae-a-slider-nav-prev' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Nav_Prev',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slider_Nav_Prev',
 				'file' => 'Widgets/NestedSlider/class-aae-a-slider-nav-prev.php',
 				'has_script' => false,
 			],
 			'aae-a-slider-nav-next' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Nav_Next',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slider_Nav_Next',
 				'file' => 'Widgets/NestedSlider/class-aae-a-slider-nav-next.php',
 				'has_script' => false,
 			],
 			'aae-a-slider-dot' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Dot',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slider_Dot',
 				'file' => 'Widgets/NestedSlider/class-aae-a-slider-dot.php',
 				'has_script' => false,
 			],
 			'aae-a-slider-indicators' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Indicators',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slider_Indicators',
 				'file' => 'Widgets/NestedSlider/class-aae-a-slider-indicators.php',
 				'has_script' => false,
 			],
 			'aae-a-slider-current' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Current',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slider_Current',
 				'file' => 'Widgets/NestedSlider/class-aae-a-slider-current.php',
 				'has_script' => false,
 			],
 			'aae-a-slider-total' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Total',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slider_Total',
 				'file' => 'Widgets/NestedSlider/class-aae-a-slider-total.php',
 				'has_script' => false,
 			],
 			'aae-a-slider-percentage' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Percentage',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slider_Percentage',
 				'file' => 'Widgets/NestedSlider/class-aae-a-slider-percentage.php',
 				'has_script' => false,
 			],
 			'aae-a-slider-progress' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Progress',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slider_Progress',
 				'file' => 'Widgets/NestedSlider/class-aae-a-slider-progress.php',
 				'has_script' => false,
 			],
 			'aae-a-slider-progress-fill' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Progress_Fill',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slider_Progress_Fill',
 				'file' => 'Widgets/NestedSlider/class-aae-a-slider-progress-fill.php',
 				'has_script' => false,
 			],
 			'aae-a-slider-counter' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Counter',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slider_Counter',
 				'file' => 'Widgets/NestedSlider/class-aae-a-slider-counter.php',
 				'has_script' => false,
 			],
 			'aae-a-slider-divider' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Divider',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slider_Divider',
 				'file' => 'Widgets/NestedSlider/class-aae-a-slider-divider.php',
 				'has_script' => false,
 			],
 			'aae-a-slider-pagination' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Pagination',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slider_Pagination',
 				'file' => 'Widgets/NestedSlider/class-aae-a-slider-pagination.php',
 				'has_script' => false,
 			],
 			'aae-a-menu' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Menu\AAE_A_Menu',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Menu\Aaeaddon_A_Menu',
 				'file' => 'Widgets/Menu/class-aae-a-menu.php',
 				'script_handle' => 'aae-a-menu-js',
 				'script_path' => '/assets/atomic/js/menu.js',
@@ -4668,7 +4668,7 @@ final class Atomic
 				'style_path' => '/assets/atomic/css/menu.css',
 			],
 			'aae-a-post-title' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostTitle\AAE_A_Post_Title',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\PostTitle\Aaeaddon_A_Post_Title',
 				'file' => 'Widgets/PostTitle/class-aae-a-post-title.php',
 				'has_script' => false,
 				'style_handle' => 'aae-a-post-title-css',
@@ -4676,31 +4676,31 @@ final class Atomic
 			],
 
 			'aae-a-search-query' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\SearchQuery\AAE_A_Search_Query',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SearchQuery\Aaeaddon_A_Search_Query',
 				'file' => 'Widgets/SearchQuery/class-aae-a-search-query.php',
 				'has_script' => false,
 			],
 
 			'aae-a-post-content' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostContent\AAE_A_Post_Content',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\PostContent\Aaeaddon_A_Post_Content',
 				'file' => 'Widgets/PostContent/class-aae-a-post-content.php',
 				'has_script' => false,
 			],
 
 			'aae-a-post-excerpt' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostExcerpt\AAE_A_Post_Excerpt',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\PostExcerpt\Aaeaddon_A_Post_Excerpt',
 				'file' => 'Widgets/PostExcerpt/class-aae-a-post-excerpt.php',
 				'has_script' => false,
 			],
 
 			'aae-a-post-image' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostImage\AAE_A_Post_Image',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\PostImage\Aaeaddon_A_Post_Image',
 				'file' => 'Widgets/PostImage/class-aae-a-post-image.php',
 				'has_script' => false,
 			],
 
 			'aae-a-posts' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Posts\AAE_A_Posts',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Posts\Aaeaddon_A_Posts',
 				'file' => 'Widgets/Posts/class-aae-a-posts.php',
 				'script_handle' => 'aae-a-posts-js',
 				'script_path' => '/assets/atomic/js/posts.js',
@@ -4710,13 +4710,13 @@ final class Atomic
 			],
 
 			'aae-a-post-card' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Posts\AAE_A_Post_Card',
+				'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Posts\Aaeaddon_A_Post_Card',
 				'file'       => 'Widgets/Posts/class-aae-a-post-card.php',
 				'has_script' => false,
 			],
 
 			'aae-a-loop-grid' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_A_Loop_Grid',
 				'file' => 'Widgets/LoopGrid/class-aae-a-loop-grid.php',
 				'script_handle' => 'aae-a-loop-grid-js',
 				'script_path' => '/assets/atomic/js/loop-grid.js',
@@ -4732,7 +4732,7 @@ final class Atomic
 			],
 
 			'aae-a-advance-portfolio' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\AdvancePortfolio\AAE_A_Advance_Portfolio',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\AdvancePortfolio\Aaeaddon_A_Advance_Portfolio',
 				'file' => 'Widgets/AdvancePortfolio/class-aae-a-advance-portfolio.php',
 				'script_handle' => 'aae-a-advance-portfolio-js',
 				'script_path' => '/assets/atomic/js/advance-portfolio.js',
@@ -4745,33 +4745,33 @@ final class Atomic
 				'style_path' => '/assets/atomic/css/advance-portfolio.css',
 			],
 			'aae-a-portfolio-title' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\AdvancePortfolio\AAE_A_Portfolio_Title',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\AdvancePortfolio\Aaeaddon_A_Portfolio_Title',
 				'file' => 'Widgets/AdvancePortfolio/class-aae-a-portfolio-title.php',
 				'has_script' => false,
 			],
 			'aae-a-portfolio-list' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\AdvancePortfolio\AAE_A_Portfolio_List',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\AdvancePortfolio\Aaeaddon_A_Portfolio_List',
 				'file' => 'Widgets/AdvancePortfolio/class-aae-a-portfolio-list.php',
 				'has_script' => false,
 			],
 			'aae-a-portfolio-item' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\AdvancePortfolio\AAE_A_Portfolio_Item',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\AdvancePortfolio\Aaeaddon_A_Portfolio_Item',
 				'file' => 'Widgets/AdvancePortfolio/class-aae-a-portfolio-item.php',
 				'has_script' => false,
 			],
 			'aae-a-portfolio-content' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\AdvancePortfolio\AAE_A_Portfolio_Content',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\AdvancePortfolio\Aaeaddon_A_Portfolio_Content',
 				'file' => 'Widgets/AdvancePortfolio/class-aae-a-portfolio-content.php',
 				'has_script' => false,
 			],
 			'aae-a-portfolio-date' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\AdvancePortfolio\AAE_A_Portfolio_Date',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\AdvancePortfolio\Aaeaddon_A_Portfolio_Date',
 				'file' => 'Widgets/AdvancePortfolio/class-aae-a-portfolio-date.php',
 				'has_script' => false,
 			],
 
 			'aae-a-loop-item' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Item',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_A_Loop_Item',
 				'file' => 'Widgets/LoopGrid/class-aae-a-loop-item.php',
 				'has_script' => false,
 			],
@@ -4781,105 +4781,105 @@ final class Atomic
 			// from every saved page on the next save; the paid behaviour is
 			// gated at runtime through Pro_Gate instead.
 			'aae-a-loop-layout' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Layout',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_A_Loop_Layout',
 				'file' => 'Widgets/LoopGrid/class-aae-a-loop-layout.php',
 				'has_script' => false,
 			],
 			'aae-a-loop-pagination' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Pagination',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_A_Loop_Pagination',
 				'file' => 'Widgets/LoopGrid/class-aae-a-loop-pagination.php',
 				'has_script' => false,
 			],
 			'aae-a-loop-prev' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Prev',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_A_Loop_Prev',
 				'file' => 'Widgets/LoopGrid/class-aae-a-loop-prev.php',
 				'has_script' => false,
 			],
 			'aae-a-loop-next' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Next',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_A_Loop_Next',
 				'file' => 'Widgets/LoopGrid/class-aae-a-loop-next.php',
 				'has_script' => false,
 			],
 			'aae-a-loop-numbers' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Numbers',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_A_Loop_Numbers',
 				'file' => 'Widgets/LoopGrid/class-aae-a-loop-numbers.php',
 				'has_script' => false,
 			],
 			'aae-a-loop-number' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Number',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_A_Loop_Number',
 				'file' => 'Widgets/LoopGrid/class-aae-a-loop-number.php',
 				'has_script' => false,
 			],
 			'aae-a-loop-loadmore' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_LoadMore',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_A_Loop_LoadMore',
 				'file' => 'Widgets/LoopGrid/class-aae-a-loop-loadmore.php',
 				'has_script' => false,
 			],
 			'aae-a-loop-arrow' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Arrow',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_A_Loop_Arrow',
 				'file' => 'Widgets/LoopGrid/class-aae-a-loop-arrow.php',
 				'has_script' => false,
 			],
 			'aae-a-loop-nav-wrap' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Nav_Wrap',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_A_Loop_Nav_Wrap',
 				'file' => 'Widgets/LoopGrid/class-aae-a-loop-nav-wrap.php',
 				'has_script' => false,
 			],
 
 			'aae-a-search-form' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Form',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SearchForm\Aaeaddon_A_Search_Form',
 				'file' => 'Widgets/SearchForm/class-aae-a-search-form.php',
 				'script_handle' => 'aae-a-search-form-js',
 				'script_path' => '/assets/atomic/js/search-form.js',
 				'has_script' => true,
 			],
 			'aae-a-search-toggle' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Toggle',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SearchForm\Aaeaddon_A_Search_Toggle',
 				'file' => 'Widgets/SearchForm/class-aae-a-search-toggle.php',
 				'has_script' => false,
 			],
 			'aae-a-search-toggle-open' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Toggle_Open',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SearchForm\Aaeaddon_A_Search_Toggle_Open',
 				'file' => 'Widgets/SearchForm/class-aae-a-search-toggle-open.php',
 				'has_script' => false,
 			],
 			'aae-a-search-toggle-close' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Toggle_Close',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SearchForm\Aaeaddon_A_Search_Toggle_Close',
 				'file' => 'Widgets/SearchForm/class-aae-a-search-toggle-close.php',
 				'has_script' => false,
 			],
 			'aae-a-search-panel' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Panel',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SearchForm\Aaeaddon_A_Search_Panel',
 				'file' => 'Widgets/SearchForm/class-aae-a-search-panel.php',
 				'has_script' => false,
 			],
 			'aae-a-search-field' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Field',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SearchForm\Aaeaddon_A_Search_Field',
 				'file' => 'Widgets/SearchForm/class-aae-a-search-field.php',
 				'has_script' => false,
 			],
 			'aae-a-search-input' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Input',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SearchForm\Aaeaddon_A_Search_Input',
 				'file' => 'Widgets/SearchForm/class-aae-a-search-input.php',
 				'has_script' => false,
 			],
 			'aae-a-search-filter-date' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Filter_Date',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SearchForm\Aaeaddon_A_Search_Filter_Date',
 				'file' => 'Widgets/SearchForm/class-aae-a-search-filter-date.php',
 				'has_script' => false,
 			],
 			'aae-a-search-filter-category' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Filter_Category',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SearchForm\Aaeaddon_A_Search_Filter_Category',
 				'file' => 'Widgets/SearchForm/class-aae-a-search-filter-category.php',
 				'has_script' => false,
 			],
 			'aae-a-search-submit' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Submit',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SearchForm\Aaeaddon_A_Search_Submit',
 				'file' => 'Widgets/SearchForm/class-aae-a-search-submit.php',
 				'has_script' => false,
 			],
 			'aae-a-search-results' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Results',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SearchForm\Aaeaddon_A_Search_Results',
 				'file' => 'Widgets/SearchForm/class-aae-a-search-results.php',
 				'has_script' => false,
 			],
@@ -4887,7 +4887,7 @@ final class Atomic
 			// Loop Grid Slider — reuses the Loop Grid query engine + the shared
 			// nested-slider runtime. Its only own script is the load-more bridge
 			'aae-a-post-pagination' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\PostPagination\Aaeaddon_A_Post_Pagination',
 				'file' => 'Widgets/PostPagination/class-aae-a-post-pagination.php',
 				'script_handle' => 'aae-a-post-pagination-js',
 				'script_path' => '/assets/atomic/js/post-pagination.js',
@@ -4897,47 +4897,47 @@ final class Atomic
 			],
 
 			'aae-a-post-pagination-prev' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Prev',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\PostPagination\Aaeaddon_A_Post_Pagination_Prev',
 				'file' => 'Widgets/PostPagination/Parts/class-aae-a-post-pagination-prev.php',
 			],
 
 			'aae-a-post-pagination-next' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Next',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\PostPagination\Aaeaddon_A_Post_Pagination_Next',
 				'file' => 'Widgets/PostPagination/Parts/class-aae-a-post-pagination-next.php',
 			],
 
 			'aae-a-post-pagination-preview' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\PostPagination\Aaeaddon_A_Post_Pagination_Preview',
 				'file' => 'Widgets/PostPagination/Parts/class-aae-a-post-pagination-preview.php',
 			],
 
 			'aae-a-post-pagination-preview-image' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Image',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\PostPagination\Aaeaddon_A_Post_Pagination_Preview_Image',
 				'file' => 'Widgets/PostPagination/Parts/class-aae-a-post-pagination-preview-image.php',
 			],
 
 			'aae-a-post-pagination-preview-category' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Category',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\PostPagination\Aaeaddon_A_Post_Pagination_Preview_Category',
 				'file' => 'Widgets/PostPagination/Parts/class-aae-a-post-pagination-preview-category.php',
 			],
 
 			'aae-a-post-pagination-preview-title' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Title',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\PostPagination\Aaeaddon_A_Post_Pagination_Preview_Title',
 				'file' => 'Widgets/PostPagination/Parts/class-aae-a-post-pagination-preview-title.php',
 			],
 
 			'aae-a-post-pagination-preview-date' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Date',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\PostPagination\Aaeaddon_A_Post_Pagination_Preview_Date',
 				'file' => 'Widgets/PostPagination/Parts/class-aae-a-post-pagination-preview-date.php',
 			],
 
 			'aae-a-post-pagination-preview-author' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Author',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\PostPagination\Aaeaddon_A_Post_Pagination_Preview_Author',
 				'file' => 'Widgets/PostPagination/Parts/class-aae-a-post-pagination-preview-author.php',
 			],
 
 			'aae-a-post-pagination-preview-excerpt' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination_Preview_Excerpt',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\PostPagination\Aaeaddon_A_Post_Pagination_Preview_Excerpt',
 				'file' => 'Widgets/PostPagination/Parts/class-aae-a-post-pagination-preview-excerpt.php',
 			],
 
@@ -4948,7 +4948,7 @@ final class Atomic
 			 * AAE_A_Comments_Ny. Uncomment to re-enable.
 			 *
 			'aae-a-comments-ny' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Comments\AAE_A_Comments_Ny',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Comments\AAE_A_Comments_Ny',
 				'file' => 'Widgets/Comments/class-aae-a-comments-ny.php',
 				'has_script' => false,
 				'style_handle' => 'aae-a-comments-css',
@@ -4956,54 +4956,54 @@ final class Atomic
 			],
 
 			'aae-a-comment-list' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Comments\AAE_A_Comment_List',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Comments\AAE_A_Comment_List',
 				'file' => 'Widgets/Comments/class-aae-a-comment-list.php',
 			],
 
 			'aae-a-comment-item' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Comments\AAE_A_Comment_Item',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Comments\AAE_A_Comment_Item',
 				'file' => 'Widgets/Comments/class-aae-a-comment-item.php',
 			],
 
 			'aae-a-comment-avatar' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Comments\AAE_A_Comment_Avatar',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Comments\AAE_A_Comment_Avatar',
 				'file' => 'Widgets/Comments/class-aae-a-comment-avatar.php',
 				'has_script' => false,
 			],
 
 			'aae-a-comment-author' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Comments\AAE_A_Comment_Author',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Comments\AAE_A_Comment_Author',
 				'file' => 'Widgets/Comments/class-aae-a-comment-author.php',
 				'has_script' => false,
 			],
 
 			'aae-a-comment-date' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Comments\AAE_A_Comment_Date',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Comments\AAE_A_Comment_Date',
 				'file' => 'Widgets/Comments/class-aae-a-comment-date.php',
 				'has_script' => false,
 			],
 
 			'aae-a-comment-content' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Comments\AAE_A_Comment_Content',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Comments\AAE_A_Comment_Content',
 				'file' => 'Widgets/Comments/class-aae-a-comment-content.php',
 				'has_script' => false,
 			],
 
 			'aae-a-comment-reply-link' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Comments\AAE_A_Comment_Reply_Link',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Comments\AAE_A_Comment_Reply_Link',
 				'file' => 'Widgets/Comments/class-aae-a-comment-reply-link.php',
 				'has_script' => false,
 			],
 
 			'aae-a-comment-form' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Comments\AAE_A_Comment_Form',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Comments\AAE_A_Comment_Form',
 				'file' => 'Widgets/Comments/class-aae-a-comment-form.php',
 				'has_script' => false,
 			],
 			*/
 
 			'aae-a-loop-grid-slider' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGridSlider\AAE_A_Loop_Grid_Slider',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGridSlider\Aaeaddon_A_Loop_Grid_Slider',
 				'file' => 'Widgets/LoopGridSlider/class-aae-a-loop-grid-slider.php',
 				'script_handle' => 'aae-a-loop-grid-slider-js',
 				'script_path' => '/assets/atomic/js/loop-grid-slider.js',
@@ -5015,23 +5015,23 @@ final class Atomic
 				'style_path' => '/assets/atomic/css/loop-grid-slider.css',
 			],
 			'aae-a-loop-slide-track' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGridSlider\AAE_A_Loop_Slide_Track',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGridSlider\Aaeaddon_A_Loop_Slide_Track',
 				'file' => 'Widgets/LoopGridSlider/class-aae-a-loop-slide-track.php',
 				'has_script' => false,
 			],
 			'aae-a-loop-slide-item' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGridSlider\AAE_A_Loop_Slide_Item',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGridSlider\Aaeaddon_A_Loop_Slide_Item',
 				'file' => 'Widgets/LoopGridSlider/class-aae-a-loop-slide-item.php',
 				'has_script' => false,
 			],
 			'aae-a-loop-slide-pagination' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGridSlider\AAE_A_Loop_Slide_Pagination',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGridSlider\Aaeaddon_A_Loop_Slide_Pagination',
 				'file' => 'Widgets/LoopGridSlider/class-aae-a-loop-slide-pagination.php',
 				'has_script' => false,
 			],
 
 			'aae-a-accordion' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Accordion\AAE_A_Accordion',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Accordion\Aaeaddon_A_Accordion',
 				'file' => 'Widgets/Accordion/class-aae-a-accordion.php',
 				'script_handle' => 'aae-a-accordion-js',
 				'script_path' => '/assets/atomic/js/accordion.js',
@@ -5041,20 +5041,20 @@ final class Atomic
 			],
 
 			'aae-a-accordion-item' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Accordion\AAE_A_Accordion_Item',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Accordion\Aaeaddon_A_Accordion_Item',
 				'file' => 'Widgets/Accordion/class-aae-a-accordion-item.php',
 				'has_script' => false,
 			],
 
 			'aae-a-icon-list' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\IconList\AAE_A_Icon_List',
+				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\IconList\Aaeaddon_A_Icon_List',
 				'file' => 'Widgets/IconList/class-aae-a-icon-list.php',
 				'has_script' => false,
 				'style_handle' => 'aae-a-icon-list-css',
 				'style_path' => '/assets/atomic/css/icon-list.css',
 			],
 		'aae-a-icon-list-item' => [
-			'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\IconList\AAE_A_Icon_List_Item',
+			'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\IconList\Aaeaddon_A_Icon_List_Item',
 			'file' => 'Widgets/IconList/class-aae-a-icon-list-item.php',
 			'has_script' => false,
 			'style_handle' => 'aae-a-icon-list-css',
@@ -5062,7 +5062,7 @@ final class Atomic
 		],
 
 		'aae-a-social-share' => [
-			'class'        => '\WCF_ADDONS\AtomicWidgets\Widgets\SocialShare\AAE_A_Social_Share',
+			'class'        => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SocialShare\Aaeaddon_A_Social_Share',
 			'file'         => 'Widgets/SocialShare/class-aae-a-social-share.php',
 			'has_script'   => false,
 			// SCSS-only widget, compiled by gulp's compile:atomic-scss task, not webpack.
@@ -5070,24 +5070,24 @@ final class Atomic
 			'style_path'   => '/assets/atomic/css/social-share.css',
 		],
 		'aae-a-social-share-item' => [
-			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\SocialShare\AAE_A_Social_Share_Item',
+			'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SocialShare\Aaeaddon_A_Social_Share_Item',
 			'file'       => 'Widgets/SocialShare/class-aae-a-social-share-item.php',
 			'has_script' => false,
 		],
 		'aae-a-social-share-item-icon' => [
-			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\SocialShare\AAE_A_Social_Share_Item_Icon',
+			'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SocialShare\Aaeaddon_A_Social_Share_Item_Icon',
 			'file'       => 'Widgets/SocialShare/Parts/class-aae-a-social-share-item-icon.php',
 			'has_script' => false,
 		],
 		'aae-a-social-share-item-title' => [
-			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\SocialShare\AAE_A_Social_Share_Item_Title',
+			'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SocialShare\Aaeaddon_A_Social_Share_Item_Title',
 			'file'       => 'Widgets/SocialShare/Parts/class-aae-a-social-share-item-title.php',
 			'has_script' => false,
 		],
 		// SocialShareMain entries removed — see the note in
 		// register_widget_definitions(). The directory no longer exists.
 		'aae-a-image-compare' => [
-			'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\ImageCompare\AAE_A_Image_Compare',
+			'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\ImageCompare\Aaeaddon_A_Image_Compare',
 			'file' => 'Widgets/ImageCompare/class-aae-a-image-compare.php',
 			'script_handle' => 'aae-a-image-compare-js',
 			'script_path' => '/assets/atomic/js/image-compare.js',
@@ -5096,19 +5096,19 @@ final class Atomic
 			'style_path' => '/assets/atomic/css/image-compare.css',
 		],
 		'aae-a-countdown' => [
-			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Countdown\AAE_A_Countdown',
+			'class'         => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Countdown\Aaeaddon_A_Countdown',
 			'file'          => 'Widgets/Countdown/class-aae-a-countdown.php',
 			'script_handle' => 'aae-a-countdown-js',
 			'script_path'   => '/assets/atomic/js/countdown.js',
 			'has_script'    => true,
 		],
 		'aae-a-countdown-unit' => [
-			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Countdown\AAE_A_Countdown_Unit',
+			'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Countdown\Aaeaddon_A_Countdown_Unit',
 			'file'       => 'Widgets/Countdown/class-aae-a-countdown-unit.php',
 			'has_script' => false,
 		],
 		'aae-a-timeline' => [
-			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Timeline\AAE_A_Timeline',
+			'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Timeline\Aaeaddon_A_Timeline',
 			'file'       => 'Widgets/Timeline/class-aae-a-timeline.php',
 			'has_script' => false,
 			// No external CSS and no inline <style> in any Twig: every visual
@@ -5116,33 +5116,33 @@ final class Atomic
 			// real base style on its own dedicated widget type. No `style_handle`.
 		],
 		'aae-a-timeline-item' => [
-			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Timeline\AAE_A_Timeline_Item',
+			'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Timeline\Aaeaddon_A_Timeline_Item',
 			'file'       => 'Widgets/Timeline/class-aae-a-timeline-item.php',
 			'has_script' => false,
 		],
 		'aae-a-timeline-number' => [
-			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Timeline\AAE_A_Timeline_Number',
+			'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Timeline\Aaeaddon_A_Timeline_Number',
 			'file'       => 'Widgets/Timeline/Parts/class-aae-a-timeline-number.php',
 			'has_script' => false,
 		],
 		'aae-a-timeline-year' => [
-			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Timeline\AAE_A_Timeline_Year',
+			'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Timeline\Aaeaddon_A_Timeline_Year',
 			'file'       => 'Widgets/Timeline/Parts/class-aae-a-timeline-year.php',
 			'has_script' => false,
 		],
 		'aae-a-timeline-title' => [
-			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Timeline\AAE_A_Timeline_Title',
+			'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Timeline\Aaeaddon_A_Timeline_Title',
 			'file'       => 'Widgets/Timeline/Parts/class-aae-a-timeline-title.php',
 			'has_script' => false,
 		],
 		'aae-a-timeline-desc' => [
-			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Timeline\AAE_A_Timeline_Desc',
+			'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Timeline\Aaeaddon_A_Timeline_Desc',
 			'file'       => 'Widgets/Timeline/Parts/class-aae-a-timeline-desc.php',
 			'has_script' => false,
 		],
 		// Add new atomic widgets below...
 			'aae-a-btn' => [
-				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Btn\AAE_A_Btn',
+				'class'         => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Btn\Aaeaddon_A_Btn',
 				'file'          => 'Widgets/Btn/class-aae-a-btn.php',
 				'script_handle' => 'aae-a-btn-js',
 				'script_path'   => '/assets/atomic/js/btn.js',
@@ -5152,7 +5152,7 @@ final class Atomic
 			],
 
 			'aae-a-btn-pro' => [
-				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\BtnPro\AAE_A_Btn_Pro',
+				'class'         => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\BtnPro\AAE_A_Btn_Pro',
 				'file'          => 'Widgets/BtnPro/class-aae-a-btn-pro.php',
 				'script_handle' => 'aae-a-btn-pro-js',
 				'script_path'   => '/assets/atomic/js/btn-pro.js',
@@ -5166,14 +5166,14 @@ final class Atomic
 			],
 
 			'aae-a-advanced-heading' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\AdvancedHeading\AAE_A_Advanced_Heading',
+				'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\AdvancedHeading\Aaeaddon_A_Advanced_Heading',
 				'file'       => 'Widgets/AdvancedHeading/class-aae-a-advanced-heading.php',
 				'has_script' => false,
 				// Design-less: this widget ships no CSS. Style your own classes.
 			],
 
 			'aae-a-progressbar' => [
-				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Progressbar\AAE_A_Progressbar',
+				'class'         => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Progressbar\Aaeaddon_A_Progressbar',
 				'file'          => 'Widgets/Progressbar/class-aae-a-progressbar.php',
 				'script_handle' => 'aae-a-progressbar-js',
 				'script_path'   => '/assets/atomic/js/progressbar.js',
@@ -5183,28 +5183,28 @@ final class Atomic
 			],
 
 			'aae-a-progressbar-track' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Progressbar\AAE_A_Progressbar_Track',
+				'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Progressbar\Aaeaddon_A_Progressbar_Track',
 				'file'       => 'Widgets/Progressbar/Parts/class-aae-a-progressbar-track.php',
 				'has_script' => false,
 			],
 			'aae-a-progressbar-fill' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Progressbar\AAE_A_Progressbar_Fill',
+				'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Progressbar\Aaeaddon_A_Progressbar_Fill',
 				'file'       => 'Widgets/Progressbar/Parts/class-aae-a-progressbar-fill.php',
 				'has_script' => false,
 			],
 			'aae-a-progressbar-label' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Progressbar\AAE_A_Progressbar_Label',
+				'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Progressbar\Aaeaddon_A_Progressbar_Label',
 				'file'       => 'Widgets/Progressbar/Parts/class-aae-a-progressbar-label.php',
 				'has_script' => false,
 			],
 			'aae-a-progressbar-dot' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Progressbar\AAE_A_Progressbar_Dot',
+				'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Progressbar\Aaeaddon_A_Progressbar_Dot',
 				'file'       => 'Widgets/Progressbar/Parts/class-aae-a-progressbar-dot.php',
 				'has_script' => false,
 			],
 
 			'aae-a-toggle-switcher' => [
-				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Switcher',
+				'class'         => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\ToggleSwitcher\Aaeaddon_A_Toggle_Switcher',
 				'file'          => 'Widgets/ToggleSwitcher/class-aae-a-toggle-switcher.php',
 				'script_handle' => 'aae-a-toggle-switcher-js',
 				'script_path'   => '/assets/atomic/js/toggle-switcher.js',
@@ -5214,54 +5214,54 @@ final class Atomic
 			],
 
 			'aae-a-toggle-pane' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Pane',
+				'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\ToggleSwitcher\Aaeaddon_A_Toggle_Pane',
 				'file'       => 'Widgets/ToggleSwitcher/class-aae-a-toggle-pane.php',
 				'has_script' => false,
 			],
 
 			'aae-a-toggle-switcher-tabs' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Switcher_Tabs',
+				'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\ToggleSwitcher\Aaeaddon_A_Toggle_Switcher_Tabs',
 				'file'       => 'Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-switcher-tabs.php',
 				'has_script' => false,
 			],
 			'aae-a-toggle-switcher-tab' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Switcher_Tab',
+				'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\ToggleSwitcher\Aaeaddon_A_Toggle_Switcher_Tab',
 				'file'       => 'Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-switcher-tab.php',
 				'has_script' => false,
 			],
 			'aae-a-toggle-pane-title' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Pane_Title',
+				'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\ToggleSwitcher\Aaeaddon_A_Toggle_Pane_Title',
 				'file'       => 'Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-pane-title.php',
 				'has_script' => false,
 			],
 			'aae-a-toggle-pane-desc' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Pane_Desc',
+				'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\ToggleSwitcher\Aaeaddon_A_Toggle_Pane_Desc',
 				'file'       => 'Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-pane-desc.php',
 				'has_script' => false,
 			],
 			'aae-a-toggle-switcher-label' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Switcher_Label',
+				'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\ToggleSwitcher\Aaeaddon_A_Toggle_Switcher_Label',
 				'file'       => 'Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-switcher-label.php',
 				'has_script' => false,
 			],
 			'aae-a-toggle-switcher-tablist' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Switcher_Tablist',
+				'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\ToggleSwitcher\Aaeaddon_A_Toggle_Switcher_Tablist',
 				'file'       => 'Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-switcher-tablist.php',
 				'has_script' => false,
 			],
 			'aae-a-toggle-switcher-track' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Switcher_Track',
+				'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\ToggleSwitcher\Aaeaddon_A_Toggle_Switcher_Track',
 				'file'       => 'Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-switcher-track.php',
 				'has_script' => false,
 			],
 			'aae-a-toggle-switcher-knob' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Switcher_Knob',
+				'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\ToggleSwitcher\Aaeaddon_A_Toggle_Switcher_Knob',
 				'file'       => 'Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-switcher-knob.php',
 				'has_script' => false,
 			],
 
 			'aae-a-form' => [
-				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form',
+				'class'         => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form\Aaeaddon_A_Form',
 				'file'          => 'Widgets/Form/class-aae-a-form.php',
 				'script_handle' => 'aae-a-form-js',
 				'script_path'   => '/assets/atomic/js/form.js',
@@ -5274,85 +5274,85 @@ final class Atomic
 			],
 
 			'aae-a-form-label' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Label',
+				'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form\Aaeaddon_A_Form_Label',
 				'file'       => 'Widgets/Form/class-aae-a-form-label.php',
 				'has_script' => false,
 			],
 
 			'aae-a-form-input' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Input',
+				'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form\Aaeaddon_A_Form_Input',
 				'file'       => 'Widgets/Form/class-aae-a-form-input.php',
 				'has_script' => false,
 			],
 
 			'aae-a-form-textarea' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Textarea',
+				'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form\Aaeaddon_A_Form_Textarea',
 				'file'       => 'Widgets/Form/class-aae-a-form-textarea.php',
 				'has_script' => false,
 			],
 
 			'aae-a-form-checkbox' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Checkbox',
+				'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form\Aaeaddon_A_Form_Checkbox',
 				'file'       => 'Widgets/Form/class-aae-a-form-checkbox.php',
 				'has_script' => false,
 			],
 
 			'aae-a-form-radio' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Radio',
+				'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form\Aaeaddon_A_Form_Radio',
 				'file'       => 'Widgets/Form/class-aae-a-form-radio.php',
 				'has_script' => false,
 			],
 
 			'aae-a-form-select' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Select',
+				'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form\Aaeaddon_A_Form_Select',
 				'file'       => 'Widgets/Form/class-aae-a-form-select.php',
 				'has_script' => false,
 			],
 
 			'aae-a-form-success-message' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Success_Message',
+				'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form\Aaeaddon_A_Form_Success_Message',
 				'file'       => 'Widgets/Form/class-aae-a-form-success-message.php',
 				'has_script' => false,
 			],
 
 			'aae-a-form-error-message' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Error_Message',
+				'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form\Aaeaddon_A_Form_Error_Message',
 				'file'       => 'Widgets/Form/class-aae-a-form-error-message.php',
 				'has_script' => false,
 			],
 
 			'aae-a-form-submit' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Submit',
+				'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form\Aaeaddon_A_Form_Submit',
 				'file'       => 'Widgets/Form/class-aae-a-form-submit.php',
 				'has_script' => false,
 			],
 
 			'aae-a-form-field-error' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Field_Error',
+				'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form\Aaeaddon_A_Form_Field_Error',
 				'file'       => 'Widgets/Form/class-aae-a-form-field-error.php',
 				'has_script' => false,
 			],
 
 			'aae-a-form-file' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_File',
+				'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form\Aaeaddon_A_Form_File',
 				'file'       => 'Widgets/Form/class-aae-a-form-file.php',
 				'has_script' => false,
 			],
 
 			'aae-a-form-rating' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Rating',
+				'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form\Aaeaddon_A_Form_Rating',
 				'file'       => 'Widgets/Form/class-aae-a-form-rating.php',
 				'has_script' => false, // ships inside aae-a-form-js itself (lib/rating.js).
 			],
 
 			'aae-a-form-range' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Range',
+				'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form\Aaeaddon_A_Form_Range',
 				'file'       => 'Widgets/Form/class-aae-a-form-range.php',
 				'has_script' => false, // ships inside aae-a-form-js itself (lib/range.js).
 			],
 
 			'aae-a-form-range-group' => [
-				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Range_Group',
+				'class'         => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form\Aaeaddon_A_Form_Range_Group',
 				'file'          => 'Widgets/Form/class-aae-a-form-range-group.php',
 				// Its own bundle, not form.js: the group is a usable page element
 				// on its own, and form.js only initialises what sits inside a form.
@@ -5364,49 +5364,49 @@ final class Atomic
 			],
 
 			'aae-a-form-range-value' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Range_Value',
+				'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form\Aaeaddon_A_Form_Range_Value',
 				'file'       => 'Widgets/Form/class-aae-a-form-range-value.php',
 				'has_script' => false, // painted by its parent's bundle (form-range-group.js).
 			],
 
 			'aae-a-form-country' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Country',
+				'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form\Aaeaddon_A_Form_Country',
 				'file'       => 'Widgets/Form/class-aae-a-form-country.php',
 				'has_script' => false, // native single <select>; no JS needed.
 			],
 
 			'aae-a-form-calculation' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Calculation',
+				'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form\Aaeaddon_A_Form_Calculation',
 				'file'       => 'Widgets/Form/class-aae-a-form-calculation.php',
 				'has_script' => false, // ships inside aae-a-form-js itself (lib/calculation.js).
 			],
 
 			'aae-a-form-password' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Password',
+				'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form\Aaeaddon_A_Form_Password',
 				'file'       => 'Widgets/Form/class-aae-a-form-password.php',
 				'has_script' => false, // reveal toggle ships inside aae-a-form-js (lib/password.js).
 			],
 
 			'aae-a-form-step' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Step',
+				'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form\Aaeaddon_A_Form_Step',
 				'file'       => 'Widgets/Form/class-aae-a-form-step.php',
 				'has_script' => false, // step-nav logic ships inside aae-a-form-js itself.
 			],
 
 			'aae-a-form-next' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Next',
+				'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form\Aaeaddon_A_Form_Next',
 				'file'       => 'Widgets/Form/class-aae-a-form-next.php',
 				'has_script' => false, // click handler ships inside aae-a-form-js itself.
 			],
 
 			'aae-a-form-prev' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Prev',
+				'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form\Aaeaddon_A_Form_Prev',
 				'file'       => 'Widgets/Form/class-aae-a-form-prev.php',
 				'has_script' => false, // click handler ships inside aae-a-form-js itself.
 			],
 
 			'aae-a-nav' => [
-			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Nav\AAE_A_Nav',
+			'class'         => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Nav\Aaeaddon_A_Nav',
 			'file'          => 'Widgets/Nav/class-aae-a-nav.php',
 			'has_script'    => true,
 			'script_handle' => 'aae-a-nav-js',
@@ -5415,17 +5415,17 @@ final class Atomic
 			'style_path'    => '/assets/atomic/css/nav.css',
 		],
 		'aae-a-nav-item' => [
-			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Nav\AAE_A_Nav_Item',
+			'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Nav\Aaeaddon_A_Nav_Item',
 			'file'       => 'Widgets/Nav/class-aae-a-nav-item.php',
 			'has_script' => false,
 		],
 		'aae-a-nav-sub-item' => [
-			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Nav\AAE_A_Nav_Sub_Item',
+			'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Nav\Aaeaddon_A_Nav_Sub_Item',
 			'file'       => 'Widgets/Nav/class-aae-a-nav-sub-item.php',
 			'has_script' => false,
 		],
 		'aae-a-mobile-nav' => [
-			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Nav\AAE_A_Mobile_Nav',
+			'class'         => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Nav\Aaeaddon_A_Mobile_Nav',
 			'file'          => 'Widgets/Nav/class-aae-a-mobile-nav.php',
 			'has_script'    => true,
 			'script_handle' => 'aae-a-nav-js',
@@ -5435,7 +5435,7 @@ final class Atomic
 		],
 
 		'aae-a-flip-box' => [
-			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\FlipBox\AAE_A_Flip_Box',
+			'class'         => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\FlipBox\Aaeaddon_A_Flip_Box',
 			'file'          => 'Widgets/FlipBox/class-aae-a-flip-box.php',
 			// SCSS-only widget (the flip animation is entirely CSS-driven) —
 			// compiled by gulp's compile:atomic-scss task, not webpack.
@@ -5445,7 +5445,7 @@ final class Atomic
 		],
 
 		'aae-a-image-hotspot' => [
-			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\ImageHotspot\AAE_A_Image_Hotspot',
+			'class'         => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\ImageHotspot\Aaeaddon_A_Image_Hotspot',
 			'file'          => 'Widgets/ImageHotspot/class-aae-a-image-hotspot.php',
 			'script_handle' => 'aae-a-image-hotspot-js',
 			'script_path'   => '/assets/atomic/js/image-hotspot.js',
@@ -5455,55 +5455,55 @@ final class Atomic
 		],
 
 		'aae-a-hotspot-point' => [
-			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ImageHotspot\AAE_A_Hotspot_Point',
+			'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\ImageHotspot\Aaeaddon_A_Hotspot_Point',
 			'file'       => 'Widgets/ImageHotspot/class-aae-a-hotspot-point.php',
 			'has_script' => false,
 		],
 
 		'aae-a-hotspot-marker' => [
-			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ImageHotspot\AAE_A_Hotspot_Marker',
+			'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\ImageHotspot\Aaeaddon_A_Hotspot_Marker',
 			'file'       => 'Widgets/ImageHotspot/Parts/class-aae-a-hotspot-marker.php',
 			'has_script' => false,
 		],
 
 		'aae-a-hotspot-content' => [
-			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ImageHotspot\AAE_A_Hotspot_Content',
+			'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\ImageHotspot\Aaeaddon_A_Hotspot_Content',
 			'file'       => 'Widgets/ImageHotspot/class-aae-a-hotspot-content.php',
 			'has_script' => false,
 		],
 
 		'aae-a-hotspot-lightbox' => [
-			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ImageHotspot\AAE_A_Hotspot_Lightbox',
+			'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\ImageHotspot\Aaeaddon_A_Hotspot_Lightbox',
 			'file'       => 'Widgets/ImageHotspot/Parts/class-aae-a-hotspot-lightbox.php',
 			'has_script' => false,
 		],
 
 		'aae-a-hotspot-close' => [
-			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ImageHotspot\AAE_A_Hotspot_Close',
+			'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\ImageHotspot\Aaeaddon_A_Hotspot_Close',
 			'file'       => 'Widgets/ImageHotspot/Parts/class-aae-a-hotspot-close.php',
 			'has_script' => false,
 		],
 
 		'aae-a-flip-box-front' => [
-			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\FlipBox\AAE_A_Flip_Box_Front',
+			'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\FlipBox\Aaeaddon_A_Flip_Box_Front',
 			'file'       => 'Widgets/FlipBox/Parts/class-aae-a-flip-box-front.php',
 			'has_script' => false,
 		],
 
 		'aae-a-flip-box-back' => [
-			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\FlipBox\AAE_A_Flip_Box_Back',
+			'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\FlipBox\Aaeaddon_A_Flip_Box_Back',
 			'file'       => 'Widgets/FlipBox/Parts/class-aae-a-flip-box-back.php',
 			'has_script' => false,
 		],
 
 		'aae-a-flip-box-title' => [
-			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\FlipBox\AAE_A_Flip_Box_Title',
+			'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\FlipBox\Aaeaddon_A_Flip_Box_Title',
 			'file'       => 'Widgets/FlipBox/Parts/class-aae-a-flip-box-title.php',
 			'has_script' => false,
 		],
 
 		'aae-a-flip-box-text' => [
-			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\FlipBox\AAE_A_Flip_Box_Text',
+			'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\FlipBox\Aaeaddon_A_Flip_Box_Text',
 			'file'       => 'Widgets/FlipBox/Parts/class-aae-a-flip-box-text.php',
 			'has_script' => false,
 		],
@@ -5514,13 +5514,13 @@ final class Atomic
 		// Widgets/SiteLogo/assets/scss for it either — the twig is the source of
 		// truth. Don't "restore" the handle without also deleting the twig block.
 		'aae-a-site-logo' => [
-			'class'        => '\WCF_ADDONS\AtomicWidgets\Widgets\SiteLogo\AAE_A_Site_Logo',
+			'class'        => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SiteLogo\Aaeaddon_A_Site_Logo',
 			'file'         => 'Widgets/SiteLogo/class-aae-a-site-logo.php',
 			'has_script'   => false,
 		],
 
 		'aae-a-video-mask' => [
-			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\VideoMask\AAE_A_Video_Mask',
+			'class'         => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\VideoMask\Aaeaddon_A_Video_Mask',
 			'file'          => 'Widgets/VideoMask/class-aae-a-video-mask.php',
 			'script_handle' => 'aae-a-video-mask-js',
 			'script_path'   => '/assets/atomic/js/video-mask.js',
@@ -5530,13 +5530,13 @@ final class Atomic
 		],
 
 		'aae-a-video-mask-btn' => [
-			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\VideoMask\AAE_A_Video_Mask_Btn',
+			'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\VideoMask\Aaeaddon_A_Video_Mask_Btn',
 			'file'       => 'Widgets/VideoMask/class-aae-a-video-mask-btn.php',
 			'has_script' => false,
 		],
 
 		'aae-a-video' => [
-			'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Video\AAE_A_Video',
+			'class'         => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Video\Aaeaddon_A_Video',
 			'file'          => 'Widgets/Video/class-aae-a-video.php',
 			'script_handle' => 'aae-a-video-js',
 			'script_path'   => '/assets/atomic/js/video.js',
@@ -5546,19 +5546,19 @@ final class Atomic
 		],
 
 		'aae-a-video-player' => [
-			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Video\AAE_A_Video_Player',
+			'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Video\Aaeaddon_A_Video_Player',
 			'file'       => 'Widgets/Video/Parts/class-aae-a-video-player.php',
 			'has_script' => false,
 		],
 
 		'aae-a-video-playbtn' => [
-			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Video\AAE_A_Video_PlayBtn',
+			'class'      => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Video\Aaeaddon_A_Video_PlayBtn',
 			'file'       => 'Widgets/Video/Parts/class-aae-a-video-playbtn.php',
 			'has_script' => false,
 		],
 
 		'aae-a-curved-text' => [
-			'class'        => '\WCF_ADDONS\AtomicWidgets\Widgets\CurvedText\AAE_A_Curved_Text',
+			'class'        => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\CurvedText\Aaeaddon_A_Curved_Text',
 			'file'         => 'Widgets/CurvedText/class-aae-a-curved-text.php',
 			'has_script'   => false,
 			'style_handle' => 'aae-a-curved-text-css',
@@ -5566,7 +5566,7 @@ final class Atomic
 		],
 
 		'aae-a-google-maps' => [
-			'class'        => '\WCF_ADDONS\AtomicWidgets\Widgets\GoogleMaps\AAE_A_Google_Maps',
+			'class'        => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\GoogleMaps\Aaeaddon_A_Google_Maps',
 			'file'         => 'Widgets/GoogleMaps/class-aae-a-google-maps.php',
 			// No frontend JS: the embed URL is built in the twig, so the map
 			// works with scripting irrelevant. The only stylesheet rule is the
@@ -5587,7 +5587,7 @@ final class Atomic
 		 * entry may carry its own `base_path` / `base_url` (absolute filesystem
 		 * path and URL, both ending in a slash) when its files live outside this
 		 * plugin; `asset_url()` and the script/style registrars fall back to
-		 * WCF_ADDONS_PATH / WCF_ADDONS_URL when they are absent, so every existing
+		 * AAEADDON_PATH / AAEADDON_URL when they are absent, so every existing
 		 * entry keeps working untouched.
 		 *
 		 * A slug added here still needs its dashboard card via
@@ -5665,7 +5665,7 @@ final class Atomic
 	 */
 	private static function excerpt_preview_data($post): array
 	{
-		$cls = '\WCF_ADDONS\AtomicWidgets\Widgets\PostExcerpt\AAE_A_Post_Excerpt';
+		$cls = '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\PostExcerpt\Aaeaddon_A_Post_Excerpt';
 		if (! $post instanceof \WP_Post || ! class_exists($cls)) {
 			return [];
 		}
@@ -5683,7 +5683,7 @@ final class Atomic
 	 */
 	private static function load_loop_grid_class(): void
 	{
-		if (! class_exists(\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::class)) {
+		if (! class_exists(\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_A_Loop_Grid::class)) {
 			require_once __DIR__ . '/Widgets/LoopGrid/class-aae-a-loop-grid.php';
 		}
 	}
@@ -5701,7 +5701,7 @@ final class Atomic
 	private static function loop_grid_taxonomy_notices(): array
 	{
 		self::load_loop_grid_class();
-		$taxes = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::get_query_taxonomies();
+		$taxes = \Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_A_Loop_Grid::get_query_taxonomies();
 		$out   = [];
 
 		foreach (array_keys(get_post_types(['public' => true])) as $type) {
@@ -5886,7 +5886,7 @@ final class Atomic
 		}
 
 		$query = new \WP_Query(
-			\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::build_query_args($filters)
+			\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_A_Loop_Grid::build_query_args($filters)
 		);
 
 		$posts = [];
@@ -5912,7 +5912,7 @@ final class Atomic
 	 *
 	 * Finds the loop-item element data inside the requesting document (by the
 	 * grid's element id), pushes the paged WP_Query onto the Render_Context stack
-	 * (keyed like AAE_A_Loop_Grid does), and renders the loop-item element — the
+	 * (keyed like Aaeaddon_A_Loop_Grid does), and renders the loop-item element — the
 	 * exact same path used server-side, so the markup + style classes match.
 	 *
 	 * Nonce: aae_loop_grid_front (public). Only reads published post content.
@@ -5953,7 +5953,7 @@ final class Atomic
 		$data = $doc->get_elements_data();
 
 		// The static grid and the slider variant share this endpoint. Both root
-		// types publish the same Render_Context (keyed by AAE_A_Loop_Grid::class,
+		// types publish the same Render_Context (keyed by Aaeaddon_A_Loop_Grid::class,
 		// which the slider root extends) and repeat a loop-item subtree per post —
 		// only the element type names differ, so accept either here.
 		$grid_types = ['e-aae-a-loop-grid', 'e-aae-a-loop-grid-slider'];
@@ -6024,7 +6024,7 @@ final class Atomic
 		// Without it the handler behaves exactly as it always has, which is what
 		// keeps the existing pagination runtime working untouched.
 		$path = isset($_POST['path']) ? (string) wp_unslash($_POST['path']) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- set_request_url() is the validator: same-host only, capped, no traversal.
-		if ('' !== $path && ! \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\Loop_Filter_Auth::set_request_url($path)) {
+		if ('' !== $path && ! \Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Loop_Filter_Auth::set_request_url($path)) {
 			wp_send_json_error(['message' => 'Invalid path.'], 400);
 		}
 
@@ -6074,13 +6074,13 @@ final class Atomic
 			// same request parser the first render uses. No second shape, and
 			// nothing for the browser to get wrong about which keys are filter
 			// keys — request_args() is already unslashed, hence `false`.
-			\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\Loop_Filter_Auth::prime_document($post_id, $data);
-			$request_args = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\Loop_Filter_Auth::request_args();
+			\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Loop_Filter_Auth::prime_document($post_id, $data);
+			$request_args = \Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Loop_Filter_Auth::request_args();
 
-			$filters = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\Loop_Filter_Auth::current(
+			$filters = \Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Loop_Filter_Auth::current(
 				$post_id,
 				$grid_id,
-				\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::effective_post_type($gs),
+				\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_A_Loop_Grid::effective_post_type($gs),
 				$request_args,
 				false
 			);
@@ -6089,7 +6089,7 @@ final class Atomic
 			// strips it) lands on page 1 without the runtime having to say so.
 			$paged = isset($request_args['aae_page']) ? max(1, absint($request_args['aae_page'])) : 1;
 		} elseif (isset($_POST['filters'])) {
-			$raw = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\Loop_Filter_Auth::decode_payload(wp_unslash($_POST['filters'])); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- decoded + capped, then every value is authorised
+			$raw = \Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Loop_Filter_Auth::decode_payload(wp_unslash($_POST['filters'])); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- decoded + capped, then every value is authorised
 			if (null === $raw) {
 				wp_send_json_error(['message' => 'Invalid filters payload.'], 400);
 			}
@@ -6099,37 +6099,37 @@ final class Atomic
 			// already decoded it above. `false` says the payload was unslashed
 			// once already, at decode_payload() — unslashing it twice ate real
 			// backslashes and made page 2 a different result set.
-			\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\Loop_Filter_Auth::prime_document($post_id, $data);
-			$filters = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\Loop_Filter_Auth::current(
+			\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Loop_Filter_Auth::prime_document($post_id, $data);
+			$filters = \Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Loop_Filter_Auth::current(
 				$post_id,
 				$grid_id,
-				\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::effective_post_type($gs),
+				\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_A_Loop_Grid::effective_post_type($gs),
 				$raw,
 				false
 			);
 		}
 
-		$query_args = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::build_query_args(
+		$query_args = \Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_A_Loop_Grid::build_query_args(
 			$gs,
 			$paged,
 			$filters
 		);
 
 		// Total + pages (respects the same query, offset-corrected).
-		$total     = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::count_total($gs, $query_args);
-		$max_pages = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::pages_for_total($total, $query_args);
+		$total     = \Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_A_Loop_Grid::count_total($gs, $query_args);
+		$max_pages = \Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_A_Loop_Grid::pages_for_total($total, $query_args);
 
 		// Hand the readouts the numbers this request already paid for. A Result
 		// Count re-rendered below would otherwise run the same count again — and,
 		// worse, could answer a different one if anything about the request
 		// changed between the two, so the grid and its own caption would
 		// disagree inside a single response.
-		\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::prime_summary(
+		\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_A_Loop_Grid::prime_summary(
 			$post_id,
 			$grid_id,
 			[
 				'grid_id'   => $grid_id,
-				'post_type' => \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::effective_post_type($gs),
+				'post_type' => \Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_A_Loop_Grid::effective_post_type($gs),
 				'filters'   => $filters['active'] ?? [],
 				'total'     => $total,
 				'max_pages' => $max_pages,
@@ -6140,7 +6140,7 @@ final class Atomic
 
 		// Push context (same key the Loop Item reads) and render the item.
 		\Elementor\Modules\AtomicWidgets\Elements\Base\Render_Context::push(
-			\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::class,
+			\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_A_Loop_Grid::class,
 			['query_args' => $query_args]
 		);
 
@@ -6152,7 +6152,7 @@ final class Atomic
 		$html = ob_get_clean();
 
 		\Elementor\Modules\AtomicWidgets\Elements\Base\Render_Context::pop(
-			\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::class
+			\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_A_Loop_Grid::class
 		);
 
 		// The filter widgets, re-rendered for the same URL.
@@ -6191,7 +6191,7 @@ final class Atomic
 	 * filtered page ends up saying "24 results" over twelve of them.
 	 *
 	 * The document is switched to for the duration: a filter widget asks
-	 * `AAE_A_Loop_Grid::current_document_id()` which document declares it, and
+	 * `Aaeaddon_A_Loop_Grid::current_document_id()` which document declares it, and
 	 * in an admin-ajax request there is no current document and no global post,
 	 * so without this every widget would resolve nothing and render an empty
 	 * list. `switch_to_document()` only swaps Elementor's own pointer — it
@@ -6203,7 +6203,7 @@ final class Atomic
 	 * @return array<string, string> element id => HTML.
 	 */
 	private function render_loop_filters(int $post_id, string $grid_id, array $elements): array {
-		$wanted = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\Loop_Filter_Auth::rerender_ids($elements, $grid_id);
+		$wanted = \Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Loop_Filter_Auth::rerender_ids($elements, $grid_id);
 		if (! $wanted) {
 			return [];
 		}
@@ -6260,10 +6260,10 @@ final class Atomic
 	 */
 	public function bump_post_pagination_cache_version($post_id): void {
 		$post_type = get_post_type($post_id);
-		if (! $post_type || ! class_exists('\WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination')) {
+		if (! $post_type || ! class_exists('\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\PostPagination\Aaeaddon_A_Post_Pagination')) {
 			return;
 		}
-		\WCF_ADDONS\AtomicWidgets\Widgets\PostPagination\AAE_A_Post_Pagination::bump_cache_version($post_type);
+		\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\PostPagination\Aaeaddon_A_Post_Pagination::bump_cache_version($post_type);
 	}
 
 	/**
@@ -6339,7 +6339,7 @@ final class Atomic
 	 * into one cached file (`base-desktop.css`), ordered by element
 	 * registration — and its own native elements (e-svg, e-heading, …)
 	 * register after ours. So when one of our named base-style classes (e.g.
-	 * AAE_A_Btn's `e-aae-a-btn-icon`, 30px) collides with a native default
+	 * Aaeaddon_A_Btn's `e-aae-a-btn-icon`, 30px) collides with a native default
 	 * sharing the exact same selector shape (`.elementor .<class>`, hence the
 	 * same specificity — e.g. `e-svg-base`'s 65px), the native rule lands
 	 * LATER in that single file and wins the tie on the frontend, even though
@@ -6662,15 +6662,15 @@ final class Atomic
 		require_once __DIR__ . '/Library/class-aae-a-library-documents.php';
 
 		$documents_manager
-			->register_document_type('e-aae-a-loop-grid', \WCF_ADDONS\AtomicWidgets\Library\AAE_A_Loop_Grid_Document::class)
-			->register_document_type('e-aae-a-loop-grid-slider', \WCF_ADDONS\AtomicWidgets\Library\AAE_A_Loop_Grid_Slider_Document::class)
-			->register_document_type('e-aae-a-slider', \WCF_ADDONS\AtomicWidgets\Library\AAE_A_Slider_Document::class);
+			->register_document_type('e-aae-a-loop-grid', \Wealcoder\AnimationAddons\AtomicWidgets\Library\Aaeaddon_A_Loop_Grid_Document::class)
+			->register_document_type('e-aae-a-loop-grid-slider', \Wealcoder\AnimationAddons\AtomicWidgets\Library\Aaeaddon_A_Loop_Grid_Slider_Document::class)
+			->register_document_type('e-aae-a-slider', \Wealcoder\AnimationAddons\AtomicWidgets\Library\Aaeaddon_A_Slider_Document::class);
 	}
 
 	/**
 	 * Build a plugin asset URL from a registry-relative path.
 	 *
-	 * WCF_ADDONS_URL comes from plugin_dir_url(), which always ends in a slash,
+	 * AAEADDON_URL comes from plugin_dir_url(), which always ends in a slash,
 	 * while every `script_path` / `style_path` in the widget registry is written
 	 * with a leading slash. Concatenating them raw yields
 	 * `.../animation-addons-for-elementor//assets/...` — the browser treats that
@@ -6680,7 +6680,7 @@ final class Atomic
 	 */
 	private static function asset_url(string $relative_path, ?string $base_url = null): string
 	{
-		return ($base_url ?? WCF_ADDONS_URL) . ltrim($relative_path, '/');
+		return ($base_url ?? AAEADDON_URL) . ltrim($relative_path, '/');
 	}
 
 	/**
@@ -6695,18 +6695,18 @@ final class Atomic
 	 */
 	private static function widget_base_path(array $widget_data): string
 	{
-		return ! empty($widget_data['base_path']) ? $widget_data['base_path'] : WCF_ADDONS_PATH;
+		return ! empty($widget_data['base_path']) ? $widget_data['base_path'] : AAEADDON_PATH;
 	}
 
 	private static function widget_base_url(array $widget_data): string
 	{
-		return ! empty($widget_data['base_url']) ? $widget_data['base_url'] : WCF_ADDONS_URL;
+		return ! empty($widget_data['base_url']) ? $widget_data['base_url'] : AAEADDON_URL;
 	}
 
 	/**
 	 * Slides an unlicensed site may author in either slider.
 	 *
-	 * Lives HERE, not on AAE_A_Loop_Grid_Slider, because Assets.php has to ship
+	 * Lives HERE, not on Aaeaddon_A_Loop_Grid_Slider, because Assets.php has to ship
 	 * it to the editor on every load and that widget's class is only required
 	 * when the widget is switched on — reading it there would fatal on a site
 	 * that has the slider disabled.
@@ -6809,7 +6809,7 @@ final class Atomic
 	 * invoked from four places, so the same stats were repeated several times a
 	 * request.
 	 *
-	 * The version source is deliberately still filemtime, not WCF_ADDONS_VERSION:
+	 * The version source is deliberately still filemtime, not AAEADDON_VERSION:
 	 * switching it would change cache-busting behaviour for existing sites
 	 * mid-release, which is a user-visible change, not an optimisation.
 	 *
@@ -6843,7 +6843,7 @@ final class Atomic
 
 		return $cache[$key] = [
 			'path'    => $path,
-			'version' => file_exists($file_path) ? filemtime($file_path) : WCF_ADDONS_VERSION,
+			'version' => file_exists($file_path) ? filemtime($file_path) : AAEADDON_VERSION,
 		];
 	}
 
@@ -7129,12 +7129,12 @@ JS;
 					$path = $widget_data['script_path'];
 					if ( ! $this->is_dev_environment() ) {
 						$min_path = str_replace( '.js', '.min.js', $path );
-						if ( file_exists( WCF_ADDONS_PATH . $min_path ) ) {
+						if ( file_exists( AAEADDON_PATH . $min_path ) ) {
 							$path = $min_path;
 						}
 					}
-					$file_path = WCF_ADDONS_PATH . $path;
-					$version   = file_exists( $file_path ) ? filemtime( $file_path ) : WCF_ADDONS_VERSION;
+					$file_path = AAEADDON_PATH . $path;
+					$version   = file_exists( $file_path ) ? filemtime( $file_path ) : AAEADDON_VERSION;
 
 					wp_register_script(
 						$widget_data['script_handle'],
@@ -7178,12 +7178,12 @@ JS;
 					$style_path = $widget_data['style_path'];
 					if ( ! $this->is_dev_environment() ) {
 						$min_path = str_replace( '.css', '.min.css', $style_path );
-						if ( file_exists( WCF_ADDONS_PATH . $min_path ) ) {
+						if ( file_exists( AAEADDON_PATH . $min_path ) ) {
 							$style_path = $min_path;
 						}
 					}
-					$style_file = WCF_ADDONS_PATH . $style_path;
-					$style_ver  = file_exists( $style_file ) ? filemtime( $style_file ) : WCF_ADDONS_VERSION;
+					$style_file = AAEADDON_PATH . $style_path;
+					$style_ver  = file_exists( $style_file ) ? filemtime( $style_file ) : AAEADDON_VERSION;
 
 					wp_register_style(
 						$widget_data['style_handle'],
@@ -7290,12 +7290,12 @@ JS;
 		}
 		if ( ! $this->is_dev_environment() ) {
 			$min_path = str_replace( '.css', '.min.css', $path );
-			if ( file_exists( WCF_ADDONS_PATH . $min_path ) ) {
+			if ( file_exists( AAEADDON_PATH . $min_path ) ) {
 				$path = $min_path;
 			}
 		}
-		$file_path = WCF_ADDONS_PATH . $path;
-		$version   = file_exists( $file_path ) ? filemtime( $file_path ) : WCF_ADDONS_VERSION;
+		$file_path = AAEADDON_PATH . $path;
+		$version   = file_exists( $file_path ) ? filemtime( $file_path ) : AAEADDON_VERSION;
 		wp_register_style( $handle, self::asset_url( $path ), [], $version );
 	}
 
@@ -7366,7 +7366,7 @@ JS;
 	 * Return true when running in a dev / local environment.
 	 *
 	 * Decides whether minified assets are served, whether the remote preset cache
-	 * is bypassed, and — through wcf_asset_version() — whether admin assets are
+	 * is bypassed, and — through aaeaddon_asset_version() — whether admin assets are
 	 * cacheable at all. A FALSE NEGATIVE makes a developer's edits appear not to
 	 * take; a false positive costs a production site its asset caching.
 	 *
@@ -7661,7 +7661,7 @@ JS;
 			}
 		}
 
-		$updated = update_option(self::OPTION_NAME, $clean);
+		$updated = \Wealcoder\AnimationAddons\Compat\Key_Bridge::update_option(self::OPTION_NAME, $clean);
 
 		// Reset cache.
 		$this->active_widgets = null;
@@ -7838,7 +7838,7 @@ JS;
 			}
 		}
 
-		$updated = update_option(self::EXTENSIONS_OPTION_NAME, $clean);
+		$updated = \Wealcoder\AnimationAddons\Compat\Key_Bridge::update_option(self::EXTENSIONS_OPTION_NAME, $clean);
 
 		// Record what the user was just shown. Without this the setup wizard's
 		// choice is silently overruled a moment later: migrate_newly_offered_extensions()
@@ -8439,7 +8439,7 @@ JS;
 			list($value_key, $absent_key) = $keys;
 
 			if (! empty($undo[$absent_key])) {
-				delete_option($name);
+				\Wealcoder\AnimationAddons\Compat\Key_Bridge::delete_option( $name );
 
 				continue;
 			}
@@ -8536,7 +8536,7 @@ JS;
 
 	private function forget_atomic_undo(): void
 	{
-		delete_option(self::UNDO_OPTION_NAME);
+		\Wealcoder\AnimationAddons\Compat\Key_Bridge::delete_option( self::UNDO_OPTION_NAME );
 	}
 
 	/**
@@ -8861,21 +8861,21 @@ JS;
 
 		$suffix = $this->is_dev_environment() ? '' : '.min';
 		$path = 'assets/atomic/js/atomic-editor' . $suffix . '.js';
-		$file_path = WCF_ADDONS_PATH . $path;
+		$file_path = AAEADDON_PATH . $path;
 		// Version the URL from the built file itself. Unlike a timestamp-only
 		// version, this also changes for multiple builds written in one second.
-		$version = WCF_ADDONS_VERSION;
+		$version = AAEADDON_VERSION;
 		if (is_readable($file_path)) {
 			$content_hash = md5_file($file_path);
 			$version = false !== $content_hash
-				? WCF_ADDONS_VERSION . '-' . substr($content_hash, 0, 12)
+				? AAEADDON_VERSION . '-' . substr($content_hash, 0, 12)
 				: (string) filemtime($file_path);
 		}
 		
 
 		wp_enqueue_script(
 			'aae-atomic-editor',
-			WCF_ADDONS_URL . $path,
+			AAEADDON_URL . $path,
 			[
 				'nested-elements',
 				'elementor-editor',

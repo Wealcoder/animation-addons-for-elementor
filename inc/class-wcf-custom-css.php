@@ -1,8 +1,6 @@
 <?php
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons;
 
 use Elementor\Controls_Manager;
 use Elementor\Controls_Stack;
@@ -12,7 +10,7 @@ use Elementor\Element_Base;
 
 defined( 'ABSPATH' ) || die();
 
-class WCF_Custom_CSS {
+class Aaeaddon_Custom_CSS {
 
 	public static function init() {
 		add_action( 'elementor/element/after_section_end', [ __CLASS__, 'register_controls' ], 10, 2 );
@@ -86,4 +84,4 @@ class WCF_Custom_CSS {
 	}
 }
 
-WCF_Custom_CSS::init();
+Aaeaddon_Custom_CSS::init();

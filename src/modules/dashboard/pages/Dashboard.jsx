@@ -8,6 +8,7 @@ import VideoBanner from "@/components/dashboard/VideoBanner";
 import WhatsNew from "@/components/dashboard/WhatsNew";
 import SplitRow from "@/components/shared/SplitRow";
 import AtomicOptInNotice from "@/components/shared/AtomicOptInNotice";
+import MigrationPendingNotice from "@/components/shared/MigrationPendingNotice";
 import AtomicUndoNotice from "@/components/shared/AtomicUndoNotice";
 
 const Dashboard = () => {
@@ -18,6 +19,7 @@ const Dashboard = () => {
        * Elementor V4 — see the components. Both render null the rest of the
        * time, so this changes nothing for every other site.
        */}
+      <MigrationPendingNotice />
       <AtomicOptInNotice />
       <AtomicUndoNotice />
 

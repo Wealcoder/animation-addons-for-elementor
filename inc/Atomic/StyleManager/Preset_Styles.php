@@ -29,7 +29,7 @@
  * @package AnimationAddonsForElementor
  */
 
-namespace WCF_ADDONS\Atomic\StyleManager;
+namespace Wealcoder\AnimationAddons\Atomic\StyleManager;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -108,10 +108,10 @@ final class Preset_Styles {
 		$handle = $entry['handle'];
 
 		if ( ! wp_style_is( $handle, 'registered' ) ) {
-			$abs = WCF_ADDONS_PATH . $entry['path'];
-			$ver = file_exists( $abs ) ? (string) filemtime( $abs ) : WCF_ADDONS_VERSION;
+			$abs = AAEADDON_PATH . $entry['path'];
+			$ver = file_exists( $abs ) ? (string) filemtime( $abs ) : AAEADDON_VERSION;
 
-			wp_register_style( $handle, WCF_ADDONS_URL . $entry['path'], [], $ver );
+			wp_register_style( $handle, AAEADDON_URL . $entry['path'], [], $ver );
 		}
 
 		wp_enqueue_style( $handle );

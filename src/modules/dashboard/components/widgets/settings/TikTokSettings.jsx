@@ -53,7 +53,7 @@ const TikTokSettings = () => {
       },
       body: new URLSearchParams({
         action: "aae_get_dynamic_settings",
-        setting_name: "aae_tiktok_api_advanced_settings",
+        setting_name: "aaeaddon_tiktok_api_settings",
         nonce: WCF_ADDONS_ADMIN.nonce,
       }),
     })
@@ -78,7 +78,7 @@ const TikTokSettings = () => {
       },
       body: new URLSearchParams({
         action: "aae_save_dynamic_settings",
-        setting_name: "aae_tiktok_api_advanced_settings",
+        setting_name: "aaeaddon_tiktok_api_settings",
         form_fields: JSON.stringify(data),
         nonce: WCF_ADDONS_ADMIN.nonce,
       }),

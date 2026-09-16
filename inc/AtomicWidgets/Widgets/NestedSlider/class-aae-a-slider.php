@@ -1,9 +1,9 @@
 <?php
-namespace WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
-use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Indicators;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slider_Indicators;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Number_Prop_Type;
@@ -17,25 +17,25 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 
-use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slide;
-use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slides_Control;
-use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Track;
-use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Nav_Prev;
-use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Nav_Next;
-use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Pagination;
-use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Current;
-use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Total;
-use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Percentage;
-use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Progress;
-use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Progress_Fill;
-use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Divider;
-use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Counter;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slide;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slides_Control;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slider_Track;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slider_Nav_Prev;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slider_Nav_Next;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slider_Pagination;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slider_Current;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slider_Total;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slider_Percentage;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slider_Progress;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slider_Progress_Fill;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slider_Divider;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slider_Counter;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-class AAE_A_Slider extends Atomic_Element_Base {
+class Aaeaddon_A_Slider extends Atomic_Element_Base {
 	use Has_Element_Template;
 
 	public function __construct( $data = [], $args = null ) {
@@ -101,7 +101,7 @@ class AAE_A_Slider extends Atomic_Element_Base {
 				->set_id( 'aae_presets' )
 				->set_items(
 					[
-						AAE_A_Preset_Picker_Control::make()
+						Aaeaddon_A_Preset_Picker_Control::make()
 							->set_label( __( 'Apply Preset', 'animation-addons-for-elementor' ) )
 							->set_meta( [ 'layout' => 'custom' ] ),
 					]
@@ -111,7 +111,7 @@ class AAE_A_Slider extends Atomic_Element_Base {
 				->set_label( __( 'Slides', 'animation-addons-for-elementor' ) )
 				->set_id( 'slides' )
 				->set_items( [
-					AAE_A_Slides_Control::make()
+					Aaeaddon_A_Slides_Control::make()
 						->set_label( __( 'Slides', 'animation-addons-for-elementor' ) )
 						->set_meta( [ 'layout' => 'custom' ] ),
 				] ),
@@ -124,7 +124,7 @@ class AAE_A_Slider extends Atomic_Element_Base {
 				->set_label( __( 'Slider Settings', 'animation-addons-for-elementor' ) )
 				->set_id( 'slider_settings' )
 				->set_items( [
-					Text_Control::bind_to( \WCF_ADDONS\Atomic\NestedSlider\Schema::SLIDER_SECTION_ANCHOR ),
+					Text_Control::bind_to( \Wealcoder\AnimationAddons\Atomic\NestedSlider\Schema::SLIDER_SECTION_ANCHOR ),
 					Text_Control::bind_to( '_cssid' )
 						->set_label( __( 'ID', 'animation-addons-for-elementor' ) )
 						->set_meta( $this->get_css_id_control_meta() ),
@@ -174,40 +174,40 @@ class AAE_A_Slider extends Atomic_Element_Base {
 		// Start with 5 empty slides; the user fills each one.
 		$slides = [];
 		for ( $i = 1; $i <= 1; $i++ ) {
-			$slides[] = AAE_A_Slide::generate()
+			$slides[] = Aaeaddon_A_Slide::generate()
 				->editor_settings( [ 'title' => 'Slide ' . $i ] )
 				->build();
 		}
 
 		return [
-			AAE_A_Slider_Track::generate()
+			Aaeaddon_A_Slider_Track::generate()
 				->editor_settings( [ 'title' => 'Slider Track' ] )
 				->settings( [ 'classes' => self::default_marker_classes() ] )
 				->children( $slides )
 				->build(),
-			AAE_A_Slider_Nav_Prev::generate()
+			Aaeaddon_A_Slider_Nav_Prev::generate()
 				->editor_settings( [ 'title' => 'Prev Nav' ] )
 				->settings( [ 'classes' => self::default_marker_classes() ] )
 				->build(),
-			AAE_A_Slider_Nav_Next::generate()
+			Aaeaddon_A_Slider_Nav_Next::generate()
 				->editor_settings( [ 'title' => 'Next Nav' ] )
 				->settings( [ 'classes' => self::default_marker_classes() ] )
 				->build(),
-			AAE_A_Slider_Pagination::generate()
+			Aaeaddon_A_Slider_Pagination::generate()
 				->editor_settings( [ 'title' => 'Pagination' ] )
 				->settings( [ 'classes' => self::default_marker_classes() ] )
 				->build(),
-			AAE_A_Slider_Indicators::generate()
+			Aaeaddon_A_Slider_Indicators::generate()
 				->editor_settings( [ 'title' => 'Indicators' ] )
 				->settings( [ 'classes' => self::default_marker_classes() ] )
 				->children( [
-					AAE_A_Slider_Counter::generate()
+					Aaeaddon_A_Slider_Counter::generate()
 						->editor_settings( [ 'title' => 'Slide Counter' ] )
 						->build(),
-					AAE_A_Slider_Progress::generate()
+					Aaeaddon_A_Slider_Progress::generate()
 						->editor_settings( [ 'title' => 'Progress Line' ] )
 						->build(),
-					AAE_A_Slider_Percentage::generate()
+					Aaeaddon_A_Slider_Percentage::generate()
 						->editor_settings( [ 'title' => 'Progress %' ] )
 						->build(),
 				] )

@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Progressbar;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Progressbar;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -39,7 +39,7 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
  * missing" (nothing in the style repository resolves it) and that alert's
  * dismiss button unapplies it, silently killing the animation.
  */
-class AAE_A_Progressbar_Dot extends Atomic_Widget_Base {
+class Aaeaddon_A_Progressbar_Dot extends Atomic_Widget_Base {
 
 	use Has_Template;
 

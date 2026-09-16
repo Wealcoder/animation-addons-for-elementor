@@ -171,7 +171,7 @@ const WeatherSettings = () => {
       },
       body: new URLSearchParams({
         action: "aae_get_dynamic_settings",
-        setting_name: "aae_weather_api_advanced_settings",
+        setting_name: "aaeaddon_weather_api_settings",
         nonce: WCF_ADDONS_ADMIN.nonce,
       }),
     })
@@ -205,7 +205,7 @@ const WeatherSettings = () => {
       },
       body: new URLSearchParams({
         action: "aae_save_dynamic_settings",
-        setting_name: "aae_weather_api_advanced_settings",
+        setting_name: "aaeaddon_weather_api_settings",
         form_fields: JSON.stringify(data),
         nonce: WCF_ADDONS_ADMIN.nonce,
       }),

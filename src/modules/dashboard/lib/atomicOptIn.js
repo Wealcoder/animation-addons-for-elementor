@@ -18,13 +18,13 @@ import { flattenAtomicExtensions } from "@/lib/atomicExtensionService";
  * (a hand save is the user's own choice) and would delete the snapshot the
  * notice had just taken.
  *
- * WHAT IS DELIBERATELY NOT TOUCHED: `wcf_save_widgets` / `wcf_save_extensions`,
+ * WHAT IS DELIBERATELY NOT TOUCHED: `aaeaddon_save_widgets` / `aaeaddon_save_extensions`,
  * the v3 pair. Not written, not cleared, not read. Switching the atomic set on
  * takes nothing away from a v3 site — its widgets stay registered, its pages
  * keep rendering, and its V3 tab is still on screen next to the new one. That
  * is also why the return path only has one option pair to restore. The wizard
  * has the same rule for a sharper reason (writing even an empty
- * `wcf_save_widgets` disarms `maybe_enable_used_v3_widgets()` and can blank an
+ * `aaeaddon_save_widgets` disarms `maybe_enable_used_v3_widgets()` and can blank an
  * imported page); see the long comment in `components/wizards/WizFooter.jsx`.
  */
 
@@ -75,7 +75,7 @@ const post = (body) =>
  */
 export const recordAtomicOptIn = (state, enable = null) => {
   const body = {
-    action: "aae_atomic_optin",
+    action: "aaeaddon_atomic_optin",
     state,
     nonce: WCF_ADDONS_ADMIN.nonce,
   };
@@ -104,7 +104,7 @@ export const recordAtomicOptIn = (state, enable = null) => {
  */
 export const answerAtomicUndo = (decision) =>
   post({
-    action: "aae_atomic_optin_undo",
+    action: "aaeaddon_atomic_optin_undo",
     decision,
     nonce: WCF_ADDONS_ADMIN.nonce,
   });

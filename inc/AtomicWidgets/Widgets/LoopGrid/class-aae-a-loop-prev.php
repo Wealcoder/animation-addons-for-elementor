@@ -7,7 +7,7 @@
  * @package AnimationAddonsForElementor
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
@@ -28,7 +28,7 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Elem
 	return;
 }
 
-class AAE_A_Loop_Prev extends Atomic_Element_Base {
+class Aaeaddon_A_Loop_Prev extends Atomic_Element_Base {
 	use Has_Element_Template;
 
 	public function __construct( $data = [], $args = null ) {

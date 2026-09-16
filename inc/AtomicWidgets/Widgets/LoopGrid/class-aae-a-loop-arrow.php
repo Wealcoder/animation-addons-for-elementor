@@ -11,7 +11,7 @@
  * @package AnimationAddonsForElementor
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Widget_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Template;
@@ -32,7 +32,7 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Widg
 	return;
 }
 
-class AAE_A_Loop_Arrow extends Atomic_Widget_Base {
+class Aaeaddon_A_Loop_Arrow extends Atomic_Widget_Base {
 	use Has_Template;
 
 	const BASE_STYLE_KEY = 'base';

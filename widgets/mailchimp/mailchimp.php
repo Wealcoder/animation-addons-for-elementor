@@ -1,8 +1,6 @@
 <?php
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\Widgets;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\Widgets;
 
 use Elementor\Group_Control_Background;
 use Elementor\Group_Control_Border;
@@ -155,7 +153,7 @@ class Mailchimp extends Widget_Base
 				'label_block' => true,
 				'placeholder' => __('Enter your mailchimp api here', 'animation-addons-for-elementor'),
 				'dynamic'     => ['active' => true],
-				'default' => get_option('aae_mailchimp_api')
+				'default' => get_option('aaeaddon_mailchimp_api')
 			]
 		);
 

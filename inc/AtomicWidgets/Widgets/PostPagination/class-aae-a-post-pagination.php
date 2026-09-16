@@ -3,12 +3,12 @@
  * AAE Post Pagination — atomic prev/next single-post navigation.
  *
  * Root container seeding a Prev + Next button (each independently
- * restyleable/composable, mirroring AAE_A_Loop_Prev/Next). Resolves the
+ * restyleable/composable, mirroring Aaeaddon_A_Loop_Prev/Next). Resolves the
  * adjacent post via its OWN full-list-and-locate query builder — WordPress's
  * `get_adjacent_post()` is too limited for this widget's requirements (only
  * one taxonomy, no custom-field/menu_order ordering, no loop-around), so we
  * build the same "resolve the full ordered id list once, locate the current
- * post's index" strategy AAE_A_Loop_Grid uses for sticky-post pinning.
+ * post's index" strategy Aaeaddon_A_Loop_Grid uses for sticky-post pinning.
  *
  * Post-type agnostic by design: `get_post_type()` on the current post drives
  * everything, so the same widget works unmodified on single Posts, Pages, or
@@ -19,7 +19,7 @@
  * @since   4.0.0
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\PostPagination;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\PostPagination;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
@@ -50,13 +50,13 @@ require_once __DIR__ . '/Parts/class-aae-a-post-pagination-prev.php';
 require_once __DIR__ . '/Parts/class-aae-a-post-pagination-next.php';
 require_once __DIR__ . '/../LoopGrid/class-aae-query-chips-control.php';
 
-use WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_Query_Chips_Control;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_Query_Chips_Control;
 
 if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base' ) ) {
 	return;
 }
 
-class AAE_A_Post_Pagination extends Atomic_Element_Base {
+class Aaeaddon_A_Post_Pagination extends Atomic_Element_Base {
 	use Has_Element_Template;
 
 	const CACHE_TTL = 6 * HOUR_IN_SECONDS;
@@ -105,7 +105,7 @@ class AAE_A_Post_Pagination extends Atomic_Element_Base {
 	protected static function define_props_schema(): array {
 		// NOTE on polarity: Elementor's 4.1.x dependency evaluator fires the
 		// `effect` when the where() condition does NOT match — a `hide`
-		// effect is really "hide UNLESS this holds" (see AAE_A_Loop_Grid's
+		// effect is really "hide UNLESS this holds" (see Aaeaddon_A_Loop_Grid's
 		// tax-prop dependencies for the same documented gotcha, verified
 		// empirically there too). So every clause below states the condition
 		// under which the field should be VISIBLE, not the condition under
@@ -241,13 +241,13 @@ class AAE_A_Post_Pagination extends Atomic_Element_Base {
 						->set_full_width( true )
 						->set_convert_options( true ),
 
-					AAE_Query_Chips_Control::bind_to( 'include_terms' )
+					Aaeaddon_Query_Chips_Control::bind_to( 'include_terms' )
 						->set_label( __( 'Include Terms', 'animation-addons-for-elementor' ) )
 						->set_kind( 'term' )
 						->set_taxonomy( $chips_taxonomy )
 						->set_placeholder( __( 'Search terms…', 'animation-addons-for-elementor' ) ),
 
-					AAE_Query_Chips_Control::bind_to( 'exclude_terms' )
+					Aaeaddon_Query_Chips_Control::bind_to( 'exclude_terms' )
 						->set_label( __( 'Exclude Terms', 'animation-addons-for-elementor' ) )
 						->set_kind( 'term' )
 						->set_taxonomy( $chips_taxonomy )
@@ -263,12 +263,12 @@ class AAE_A_Post_Pagination extends Atomic_Element_Base {
 						->set_full_width( true )
 						->set_convert_options( true ),
 
-					AAE_Query_Chips_Control::bind_to( 'include_posts' )
+					Aaeaddon_Query_Chips_Control::bind_to( 'include_posts' )
 						->set_label( __( 'Include Posts', 'animation-addons-for-elementor' ) )
 						->set_kind( 'post' )
 						->set_placeholder( __( 'Search by title or ID…', 'animation-addons-for-elementor' ) ),
 
-					AAE_Query_Chips_Control::bind_to( 'exclude_posts' )
+					Aaeaddon_Query_Chips_Control::bind_to( 'exclude_posts' )
 						->set_label( __( 'Exclude Posts', 'animation-addons-for-elementor' ) )
 						->set_kind( 'post' )
 						->set_placeholder( __( 'Search by title or ID…', 'animation-addons-for-elementor' ) ),
@@ -392,10 +392,10 @@ class AAE_A_Post_Pagination extends Atomic_Element_Base {
 		// label text, icon, and style are exactly what a user drops this
 		// widget to customize.
 		return [
-			AAE_A_Post_Pagination_Prev::generate()
+			Aaeaddon_A_Post_Pagination_Prev::generate()
 				->editor_settings( [ 'title' => 'Previous Post' ] )
 				->build(),
-			AAE_A_Post_Pagination_Next::generate()
+			Aaeaddon_A_Post_Pagination_Next::generate()
 				->editor_settings( [ 'title' => 'Next Post' ] )
 				->build(),
 		];
@@ -493,8 +493,8 @@ class AAE_A_Post_Pagination extends Atomic_Element_Base {
 		}
 
 		if ( class_exists( '\Elementor\Plugin' ) && \Elementor\Plugin::$instance->editor->is_edit_mode()
-			&& class_exists( '\WCF_ADDONS\AtomicWidgets\Atomic' ) ) {
-			$sample = \WCF_ADDONS\AtomicWidgets\Atomic::get_sample_post();
+			&& class_exists( '\Wealcoder\AnimationAddons\AtomicWidgets\Atomic' ) ) {
+			$sample = \Wealcoder\AnimationAddons\AtomicWidgets\Atomic::get_sample_post();
 			if ( $sample ) {
 				return (int) $sample->ID;
 			}
@@ -623,7 +623,7 @@ class AAE_A_Post_Pagination extends Atomic_Element_Base {
 			'url'       => get_permalink( $id ),
 			'thumbnail' => has_post_thumbnail( $id ) ? get_the_post_thumbnail_url( $id, 'medium' ) : '',
 			// Generously capped at WP core's own default excerpt length —
-			// AAE_A_Post_Pagination_Preview_Excerpt::get_atomic_settings()
+			// Aaeaddon_A_Post_Pagination_Preview_Excerpt::get_atomic_settings()
 			// re-trims this down to its OWN "Length (words)" setting at
 			// render time, so the length control lives on the piece that
 			// actually displays it, not here.
@@ -777,7 +777,7 @@ class AAE_A_Post_Pagination extends Atomic_Element_Base {
 	 * Extract positive integer ids from a chips value: an array whose items
 	 * are JSON strings {"id":123,"label":".."} (aae-query-chips storage
 	 * format), plain numerics, or already-decoded arrays. (Same shape as
-	 * AAE_A_Loop_Grid::extract_ids().)
+	 * Aaeaddon_A_Loop_Grid::extract_ids().)
 	 */
 	private static function extract_ids( $items ): array {
 		if ( ! is_array( $items ) ) {
@@ -805,7 +805,7 @@ class AAE_A_Post_Pagination extends Atomic_Element_Base {
 
 	/** Per-post-type cache-version bump, invalidating stale ordered-id lists. */
 	public static function cache_version( string $post_type ): int {
-		$versions = get_option( 'aae_pp_cache_versions', [] );
+		$versions = get_option( 'aaeaddon_pp_cache_versions', [] );
 		return isset( $versions[ $post_type ] ) ? (int) $versions[ $post_type ] : 1;
 	}
 
@@ -813,9 +813,9 @@ class AAE_A_Post_Pagination extends Atomic_Element_Base {
 		if ( ! $post_type ) {
 			return;
 		}
-		$versions               = get_option( 'aae_pp_cache_versions', [] );
+		$versions               = get_option( 'aaeaddon_pp_cache_versions', [] );
 		$versions[ $post_type ] = self::cache_version( $post_type ) + 1;
-		update_option( 'aae_pp_cache_versions', $versions, false );
+		update_option( 'aaeaddon_pp_cache_versions', $versions, false );
 	}
 
 	private static function get_taxonomy_options(): array {

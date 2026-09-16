@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Nav;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Nav;
 
 use Elementor\Modules\AtomicWidgets\Controls\Base\Element_Control_Base;
 
@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * on every nav-item, selecting a nested item shows the same manager — that's
  * how 2nd/3rd-level menus are authored without touching the Structure tree.
  */
-class AAE_A_Nav_Sub_Items_Control extends Element_Control_Base {
+class Aaeaddon_A_Nav_Sub_Items_Control extends Element_Control_Base {
 
 	public function get_type(): string {
 		return 'aae-nav-sub-items';

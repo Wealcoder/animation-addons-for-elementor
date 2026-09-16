@@ -9,13 +9,13 @@
  * @package AnimationAddonsForElementor
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Library;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Library;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-class AAE_A_Loop_Grid_Document extends AAE_A_Library_Document {
+class Aaeaddon_A_Loop_Grid_Document extends Aaeaddon_A_Library_Document {
 	public function get_name() {
 		return 'e-aae-a-loop-grid';
 	}
@@ -27,7 +27,7 @@ class AAE_A_Loop_Grid_Document extends AAE_A_Library_Document {
 	}
 }
 
-class AAE_A_Loop_Grid_Slider_Document extends AAE_A_Library_Document {
+class Aaeaddon_A_Loop_Grid_Slider_Document extends Aaeaddon_A_Library_Document {
 	public function get_name() {
 		return 'e-aae-a-loop-grid-slider';
 	}
@@ -39,7 +39,7 @@ class AAE_A_Loop_Grid_Slider_Document extends AAE_A_Library_Document {
 	}
 }
 
-class AAE_A_Slider_Document extends AAE_A_Library_Document {
+class Aaeaddon_A_Slider_Document extends Aaeaddon_A_Library_Document {
 	public function get_name() {
 		return 'e-aae-a-slider';
 	}

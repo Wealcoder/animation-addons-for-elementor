@@ -1,11 +1,11 @@
 <?php
 
-namespace WCF_ADDONS\Atomic\CustomCss;
+namespace Wealcoder\AnimationAddons\Atomic\CustomCss;
 
 use Elementor\Core\DynamicTags\Dynamic_CSS;
-use WCF_ADDONS\Atomic\Bootstrap;
-use WCF_ADDONS\Atomic\InteractionsMap;
-use WCF_ADDONS\Atomic\CustomCss\Schema;
+use Wealcoder\AnimationAddons\Atomic\Bootstrap;
+use Wealcoder\AnimationAddons\Atomic\InteractionsMap;
+use Wealcoder\AnimationAddons\Atomic\CustomCss\Schema;
 
 if (! defined('ABSPATH')) {
 	exit;
@@ -13,7 +13,7 @@ if (! defined('ABSPATH')) {
 
 final class Render
 {
-	use \WCF_ADDONS\Atomic\Traits\Responsive_Config;
+	use \Wealcoder\AnimationAddons\Atomic\Traits\Responsive_Config;
 
 	public function register(): void
 	{

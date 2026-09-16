@@ -1,8 +1,8 @@
 <?php
 
-namespace WCF_ADDONS\Atomic\CursorHoverEffect;
+namespace Wealcoder\AnimationAddons\Atomic\CursorHoverEffect;
 
-use WCF_ADDONS\Atomic\PropTypes\Section_Anchor_Prop_Type as Base_Section_Anchor;
+use Wealcoder\AnimationAddons\Atomic\PropTypes\Section_Anchor_Prop_Type as Base_Section_Anchor;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid;
 
 use Elementor\Modules\AtomicWidgets\Controls\Base\Atomic_Control_Base;
 
@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * a JSON object `{"id":123,"label":"Hello"}` — the id feeds the WP_Query,
  * the label re-hydrates the chip when the panel reopens.
  */
-class AAE_Query_Chips_Control extends Atomic_Control_Base {
+class Aaeaddon_Query_Chips_Control extends Atomic_Control_Base {
 
 	/** 'post' (search posts by title/ID) or 'term' (search taxonomy terms). */
 	private string $kind = 'post';

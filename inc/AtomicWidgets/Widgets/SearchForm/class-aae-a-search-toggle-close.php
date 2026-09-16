@@ -21,7 +21,7 @@
  * @package AnimationAddonsForElementor
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\SearchForm;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SearchForm;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Widget_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Template;
@@ -44,7 +44,7 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Widg
 	return;
 }
 
-class AAE_A_Search_Toggle_Close extends Atomic_Widget_Base {
+class Aaeaddon_A_Search_Toggle_Close extends Atomic_Widget_Base {
 	use Has_Template;
 
 	public static function get_element_type(): string {

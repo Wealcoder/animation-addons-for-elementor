@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\Atomic\Presets;
+namespace Wealcoder\AnimationAddons\Atomic\Presets;
 
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 
@@ -77,7 +77,7 @@ final class Controls {
 			->set_label( __( 'Presets', 'animation-addons-for-elementor' ) )
 			->set_id( 'aae_presets' )
 			->set_items( [
-				AAE_A_Preset_Picker_Control::make()
+				Aaeaddon_A_Preset_Picker_Control::make()
 					->set_label( __( 'Apply Preset', 'animation-addons-for-elementor' ) )
 					->set_meta( [ 'layout' => 'custom' ] ),
 			] );

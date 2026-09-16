@@ -6,12 +6,12 @@
  * The prop-bound counterpart of Elementor's single-value `query` control
  * (the multi `query-chips` control only exists in the 4.3-dev packages, not
  * in the installed 4.1.x runtime). Registered under type 'aae-query-chips';
- * the PHP side is AAE_Query_Chips_Control, which passes { kind, taxonomy,
+ * the PHP side is Aaeaddon_Query_Chips_Control, which passes { kind, taxonomy,
  * placeholder } and binds a String_Array prop.
  *
  * Storage format: each selected option is ONE string of the bound
  * String_Array — a JSON object `{"id":123,"label":"Hello"}`. The id feeds
- * WP_Query on the server (AAE_A_Loop_Grid::build_query_args), the label
+ * WP_Query on the server (Aaeaddon_A_Loop_Grid::build_query_args), the label
  * re-hydrates the chip when the panel reopens, no lookup round-trip needed.
  *
  * Search goes through admin-ajax `aae_loop_query_options` (kind: 'post'

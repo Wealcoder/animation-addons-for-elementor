@@ -205,7 +205,7 @@
             }
 
             const data = {
-                action: 'live_search',
+                action: 'aaeaddon_live_search',
                 keyword: keyword,
                 nonce: WCF_ADDONS_JS._wpnonce
             };
@@ -261,3 +261,5 @@
         );
     });
 })(jQuery);
+
+//# sourceMappingURL=search.js.map

@@ -9,7 +9,7 @@
  * because that is where the v3 skin read them from
  * (`$this->get_instance_value('section_title')` on the parent widget) — so the
  * two controls stay in the parent's Layout section exactly as they appear in
- * the v3 panel. AAE_A_Post_Pagination_Preview_Date resolves its own text the
+ * the v3 panel. Aaeaddon_A_Post_Pagination_Preview_Date resolves its own text the
  * same way.
  *
  * This element does carry `text`/`tag` props of its own, but only as the
@@ -27,7 +27,7 @@
  * @package AnimationAddonsForElementor
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\AdvancePortfolio;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\AdvancePortfolio;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Widget_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Template;
@@ -49,7 +49,7 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Widg
 	return;
 }
 
-class AAE_A_Portfolio_Title extends Atomic_Widget_Base {
+class Aaeaddon_A_Portfolio_Title extends Atomic_Widget_Base {
 
 	use Has_Template;
 
@@ -145,7 +145,7 @@ class AAE_A_Portfolio_Title extends Atomic_Widget_Base {
 	public function get_atomic_settings(): array {
 		$settings = parent::get_atomic_settings();
 
-		$ctx = Render_Context::get( AAE_A_Advance_Portfolio::class );
+		$ctx = Render_Context::get( Aaeaddon_A_Advance_Portfolio::class );
 
 		// Two DIFFERENT situations that both look like "no title", and they must
 		// not be treated the same:

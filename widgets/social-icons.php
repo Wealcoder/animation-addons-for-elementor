@@ -1,8 +1,6 @@
 <?php
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\Widgets;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\Widgets;
 
 use Elementor\Icons_Manager;
 use Elementor\Repeater;

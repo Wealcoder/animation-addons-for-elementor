@@ -73,7 +73,7 @@
 	}
 
 	// "Show Play Button" switch — the button itself is a fixed child
-	// element (Parts\AAE_A_Video_PlayBtn), never a twig conditional, so
+	// element (Parts\Aaeaddon_A_Video_PlayBtn), never a twig conditional, so
 	// visibility is purely this CSS rule driven by the wrapper's own
 	// data-attr (see class-aae-a-video.php's playbtn_enabled prop). The
 	// poster/clickzone remain clickable to toggle playback either way.

@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Posts;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Posts;
 
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Heading\Atomic_Heading;
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class AAE_A_Post_Card extends Atomic_Element_Base {
+class Aaeaddon_A_Post_Card extends Atomic_Element_Base {
 	use Has_Element_Template;
 
 	public function __construct( $data = [], $args = null ) {

@@ -9,7 +9,7 @@ class ComposerStaticInit29593bdbf416014cb72a7f7f6c7bd854
     public static $prefixLengthsPsr4 = array (
         'W' => 
         array (
-            'WCF_ADDONS\\' => 11,
+            'Wealcoder\\AnimationAddons\\' => 26,
         ),
         'P' => 
         array (
@@ -18,7 +18,7 @@ class ComposerStaticInit29593bdbf416014cb72a7f7f6c7bd854
     );
 
     public static $prefixDirsPsr4 = array (
-        'WCF_ADDONS\\' => 
+        'Wealcoder\\AnimationAddons\\' => 
         array (
             0 => __DIR__ . '/../..' . '/inc',
         ),

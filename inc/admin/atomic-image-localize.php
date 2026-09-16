@@ -39,10 +39,10 @@
  *    memory a single dead url would make the step spin forever, since the
  *    re-scan on every request would find it "pending" again.
  *
- * @package WCF_ADDONS
+ * @package Wealcoder\AnimationAddons
  */
 
-namespace WCF_ADDONS\Admin\Base;
+namespace Wealcoder\AnimationAddons\Admin\Base;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -50,7 +50,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class Atomic_Image_Localize {
 
-	const STATE_OPTION = 'aae_import_image_localize';
+	const STATE_OPTION = 'aaeaddon_import_image_localize';
 
 	/** Seconds of work per request. admin-ajax on a shared host is often capped at 30. */
 	const DEFAULT_BUDGET = 18.0;
@@ -63,7 +63,7 @@ class Atomic_Image_Localize {
 	}
 
 	public static function reset(): void {
-		delete_option( self::STATE_OPTION );
+		\Wealcoder\AnimationAddons\Compat\Key_Bridge::delete_option( self::STATE_OPTION );
 	}
 
 	/**

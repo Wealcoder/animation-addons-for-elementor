@@ -53,7 +53,7 @@ const syncMaskToBtn = ( container ) => {
 };
 
 const initVideoMask = ( container, signal ) => {
-	// The click-trigger is the inner AAE_A_Video_Mask_Btn atomic element.
+	// The click-trigger is the inner Aaeaddon_A_Video_Mask_Btn atomic element.
 	// Using data-element_type to find it is robust against class-name changes.
 	const btn   = container.querySelector( '[data-element_type="e-aae-a-video-mask-btn"]' );
 	const video = container.querySelector( 'video' );

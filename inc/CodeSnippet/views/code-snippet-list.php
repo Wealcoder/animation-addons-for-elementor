@@ -3,11 +3,11 @@
 /**
  * Admin View: List Code Snippets
  *
- * @package WCF_ADDONS\CodeSnippet
+ * @package Wealcoder\AnimationAddons\CodeSnippet
  * @since 1.0.0
 */
 
-use WCF_ADDONS\CodeSnippet\Helpers;
+use Wealcoder\AnimationAddons\CodeSnippet\Helpers;
 
 defined( 'ABSPATH' ) || exit;
 

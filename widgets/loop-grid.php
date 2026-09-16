@@ -1,13 +1,11 @@
 <?php
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\Widgets;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\Widgets;
 
 use Elementor\Group_Control_Background;
-use WCF_ADDONS\WCF_Post_Query_Trait;
-use WCF_ADDONS\AAE_Post_Handler_Trait;
-use WCF_ADDONS\Widgets\Loop_Builder\Template_Manager;
-use WCF_ADDONS\Widgets\Loop_Builder\Query_Manager;
+use Wealcoder\AnimationAddons\Aaeaddon_Post_Query_Trait;
+use Wealcoder\AnimationAddons\Aaeaddon_Post_Handler_Trait;
+use Wealcoder\AnimationAddons\Widgets\Loop_Builder\Template_Manager;
+use Wealcoder\AnimationAddons\Widgets\Loop_Builder\Query_Manager;
 use Elementor\Controls_Manager;
 use Elementor\Group_Control_Typography;
 use Elementor\Group_Control_Border;
@@ -23,8 +21,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Displays posts in a customizable grid layout using loop item templates.
  */
 class Loop_Grid extends \Elementor\Widget_Base {
-	use WCF_Post_Query_Trait;
-	use AAE_Post_Handler_Trait;
+	use Aaeaddon_Post_Query_Trait;
+	use Aaeaddon_Post_Handler_Trait;
 
 	/**
 	 * Query object.
@@ -112,7 +110,7 @@ class Loop_Grid extends \Elementor\Widget_Base {
 	 * @return array
 	 */
 	public function get_script_depends() {
-		return array( 'custom-loop-builder-frontend', 'advanced--adv-posts-pro', 'advanced--aae--features--posts', 'wcf--posts' );
+		return array( 'aaeaddon-loop-builder-frontend', 'advanced--adv-posts-pro', 'advanced--aae--features--posts', 'wcf--posts' );
 	}
 
 	/**

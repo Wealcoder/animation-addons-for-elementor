@@ -1,13 +1,11 @@
 <?php
 
 /**
- * Static functions used in the WCF_ADDONS plugin.
+ * Static functions used in the Animation Addons plugin.
  *
- * @package WCF_ADDONS
+ * @package Wealcoder\AnimationAddons
  */
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\Admin\Base;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\Admin\Base;
 
 defined( 'ABSPATH' ) || die();
 /**
@@ -469,7 +467,7 @@ class Helpers {
 	 * @param array $data Data to be saved to the transient.
 	 */
 	public static function set_st_import_data_transient( $data ) {
-		set_transient( 'aadaddon_st_importer_data', $data, 0.1 * HOUR_IN_SECONDS );
+		set_transient( 'aaeaddon_st_importer_data', $data, 0.1 * HOUR_IN_SECONDS );
 	}
 
 

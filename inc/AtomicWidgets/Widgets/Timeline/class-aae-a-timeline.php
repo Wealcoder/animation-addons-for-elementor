@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Timeline;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Timeline;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -26,8 +26,8 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 require_once __DIR__ . '/class-aae-a-timeline-item.php';
 require_once __DIR__ . '/class-aae-a-timeline-items-control.php';
 
-use WCF_ADDONS\AtomicWidgets\Widgets\Timeline\AAE_A_Timeline_Item;
-use WCF_ADDONS\AtomicWidgets\Widgets\Timeline\AAE_A_Timeline_Items_Control;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Timeline\Aaeaddon_A_Timeline_Item;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Timeline\Aaeaddon_A_Timeline_Items_Control;
 
 /**
  * AAE Timeline — an open composite timeline container (Btn pattern).
@@ -40,7 +40,7 @@ use WCF_ADDONS\AtomicWidgets\Widgets\Timeline\AAE_A_Timeline_Items_Control;
  * top of this widget's generic base styles, styled with Elementor's native
  * builder wherever possible.
  */
-class AAE_A_Timeline extends Atomic_Element_Base {
+class Aaeaddon_A_Timeline extends Atomic_Element_Base {
 
 	use Has_Element_Template;
 
@@ -109,7 +109,7 @@ class AAE_A_Timeline extends Atomic_Element_Base {
 				->set_label( __( 'Presets', 'animation-addons-for-elementor' ) )
 				->set_id( 'aae_presets' )
 				->set_items( [
-					AAE_A_Preset_Picker_Control::make()
+					Aaeaddon_A_Preset_Picker_Control::make()
 						->set_label( __( 'Apply Preset', 'animation-addons-for-elementor' ) )
 						->set_meta( [ 'layout' => 'custom' ] ),
 				] ),
@@ -124,7 +124,7 @@ class AAE_A_Timeline extends Atomic_Element_Base {
 				->set_label( __( 'Items', 'animation-addons-for-elementor' ) )
 				->set_id( 'items' )
 				->set_items( [
-					AAE_A_Timeline_Items_Control::make()
+					Aaeaddon_A_Timeline_Items_Control::make()
 						->set_label( __( 'Items', 'animation-addons-for-elementor' ) )
 						->set_meta( [ 'layout' => 'custom' ] ),
 				] ),
@@ -195,10 +195,10 @@ class AAE_A_Timeline extends Atomic_Element_Base {
 
 		$children = [];
 		foreach ( $items as $index => $item ) {
-			$children[] = AAE_A_Timeline_Item::generate()
+			$children[] = Aaeaddon_A_Timeline_Item::generate()
 				->editor_settings( [ 'title' => 'Item ' . ( $index + 1 ) ] )
 				->children(
-					AAE_A_Timeline_Item::build_default_inner_children(
+					Aaeaddon_A_Timeline_Item::build_default_inner_children(
 						$item['date'],
 						$item['number'],
 						$item['title'],

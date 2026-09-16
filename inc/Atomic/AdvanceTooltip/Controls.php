@@ -1,11 +1,11 @@
 <?php
 
-namespace WCF_ADDONS\Atomic\AdvanceTooltip;
+namespace Wealcoder\AnimationAddons\Atomic\AdvanceTooltip;
 
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Switch_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
-use WCF_ADDONS\Atomic\Bootstrap;
+use Wealcoder\AnimationAddons\Atomic\Bootstrap;
 
 if (! defined('ABSPATH')) {
     exit;

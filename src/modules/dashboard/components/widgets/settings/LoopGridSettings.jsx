@@ -79,7 +79,7 @@ const LoopGridSettings = () => {
         },
         body: new URLSearchParams({
           action: "aae_get_dynamic_settings",
-          setting_name: "aae_loop_grid_settings",
+          setting_name: "aaeaddon_loop_grid_settings",
           nonce: WCF_ADDONS_ADMIN.nonce,
         }),
       });
@@ -141,7 +141,7 @@ const LoopGridSettings = () => {
         },
         body: new URLSearchParams({
           action: "aae_save_dynamic_settings",
-          setting_name: "aae_loop_grid_settings",
+          setting_name: "aaeaddon_loop_grid_settings",
           form_fields: JSON.stringify(data),
           nonce: WCF_ADDONS_ADMIN.nonce,
         }),

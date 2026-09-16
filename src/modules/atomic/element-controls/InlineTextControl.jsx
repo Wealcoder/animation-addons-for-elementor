@@ -37,7 +37,7 @@
  * rather than tags — that was the original ask and it is unchanged.
  *
  * THREE LISTS MUST AGREE. ALLOWED_TAGS/ALLOWED_ATTRS here,
- * AAE_Rich_Text_Prop_Type::allowed_tags() in PHP, and the striptags whitelist in
+ * Aaeaddon_Rich_Text_Prop_Type::allowed_tags() in PHP, and the striptags whitelist in
  * aae-a-advanced-heading.html.twig. Anything this file emits but PHP omits is
  * deleted on save, which reads as "my formatting disappeared".
  */
@@ -372,7 +372,7 @@ const TYPED_TAG_RE = new RegExp(
  * Turn the verbatim source into what should actually be displayed: tags the user
  * typed become real elements, rendered AS TYPED — an `<h2>` stays an `<h2>`.
  *
- * DELIBERATE DUPLICATE of AAE_A_Advanced_Heading::interpret_source(). The two
+ * DELIBERATE DUPLICATE of Aaeaddon_A_Advanced_Heading::interpret_source(). The two
  * exist because they serve different renderers: PHP feeds the FRONTEND, this
  * feeds the editor CANVAS, which renders the same Twig client-side and never
  * runs PHP. Without this the canvas shows raw `<h2>` angle brackets while the
@@ -568,7 +568,7 @@ export function InlineTextControl() {
 				container,
 				settings: {
 					// Same envelope as `content` — content_html is an
-					// AAE_Rich_Text_Prop_Type (`html-v3`), NOT a string prop. It was a
+					// Aaeaddon_Rich_Text_Prop_Type (`html-v3`), NOT a string prop. It was a
 					// string prop once, and String_Prop_Type sanitises with
 					// sanitize_text_field(), so every tag written here was stripped on
 					// save: the canvas came back as bare text after a reload while the
@@ -607,7 +607,7 @@ export function InlineTextControl() {
 		// longer take apart.
 		//
 		// The interpretation happens once, on the render path, in
-		// AAE_A_Advanced_Heading::get_atomic_settings() — see that method for the
+		// Aaeaddon_A_Advanced_Heading::get_atomic_settings() — see that method for the
 		// tag-unwrapping rule. cleanHtml() still runs, because the TOOLBAR emits
 		// real markup (bold, colour, links) and that half must stay whitelisted.
 		const html = cleanHtml( el.innerHTML );

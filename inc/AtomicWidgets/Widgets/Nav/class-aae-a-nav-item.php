@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Nav;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Nav;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
@@ -31,7 +31,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * content — hangs the editor on device switch) down to Nav → item →
  * sub-item (3 levels).
  */
-class AAE_A_Nav_Item extends Atomic_Element_Base {
+class Aaeaddon_A_Nav_Item extends Atomic_Element_Base {
 	use Has_Element_Template;
 
 	public function __construct( $data = [], $args = null ) {
@@ -111,7 +111,7 @@ class AAE_A_Nav_Item extends Atomic_Element_Base {
 				->set_label( __( 'Sub-menu Items', 'animation-addons-for-elementor' ) )
 				->set_id( 'sub_menu_items' )
 				->set_items( [
-					AAE_A_Nav_Sub_Items_Control::make()
+					Aaeaddon_A_Nav_Sub_Items_Control::make()
 						->set_label( __( 'Sub-items', 'animation-addons-for-elementor' ) )
 						->set_meta( [ 'layout' => 'custom' ] ),
 				] ),
@@ -154,7 +154,7 @@ class AAE_A_Nav_Item extends Atomic_Element_Base {
 		 * legacy leaf, kept for back-compat. 'widget' allows arbitrary content.
 		 * 'e-aae-a-nav-item' enables MULTI-LEVEL menus: a nested item is added
 		 * inside this item's dropdown flexbox (freeze-safe interleave — the core
-		 * flexbox breaks the AAE-element chain). See AAE_A_Nav_Sub_Items_Control. */
+		 * flexbox breaks the AAE-element chain). See Aaeaddon_A_Nav_Sub_Items_Control. */
 		return [ 'widget', 'e-aae-a-nav-sub-item', 'e-flexbox', 'e-aae-a-nav-item' ];
 	}
 

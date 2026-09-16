@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\Atomic;
+namespace Wealcoder\AnimationAddons\Atomic;
 
 if (! defined('ABSPATH')) {
 	exit;
@@ -78,7 +78,7 @@ final class Assets
 
 		wp_register_script(
 			self::HANDLE,
-			WCF_ADDONS_URL . self::BUILD_DIR . 'common.js',
+			AAEADDON_URL . self::BUILD_DIR . 'common.js',
 			$deps,
 			$core['version'],
 			true
@@ -102,7 +102,7 @@ final class Assets
 				'AAE_CONFIG',
 				[
 					'breakpoints' => $config,
-					'tooltip_css_url' => WCF_ADDONS_URL . 'assets/build/modules/atomic/effects/advance-tooltip.css',
+					'tooltip_css_url' => AAEADDON_URL . 'assets/build/modules/atomic/effects/advance-tooltip.css',
 				]
 			);
 		}
@@ -119,7 +119,7 @@ final class Assets
 			$asset     = $this->load_asset($entry_key, $manual_deps);		
 			wp_register_script(
 				$handle,
-				WCF_ADDONS_URL . self::BUILD_DIR . $relative,
+				AAEADDON_URL . self::BUILD_DIR . $relative,
 				array_merge([self::HANDLE], $asset['dependencies']),
 				$asset['version'],
 				true
@@ -190,7 +190,7 @@ final class Assets
 				'gsap',
 				WCF_ADDONS_PRO_URL . 'assets/lib/gsap.min.js',
 				[],
-				defined('WCF_ADDONS_PRO_VERSION') ? WCF_ADDONS_PRO_VERSION : WCF_ADDONS_VERSION,
+				defined('WCF_ADDONS_PRO_VERSION') ? WCF_ADDONS_PRO_VERSION : AAEADDON_VERSION,
 				true
 			);
 		}
@@ -199,7 +199,7 @@ final class Assets
 				'ScrollTrigger',
 				WCF_ADDONS_PRO_URL . 'assets/lib/ScrollTrigger.min.js',
 				['gsap'],
-				defined('WCF_ADDONS_PRO_VERSION') ? WCF_ADDONS_PRO_VERSION : WCF_ADDONS_VERSION,
+				defined('WCF_ADDONS_PRO_VERSION') ? WCF_ADDONS_PRO_VERSION : AAEADDON_VERSION,
 				true
 			);
 		}
@@ -208,7 +208,7 @@ final class Assets
 				'SplitText',
 				WCF_ADDONS_PRO_URL . 'assets/lib/SplitText.min.js',
 				['gsap'],
-				defined('WCF_ADDONS_PRO_VERSION') ? WCF_ADDONS_PRO_VERSION : WCF_ADDONS_VERSION,
+				defined('WCF_ADDONS_PRO_VERSION') ? WCF_ADDONS_PRO_VERSION : AAEADDON_VERSION,
 				true
 			);
 		}
@@ -217,7 +217,7 @@ final class Assets
 				'ScrollToPlugin',
 				WCF_ADDONS_PRO_URL . 'assets/lib/ScrollToPlugin.min.js',
 				['gsap'],
-				defined('WCF_ADDONS_PRO_VERSION') ? WCF_ADDONS_PRO_VERSION : WCF_ADDONS_VERSION,
+				defined('WCF_ADDONS_PRO_VERSION') ? WCF_ADDONS_PRO_VERSION : AAEADDON_VERSION,
 				true
 			);
 		}
@@ -229,7 +229,7 @@ final class Assets
 				'DrawSVGPlugin',
 				WCF_ADDONS_PRO_URL . 'assets/lib/DrawSVGPlugin.min.js',
 				['gsap'],
-				defined('WCF_ADDONS_PRO_VERSION') ? WCF_ADDONS_PRO_VERSION : WCF_ADDONS_VERSION,
+				defined('WCF_ADDONS_PRO_VERSION') ? WCF_ADDONS_PRO_VERSION : AAEADDON_VERSION,
 				true
 			);
 		}
@@ -238,7 +238,7 @@ final class Assets
 				'MotionPathPlugin',
 				WCF_ADDONS_PRO_URL . 'assets/lib/MotionPathPlugin.min.js',
 				['gsap'],
-				defined('WCF_ADDONS_PRO_VERSION') ? WCF_ADDONS_PRO_VERSION : WCF_ADDONS_VERSION,
+				defined('WCF_ADDONS_PRO_VERSION') ? WCF_ADDONS_PRO_VERSION : AAEADDON_VERSION,
 				true
 			);
 		}
@@ -340,11 +340,11 @@ final class Assets
 		// Extensions count as well as widgets: an extension adds sections to
 		// Elementor's OWN atomic widgets, so a site with every AAE atomic widget
 		// off but one extension on still needs the bridge.
-		if (! class_exists('\\WCF_ADDONS\\AtomicWidgets\\Atomic')) {
+		if (! class_exists('\\Wealcoder\\AnimationAddons\\AtomicWidgets\\Atomic')) {
 			return;
 		}
 
-		$atomic = \WCF_ADDONS\AtomicWidgets\Atomic::instance();
+		$atomic = \Wealcoder\AnimationAddons\AtomicWidgets\Atomic::instance();
 
 		if (! method_exists($atomic, 'has_active_atomic') || ! $atomic->has_active_atomic()) {
 			return;
@@ -397,7 +397,7 @@ final class Assets
 
 		wp_enqueue_script(
 			self::HANDLE . '-editor-bridge',
-			WCF_ADDONS_URL . self::BUILD_DIR . 'editor-bridge.js',
+			AAEADDON_URL . self::BUILD_DIR . 'editor-bridge.js',
 			$deps,
 			$asset['version'],
 			true
@@ -414,8 +414,8 @@ final class Assets
 				// renderer can never disagree about which shapes exist or where
 				// their SVGs live — Shapes::all() is the single source of truth,
 				// filter included.
-				'mask_shapes' => class_exists( '\WCF_ADDONS\Atomic\Mask\Shapes' )
-					? \WCF_ADDONS\Atomic\Mask\Shapes::all()
+				'mask_shapes' => class_exists( '\Wealcoder\AnimationAddons\Atomic\Mask\Shapes' )
+					? \Wealcoder\AnimationAddons\Atomic\Mask\Shapes::all()
 					: [],
 			]
 		);
@@ -454,22 +454,22 @@ final class Assets
 					? wp_create_nonce( 'wcf_admin_nonce' )
 					: '',
 				'ajaxUrl'          => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
-				'requiresAction'   => \WCF_ADDONS\Atomic\Presets\Requires::ACTION,
+				'requiresAction'   => \Wealcoder\AnimationAddons\Atomic\Presets\Requires::ACTION,
 
 				// proActive says a Pro plugin is INSTALLED; this says its licence
 				// is valid, i.e. whether the customer has actually paid. The
 				// slide limit below is gated on this one — an expired licence
 				// must stop authoring new slides even though Pro's files are
 				// still sitting on disk.
-				'proLicensed'      => \WCF_ADDONS\AtomicWidgets\Atomic::pro_licensed(),
+				'proLicensed'      => \Wealcoder\AnimationAddons\AtomicWidgets\Atomic::pro_licensed(),
 
 				// Slides an unlicensed site may author, shared with the PHP
 				// constant Atomic::FREE_SLIDE_LIMIT so the Nested
 				// Slider's JS control and the Loop Grid Slider's panel cap cannot
 				// drift apart. PANEL ONLY — nothing here reaches the renderer, so
 				// existing sliders keep every slide they were built with.
-				'freeSlideLimit'   => \WCF_ADDONS\AtomicWidgets\Atomic::FREE_SLIDE_LIMIT,
-				'placeholderThumb' => WCF_ADDONS_URL . 'assets/images/preset-placeholder.png',
+				'freeSlideLimit'   => \Wealcoder\AnimationAddons\AtomicWidgets\Atomic::FREE_SLIDE_LIMIT,
+				'placeholderThumb' => AAEADDON_URL . 'assets/images/preset-placeholder.png',
 
 				// The `$$type` tag the INSTALLED core registers for the
 				// border-width object prop. Elementor renamed it
@@ -673,12 +673,12 @@ JS;
 
 	private function load_asset(string $entry, array $manual_deps = []): array
 	{
-		$file = WCF_ADDONS_PATH . self::BUILD_DIR . $entry . '.asset.php';
+		$file = AAEADDON_PATH . self::BUILD_DIR . $entry . '.asset.php';
 
 		if (! file_exists($file)) {
 			return [
 				'dependencies' => $manual_deps,
-				'version'      => WCF_ADDONS_VERSION,
+				'version'      => AAEADDON_VERSION,
 			];
 		}
 
@@ -687,7 +687,7 @@ JS;
 
 		return [
 			'dependencies' => array_values($merged_deps),
-			'version'      => $asset['version']      ?? WCF_ADDONS_VERSION,
+			'version'      => $asset['version']      ?? AAEADDON_VERSION,
 		];
 	}
 }

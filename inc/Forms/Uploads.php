@@ -22,7 +22,7 @@
  * @since   4.0.0
  */
 
-namespace WCF_ADDONS\Forms;
+namespace Wealcoder\AnimationAddons\Forms;
 
 use WP_REST_Request;
 use WP_REST_Response;

@@ -103,7 +103,7 @@ export const JS_HOOK_CLASSES = [
 	'aae-ic-default',
 
 	// Nested Slider — the auto-preset watcher's freshness marker, seeded by
-	// AAE_A_Slider::DEFAULT_CHILD_MARKER onto every default child. Not a
+	// Aaeaddon_A_Slider::DEFAULT_CHILD_MARKER onto every default child. Not a
 	// runtime selector like most of this list, but it needs registering for
 	// the same reason: unregistered, the panel reports it as a missing class
 	// on all five children, and the alert's ✕ strips it from the document —

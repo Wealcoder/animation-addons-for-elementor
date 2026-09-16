@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\AtomicWidgets\Widgets\IconList;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\IconList;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
@@ -24,16 +24,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-class AAE_A_Icon_List_Item extends Atomic_Element_Base {
+class Aaeaddon_A_Icon_List_Item extends Atomic_Element_Base {
 	use Has_Element_Template;
 
 	/**
 	 * Single source of truth for the icon's fixed square size.
 	 *
 	 * Read by BOTH define_base_styles() (the real default) AND
-	 * AAE_A_Icon_List::get_frontend_css_override() (the CSS that must load
+	 * Aaeaddon_A_Icon_List::get_frontend_css_override() (the CSS that must load
 	 * after Elementor's base-desktop.css to win the tie against e-svg-base's
-	 * native 65px default — same pattern as AAE_A_Btn / AAE_A_Social_Share).
+	 * native 65px default — same pattern as Aaeaddon_A_Btn / Aaeaddon_A_Social_Share).
 	 * The old icon-list.scss rule targeting this class had NO `.elementor`
 	 * ancestor, so at (0,1,0) specificity it could never beat e-svg-base's
 	 * (0,2,0) — width/height always lost regardless of stylesheet order. On
@@ -139,7 +139,7 @@ class AAE_A_Icon_List_Item extends Atomic_Element_Base {
 	/**
 	 * Bundled starter icons, one per default label below — same allow-list +
 	 * "unknown key degrades to Elementor's own placeholder, never an error"
-	 * contract as AAE_A_Social_Share_Item::get_vendor_svg_url().
+	 * contract as Aaeaddon_A_Social_Share_Item::get_vendor_svg_url().
 	 */
 	public static function get_icon_svg_url( string $icon ): string {
 		$allowed = [ 'bolt', 'sliders', 'headset' ];
@@ -152,24 +152,24 @@ class AAE_A_Icon_List_Item extends Atomic_Element_Base {
 			return '';
 		}
 
-		if ( ! defined( 'WCF_ADDONS_URL' ) ) {
+		if ( ! defined( 'AAEADDON_URL' ) ) {
 			return '';
 		}
 
-		return WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/IconList/assets/svg/' . $icon . '.svg';
+		return AAEADDON_URL . 'inc/AtomicWidgets/Widgets/IconList/assets/svg/' . $icon . '.svg';
 	}
 
 	/**
 	 * Prefilled icon + label pair. Exposed publicly so the parent's
 	 * define_default_children() can seed each fresh instance with its own
 	 * real-world label + matching icon — same shape as
-	 * AAE_A_Social_Share_Item::build_default_inner_children(). $icon is a
+	 * Aaeaddon_A_Social_Share_Item::build_default_inner_children(). $icon is a
 	 * bundled key (see get_icon_svg_url()); '' or unknown keeps Elementor's
 	 * own default SVG placeholder, exactly like before this was added.
 	 */
 	public static function build_default_inner_children( string $label = 'List Item Text', string $icon = '' ): array {
 		// Matches define_base_styles()'s "{element_type}-{key}" naming for the
-		// 'icon' style key — same convention AAE_A_Btn / AAE_A_Social_Share_Item
+		// 'icon' style key — same convention Aaeaddon_A_Btn / Aaeaddon_A_Social_Share_Item
 		// use for their own icon class.
 		$icon_class = static::get_element_type() . '-icon';
 

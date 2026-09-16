@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Progressbar;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Progressbar;
 
 use Elementor\Modules\AtomicWidgets\Controls\Base\Element_Control_Base;
 
@@ -21,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * replaces the selected element with the preset's design (flex wrapper
  * unwrapped). No props are passed from PHP — the preset list is global.
  */
-class AAE_A_Preset_Picker_Control extends Element_Control_Base {
+class Aaeaddon_A_Preset_Picker_Control extends Element_Control_Base {
 
 	public function get_type(): string {
 		return 'aae-preset-picker';

@@ -1,14 +1,12 @@
 <?php
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\Extensions;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\Extensions;
 
 if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly.
 }
 
-if(class_exists('\WCF_ADDONS\Extensions\CustomCpt_Pro')){    
+if(class_exists('\Wealcoder\AnimationAddons\Extensions\CustomCpt_Pro')){    
     return;
 }
 
@@ -28,8 +26,8 @@ class CustomCpt_Lite {
     public $tax_type = 'aaetaxebilder';
     public $meta_key = 'aae_ptypebilder_meta';
     public $tax_meta_key = 'aae_ptaxbilder_meta';
-    public $cache_key = 'aae_cpts_032153';
-    public $cache_tax_key = 'aae_taxs_933153';
+    public $cache_key = 'aaeaddon_cpts_cache';
+    public $cache_tax_key = 'aaeaddon_taxs_cache';
     
     public $plabels =  array(
             'name'          => '',
@@ -92,7 +90,6 @@ class CustomCpt_Lite {
       
         add_action( 'admin_menu', [ $this, 'register_sub_menu' ], 30 );
         add_action( 'admin_enqueue_scripts', [ $this, 'admin_scripts' ] );
-        add_action( 'wp_ajax_save_global_settings', [ $this, 'save_global_settings' ] );
         add_action( 'wp_ajax_aae_add_or_update_new_post_type_builder', [ $this, 'aae_add_or_update' ] );
         add_action( 'wp_ajax_aae_delete_post_type_builder', [ $this, 'aae_delete_post_type' ] );
         add_action( 'wp_ajax_aae_post_type_builder_list', [ $this, 'aae_list' ] );
@@ -127,8 +124,8 @@ class CustomCpt_Lite {
      * until someone opened the CPT Builder screen.
      */
     public function refresh_registrations() {
-        delete_option( $this->cache_key );
-        delete_option( $this->cache_tax_key );
+        \Wealcoder\AnimationAddons\Compat\Key_Bridge::delete_option( $this->cache_key );
+        \Wealcoder\AnimationAddons\Compat\Key_Bridge::delete_option( $this->cache_tax_key );
         $this->register_taxonomes();
         $this->register_cpt();
     }
@@ -259,7 +256,7 @@ class CustomCpt_Lite {
                         if(isset($meta['template']) && $meta['template'] !='')
                         {
                              // Gutenberg support
-                            if($template = aae_validate_content_json($meta['template'])){
+                            if($template = aaeaddon_validate_content_json($meta['template'])){
                                 $args['template'] = $template;                          
                                 unset($meta['template']);
                             }
@@ -523,28 +520,6 @@ class CustomCpt_Lite {
         echo '</div>';
     }
 
-    /**
-     * Save global settings via AJAX
-     *
-     * Handles AJAX requests to save global settings.
-     */
-    public function save_global_settings() {
-        check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
-
-        if ( ! current_user_can( 'manage_options' ) ) {
-            wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor' ) );
-        }
-
-        $id = isset( $_POST['id'] ) ? sanitize_text_field( wp_unslash( $_POST['id'] ) ) : null;
-        $custom_font_global = isset( $_POST['wcfcustom_cpt_global'] ) ? sanitize_text_field( wp_unslash( $_POST['wcfcustom_cpt_global'] ) ) : null;
-
-        if ( empty( $id ) || empty( $custom_font_global ) ) {
-            wp_send_json_error( esc_html__( 'Invalid data provided.', 'animation-addons-for-elementor' ) );
-        }
-
-        update_post_meta( $id, 'wcfcustom_cpt_global', $custom_font_global );
-        wp_send_json_success( esc_html__( 'Settings updated successfully.', 'animation-addons-for-elementor' ) );
-    }
 
     public function latest_data($post_type) {
         // get_posts() defaults to numberposts = 5, so a site with six or more
@@ -593,8 +568,8 @@ class CustomCpt_Lite {
             wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor' ) );
         }
 
-        delete_option($this->cache_key);       
-        delete_option($this->cache_tax_key);       
+        \Wealcoder\AnimationAddons\Compat\Key_Bridge::delete_option( $this->cache_key );       
+        \Wealcoder\AnimationAddons\Compat\Key_Bridge::delete_option( $this->cache_tax_key );       
         $id        = isset( $_POST['post_type_id'] ) ? sanitize_text_field( wp_unslash( $_POST['post_type_id'] ) ) : null;
         $post_meta = isset( $_POST['post_meta'] ) ? sanitize_text_field( wp_unslash( $_POST['post_meta'] ) ) : null;
         $title     = isset( $_POST['post_type_title'] ) ? sanitize_text_field( wp_unslash( $_POST['post_type_title'] ) ) : null;
@@ -632,7 +607,7 @@ class CustomCpt_Lite {
         if ( ! current_user_can( 'manage_options' ) ) {
             wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor' ) );
         }
-        delete_option($this->cache_key);
+        \Wealcoder\AnimationAddons\Compat\Key_Bridge::delete_option( $this->cache_key );
         $id = isset( $_POST['post_type_id'] ) ? sanitize_text_field( wp_unslash( $_POST['post_type_id'] ) ) : null;
        
         if(is_numeric($id)){
@@ -655,8 +630,8 @@ class CustomCpt_Lite {
         if ( ! current_user_can( 'manage_options' ) ) {
             wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor' ) );
         }
-        delete_option($this->cache_key);
-        delete_option($this->cache_tax_key);
+        \Wealcoder\AnimationAddons\Compat\Key_Bridge::delete_option( $this->cache_key );
+        \Wealcoder\AnimationAddons\Compat\Key_Bridge::delete_option( $this->cache_tax_key );
         wp_send_json_success( $this->latest_data($this->post_type) );
     }
 
@@ -758,7 +733,7 @@ class CustomCpt_Lite {
         if ( ! current_user_can( 'manage_options' ) ) {
             wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor' ) );
         }
-        delete_option($this->cache_key);
+        \Wealcoder\AnimationAddons\Compat\Key_Bridge::delete_option( $this->cache_key );
         wp_send_json_success( $this->latest_data($this->tax_type) );
     }
 
@@ -822,16 +797,16 @@ class CustomCpt_Lite {
         //if ( $hook === 'animation-addon_page_wcf-cpt-builder' ) {
             wp_enqueue_style(
                 'wcf-addon-pro-cpt-builder',
-                WCF_ADDONS_URL . 'assets/build/modules/cpt-builder/main.css',
-                array( \WCF_ADDONS\AAE_Fonts::ensure() ),
-                WCF_ADDONS_VERSION
+                AAEADDON_URL . 'assets/build/modules/cpt-builder/main.css',
+                array( \Wealcoder\AnimationAddons\Aaeaddon_Fonts::ensure() ),
+                AAEADDON_VERSION
             );
 
             wp_enqueue_script(
                 'wcf-addon-pro-cpt-builder',
-                WCF_ADDONS_URL . 'assets/build/modules/cpt-builder/main.js',
+                AAEADDON_URL . 'assets/build/modules/cpt-builder/main.js',
                 [ 'react', 'react-dom', 'wp-element', 'wp-i18n' ],
-                WCF_ADDONS_VERSION,
+                AAEADDON_VERSION,
                 true
             );
 

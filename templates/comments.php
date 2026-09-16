@@ -1,7 +1,4 @@
 <?php
-/**
- * @phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
- */
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -15,9 +12,9 @@ if ( ! defined( 'ABSPATH' ) ) {
     /*----------------------------------------
    CUSTOM COMMENNS WALKER
 -------------------------------------------*/
-if ( !function_exists('aae_addon_comment_style') ):
+if ( !function_exists('aaeaddon_comment_style') ):
 
-   function aae_addon_comment_style( $comment, $args, $depth ) {
+   function aaeaddon_comment_style( $comment, $args, $depth ) {
       if ( 'div' === $args[ 'style' ] ) {
          $tag		 = 'div';
          $add_below	 = 'comment';
@@ -112,7 +109,7 @@ endif;
 				<?php
 						wp_list_comments( array(
 							'reply_text'        => sprintf('<svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2023 Fonticons, Inc.--><path d="M205 34.8c11.5 5.1 19 16.6 19 29.2v64H336c97.2 0 176 78.8 176 176c0 113.3-81.5 163.9-100.2 174.1c-2.5 1.4-5.3 1.9-8.1 1.9c-10.9 0-19.7-8.9-19.7-19.7c0-7.5 4.3-14.4 9.8-19.5c9.4-8.8 22.2-26.4 22.2-56.7c0-53-43-96-96-96H224v64c0 12.6-7.4 24.1-19 29.2s-25 3-34.4-5.4l-160-144C3.9 225.7 0 217.1 0 208s3.9-17.7 10.6-23.8l160-144c9.4-8.5 22.9-10.6 34.4-5.4z"/></svg> %s',esc_html__('Reply','animation-addons-for-elementor')),
-								'callback'    => 'aae_addon_comment_style',
+								'callback'    => 'aaeaddon_comment_style',
 								'style'       => 'ul',
 								'short_ping'  => false,
 								'type'        => 'all',
@@ -147,38 +144,46 @@ endif;
 
 		<?php
 
-			// This template runs in global scope, so nothing here may be named
-			// after a WordPress global. It previously assigned $post_id, $id and
-			// $user_identity, all of which core uses. $post_id was also dead
-			// logic: it was set to '' and then compared with `null === $post_id`,
-			// which is never true, so it stayed empty and every get_permalink()
-			// below silently fell back to the global post.
-			$wcf_post_id	 = get_the_ID();
-			$commenter		 = wp_get_current_commenter();
-			$wcf_user		 = wp_get_current_user();
-			$wcf_user_name	 = $wcf_user->exists() ? $wcf_user->display_name : '';
-	        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+			// WordPress `require`s this file from INSIDE comments_template()
+			// (wp-includes/comment-template.php), so every variable here is a
+			// local of THAT function — not a global, whatever the
+			// PrefixAllGlobals sniff reports. The suppression below is for that
+			// false positive and nothing else; it is deliberately scoped to
+			// variables, so a genuinely global function or hook name added to
+			// this file is still reported.
+			//
+			// Being that function's locals is also the real hazard: assigning a
+			// name core uses there overwrites core's own value. This template
+			// used to assign $post_id, $id and $user_identity — $id and
+			// $user_identity are among the globals comments_template() imports,
+			// so those were corrupting real globals. $post_id was dead logic
+			// besides: set to '' and then compared with `null === $post_id`,
+			// never true, so it stayed empty and every get_permalink() below
+			// silently fell back to the global post. The AAE-owned names carry
+			// the plugin prefix so they can never collide with core's again.
+			//
+			// $commenter and $req keep core's spelling on purpose: core assigns
+			// both, to these same values, a few lines before the require.
+			// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Function-scope locals, see above.
+			$aaeaddon_post_id   = get_the_ID();
+			$commenter          = wp_get_current_commenter();
+			$aaeaddon_user      = wp_get_current_user();
+			$aaeaddon_user_name = $aaeaddon_user->exists() ? $aaeaddon_user->display_name : '';
 			$req		 = get_option( 'require_name_email' );
-			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 			$aria_req	 = ( $req ? " aria-required='true'" : '' );
-			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 			$fields = array(
 				'author' => '<div class="grid-row"><div class="col-lg-6"><div class="elc-inbd-comment__field mb-30"><label for="author">' . esc_html__( 'Name*' ,'animation-addons-for-elementor' ) . '</label> <input placeholder="'.  esc_attr__('Enter Name', 'animation-addons-for-elementor').'" id="author" class="form-input" name="author" type="text" value="' . esc_attr( $commenter[ 'comment_author' ] ) . '" size="30"' . $aria_req . ' /></div></div>',
 				'email'	 => '<div class="col-lg-6"><div class="elc-inbd-comment__field mb-30"><label for="email">' . esc_html__( 'Email*' ,'animation-addons-for-elementor' ) . '</label><input placeholder="'.  esc_attr__('Enter Email', 'animation-addons-for-elementor').'" id="email" name="email" class="form-input" type="email" value="' . esc_attr( $commenter[ 'comment_author_email' ] ) . '" size="30"' . $aria_req . ' /></div></div> </div>',
 			);
 
 			if ( is_user_logged_in() ) {
-				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 				$cl = 'loginformuser';
 			} else {
-				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 				$cl = '';
 			}
-			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 			$button_style = 'btn-hover-divide';
 			// 'the_permalink' below is a WordPress core filter (reused intentionally), not a plugin hook.
 			// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
-			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 			$defaults = [
 				'fields'			 => $fields,
 				'comment_field'		 => '
@@ -195,12 +200,12 @@ endif;
 				/** This filter is documented in wp-includes/link-template.php */
 				'must_log_in'		 => '
 					<p class="must-log-in">
-					'.esc_html__('You must be','animation-addons-for-elementor').' <a href="'.esc_url(wp_login_url( apply_filters( 'the_permalink', get_permalink( $wcf_post_id ) ) )).'">'.esc_html__('logged in','animation-addons-for-elementor').'</a> '.esc_html__('to post a comment.','animation-addons-for-elementor').'
+					'.esc_html__('You must be','animation-addons-for-elementor').' <a href="'.esc_url(wp_login_url( apply_filters( 'the_permalink', get_permalink( $aaeaddon_post_id ) ) )).'">'.esc_html__('logged in','animation-addons-for-elementor').'</a> '.esc_html__('to post a comment.','animation-addons-for-elementor').'
 					</p>',
 				/** This filter is documented in wp-includes/link-template.php */
 				'logged_in_as'		 => '
 					<p class="logged-in-as">
-					'.esc_html__('Logged in as','animation-addons-for-elementor').' <a href="'.esc_url(get_edit_user_link()).'">'.esc_html($wcf_user_name).'</a>. <a href="'.esc_url(wp_logout_url( apply_filters( 'the_permalink', get_permalink( $wcf_post_id ) ) )).'" title="'.esc_attr__('Log out of this account','animation-addons-for-elementor').'">'.esc_html__('Log out?','animation-addons-for-elementor').'</a>
+					'.esc_html__('Logged in as','animation-addons-for-elementor').' <a href="'.esc_url(get_edit_user_link()).'">'.esc_html($aaeaddon_user_name).'</a>. <a href="'.esc_url(wp_logout_url( apply_filters( 'the_permalink', get_permalink( $aaeaddon_post_id ) ) )).'" title="'.esc_attr__('Log out of this account','animation-addons-for-elementor').'">'.esc_html__('Log out?','animation-addons-for-elementor').'</a>
 					</p>',
 				'id_form'			 => 'commentform',
 				'id_submit'			 => 'submit',

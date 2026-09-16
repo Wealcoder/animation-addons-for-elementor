@@ -144,10 +144,10 @@ const ShowWidgets = ({
       },
 
       body: new URLSearchParams({
-        action: "save_settings_with_ajax",
+        action: "aaeaddon_save_settings",
         fields: JSON.stringify(allWidgets),
         nonce: WCF_ADDONS_ADMIN.nonce,
-        settings: "wcf_save_widgets",
+        settings: "aaeaddon_save_widgets",
       }),
     })
       .then((response) => {

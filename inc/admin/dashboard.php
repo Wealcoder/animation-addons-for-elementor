@@ -1,8 +1,6 @@
 <?php
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\Admin;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\Admin;
 
 use Elementor\Modules\ElementManager\Options;
 use Elementor\Plugin;
@@ -11,10 +9,10 @@ if (! defined('ABSPATH')) {
 	exit();
 } // Exit if accessed directly
 
-class WCF_Admin_Init
+class Aaeaddon_Admin_Init
 {
 
-	use \WCF_ADDONS\WCF_Extension_Widgets_Trait;
+	use \Wealcoder\AnimationAddons\Aaeaddon_Extension_Widgets_Trait;
 
 	/**
 	 * Option names the dashboard AJAX endpoints may read and write.
@@ -26,31 +24,33 @@ class WCF_Admin_Init
 	 *
 	 * EVERY name the JS bundles send has to be here or that screen silently
 	 * stops loading and saving. Current senders:
-	 *   free  save_settings_with_ajax  -> wcf_save_widgets, wcf_save_extensions
-	 *   free  aae_*_dynamic_settings   -> aae_mailchimp_api, aae_tiktok_api_advanced_settings,
-	 *                                     aae_weather_api_advanced_settings,
-	 *                                     aae_youtube_video_advanced_settings
-	 *   Pro   aae_*_dynamic_settings   -> aae_anim_builder_settings, wcf_addon_sl_license_key
+	 *   free  aaeaddon_save_settings  -> the widget / extension lists
+	 *   free  aae_*_dynamic_settings   -> the mailchimp, tiktok, weather and youtube settings
+	 *   Pro   aae_*_dynamic_settings   -> the animation-builder settings, the licence key
 	 * Pro ships its own screens against these same free endpoints, so its
 	 * option names belong here too even though nothing in this plugin reads them.
 	 *
+	 * Built from the key map (inc/Compat/key-map.php): every renamed option
+	 * under BOTH spellings — a Pro screen still posts the pre-4.2 name and the
+	 * bridge lands it on the live row — plus the deliberately kept names. The
+	 * map is the only place a name is spelled out.
+	 *
 	 * @since 2.7.3
 	 */
-	private static $allowed_option_names = array(
-		'wcf_save_widgets',
-		'wcf_save_extensions',
-		'wcf_custom_font_setting',
-		'wcf_smooth_scroller',
-		'wcf_notice_data',
-		'wcf_addons_setup_wizard',
-		'aae_mailchimp_api',
-		'aae_tiktok_api_advanced_settings',
-		'aae_weather_api_advanced_settings',
-		'aae_youtube_video_advanced_settings',
-		'aae_anim_builder_settings',
-		'wcf_addon_sl_license_key',
-		'aae_loop_grid_settings',
-	);
+	private static function allowed_option_names() {
+		static $names = null;
+		if ( null === $names ) {
+			$map   = \Wealcoder\AnimationAddons\Compat\Key_Bridge::map();
+			$names = array_merge(
+				array_keys( $map['options'] ),
+				array_values( $map['options'] ),
+				array_keys( $map['options_pro'] ),
+				array_values( $map['options_pro'] ),
+				array_keys( $map['keep'] )
+			);
+		}
+		return $names;
+	}
 
 	/**
 	 * Parent Menu Page Slug
@@ -131,14 +131,16 @@ class WCF_Admin_Init
 		add_action('wp_ajax_aae_save_dynamic_settings', array($this, 'save_dynamic_settings'));
 		add_action('wp_ajax_aae_get_dynamic_settings', array($this, 'get_dynamic_settings'));
 		add_action('wp_ajax_aae_flush_known_taxonomies', array($this, 'flush_known_taxonomies'));
-		add_action('wp_ajax_save_settings_with_ajax', array($this, 'save_settings'));
+		// The three unprefixed names below are kept as deprecated aliases for one
+		// release (a cached dashboard bundle) -- remove the aliases in 4.3.
+		\Wealcoder\AnimationAddons\Ajax_Alias::register('save_settings_with_ajax', 'aaeaddon_save_settings', array($this, 'save_settings'));
 		add_action('wp_ajax_aae_complete_setup_wizard', array($this, 'complete_setup_wizard'));
 		add_action('wp_ajax_wcf_dashboard_notice_store', array($this, 'notice_store'));
 		add_action('wp_ajax_wcf_get_notice_data', array($this, 'get_notice'));
 		add_action('wp_ajax_wcf_request_new_feature', array($this, 'request_new_feature'));
-		add_action('wp_ajax_save_settings_with_ajax_dashboard', array($this, 'save_settings_dashboard'));
+		\Wealcoder\AnimationAddons\Ajax_Alias::register('save_settings_with_ajax_dashboard', 'aaeaddon_save_settings_dashboard', array($this, 'save_settings_dashboard'));
 
-		add_action('wp_ajax_save_smooth_scroller_settings', array($this, 'save_smooth_scroller_settings'));
+		\Wealcoder\AnimationAddons\Ajax_Alias::register('save_smooth_scroller_settings', 'aaeaddon_save_smooth_scroller_settings', array($this, 'save_smooth_scroller_settings'));
 
 		// Prune AAE widgets only when Elementor's Element Manager list actually changes.
 		add_action('add_option_elementor_disabled_elements', array($this, 'disable_widgets_by_element_manager'));
@@ -182,7 +184,7 @@ class WCF_Admin_Init
 		}
 
 		$disable_widgets = Options::get_disabled_elements();
-		$saved_widgets   = get_option('wcf_save_widgets');
+		$saved_widgets   = get_option('aaeaddon_save_widgets');
 
 		if (is_array($disable_widgets) && is_array($saved_widgets)) {
 
@@ -195,7 +197,7 @@ class WCF_Admin_Init
 				}
 			}
 
-			update_option('wcf_save_widgets', $saved_widgets);
+			update_option('aaeaddon_save_widgets', $saved_widgets);
 		}
 	}
 
@@ -207,7 +209,7 @@ class WCF_Admin_Init
 		}
 
 		$disable_widgets = Options::get_disabled_elements();
-		$saved_widgets   = get_option('wcf_save_widgets');
+		$saved_widgets   = get_option('aaeaddon_save_widgets');
 
 		if (is_array($disable_widgets) && is_array($saved_widgets)) {
 
@@ -249,7 +251,7 @@ class WCF_Admin_Init
 				Plugin::instance()->widgets_manager->get_widget_types();
 			}
 
-			$element_to_key  = \WCF_ADDONS\Plugin::$widget_element_keys;
+			$element_to_key  = \Wealcoder\AnimationAddons\Plugin::$widget_element_keys;
 			$element_to_key += array_flip(self::ELEMENT_MANAGER_NAME_FIXES);
 		}
 
@@ -272,10 +274,10 @@ class WCF_Admin_Init
 	 */
 	public function dashboard_db_widgets_config($configs)
 	{
-		$wgt           = get_option('wcf_save_widgets');
+		$wgt           = get_option('aaeaddon_save_widgets');
 		$saved_widgets = is_array($wgt) ? array_keys($wgt) : array();
 		$widgets       = $configs['widgets'];
-		wcf_get_db_updated_config($widgets, $saved_widgets);
+		aaeaddon_get_db_updated_config($widgets, $saved_widgets);
 		$configs['widgets'] = $widgets;
 		return $configs;
 	}
@@ -287,10 +289,10 @@ class WCF_Admin_Init
 	 */
 	public function dashboard_db_extnsions_config($configs)
 	{
-		$ext        = get_option('wcf_save_extensions');
+		$ext        = get_option('aaeaddon_save_extensions');
 		$saved_ext  = is_array($ext) ? array_keys($ext) : array();
 		$extensions = $configs['extensions'];
-		wcf_get_db_updated_config($extensions, $saved_ext);
+		aaeaddon_get_db_updated_config($extensions, $saved_ext);
 		$configs['extensions'] = $extensions;
 		return $configs;
 	}
@@ -308,7 +310,7 @@ class WCF_Admin_Init
 		require_once 'base/Downloader.php';
 
 		// The import engine is NOT loaded here: Importer.php itself, plus
-		// WPImporterLogger, WPImporterLoggerCLI, WXRImporter, WXRImportInfo,
+		// WPImporterLogger, WPImporterLoggerCLI, AaeaddonWXRImporter, AaeaddonWXRImportInfo,
 		// AAEImporter, Logger and core's class-wp-importer.php. This method
 		// runs on every admin request, admin-ajax included, and those files
 		// declare classes and nothing else -- the only code that names them
@@ -319,12 +321,12 @@ class WCF_Admin_Init
 		require_once 'atomic-kit-import.php';
 		require_once 'atomic-v3-switch-off.php';
 		require_once 'atomic-image-localize.php';
-		\WCF_ADDONS\Admin\Base\Atomic_Attachment_Remap::init();
-		\WCF_ADDONS\Admin\Base\Atomic_Kit_Import::init();
-		\WCF_ADDONS\Admin\Base\Atomic_Image_Localize::init();
+		\Wealcoder\AnimationAddons\Admin\Base\Atomic_Attachment_Remap::init();
+		\Wealcoder\AnimationAddons\Admin\Base\Atomic_Kit_Import::init();
+		\Wealcoder\AnimationAddons\Admin\Base\Atomic_Image_Localize::init();
 		require_once 'st-init.php';
 		require_once 'template-importer.php';
-		$oneimport = \WCF_ADDONS\Admin\Base\OneClickImport::get_instance();
+		$oneimport = \Wealcoder\AnimationAddons\Admin\Base\OneClickImport::get_instance();
 	}
 
 
@@ -343,7 +345,7 @@ class WCF_Admin_Init
 			self::MENU_CAPABILITY,
 			self::MENU_PAGE_SLUG,
 			'',
-			WCF_ADDONS_URL . 'assets/images/wcf.png',
+			AAEADDON_URL . 'assets/images/wcf.png',
 			// 81 -- immediately BELOW Settings (80), in the block where plugins
 			// belong. It used to be 8, which sits between Posts (5) and Media
 			// (10) and pushed this above Media, Pages, Comments, Appearance,
@@ -387,44 +389,44 @@ class WCF_Admin_Init
 		}
 
 		// Load config once
-		$config = wcf_get_config();
+		$config = aaeaddon_get_config();
 
 		// CSS
 		wp_enqueue_style(
 			'wcf-admin',
-			WCF_ADDONS_URL . 'assets/build/modules/dashboard/index.css',
-			array( \WCF_ADDONS\AAE_Fonts::ensure() ),
-			wcf_asset_version()
+			AAEADDON_URL . 'assets/build/modules/dashboard/index.css',
+			array( \Wealcoder\AnimationAddons\Aaeaddon_Fonts::ensure() ),
+			aaeaddon_asset_version()
 		);
 
 		wp_enqueue_script(
 			'wcf-admin',
-			WCF_ADDONS_URL . 'assets/build/modules/dashboard/index.js',
+			AAEADDON_URL . 'assets/build/modules/dashboard/index.js',
 			array('react', 'react-dom', 'wp-element', 'wp-i18n'),
-			wcf_asset_version(),
+			aaeaddon_asset_version(),
 			true
 		);
 
 		// Count widgets/extensions
-		wcf_get_total_config_elements_by_key($config['extensions'], $total_extensions);
-		wcf_get_total_config_elements_by_key($config['widgets'], $total_widgets);
+		aaeaddon_get_total_config_elements_by_key($config['extensions'], $total_extensions);
+		aaeaddon_get_total_config_elements_by_key($config['widgets'], $total_widgets);
 
 		// Widgets
-		$widgets       = get_option('wcf_save_widgets');
+		$widgets       = get_option('aaeaddon_save_widgets');
 		$saved_widgets = is_array($widgets) ? array_keys($widgets) : array();
 
-		wcf_get_search_active_keys($config['widgets'], $saved_widgets, $foundKeys, $awidgets);
+		aaeaddon_get_search_active_keys($config['widgets'], $saved_widgets, $foundKeys, $awidgets);
 
 		// Extensions
-		$extensions       = get_option('wcf_save_extensions');
+		$extensions       = get_option('aaeaddon_save_extensions');
 		$saved_extensions = is_array($extensions) ? array_keys($extensions) : array();
 
-		wcf_get_search_active_keys($config['extensions'], $saved_extensions, $foundext, $activeext);
+		aaeaddon_get_search_active_keys($config['extensions'], $saved_extensions, $foundext, $activeext);
 
 		$active_widgets = self::get_widgets();
 		$active_ext     = self::get_extensions();
 
-		$font_settings = wp_unslash(get_option('wcf_custom_font_setting'));
+		$font_settings = wp_unslash(get_option('aaeaddon_custom_font_setting'));
 
 		$localize_data = array(
 			'ajaxurl'        => admin_url('admin-ajax.php'),
@@ -434,7 +436,7 @@ class WCF_Admin_Init
 			'addons_config'  => apply_filters('wcf_addons_dashboard_config', $config),  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 
 			'adminURL'       => admin_url(),
-			'smoothScroller' => json_decode(get_option('wcf_smooth_scroller')),
+			'smoothScroller' => json_decode(get_option('aaeaddon_smooth_scroller')),
 
 			// When MotionKit is connected and its ScrollSmoother is switched on
 			// site-wide, AAE Pro stands its own smoother down (MotionKit has
@@ -480,32 +482,32 @@ class WCF_Admin_Init
 			 * Same ratchet as `legacy_v3` (Rule 5 in CLAUDE.md): evidence of v3
 			 * can only ever switch V3 back ON.
 			 */
-			'v3_in_use' => class_exists('\WCF_ADDONS\AnimationSettings\Animation_Settings')
-				&& \WCF_ADDONS\AnimationSettings\Animation_Settings::has_v3_usage(),
+			'v3_in_use' => class_exists('\Wealcoder\AnimationAddons\AnimationSettings\Animation_Settings')
+				&& \Wealcoder\AnimationAddons\AnimationSettings\Animation_Settings::has_v3_usage(),
 
 			'global_settings_url' => $this->get_elementor_active_edit_url(),
 			'theme_builder_url'   => admin_url('edit.php?post_type=wcf-addons-template'),
-			'user_role'           => wcfaddon_get_current_user_roles(),
+			'user_role'           => aaeaddon_get_current_user_roles(),
 
-			'version'            => WCF_ADDONS_VERSION,
-			'st_template_domain' => WCF_TEMPLATE_STARTER_BASE_URL,
+			'version'            => AAEADDON_VERSION,
+			'st_template_domain' => AAEADDON_TEMPLATE_STARTER_BASE_URL,
 
 			'home_url' => add_query_arg(['aae-cache' => 1], home_url('/')),
 
 
 			'hero'       => file_exists($this->plugin_file)
-				? WCF_ADDONS_URL . 'assets/images/hero-banner.jpg'
+				? AAEADDON_URL . 'assets/images/hero-banner.jpg'
 				: 'no',
 
-			'hero_offer' => WCF_ADDONS_URL . 'assets/video/cyber-sale.mp4',
+			'hero_offer' => AAEADDON_URL . 'assets/video/cyber-sale.mp4',
 
 			// Animation Settings screen. Shipped in the initial payload rather
 			// than fetched, so the panel paints filled in on first open.
 			'animation_settings' => array(
-				'settings'      => \WCF_ADDONS\AnimationSettings\Animation_Settings::get(),
-				'schema'        => \WCF_ADDONS\AnimationSettings\Animation_Settings::schema_for_ui(),
-				'global_colors' => \WCF_ADDONS\AnimationSettings\Animation_Settings::global_colors(),
-				'has_pro'       => \WCF_ADDONS\AnimationSettings\Animation_Settings::has_pro(),
+				'settings'      => \Wealcoder\AnimationAddons\AnimationSettings\Animation_Settings::get(),
+				'schema'        => \Wealcoder\AnimationAddons\AnimationSettings\Animation_Settings::schema_for_ui(),
+				'global_colors' => \Wealcoder\AnimationAddons\AnimationSettings\Animation_Settings::global_colors(),
+				'has_pro'       => \Wealcoder\AnimationAddons\AnimationSettings\Animation_Settings::has_pro(),
 			),
 
 			/*
@@ -539,7 +541,7 @@ class WCF_Admin_Init
 		wp_localize_script('wcf-admin', 'WCF_ADDONS_ADMIN', $localize_data);
 
 		// WordPress.org translations take priority, bundled translations in plugin's languages/ folder serve as fallback
-		wp_set_script_translations('wcf-admin', 'animation-addons-for-elementor', WCF_ADDONS_PATH . 'languages');
+		wp_set_script_translations('wcf-admin', 'animation-addons-for-elementor', AAEADDON_PATH . 'languages');
 
 		// Support user-level locale (when user sets language in their profile)
 		$user_locale = get_user_locale();
@@ -547,7 +549,7 @@ class WCF_Admin_Init
 
 		if ($user_locale !== $site_locale && $user_locale !== 'en_US') {
 			$md5    = md5('assets/build/modules/dashboard/index.js');
-			$json_file = WCF_ADDONS_PATH . "languages/animation-addons-for-elementor-{$user_locale}-{$md5}.json";
+			$json_file = AAEADDON_PATH . "languages/animation-addons-for-elementor-{$user_locale}-{$md5}.json";
 
 			if (file_exists($json_file)) {
 				// A translation JSON shipped in this plugin's own /languages folder,
@@ -580,7 +582,7 @@ class WCF_Admin_Init
 		$data_base = '';
 		foreach ($configs['integrations']['plugins']['elements'] as &$plugin) {
 
-			if (wcf_addons_get_local_plugin_data($plugin['basename']) === false) {
+			if (aaeaddon_get_local_plugin_data($plugin['basename']) === false) {
 				$action    = 'Download';
 				$data_base = $plugin['download_url'];
 			} elseif (is_plugin_active($plugin['basename'])) {
@@ -687,26 +689,26 @@ class WCF_Admin_Init
 		$option_name   = isset($_POST['settings']) ? sanitize_text_field(wp_unslash($_POST['settings'])) : '';
 
 		// Only ever write one of the plugin's own options.
-		if (! empty($option_name) && ! in_array($option_name, self::$allowed_option_names, true)) {
+		if (! empty($option_name) && ! in_array($option_name, self::allowed_option_names(), true)) {
 			wp_send_json_error(esc_html__('Invalid option name.', 'animation-addons-for-elementor'));
 		}
 
 		$sanitize_data = sanitize_text_field(wp_unslash($_POST['fields']));
 		$settings      = json_decode($sanitize_data, true);
-		wcf_get_nested_active_config_keys($settings, $found, $actives);
-		wcf_get_nested_config_keys($settings, $foundkeys, $updatedSettings);
+		aaeaddon_get_nested_active_config_keys($settings, $found, $actives);
+		aaeaddon_get_nested_config_keys($settings, $foundkeys, $updatedSettings);
 
-		update_option('wcf_addons_setup_wizard', 'complete');
+		update_option('aaeaddon_setup_wizard', 'complete');
 		// update new settings
 		if (! empty($option_name)) {
 
-			$updated = update_option($option_name, $updatedSettings);
+			$updated = \Wealcoder\AnimationAddons\Compat\Key_Bridge::update_option($option_name, $updatedSettings);
 
-			if ($option_name == 'wcf_save_widgets') {
+			if ($option_name == 'aaeaddon_save_widgets') {
 				$this->sync_widgets_by_element_manager();
-				update_option('wcf_widget_dashboardv2', true);
+				update_option('aaeaddon_widget_dashboardv2', true);
 			} else {
-				update_option('wcf_extension_dashboardv2', true);
+				update_option('aaeaddon_extension_dashboardv2', true);
 			}
 
 			$return_message = array(
@@ -742,7 +744,7 @@ class WCF_Admin_Init
 			wp_send_json_error(esc_html__('Permission denied.', 'animation-addons-for-elementor'));
 		}
 
-		update_option('wcf_addons_setup_wizard', 'complete');
+		update_option('aaeaddon_setup_wizard', 'complete');
 
 		wp_send_json_success(array('status' => 'complete'));
 	}
@@ -762,7 +764,7 @@ class WCF_Admin_Init
 		$setting_name = sanitize_text_field(wp_unslash($_POST['setting_name']));
 
 		// Only ever read one of the plugin's own options.
-		if (! in_array($setting_name, self::$allowed_option_names, true)) {
+		if (! in_array($setting_name, self::allowed_option_names(), true)) {
 			wp_send_json_error(esc_html__('Invalid option name.', 'animation-addons-for-elementor'));
 		}
 
@@ -810,7 +812,7 @@ class WCF_Admin_Init
 		$setting_name = sanitize_text_field(wp_unslash($_POST['setting_name']));
 
 		// Only ever write one of the plugin's own options.
-		if (! in_array($setting_name, self::$allowed_option_names, true)) {
+		if (! in_array($setting_name, self::allowed_option_names(), true)) {
 			wp_send_json_error(esc_html__('Invalid option name.', 'animation-addons-for-elementor'));
 		}
 
@@ -843,18 +845,18 @@ class WCF_Admin_Init
 
 		// Element classes are require'd during Elementor's element registration,
 		// which does not run on a plain admin-ajax request.
-		if (! class_exists('\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid')) {
-			$file = WCF_ADDONS_PATH . 'inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php';
+		if (! class_exists('\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_A_Loop_Grid')) {
+			$file = AAEADDON_PATH . 'inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php';
 			if (file_exists($file)) {
 				require_once $file;
 			}
 		}
 
-		if (! class_exists('\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid')) {
+		if (! class_exists('\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_A_Loop_Grid')) {
 			wp_send_json_error(array('message' => esc_html__('The Loop Grid widget is not available.', 'animation-addons-for-elementor')));
 		}
 
-		$result  = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::forget_unused_taxonomies();
+		$result  = \Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_A_Loop_Grid::forget_unused_taxonomies();
 		$removed = count($result['removed']);
 		$in_use  = count($result['kept_in_use']);
 
@@ -891,7 +893,7 @@ class WCF_Admin_Init
 		}
 
 		$sanitize_data = sanitize_text_field(wp_unslash($_POST['notice']));
-		update_option('wcf_notice_data', $sanitize_data);
+		update_option('aaeaddon_notice_data', $sanitize_data);
 
 		$return_message = array(
 			'message' => 'Notice Updated',
@@ -909,7 +911,7 @@ class WCF_Admin_Init
 		}
 
 		$return_message = array(
-			'notice' => json_decode(get_option('wcf_notice_data')),
+			'notice' => json_decode(get_option('aaeaddon_notice_data')),
 		);
 		wp_send_json($return_message);
 	}
@@ -1057,7 +1059,7 @@ class WCF_Admin_Init
 	/**
 	 * Where feature requests are sent.
 	 *
-	 * The value lives in WCF_FEATURE_REQUEST_ENDPOINT (declared in the main
+	 * The value lives in AAEADDON_FEATURE_REQUEST_ENDPOINT (declared in the main
 	 * plugin file, overridable from wp-config.php). The filter is the third
 	 * layer, for a staging site that needs to decide per-request rather than
 	 * per-install.
@@ -1072,7 +1074,7 @@ class WCF_Admin_Init
 	 */
 	private static function feature_request_endpoint()
 	{
-		$endpoint = defined('WCF_FEATURE_REQUEST_ENDPOINT') ? WCF_FEATURE_REQUEST_ENDPOINT : '';
+		$endpoint = defined('AAEADDON_FEATURE_REQUEST_ENDPOINT') ? AAEADDON_FEATURE_REQUEST_ENDPOINT : '';
 
 		return apply_filters('wcf_addons_feature_request_endpoint', $endpoint); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 	}
@@ -1080,7 +1082,7 @@ class WCF_Admin_Init
 	/**
 	 * The shared key the receiver checks.
 	 *
-	 * Declared as WCF_FEATURE_REQUEST_API_KEY in the main plugin file; see the
+	 * Declared as AAEADDON_FEATURE_REQUEST_API_KEY in the main plugin file; see the
 	 * note there on why it is obfuscation rather than authentication.
 	 *
 	 * @since 4.1.1
@@ -1088,7 +1090,7 @@ class WCF_Admin_Init
 	 */
 	private static function feature_request_api_key()
 	{
-		return defined('WCF_FEATURE_REQUEST_API_KEY') ? WCF_FEATURE_REQUEST_API_KEY : '';
+		return defined('AAEADDON_FEATURE_REQUEST_API_KEY') ? AAEADDON_FEATURE_REQUEST_API_KEY : '';
 	}
 
 	public function save_settings_dashboard()
@@ -1108,13 +1110,13 @@ class WCF_Admin_Init
 		$option_name   = isset($_POST['settings']) ? sanitize_text_field(wp_unslash($_POST['settings'])) : '';
 
 		// Only ever write one of the plugin's own options.
-		if (! empty($option_name) && ! in_array($option_name, self::$allowed_option_names, true)) {
+		if (! empty($option_name) && ! in_array($option_name, self::allowed_option_names(), true)) {
 			wp_send_json_error(esc_html__('Invalid option name.', 'animation-addons-for-elementor'));
 		}
 
 		$sanitize_data = sanitize_text_field(wp_unslash($_POST['fields']));
 		$settings      = json_decode($sanitize_data, true);
-		$actives       = get_option('wcf_save_widgets');
+		$actives       = get_option('aaeaddon_save_widgets');
 
 		if (is_array($actives)) {
 			foreach ($settings as $slug => $item) {
@@ -1131,9 +1133,9 @@ class WCF_Admin_Init
 		// update new settings
 		if (! empty($option_name)) {
 
-			$updated = update_option($option_name, $actives);
+			$updated = \Wealcoder\AnimationAddons\Compat\Key_Bridge::update_option($option_name, $actives);
 
-			if ($option_name == 'wcf_save_widgets') {
+			if ($option_name == 'aaeaddon_save_widgets') {
 				$this->sync_widgets_by_element_manager();
 			}
 			$elements = get_option($option_name);
@@ -1176,7 +1178,7 @@ class WCF_Admin_Init
 		// update new settings
 		if (! empty($_POST['smooth'])) {
 
-			update_option('wcf_smooth_scroller', $option);
+			update_option('aaeaddon_smooth_scroller', $option);
 			wp_send_json($option);
 		}
 
@@ -1184,4 +1186,4 @@ class WCF_Admin_Init
 	}
 }
 
-WCF_Admin_Init::instance();
+Aaeaddon_Admin_Init::instance();

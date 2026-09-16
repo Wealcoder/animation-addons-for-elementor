@@ -12,7 +12,7 @@
  * @since   4.0.0
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Form;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -39,7 +39,7 @@ use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\AtomicWidgets\Styles\Style_States;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
-class AAE_A_Form_Checkbox extends Atomic_Widget_Base {
+class Aaeaddon_A_Form_Checkbox extends Atomic_Widget_Base {
 
 	use Has_Template;
 

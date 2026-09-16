@@ -39,7 +39,7 @@
       },
 
       body: new URLSearchParams({
-        action: "activate_from_editor_plugin",
+        action: "aaeaddon_activate_from_editor_plugin",
         action_base:
           "animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php",
         nonce: WCF_TEMPLATE_LIBRARY.nonce,
@@ -252,7 +252,7 @@
               }
              
             });
-            aaeadddon_run_lazy_load();
+            aaeaddon_run_lazy_load();
 
             $($(".wcf-library-template").last())
               .find("img")
@@ -554,7 +554,7 @@
     }
   });
 
-  function aaeadddon_run_lazy_load() {
+  function aaeaddon_run_lazy_load() {
     const listItems = document.querySelectorAll(".aaeaadon-loadmore-footer");
     if (!(listItems && listItems.length)) return;
     const lastItem = listItems[listItems.length - 1];

@@ -16,7 +16,7 @@
  * @package AnimationAddonsForElementor
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\AdvancedHeading;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\AdvancedHeading;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -28,7 +28,7 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Controls\Base\Atomic_Cont
 
 use Elementor\Modules\AtomicWidgets\Controls\Base\Atomic_Control_Base;
 
-class AAE_Inline_Text_Control extends Atomic_Control_Base {
+class Aaeaddon_Inline_Text_Control extends Atomic_Control_Base {
 
 	private ?string $placeholder = null;
 

@@ -1,14 +1,12 @@
 <?php
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons;
 
 use Elementor\Controls_Manager;
 use Elementor\Element_Base;
 
 defined( 'ABSPATH' ) || die();
 
-class WCF_Starter_Animations {
+class Aaeaddon_Starter_Animations {
 
     private static function get_text_widgets() {
         return [
@@ -63,7 +61,7 @@ class WCF_Starter_Animations {
         // Checked here rather than in init() so the option is read long after
         // every plugin has loaded: the Pro plugin filters
         // option_wcf_save_extensions, and init() runs too early to see it.
-        if ( ! \WCF_ADDONS\Plugin::has_active_legacy_assets() ) {
+        if ( ! \Wealcoder\AnimationAddons\Plugin::has_active_legacy_assets() ) {
             return;
         }
 
@@ -724,7 +722,7 @@ class WCF_Starter_Animations {
     public static function register_controls_container( Element_Base $element ) {
 
         // See register_controls() — same legacy gate, same reasoning.
-        if ( ! \WCF_ADDONS\Plugin::has_active_legacy_assets() ) {
+        if ( ! \Wealcoder\AnimationAddons\Plugin::has_active_legacy_assets() ) {
             return;
         }
 
@@ -932,7 +930,7 @@ class WCF_Starter_Animations {
         // Legacy (v3) feature — don't inject the replay handler into the editor
         // once every legacy extension and widget is switched off. Matches the
         // gate on the aae-starter-animations script/style in Plugin.
-        if ( ! \WCF_ADDONS\Plugin::has_active_legacy_assets() ) {
+        if ( ! \Wealcoder\AnimationAddons\Plugin::has_active_legacy_assets() ) {
             return;
         }
         ?>
@@ -999,4 +997,4 @@ class WCF_Starter_Animations {
 
 }
 
-WCF_Starter_Animations::init();
+Aaeaddon_Starter_Animations::init();

@@ -67,7 +67,7 @@ re-create them. Items marked **[per-widget]** are what this skill adds.
 ├──────────────────────────────────────────────────────────────────────┤
 │ 2. Panel section     [per-widget]                                     │
 │    In the widget's define_atomic_controls(): a "Presets" Section      │
-│    holding AAE_A_Preset_Picker_Control::make().                       │
+│    holding Aaeaddon_A_Preset_Picker_Control::make().                       │
 ├──────────────────────────────────────────────────────────────────────┤
 │ 3. Preset JSON       [per-widget]                                     │
 │    Widgets/<Name>/presets/*.json — Elementor native exports.          │
@@ -160,13 +160,13 @@ changing **only the namespace** to the widget's namespace.
 
 ```php
 <?php
-namespace WCF_ADDONS\AtomicWidgets\Widgets\<Name>;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\<Name>;
 
 use Elementor\Modules\AtomicWidgets\Controls\Base\Element_Control_Base;
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-class AAE_A_Preset_Picker_Control extends Element_Control_Base {
+class Aaeaddon_A_Preset_Picker_Control extends Element_Control_Base {
     public function get_type(): string {
         return 'aae-preset-picker';   // MUST match the JS registry key
     }
@@ -200,7 +200,7 @@ protected function define_atomic_controls(): array {
             ->set_label( __( 'Presets', 'animation-addons-for-elementor' ) )
             ->set_id( 'aae_presets' )
             ->set_items( [
-                AAE_A_Preset_Picker_Control::make()
+                Aaeaddon_A_Preset_Picker_Control::make()
                     ->set_label( __( 'Apply Preset', 'animation-addons-for-elementor' ) )
                     ->set_meta( [ 'layout' => 'custom' ] ),
             ] ),

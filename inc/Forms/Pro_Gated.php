@@ -29,7 +29,7 @@
  * @package AnimationAddonsForElementor
  */
 
-namespace WCF_ADDONS\Forms;
+namespace Wealcoder\AnimationAddons\Forms;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

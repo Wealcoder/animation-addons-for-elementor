@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Timeline;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Timeline;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -33,7 +33,7 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
  * widget would mean styling every paragraph on the site, since base styles
  * are owned by the widget TYPE, not a per-instance override.
  */
-class AAE_A_Timeline_Number extends Atomic_Widget_Base {
+class Aaeaddon_A_Timeline_Number extends Atomic_Widget_Base {
 
 	use Has_Template;
 

@@ -1,9 +1,9 @@
 <?php
-namespace WCF_ADDONS\Atomic\ImageOverlay;
+namespace Wealcoder\AnimationAddons\Atomic\ImageOverlay;
 
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
-use WCF_ADDONS\Atomic\Bootstrap;
+use Wealcoder\AnimationAddons\Atomic\Bootstrap;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

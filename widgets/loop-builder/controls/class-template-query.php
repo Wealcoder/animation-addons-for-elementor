@@ -1,7 +1,5 @@
 <?php
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\Widgets\Loop_Builder\Controls;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\Widgets\Loop_Builder\Controls;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -116,9 +114,9 @@ class Template_Query extends \Elementor\Base_Data_Control {
 	public function enqueue() {
 		wp_enqueue_script(
 			'aae-loop-builder-template-query',
-			WCF_ADDONS_URL . 'assets/js/loop-builder/controls/template-query.js',
+			AAEADDON_URL . 'assets/js/loop-builder/controls/template-query.js',
 			array( 'elementor-editor', 'elementor-common' ),
-			WCF_ADDONS_VERSION,
+			AAEADDON_VERSION,
 			true
 		);
 

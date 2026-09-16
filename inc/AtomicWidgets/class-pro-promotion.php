@@ -52,7 +52,7 @@
  * @package AnimationAddonsForElementor
  */
 
-namespace WCF_ADDONS\AtomicWidgets;
+namespace Wealcoder\AnimationAddons\AtomicWidgets;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

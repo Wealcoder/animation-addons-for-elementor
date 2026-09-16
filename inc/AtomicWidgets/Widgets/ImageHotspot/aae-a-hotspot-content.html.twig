@@ -1,7 +1,7 @@
 {#
   AAE Hotspot Content — the tooltip/lightbox box. `data-aae-hotspot-mode`
   comes from the ancestor Point's `tooltip_type` via Render_Context (see
-  AAE_A_Hotspot_Point::define_render_context() and this class's own
+  Aaeaddon_A_Hotspot_Point::define_render_context() and this class's own
   build_template_context()) — rendered here, server-side, so image-hotspot.
   scss's lightbox rule matches from first paint, before image-hotspot.js
   even runs. `role`/`aria-modal` are still set by that JS at init (they

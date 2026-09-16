@@ -3,19 +3,19 @@
  * AAE Hotspot Point — atomic element (repeating child).
  *
  * One marker+content pair positioned over the parent Image Hotspot's canvas.
- * Inserted only via the "Hotspots" element-control (AAE_A_Hotspots_Control)
+ * Inserted only via the "Hotspots" element-control (Aaeaddon_A_Hotspots_Control)
  * on the parent — never dragged from the panel directly
- * (should_show_in_panel() => false), same convention as AAE_A_Slide.
+ * (should_show_in_panel() => false), same convention as Aaeaddon_A_Slide.
  *
  * Position is a plain X/Y percent CONTENT prop (pos_left/pos_top), not a
  * Style tab override — this keeps every default point trivially positionable
- * at generate() time (see AAE_A_Image_Hotspot::define_default_children())
+ * at generate() time (see Aaeaddon_A_Image_Hotspot::define_default_children())
  * without needing per-instance base-style overrides, and leaves room for a
  * future click-to-place editor UX to just write these two numbers.
  *
  * The MARKER's own look (background/color/radius/padding/size) and the
  * CONTENT box's own look (background/padding/width/radius) each live on
- * their OWN real child element (AAE_A_Hotspot_Marker / AAE_A_Hotspot_Content)
+ * their OWN real child element (Aaeaddon_A_Hotspot_Marker / Aaeaddon_A_Hotspot_Content)
  * — split out specifically so a builder can select either part in the
  * Navigator and restyle it from Elementor's generic Style tab, instead of
  * those looks being hardcoded in image-hotspot.scss. This element itself is
@@ -29,7 +29,7 @@
  * calls rather than parsing an HTML string). image-hotspot.js wires click +
  * Enter/Space keyboard activation onto this div instead.
  *
- * Content's children are UNRESTRICTED (mirrors AAE_A_Flip_Box) — they ARE
+ * Content's children are UNRESTRICTED (mirrors Aaeaddon_A_Flip_Box) — they ARE
  * the tooltip/lightbox content, and dropping another e-aae-a-image-hotspot
  * in there is exactly how drill-down hotspots work; no special-case "nested
  * hotspot" code exists anywhere, it's pure composition.
@@ -38,7 +38,7 @@
  * @since   4.0.0
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\ImageHotspot;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\ImageHotspot;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -72,11 +72,11 @@ require_once __DIR__ . '/Parts/class-aae-a-hotspot-marker.php';
 require_once __DIR__ . '/class-aae-a-hotspot-content.php';
 require_once __DIR__ . '/Parts/class-aae-a-hotspot-lightbox.php';
 
-use WCF_ADDONS\AtomicWidgets\Widgets\ImageHotspot\AAE_A_Hotspot_Marker;
-use WCF_ADDONS\AtomicWidgets\Widgets\ImageHotspot\AAE_A_Hotspot_Content;
-use WCF_ADDONS\AtomicWidgets\Widgets\ImageHotspot\AAE_A_Hotspot_Lightbox;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\ImageHotspot\Aaeaddon_A_Hotspot_Marker;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\ImageHotspot\Aaeaddon_A_Hotspot_Content;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\ImageHotspot\Aaeaddon_A_Hotspot_Lightbox;
 
-class AAE_A_Hotspot_Point extends Atomic_Element_Base {
+class Aaeaddon_A_Hotspot_Point extends Atomic_Element_Base {
 
 	use Has_Element_Template;
 
@@ -209,11 +209,11 @@ class AAE_A_Hotspot_Point extends Atomic_Element_Base {
 
 	protected function define_default_children() {
 		return [
-			AAE_A_Hotspot_Marker::generate()
+			Aaeaddon_A_Hotspot_Marker::generate()
 				->editor_settings( [ 'title' => 'Marker' ] )
 				->build(),
 
-			AAE_A_Hotspot_Content::generate()
+			Aaeaddon_A_Hotspot_Content::generate()
 				->editor_settings( [ 'title' => 'Content' ] )
 				->build(),
 
@@ -221,7 +221,7 @@ class AAE_A_Hotspot_Point extends Atomic_Element_Base {
 			// live DOM node inside this element at runtime (Content stays
 			// Point's own direct child in the saved data). See
 			// class-aae-a-hotspot-lightbox.php.
-			AAE_A_Hotspot_Lightbox::generate()
+			Aaeaddon_A_Hotspot_Lightbox::generate()
 				->editor_settings( [ 'title' => 'Lightbox' ] )
 				->build(),
 		];
@@ -235,7 +235,7 @@ class AAE_A_Hotspot_Point extends Atomic_Element_Base {
 	 * Publishes this Point's OWN `tooltip_type` down the Render_Context stack
 	 * so Content — which can't read an ancestor's props in its own Twig —
 	 * can render `data-aae-hotspot-mode` on ITSELF, server-side, at first
-	 * paint. Same mechanism AAE_A_Post_Pagination already uses to hand
+	 * paint. Same mechanism Aaeaddon_A_Post_Pagination already uses to hand
 	 * prev/next post data down to its Prev/Next children.
 	 *
 	 * This replaces relying on image-hotspot.js to copy the mode onto

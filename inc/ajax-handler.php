@@ -1,8 +1,6 @@
 <?php
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons;
 
 use Elementor\Modules\AtomicWidgets\Styles\Atomic_Widget_Styles;
 use Elementor\Modules\AtomicWidgets\Styles\Styles_Renderer;
@@ -16,11 +14,15 @@ defined( 'ABSPATH' ) || die();
 class Ajax_Handler {
 
 	public static function init() {
-		add_action( 'wp_ajax_live_search', array( __CLASS__, 'handle_live_search' ) );
-		add_action( 'wp_ajax_nopriv_live_search', array( __CLASS__, 'handle_live_search' ) );
+		// Front-end live search. The old unprefixed name stays answered while a
+		// page cache or combined JS bundle can still be posting it; remove the
+		// alias in 4.4 (see Ajax_Alias).
+		Ajax_Alias::register( 'live_search', 'aaeaddon_live_search', array( __CLASS__, 'handle_live_search' ), true );
 
-		// Mailchimp AJAX handlers (editor configuration).
-		add_action( 'wp_ajax_mailchimp_api', array( __CLASS__, 'mailchimp_lists' ) );
+		// Mailchimp AJAX handlers (editor configuration). Pro registers
+		// `mailchimp_api` too and posts it from its own widget until Pro 4.3;
+		// remove the alias in 4.4.
+		Ajax_Alias::register( 'mailchimp_api', 'aaeaddon_mailchimp_api', array( __CLASS__, 'mailchimp_lists' ) );
 		add_action( 'wp_ajax_wcf_mailchimp_list_fields', array( __CLASS__, 'wcf_mailchimp_list_fields' ) );
 
 		// Mailchimp frontend subscription.
@@ -52,7 +54,7 @@ class Ajax_Handler {
 		// WHICH document this visitor may read -- `post_id` is whatever the
 		// request asked for. Without this check any visitor could name a draft,
 		// pending, private or password-protected post and receive its rendered
-		// popup content. `wcf_addons_get_widget_settings()` reads
+		// popup content. `aaeaddon_get_widget_settings()` reads
 		// `_elementor_data` straight off the document and applies no guard of
 		// its own, so the guard belongs here, at the request boundary.
 		// Same test as `Atomic::ajax_loop_grid_page()`.
@@ -63,7 +65,7 @@ class Ajax_Handler {
 			wp_send_json_error( 'Access denied', 403 );
 		}
 
-		$settings = wcf_addons_get_widget_settings( $post_id, $element_id );
+		$settings = aaeaddon_get_widget_settings( $post_id, $element_id );
 
 		// The SAVED document is the authority, and that is what makes this
 		// endpoint safe to serve to the public. But in the Elementor editor
@@ -284,8 +286,8 @@ class Ajax_Handler {
 			exit( 'No naughty business please' );
 		}
 		$api = isset( $_REQUEST['api'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['api'] ) ) : '';
-		update_option( 'aae_mailchimp_api', $api );
-		$response = \WCF_ADDONS\Widgets\Mailchimp\Mailchimp_Api::get_mailchimp_lists( $api );
+		update_option( 'aaeaddon_mailchimp_api', $api );
+		$response = \Wealcoder\AnimationAddons\Widgets\Mailchimp\Mailchimp_Api::get_mailchimp_lists( $api );
 
 		wp_send_json( $response );
 	}
@@ -308,7 +310,7 @@ class Ajax_Handler {
 		$api     = isset( $_REQUEST['api'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['api'] ) ) : '';
 		$list_id = ! empty( $_REQUEST['list_id'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['list_id'] ) ) : '';
 
-		$response = \WCF_ADDONS\Widgets\Mailchimp\Mailchimp_Api::get_form_fields( $api, $list_id );
+		$response = \Wealcoder\AnimationAddons\Widgets\Mailchimp\Mailchimp_Api::get_form_fields( $api, $list_id );
 
 		wp_send_json( $response );
 	}
@@ -331,7 +333,7 @@ class Ajax_Handler {
 		$query           = isset( $_POST['subscriber_info'] ) ? wp_kses_post( wp_unslash( $_POST['subscriber_info'] ) ) : '';
 		$subscriber_info = html_entity_decode( $query );
 		parse_str( $subscriber_info, $subscriber );
-		$response = \WCF_ADDONS\Widgets\Mailchimp\Mailchimp_Api::insert_subscriber_to_mailchimp( $subscriber );
+		$response = \Wealcoder\AnimationAddons\Widgets\Mailchimp\Mailchimp_Api::insert_subscriber_to_mailchimp( $subscriber );
 
 		wp_send_json( $response );
 	}

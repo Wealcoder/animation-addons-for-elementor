@@ -1,8 +1,6 @@
 <?php
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\Admin\Notices;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\Admin\Notices;
 
 defined( 'ABSPATH' ) || exit();
 /**
@@ -69,8 +67,8 @@ class Notices {
 	 * @return void
 	 */
 	public function enqueue_scripts() {
-		wp_register_style( 'aae-notice', WCF_ADDONS_URL . 'assets/css/css/notice.css', array( \WCF_ADDONS\AAE_Fonts::ensure() ), WCF_ADDONS_VERSION );
-		wp_register_script( 'aae-notice', WCF_ADDONS_URL . 'assets/js/js/notice.js', array( 'jquery' ), WCF_ADDONS_VERSION, true );
+		wp_register_style( 'aae-notice', AAEADDON_URL . 'assets/css/css/notice.css', array( \Wealcoder\AnimationAddons\Aaeaddon_Fonts::ensure() ), AAEADDON_VERSION );
+		wp_register_script( 'aae-notice', AAEADDON_URL . 'assets/js/js/notice.js', array( 'jquery' ), AAEADDON_VERSION, true );
 	}
 
 	/**

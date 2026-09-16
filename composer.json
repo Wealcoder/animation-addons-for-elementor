@@ -5,7 +5,7 @@
   "license": "GPL-3",
   "autoload": {
     "psr-4": {
-      "WCF_ADDONS\\": "inc/"
+      "Wealcoder\\AnimationAddons\\": "inc/"
     }
   },
   "authors": [

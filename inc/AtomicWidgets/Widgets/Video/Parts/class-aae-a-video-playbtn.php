@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Video;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Video;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -47,11 +47,11 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
  * circle (or anything else about it) with no custom CSS at all.
  *
  * The icon is a genuine nested Atomic_Svg child (same icon+label pattern
- * AAE_A_Btn's own default children use) so swapping it for any other SVG is
+ * Aaeaddon_A_Btn's own default children use) so swapping it for any other SVG is
  * just Elementor's native "Choose SVG" control on that child — no bespoke
  * icon-upload plumbing needed here.
  */
-class AAE_A_Video_PlayBtn extends Atomic_Element_Base {
+class Aaeaddon_A_Video_PlayBtn extends Atomic_Element_Base {
 
 	use Has_Element_Template;
 
@@ -147,7 +147,7 @@ class AAE_A_Video_PlayBtn extends Atomic_Element_Base {
 				] ) ),
 
 			// Matches define_default_children()'s "{element_type}-{key}" naming
-			// convention — same one AAE_A_Btn's own icon style key uses.
+			// convention — same one Aaeaddon_A_Btn's own icon style key uses.
 			'icon' => Style_Definition::make()
 				->set_label( __( 'Icon', 'animation-addons-for-elementor' ) )
 				->add_variant( Style_Variant::make()->add_props( [
@@ -166,7 +166,7 @@ class AAE_A_Video_PlayBtn extends Atomic_Element_Base {
 					'classes' => Classes_Prop_Type::generate( [ $icon_class ] ),
 					'svg'     => Svg_Src_Prop_Type::generate( [
 						'id'  => null,
-						'url' => Url_Prop_Type::generate( WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/Video/Parts/assets/icons/play.svg' ),
+						'url' => Url_Prop_Type::generate( AAEADDON_URL . 'inc/AtomicWidgets/Widgets/Video/Parts/assets/icons/play.svg' ),
 					] ),
 				] )
 				->build(),

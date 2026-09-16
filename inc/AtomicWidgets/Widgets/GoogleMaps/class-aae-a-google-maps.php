@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\AtomicWidgets\Widgets\GoogleMaps;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\GoogleMaps;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -57,7 +57,7 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
  * `get_atomic_settings()` runs server-side only, but the editor canvas
  * renders this same .twig CLIENT-SIDE through Twing — so a `map_src` computed
  * in PHP would simply be undefined on the canvas and the widget would preview
- * blank (the constraint that forced AAE_A_Menu's `rendered_menu` through an
+ * blank (the constraint that forced Aaeaddon_A_Menu's `rendered_menu` through an
  * AJAX fallback). Building the URL from plain string concatenation + the
  * `url_encode` filter — both present in Twing, verified against
  * assets/js/packages/twing/twing.js — makes the editor and the frontend
@@ -67,7 +67,7 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
  * @package AnimationAddonsForElementor
  */
 
-class AAE_A_Google_Maps extends Atomic_Widget_Base {
+class Aaeaddon_A_Google_Maps extends Atomic_Widget_Base {
 
 	use Has_Template;
 
@@ -163,7 +163,7 @@ class AAE_A_Google_Maps extends Atomic_Widget_Base {
 
 			// Also control-less. The empty-Location placeholder text lives in
 			// the schema rather than as a literal in the .twig (which is what
-			// AAE_A_Menu does) purely so it goes through __() and stays
+			// Aaeaddon_A_Menu does) purely so it goes through __() and stays
 			// translatable — the twig is also parsed client-side by Twing,
 			// which has no `trans` filter, so PHP is the only place that can
 			// translate it.
@@ -267,7 +267,7 @@ class AAE_A_Google_Maps extends Atomic_Widget_Base {
 		];
 
 		// Compound descendant key -> `.e-aae-a-google-maps-base .aae-a-google-maps-frame`
-		// (same shape as AAE_A_Form's 'base .aae-form-checkbox-row'). Structural,
+		// (same shape as Aaeaddon_A_Form's 'base .aae-form-checkbox-row'). Structural,
 		// not cosmetic: the iframe fills whatever box the user's Style-tab
 		// Width/Height gives the root. `display:block` also kills the inline
 		// descender gap core patched with `line-height: 0`.

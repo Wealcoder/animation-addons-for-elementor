@@ -22,7 +22,7 @@
  * @since   4.0.0
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\SearchForm;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SearchForm;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
@@ -41,8 +41,8 @@ use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 require_once __DIR__ . '/class-aae-a-search-toggle.php';
 require_once __DIR__ . '/class-aae-a-search-panel.php';
 
-use WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Toggle;
-use WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Panel;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SearchForm\Aaeaddon_A_Search_Toggle;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SearchForm\Aaeaddon_A_Search_Panel;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -52,7 +52,7 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Elem
 	return;
 }
 
-class AAE_A_Search_Form extends Atomic_Element_Base {
+class Aaeaddon_A_Search_Form extends Atomic_Element_Base {
 	use Has_Element_Template;
 
 	public function __construct( $data = [], $args = null ) {
@@ -189,12 +189,12 @@ class AAE_A_Search_Form extends Atomic_Element_Base {
 	 */
 	protected function define_default_children() {
 		return [
-			AAE_A_Search_Toggle::generate()
+			Aaeaddon_A_Search_Toggle::generate()
 				->is_locked( true )
 				->editor_settings( [ 'title' => 'Search Toggle' ] )
 				->build(),
 
-			AAE_A_Search_Panel::generate()
+			Aaeaddon_A_Search_Panel::generate()
 				->is_locked( true )
 				->editor_settings( [ 'title' => 'Search Panel' ] )
 				->build(),
@@ -231,7 +231,7 @@ class AAE_A_Search_Form extends Atomic_Element_Base {
 		$settings['search_config'] = wp_json_encode( [
 			'ajaxUrl'    => admin_url( 'admin-ajax.php' ),
 			'nonce'      => wp_create_nonce( 'wcf-addons-frontend' ),
-			'action'     => 'live_search',
+			'action'     => 'aaeaddon_live_search',
 			'mode'       => isset( $settings['mode'] ) ? $settings['mode'] : 'inline',
 			'position'   => isset( $settings['position'] ) ? $settings['position'] : 'left',
 			'ajax'       => ! empty( $settings['enable_ajax'] ),

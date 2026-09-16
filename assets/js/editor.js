@@ -40,7 +40,7 @@
       dataType: "json",
       url: config.ajaxUrl,
       data: {
-        action: "mailchimp_api",
+        action: "aaeaddon_mailchimp_api",
         nonce: config._wpnonce,
         api: $api,
       },
@@ -102,7 +102,7 @@
           dataType: "json",
           url: config.ajaxUrl,
           data: {
-            action: "mailchimp_api",
+            action: "aaeaddon_mailchimp_api",
             nonce: config._wpnonce,
             api: $api,
           },

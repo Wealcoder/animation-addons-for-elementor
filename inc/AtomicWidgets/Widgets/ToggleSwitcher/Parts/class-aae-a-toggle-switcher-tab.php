@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\ToggleSwitcher;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -76,7 +76,7 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
  * already dropped their own competing base-level "on" look for the same
  * reason (see class-aae-a-toggle-switcher-track.php).
  */
-class AAE_A_Toggle_Switcher_Tab extends Atomic_Widget_Base {
+class Aaeaddon_A_Toggle_Switcher_Tab extends Atomic_Widget_Base {
 
 	use Has_Template;
 

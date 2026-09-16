@@ -13,6 +13,7 @@ import TryAtomicLink from "@/components/shared/TryAtomicLink";
 import { SHOW_TRY_ATOMIC_LINK } from "@/lib/systemVisibility";
 import UsageScanButton from "@/components/shared/UsageScanButton";
 import AtomicOptInNotice from "@/components/shared/AtomicOptInNotice";
+import MigrationPendingNotice from "@/components/shared/MigrationPendingNotice";
 import AtomicUndoNotice from "@/components/shared/AtomicUndoNotice";
 import { fetchWidgetUsage } from "@/lib/widgetUsage";
 import { toast } from "sonner";
@@ -99,6 +100,7 @@ const Extensions = () => {
        * this screen as a whole, not about the list's filters or tab strip.
        */}
       <div className="flex flex-col gap-4 mb-4 empty:hidden">
+        <MigrationPendingNotice />
         <AtomicOptInNotice />
         <AtomicUndoNotice />
       </div>

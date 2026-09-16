@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\ToggleSwitcher;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -40,7 +40,7 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
  * a tablist to have non-tab children, even indirectly. Scoping the role to
  * a wrapper around ONLY the tab-like Labels avoids that entirely.
  */
-class AAE_A_Toggle_Switcher_Tablist extends Atomic_Element_Base {
+class Aaeaddon_A_Toggle_Switcher_Tablist extends Atomic_Element_Base {
 
 	use Has_Element_Template;
 

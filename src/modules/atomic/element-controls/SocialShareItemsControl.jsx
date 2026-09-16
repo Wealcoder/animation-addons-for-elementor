@@ -7,7 +7,7 @@
  *
  * Registered under the type id 'aae-social-share-items' (see ./index.js) and
  * rendered by the editing panel where the PHP side places an
- * AAE_A_Social_Share_Items_Control. Mirrors the Timeline's
+ * Aaeaddon_A_Social_Share_Items_Control. Mirrors the Timeline's
  * TimelineItemsControl: a custom list (not Elementor's <Repeater>) whose rows
  * are a LIVE PROJECTION of the social share's real <e-aae-a-social-share-item>
  * children — there is no separate repeater data to keep in sync; the list is
@@ -53,7 +53,7 @@ const ITEM_TYPE = 'e-aae-a-social-share-item';
 /**
  * Model for a fresh social-share item. `elements: []` (empty, not undefined)
  * lets Elementor's onElementCreate() populate the default icon/label children
- * via AAE_A_Social_Share_Item::define_default_children().
+ * via Aaeaddon_A_Social_Share_Item::define_default_children().
  */
 function buildItemModel( position ) {
 	return {

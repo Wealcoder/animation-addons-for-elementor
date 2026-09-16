@@ -1,15 +1,13 @@
 <?php
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\Admin\Base;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\Admin\Base;
 
 use WP_Error;
 use XMLReader;
 
 defined('ABSPATH') || die();
 
-class WXRImporter extends \WP_Importer
+class AaeaddonWXRImporter extends \WP_Importer
 {
 	/**
 	 * Maximum supported WXR version
@@ -197,7 +195,7 @@ class WXRImporter extends \WP_Importer
 	 *
 	 * @param string $file Path to the WXR file for importing
 	 *
-	 * @return WXRImportInfo|WP_Error
+	 * @return AaeaddonWXRImportInfo|WP_Error
 	 */
 	public function get_preliminary_information($file)
 	{
@@ -211,7 +209,7 @@ class WXRImporter extends \WP_Importer
 		$this->version = '1.0';
 
 		// Start parsing!
-		$data = new WXRImportInfo();
+		$data = new AaeaddonWXRImportInfo();
 		while ($reader->read()) {
 			// Only deal with element opens
 			if ($reader->nodeType !== XMLReader::ELEMENT) {

@@ -3,7 +3,7 @@
  * AAE Search Results — atomic leaf: the live Ajax results container.
  *
  * Server-renders an empty, absolutely-positioned box; the runtime JS fills it with
- * the markup returned by the shared `live_search` admin-ajax endpoint (the same
+ * the markup returned by the shared `aaeaddon_live_search` admin-ajax endpoint (the same
  * `.search-item` / `.search-no-result` HTML the v3 widget used) and shows it while
  * typing. Hidden by default (display:none in base styles) — the JS flips it on. No
  * CSS file ships.
@@ -11,7 +11,7 @@
  * @package AnimationAddonsForElementor
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\SearchForm;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SearchForm;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Widget_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Template;
@@ -32,7 +32,7 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Widg
 	return;
 }
 
-class AAE_A_Search_Results extends Atomic_Widget_Base {
+class Aaeaddon_A_Search_Results extends Atomic_Widget_Base {
 	use Has_Template;
 
 	public static function get_element_type(): string {

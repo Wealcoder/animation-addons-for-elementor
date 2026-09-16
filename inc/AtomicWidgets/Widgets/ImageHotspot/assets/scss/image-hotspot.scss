@@ -1,4 +1,4 @@
-// ── Inline tooltip visibility (position/offset/transform/margin are base-style now, see AAE_A_Hotspot_Content::define_base_styles()) ──
+// ── Inline tooltip visibility (position/offset/transform/margin are base-style now, see Aaeaddon_A_Hotspot_Content::define_base_styles()) ──
 .aae-hotspot-point[data-aae-hotspot-mode="tooltip"] .aae-hotspot-content {
 	opacity: 0;
 	visibility: hidden;
@@ -43,7 +43,7 @@
 	pointer-events: none;
 }
 
-// Position/inset/z-index/background/flex-centering are AAE_A_Hotspot_Lightbox's own base style now (class-aae-a-hotspot-lightbox.php, merged backdrop+frame) — only the JS-toggled show/hide stays here.
+// Position/inset/z-index/background/flex-centering are Aaeaddon_A_Hotspot_Lightbox's own base style now (class-aae-a-hotspot-lightbox.php, merged backdrop+frame) — only the JS-toggled show/hide stays here.
 .aae-hotspot-lightbox {
 	opacity: 0;
 	visibility: hidden;

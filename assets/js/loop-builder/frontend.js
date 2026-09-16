@@ -273,7 +273,7 @@
                 url: ajaxUrl,
                 type: 'POST',
                 data: {
-                    action: 'clb_load_more',
+                    action: 'aaeaddon_clb_load_more',
                     nonce: nonce,
                     settings: settings,
                     page: page
@@ -299,7 +299,7 @@
                 url: ajaxUrl,
                 type: 'POST',
                 data: {
-                    action: 'clb_load_page',
+                    action: 'aaeaddon_clb_load_page',
                     nonce: nonce,
                     settings: newSettings,
                     page: page

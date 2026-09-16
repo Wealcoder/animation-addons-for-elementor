@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\AtomicWidgets\Widgets\VideoMask;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\VideoMask;
 
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Svg\Atomic_Svg;
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class AAE_A_Video_Mask_Btn extends Atomic_Element_Base {
+class Aaeaddon_A_Video_Mask_Btn extends Atomic_Element_Base {
 	use Has_Element_Template;
 
 	public function __construct( $data = [], $args = null ) {

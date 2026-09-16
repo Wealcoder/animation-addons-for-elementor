@@ -6,9 +6,9 @@
    never win regardless of stylesheet load order, and (separately) this file
    was never even enqueued because neither PHP class declared
    get_style_depends(). Both are fixed now in PHP: see
-   AAE_A_Icon_List::get_frontend_css_override() for the sizing (an inline
+   Aaeaddon_A_Icon_List::get_frontend_css_override() for the sizing (an inline
    block guaranteed to load after base-desktop.css with matching
-   `.elementor`-prefixed specificity) and AAE_A_Icon_List::get_style_depends()
+   `.elementor`-prefixed specificity) and Aaeaddon_A_Icon_List::get_style_depends()
    for why this stylesheet actually loads at all. */
 /* --- list-style ------------------------------------------------------------
    The base style declares `list-style: none` and it has NEVER applied:
@@ -35,3 +35,4 @@
 .elementor ul.aae-a-icon-list.e-atomic-element > li {
   list-style: none;
 }
+/*# sourceMappingURL=icon-list.css.map */

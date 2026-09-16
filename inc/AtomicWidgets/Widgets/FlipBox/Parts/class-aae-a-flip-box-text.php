@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\FlipBox;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\FlipBox;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -27,11 +27,11 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
 /**
  * AAE Flip Box — Text. A single muted body-copy paragraph. No color of its
- * own — same inheritance reasoning as AAE_A_Flip_Box_Title. Its own widget
+ * own — same inheritance reasoning as Aaeaddon_A_Flip_Box_Title. Its own widget
  * type exists only so it can carry fixed typography via define_base_styles(),
  * which a reused e-paragraph can't (base styles are per widget TYPE).
  */
-class AAE_A_Flip_Box_Text extends Atomic_Widget_Base {
+class Aaeaddon_A_Flip_Box_Text extends Atomic_Widget_Base {
 
 	use Has_Template;
 

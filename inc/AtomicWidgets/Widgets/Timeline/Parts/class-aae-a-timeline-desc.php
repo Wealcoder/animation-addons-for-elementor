@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Timeline;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Timeline;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -32,7 +32,7 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
  * define_base_styles() — see class-aae-a-timeline-number.php for why this
  * can't be a reused e-paragraph.
  */
-class AAE_A_Timeline_Desc extends Atomic_Widget_Base {
+class Aaeaddon_A_Timeline_Desc extends Atomic_Widget_Base {
 
 	use Has_Template;
 

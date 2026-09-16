@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Accordion;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Accordion;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
@@ -35,7 +35,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-class AAE_A_Accordion_Item extends Atomic_Element_Base {
+class Aaeaddon_A_Accordion_Item extends Atomic_Element_Base {
 	use Has_Element_Template;
 
 	public function __construct( $data = [], $args = null ) {
@@ -74,8 +74,8 @@ class AAE_A_Accordion_Item extends Atomic_Element_Base {
 			'item_title' => String_Prop_Type::make()->default( 'Accordion Title' ),
 			'is_active' => Boolean_Prop_Type::make()->default( false ),
 			'icon_position' => String_Prop_Type::make()->enum( [ 'left', 'right' ] )->default( 'right' ),
-			'expand_icon' => Svg_Src_Prop_Type::make()->default_url( WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/Accordion/assets/icons/open.svg' ),
-			'collapse_icon' => Svg_Src_Prop_Type::make()->default_url( WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/Accordion/assets/icons/close.svg' ),
+			'expand_icon' => Svg_Src_Prop_Type::make()->default_url( AAEADDON_URL . 'inc/AtomicWidgets/Widgets/Accordion/assets/icons/open.svg' ),
+			'collapse_icon' => Svg_Src_Prop_Type::make()->default_url( AAEADDON_URL . 'inc/AtomicWidgets/Widgets/Accordion/assets/icons/close.svg' ),
 			'title_html_tag' => String_Prop_Type::make()->enum( [ 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6' ] )->default( 'div' ),
 		];
 	}
@@ -156,8 +156,8 @@ class AAE_A_Accordion_Item extends Atomic_Element_Base {
 			] )
 			->build();
 
-		$open_icon_url  = WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/Accordion/assets/icons/open.svg';
-		$close_icon_url = WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/Accordion/assets/icons/close.svg';
+		$open_icon_url  = AAEADDON_URL . 'inc/AtomicWidgets/Widgets/Accordion/assets/icons/open.svg';
+		$close_icon_url = AAEADDON_URL . 'inc/AtomicWidgets/Widgets/Accordion/assets/icons/close.svg';
 
 		// Icon show/hide is owned entirely by accordion.scss (scoped + !important
 		// so it always wins over the Atomic_Svg element's own base `display`):

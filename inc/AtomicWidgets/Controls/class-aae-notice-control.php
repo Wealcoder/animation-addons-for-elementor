@@ -23,7 +23,7 @@
  * @package AnimationAddonsForElementor
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Controls;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Controls;
 
 use Elementor\Modules\AtomicWidgets\Controls\Base\Element_Control_Base;
 
@@ -35,7 +35,7 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Controls\Base\Element_Con
 	return;
 }
 
-class AAE_Notice_Control extends Element_Control_Base {
+class Aaeaddon_Notice_Control extends Element_Control_Base {
 
 	/** 'info' | 'warning' | 'success'. */
 	private string $tone = 'info';

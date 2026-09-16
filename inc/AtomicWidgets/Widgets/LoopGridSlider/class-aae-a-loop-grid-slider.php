@@ -5,7 +5,7 @@
  * A Loop Grid whose per-post cards are presented as SLIDES instead of a static
  * flex grid. It reuses two existing engines wholesale:
  *
- *   1. QUERY ENGINE — inherited from AAE_A_Loop_Grid (build_query_args(),
+ *   1. QUERY ENGINE — inherited from Aaeaddon_A_Loop_Grid (build_query_args(),
  *      compute_max_pages(), define_render_context(), and the entire Query /
  *      Query-Filters control panel). The per-post repeat lives on the child
  *      Loop Slide Item (e-aae-a-loop-slide-item), exactly like the grid's Loop
@@ -31,7 +31,7 @@
  * @since   4.0.0
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\LoopGridSlider;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGridSlider;
 
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
@@ -40,13 +40,13 @@ use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Dimensions_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
-use WCF_ADDONS\AtomicWidgets\Atomic;
-use WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid;
-use WCF_ADDONS\AtomicWidgets\Widgets\PostImage\AAE_A_Post_Image;
-use WCF_ADDONS\AtomicWidgets\Widgets\PostTitle\AAE_A_Post_Title;
-use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Nav_Prev;
-use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Nav_Next;
-use WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider\AAE_A_Slider_Pagination;
+use Wealcoder\AnimationAddons\AtomicWidgets\Atomic;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_A_Loop_Grid;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\PostImage\Aaeaddon_A_Post_Image;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\PostTitle\Aaeaddon_A_Post_Title;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slider_Nav_Prev;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slider_Nav_Next;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider\Aaeaddon_A_Slider_Pagination;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -74,7 +74,7 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Elem
 	return;
 }
 
-class AAE_A_Loop_Grid_Slider extends AAE_A_Loop_Grid {
+class Aaeaddon_A_Loop_Grid_Slider extends Aaeaddon_A_Loop_Grid {
 
 	public static function get_type() {
 		return 'e-aae-a-loop-grid-slider';
@@ -126,7 +126,7 @@ class AAE_A_Loop_Grid_Slider extends AAE_A_Loop_Grid {
 			->set_label( __( 'Slider Settings', 'animation-addons-for-elementor' ) )
 			->set_id( 'aae_loop_slider_settings' )
 			->set_items( [
-				Text_Control::bind_to( \WCF_ADDONS\Atomic\NestedSlider\Schema::SLIDER_SECTION_ANCHOR ),
+				Text_Control::bind_to( \Wealcoder\AnimationAddons\Atomic\NestedSlider\Schema::SLIDER_SECTION_ANCHOR ),
 			] );
 
 		return $controls;
@@ -163,7 +163,7 @@ class AAE_A_Loop_Grid_Slider extends AAE_A_Loop_Grid {
 	 * Slider wrapper base styles. The nested-slider runtime handles the track
 	 * transform / overflow; here we just make the wrapper a positioned,
 	 * full-width, overflow-hidden block so absolutely-positioned nav arrows
-	 * anchor to it (mirrors AAE_A_Slider::define_base_styles()).
+	 * anchor to it (mirrors Aaeaddon_A_Slider::define_base_styles()).
 	 */
 	protected function define_base_styles(): array {
 		$wrapper_styles = [
@@ -172,7 +172,7 @@ class AAE_A_Loop_Grid_Slider extends AAE_A_Loop_Grid {
 			'width'    => Size_Prop_Type::generate( array( 'size' => 100, 'unit' => '%' ) ),
 			// Default the slider wrapper to zero padding. It carries `e-con`, whose
 			// default 10px padding offsets the slide-width reference box away from
-			// the runtime's positioning box (see AAE_A_Loop_Slide_Track), clipping
+			// the runtime's positioning box (see Aaeaddon_A_Loop_Slide_Track), clipping
 			// the first slide. The user can still add padding deliberately from the
 			// panel; this just removes the surprising inherited default.
 			'padding'  => Dimensions_Prop_Type::generate( [
@@ -206,45 +206,45 @@ class AAE_A_Loop_Grid_Slider extends AAE_A_Loop_Grid {
 		$card_children = [];
 
 		if ( self::type_registered( 'e-aae-a-post-image' ) ) {
-			$card_children[] = AAE_A_Post_Image::generate()
+			$card_children[] = Aaeaddon_A_Post_Image::generate()
 				->editor_settings( [ 'title' => 'Post Image' ] )
 				->build();
 		}
 
 		if ( self::type_registered( 'e-aae-a-post-title' ) ) {
-			$card_children[] = AAE_A_Post_Title::generate()
+			$card_children[] = Aaeaddon_A_Post_Title::generate()
 				->editor_settings( [ 'title' => 'Post Title' ] )
 				->build();
 		}
 
 		return [
-			AAE_A_Loop_Slide_Track::generate()
+			Aaeaddon_A_Loop_Slide_Track::generate()
 				->editor_settings( [ 'title' => 'Slider Track' ] )
 				->is_locked( true )
 				->children( [
-					AAE_A_Loop_Slide_Item::generate()
+					Aaeaddon_A_Loop_Slide_Item::generate()
 						->editor_settings( [ 'title' => 'Loop Slide Item' ] )
 						->is_locked( true )
 						->children( $card_children )
 						->build(),
 				] )
 				->build(),
-			AAE_A_Slider_Nav_Prev::generate()
+			Aaeaddon_A_Slider_Nav_Prev::generate()
 				->editor_settings( [ 'title' => 'Prev Nav' ] )
 				->build(),
-			AAE_A_Slider_Nav_Next::generate()
+			Aaeaddon_A_Slider_Nav_Next::generate()
 				->editor_settings( [ 'title' => 'Next Nav' ] )
 				->build(),
 			// Dot pagination (slide indicators). Reuses the Nested Slider's
 			// `.js-aae-dots` container + `.js-aae-dot` template; the shared runtime
 			// clones one dot per slide and wires click-to-slide + active state.
-			AAE_A_Slider_Pagination::generate()
+			Aaeaddon_A_Slider_Pagination::generate()
 				->editor_settings( [ 'title' => 'Dot Pagination' ] )
 				->build(),
 			// Post PAGING — Numbers + Load More only (NO Nav Wrap Prev/Next; the
 			// slider arrows above already handle navigation). Advancing here fetches
-			// MORE posts into the slider. See AAE_A_Loop_Slide_Pagination.
-			AAE_A_Loop_Slide_Pagination::generate()
+			// MORE posts into the slider. See Aaeaddon_A_Loop_Slide_Pagination.
+			Aaeaddon_A_Loop_Slide_Pagination::generate()
 				->editor_settings( [ 'title' => 'Pagination' ] )
 				->build(),
 		];

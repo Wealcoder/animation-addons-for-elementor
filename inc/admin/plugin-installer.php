@@ -1,14 +1,12 @@
 <?php
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\Admin;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\Admin;
 
 if (!defined('ABSPATH')) {
     exit();
 } // Exit if accessed directly
 
-class WCF_Plugin_Installer
+class Aaeaddon_Plugin_Installer
 {
 
     /**
@@ -26,7 +24,8 @@ class WCF_Plugin_Installer
         if (!$reload) {
 
             add_action('wp_ajax_wcf_active_plugin', [$this, 'ajax_activate_plugin']);
-            add_action('wp_ajax_activate_from_editor_plugin', [$this, 'activate_from_editor_plugin']);
+            // Old unprefixed name kept for one release for a cached editor bundle -- remove the alias in 4.3.
+            \Wealcoder\AnimationAddons\Ajax_Alias::register('activate_from_editor_plugin', 'aaeaddon_activate_from_editor_plugin', [$this, 'activate_from_editor_plugin']);
             add_action('wp_ajax_aaeaddon_template_dependency_status', [$this, 'dependency_status']);
             add_action('wp_ajax_aaeaddon_atomic_import_status', [$this, 'atomic_import_status']);
         }
@@ -54,11 +53,11 @@ class WCF_Plugin_Installer
         // The atomic registry only loads on Elementor 4+; without it there is
         // nothing a V4 template could render with, so "not available" is the
         // honest answer rather than an error.
-        if (!class_exists('\WCF_ADDONS\AtomicWidgets\Atomic')) {
+        if (!class_exists('\Wealcoder\AnimationAddons\AtomicWidgets\Atomic')) {
             wp_send_json_success(['available' => false, 'in_use' => false]);
         }
 
-        wp_send_json_success(\WCF_ADDONS\AtomicWidgets\Atomic::import_signal());
+        wp_send_json_success(\Wealcoder\AnimationAddons\AtomicWidgets\Atomic::import_signal());
     }
 
     public function ajax_activate_plugin()
@@ -195,4 +194,4 @@ class WCF_Plugin_Installer
     }
 }
 
-new WCF_Plugin_Installer();
+new Aaeaddon_Plugin_Installer();

@@ -1,8 +1,6 @@
 <?php
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\CodeSnippet\listTables;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\CodeSnippet\listTables;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -15,7 +13,7 @@ if ( ! class_exists( '\WP_List_Table' ) ) {
  * Abstract List table class.
  *
  * @since 1.0.0
- * @package WCF_ADDONS
+ * @package Wealcoder\AnimationAddons
  */
 abstract class AbstractListTable extends \WP_List_Table {
 

@@ -78,7 +78,7 @@
               q: params.term, // search term
               page: params.page || 1,
               action: "wcf_get_posts_by_query",
-              nonce: WCF_Theme_Builder.nonce,
+              nonce: Aaeaddon_Theme_Builder.nonce,
             };
           },
           processResults: function (data) {
@@ -110,13 +110,13 @@
         content = null;
 
       content = popupTmp({
-        templatetype: WCF_Theme_Builder.templatetype,
-        hflocation: WCF_Theme_Builder.hflocation,
-        archivelocation: WCF_Theme_Builder.archivelocation,
-        singlelocation: WCF_Theme_Builder.singlelocation,
-        postcategory: WCF_Theme_Builder.postcategory,
-        editor: WCF_Theme_Builder.editor,
-        heading: WCF_Theme_Builder.labels,
+        templatetype: Aaeaddon_Theme_Builder.templatetype,
+        hflocation: Aaeaddon_Theme_Builder.hflocation,
+        archivelocation: Aaeaddon_Theme_Builder.archivelocation,
+        singlelocation: Aaeaddon_Theme_Builder.singlelocation,
+        postcategory: Aaeaddon_Theme_Builder.postcategory,
+        editor: Aaeaddon_Theme_Builder.editor,
+        heading: Aaeaddon_Theme_Builder.labels,
       });
 
       $("body").append(content);
@@ -182,10 +182,10 @@
       if (tmpId) {
         //fetch existing template data
         $.ajax({
-          url: WCF_Theme_Builder.ajaxurl,
+          url: Aaeaddon_Theme_Builder.ajaxurl,
           data: {
             action: "wcf_get_template",
-            nonce: WCF_Theme_Builder.nonce,
+            nonce: Aaeaddon_Theme_Builder.nonce,
             tmpId: tmpId,
           },
           type: "POST",
@@ -373,7 +373,7 @@
 
       let data = {
         action: "wcf_save_template",
-        nonce: WCF_Theme_Builder.nonce,
+        nonce: Aaeaddon_Theme_Builder.nonce,
         tmpId: tmpId,
         title: title,
         tmpType: tmpType,
@@ -414,11 +414,11 @@
       }
 
       $.ajax({
-        url: WCF_Theme_Builder.ajaxurl,
+        url: Aaeaddon_Theme_Builder.ajaxurl,
         data: data,
         type: "POST",
         beforeSend: function () {
-          $this.text(WCF_Theme_Builder.labels.buttons.save.saving);
+          $this.text(Aaeaddon_Theme_Builder.labels.buttons.save.saving);
           $this.addClass("updating-message");
         },
 
@@ -443,7 +443,7 @@
         complete: function (data) {
           $("body.post-type-woolentor-template").removeClass("loading");
           $this.removeClass("updating-message");
-          $this.text(WCF_Theme_Builder.labels.buttons.save.saved);
+          $this.text(Aaeaddon_Theme_Builder.labels.buttons.save.saved);
         },
 
         error: function (errorThrown) {
@@ -459,7 +459,7 @@
       var $this = $(this),
         link = $this.data("link") ? $this.data("link") : "";
 
-      window.location.replace(WCF_Theme_Builder.adminURL + link);
+      window.location.replace(Aaeaddon_Theme_Builder.adminURL + link);
     },
 
     displayLocation: function (event) {

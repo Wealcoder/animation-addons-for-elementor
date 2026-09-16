@@ -1,8 +1,8 @@
 <?php
 
-namespace WCF_ADDONS\Atomic\ScrollTo;
+namespace Wealcoder\AnimationAddons\Atomic\ScrollTo;
 
-use WCF_ADDONS\Atomic\PropTypes\Responsive_JSON_Prop_Type;
+use Wealcoder\AnimationAddons\Atomic\PropTypes\Responsive_JSON_Prop_Type;
 
 if (! defined('ABSPATH')) {
 	exit;

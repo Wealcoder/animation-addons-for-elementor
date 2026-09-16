@@ -2,9 +2,9 @@
 /**
  * AAE Loop Slide Item — one post = one slide.
  *
- * Subclass of the Loop Grid's AAE_A_Loop_Item: it inherits the entire per-post
+ * Subclass of the Loop Grid's Aaeaddon_A_Loop_Item: it inherits the entire per-post
  * repeat engine (print_content() reads the Render_Context published by the Loop
- * Grid root — keyed by AAE_A_Loop_Grid::class, which the Loop Grid Slider root
+ * Grid root — keyed by Aaeaddon_A_Loop_Grid::class, which the Loop Grid Slider root
  * extends, so the same context is found — runs the WP_Query and renders this
  * element's Twig once per post).
  *
@@ -17,14 +17,14 @@
  * @package AnimationAddonsForElementor
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\LoopGridSlider;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGridSlider;
 
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Dimensions_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
-use WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Item;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_A_Loop_Item;
 
 require_once __DIR__ . '/../LoopGrid/class-aae-a-loop-item.php';
 
@@ -36,7 +36,7 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Elem
 	return;
 }
 
-class AAE_A_Loop_Slide_Item extends AAE_A_Loop_Item {
+class Aaeaddon_A_Loop_Slide_Item extends Aaeaddon_A_Loop_Item {
 
 	public static function get_type() {
 		return 'e-aae-a-loop-slide-item';
@@ -83,7 +83,7 @@ class AAE_A_Loop_Slide_Item extends AAE_A_Loop_Item {
 		];
 	}
 
-	// NOTE: the per-post repeat is inherited from AAE_A_Loop_Item::print_content()
+	// NOTE: the per-post repeat is inherited from Aaeaddon_A_Loop_Item::print_content()
 	// (frontend WP_Query). The EDITOR shows only one authored slide because atomic
 	// elements render client-side there (no server print_content, no WP_Query) — the
 	// multi-up editor preview is instead synthesized in JS by the editor-bridge

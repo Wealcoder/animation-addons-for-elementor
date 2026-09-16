@@ -149,7 +149,7 @@ const ScrollSmootherSettings = () => {
         },
         credentials: "same-origin",
         body: new URLSearchParams({
-          action: "save_smooth_scroller_settings",
+          action: "aaeaddon_save_smooth_scroller_settings",
           smooth: JSON.stringify(smooth),
           nonce: WCF_ADDONS_ADMIN.nonce,
         }),

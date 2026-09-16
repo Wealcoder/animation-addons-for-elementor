@@ -22,7 +22,7 @@ import { answerAtomicUndo, goToWidgets } from "@/lib/atomicOptIn";
  * from an abandoned wizard run) and only restoring that exact state puts the
  * user where they were. PHP snapshots it before the first write and this
  * restores it, down to DELETING the rows that had never existed — an empty
- * `aae_atomic_extensions` is a different site from a missing one (see
+ * `aaeaddon_atomic_extensions` is a different site from a missing one (see
  * `Atomic::UNDO_OPTION_NAME`).
  *
  * WHAT WAS NEVER AT RISK, and the notice says so. Accepting the offer does not

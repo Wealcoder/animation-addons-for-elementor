@@ -31,7 +31,7 @@
  * WHAT DELIBERATELY DID NOT COME ACROSS
  * -------------------------------------
  *   - The Skin select. No v4 equivalent; presets replace it (above).
- *   - Image Resolution. AAE_A_Post_Image already owns an `image_size` prop, so
+ *   - Image Resolution. Aaeaddon_A_Post_Image already owns an `image_size` prop, so
  *     duplicating it here would give two controls fighting over one value.
  *   - The Title / Image style sections, and the skin's own layout/content/
  *     section-title style controls. In v3 those existed because a skin renders
@@ -42,7 +42,7 @@
  *     slider-type skins (Two, Seven, Nine); Portfolio Three is a plain grid.
  *     A slider look here is the Loop Grid Slider's job.
  *
- * The query itself is NOT reimplemented: AAE_A_Loop_Grid::build_query_args() is
+ * The query itself is NOT reimplemented: Aaeaddon_A_Loop_Grid::build_query_args() is
  * already the one place this plugin assembles a loop query (frontend render,
  * AJAX pagination and editor preview all go through it), and it accepts both
  * $$type-wrapped and plain settings. Reusing it keeps this widget's results
@@ -52,7 +52,7 @@
  * @package AnimationAddonsForElementor
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\AdvancePortfolio;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\AdvancePortfolio;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
@@ -70,8 +70,8 @@ use Elementor\Modules\AtomicWidgets\Controls\Types\Switch_Control;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
-use WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid;
-use WCF_ADDONS\AtomicWidgets\Widgets\PostImage\AAE_A_Post_Image;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_A_Loop_Grid;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\PostImage\Aaeaddon_A_Post_Image;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -81,7 +81,7 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Elem
 	return;
 }
 
-class AAE_A_Advance_Portfolio extends Atomic_Element_Base {
+class Aaeaddon_A_Advance_Portfolio extends Atomic_Element_Base {
 
 	use Has_Element_Template;
 
@@ -134,7 +134,7 @@ class AAE_A_Advance_Portfolio extends Atomic_Element_Base {
 			'classes'    => Classes_Prop_Type::make()->default( [] ),
 			'attributes' => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
 
-			// Query. Names match AAE_A_Loop_Grid's on purpose — its
+			// Query. Names match Aaeaddon_A_Loop_Grid's on purpose — its
 			// build_query_args() reads these exact keys, and reusing them is
 			// what lets this widget share that one query builder.
 			'post_type'      => String_Prop_Type::make()->default( 'post' ),
@@ -146,7 +146,7 @@ class AAE_A_Advance_Portfolio extends Atomic_Element_Base {
 			// The v3 skin read both of these off the parent widget
 			// (get_instance_value), so they stay on the root here too and the
 			// title part reads them from the render context — the same
-			// arrangement AAE_A_Post_Pagination_Preview_Date uses.
+			// arrangement Aaeaddon_A_Post_Pagination_Preview_Date uses.
 			'section_title'     => String_Prop_Type::make()->default( 'WORK' ),
 			'section_title_tag' => String_Prop_Type::make()->default( 'h2' ),
 
@@ -169,7 +169,7 @@ class AAE_A_Advance_Portfolio extends Atomic_Element_Base {
 			// The serialised payload the twig prints. Filled in by
 			// get_atomic_settings() below, never edited: a twig can only reach
 			// values under `settings`, so a render-context value has to be put
-			// there first — the same route AAE_A_Post_Pagination_Preview_Date
+			// there first — the same route Aaeaddon_A_Post_Pagination_Preview_Date
 			// takes for its own text.
 			'anim_settings_json' => String_Prop_Type::make()->default( '' ),
 		];
@@ -193,7 +193,7 @@ class AAE_A_Advance_Portfolio extends Atomic_Element_Base {
 				->set_id( 'aae_presets' )
 				->set_items(
 					[
-						AAE_A_Portfolio_Preset_Picker_Control::make()
+						Aaeaddon_A_Portfolio_Preset_Picker_Control::make()
 							->set_label( __( 'Apply Preset', 'animation-addons-for-elementor' ) )
 							->set_meta( [ 'layout' => 'custom' ] ),
 					]
@@ -302,7 +302,7 @@ class AAE_A_Advance_Portfolio extends Atomic_Element_Base {
 	/**
 	 * Only seed types that are actually registered — an unknown child type
 	 * makes the editor throw ElementTypeNotFound on drop. Copied from
-	 * AAE_A_Loop_Grid for the same reason.
+	 * Aaeaddon_A_Loop_Grid for the same reason.
 	 */
 	protected static function type_registered( string $type ): bool {
 		if ( ! class_exists( '\Elementor\Plugin' ) ) {
@@ -341,19 +341,19 @@ class AAE_A_Advance_Portfolio extends Atomic_Element_Base {
 		$card = [];
 
 		if ( self::type_registered( 'e-aae-a-post-image' ) ) {
-			$card[] = AAE_A_Post_Image::generate()
+			$card[] = Aaeaddon_A_Post_Image::generate()
 				->editor_settings( [ 'title' => 'Thumbnail' ] )
 				->build();
 		}
 
 		return [
-			AAE_A_Portfolio_Title::generate()
+			Aaeaddon_A_Portfolio_Title::generate()
 				->editor_settings( [ 'title' => 'Section Title' ] )
 				->build(),
-			AAE_A_Portfolio_List::generate()
+			Aaeaddon_A_Portfolio_List::generate()
 				->editor_settings( [ 'title' => 'Posts List' ] )
 				->children( [
-					AAE_A_Portfolio_Item::generate()
+					Aaeaddon_A_Portfolio_Item::generate()
 						->editor_settings( [ 'title' => 'Portfolio Item' ] )
 						->children( $card )
 						->build(),
@@ -386,8 +386,8 @@ class AAE_A_Advance_Portfolio extends Atomic_Element_Base {
 	 * title part renders.
 	 *
 	 * The item reads `query_args` off the Render_Context stack keyed by THIS
-	 * class and runs the loop itself, exactly as AAE_A_Loop_Item does against
-	 * AAE_A_Loop_Grid — repeating at the item level rather than the root keeps
+	 * class and runs the loop itself, exactly as Aaeaddon_A_Loop_Item does against
+	 * Aaeaddon_A_Loop_Grid — repeating at the item level rather than the root keeps
 	 * non-repeating siblings (the section title) rendering only once.
 	 */
 	/**
@@ -432,7 +432,7 @@ class AAE_A_Advance_Portfolio extends Atomic_Element_Base {
 			[
 				'context_key' => self::class,
 				'context'     => [
-					'query_args'        => AAE_A_Loop_Grid::build_query_args(
+					'query_args'        => Aaeaddon_A_Loop_Grid::build_query_args(
 						(array) $this->get_data( 'settings' ),
 						1
 					),

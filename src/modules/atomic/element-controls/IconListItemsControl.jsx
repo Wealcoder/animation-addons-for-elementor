@@ -6,7 +6,7 @@
  *
  * Registered under the type id 'aae-icon-list-items' (see ./index.js) and
  * rendered by the editing panel where the PHP side places an
- * AAE_A_Icon_List_Items_Control. Mirrors the Social Share's
+ * Aaeaddon_A_Icon_List_Items_Control. Mirrors the Social Share's
  * SocialShareItemsControl: a custom list (not Elementor's <Repeater>) whose
  * rows are a LIVE PROJECTION of the icon list's real <e-aae-a-icon-list-item>
  * children — there is no separate repeater data to keep in sync; the list is
@@ -53,7 +53,7 @@ const ITEM_TYPE = 'e-aae-a-icon-list-item';
 /**
  * Model for a fresh icon-list item. `elements: []` (empty, not undefined)
  * lets Elementor's onElementCreate() populate the default icon/label children
- * via AAE_A_Icon_List_Item::define_default_children().
+ * via Aaeaddon_A_Icon_List_Item::define_default_children().
  */
 function buildItemModel( position ) {
 	return {

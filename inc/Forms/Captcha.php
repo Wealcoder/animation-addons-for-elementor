@@ -18,7 +18,7 @@
  * @since   4.0.0
  */
 
-namespace WCF_ADDONS\Forms;
+namespace Wealcoder\AnimationAddons\Forms;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -27,7 +27,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class Captcha {
 
 	/** Single option holding [ 'site_key' => string, 'secret_key' => string ]. */
-	const OPTION_KEYS = 'aae_form_recaptcha_keys';
+	const OPTION_KEYS = 'aaeaddon_form_recaptcha_keys';
 
 	/** Google's default "human" threshold for v3 scores (0.0–1.0). */
 	const DEFAULT_THRESHOLD = 0.5;

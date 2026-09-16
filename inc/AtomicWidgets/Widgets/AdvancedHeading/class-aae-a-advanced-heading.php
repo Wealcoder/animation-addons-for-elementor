@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\AtomicWidgets\Widgets\AdvancedHeading;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\AdvancedHeading;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * THE THREE PIECES, and why each is ours rather than core's:
  *
- *   1. `content` is AAE_Rich_Text_Prop_Type — a subclass of core's
+ *   1. `content` is Aaeaddon_Rich_Text_Prop_Type — a subclass of core's
  *      Html_V3_Prop_Type that KEEPS THE `html-v3` KEY and only widens the
  *      wp_kses whitelist. The stock one allows no attributes at all, so
  *      `style="color:…"` never survives a save. `class` and `id` are allowed
@@ -41,7 +41,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * saved Range directly, which needs no focus at all.
  *
  * Legacy content saved under the old string shape is converted on document load
- * by AAE_Advanced_Heading_Migration — do not remove that class, or every heading
+ * by Aaeaddon_Advanced_Heading_Migration — do not remove that class, or every heading
  * built before this change loses its text the next time its page is saved
  * (Props_Parser::validate() erases a prop whose value fails the schema).
  *
@@ -74,7 +74,7 @@ use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
-class AAE_A_Advanced_Heading extends Atomic_Widget_Base {
+class Aaeaddon_A_Advanced_Heading extends Atomic_Widget_Base {
 
 	use Has_Template;
 
@@ -106,7 +106,7 @@ class AAE_A_Advanced_Heading extends Atomic_Widget_Base {
 		// of the colour button — is deleted on save. The subclass keeps the
 		// `html-v3` KEY (so the client util and the transformer are unchanged)
 		// and only widens the whitelist — `style`, `class` and `id` included.
-		$content = AAE_Rich_Text_Prop_Type::make()
+		$content = Aaeaddon_Rich_Text_Prop_Type::make()
 			->default( [
 				'content'  => String_Prop_Type::generate(
 					__( 'Build your <b>Innovate</b> Our Core Solution', 'animation-addons-for-elementor' )
@@ -158,7 +158,7 @@ class AAE_A_Advanced_Heading extends Atomic_Widget_Base {
 			// (PHP recomputes, so only the preview could show it). Same wp_kses
 			// whitelist as `content`, so the two cannot disagree about what an
 			// allowed tag is.
-			'content_html' => AAE_Rich_Text_Prop_Type::make()
+			'content_html' => Aaeaddon_Rich_Text_Prop_Type::make()
 				->default( [
 					'content'  => String_Prop_Type::generate( '' ),
 					'children' => [],
@@ -191,7 +191,7 @@ class AAE_A_Advanced_Heading extends Atomic_Widget_Base {
 					// TipTap editor with no toolbar, because core's format
 					// buttons live on the canvas and the canvas editor is
 					// hardcoded to five core types. See the class docblock.
-					AAE_Inline_Text_Control::bind_to( 'content' )
+					Aaeaddon_Inline_Text_Control::bind_to( 'content' )
 						->set_label( __( 'Content', 'animation-addons-for-elementor' ) )
 						->set_placeholder( __( 'Type your heading here', 'animation-addons-for-elementor' ) ),
 				] ),
@@ -297,7 +297,7 @@ class AAE_A_Advanced_Heading extends Atomic_Widget_Base {
 	private static function interpret_source( string $html ): string {
 		$decoded = self::collapse_spaces( self::decode_typed_tags( $html ) );
 
-		return wp_kses( $decoded, AAE_Rich_Text_Prop_Type::allowed_tags() );
+		return wp_kses( $decoded, Aaeaddon_Rich_Text_Prop_Type::allowed_tags() );
 	}
 
 	/**
@@ -353,7 +353,7 @@ class AAE_A_Advanced_Heading extends Atomic_Widget_Base {
 	 * TYPED_TAG_RE in InlineTextControl.jsx.
 	 */
 	private static function decode_typed_tags( string $html ): string {
-		$tags = implode( '|', array_map( 'preg_quote', array_keys( AAE_Rich_Text_Prop_Type::allowed_tags() ) ) );
+		$tags = implode( '|', array_map( 'preg_quote', array_keys( Aaeaddon_Rich_Text_Prop_Type::allowed_tags() ) ) );
 
 		return preg_replace_callback(
 			'/&lt;(\/?)(' . $tags . ')((?:\s(?:(?!&gt;).)*?)?)(\/?)&gt;/i',

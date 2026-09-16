@@ -5,7 +5,7 @@
  * AccordionItemsControl — the "Items" element-control for the AAE Accordion.
  *
  * Registered under the type id 'aae-items' (see ./index.js) and rendered by the
- * editing panel where the PHP side places an AAE_A_Items_Control. Mirrors the
+ * editing panel where the PHP side places an Aaeaddon_A_Items_Control. Mirrors the
  * Nested Slider's SlidesControl: a custom accordion list (not Elementor's
  * <Repeater> — see SlidesControl.jsx for why) whose rows are a LIVE PROJECTION
  * of the accordion's real <e-aae-a-accordion-item> children.

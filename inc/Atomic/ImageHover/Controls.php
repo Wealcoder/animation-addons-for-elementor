@@ -1,8 +1,8 @@
 <?php
 
-namespace WCF_ADDONS\Atomic\ImageHover;
+namespace Wealcoder\AnimationAddons\Atomic\ImageHover;
 
-use WCF_ADDONS\Atomic\Bootstrap;
+use Wealcoder\AnimationAddons\Atomic\Bootstrap;
 
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;

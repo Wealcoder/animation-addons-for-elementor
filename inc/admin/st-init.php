@@ -1,8 +1,5 @@
 <?php
-// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\Admin\Base;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\Admin\Base;
 
 use WP_Error;
 
@@ -138,7 +135,7 @@ class OneClickImport
 
 		if ($postdata['post_type'] == 'page') {
 			$batch_id = 'wxr_' . gmdate('Ymd_His'); 
-			update_option('aae_last_import_batch', $batch_id);
+			update_option('aaeaddon_last_import_batch', $batch_id);
 			add_post_meta($post_id, 'aae_import_batch', $batch_id, true);			
 			add_post_meta($post_id, 'aae_imported', 1, true);
 		}
@@ -161,7 +158,7 @@ class OneClickImport
 		}
 
 		$per_page = isset($_POST['per_page']) ? max(1, (int) $_POST['per_page']) : 1; // latest one by default
-		$batch_id = get_option('aae_last_import_batch');
+		$batch_id = get_option('aaeaddon_last_import_batch');
 
 		// If batch not found, gracefully fall back to any page marked imported
 		$meta_query = [];
@@ -217,7 +214,7 @@ class OneClickImport
 	{
 		// Try to update PHP memory limit (so that it does not run out of it).
 		// phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged
-		ini_set('memory_limit', Helpers::apply_filters('aadaddon/st/import_memory_limit', '1024M'));
+		ini_set('memory_limit', Helpers::apply_filters('aaeaddon/st/import_memory_limit', '1024M'));
 
 		// Verify if the AJAX call is valid (checks nonce and current_user_can).
 		Helpers::verify_ajax_call();
@@ -231,7 +228,7 @@ class OneClickImport
 
 			// A NEW content import (not a chunk continuation): let per-import
 			// trackers drop the previous run's state. `import_start` cannot be
-			// used for this -- WXRImporter fires it on every chunk.
+			// used for this -- AaeaddonWXRImporter fires it on every chunk.
 			do_action('aaeaddon/content_import/fresh_start'); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- slash-namespaced plugin hook, same family as aaeaddon/after_import.
 
 			// Start from a clean progress reading. report_progress() carries the
@@ -374,12 +371,12 @@ class OneClickImport
 		}
 
 		// Delete importer data transient for current import.
-		delete_transient('aadaddon_st_importer_data');
+		delete_transient('aaeaddon_st_importer_data');
 		// Was misspelled twice over ('aad' for 'aae', 'mporter' for 'importer'),
 		// so this had never deleted anything and the real row -- 7 KB of failed
 		// attachment URLs -- outlived every import. Helpers owns the name now.
 		delete_transient(Helpers::FAILED_ATTACHMENT_TRANSIENT);
-		delete_transient('aadaddon_import_menu_mapping');
+		delete_transient('aaeaddon_import_menu_mapping');
 		delete_transient('aaeaddon_import_posts_with_nav_block');
 
 		// The CPT Builder caches its registrations in these two options and
@@ -390,8 +387,8 @@ class OneClickImport
 		// template importer clears them BEFORE the content step, which is the
 		// wrong side of it; this is the right one. Plain deletes, because the
 		// builder's class is only loaded while its extension is switched on.
-		delete_option('aae_cpts_032153');
-		delete_option('aae_taxs_933153');
+		\Wealcoder\AnimationAddons\Compat\Key_Bridge::delete_option( 'aaeaddon_cpts_cache' );
+		\Wealcoder\AnimationAddons\Compat\Key_Bridge::delete_option( 'aaeaddon_taxs_cache' );
 
 		$response['msg'] = esc_html__('Congrats, your demo has been imported.', 'animation-addons-for-elementor');
 		$response['progress'] = 80;
@@ -417,7 +414,7 @@ class OneClickImport
 	 */
 	private function use_existing_importer_data()
 	{
-		if ($data = get_transient('aadaddon_st_importer_data')) {
+		if ($data = get_transient('aaeaddon_st_importer_data')) {
 
 			// FIRST -- setup_st_importer() clears $this->import_files, so
 			// building the importer after restoring the transient would wipe
@@ -671,7 +668,7 @@ class OneClickImport
 			 * Save the `wp_navigation` post type mapping of the original menu ID and the new menu ID
 			 * in transient.
 			 */
-			$wcfio_menu_mapping = get_transient('aadaddon_import_menu_mapping');
+			$wcfio_menu_mapping = get_transient('aaeaddon_import_menu_mapping');
 
 			if (empty($wcfio_menu_mapping)) {
 				$wcfio_menu_mapping = [];
@@ -683,7 +680,7 @@ class OneClickImport
 				'new_menu_id'      => $post_id,
 			];
 
-			set_transient('aadaddon_import_menu_mapping', $wcfio_menu_mapping, HOUR_IN_SECONDS);
+			set_transient('aaeaddon_import_menu_mapping', $wcfio_menu_mapping, HOUR_IN_SECONDS);
 		}
 	}
 
@@ -699,7 +696,7 @@ class OneClickImport
 	{
 
 		// Get the `wp_navigation` import mapping.
-		$nav_import_mapping = get_transient('aadaddon_import_menu_mapping');
+		$nav_import_mapping = get_transient('aaeaddon_import_menu_mapping');
 
 		// Get the post IDs that needs to be updated.
 		$posts_nav_block = get_transient('aaeaddon_import_posts_with_nav_block');

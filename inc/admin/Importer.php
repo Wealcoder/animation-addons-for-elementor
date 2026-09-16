@@ -6,9 +6,7 @@
  * @package Animation Addon
  */
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\Admin\Base;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\Admin\Base;
 
 if (! defined('ABSPATH')) {
 	exit();
@@ -31,7 +29,7 @@ class Importer
 	private $microtime;
 
 	/**
-	 * The instance of the WCF_ADDONS\Admin\Base\Logger class.
+	 * The instance of the Wealcoder\AnimationAddons\Admin\Base\Logger class.
 	 *
 	 * @var object
 	 */
@@ -64,7 +62,7 @@ class Importer
 	 * These six files declare classes and do nothing else -- no hooks, no
 	 * instances -- so there is nothing to gain by having them in memory
 	 * before an import actually starts. They used to be required from
-	 * `WCF_Admin_Init::include()`, which runs on EVERY admin request,
+	 * `Aaeaddon_Admin_Init::include()`, which runs on EVERY admin request,
 	 * admin-ajax included: ~99 KB parsed on every page of wp-admin for two
 	 * lines of code that only run during an import.
 	 *
@@ -80,8 +78,8 @@ class Importer
 	 */
 	public static function load_engine()
 	{
-		// AAEImporter extends WXRImporter, which extends the core
-		// \WP_Importer class. Core does not autoload it, and WXRImporter.php
+		// AAEImporter extends AaeaddonWXRImporter, which extends the core
+		// \WP_Importer class. Core does not autoload it, and AaeaddonWXRImporter.php
 		// below cannot be parsed without it.
 		if (! class_exists('\WP_Importer')) {
 			require_once ABSPATH . 'wp-admin/includes/class-wp-importer.php';
@@ -89,8 +87,8 @@ class Importer
 
 		require_once __DIR__ . '/base/WPImporterLogger.php';
 		require_once __DIR__ . '/base/WPImporterLoggerCLI.php';
-		require_once __DIR__ . '/base/WXRImporter.php';
-		require_once __DIR__ . '/base/WXRImportInfo.php';
+		require_once __DIR__ . '/base/AaeaddonWXRImporter.php';
+		require_once __DIR__ . '/base/AaeaddonWXRImportInfo.php';
 		require_once __DIR__ . '/aae-importer.php';
 		require_once __DIR__ . '/Logger.php';
 	}

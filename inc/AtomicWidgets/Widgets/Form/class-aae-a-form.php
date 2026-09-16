@@ -12,18 +12,18 @@
  * "AAE Atomic Form Builder" section for the full milestone plan.
  *
  * Default structure on drop:
- *   AAE_A_Form (this class, <form>)
+ *   Aaeaddon_A_Form (this class, <form>)
  *     ├─ Label "First name"  + Input(text)
  *     ├─ Label "Last name"   + Input(text)
  *     ├─ Label "Email"       + Input(email)
  *     ├─ Label "Message"     + Textarea
- *     └─ AAE_A_Form_Submit (locked)
+ *     └─ Aaeaddon_A_Form_Submit (locked)
  *
  * @package AnimationAddonsForElementor
  * @since   4.0.0
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Form;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -67,15 +67,15 @@ require_once __DIR__ . '/class-aae-a-form-submit.php';
 require_once __DIR__ . '/class-aae-a-form-success-message.php';
 require_once __DIR__ . '/class-aae-a-form-error-message.php';
 
-use WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Label;
-use WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Input;
-use WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Textarea;
-use WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Checkbox;
-use WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Submit;
-use WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Success_Message;
-use WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Error_Message;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form\Aaeaddon_A_Form_Label;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form\Aaeaddon_A_Form_Input;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form\Aaeaddon_A_Form_Textarea;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form\Aaeaddon_A_Form_Checkbox;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form\Aaeaddon_A_Form_Submit;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form\Aaeaddon_A_Form_Success_Message;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form\Aaeaddon_A_Form_Error_Message;
 
-class AAE_A_Form extends Atomic_Element_Base {
+class Aaeaddon_A_Form extends Atomic_Element_Base {
 
 	use Has_Element_Template;
 
@@ -191,7 +191,7 @@ class AAE_A_Form extends Atomic_Element_Base {
 				->set_id( 'aae_presets' )
 				->set_items(
 					[
-						AAE_A_Preset_Picker_Control::make()
+						Aaeaddon_A_Preset_Picker_Control::make()
 							->set_label( __( 'Apply Preset', 'animation-addons-for-elementor' ) )
 							->set_meta( [ 'layout' => 'custom' ] ),
 					]
@@ -251,7 +251,7 @@ class AAE_A_Form extends Atomic_Element_Base {
 					[
 						// Opens the actions dialog (admin email / visitor auto
 						// reply / webhook) — reads/writes the hidden actions_json.
-						AAE_A_Form_Actions_Control::make()
+						Aaeaddon_A_Form_Actions_Control::make()
 							->set_label( __( 'Manage Actions', 'animation-addons-for-elementor' ) )
 							->set_meta( [ 'layout' => 'custom' ] ),
 					]
@@ -362,16 +362,16 @@ class AAE_A_Form extends Atomic_Element_Base {
 			// looking empty for the same reason it used to.
 			// Not locked: locking would also block moving it (e.g. into a
 			// flexbox row inside the form).
-			AAE_A_Form_Submit::generate()
+			Aaeaddon_A_Form_Submit::generate()
 				->editor_settings( [ 'title' => __( 'Submit', 'animation-addons-for-elementor' ) ] )
 				->build(),
 
 			// Locked status-message containers — hidden (display:none base
 			// style) until the form gets a form-state-success/error class.
-			AAE_A_Form_Success_Message::generate()
+			Aaeaddon_A_Form_Success_Message::generate()
 				->editor_settings( [ 'title' => __( 'Success message', 'animation-addons-for-elementor' ) ] )
 				->build(),
-			AAE_A_Form_Error_Message::generate()
+			Aaeaddon_A_Form_Error_Message::generate()
 				->editor_settings( [ 'title' => __( 'Error message', 'animation-addons-for-elementor' ) ] )
 				->build(),
 		];
@@ -382,7 +382,7 @@ class AAE_A_Form extends Atomic_Element_Base {
 	 * that gets a wrapper — mirrors native build_checkbox_row()).
 	 */
 	private function build_checkbox_row( string $label_text, string $checkbox_id ): array {
-		$checkbox = AAE_A_Form_Checkbox::generate()
+		$checkbox = Aaeaddon_A_Form_Checkbox::generate()
 			->settings(
 				[
 					'_cssid' => String_Prop_Type::generate( $checkbox_id ),
@@ -406,7 +406,7 @@ class AAE_A_Form extends Atomic_Element_Base {
 
 	/** One <label> widget pointing at an input's _cssid (renders for=). */
 	private function build_label( string $text, string $input_id ): array {
-		return AAE_A_Form_Label::generate()
+		return Aaeaddon_A_Form_Label::generate()
 			->settings(
 				[
 					'text'     => Html_V3_Prop_Type::generate(
@@ -425,7 +425,7 @@ class AAE_A_Form extends Atomic_Element_Base {
 	/** One <input> (or <textarea> when $type is 'textarea') widget with the given _cssid. */
 	private function build_input( string $placeholder, string $type, string $input_id ): array {
 		if ( 'textarea' === $type ) {
-			return AAE_A_Form_Textarea::generate()
+			return Aaeaddon_A_Form_Textarea::generate()
 				->settings(
 					[
 						'placeholder' => String_Prop_Type::generate( $placeholder ),
@@ -437,7 +437,7 @@ class AAE_A_Form extends Atomic_Element_Base {
 				->build();
 		}
 
-		return AAE_A_Form_Input::generate()
+		return Aaeaddon_A_Form_Input::generate()
 			->settings(
 				[
 					'placeholder' => String_Prop_Type::generate( $placeholder ),

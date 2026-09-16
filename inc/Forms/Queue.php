@@ -20,9 +20,9 @@
  * @since   4.0.0
  */
 
-namespace WCF_ADDONS\Forms;
+namespace Wealcoder\AnimationAddons\Forms;
 
-use WCF_ADDONS\Forms\Actions\Registry;
+use Wealcoder\AnimationAddons\Forms\Actions\Registry;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

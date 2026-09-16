@@ -10,11 +10,11 @@ import { register } from '@elementor/frontend-handlers';
  *     at all), so its hook class is hardcoded there — nothing for this file
  *     to swap or protect at runtime; the PHP/twig side already picked
  *     between the auto-fetched thumbnail and the user's own image.
- *   - .aae-a-video-playbtn — our own Parts\AAE_A_Video_PlayBtn, whose hook
+ *   - .aae-a-video-playbtn — our own Parts\Aaeaddon_A_Video_PlayBtn, whose hook
  *     class is hardcoded in ITS OWN twig instead (see that class's docblock
  *     for why it isn't a reused native e-button).
  *   - .aae-a-video-mount / .aae-a-video-controls — our own Parts\
- *     AAE_A_Video_Player, a "dumb" mount point + controls bar shell with no
+ *     Aaeaddon_A_Video_Player, a "dumb" mount point + controls bar shell with no
  *     settings of its own (see that class's docblock).
  *
  * The mount starts EMPTY — this file builds the actual media element itself
@@ -30,7 +30,7 @@ const VIMEO_ID_REGEX = /vimeo\.com\/(?:.*\/)?(?:videos\/)?(\d+)/;
 const DAILYMOTION_ID_REGEX = /(?:dailymotion\.com\/(?:embed\/)?video\/|dai\.ly\/)([a-zA-Z0-9]+)/;
 const VIDEOPRESS_GUID_REGEX = /videopress\.com\/(?:v|embed)\/([a-zA-Z0-9]+)/;
 
-// Kept in sync with AAE_A_Video::extract_youtube_id() (PHP) — both extract
+// Kept in sync with Aaeaddon_A_Video::extract_youtube_id() (PHP) — both extract
 // the same id from the same URL shapes, one server-side (poster
 // resolution), one client-side (player mount).
 const getYoutubeIdFromUrl = ( url ) => {

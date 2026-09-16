@@ -1,11 +1,11 @@
 <?php
 
-namespace WCF_ADDONS\Atomic\Sticky;
+namespace Wealcoder\AnimationAddons\Atomic\Sticky;
 
 use Elementor\Modules\AtomicWidgets\PropDependencies\Manager as Dependency_Manager;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
-use WCF_ADDONS\Atomic\PropTypes\Responsive_JSON_Prop_Type;
+use Wealcoder\AnimationAddons\Atomic\PropTypes\Responsive_JSON_Prop_Type;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

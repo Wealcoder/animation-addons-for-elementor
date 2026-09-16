@@ -19,7 +19,7 @@
  * @since   4.0.0
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
@@ -57,9 +57,9 @@ require_once __DIR__ . '/class-aae-a-loop-next.php';
 require_once __DIR__ . '/../PostImage/class-aae-a-post-image.php';
 require_once __DIR__ . '/../PostTitle/class-aae-a-post-title.php';
 
-use WCF_ADDONS\AtomicWidgets\Widgets\PostImage\AAE_A_Post_Image;
-use WCF_ADDONS\AtomicWidgets\Widgets\PostTitle\AAE_A_Post_Title;
-use WCF_ADDONS\AtomicWidgets\Controls\AAE_Notice_Control;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\PostImage\Aaeaddon_A_Post_Image;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\PostTitle\Aaeaddon_A_Post_Title;
+use Wealcoder\AnimationAddons\AtomicWidgets\Controls\Aaeaddon_Notice_Control;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -69,7 +69,7 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Elem
 	return;
 }
 
-class AAE_A_Loop_Grid extends Atomic_Element_Base {
+class Aaeaddon_A_Loop_Grid extends Atomic_Element_Base {
 	use Has_Element_Template;
 
 	/**
@@ -77,7 +77,7 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 	 * label and object types it had — so the prop survives the taxonomy's plugin
 	 * being switched off. See known_taxonomies().
 	 */
-	public const KNOWN_TAXONOMIES_OPTION = 'aae_loop_grid_known_taxonomies';
+	public const KNOWN_TAXONOMIES_OPTION = 'aaeaddon_loop_grid_known_taxonomies';
 
 	/**
 	 * The element types that ARE a loop grid.
@@ -500,35 +500,35 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 		// taxonomy for this post type") — resolved in the panel from the
 		// element's own post_type against the map class-atomic.php localizes as
 		// AAE_LOOP_GRID.notices. Renders nothing when there is nothing to say.
-		$items[] = AAE_Notice_Control::make()->set_source( 'loop-grid-taxonomies' );
+		$items[] = Aaeaddon_Notice_Control::make()->set_source( 'loop-grid-taxonomies' );
 
 		foreach ( self::get_query_taxonomies() as $tax ) {
 			if ( ! empty( $tax->aae_unregistered ) ) {
 				continue; // Prop kept (ratchet), control withheld — nothing to search.
 			}
-			$items[] = AAE_Query_Chips_Control::bind_to( self::tax_prop_name( $tax->name ) )
+			$items[] = Aaeaddon_Query_Chips_Control::bind_to( self::tax_prop_name( $tax->name ) )
 				->set_label( $tax->label )
 				->set_kind( 'term' )
 				->set_taxonomy( $tax->name )
 				->set_placeholder( __( 'Search terms…', 'animation-addons-for-elementor' ) );
 		}
 
-		$items[] = AAE_Query_Chips_Control::bind_to( 'include_posts' )
+		$items[] = Aaeaddon_Query_Chips_Control::bind_to( 'include_posts' )
 			->set_label( __( 'Include Posts', 'animation-addons-for-elementor' ) )
 			->set_kind( 'post' )
 			->set_placeholder( __( 'Search by title or ID…', 'animation-addons-for-elementor' ) );
 
-		$items[] = AAE_Query_Chips_Control::bind_to( 'exclude_posts' )
+		$items[] = Aaeaddon_Query_Chips_Control::bind_to( 'exclude_posts' )
 			->set_label( __( 'Exclude Posts', 'animation-addons-for-elementor' ) )
 			->set_kind( 'post' )
 			->set_placeholder( __( 'Search by title or ID…', 'animation-addons-for-elementor' ) );
 
-		$items[] = AAE_Query_Chips_Control::bind_to( 'authors' )
+		$items[] = Aaeaddon_Query_Chips_Control::bind_to( 'authors' )
 			->set_label( __( 'Authors', 'animation-addons-for-elementor' ) )
 			->set_kind( 'user' )
 			->set_placeholder( __( 'Search by name…', 'animation-addons-for-elementor' ) );
 
-		$items[] = AAE_Query_Chips_Control::bind_to( 'exclude_authors' )
+		$items[] = Aaeaddon_Query_Chips_Control::bind_to( 'exclude_authors' )
 			->set_label( __( 'Exclude Authors', 'animation-addons-for-elementor' ) )
 			->set_kind( 'user' )
 			->set_placeholder( __( 'Search by name…', 'animation-addons-for-elementor' ) );
@@ -621,13 +621,13 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 		$children = [];
 
 		if ( self::type_registered( 'e-aae-a-post-image' ) ) {
-			$children[] = AAE_A_Post_Image::generate()
+			$children[] = Aaeaddon_A_Post_Image::generate()
 				->editor_settings( [ 'title' => 'Post Image' ] )
 				->build();
 		} 
 
 		if ( self::type_registered( 'e-aae-a-post-title' ) ) {
-			$children[] = AAE_A_Post_Title::generate()
+			$children[] = Aaeaddon_A_Post_Title::generate()
 				->editor_settings( [ 'title' => 'Post Title' ] )
 				->build();
 		} 	
@@ -636,11 +636,11 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 		//   Loop Layout (grid)  ->  Loop Item (repeats per post)  ->  card children
 		//   Pagination          ->  Previous / Next (each seeds a Paragraph)
 		$tree = [
-			AAE_A_Loop_Layout::generate()
+			Aaeaddon_A_Loop_Layout::generate()
 				->editor_settings( [ 'title' => 'Loop Layout' ] )
 				->is_locked( true )
 				->children( [
-					AAE_A_Loop_Item::generate()
+					Aaeaddon_A_Loop_Item::generate()
 						->editor_settings( [ 'title' => 'Loop Item' ] )
 						->is_locked( true )
 						->children( $children )
@@ -648,8 +648,8 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 				] )
 				->build(),
 			// Pagination self-seeds its atomic pieces (Prev / Numbers / Next /
-			// Load More) — see AAE_A_Loop_Pagination::define_default_children().
-			AAE_A_Loop_Pagination::generate()
+			// Load More) — see Aaeaddon_A_Loop_Pagination::define_default_children().
+			Aaeaddon_A_Loop_Pagination::generate()
 				->editor_settings( [ 'title' => 'Pagination' ] )
 				->build(),
 		];
@@ -1686,7 +1686,7 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 	/**
 	 * Upper bound offered by the Posts Per Page control.
 	 *
-	 * A seam, not a constant, because AAE_A_Loop_Grid_Slider lowers it on an
+	 * A seam, not a constant, because Aaeaddon_A_Loop_Grid_Slider lowers it on an
 	 * unlicensed site — see its override. The plain grid is deliberately NOT
 	 * gated and always offers the full range.
 	 *
@@ -1727,7 +1727,7 @@ class AAE_A_Loop_Grid extends Atomic_Element_Base {
 	 * asked during render, before the subtree exists as objects, and the answer
 	 * only depends on what was saved.
 	 *
-	 * Matches by SUFFIX, not an exact type. AAE_A_Loop_Grid_Slider extends this
+	 * Matches by SUFFIX, not an exact type. Aaeaddon_A_Loop_Grid_Slider extends this
 	 * class and inherits define_render_context(), but its pagination child is
 	 * `e-aae-a-loop-slide-pagination` — an exact match on
 	 * `e-aae-a-loop-pagination` answered "no pagination" for every slider and

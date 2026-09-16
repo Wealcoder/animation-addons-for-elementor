@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Accordion;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Accordion;
 
 use Elementor\Modules\AtomicWidgets\Controls\Base\Element_Control_Base;
 
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * is a live projection of the element tree (drag/duplicate/remove/rename all act
  * directly on the children).
  */
-class AAE_A_Items_Control extends Element_Control_Base {
+class Aaeaddon_A_Items_Control extends Element_Control_Base {
 
 	public function get_type(): string {
 		return 'aae-items';

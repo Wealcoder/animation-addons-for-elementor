@@ -12,10 +12,10 @@
  * @since   4.0.0
  */
 
-namespace WCF_ADDONS\Forms\Actions;
+namespace Wealcoder\AnimationAddons\Forms\Actions;
 
-use WCF_ADDONS\Forms\Smart_Tags;
-use WCF_ADDONS\Forms\Uploads;
+use Wealcoder\AnimationAddons\Forms\Smart_Tags;
+use Wealcoder\AnimationAddons\Forms\Uploads;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

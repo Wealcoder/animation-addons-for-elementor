@@ -194,7 +194,7 @@
                 url: ajaxUrl,
                 type: 'POST',
                 data: {
-                    action: 'create_loop_template',
+                    action: 'aaeaddon_clb_create_template',
                     template_name: 'New Loop Template',
                     source_type: 'post',
                     template_type: 'loop-builder',
@@ -286,7 +286,7 @@
                 url: ajaxUrl,
                 type: 'POST',
                 data: {
-                    action: 'clb_get_template_preview',
+                    action: 'aaeaddon_clb_get_template_preview',
                     template_id: templateId,
                     nonce: nonce
                 }

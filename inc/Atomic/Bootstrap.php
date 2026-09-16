@@ -1,7 +1,7 @@
 <?php
-namespace WCF_ADDONS\Atomic;
+namespace Wealcoder\AnimationAddons\Atomic;
 
-use WCF_ADDONS\AtomicWidgets\Atomic;
+use Wealcoder\AnimationAddons\AtomicWidgets\Atomic;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -31,7 +31,7 @@ final class Bootstrap {
 		// call stack, executes Bootstrap::init() synchronously), so load it
 		// defensively here. require_once is a no-op on the later, normal load.
 		if ( ! class_exists( Atomic::class ) ) {
-			require_once WCF_ADDONS_PATH . 'inc/AtomicWidgets/class-atomic.php';
+			require_once AAEADDON_PATH . 'inc/AtomicWidgets/class-atomic.php';
 		}
 
 		$extensions = Atomic::instance();
@@ -49,78 +49,78 @@ final class Bootstrap {
 		// Regular (preset-based) animation — applied to every atomic widget.
 		// Frontend reads window.AAE_INTERACTIONS_ANIM[<id>].
 		if ( $extensions->is_extension_active( 'regular-animation' ) ) {
-			( new \WCF_ADDONS\Atomic\RegularAnimation\Schema() )->register();
-			( new \WCF_ADDONS\Atomic\RegularAnimation\Controls() )->register();
+			( new \Wealcoder\AnimationAddons\Atomic\RegularAnimation\Schema() )->register();
+			( new \Wealcoder\AnimationAddons\Atomic\RegularAnimation\Controls() )->register();
 		}
 
 		// Parallax (ScrollSmoother) — applied to every atomic widget.
 		// Frontend reads window.AAE_INTERACTIONS_PLX[<id>].
 		if ( $extensions->is_extension_active( 'parallax' ) ) {
-			( new \WCF_ADDONS\Atomic\Parallax\Schema() )->register();
-			( new \WCF_ADDONS\Atomic\Parallax\Controls() )->register();
+			( new \Wealcoder\AnimationAddons\Atomic\Parallax\Schema() )->register();
+			( new \Wealcoder\AnimationAddons\Atomic\Parallax\Controls() )->register();
 		}
 
 		// Text animation — char/word/reveal/etc. for heading-class widgets.
 		if ( $extensions->is_extension_active( 'text-animation' ) ) {
-			( new \WCF_ADDONS\Atomic\TextAnimation\Schema() )->register();
-			( new \WCF_ADDONS\Atomic\TextAnimation\Controls() )->register();
+			( new \Wealcoder\AnimationAddons\Atomic\TextAnimation\Schema() )->register();
+			( new \Wealcoder\AnimationAddons\Atomic\TextAnimation\Controls() )->register();
 		}
 
 		// Image animation — reveal/scale/stretch for e-image / e-svg.
 		// Frontend reads window.AAE_INTERACTIONS_IMG[<id>].
 		if ( $extensions->is_extension_active( 'image-animation' ) ) {
-			( new \WCF_ADDONS\Atomic\ImageAnimation\Schema() )->register();
-			( new \WCF_ADDONS\Atomic\ImageAnimation\Controls() )->register();
-			( new \WCF_ADDONS\Atomic\ImageAnimation\Render() )->register();
+			( new \Wealcoder\AnimationAddons\Atomic\ImageAnimation\Schema() )->register();
+			( new \Wealcoder\AnimationAddons\Atomic\ImageAnimation\Controls() )->register();
+			( new \Wealcoder\AnimationAddons\Atomic\ImageAnimation\Render() )->register();
 		}
 
 		// Image hover — cursor-following floating image overlay on any
 		// atomic widget. Frontend reads window.AAE_INTERACTIONS_IH[<id>].
 		if ( $extensions->is_extension_active( 'image-hover' ) ) {
-			( new \WCF_ADDONS\Atomic\ImageHover\Schema() )->register();
-			( new \WCF_ADDONS\Atomic\ImageHover\Controls() )->register();
+			( new \Wealcoder\AnimationAddons\Atomic\ImageHover\Schema() )->register();
+			( new \Wealcoder\AnimationAddons\Atomic\ImageHover\Controls() )->register();
 		}
 
 		// Sticky — pin elements
 		if ( $extensions->is_extension_active( 'sticky' ) ) {
-			( new \WCF_ADDONS\Atomic\Sticky\Schema() )->register();
-			( new \WCF_ADDONS\Atomic\Sticky\Controls() )->register();
+			( new \Wealcoder\AnimationAddons\Atomic\Sticky\Schema() )->register();
+			( new \Wealcoder\AnimationAddons\Atomic\Sticky\Controls() )->register();
 		}
 
 		// horizontal scroll animation
 		if ( $extensions->is_extension_active( 'horizontal-scroll-anim' ) ) {
-			( new \WCF_ADDONS\Atomic\HorizontalScrollAnim\Schema() )->register();
-			( new \WCF_ADDONS\Atomic\HorizontalScrollAnim\Controls() )->register();
+			( new \Wealcoder\AnimationAddons\Atomic\HorizontalScrollAnim\Schema() )->register();
+			( new \Wealcoder\AnimationAddons\Atomic\HorizontalScrollAnim\Controls() )->register();
 		}
 
 		// Cursor hover effect — cursor-following floating element on any
 		if ( $extensions->is_extension_active( 'cursor-hover-effect' ) ) {
-			( new \WCF_ADDONS\Atomic\CursorHoverEffect\Schema() )->register();
-			( new \WCF_ADDONS\Atomic\CursorHoverEffect\Controls() )->register();
+			( new \Wealcoder\AnimationAddons\Atomic\CursorHoverEffect\Schema() )->register();
+			( new \Wealcoder\AnimationAddons\Atomic\CursorHoverEffect\Controls() )->register();
 		}
 
 		// Mouse move effect — element moves based on mouse position.
 		if ( $extensions->is_extension_active( 'mouse-move-effect' ) ) {
-			( new \WCF_ADDONS\Atomic\MouseMoveEffect\Schema() )->register();
-			( new \WCF_ADDONS\Atomic\MouseMoveEffect\Controls() )->register();
+			( new \Wealcoder\AnimationAddons\Atomic\MouseMoveEffect\Schema() )->register();
+			( new \Wealcoder\AnimationAddons\Atomic\MouseMoveEffect\Controls() )->register();
 		}
 
 		// Advance Tooltip
 		if ( $extensions->is_extension_active( 'advance-tooltip' ) ) {
-			( new \WCF_ADDONS\Atomic\AdvanceTooltip\Schema() )->register();
-			( new \WCF_ADDONS\Atomic\AdvanceTooltip\Controls() )->register();
+			( new \Wealcoder\AnimationAddons\Atomic\AdvanceTooltip\Schema() )->register();
+			( new \Wealcoder\AnimationAddons\Atomic\AdvanceTooltip\Controls() )->register();
 		}
 
 		// Tilt
 		if ( $extensions->is_extension_active( 'tilt' ) ) {
-			( new \WCF_ADDONS\Atomic\Tilt\Schema() )->register();
-			( new \WCF_ADDONS\Atomic\Tilt\Controls() )->register();
+			( new \Wealcoder\AnimationAddons\Atomic\Tilt\Schema() )->register();
+			( new \Wealcoder\AnimationAddons\Atomic\Tilt\Controls() )->register();
 		}
 
 		// scrollto
 		if ( $extensions->is_extension_active( 'scroll-to' ) ) {
-			( new \WCF_ADDONS\Atomic\ScrollTo\Schema() )->register();
-			( new \WCF_ADDONS\Atomic\ScrollTo\Controls() )->register();
+			( new \Wealcoder\AnimationAddons\Atomic\ScrollTo\Schema() )->register();
+			( new \Wealcoder\AnimationAddons\Atomic\ScrollTo\Controls() )->register();
 		}
 
 		// Image Overlay — static color/gradient tint on e-image / e-svg.
@@ -128,9 +128,9 @@ final class Bootstrap {
 		// shared extensions above: it needs no JS animation runtime, just a
 		// plain background + mix-blend-mode application. See Render.php.
 		if ( $extensions->is_extension_active( 'image-overlay' ) ) {
-			( new \WCF_ADDONS\Atomic\ImageOverlay\Schema() )->register();
-			( new \WCF_ADDONS\Atomic\ImageOverlay\Controls() )->register();
-			( new \WCF_ADDONS\Atomic\ImageOverlay\Render() )->register();
+			( new \Wealcoder\AnimationAddons\Atomic\ImageOverlay\Schema() )->register();
+			( new \Wealcoder\AnimationAddons\Atomic\ImageOverlay\Controls() )->register();
+			( new \Wealcoder\AnimationAddons\Atomic\ImageOverlay\Render() )->register();
 		}
 
 		// Mask — clips an element to a shape. Registered as real atomic STYLE
@@ -140,8 +140,8 @@ final class Bootstrap {
 		// element's stylesheet — no runtime JS. v3's mask is widget-only, so
 		// containers gain something they never had.
 		if ( $extensions->is_extension_active( 'mask' ) ) {
-			( new \WCF_ADDONS\Atomic\Mask\Schema() )->register();
-			( new \WCF_ADDONS\Atomic\Mask\Transformers() )->register();
+			( new \Wealcoder\AnimationAddons\Atomic\Mask\Schema() )->register();
+			( new \Wealcoder\AnimationAddons\Atomic\Mask\Transformers() )->register();
 		}
 
 		// Background Video — a video layer behind e-flexbox / e-div-block /
@@ -150,9 +150,9 @@ final class Bootstrap {
 		// animation, and it needs no GSAP, so there is nothing here for the Pro
 		// split to own. Frontend reads window.AAE_INTERACTIONS_BGV[<id>].
 		if ( $extensions->is_extension_active( 'background-video' ) ) {
-			( new \WCF_ADDONS\Atomic\BackgroundVideo\Schema() )->register();
-			( new \WCF_ADDONS\Atomic\BackgroundVideo\Controls() )->register();
-			( new \WCF_ADDONS\Atomic\BackgroundVideo\Render() )->register();
+			( new \Wealcoder\AnimationAddons\Atomic\BackgroundVideo\Schema() )->register();
+			( new \Wealcoder\AnimationAddons\Atomic\BackgroundVideo\Controls() )->register();
+			( new \Wealcoder\AnimationAddons\Atomic\BackgroundVideo\Render() )->register();
 		}
 
 		// Custom CSS — NOT part of the move to Pro, so it keeps its Render here.
@@ -165,9 +165,9 @@ final class Bootstrap {
 		// those files are gone — see the Presets note below — but the
 		// dependency is a property of the preset format, not of those files.)
 		if ( $extensions->is_extension_active( 'custom-css' ) ) {
-			( new \WCF_ADDONS\Atomic\CustomCss\Schema() )->register();
-			( new \WCF_ADDONS\Atomic\CustomCss\Controls() )->register();
-			( new \WCF_ADDONS\Atomic\CustomCss\Render() )->register();
+			( new \Wealcoder\AnimationAddons\Atomic\CustomCss\Schema() )->register();
+			( new \Wealcoder\AnimationAddons\Atomic\CustomCss\Controls() )->register();
+			( new \Wealcoder\AnimationAddons\Atomic\CustomCss\Render() )->register();
 		}
 
 		// Presets — "Apply Preset" picker section for NATIVE atomic widgets
@@ -183,27 +183,27 @@ final class Bootstrap {
 		// that was the old behaviour and it surfaced "Presets" on widgets
 		// nobody had opted in (e-paragraph, e-image), which is why the
 		// whitelist replaced it.
-		( new \WCF_ADDONS\Atomic\Presets\Controls() )->register();
+		( new \Wealcoder\AnimationAddons\Atomic\Presets\Controls() )->register();
 
 		// Nested Slider. (No Controls class — the slider's panel section is built
-		// directly in AAE_A_Slider::define_atomic_controls(), so there's nothing
+		// directly in Aaeaddon_A_Slider::define_atomic_controls(), so there's nothing
 		// to inject via the controls filter.)
-		( new \WCF_ADDONS\Atomic\NestedSlider\Schema() )->register();
-		( new \WCF_ADDONS\Atomic\NestedSlider\Render() )->register();
+		( new \Wealcoder\AnimationAddons\Atomic\NestedSlider\Schema() )->register();
+		( new \Wealcoder\AnimationAddons\Atomic\NestedSlider\Render() )->register();
 
 		// Loop Grid Slider — reuses the Nested Slider schema (NS_*) and the shared
 		// 'ns' InteractionsMap namespace + runtime, so no separate Schema is needed.
 		// This Render only publishes the config for e-aae-a-loop-grid-slider and
 		// enqueues the shared slider runtime plus the load-more bridge.
-		( new \WCF_ADDONS\Atomic\LoopGridSlider\Render() )->register();
+		( new \Wealcoder\AnimationAddons\Atomic\LoopGridSlider\Render() )->register();
 
 		// Style Manager — registers AAE utility classes (aae-flex, aae-a-p0,
 		// aae-a-svg, …) via the atomic styles pipeline.
-		( new \WCF_ADDONS\Atomic\StyleManager\Manager() )->register();
+		( new \Wealcoder\AnimationAddons\Atomic\StyleManager\Manager() )->register();
 
 		// Preset interaction styles — keyed CSS map, printed inline on demand
 		// for the presets actually used on the page (see Preset_Styles).
-		( new \WCF_ADDONS\Atomic\StyleManager\Preset_Styles() )->register();
+		( new \Wealcoder\AnimationAddons\Atomic\StyleManager\Preset_Styles() )->register();
 
 		( new Assets() )->register();
 
@@ -213,12 +213,12 @@ final class Bootstrap {
 		// adds its props to every type; the server keeps that (it is what
 		// protects saved data on save), the client does not need it. See the
 		// class docblock for the rule that keeps this safe.
-		( new \WCF_ADDONS\Atomic\Editor\Schema_Trim() )->register();
+		( new \Wealcoder\AnimationAddons\Atomic\Editor\Schema_Trim() )->register();
 
 		// Remote preset system — the same-origin proxy route the editor's JS
 		// fetches (merges remote + local presets; see Atomic\Presets\Cache).
 		// The "Presets" panel section itself is registered once, above.
-		( new \WCF_ADDONS\Atomic\Presets\Rest() )->register();
+		( new \Wealcoder\AnimationAddons\Atomic\Presets\Rest() )->register();
 
 		// The install door for a preset that needs a post type, an ACF field
 		// group or a plugin before its design can do anything. Free owns the
@@ -226,7 +226,7 @@ final class Bootstrap {
 		// requires — and Pro owns what is behind it, so a site without Pro gets
 		// an honest "nothing can install this" instead of a 400 from an action
 		// nobody registered. See Presets\Requires.
-		( new \WCF_ADDONS\Atomic\Presets\Requires() )->register();
+		( new \Wealcoder\AnimationAddons\Atomic\Presets\Requires() )->register();
 	}
 
 	/**

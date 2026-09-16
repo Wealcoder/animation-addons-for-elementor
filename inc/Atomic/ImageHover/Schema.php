@@ -1,8 +1,8 @@
 <?php
-namespace WCF_ADDONS\Atomic\ImageHover;
+namespace Wealcoder\AnimationAddons\Atomic\ImageHover;
 
-use WCF_ADDONS\Atomic\Bootstrap;
-use WCF_ADDONS\Atomic\PropTypes\Responsive_Json_Prop_Type;
+use Wealcoder\AnimationAddons\Atomic\Bootstrap;
+use Wealcoder\AnimationAddons\Atomic\PropTypes\Responsive_Json_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
 
 if ( ! defined( 'ABSPATH' ) ) {

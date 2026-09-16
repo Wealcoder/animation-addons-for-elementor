@@ -12,6 +12,7 @@ import BackToV3Link from "@/components/shared/BackToV3Link";
 import TryAtomicLink from "@/components/shared/TryAtomicLink";
 import V3InUseNotice from "@/components/shared/V3InUseNotice";
 import AtomicOptInNotice from "@/components/shared/AtomicOptInNotice";
+import MigrationPendingNotice from "@/components/shared/MigrationPendingNotice";
 import AtomicUndoNotice from "@/components/shared/AtomicUndoNotice";
 import UsageScanButton from "@/components/shared/UsageScanButton";
 import { fetchWidgetUsage } from "@/lib/widgetUsage";
@@ -118,6 +119,7 @@ const Widgets = () => {
        * this screen as a whole, not about the list's filters or tab strip.
        */}
       <div className="flex flex-col gap-4 mb-4 empty:hidden">
+        <MigrationPendingNotice />
         <AtomicOptInNotice />
         <AtomicUndoNotice />
       </div>

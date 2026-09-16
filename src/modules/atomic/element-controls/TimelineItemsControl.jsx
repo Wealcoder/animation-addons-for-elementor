@@ -6,7 +6,7 @@
  *
  * Registered under the type id 'aae-timeline-items' (see ./index.js) and
  * rendered by the editing panel where the PHP side places an
- * AAE_A_Timeline_Items_Control. Mirrors the Accordion's AccordionItemsControl:
+ * Aaeaddon_A_Timeline_Items_Control. Mirrors the Accordion's AccordionItemsControl:
  * a custom list (not Elementor's <Repeater>) whose rows are a LIVE PROJECTION
  * of the timeline's real <e-aae-a-timeline-item> children — there is no
  * separate repeater data to keep in sync; the list is read straight off the
@@ -56,7 +56,7 @@ const ITEM_TYPE = 'e-aae-a-timeline-item';
 /**
  * Model for a fresh timeline item. `elements: []` (empty, not undefined) lets
  * Elementor's onElementCreate() populate the default marker/date/title/desc
- * children via AAE_A_Timeline_Item::define_default_children().
+ * children via Aaeaddon_A_Timeline_Item::define_default_children().
  */
 function buildItemModel( position ) {
 	return {

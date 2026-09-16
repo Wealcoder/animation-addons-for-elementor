@@ -17,7 +17,7 @@
  * @since   4.0.0
  */
 
-namespace WCF_ADDONS\Forms\Actions;
+namespace Wealcoder\AnimationAddons\Forms\Actions;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

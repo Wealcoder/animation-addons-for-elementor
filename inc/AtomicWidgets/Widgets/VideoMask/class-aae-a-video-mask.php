@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\AtomicWidgets\Widgets\VideoMask;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\VideoMask;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class AAE_A_Video_Mask extends Atomic_Element_Base {
+class Aaeaddon_A_Video_Mask extends Atomic_Element_Base {
 	use Has_Element_Template;
 
 	public function __construct( $data = [], $args = null ) {
@@ -144,11 +144,11 @@ class AAE_A_Video_Mask extends Atomic_Element_Base {
 		];
 	}
 
-	// The inner AAE_A_Video_Mask_Btn element is the click-trigger and
+	// The inner Aaeaddon_A_Video_Mask_Btn element is the click-trigger and
 	// open-label container. The user positions it freely via the Style panel.
 	protected function define_default_children(): array {
 		return [
-			AAE_A_Video_Mask_Btn::generate()
+			Aaeaddon_A_Video_Mask_Btn::generate()
 				->editor_settings( [ 'title' => 'Button' ] )
 				->build(),
 		];

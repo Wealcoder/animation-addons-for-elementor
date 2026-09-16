@@ -148,7 +148,7 @@
 
 	/* ---------------------------------------------------------------------
 	 * Hover Preview Card — a REAL, user-customizable atomic element tree
-	 * (AAE_A_Post_Pagination_Preview + its Thumbnail/Category/Title/Date/
+	 * (Aaeaddon_A_Post_Pagination_Preview + its Thumbnail/Category/Title/Date/
 	 * Author/Excerpt children — see class-aae-a-post-pagination-preview*.php)
 	 * nested INSIDE each Prev/Next link and already server-rendered with
 	 * that side's real post data. This is pure show/position/hide — no

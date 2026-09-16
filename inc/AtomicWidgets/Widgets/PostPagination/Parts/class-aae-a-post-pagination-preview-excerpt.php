@@ -3,8 +3,8 @@
  * AAE Post Pagination Preview — Excerpt. See class-aae-a-post-pagination-
  * preview-image.php's docblock for the shared `role`/Render_Context pattern.
  *
- * Owns its OWN `excerpt_length` control (mirrors AAE_A_Post_Title's own
- * `title_limit`) — AAE_A_Post_Pagination::post_summary() resolves a
+ * Owns its OWN `excerpt_length` control (mirrors Aaeaddon_A_Post_Title's own
+ * `title_limit`) — Aaeaddon_A_Post_Pagination::post_summary() resolves a
  * generously-capped excerpt (55 words, WP's own core default) once per
  * adjacent post; this widget re-trims THAT string down to its own setting
  * at render time, so the length is a per-instance Content-tab control on
@@ -14,7 +14,7 @@
  * @package AnimationAddonsForElementor
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\PostPagination;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\PostPagination;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Widget_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Template;
@@ -39,7 +39,7 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Widg
 	return;
 }
 
-class AAE_A_Post_Pagination_Preview_Excerpt extends Atomic_Widget_Base {
+class Aaeaddon_A_Post_Pagination_Preview_Excerpt extends Atomic_Widget_Base {
 	use Has_Template;
 
 	public static function get_element_type(): string {
@@ -110,7 +110,7 @@ class AAE_A_Post_Pagination_Preview_Excerpt extends Atomic_Widget_Base {
 		$role     = ! empty( $settings['role'] ) ? $settings['role'] : 'next';
 		$length   = isset( $settings['excerpt_length'] ) ? max( 1, (int) $settings['excerpt_length'] ) : 20;
 
-		$ctx  = Render_Context::get( AAE_A_Post_Pagination::class );
+		$ctx  = Render_Context::get( Aaeaddon_A_Post_Pagination::class );
 		$post = isset( $ctx[ $role ] ) ? $ctx[ $role ] : null;
 
 		if ( $post && ! empty( $post['excerpt'] ) ) {

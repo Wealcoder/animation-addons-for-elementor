@@ -4,10 +4,10 @@
   `content_html` is the interpreted form: tags the user typed by hand, decoded
   into real elements and rendered as typed. `content` holds the verbatim source
   the panel edits and is deliberately NOT rendered — see
-  AAE_A_Advanced_Heading::get_atomic_settings(), which recomputes content_html on
+  Aaeaddon_A_Advanced_Heading::get_atomic_settings(), which recomputes content_html on
   every server render.
 #}
-{# Must match AAE_Rich_Text_Prop_Type::allowed_tags(). striptags is the SECOND
+{# Must match Aaeaddon_Rich_Text_Prop_Type::allowed_tags(). striptags is the SECOND
    belt — wp_kses already cleaned this on save; this only guards a value that
    reached the DB by some other route (import, a component override, direct
    _elementor_data edit). Note striptags filters TAGS only, so it is the kses pass

@@ -2,9 +2,9 @@
 /**
  * AAE Form Country — atomic leaf WIDGET. Renders a country <select>.
  *
- * Structurally a single-value sibling of AAE_A_Form_Select: same "value|Label"
+ * Structurally a single-value sibling of Aaeaddon_A_Form_Select: same "value|Label"
  * options format, same base styles, same twig mechanics — but the options
- * default to the full built-in ISO 3166-1 list (WCF_ADDONS\Forms\Countries),
+ * default to the full built-in ISO 3166-1 list (Wealcoder\AnimationAddons\Forms\Countries),
  * values submit as ISO alpha-2 codes, and the rendered <select> carries
  * autocomplete="country-name" for browser autofill (spec MVP requirement).
  *
@@ -18,7 +18,7 @@
  * @since   4.0.0
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Form;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -45,10 +45,10 @@ use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\AtomicWidgets\Styles\Style_States;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
-use WCF_ADDONS\Forms\Countries;
-use WCF_ADDONS\Forms\Pro_Gated;
+use Wealcoder\AnimationAddons\Forms\Countries;
+use Wealcoder\AnimationAddons\Forms\Pro_Gated;
 
-class AAE_A_Form_Country extends Atomic_Widget_Base {
+class Aaeaddon_A_Form_Country extends Atomic_Widget_Base {
 
 	/**
 	 * Locks this widget's PANEL CARD (not the element) without a Pro licence:
@@ -156,7 +156,7 @@ class AAE_A_Form_Country extends Atomic_Widget_Base {
 	}
 
 	protected function define_base_styles(): array {
-		// Mirrors AAE_A_Form_Select so both dropdown fields look identical
+		// Mirrors Aaeaddon_A_Form_Select so both dropdown fields look identical
 		// out of the box.
 		return [
 			'base' => Style_Definition::make()

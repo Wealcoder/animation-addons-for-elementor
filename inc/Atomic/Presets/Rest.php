@@ -1,7 +1,7 @@
 <?php
-namespace WCF_ADDONS\Atomic\Presets;
+namespace Wealcoder\AnimationAddons\Atomic\Presets;
 
-use WCF_ADDONS\AtomicWidgets\Atomic;
+use Wealcoder\AnimationAddons\AtomicWidgets\Atomic;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

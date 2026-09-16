@@ -10,7 +10,7 @@
  * @package AnimationAddonsForElementor
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\SearchForm;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SearchForm;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
@@ -27,10 +27,10 @@ require_once __DIR__ . '/class-aae-a-search-filter-date.php';
 require_once __DIR__ . '/class-aae-a-search-filter-category.php';
 require_once __DIR__ . '/class-aae-a-search-submit.php';
 
-use WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Input;
-use WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Filter_Date;
-use WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Filter_Category;
-use WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Submit;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SearchForm\Aaeaddon_A_Search_Input;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SearchForm\Aaeaddon_A_Search_Filter_Date;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SearchForm\Aaeaddon_A_Search_Filter_Category;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SearchForm\Aaeaddon_A_Search_Submit;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -40,7 +40,7 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Elem
 	return;
 }
 
-class AAE_A_Search_Field extends Atomic_Element_Base {
+class Aaeaddon_A_Search_Field extends Atomic_Element_Base {
 	use Has_Element_Template;
 
 	public function __construct( $data = [], $args = null ) {
@@ -99,22 +99,22 @@ class AAE_A_Search_Field extends Atomic_Element_Base {
 
 	protected function define_default_children() {
 		return [
-			AAE_A_Search_Input::generate()
+			Aaeaddon_A_Search_Input::generate()
 				->is_locked( true )
 				->editor_settings( [ 'title' => 'Search Input' ] )
 				->build(),
 
-			AAE_A_Search_Filter_Date::generate()
+			Aaeaddon_A_Search_Filter_Date::generate()
 				->is_locked( true )
 				->editor_settings( [ 'title' => 'Date Filter' ] )
 				->build(),
 
-			AAE_A_Search_Filter_Category::generate()
+			Aaeaddon_A_Search_Filter_Category::generate()
 				->is_locked( true )
 				->editor_settings( [ 'title' => 'Category Filter' ] )
 				->build(),
 
-			AAE_A_Search_Submit::generate()
+			Aaeaddon_A_Search_Submit::generate()
 				->is_locked( true )
 				->editor_settings( [ 'title' => 'Search Submit' ] )
 				->build(),

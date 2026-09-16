@@ -1,14 +1,12 @@
 <?php
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\Extensions;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\Extensions;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
-if(class_exists('\WCF_ADDONS\Extensions\CustomFonts')){
+if(class_exists('\Wealcoder\AnimationAddons\Extensions\CustomFonts')){
     return;
 }
 
@@ -125,7 +123,7 @@ Class CustomFonts_Lite{
         add_action( 'wp_enqueue_scripts',  array( $this, 'push_dynamic_style' ) , 20 );
         add_action( 'wp_head',  array( $this, 'wp_push_style' ) , 20 );
         add_action( 'wp_ajax_wcf_addon_custom_font_settings', [ $this, 'custom_font_settings' ] );
-        $this->gl_settings = aae_validate_content_json( wp_unslash( get_option('wcf_custom_font_setting')) );
+        $this->gl_settings = aaeaddon_validate_content_json( wp_unslash( get_option('aaeaddon_custom_font_setting')) );
         add_filter( 'post_row_actions', [$this,'remove_quick_edit_button'], 10, 2 );
 		add_filter( 'display_post_states', [$this,'remove_post_states'], 10, 2);
 	}
@@ -161,7 +159,7 @@ Class CustomFonts_Lite{
 	
 		$settings = sanitize_text_field( wp_unslash( $_POST['settings'] ) );
 			
-		update_option( 'wcf_custom_font_setting', $settings );
+		update_option( 'aaeaddon_custom_font_setting', $settings );
 		wp_send_json( $settings );
 	}
 	
@@ -339,7 +337,7 @@ Class CustomFonts_Lite{
          * print_fonts_links() a second time on wp_footer for templates rendered
          * below the head — has to be echoed instead.
          */
-        $handle = \WCF_ADDONS\Plugin::INLINE_STYLE_HANDLE;
+        $handle = \Wealcoder\AnimationAddons\Plugin::INLINE_STYLE_HANDLE;
 
         if ( ! $this->is_load_in_head() && ! wp_style_is( $handle, 'done' ) ) {
             wp_add_inline_style( $handle, wp_strip_all_tags( $custom_css ) );
@@ -640,10 +638,10 @@ Class CustomFonts_Lite{
 		
 		if(isset($current_screen->id) && $current_screen->id == 'wcf-custom-fonts'){
 			wp_enqueue_media();
-			wp_enqueue_style( 'wcf-addon-pro-custom-fonts', WCF_ADDONS_URL . 'assets/build/modules/custom-font/main.css', array(), WCF_ADDONS_VERSION );
-			wp_enqueue_script( 'wcf-addon-pro-custom-fonts', WCF_ADDONS_URL . 'assets/build/modules/custom-font/main.js', array(
+			wp_enqueue_style( 'wcf-addon-pro-custom-fonts', AAEADDON_URL . 'assets/build/modules/custom-font/main.css', array(), AAEADDON_VERSION );
+			wp_enqueue_script( 'wcf-addon-pro-custom-fonts', AAEADDON_URL . 'assets/build/modules/custom-font/main.js', array(
 				'react', 'react-dom', 'wp-element' , 'wp-i18n'
-			), WCF_ADDONS_VERSION, true );
+			), AAEADDON_VERSION, true );
             $font = get_post_meta(get_the_id(),'wcf_addon_custom_fonts',true);
             if(is_array($font)){
                 $font = wp_json_encode($font);

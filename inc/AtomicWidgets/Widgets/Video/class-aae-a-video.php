@@ -4,7 +4,7 @@
  *
  * A single video widget for every source — YouTube, Vimeo, a hosted URL, or
  * a Media Library upload — built entirely on our own engine (Parts\
- * AAE_A_Video_Player, see that class) so the same custom controls bar
+ * Aaeaddon_A_Video_Player, see that class) so the same custom controls bar
  * (play/pause, seek, time, mute, fullscreen) works identically regardless of
  * source, with no dependence on Elementor's own e-youtube/e-self-hosted-video
  * widgets (whose internals aren't reachable from outside — verified directly
@@ -12,10 +12,10 @@
  *
  * Mirrors the Progress Bar's "container + dedicated Parts widgets" pattern
  * (inc/AtomicWidgets/Widgets/Progressbar/Parts/): the play button is our own
- * Parts\AAE_A_Video_PlayBtn (see that class for why a native e-button
+ * Parts\Aaeaddon_A_Video_PlayBtn (see that class for why a native e-button
  * couldn't carry the click hook class), independently editable via its own
  * full Style/Content panel; the actual video engine is our own
- * Parts\AAE_A_Video_Player, a single mount point + controls bar that
+ * Parts\Aaeaddon_A_Video_Player, a single mount point + controls bar that
  * assets/js/video.js drives via a small per-source adapter (native <video>,
  * YT.Player, or Vimeo.Player). The poster is plain `<img>` markup rendered
  * directly by THIS class's own twig from the `poster_image` SETTING (Poster
@@ -30,7 +30,7 @@
  * @package AnimationAddonsForElementor
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Video;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Video;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -43,8 +43,8 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Elem
 require_once __DIR__ . '/Parts/class-aae-a-video-player.php';
 require_once __DIR__ . '/Parts/class-aae-a-video-playbtn.php';
 
-use WCF_ADDONS\AtomicWidgets\Widgets\Video\AAE_A_Video_Player;
-use WCF_ADDONS\AtomicWidgets\Widgets\Video\AAE_A_Video_PlayBtn;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Video\Aaeaddon_A_Video_Player;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Video\Aaeaddon_A_Video_PlayBtn;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
@@ -68,7 +68,7 @@ use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\AtomicWidgets\PropDependencies\Manager as Dependency_Manager;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
-class AAE_A_Video extends Atomic_Element_Base {
+class Aaeaddon_A_Video extends Atomic_Element_Base {
 
 	use Has_Element_Template;
 
@@ -104,7 +104,7 @@ class AAE_A_Video extends Atomic_Element_Base {
 	/**
 	 * Atomic_Element_Base reads the panel category from HERE, not
 	 * get_categories() (Widget_Base's own hook, never called for an element
-	 * type) — see AAE_A_Btn's identical note.
+	 * type) — see Aaeaddon_A_Btn's identical note.
 	 */
 	protected function define_panel_categories(): array {
 		return $this->get_categories();
@@ -298,7 +298,7 @@ class AAE_A_Video extends Atomic_Element_Base {
 			'resolved_poster_url' => String_Prop_Type::make()->default( '' ),
 
 			// Play button visibility + attention effect. The button itself is
-			// a fixed child (Parts\AAE_A_Video_PlayBtn), not a setting-driven
+			// a fixed child (Parts\Aaeaddon_A_Video_PlayBtn), not a setting-driven
 			// twig block, so these ride as data-attrs on THIS wrapper and are
 			// applied in video.scss purely via CSS — no twig conditional needed.
 			'playbtn_enabled' => Boolean_Prop_Type::make()->default( true ),
@@ -482,14 +482,14 @@ class AAE_A_Video extends Atomic_Element_Base {
 
 	/**
 	 * Fixed structural parts: our own universal video Player
-	 * (Parts\AAE_A_Video_Player) and our own play-button trigger
-	 * (Parts\AAE_A_Video_PlayBtn — mirrors AAE_A_Btn's icon+label pattern).
+	 * (Parts\Aaeaddon_A_Video_Player) and our own play-button trigger
+	 * (Parts\Aaeaddon_A_Video_PlayBtn — mirrors Aaeaddon_A_Btn's icon+label pattern).
 	 *
 	 * The poster used to be a THIRD default child here (a reused native
 	 * e-image, its `aae-a-video-poster` hook class seeded through the
 	 * `classes` prop since a reused native widget has no twig of ours to
 	 * hardcode a class into — same "Some classes are missing" exposure
-	 * AAE_A_Video_PlayBtn's own docblock explains for the button). It's now
+	 * Aaeaddon_A_Video_PlayBtn's own docblock explains for the button). It's now
 	 * the `poster_image` SETTING instead (see define_props_schema() and the
 	 * "Poster & Play Button" section below), rendered as plain `<img
 	 * class="aae-a-video-poster">` markup directly in THIS class's own twig
@@ -498,9 +498,9 @@ class AAE_A_Video extends Atomic_Element_Base {
 	 */
 	protected function define_default_children() {
 		return [
-			AAE_A_Video_Player::generate()->build(),
+			Aaeaddon_A_Video_Player::generate()->build(),
 
-			AAE_A_Video_PlayBtn::generate()->build(),
+			Aaeaddon_A_Video_PlayBtn::generate()->build(),
 		];
 	}
 
@@ -525,7 +525,7 @@ class AAE_A_Video extends Atomic_Element_Base {
 	/**
 	 * Resolve the auto-fetched poster thumbnail server-side, since Twig has
 	 * no HTTP client and the Vimeo oEmbed lookup needs caching. Same
-	 * computed-value hook AAE_A_Site_Logo uses — accepted trade-off: the
+	 * computed-value hook Aaeaddon_A_Site_Logo uses — accepted trade-off: the
 	 * editor's client-side twig re-render only refreshes this on an actual
 	 * server round-trip, not on every keystroke while editing the video URL.
 	 * aae-a-video.html.twig picks between this and the user's own

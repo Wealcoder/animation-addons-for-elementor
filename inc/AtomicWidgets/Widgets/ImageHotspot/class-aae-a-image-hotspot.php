@@ -7,14 +7,14 @@
  * prop — same choice ImageCompare made for its Before/After images — so it
  * gets full native Style-tab control for free. Markers are real
  * `e-aae-a-hotspot-point` children, added/reordered/removed through the
- * "Hotspots" element-control (AAE_A_Hotspots_Control), same convention as
+ * "Hotspots" element-control (Aaeaddon_A_Hotspots_Control), same convention as
  * NestedSlider's slides / Accordion's items.
  *
  * @package AnimationAddonsForElementor
  * @since   4.0.0
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\ImageHotspot;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\ImageHotspot;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -49,10 +49,10 @@ use Elementor\Modules\AtomicWidgets\PropDependencies\Manager as Dependency_Manag
 require_once __DIR__ . '/class-aae-a-hotspot-point.php';
 require_once __DIR__ . '/class-aae-a-hotspots-control.php';
 
-use WCF_ADDONS\AtomicWidgets\Widgets\ImageHotspot\AAE_A_Hotspot_Point;
-use WCF_ADDONS\AtomicWidgets\Widgets\ImageHotspot\AAE_A_Hotspots_Control;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\ImageHotspot\Aaeaddon_A_Hotspot_Point;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\ImageHotspot\Aaeaddon_A_Hotspots_Control;
 
-class AAE_A_Image_Hotspot extends Atomic_Element_Base {
+class Aaeaddon_A_Image_Hotspot extends Atomic_Element_Base {
 
 	use Has_Element_Template;
 
@@ -136,7 +136,7 @@ class AAE_A_Image_Hotspot extends Atomic_Element_Base {
 				->set_id( 'hotspots' )
 				->set_label( __( 'Hotspots', 'animation-addons-for-elementor' ) )
 				->set_items( [
-					AAE_A_Hotspots_Control::make()
+					Aaeaddon_A_Hotspots_Control::make()
 						->set_label( __( 'Hotspots', 'animation-addons-for-elementor' ) )
 						->set_meta( [ 'layout' => 'custom' ] ),
 				] ),
@@ -228,7 +228,7 @@ class AAE_A_Image_Hotspot extends Atomic_Element_Base {
 				] )
 				->build(),
 
-			AAE_A_Hotspot_Point::generate()
+			Aaeaddon_A_Hotspot_Point::generate()
 				->editor_settings( [ 'title' => 'Hotspot 1' ] )
 				->settings( [
 					'pos_left' => Number_Prop_Type::generate( 30 ),
@@ -236,7 +236,7 @@ class AAE_A_Image_Hotspot extends Atomic_Element_Base {
 				] )
 				->build(),
 
-			AAE_A_Hotspot_Point::generate()
+			Aaeaddon_A_Hotspot_Point::generate()
 				->editor_settings( [ 'title' => 'Hotspot 2' ] )
 				->settings( [
 					'pos_left' => Number_Prop_Type::generate( 65 ),

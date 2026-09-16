@@ -11,13 +11,11 @@
  * every child selector. Escaping late still has to mean escaping, so this
  * is the one place that knows how.
  *
- * @package WCF_ADDONS
+ * @package Wealcoder\AnimationAddons
  */
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS;
+namespace Wealcoder\AnimationAddons;
 
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

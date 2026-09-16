@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Btn;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Btn;
 
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Svg\Atomic_Svg;
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
@@ -38,7 +38,7 @@ if (! defined('ABSPATH')) {
 /**
  * AAE Basic Button — an open atomic container styled like a button.
  */
-class AAE_A_Btn extends Atomic_Element_Base
+class Aaeaddon_A_Btn extends Atomic_Element_Base
 {
 	use Has_Element_Template;
 
@@ -150,7 +150,7 @@ class AAE_A_Btn extends Atomic_Element_Base
 			'aae_btn_underline'     => Boolean_Prop_Type::make()->default(false),
 
 			// Same "preset-driven, hidden by default" family as the flags above,
-			// but this pair DOES get a panel control (see AAE_A_Btn_Hover_Style_Control
+			// but this pair DOES get a panel control (see Aaeaddon_A_Btn_Hover_Style_Control
 			// below) — the "Default" preset (presets/default.json) is the only preset
 			// that sets aae_btn_hover_effect=true, and BtnHoverStyleControl.jsx hides
 			// its own row whenever that marker is false. aae_btn_hover_style carries the
@@ -181,7 +181,7 @@ class AAE_A_Btn extends Atomic_Element_Base
 				->set_label(__('Presets', 'animation-addons-for-elementor'))
 				->set_id('aae_presets')
 				->set_items([
-					AAE_A_Preset_Picker_Control::make()
+					Aaeaddon_A_Preset_Picker_Control::make()
 						->set_label(__('Apply Preset', 'animation-addons-for-elementor'))
 						->set_meta(['layout' => 'custom']),
 				]),
@@ -199,7 +199,7 @@ class AAE_A_Btn extends Atomic_Element_Base
 
 					// Hidden unless the "Default" preset's aae_btn_hover_effect marker
 					// is set on the selected button — see BtnHoverStyleControl.jsx.
-					AAE_A_Btn_Hover_Style_Control::bind_to('aae_btn_hover_style')
+					Aaeaddon_A_Btn_Hover_Style_Control::bind_to('aae_btn_hover_style')
 						->set_label(__('Hover Style', 'animation-addons-for-elementor')),
 				]),
 
@@ -308,7 +308,7 @@ class AAE_A_Btn extends Atomic_Element_Base
 					'classes' => Classes_Prop_Type::generate([$icon_class]),
 					'svg'     => Svg_Src_Prop_Type::generate([
 						'id'  => null,
-						'url' => Url_Prop_Type::generate(WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/Btn/assets/icons/add-file.svg'),
+						'url' => Url_Prop_Type::generate(AAEADDON_URL . 'inc/AtomicWidgets/Widgets/Btn/assets/icons/add-file.svg'),
 					]),
 				])
 				->build(),

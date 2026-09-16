@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\ToggleSwitcher;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -32,14 +32,14 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
  * Labels. Wraps a single knob element (normally an e-divider styled round).
  *
  * A genuine container (Atomic_Element_Base) for the same reason as
- * AAE_A_Toggle_Switcher_Label: it needs to render the `aae-ts-switch` hook
+ * Aaeaddon_A_Toggle_Switcher_Label: it needs to render the `aae-ts-switch` hook
  * class unconditionally from its own twig, never through the `classes` prop
  * — see "Never put a functional hook class in the classes prop" in
  * CLAUDE.md. Before this widget existed, the preset built this wrapper out
  * of a plain e-div-block with the hook class stuffed into `classes`, which
  * is exactly the failure that section warns about.
  */
-class AAE_A_Toggle_Switcher_Track extends Atomic_Element_Base {
+class Aaeaddon_A_Toggle_Switcher_Track extends Atomic_Element_Base {
 
 	use Has_Element_Template;
 
@@ -116,7 +116,7 @@ class AAE_A_Toggle_Switcher_Track extends Atomic_Element_Base {
 	 * SCSS rule (an undefined custom property, always resolving to black,
 	 * never editable from the panel). Atomic_Element_Base's own
 	 * get_initial_config() already calls define_atomic_style_states() on its
-	 * own — see AAE_A_Toggle_Switcher_Label's identical override — so no
+	 * own — see Aaeaddon_A_Toggle_Switcher_Label's identical override — so no
 	 * extra config plumbing is needed here.
 	 */
 	protected function define_atomic_style_states(): array {

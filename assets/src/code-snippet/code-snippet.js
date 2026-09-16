@@ -164,7 +164,7 @@ function initializeEditor() {
         ],
         extraKeys: {
             "Ctrl-Space": "autocomplete",
-            "F11": toggleFullscreen,
+            "F11": aaeaddonToggleFullscreen,
             "Esc": exitFullscreen,
             // Additional useful shortcuts
             "Ctrl-/": "toggleComment",
@@ -323,7 +323,7 @@ function toggleTheme() {
 }
 
 // Toggle fullscreen
-function toggleFullscreen() {
+function aaeaddonToggleFullscreen() {
     if (!editor) return;
 
     isFullscreen = !isFullscreen;
@@ -510,7 +510,7 @@ function initializeEditorFunctionality() {
 
     const fullscreenBtn = document.getElementById('fullscreen-btn');
     if (fullscreenBtn) {
-        fullscreenBtn.addEventListener('click', toggleFullscreen);
+        fullscreenBtn.addEventListener('click', aaeaddonToggleFullscreen);
     }
 
     const copyCodeBtn = document.getElementById('copy-code-btn');
@@ -785,7 +785,7 @@ function initializeSelect2PageSelection() {
                     return {
                         q: params.term, // search term
                         page: params.page || 1,
-                        action: 'add_custom_page',
+                        action: 'aaeaddon_snippet_page_search',
                         nonce: WCFCustomCodeVars.nonce,
                     };
                 },

@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Video;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Video;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -32,13 +32,13 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
  * for the same reasoning applied to Progress Bar's parts).
  *
  * It owns NO source/playback settings itself — those all live on the parent
- * AAE_A_Video, which emits them as data-aae-video-* attributes on the shared
+ * Aaeaddon_A_Video, which emits them as data-aae-video-* attributes on the shared
  * wrapper. assets/js/video.js binds ONE frontend handler to the PARENT
  * element type and reads this part's mount div + controls bar as descendants
  * (exactly how VideoMask's JS reaches its internal button child), so this
  * class stays a "dumb" rendering surface: mount div + controls markup only.
  */
-class AAE_A_Video_Player extends Atomic_Widget_Base {
+class Aaeaddon_A_Video_Player extends Atomic_Widget_Base {
 
 	use Has_Template;
 

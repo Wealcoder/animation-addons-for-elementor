@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\Atomic\Presets;
+namespace Wealcoder\AnimationAddons\Atomic\Presets;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -31,7 +31,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class Cache {
 
 	const TYPE_TRANSIENT_PREFIX = 'aae_preset_type_';
-	const MANIFEST_OPTION       = 'aae_preset_manifest_cache';
+	const MANIFEST_OPTION       = 'aaeaddon_preset_manifest_cache';
 
 	private Remote_Client $remote;
 	private Local_Fallback $local;
@@ -230,7 +230,7 @@ final class Cache {
 	 * local presets use (see Local_Fallback::parse_preset_file()) — the
 	 * remote server has no knowledge of any one install's plugin URL, so it
 	 * stores the literal token and expects each consuming site to resolve it
-	 * to its own `WCF_ADDONS_URL . 'inc/AtomicWidgets/'`.
+	 * to its own `AAEADDON_URL . 'inc/AtomicWidgets/'`.
 	 *
 	 * Local_Fallback resolves this at parse-time for local files; remote
 	 * entries were never getting the same treatment, so any remote preset
@@ -245,7 +245,7 @@ final class Cache {
 	 * @return array<int, array>
 	 */
 	private function resolve_asset_urls( array $entries ): array {
-		if ( empty( $entries ) || ! defined( 'WCF_ADDONS_URL' ) ) {
+		if ( empty( $entries ) || ! defined( 'AAEADDON_URL' ) ) {
 			return $entries;
 		}
 
@@ -254,7 +254,7 @@ final class Cache {
 			return $entries;
 		}
 
-		$json = str_replace( '{{AAE_ASSET_URL}}', WCF_ADDONS_URL . 'inc/AtomicWidgets/', $json );
+		$json = str_replace( '{{AAE_ASSET_URL}}', AAEADDON_URL . 'inc/AtomicWidgets/', $json );
 
 		$decoded = json_decode( $json, true );
 

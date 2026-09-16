@@ -1,8 +1,6 @@
 <?php
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\Widgets;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\Widgets;
 
 use Elementor\Controls_Manager;
 use Elementor\Core\Kits\Documents\Tabs\Global_Colors;
@@ -10,7 +8,7 @@ use Elementor\Core\Kits\Documents\Tabs\Global_Typography;
 use Elementor\Group_Control_Typography;
 use Elementor\Widget_Base;
 use Elementor\Plugin;
-use WCF_ADDONS\WCF_Theme_Builder;
+use Wealcoder\AnimationAddons\Aaeaddon_Theme_Builder;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
@@ -101,7 +99,7 @@ class Post_Content extends Widget_Base {
 			/**
 			 * ThemeBuilder
 			 */
-			$document = WCF_Theme_Builder::get_document( $post->ID );
+			$document = Aaeaddon_Theme_Builder::get_document( $post->ID );
 			// On view theme document show it's preview content.
 			if ( $document ) {
 				$preview_type = $document->get_settings( 'preview_type' );

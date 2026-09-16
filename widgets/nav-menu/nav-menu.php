@@ -1,8 +1,6 @@
 <?php
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\Widgets;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\Widgets;
 
 use Elementor\Group_Control_Background;
 use Elementor\Group_Control_Border;
@@ -12,7 +10,7 @@ use Elementor\Icons_Manager;
 use Elementor\Plugin;
 use Elementor\Widget_Base;
 use Elementor\Controls_Manager;
-use WCF_ADDONS\Widgets\Nav_Menu\WCF_Menu_Walker;
+use Wealcoder\AnimationAddons\Widgets\Nav_Menu\Aaeaddon_Menu_Walker;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
@@ -1844,8 +1842,8 @@ class Nav_Menu extends Widget_Base {
 		}
 
 		//include nav menu walker
-		if ( ! class_exists( 'WCF_ADDONS\Widgets\Nav_Menu\WCF_Menu_Walker' ) ) {
-			include_once WCF_ADDONS_PATH . 'widgets/nav-menu/walker-nav-menu.php';
+		if ( ! class_exists( 'Wealcoder\AnimationAddons\Widgets\Nav_Menu\Aaeaddon_Menu_Walker' ) ) {
+			include_once AAEADDON_PATH . 'widgets/nav-menu/walker-nav-menu.php';
 		}
 
 		$close_button = '<button class="wcf-menu-close" type="button">' . Icons_Manager::try_get_icon_html( $settings['mobile_close'], [ 'aria-hidden' => 'true' ] ) . '</button>';
@@ -1861,7 +1859,7 @@ class Nav_Menu extends Widget_Base {
 			'menu_class'             => 'wcf-nav-menu-nav ' . 'menu-layout-' . $settings['menu_layout'],			
 			'submenu_indicator_icon' => Icons_Manager::try_get_icon_html( $settings['submenu_indicator'], [ 'aria-hidden' => 'true' ] ),
 			'innersubmenu_indicator_icon' => isset($settings['innersubmenu_indicator_icon']['library']) && $settings['innersubmenu_indicator_icon']['library'] !='' ? Icons_Manager::try_get_icon_html( $settings['innersubmenu_indicator_icon'], [ 'aria-hidden' => 'true' ] ): Icons_Manager::try_get_icon_html( $settings['submenu_indicator'], [ 'aria-hidden' => 'true' ] ),
-			'walker'                 => ( class_exists( 'WCF_ADDONS\Widgets\Nav_Menu\WCF_Menu_Walker' ) ? new WCF_Menu_Walker(['remove_span'=> $remove_span]) : '' )
+			'walker'                 => ( class_exists( 'Wealcoder\AnimationAddons\Widgets\Nav_Menu\Aaeaddon_Menu_Walker' ) ? new Aaeaddon_Menu_Walker(['remove_span'=> $remove_span]) : '' )
 		];
 
 		//necessary preloaded class for style breaking

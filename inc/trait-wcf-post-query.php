@@ -1,10 +1,5 @@
 <?php
-/**
- * @phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
- */
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons;
 
 use Elementor\Controls_Manager;
 use WP_Query;
@@ -13,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 } // Exit if accessed directly
 
-trait WCF_Post_Query_Trait {
+trait Aaeaddon_Post_Query_Trait {
 
 	public static function get_public_post_types( $args = [] ) {
 		$post_type_args = [

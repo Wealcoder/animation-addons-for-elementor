@@ -1,8 +1,6 @@
 <?php
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons;
 
 use Elementor\Modules\Library\Documents\Library_Document;
 use Elementor\Plugin as ElementorPlugin;
@@ -11,7 +9,7 @@ if (! defined('ABSPATH')) {
 	exit();
 } // Exit if accessed directly
 
-class WCF_Theme_Builder
+class Aaeaddon_Theme_Builder
 {
 
 	const CPTTYPE  = 'wcf-addons-template';
@@ -177,8 +175,8 @@ class WCF_Theme_Builder
 			// render time, i.e. after wp_head() has closed, so the header would
 			// paint unstyled before print_late_styles() catches up at wp_footer.
 			// Enqueue this document's own handles now instead.
-			if (class_exists('\WCF_ADDONS\AtomicWidgets\Atomic')) {
-				\WCF_ADDONS\AtomicWidgets\Atomic::instance()
+			if (class_exists('\Wealcoder\AnimationAddons\AtomicWidgets\Atomic')) {
+				\Wealcoder\AnimationAddons\AtomicWidgets\Atomic::instance()
 					->enqueue_document_widget_assets($template_id);
 			}
 		}
@@ -452,7 +450,7 @@ class WCF_Theme_Builder
 			return;
 		}
 	
-		require WCF_ADDONS_PATH . '/templates/header.php';
+		require AAEADDON_PATH . '/templates/header.php';
 
 		$templates = array();
 		$name      = (string) $name;
@@ -510,7 +508,7 @@ class WCF_Theme_Builder
 			return;
 		}
 
-		require WCF_ADDONS_PATH . '/templates/footer.php';
+		require AAEADDON_PATH . '/templates/footer.php';
 
 		$templates = array();
 		$name      = (string) $name;
@@ -593,7 +591,7 @@ class WCF_Theme_Builder
 		$default_file = self::get_template_loader_default_file();
 
 		if ($default_file) {
-			$template = WCF_ADDONS_PATH . '/templates/' . $default_file;
+			$template = AAEADDON_PATH . '/templates/' . $default_file;
 		}
 
 		return $template;
@@ -637,12 +635,12 @@ class WCF_Theme_Builder
 		if ($template_ID) {
 			if($tmpType == 'header'){
 				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-				$GLOBALS['aae_header_smoother'] = get_post_meta( $template_ID, 'aae_header_smoother', true ); 
+				$GLOBALS['aaeaddon_header_smoother'] = get_post_meta( $template_ID, 'aae_header_smoother', true ); 
 				$offsetY = get_post_meta( $template_ID, 'aae_header_smoother_offsety', true );
 				$offsetY = preg_replace( '/[^0-9.\-]/', '', $offsetY );
 				if($offsetY && is_numeric($offsetY)){
 					// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-					$GLOBALS['aae_header_smoother_offsetY'] = $offsetY;
+					$GLOBALS['aaeaddon_header_smoother_offsety'] = $offsetY;
 				}
 				
 			}
@@ -1496,7 +1494,7 @@ class WCF_Theme_Builder
 	 */
 	private static function legacy_v3_enabled()
 	{
-		$cls = '\WCF_ADDONS\AnimationSettings\Animation_Settings';
+		$cls = '\Wealcoder\AnimationAddons\AnimationSettings\Animation_Settings';
 
 		if (class_exists($cls) && method_exists($cls, 'legacy_v3_enabled')) {
 			return (bool) $cls::legacy_v3_enabled();
@@ -2484,19 +2482,19 @@ class WCF_Theme_Builder
 		if (isset($_GET['post_type']) && self::CPTTYPE === sanitize_key(wp_unslash($_GET['post_type']))) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 			// CSS
-			wp_enqueue_style('select2', WCF_ADDONS_URL . '/assets/css/select2.min.css', array(), WCF_ADDONS_VERSION);
-			wp_enqueue_style('wcf-theme-builder', WCF_ADDONS_URL . '/assets/css/theme-builder.min.css', array(), WCF_ADDONS_VERSION);
+			wp_enqueue_style('select2', AAEADDON_URL . '/assets/css/select2.min.css', array(), AAEADDON_VERSION);
+			wp_enqueue_style('wcf-theme-builder', AAEADDON_URL . '/assets/css/theme-builder.min.css', array(), AAEADDON_VERSION);
 
 			// JS
-			wp_enqueue_script('select2', WCF_ADDONS_URL . 'assets/js/select2.min.js', array('jquery'), WCF_ADDONS_VERSION, true);
+			wp_enqueue_script('select2', AAEADDON_URL . 'assets/js/select2.min.js', array('jquery'), AAEADDON_VERSION, true);
 			wp_enqueue_script(
 				'wcf-theme-builder',
-				WCF_ADDONS_URL . 'assets/js/theme-builder.js',
+				AAEADDON_URL . 'assets/js/theme-builder.js',
 				array(
 					'jquery',
 					'wp-util',
 				),
-				WCF_ADDONS_VERSION,
+				AAEADDON_VERSION,
 				true
 			);
 
@@ -2537,7 +2535,7 @@ class WCF_Theme_Builder
 					),
 				),
 			);
-			wp_localize_script('wcf-theme-builder', 'WCF_Theme_Builder', $localize_data);
+			wp_localize_script('wcf-theme-builder', 'Aaeaddon_Theme_Builder', $localize_data);
 		}
 	}
 
@@ -2571,4 +2569,4 @@ class WCF_Theme_Builder
 	}
 }
 
-WCF_Theme_Builder::instance();
+Aaeaddon_Theme_Builder::instance();

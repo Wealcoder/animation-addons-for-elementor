@@ -24,7 +24,7 @@
 
 	// Default Tab's out-of-the-box "Selected" look (dark pill, white text).
 	// Deliberately NOT declared as a `Style_States::SELECTED` variant in
-	// AAE_A_Toggle_Switcher_Tab::define_base_styles() — Elementor's own
+	// Aaeaddon_A_Toggle_Switcher_Tab::define_base_styles() — Elementor's own
 	// atomic-widget base-style compiler and a per-instance LOCAL style
 	// variant for the same state compile to identical specificity
 	// (`.<class>.e--selected`), so the winner is whichever loads later, and

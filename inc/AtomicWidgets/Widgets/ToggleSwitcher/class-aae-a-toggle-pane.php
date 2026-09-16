@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\ToggleSwitcher;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -25,17 +25,17 @@ require_once __DIR__ . '/Parts/class-aae-a-toggle-pane-desc.php';
 
 /**
  * AAE Toggle Pane — an open, unlocked content pane meant to live inside
- * AAE_A_Toggle_Switcher. Shown/hidden by toggle-switcher.js purely via the
+ * Aaeaddon_A_Toggle_Switcher. Shown/hidden by toggle-switcher.js purely via the
  * .aae-ts-pane marker class baked into its own template (position in the
  * DOM decides before/after pane, same as ToggleSwitcherMain's pane pair) —
  * no locked props, restyle from this pane's own Style panel exactly like
  * the AAE Btn wrapper pattern. Its default title/description children are
- * each a dedicated small widget type (AAE_A_Toggle_Pane_Title/_Desc)
+ * each a dedicated small widget type (Aaeaddon_A_Toggle_Pane_Title/_Desc)
  * carrying real typography via their own define_base_styles() — see
  * class-aae-a-toggle-pane-title.php for why plain e-heading/e-paragraph
  * reuse can't express that.
  */
-class AAE_A_Toggle_Pane extends Atomic_Element_Base {
+class Aaeaddon_A_Toggle_Pane extends Atomic_Element_Base {
 
 	use Has_Element_Template;
 
@@ -109,14 +109,14 @@ class AAE_A_Toggle_Pane extends Atomic_Element_Base {
 	/**
 	 * Exposed publicly so the parent Switcher's define_default_children() can
 	 * seed each fresh pane's title/description directly (mirrors
-	 * AAE_A_Timeline_Item::build_default_inner_children()).
+	 * Aaeaddon_A_Timeline_Item::build_default_inner_children()).
 	 */
 	public static function build_default_inner_children(
 		string $title = 'Pane Title',
 		string $desc = 'Add your content here.'
 	): array {
 		return [
-			AAE_A_Toggle_Pane_Title::generate()
+			Aaeaddon_A_Toggle_Pane_Title::generate()
 				->editor_settings( [ 'title' => 'Title' ] )
 				->settings( [
 					'text' => Html_V3_Prop_Type::generate( [
@@ -126,7 +126,7 @@ class AAE_A_Toggle_Pane extends Atomic_Element_Base {
 				] )
 				->build(),
 
-			AAE_A_Toggle_Pane_Desc::generate()
+			Aaeaddon_A_Toggle_Pane_Desc::generate()
 				->editor_settings( [ 'title' => 'Description' ] )
 				->settings( [
 					'text' => Html_V3_Prop_Type::generate( [

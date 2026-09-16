@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\Atomic\Mask;
+namespace Wealcoder\AnimationAddons\Atomic\Mask;
 
 use Elementor\Modules\AtomicWidgets\PropDependencies\Manager as Dependency_Manager;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;

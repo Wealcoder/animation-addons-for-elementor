@@ -4,7 +4,7 @@
  * Nav → the Dropdown Icon panel section.
  *
  * This is an ELEMENT section, not an extension: it attaches to an anchor prop
- * AAE_A_Nav declares in its own schema, so it appears on e-aae-a-nav only.
+ * Aaeaddon_A_Nav declares in its own schema, so it appears on e-aae-a-nav only.
  * Same wiring as the WP Menu's panel — the responsive framework binds by
  * anchor key, never by element type, which is what lets it attach to an
  * Atomic_Element_Base the same way it attaches to a widget.

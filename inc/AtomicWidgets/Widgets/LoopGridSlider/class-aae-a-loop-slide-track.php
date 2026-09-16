@@ -2,7 +2,7 @@
 /**
  * AAE Loop Slide Track — the `.aae-slider-track` inside the Loop Grid Slider.
  *
- * Structural container (mirrors NestedSlider's AAE_A_Slider_Track). Holds exactly
+ * Structural container (mirrors NestedSlider's Aaeaddon_A_Slider_Track). Holds exactly
  * one Loop Slide Item, which repeats per queried post at render time. The shared
  * nested-slider runtime finds this element by its `.aae-slider-track` class and
  * drives the transform / autoplay / effect on its `.aae-a-slide` children.
@@ -10,7 +10,7 @@
  * @package AnimationAddonsForElementor
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\LoopGridSlider;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGridSlider;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
@@ -32,7 +32,7 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Elem
 	return;
 }
 
-class AAE_A_Loop_Slide_Track extends Atomic_Element_Base {
+class Aaeaddon_A_Loop_Slide_Track extends Atomic_Element_Base {
 	use Has_Element_Template;
 
 	public function __construct( $data = [], $args = null ) {

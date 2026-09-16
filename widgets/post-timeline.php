@@ -1,8 +1,6 @@
 <?php
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\Widgets;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\Widgets;
 
 use Elementor\Group_Control_Background;
 use Elementor\Group_Control_Border;
@@ -14,8 +12,8 @@ use Elementor\Repeater;
 use Elementor\Utils;
 use Elementor\Widget_Base;
 use Elementor\Controls_Manager;
-use WCF_ADDONS\WCF_Post_Query_Trait;
-use WCF_ADDONS\WCF_Post_Handler_Trait;
+use Wealcoder\AnimationAddons\Aaeaddon_Post_Query_Trait;
+use Wealcoder\AnimationAddons\Aaeaddon_Post_Handler_Legacy_Trait;
 
 if (! defined('ABSPATH')) {
 	exit; // Exit if accessed directly
@@ -31,8 +29,8 @@ if (! defined('ABSPATH')) {
 class Post_Timeline extends Widget_Base
 {
 
-	use WCF_Post_Query_Trait;
-	use WCF_Post_Handler_Trait;
+	use Aaeaddon_Post_Query_Trait;
+	use Aaeaddon_Post_Handler_Legacy_Trait;
 
 	/**
 	 * @var \WP_Query
@@ -757,15 +755,15 @@ class Post_Timeline extends Widget_Base
 				'options' => [
 					'layout-normal'  => [
 						'title' => esc_html__('Normal', 'animation-addons-for-elementor'),
-						'url'   => WCF_ADDONS_URL . 'assets/image/post-layout-2.jpg',
+						'url'   => AAEADDON_URL . 'assets/image/post-layout-2.jpg',
 					],
 					'layout-aside'   => [
 						'title' => esc_html__('Aside', 'animation-addons-for-elementor'),
-						'url'   => WCF_ADDONS_URL . 'assets/image/post-layout-1.jpg',
+						'url'   => AAEADDON_URL . 'assets/image/post-layout-1.jpg',
 					],
 					'layout-overlay' => [
 						'title' => esc_html__('Overlay', 'animation-addons-for-elementor'),
-						'url'   => WCF_ADDONS_URL . 'assets/image/post-layout-3.jpg',
+						'url'   => AAEADDON_URL . 'assets/image/post-layout-3.jpg',
 					],
 				],
 				'default' => 'layout-normal',

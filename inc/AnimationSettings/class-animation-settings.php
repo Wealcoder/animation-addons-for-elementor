@@ -36,7 +36,7 @@
  * @package AnimationAddons
  */
 
-namespace WCF_ADDONS\AnimationSettings;
+namespace Wealcoder\AnimationAddons\AnimationSettings;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -44,7 +44,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class Animation_Settings {
 
-	const OPTION_NAME = 'aae_animation_settings';
+	const OPTION_NAME = 'aaeaddon_animation_settings';
 	const NONCE       = 'wcf_admin_nonce';
 
 	/** Features this module can own. Only `preloader` is implemented so far. */
@@ -327,7 +327,7 @@ class Animation_Settings {
 	 * opposite move — never DISABLE registration on a heuristic.
 	 */
 	public static function maybe_enable_used_v3_widgets(): void {
-		if ( false !== get_option( 'wcf_save_widgets', false ) ) {
+		if ( false !== get_option( 'aaeaddon_save_widgets', false ) ) {
 			return;
 		}
 
@@ -341,7 +341,7 @@ class Animation_Settings {
 			return;
 		}
 
-		update_option( 'wcf_save_widgets', $slugs );
+		update_option( 'aaeaddon_save_widgets', $slugs );
 	}
 
 	/**
@@ -433,12 +433,12 @@ class Animation_Settings {
 	 * the call with `class_exists()` — an older free plugin will not have it.
 	 */
 	public static function widget_name_to_slug_map(): array {
-		if ( ! function_exists( 'wcf_get_config' ) ) {
+		if ( ! function_exists( 'aaeaddon_get_config' ) ) {
 			return [];
 		}
 
-		$config = wcf_get_config();
-		$dirs   = [ WCF_ADDONS_PATH . 'widgets/' ];
+		$config = aaeaddon_get_config();
+		$dirs   = [ AAEADDON_PATH . 'widgets/' ];
 
 		if ( defined( 'WCF_ADDONS_PRO_PATH' ) ) {
 			$dirs[] = WCF_ADDONS_PRO_PATH . 'widgets/';
@@ -504,7 +504,7 @@ class Animation_Settings {
 	 * times and widening one would have left the others blind.
 	 *
 	 * Falls back to the historic `wcf--` test when the map is unavailable
-	 * (`wcf_get_config()` missing this early). That is no worse than the
+	 * (`aaeaddon_get_config()` missing this early). That is no worse than the
 	 * behaviour this replaced, and failing to the OLD answer is the only safe
 	 * direction — an empty alternation would match every row or none, and both
 	 * are silently wrong.
@@ -619,7 +619,7 @@ class Animation_Settings {
 	 * not, and a panel that disagrees with the page is how support tickets start.
 	 */
 	public static function import_smooth_scroll_from_v3( array $settings ): array {
-		$stored = get_option( 'wcf_smooth_scroller', '' );
+		$stored = get_option( 'aaeaddon_smooth_scroller', '' );
 		$v3     = is_string( $stored ) && '' !== $stored ? json_decode( $stored, true ) : null;
 
 		if ( ! is_array( $v3 ) ) {
@@ -662,7 +662,7 @@ class Animation_Settings {
 		// Device rows can sit in the option from a since-disabled extension, and
 		// importing those would turn smoothing on for a site that had turned it
 		// off.
-		if ( ! wcf_addons_get_settings( 'wcf_save_extensions', 'wcf-smooth-scroller' ) ) {
+		if ( ! aaeaddon_get_settings( 'aaeaddon_save_extensions', 'wcf-smooth-scroller' ) ) {
 			return $settings;
 		}
 

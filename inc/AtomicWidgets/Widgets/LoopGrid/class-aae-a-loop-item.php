@@ -7,7 +7,7 @@
  * layout that can be styled via the Elementor UI.
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
@@ -32,7 +32,7 @@ if ( ! class_exists( '\\Elementor\\Modules\\AtomicWidgets\\Elements\\Base\\Atomi
     return;
 }
 
-class AAE_A_Loop_Item extends Atomic_Element_Base {
+class Aaeaddon_A_Loop_Item extends Atomic_Element_Base {
     use Has_Element_Template;
 
     public function __construct( $data = [], $args = null ) {
@@ -89,7 +89,7 @@ class AAE_A_Loop_Item extends Atomic_Element_Base {
                 ->set_label( __( 'Presets', 'animation-addons-for-elementor' ) )
                 ->set_id( 'aae_presets' )
                 ->set_items( [
-                    AAE_A_Preset_Picker_Control::make()
+                    Aaeaddon_A_Preset_Picker_Control::make()
                         ->set_label( __( 'Apply Preset', 'animation-addons-for-elementor' ) )
                         ->set_meta( [ 'layout' => 'custom' ] ),
                 ] ),
@@ -150,7 +150,7 @@ class AAE_A_Loop_Item extends Atomic_Element_Base {
      * Repeat the WHOLE loop-item card once per queried post.
      *
      * The Loop Grid root publishes its query on the Render_Context stack (keyed
-     * by AAE_A_Loop_Grid::class). Here we read it, run the WP_Query, and render
+     * by Aaeaddon_A_Loop_Grid::class). Here we read it, run the WP_Query, and render
      * this element's full twig once per post — each Loop Item div becomes a
      * direct flex child of the Loop Layout, so the atomic current-post widgets
      * resolve per post. Repeating at THIS level (not the root) means
@@ -161,7 +161,7 @@ class AAE_A_Loop_Item extends Atomic_Element_Base {
      */
     public function print_content() {
         $ctx = \Elementor\Modules\AtomicWidgets\Elements\Base\Render_Context::get(
-            \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::class
+            \Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_A_Loop_Grid::class
         );
 
         // No query context (item edited in isolation) — render once via the
@@ -234,7 +234,7 @@ class AAE_A_Loop_Item extends Atomic_Element_Base {
             // interpolated into one: languages whose verb agreement differs
             // from ours cannot be served by stitching "1 filter" into a
             // sentence built for "3 filters".
-            $url = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\Loop_Filter_Auth::clear_all_url(
+            $url = \Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Loop_Filter_Auth::clear_all_url(
                 (int) ( $ctx['document_id'] ?? 0 ),
                 (string) ( $ctx['grid_id'] ?? '' )
             );
@@ -267,7 +267,7 @@ class AAE_A_Loop_Item extends Atomic_Element_Base {
      * Fill in `alt` on any `<img>` in $html that has NO alt attribute at all —
      * e.g. a native e-image widget inside a card design (local or remote
      * preset) whose src is bound to this post's featured image but whose own
-     * `alt` prop was left empty. AAE_A_Post_Image already resolves a real alt
+     * `alt` prop was left empty. Aaeaddon_A_Post_Image already resolves a real alt
      * from attachment meta on every render (see get_atomic_settings()); this
      * is the safety net for every OTHER image type a design can drop into a
      * Loop Item, since we do not control what a (possibly remote) preset's

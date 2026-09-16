@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\SocialShare;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SocialShare;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -23,7 +23,7 @@ use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
  *
  * The earlier version reused native e-svg directly and sized it by seeding
  * `aae-a-social-share-item-icon` into the icon's OWN `classes` prop, then
- * had AAE_A_Social_Share::get_frontend_css_override() print
+ * had Aaeaddon_A_Social_Share::get_frontend_css_override() print
  * `.e-aae-a-social-share-item-icon{width:...}` globally to win the
  * specificity tie against e-svg-base's native 65px default. That class was
  * never a real registered style FOR THIS ELEMENT, so Elementor's panel
@@ -33,11 +33,11 @@ use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
  * declaring the size as a normal base style — exactly like every other
  * widget's icon part — needs no hook class and no external override at all.
  */
-class AAE_A_Social_Share_Item_Icon extends Atomic_Svg {
+class Aaeaddon_A_Social_Share_Item_Icon extends Atomic_Svg {
 
 	/**
 	 * Single source of truth for the icon's fixed square size. Was
-	 * AAE_A_Social_Share_Item::ICON_SIZE_PX; moved here now that this class
+	 * Aaeaddon_A_Social_Share_Item::ICON_SIZE_PX; moved here now that this class
 	 * owns its own sizing outright.
 	 */
 	const ICON_SIZE_PX = 30;

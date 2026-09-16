@@ -1,7 +1,5 @@
 <?php
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\Widgets;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\Widgets;
 
 use Elementor\Controls_Manager;
 use Elementor\Core\Kits\Documents\Tabs\Global_Typography;
@@ -10,7 +8,7 @@ use Elementor\Group_Control_Border;
 use Elementor\Group_Control_Typography;
 use Elementor\Repeater;
 use Elementor\Widget_Base;
-use WCF_ADDONS\WCF_Button_Trait;
+use Wealcoder\AnimationAddons\Aaeaddon_Button_Trait;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
@@ -25,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Advance_Pricing_Table extends Widget_Base {
 
-	use WCF_Button_Trait;
+	use Aaeaddon_Button_Trait;
 
 	protected $_has_template_content = false;
 

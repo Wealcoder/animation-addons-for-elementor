@@ -1,8 +1,6 @@
 <?php
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\Widgets;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\Widgets;
 
 use Elementor\Controls_Manager;
 use Elementor\Group_Control_Background;
@@ -175,7 +173,7 @@ class Tabs extends Widget_Base {
 				'type'        => Controls_Manager::SELECT2,
 				'label_block' => false,
 				'multiple'    => false,
-				'options'     => wcf_addons_get_saved_template_list(),
+				'options'     => aaeaddon_get_saved_template_list(),
 				'condition'   => [
 					'tabs_content_type' => 'template',
 				],

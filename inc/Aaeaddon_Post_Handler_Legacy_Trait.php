@@ -1,10 +1,5 @@
 <?php
-/**
- * @phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
- */
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons;
 
 use Elementor\Group_Control_Image_Size;
 use Elementor\Icons_Manager;
@@ -14,7 +9,7 @@ if (! defined('ABSPATH')) {
 	exit;
 } // Exit if accessed directly
 
-trait WCF_Post_Handler_Trait
+trait Aaeaddon_Post_Handler_Legacy_Trait
 {
 
 

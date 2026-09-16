@@ -1,8 +1,6 @@
 <?php
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\Widgets;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\Widgets;
 
 use Elementor\Group_Control_Background;
 use Elementor\Group_Control_Border;
@@ -12,7 +10,7 @@ use Elementor\Icons_Manager;
 use Elementor\Utils;
 use Elementor\Widget_Base;
 use Elementor\Controls_Manager;
-use WCF_ADDONS\WCF_Button_Trait;
+use Wealcoder\AnimationAddons\Aaeaddon_Button_Trait;
 
 if (! defined('ABSPATH')) {
 	exit; // Exit if accessed directly
@@ -28,7 +26,7 @@ if (! defined('ABSPATH')) {
 class Icon_Box extends Widget_Base
 {
 
-	use WCF_Button_Trait;
+	use Aaeaddon_Button_Trait;
 	public function get_name()
 	{
 		return 'wcf--icon-box';

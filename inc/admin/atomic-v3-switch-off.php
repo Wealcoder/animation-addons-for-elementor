@@ -1,11 +1,11 @@
 <?php
-namespace WCF_ADDONS\Admin\Base;
+namespace Wealcoder\AnimationAddons\Admin\Base;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use WCF_ADDONS\AnimationSettings\Animation_Settings;
+use Wealcoder\AnimationAddons\AnimationSettings\Animation_Settings;
 
 /**
  * After a V4 (atomic) starter TEMPLATE import, switch the V3 era off.
@@ -57,7 +57,7 @@ use WCF_ADDONS\AnimationSettings\Animation_Settings;
 
 class Atomic_V3_Switch_Off {
 
-	const RECORD_OPTION = 'aae_v4_import_v3_off';
+	const RECORD_OPTION = 'aaeaddon_v4_import_v3_off';
 
 	/** The v3 chrome keys the Pro renderer reads out of the Kit. */
 	const KIT_CHROME_KEYS = [
@@ -111,7 +111,7 @@ class Atomic_V3_Switch_Off {
 		];
 
 		// ---- widgets -------------------------------------------------------------
-		$raw                         = get_option( 'wcf_save_widgets', '__ABSENT__' );
+		$raw                         = get_option( 'aaeaddon_save_widgets', '__ABSENT__' );
 		$record['widgets']['absent'] = '__ABSENT__' === $raw;
 		$record['widgets']['value']  = '__ABSENT__' === $raw ? null : $raw;
 		$was_on                      = is_array( $raw ) ? array_keys( array_filter( $raw ) ) : [];
@@ -131,17 +131,17 @@ class Atomic_V3_Switch_Off {
 			}
 		}
 
-		update_option( 'wcf_save_widgets', $keep );
+		update_option( 'aaeaddon_save_widgets', $keep );
 		$summary['widgets_kept'] = count( $keep );
 		$summary['widgets_off']  = count( array_diff( $was_on, array_keys( $keep ) ) );
 
 		// ---- extensions ----------------------------------------------------------
-		$raw                            = get_option( 'wcf_save_extensions', '__ABSENT__' );
+		$raw                            = get_option( 'aaeaddon_save_extensions', '__ABSENT__' );
 		$record['extensions']['absent'] = '__ABSENT__' === $raw;
 		$record['extensions']['value']  = '__ABSENT__' === $raw ? null : $raw;
 		$summary['extensions_off']      = is_array( $raw ) ? count( array_filter( $raw ) ) : 0;
 
-		update_option( 'wcf_save_extensions', [] );
+		update_option( 'aaeaddon_save_extensions', [] );
 
 		// ---- Kit chrome ------------------------------------------------------------
 		// The ACTIVE kit: on a first-lane import that is the kit the zip just
@@ -229,9 +229,9 @@ class Atomic_V3_Switch_Off {
 			return false;
 		}
 
-		foreach ( [ 'widgets' => 'wcf_save_widgets', 'extensions' => 'wcf_save_extensions' ] as $k => $option ) {
+		foreach ( [ 'widgets' => 'aaeaddon_save_widgets', 'extensions' => 'aaeaddon_save_extensions' ] as $k => $option ) {
 			if ( ! empty( $record[ $k ]['absent'] ) ) {
-				delete_option( $option );
+				\Wealcoder\AnimationAddons\Compat\Key_Bridge::delete_option( $option );
 			} elseif ( isset( $record[ $k ] ) && array_key_exists( 'value', $record[ $k ] ) ) {
 				update_option( $option, $record[ $k ]['value'] );
 			}
@@ -264,7 +264,7 @@ class Atomic_V3_Switch_Off {
 		}
 
 		delete_transient( 'aae_v3_usage' );
-		delete_option( self::RECORD_OPTION );
+		\Wealcoder\AnimationAddons\Compat\Key_Bridge::delete_option( self::RECORD_OPTION );
 
 		return true;
 	}

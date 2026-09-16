@@ -1,12 +1,12 @@
 <?php
 
-namespace WCF_ADDONS\Atomic\HorizontalScrollAnim;
+namespace Wealcoder\AnimationAddons\Atomic\HorizontalScrollAnim;
 
-use WCF_ADDONS\Atomic\Bootstrap;
+use Wealcoder\AnimationAddons\Atomic\Bootstrap;
 
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
-use WCF_ADDONS\Atomic\HorizontalScrollAnim\Schema;
+use Wealcoder\AnimationAddons\Atomic\HorizontalScrollAnim\Schema;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

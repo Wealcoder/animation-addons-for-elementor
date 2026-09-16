@@ -1,12 +1,10 @@
 <?php
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\Admin\Base;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\Admin\Base;
 
 defined( 'ABSPATH' ) || die();
 
-class WXRImportInfo {
+class AaeaddonWXRImportInfo {
 	public $home;
 	public $siteurl;
 	public $title;

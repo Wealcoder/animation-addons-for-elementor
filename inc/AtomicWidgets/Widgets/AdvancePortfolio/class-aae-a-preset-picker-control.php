@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\AtomicWidgets\Widgets\AdvancePortfolio;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\AdvancePortfolio;
 
 use Elementor\Modules\AtomicWidgets\Controls\Base\Element_Control_Base;
 
@@ -21,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * This is the seam the nine v3 skins arrive through: each becomes a preset for
  * `e-aae-a-advance-portfolio`, chosen here.
  */
-class AAE_A_Portfolio_Preset_Picker_Control extends Element_Control_Base {
+class Aaeaddon_A_Portfolio_Preset_Picker_Control extends Element_Control_Base {
 
 	public function get_type(): string {
 		return 'aae-preset-picker';

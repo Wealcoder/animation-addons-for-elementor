@@ -26,7 +26,7 @@
  * @since   4.0.0
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Form;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -56,11 +56,11 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 require_once __DIR__ . '/class-aae-a-form-next.php';
 require_once __DIR__ . '/class-aae-a-form-prev.php';
 
-use WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Next;
-use WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Prev;
-use WCF_ADDONS\Forms\Pro_Gated;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form\Aaeaddon_A_Form_Next;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form\Aaeaddon_A_Form_Prev;
+use Wealcoder\AnimationAddons\Forms\Pro_Gated;
 
-class AAE_A_Form_Step extends Atomic_Element_Base {
+class Aaeaddon_A_Form_Step extends Atomic_Element_Base {
 
 	/**
 	 * Locks this widget's PANEL CARD (not the element) without a Pro licence:
@@ -134,8 +134,8 @@ class AAE_A_Form_Step extends Atomic_Element_Base {
 
 			// Per-step (not form-level — moved here 2026-07-20): when ON
 			// (default), multi-step.js auto-injects its own Prev/Next DOM
-			// buttons into THIS step if it has neither an AAE_A_Form_Prev nor
-			// AAE_A_Form_Next widget of its own — so a step never becomes
+			// buttons into THIS step if it has neither an Aaeaddon_A_Form_Prev nor
+			// Aaeaddon_A_Form_Next widget of its own — so a step never becomes
 			// un-advanceable. A builder doing fully custom navigation on one
 			// particular step (e.g. a review/confirm step with its own
 			// bespoke buttons) can turn this off for just that step, without
@@ -181,11 +181,11 @@ class AAE_A_Form_Step extends Atomic_Element_Base {
 	 * current step just don't get shown) — see multi-step.js's render().
 	 */
 	protected function define_default_children(): array {
-		$prev = AAE_A_Form_Prev::generate()
+		$prev = Aaeaddon_A_Form_Prev::generate()
 			->editor_settings( [ 'title' => __( 'Previous', 'animation-addons-for-elementor' ) ] )
 			->build();
 
-		$next = AAE_A_Form_Next::generate()
+		$next = Aaeaddon_A_Form_Next::generate()
 			->editor_settings( [ 'title' => __( 'Next', 'animation-addons-for-elementor' ) ] )
 			->build();
 

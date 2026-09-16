@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\Atomic\Presets;
+namespace Wealcoder\AnimationAddons\Atomic\Presets;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -60,7 +60,7 @@ final class Local_Fallback {
 
 			// `file` is normally relative to inc/AtomicWidgets/ in THIS plugin, but a
 			// widget owned by another plugin (the families that moved to Pro) gives
-			// an absolute path instead. Concatenating that onto WCF_ADDONS_PATH
+			// an absolute path instead. Concatenating that onto AAEADDON_PATH
 			// produces a directory that cannot exist, so the widget's presets/
 			// folder is never found — and an unreachable preset is invisible rather
 			// than broken: the picker simply shows nothing for that widget.
@@ -72,7 +72,7 @@ final class Local_Fallback {
 			$raw_file   = $widget_data['file'];
 			$widget_dir = path_is_absolute( $raw_file )
 				? wp_normalize_path( dirname( $raw_file ) )
-				: wp_normalize_path( dirname( WCF_ADDONS_PATH . 'inc/AtomicWidgets/' . $raw_file ) );
+				: wp_normalize_path( dirname( AAEADDON_PATH . 'inc/AtomicWidgets/' . $raw_file ) );
 			$preset_dir = $widget_dir . '/presets';
 
 			if ( ! is_dir( $preset_dir ) ) {
@@ -137,7 +137,7 @@ final class Local_Fallback {
 		// are different and do work cross-plugin — the loop above derives the
 		// directory from each widget's own `file`, which is absolute for a
 		// widget registered by Pro (see StackCards).
-		$native_root = wp_normalize_path( WCF_ADDONS_PATH . 'inc/AtomicWidgets/Presets' );
+		$native_root = wp_normalize_path( AAEADDON_PATH . 'inc/AtomicWidgets/Presets' );
 
 		if ( is_dir( $native_root ) ) {
 			$type_dirs = glob( $native_root . '/*', GLOB_ONLYDIR );
@@ -181,11 +181,11 @@ final class Local_Fallback {
 	 * this class doesn't need to duplicate the (large) widget list.
 	 */
 	private function get_available_widgets(): array {
-		if ( ! class_exists( '\WCF_ADDONS\AtomicWidgets\Atomic' ) ) {
+		if ( ! class_exists( '\Wealcoder\AnimationAddons\AtomicWidgets\Atomic' ) ) {
 			return [];
 		}
 
-		$atomic = \WCF_ADDONS\AtomicWidgets\Atomic::instance();
+		$atomic = \Wealcoder\AnimationAddons\AtomicWidgets\Atomic::instance();
 
 		if ( ! method_exists( $atomic, 'get_available_widgets_public' ) ) {
 			return [];
@@ -210,8 +210,8 @@ final class Local_Fallback {
 			return null;
 		}
 
-		if ( defined( 'WCF_ADDONS_URL' ) ) {
-			$raw = str_replace( '{{AAE_ASSET_URL}}', WCF_ADDONS_URL . 'inc/AtomicWidgets/', $raw );
+		if ( defined( 'AAEADDON_URL' ) ) {
+			$raw = str_replace( '{{AAE_ASSET_URL}}', AAEADDON_URL . 'inc/AtomicWidgets/', $raw );
 		}
 
 		$data = json_decode( $raw, true );

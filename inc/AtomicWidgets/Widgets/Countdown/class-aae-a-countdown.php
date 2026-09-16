@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Countdown;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Countdown;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -32,27 +32,27 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 // Sub-element file — loaded eagerly so define_default_children() can call ::generate().
 require_once __DIR__ . '/class-aae-a-countdown-unit.php';
 
-use WCF_ADDONS\AtomicWidgets\Widgets\Countdown\AAE_A_Countdown_Unit;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Countdown\Aaeaddon_A_Countdown_Unit;
 
 /**
  * AAE Countdown — composite atomic widget.
  *
  * Structure:
- *   AAE_A_Countdown (this class — the parent users drop in)
- *     ├─ AAE_A_Countdown_Unit  (locked — unit_type=days)
+ *   Aaeaddon_A_Countdown (this class — the parent users drop in)
+ *     ├─ Aaeaddon_A_Countdown_Unit  (locked — unit_type=days)
  *     ├─ Atomic_Paragraph ":"  (locked — separator, toggled by show_separator)
- *     ├─ AAE_A_Countdown_Unit  (locked — unit_type=hours)
+ *     ├─ Aaeaddon_A_Countdown_Unit  (locked — unit_type=hours)
  *     ├─ Atomic_Paragraph ":"
- *     ├─ AAE_A_Countdown_Unit  (locked — unit_type=minutes)
+ *     ├─ Aaeaddon_A_Countdown_Unit  (locked — unit_type=minutes)
  *     ├─ Atomic_Paragraph ":"
- *     └─ AAE_A_Countdown_Unit  (locked — unit_type=seconds)
+ *     └─ Aaeaddon_A_Countdown_Unit  (locked — unit_type=seconds)
  *
  * Each unit internally hosts two Atomic_Paragraph children (digit + label)
  * — see class-aae-a-countdown-unit.php. The JS handler updates each unit's
  * `.aae-a-countdown-unit-count` text every second based on the `due_date`
  * set here.
  */
-class AAE_A_Countdown extends Atomic_Element_Base {
+class Aaeaddon_A_Countdown extends Atomic_Element_Base {
 
 	use Has_Element_Template;
 
@@ -229,13 +229,13 @@ class AAE_A_Countdown extends Atomic_Element_Base {
 		$last_unit  = end( $unit_keys );
 
 		foreach ( $units as $unit_type => $label ) {
-			$children[] = AAE_A_Countdown_Unit::generate()
+			$children[] = Aaeaddon_A_Countdown_Unit::generate()
 				->is_locked( true )
 				->editor_settings( [ 'title' => ucfirst( $unit_type ) ] )
 				->settings( [
 					'unit_type' => String_Prop_Type::generate( $unit_type ),
 				] )
-				->children( AAE_A_Countdown_Unit::build_default_inner_children( $label ) )
+				->children( Aaeaddon_A_Countdown_Unit::build_default_inner_children( $label ) )
 				->build();
 
 			if ( $unit_type !== $last_unit ) {

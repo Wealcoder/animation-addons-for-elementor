@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\FlipBox;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\FlipBox;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -38,7 +38,7 @@ require_once __DIR__ . '/class-aae-a-flip-box-text.php';
  * color, radius, padding) live here, so each design still comes from
  * define_base_styles() rather than raw CSS.
  */
-class AAE_A_Flip_Box_Front extends Atomic_Element_Base {
+class Aaeaddon_A_Flip_Box_Front extends Atomic_Element_Base {
 
 	use Has_Element_Template;
 
@@ -120,14 +120,14 @@ class AAE_A_Flip_Box_Front extends Atomic_Element_Base {
 	/**
 	 * Exposed publicly so the parent Flip Box's define_default_children()
 	 * can seed a fresh Front face's title/text directly (mirrors
-	 * AAE_A_Timeline_Item::build_default_inner_children()).
+	 * Aaeaddon_A_Timeline_Item::build_default_inner_children()).
 	 */
 	public static function build_default_inner_children(
 		string $title = 'Front Title',
 		string $text = 'This is front side content.'
 	): array {
 		return [
-			AAE_A_Flip_Box_Title::generate()
+			Aaeaddon_A_Flip_Box_Title::generate()
 				->editor_settings( [ 'title' => 'Title' ] )
 				->settings( [
 					'text' => Html_V3_Prop_Type::generate( [
@@ -137,7 +137,7 @@ class AAE_A_Flip_Box_Front extends Atomic_Element_Base {
 				] )
 				->build(),
 
-			AAE_A_Flip_Box_Text::generate()
+			Aaeaddon_A_Flip_Box_Text::generate()
 				->editor_settings( [ 'title' => 'Text' ] )
 				->settings( [
 					'text' => Html_V3_Prop_Type::generate( [

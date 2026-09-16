@@ -3,7 +3,7 @@
  * AAE Hotspot Marker — atomic element (container).
  *
  * The clickable marker inside a Hotspot Point. Split out as its own real,
- * selectable element (mirrors AAE_A_Progressbar_Fill / AAE_A_Toggle_
+ * selectable element (mirrors Aaeaddon_A_Progressbar_Fill / AAE_A_Toggle_
  * Switcher_Tab) specifically so its look — background, color, border-radius,
  * padding, font-size — is editable from Elementor's generic Style tab instead
  * of being hardcoded in image-hotspot.scss.
@@ -14,7 +14,7 @@
  * A builder who wants an icon and/or label drops a real `e-svg`/`e-image`
  * (icon) and/or `e-paragraph` (text) child in directly — no more `hsp_layout`
  * Select control choosing between 5 preset looks. This mirrors
- * AAE_A_Hotspot_Content's own "unrestricted children, builder manages them"
+ * Aaeaddon_A_Hotspot_Content's own "unrestricted children, builder manages them"
  * philosophy rather than a closed enum, and means icon/text sizing is a
  * normal per-instance Style-tab edit on that REAL child element instead of
  * plugin CSS — there's no API in this codebase (or Elementor core) for
@@ -36,7 +36,7 @@
  * @since   4.0.0
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\ImageHotspot;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\ImageHotspot;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -62,7 +62,7 @@ use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
-class AAE_A_Hotspot_Marker extends Atomic_Element_Base {
+class Aaeaddon_A_Hotspot_Marker extends Atomic_Element_Base {
 
 	use Has_Element_Template;
 

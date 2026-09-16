@@ -13,7 +13,7 @@ import { toast } from "sonner";
  *
  * Most of these features previously lived only as Elementor Site Settings tabs
  * in the Pro plugin (v3, stored in the Kit). This screen is the v4 replacement
- * and writes to its own `aae_animation_settings` option; nothing here touches
+ * and writes to its own `aaeaddon_animation_settings` option; nothing here touches
  * the Kit. See inc/AnimationSettings/class-animation-settings.php for how the
  * two systems are kept from colliding.
  *

@@ -1,9 +1,9 @@
 <?php
 
-namespace WCF_ADDONS\Atomic\BackgroundVideo;
+namespace Wealcoder\AnimationAddons\Atomic\BackgroundVideo;
 
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
-use WCF_ADDONS\Atomic\PropTypes\Responsive_JSON_Prop_Type;
+use Wealcoder\AnimationAddons\Atomic\PropTypes\Responsive_JSON_Prop_Type;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\ToggleSwitcher;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -35,7 +35,7 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 /**
  * AAE Toggle Switcher — Knob. The round dot that slides inside the Track in
  * the Switch-style Toggle Switcher preset. A genuine leaf widget (like
- * AAE_A_Toggle_Switcher_Tab), never a container — it has no children of its
+ * Aaeaddon_A_Toggle_Switcher_Tab), never a container — it has no children of its
  * own.
  *
  * Renders `aae-ts-knob` unconditionally from its own twig, deliberately
@@ -47,7 +47,7 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
  * `.aae-ts-switch.active .aae-ts-knob` in CSS — but it carried the same
  * "Some classes are missing" exposure as the Label/Track wrappers).
  */
-class AAE_A_Toggle_Switcher_Knob extends Atomic_Widget_Base {
+class Aaeaddon_A_Toggle_Switcher_Knob extends Atomic_Widget_Base {
 
 	use Has_Template;
 
@@ -82,7 +82,7 @@ class AAE_A_Toggle_Switcher_Knob extends Atomic_Widget_Base {
 	 * change when the switch is on, fully editable per-instance.
 	 *
 	 * A genuine leaf widget (Atomic_Widget_Base), same situation as
-	 * AAE_A_Toggle_Switcher_Tab: Atomic_Widget_Base's own get_initial_config()
+	 * Aaeaddon_A_Toggle_Switcher_Tab: Atomic_Widget_Base's own get_initial_config()
 	 * never calls define_atomic_style_states() on its own (only
 	 * Atomic_Element_Base does — see Track's identical override), so it must
 	 * be threaded in manually via the get_initial_config() override below.

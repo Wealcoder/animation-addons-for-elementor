@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\ToggleSwitcher;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -26,8 +26,8 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 require_once __DIR__ . '/class-aae-a-toggle-pane.php';
 require_once __DIR__ . '/Parts/class-aae-a-toggle-switcher-tabs.php';
 
-use WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Pane;
-use WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Switcher_Tabs;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\ToggleSwitcher\Aaeaddon_A_Toggle_Pane;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\ToggleSwitcher\Aaeaddon_A_Toggle_Switcher_Tabs;
 
 /**
  * AAE Toggle Switcher — an open dual-panel content toggle: a Tabs row (two
@@ -55,7 +55,7 @@ use WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Switcher_Tabs;
  * override since
  * leaf widgets don't call define_atomic_style_states() on their own.
  */
-class AAE_A_Toggle_Switcher extends Atomic_Element_Base {
+class Aaeaddon_A_Toggle_Switcher extends Atomic_Element_Base {
 
 	use Has_Element_Template;
 
@@ -124,7 +124,7 @@ class AAE_A_Toggle_Switcher extends Atomic_Element_Base {
 				->set_label( __( 'Presets', 'animation-addons-for-elementor' ) )
 				->set_id( 'aae_presets' )
 				->set_items( [
-					AAE_A_Preset_Picker_Control::make()
+					Aaeaddon_A_Preset_Picker_Control::make()
 						->set_label( __( 'Apply Preset', 'animation-addons-for-elementor' ) )
 						->set_meta( [ 'layout' => 'custom' ] ),
 				] ),
@@ -172,29 +172,29 @@ class AAE_A_Toggle_Switcher extends Atomic_Element_Base {
 
 	/**
 	 * Out-of-the-box look for a freshly dropped instance: a Tabs row (built by
-	 * AAE_A_Toggle_Switcher_Tabs's own default children — "Monthly" active,
+	 * Aaeaddon_A_Toggle_Switcher_Tabs's own default children — "Monthly" active,
 	 * "Yearly" not) plus two panes, each with its own title/description.
 	 */
 	protected function define_default_children() {
 		return [
-			AAE_A_Toggle_Switcher_Tabs::generate()
+			Aaeaddon_A_Toggle_Switcher_Tabs::generate()
 				->editor_settings( [ 'title' => 'Tabs' ] )
 				->children(
-					AAE_A_Toggle_Switcher_Tabs::build_default_inner_children()
+					Aaeaddon_A_Toggle_Switcher_Tabs::build_default_inner_children()
 				)
 				->build(),
 
-			AAE_A_Toggle_Pane::generate()
+			Aaeaddon_A_Toggle_Pane::generate()
 				->editor_settings( [ 'title' => 'Pane — Monthly' ] )
 				->children(
-					AAE_A_Toggle_Pane::build_default_inner_children( 'Monthly plan', 'Add your content here.' )
+					Aaeaddon_A_Toggle_Pane::build_default_inner_children( 'Monthly plan', 'Add your content here.' )
 				)
 				->build(),
 
-			AAE_A_Toggle_Pane::generate()
+			Aaeaddon_A_Toggle_Pane::generate()
 				->editor_settings( [ 'title' => 'Pane — Yearly' ] )
 				->children(
-					AAE_A_Toggle_Pane::build_default_inner_children( 'Yearly plan', 'Add your content here.' )
+					Aaeaddon_A_Toggle_Pane::build_default_inner_children( 'Yearly plan', 'Add your content here.' )
 				)
 				->build(),
 		];

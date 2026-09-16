@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\AtomicWidgets\Widgets\IconList;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\IconList;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
@@ -16,14 +16,14 @@ use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 
 require_once __DIR__ . '/class-aae-a-icon-list-item.php';
 require_once __DIR__ . '/class-aae-a-icon-list-items-control.php';
-use WCF_ADDONS\AtomicWidgets\Widgets\IconList\AAE_A_Icon_List_Item;
-use WCF_ADDONS\AtomicWidgets\Widgets\IconList\AAE_A_Icon_List_Items_Control;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\IconList\Aaeaddon_A_Icon_List_Item;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\IconList\Aaeaddon_A_Icon_List_Items_Control;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-class AAE_A_Icon_List extends Atomic_Element_Base {
+class Aaeaddon_A_Icon_List extends Atomic_Element_Base {
 	use Has_Element_Template;
 
 	public function __construct( $data = [], $args = null ) {
@@ -86,7 +86,7 @@ class AAE_A_Icon_List extends Atomic_Element_Base {
 				->set_label( __( 'Items', 'animation-addons-for-elementor' ) )
 				->set_id( 'items' )
 				->set_items( [
-					AAE_A_Icon_List_Items_Control::make()
+					Aaeaddon_A_Icon_List_Items_Control::make()
 						->set_label( __( 'Items', 'animation-addons-for-elementor' ) )
 						->set_meta( [ 'layout' => 'custom' ] ),
 				] ),
@@ -138,7 +138,7 @@ class AAE_A_Icon_List extends Atomic_Element_Base {
 	 * Three ordinary, real-world-labeled items — a usable starting point,
 	 * not three copies of the same placeholder text (was "List Item Text"
 	 * ×3) or the same generic Elementor icon. Same idea as
-	 * AAE_A_Social_Share::define_default_children() seeding
+	 * Aaeaddon_A_Social_Share::define_default_children() seeding
 	 * "Facebook"/"Twitter"/"LinkedIn" instead of one repeated label.
 	 */
 	protected function define_default_children() {
@@ -150,9 +150,9 @@ class AAE_A_Icon_List extends Atomic_Element_Base {
 
 		$children = [];
 		foreach ( $defaults as $label => $icon ) {
-			$children[] = AAE_A_Icon_List_Item::generate()
+			$children[] = Aaeaddon_A_Icon_List_Item::generate()
 				->editor_settings( [ 'title' => $label ] )
-				->children( AAE_A_Icon_List_Item::build_default_inner_children( $label, $icon ) )
+				->children( Aaeaddon_A_Icon_List_Item::build_default_inner_children( $label, $icon ) )
 				->build();
 		}
 
@@ -190,8 +190,8 @@ class AAE_A_Icon_List extends Atomic_Element_Base {
 	 * after this widget's own stylesheet, once that stylesheet is guaranteed
 	 * to load after Elementor's base-desktop.css.
 	 *
-	 * Same pattern as AAE_A_Btn::get_frontend_css_override() /
-	 * AAE_A_Social_Share::get_frontend_css_override(): `.e-svg-base` compiles
+	 * Same pattern as Aaeaddon_A_Btn::get_frontend_css_override() /
+	 * Aaeaddon_A_Social_Share::get_frontend_css_override(): `.e-svg-base` compiles
 	 * as `.elementor .e-svg-base` (specificity 0,2,0) with a native 65px
 	 * default, so a plain `.e-aae-a-icon-list-item-icon{width:...}` rule
 	 * (0,1,0) can never win regardless of load order — it needs the matching
@@ -201,7 +201,7 @@ class AAE_A_Icon_List extends Atomic_Element_Base {
 	public static function get_frontend_css_override(): string {
 		return sprintf(
 			'.elementor .e-aae-a-icon-list-item-icon{width:%1$dpx;height:%1$dpx}',
-			AAE_A_Icon_List_Item::ICON_SIZE_PX
+			Aaeaddon_A_Icon_List_Item::ICON_SIZE_PX
 		);
 	}
 }

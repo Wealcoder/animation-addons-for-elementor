@@ -1,8 +1,6 @@
 <?php
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\Admin;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\Admin;
 
 use WP_Error;
 
@@ -39,14 +37,14 @@ class AAEAddon_Row_Actions {
     
     function _enqueue_admin_scripts($hook) {
         if ($hook === 'plugins.php') {
-            wp_enqueue_script('wcf-admin', WCF_ADDONS_URL . 'assets/js/wcf-admin.js', ['jquery'], WCF_ADDONS_VERSION, true);
+            wp_enqueue_script('wcf-admin', AAEADDON_URL . 'assets/js/wcf-admin.js', ['jquery'], AAEADDON_VERSION, true);
         }
     }
     
   
 
     function _plugin_row_meta( $meta, $plugin_file ) {
-        if ( basename(WCF_ADDONS_BASE) !== basename($plugin_file) ) {
+        if ( basename(AAEADDON_BASE) !== basename($plugin_file) ) {
 			return $meta;
 		}
         
@@ -70,7 +68,7 @@ class AAEAddon_Row_Actions {
 	function add_plugin_link( $plugin_actions, $plugin_file ) {
 	
 	    $new_actions = array();	   
-	    if ( basename(WCF_ADDONS_BASE) === basename($plugin_file) ) {
+	    if ( basename(AAEADDON_BASE) === basename($plugin_file) ) {
 			$new_actions['aaeaddon-dsb-settings'] = sprintf(
 				'<a href="%s">%s</a>',
 				esc_url( admin_url( 'admin.php?page=wcf_addons_settings' ) ),

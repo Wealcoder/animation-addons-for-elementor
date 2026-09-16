@@ -15,7 +15,7 @@
  * @since   4.0.0
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Form;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -44,9 +44,9 @@ use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\AtomicWidgets\Styles\Style_States;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
-use WCF_ADDONS\Forms\Pro_Gated;
+use Wealcoder\AnimationAddons\Forms\Pro_Gated;
 
-class AAE_A_Form_Next extends Atomic_Widget_Base {
+class Aaeaddon_A_Form_Next extends Atomic_Widget_Base {
 
 	/**
 	 * Locks this widget's PANEL CARD (not the element) without a Pro licence:
@@ -80,7 +80,7 @@ class AAE_A_Form_Next extends Atomic_Widget_Base {
 	 * panel category so a builder can rebuild a nav row they deleted or lay one
 	 * out by hand.
 	 *
-	 * AAE_A_Form_Next extends Atomic_Widget_Base (→ classic Widget_Base), NOT
+	 * Aaeaddon_A_Form_Next extends Atomic_Widget_Base (→ classic Widget_Base), NOT
 	 * Atomic_Element_Base — the hook is the classic show_in_panel()/
 	 * get_categories()/hide_on_search() trio (Widget_Base::get_initial_config()),
 	 * not Atomic_Element_Base's should_show_in_panel()/define_panel_categories().

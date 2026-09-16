@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -23,7 +23,7 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Number_Prop_Type;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
-class AAE_A_Slider_Indicators extends Atomic_Element_Base {
+class Aaeaddon_A_Slider_Indicators extends Atomic_Element_Base {
 	use Has_Element_Template;
 
 	const BASE_STYLE_KEY = 'base';

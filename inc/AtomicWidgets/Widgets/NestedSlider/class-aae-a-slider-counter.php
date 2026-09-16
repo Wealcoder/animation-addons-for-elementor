@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -21,7 +21,7 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
-class AAE_A_Slider_Counter extends Atomic_Element_Base {
+class Aaeaddon_A_Slider_Counter extends Atomic_Element_Base {
 	use Has_Element_Template;
 
 	public function __construct( $data = [], $args = null ) {
@@ -88,13 +88,13 @@ class AAE_A_Slider_Counter extends Atomic_Element_Base {
 
 	protected function define_default_children() {
 		return [
-			AAE_A_Slider_Current::generate()
+			Aaeaddon_A_Slider_Current::generate()
 				->editor_settings( [ 'title' => 'Current Slide' ] )
 				->build(),
-			AAE_A_Slider_Divider::generate()
+			Aaeaddon_A_Slider_Divider::generate()
 				->editor_settings( [ 'title' => 'Divider' ] )
 				->build(),
-			AAE_A_Slider_Total::generate()
+			Aaeaddon_A_Slider_Total::generate()
 				->editor_settings( [ 'title' => 'Total Slides' ] )
 				->build(),
 		];

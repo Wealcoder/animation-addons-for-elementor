@@ -3,13 +3,13 @@
  * AAE Loop Numbers — atomic pagination number list.
  *
  * A structural atomic container holding ONE styleable page-number TEMPLATE
- * (AAE_A_Loop_Number). The template repeats at render, once per page link
+ * (Aaeaddon_A_Loop_Number). The template repeats at render, once per page link
  * (1 2 3 … N), so the user styles a single element and every number follows.
  *
  * @package AnimationAddonsForElementor
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
@@ -33,7 +33,7 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Elem
 	return;
 }
 
-class AAE_A_Loop_Numbers extends Atomic_Element_Base {
+class Aaeaddon_A_Loop_Numbers extends Atomic_Element_Base {
 	use Has_Element_Template;
 
 	public function __construct( $data = [], $args = null ) {
@@ -84,7 +84,7 @@ class AAE_A_Loop_Numbers extends Atomic_Element_Base {
 
 	/**
 	 * Seed the single page-number TEMPLATE. It is one authored atomic element the
-	 * user styles once (Normal / Hover / Current); AAE_A_Loop_Number::print_content()
+	 * user styles once (Normal / Hover / Current); Aaeaddon_A_Loop_Number::print_content()
 	 * repeats it per page link at render. Locked so it can't be deleted, but its
 	 * styles stay fully editable.
 	 *
@@ -93,7 +93,7 @@ class AAE_A_Loop_Numbers extends Atomic_Element_Base {
 	 */
 	public static function build_number_template(): array {
 		return [
-			AAE_A_Loop_Number::generate()
+			Aaeaddon_A_Loop_Number::generate()
 				->editor_settings( [ 'title' => __( 'Page Number', 'animation-addons-for-elementor' ) ] )
 				->is_locked( true )
 				->build(),

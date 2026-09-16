@@ -4,9 +4,9 @@
  *
  * A real, fully customizable atomic container — replaces the earlier
  * JS-templated `.aae-pp-preview-card` div. Nested as an extra child INSIDE
- * both AAE_A_Post_Pagination_Prev and AAE_A_Post_Pagination_Next (each seeds
+ * both Aaeaddon_A_Post_Pagination_Prev and Aaeaddon_A_Post_Pagination_Next (each seeds
  * its OWN instance via build_default_inner_children(), same "one class, a
- * `role` prop tells it which side" trick already used by AAE_A_Loop_Arrow's
+ * `role` prop tells it which side" trick already used by Aaeaddon_A_Loop_Arrow's
  * `direction` prop in this same widget family) — so a user can freely
  * add/remove/restyle/reorder the pieces inside (Thumbnail/Category/Title/
  * Date/Author/Excerpt, each its own dedicated widget — see the sibling
@@ -26,7 +26,7 @@
  * @package AnimationAddonsForElementor
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\PostPagination;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\PostPagination;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
@@ -59,7 +59,7 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Elem
 	return;
 }
 
-class AAE_A_Post_Pagination_Preview extends Atomic_Element_Base {
+class Aaeaddon_A_Post_Pagination_Preview extends Atomic_Element_Base {
 	use Has_Element_Template;
 
 	public function __construct( $data = [], $args = null ) {
@@ -121,33 +121,33 @@ class AAE_A_Post_Pagination_Preview extends Atomic_Element_Base {
 
 	/**
 	 * Seeds one Preview wrapper's default pieces for the given side — called
-	 * by BOTH AAE_A_Post_Pagination_Prev and AAE_A_Post_Pagination_Next with
+	 * by BOTH Aaeaddon_A_Post_Pagination_Prev and Aaeaddon_A_Post_Pagination_Next with
 	 * 'prev'/'next' respectively, so each leaf piece's `role` prop tells it
 	 * which Render_Context key (prev/next) to read.
 	 */
 	public static function build_default_inner_children( string $role ): array {
 		return [
-			AAE_A_Post_Pagination_Preview_Image::generate()
+			Aaeaddon_A_Post_Pagination_Preview_Image::generate()
 				->editor_settings( [ 'title' => 'Thumbnail' ] )
 				->settings( [ 'role' => [ '$$type' => 'string', 'value' => $role ] ] )
 				->build(),
-			AAE_A_Post_Pagination_Preview_Category::generate()
+			Aaeaddon_A_Post_Pagination_Preview_Category::generate()
 				->editor_settings( [ 'title' => 'Category' ] )
 				->settings( [ 'role' => [ '$$type' => 'string', 'value' => $role ] ] )
 				->build(),
-			AAE_A_Post_Pagination_Preview_Title::generate()
+			Aaeaddon_A_Post_Pagination_Preview_Title::generate()
 				->editor_settings( [ 'title' => 'Title' ] )
 				->settings( [ 'role' => [ '$$type' => 'string', 'value' => $role ] ] )
 				->build(),
-			AAE_A_Post_Pagination_Preview_Date::generate()
+			Aaeaddon_A_Post_Pagination_Preview_Date::generate()
 				->editor_settings( [ 'title' => 'Date' ] )
 				->settings( [ 'role' => [ '$$type' => 'string', 'value' => $role ] ] )
 				->build(),
-			AAE_A_Post_Pagination_Preview_Author::generate()
+			Aaeaddon_A_Post_Pagination_Preview_Author::generate()
 				->editor_settings( [ 'title' => 'Author' ] )
 				->settings( [ 'role' => [ '$$type' => 'string', 'value' => $role ] ] )
 				->build(),
-			AAE_A_Post_Pagination_Preview_Excerpt::generate()
+			Aaeaddon_A_Post_Pagination_Preview_Excerpt::generate()
 				->editor_settings( [ 'title' => 'Excerpt' ] )
 				->settings( [ 'role' => [ '$$type' => 'string', 'value' => $role ] ] )
 				->build(),

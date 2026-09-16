@@ -1,7 +1,7 @@
 <?php
-namespace WCF_ADDONS\Atomic\NestedSlider;
+namespace Wealcoder\AnimationAddons\Atomic\NestedSlider;
 
-use WCF_ADDONS\Atomic\PropTypes\Responsive_JSON_Prop_Type;
+use Wealcoder\AnimationAddons\Atomic\PropTypes\Responsive_JSON_Prop_Type;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

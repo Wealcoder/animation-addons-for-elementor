@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\SocialShare;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SocialShare;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -25,7 +25,7 @@ use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
  * are all inherited from Atomic_Paragraph unchanged — this is still a plain
  * paragraph in every way except its type name and panel visibility.
  */
-class AAE_A_Social_Share_Item_Title extends Atomic_Paragraph {
+class Aaeaddon_A_Social_Share_Item_Title extends Atomic_Paragraph {
 
 	public static $widget_description = 'Internal label used by the AAE Social Share Item.';
 

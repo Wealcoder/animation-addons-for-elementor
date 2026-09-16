@@ -6,7 +6,7 @@
  * Normal / Hover / Current-page (Selected) states via the native Style panel —
  * and it REPEATS at render, once per page link: 1 2 3 … N (smart-truncated).
  *
- * Render strategy mirrors AAE_A_Loop_Item: print_content() reads the grid's
+ * Render strategy mirrors Aaeaddon_A_Loop_Item: print_content() reads the grid's
  * render context (current page + total pages) off the Render_Context stack,
  * builds the smart-truncated page list, and renders this element's own Twig
  * once per item — setting a per-iteration payload the template reads. Each
@@ -16,7 +16,7 @@
  * @package AnimationAddonsForElementor
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
@@ -41,7 +41,7 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Elem
 	return;
 }
 
-class AAE_A_Loop_Number extends Atomic_Element_Base {
+class Aaeaddon_A_Loop_Number extends Atomic_Element_Base {
 	use Has_Element_Template;
 
 	/**
@@ -146,7 +146,7 @@ class AAE_A_Loop_Number extends Atomic_Element_Base {
 	 * editor) when rendered in isolation.
 	 */
 	protected function build_template_context(): array {
-		$context = Render_Context::get( AAE_A_Loop_Grid::class );
+		$context = Render_Context::get( Aaeaddon_A_Loop_Grid::class );
 		$current = isset( $context['paged'] ) ? (int) $context['paged'] : 1;
 
 		// Which page link this iteration is.
@@ -161,7 +161,7 @@ class AAE_A_Loop_Number extends Atomic_Element_Base {
 
 		$is_gap = '...' === $item;
 		$page   = is_int( $item ) ? $item : null;
-		$url    = $page ? AAE_A_Loop_Numbers::page_url( $page, is_array( $context ) ? $context : [] ) : '';
+		$url    = $page ? Aaeaddon_A_Loop_Numbers::page_url( $page, is_array( $context ) ? $context : [] ) : '';
 
 		return array_merge( $this->build_base_template_context(), [
 			'page_number' => $page,
@@ -183,7 +183,7 @@ class AAE_A_Loop_Number extends Atomic_Element_Base {
 	 * In the editor / with no context, render once so the template is authorable.
 	 */
 	public function print_content() {
-		$context = Render_Context::get( AAE_A_Loop_Grid::class );
+		$context = Render_Context::get( Aaeaddon_A_Loop_Grid::class );
 
 		// No context (edited in isolation) — single render via the Twig pipeline.
 		if ( empty( $context ) || ! isset( $context['max_num_pages'] ) ) {
@@ -193,7 +193,7 @@ class AAE_A_Loop_Number extends Atomic_Element_Base {
 
 		$current = isset( $context['paged'] ) ? (int) $context['paged'] : 1;
 		$total   = (int) $context['max_num_pages'];
-		$items   = AAE_A_Loop_Numbers::smart_pages( $current, $total );
+		$items   = Aaeaddon_A_Loop_Numbers::smart_pages( $current, $total );
 
 		foreach ( $items as $item ) {
 			$this->render_item = [

@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Posts;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Posts;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class AAE_A_Posts extends Atomic_Element_Base {
+class Aaeaddon_A_Posts extends Atomic_Element_Base {
 	use Has_Element_Template;
 
 	public function __construct( $data = [], $args = null ) {
@@ -176,7 +176,7 @@ class AAE_A_Posts extends Atomic_Element_Base {
 
 	protected function define_default_children() {
 		return [
-			AAE_A_Post_Card::generate()
+			Aaeaddon_A_Post_Card::generate()
 				->editor_settings( [ 'title' => 'Post Card' ] )
 				->build(),
 		];

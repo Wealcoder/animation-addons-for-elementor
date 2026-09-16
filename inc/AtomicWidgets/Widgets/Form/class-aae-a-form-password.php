@@ -17,7 +17,7 @@
  * @since   4.0.0
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Form;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -43,9 +43,9 @@ use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\AtomicWidgets\Styles\Style_States;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
-use WCF_ADDONS\Forms\Pro_Gated;
+use Wealcoder\AnimationAddons\Forms\Pro_Gated;
 
-class AAE_A_Form_Password extends Atomic_Widget_Base {
+class Aaeaddon_A_Form_Password extends Atomic_Widget_Base {
 
 	/**
 	 * Locks this widget's PANEL CARD (not the element) without a Pro licence:
@@ -208,7 +208,7 @@ class AAE_A_Form_Password extends Atomic_Widget_Base {
 	}
 
 	protected function define_base_styles(): array {
-		// Mirrors AAE_A_Form_Input so a password field sits flush with the
+		// Mirrors Aaeaddon_A_Form_Input so a password field sits flush with the
 		// text fields around it.
 		return [
 			'base' => Style_Definition::make()

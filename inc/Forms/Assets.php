@@ -12,7 +12,7 @@
  * @since   4.0.0
  */
 
-namespace WCF_ADDONS\Forms;
+namespace Wealcoder\AnimationAddons\Forms;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -60,11 +60,11 @@ final class Assets {
 
 		if ( ! wp_script_is( self::SCRIPT_HANDLE, 'registered' ) ) {
 			$path    = self::SCRIPT_PATH;
-			$file    = WCF_ADDONS_PATH . $path;
-			$version = file_exists( $file ) ? filemtime( $file ) : WCF_ADDONS_VERSION;
+			$file    = AAEADDON_PATH . $path;
+			$version = file_exists( $file ) ? filemtime( $file ) : AAEADDON_VERSION;
 			wp_register_script(
 				self::SCRIPT_HANDLE,
-				WCF_ADDONS_URL . $path,
+				AAEADDON_URL . $path,
 				[ 'elementor-v2-frontend-handlers' ],
 				$version,
 				true
@@ -73,9 +73,9 @@ final class Assets {
 		wp_enqueue_script( self::SCRIPT_HANDLE );
 
 		if ( ! wp_style_is( self::STYLE_HANDLE, 'registered' ) ) {
-			$style_file    = WCF_ADDONS_PATH . self::STYLE_PATH;
-			$style_version = file_exists( $style_file ) ? filemtime( $style_file ) : WCF_ADDONS_VERSION;
-			wp_register_style( self::STYLE_HANDLE, WCF_ADDONS_URL . self::STYLE_PATH, [], $style_version );
+			$style_file    = AAEADDON_PATH . self::STYLE_PATH;
+			$style_version = file_exists( $style_file ) ? filemtime( $style_file ) : AAEADDON_VERSION;
+			wp_register_style( self::STYLE_HANDLE, AAEADDON_URL . self::STYLE_PATH, [], $style_version );
 		}
 		wp_enqueue_style( self::STYLE_HANDLE );
 	}

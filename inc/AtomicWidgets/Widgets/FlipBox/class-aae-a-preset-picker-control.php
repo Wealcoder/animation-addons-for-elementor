@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\AtomicWidgets\Widgets\FlipBox;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\FlipBox;
 
 use Elementor\Modules\AtomicWidgets\Controls\Base\Element_Control_Base;
 
@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * presets for the selected element's type, and on pick replaces the selected
  * element with the preset design (flex wrapper unwrapped, in place).
  */
-class AAE_A_Preset_Picker_Control extends Element_Control_Base {
+class Aaeaddon_A_Preset_Picker_Control extends Element_Control_Base {
 
 	public function get_type(): string {
 		return 'aae-preset-picker';

@@ -3,7 +3,7 @@
  * Plugin Name:                Animation Addons
  * Description:                Animation Addons for Elementor comes with GSAP Animation Builder, Customizable Widgets, Header Footer, Single Post, Archive Page Builder, and more.
  * Plugin URI:                 https://animation-addons.com/
- * Version:                    4.1.0
+ * Version:                    4.2.0
  * Author:                     Wealcoder
  * Author URI:                 https://animation-addons.com/
  * License:                    GPL v2 or later
@@ -21,77 +21,154 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 } // Exit if accessed directly
 
-if ( ! defined( 'WCF_ADDONS_DASHBOARD_V2' ) ) {
-	define( 'WCF_ADDONS_DASHBOARD_V2', true);
+if ( ! function_exists( 'aaeaddon_define' ) ) :
+/**
+ * Define one of this plugin's constants, honouring a pre-4.2 override.
+ *
+ * 4.2.0 renamed the define prefix from `WCF_ADDONS_` / `WCF_` to `AAEADDON_`
+ * for WordPress.org's unique-prefix review. `wp-config.php` runs long before
+ * any plugin, so a site that pins one of these — a staging site pointing the
+ * template server somewhere else, a feature flag switched off, a self-hosted
+ * feature-request endpoint — has ALREADY defined the old name by the time we
+ * get here. Taking the built-in default instead would drop that override
+ * silently: the site keeps working and quietly talks to the wrong server.
+ *
+ * So the old name wins when it is present, and is then defined under the new
+ * name as well. `$legacy` is the pre-4.2 spelling, or null for a constant that
+ * never had one.
+ *
+ * @since 4.2.0
+ *
+ * @param string      $name   The current constant name.
+ * @param mixed       $value  Its built-in default.
+ * @param string|null $legacy The pre-4.2 spelling to prefer, if defined.
+ */
+function aaeaddon_define( $name, $value, $legacy = null ) {
+	if ( defined( $name ) ) {
+		return;
+	}
+	if ( null !== $legacy && defined( $legacy ) ) {
+		$value = constant( $legacy );
+	}
+	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.VariableConstantNameFound -- every caller below passes an AAEADDON_ literal.
+	define( $name, $value );
 }
+endif;
 
-if ( ! defined( 'WCF_ADDONS_VERSION' ) ) {
-	/**
-	 * Plugin Version.
-	 */
-	define('WCF_ADDONS_VERSION', '4.1.0');
-}
-if ( ! defined( 'WCF_ADDONS_FILE' ) ) {
-	/**
-	 * Plugin File Ref.
-	 */
-	define( 'WCF_ADDONS_FILE', __FILE__ );
-}
-if ( ! defined( 'WCF_ADDONS_BASE' ) ) {
-	/**
-	 * Plugin Base Name.
-	 */
-	define( 'WCF_ADDONS_BASE', plugin_basename( WCF_ADDONS_FILE ) );
-}
-if ( ! defined( 'WCF_ADDONS_PATH' ) ) {
-	/**
-	 * Plugin Dir Ref.
-	 */
-	define( 'WCF_ADDONS_PATH', plugin_dir_path( WCF_ADDONS_FILE ) );
-}
-if ( ! defined( 'WCF_ADDONS_URL' ) ) {
-	/**
-	 * Plugin URL.
-	 */
-	define( 'WCF_ADDONS_URL', plugin_dir_url( WCF_ADDONS_FILE ) );
-}
-if ( ! defined( 'WCF_ADDONS_WIDGETS_PATH' ) ) {
-	/**
-	 * Widgets Dir Ref.
-	 */
-	define( 'WCF_ADDONS_WIDGETS_PATH', WCF_ADDONS_PATH . 'widgets/' );
-}
+aaeaddon_define( 'AAEADDON_DASHBOARD_V2', true, 'WCF_ADDONS_DASHBOARD_V2' );
 
-if ( ! defined( 'WCF_TEMPLATE_STARTER_BASE_URL' ) ) {
-	/**
-	 * Template Path
-	 */
-	define( 'WCF_TEMPLATE_STARTER_BASE_URL', 'https://www.themecrowdy.com/' );
-}
+/**
+ * Plugin Version.
+ */
+aaeaddon_define( 'AAEADDON_VERSION', '4.2.0', 'WCF_ADDONS_VERSION' );
 
-if ( ! defined( 'WCF_FEATURE_REQUEST_ENDPOINT' ) ) {
-	define( 'WCF_FEATURE_REQUEST_ENDPOINT', 'https://animation-addons.com/wp-json/aae/v1/request-new-feature' );
-}
+/**
+ * Plugin File Ref.
+ */
+aaeaddon_define( 'AAEADDON_FILE', __FILE__, 'WCF_ADDONS_FILE' );
 
-if ( ! defined( 'WCF_FEATURE_REQUEST_API_KEY' ) ) {
-	/**
-	 * Shared key the receiver checks, sent as the X-API-Key header.
-	 *
-	 * Must match AAEFR_API_KEY on the receiving side — change one without the
-	 * other and every submission comes back 401.
-	 *
-	 * Shared client key sent as the X-API-Key header to route and rate-limit
-	 * submissions on the feature request receiving endpoint.
-	 */
-	define( 'WCF_FEATURE_REQUEST_API_KEY', '0700c72d204521236f5af03011cb0cbb4f6229a6bbdc2ef041d76184e9a795b7' );
+/**
+ * Plugin Base Name.
+ */
+aaeaddon_define( 'AAEADDON_BASE', plugin_basename( AAEADDON_FILE ), 'WCF_ADDONS_BASE' );
+
+/**
+ * Plugin Dir Ref.
+ */
+aaeaddon_define( 'AAEADDON_PATH', plugin_dir_path( AAEADDON_FILE ), 'WCF_ADDONS_PATH' );
+
+/**
+ * Plugin URL.
+ */
+aaeaddon_define( 'AAEADDON_URL', plugin_dir_url( AAEADDON_FILE ), 'WCF_ADDONS_URL' );
+
+/**
+ * Widgets Dir Ref.
+ */
+aaeaddon_define( 'AAEADDON_WIDGETS_PATH', AAEADDON_PATH . 'widgets/', 'WCF_ADDONS_WIDGETS_PATH' );
+
+/**
+ * Template server base.
+ *
+ * Overridden in wp-config.php on staging sites to point at a local copy — the
+ * reason `aaeaddon_define()` prefers the old spelling.
+ */
+aaeaddon_define( 'AAEADDON_TEMPLATE_STARTER_BASE_URL', 'https://www.themecrowdy.com/', 'WCF_TEMPLATE_STARTER_BASE_URL' );
+
+aaeaddon_define( 'AAEADDON_FEATURE_REQUEST_ENDPOINT', 'https://animation-addons.com/wp-json/aae/v1/request-new-feature', 'WCF_FEATURE_REQUEST_ENDPOINT' );
+
+/**
+ * Shared key the receiver checks, sent as the X-API-Key header.
+ *
+ * Must match AAEFR_API_KEY on the receiving side — change one without the
+ * other and every submission comes back 401.
+ *
+ * Shared client key sent as the X-API-Key header to route and rate-limit
+ * submissions on the feature request receiving endpoint.
+ */
+aaeaddon_define( 'AAEADDON_FEATURE_REQUEST_API_KEY', '0700c72d204521236f5af03011cb0cbb4f6229a6bbdc2ef041d76184e9a795b7', 'WCF_FEATURE_REQUEST_API_KEY' );
+
+/*
+ * The pre-4.2 spellings of the seven constants above, kept as aliases.
+ *
+ * `WCF_ADDONS_*` was the plugin's define prefix until 4.2.0 renamed it to
+ * `AAEADDON_` for WordPress.org's unique-prefix review. These seven are the
+ * ONLY ones that leave this plugin: the paid add-on reads `WCF_ADDONS_PATH` on
+ * 37 lines (eleven of its loop-filter files `require_once` OUR files by that
+ * path), `WCF_ADDONS_VERSION` on eleven — it is the add-on's whole
+ * free-is-present-and-new-enough test — plus `_URL` and `_DASHBOARD_V2`. A
+ * child theme or a site snippet may read any of them.
+ *
+ * So they are defined, not merely documented: the add-on is updated by hand,
+ * weeks after this plugin auto-updates from WordPress.org, and an undefined
+ * constant is a fatal in PHP 8. Same reasoning, and the same permanence, as
+ * the `WCF_ADDONS_Plugin` class alias at the bottom of this file.
+ *
+ * `AAEADDON_TEMPLATE_STARTER_BASE_URL` and the two feature-request constants
+ * get NO alias: nothing outside this plugin has ever read them.
+ *
+ * @since 4.2.0
+ */
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals -- the pre-4.2 names being aliased, defined from a keyed list.
+foreach (
+	array(
+		'WCF_ADDONS_DASHBOARD_V2' => AAEADDON_DASHBOARD_V2,
+		'WCF_ADDONS_VERSION'      => AAEADDON_VERSION,
+		'WCF_ADDONS_FILE'         => AAEADDON_FILE,
+		'WCF_ADDONS_BASE'         => AAEADDON_BASE,
+		'WCF_ADDONS_PATH'         => AAEADDON_PATH,
+		'WCF_ADDONS_URL'          => AAEADDON_URL,
+		'WCF_ADDONS_WIDGETS_PATH' => AAEADDON_WIDGETS_PATH,
+	) as $aaeaddon_legacy_const => $aaeaddon_const_value
+) {
+	if ( ! defined( $aaeaddon_legacy_const ) ) {
+		define( $aaeaddon_legacy_const, $aaeaddon_const_value );
+	}
 }
+unset( $aaeaddon_legacy_const, $aaeaddon_const_value );
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals
 
 if (file_exists(__DIR__ . '/vendor/autoload.php')) {
 	require __DIR__ . '/vendor/autoload.php';
 }
 
+/*
+ * The pre-4.2 namespace (`WCF_ADDONS\`) is still answered, for the paid
+ * add-on and for any site code that imported a class under the old name.
+ * Must follow Composer's loader and precede everything else.
+ */
+require __DIR__ . '/inc/Compat/namespace-alias.php';
+
+/*
+ * Every option is `aaeaddon_…` in the code from 4.2 on; the database keeps
+ * the pre-4.2 rows and the bridge answers both spellings from one live row
+ * (inc/Compat/key-map.php is the list). Booted here, before the add-on or
+ * anything else reads an option.
+ */
+\Wealcoder\AnimationAddons\Compat\Key_Bridge::boot();
+
 /**
- * Main WCF_ADDONS_Plugin Class
+ * Main Aaeaddon_Plugin Class
  *
  * The init class that runs the Hello World plugin.
  * Intended To make sure that the plugin's minimum requirements are met.
@@ -102,7 +179,7 @@ if (file_exists(__DIR__ . '/vendor/autoload.php')) {
  *
  * @since 1.2.0
  */
-final class WCF_ADDONS_Plugin {
+final class Aaeaddon_Plugin {
 
 	/**
 	 * Plugin Version
@@ -136,11 +213,14 @@ final class WCF_ADDONS_Plugin {
 	 */
 	public function __construct() {
 		
-		// register_activation_hook( WCF_ADDONS_BASE, [ __CLASS__, 'plugin_activation_hook' ] );
-		// register_deactivation_hook( WCF_ADDONS_BASE, [ __CLASS__, 'plugin_deactivation_hook' ] );
-		// register_uninstall_hook( WCF_ADDONS_BASE, [ __CLASS__, 'plugin_unregister_hook' ] );
+		// register_activation_hook( AAEADDON_BASE, [ __CLASS__, 'plugin_activation_hook' ] );
+		// register_deactivation_hook( AAEADDON_BASE, [ __CLASS__, 'plugin_deactivation_hook' ] );
+		// register_uninstall_hook( AAEADDON_BASE, [ __CLASS__, 'plugin_unregister_hook' ] );
 		add_action('admin_enqueue_scripts', [$this,'enqueue_admin_notice_style']);
 		add_action('admin_head', [$this,'print_admin_menu_icon_style']);
+		// The storage-name migration screen, notices and endpoints. Before
+		// init() and NOT gated on Elementor: the bridge serves options either way.
+		add_action( 'plugins_loaded', array( '\Wealcoder\AnimationAddons\Compat\Migration', 'init' ), 5 );
 		// Init Plugin
 		add_action( 'plugins_loaded', array( $this, 'init' ) );
 		add_action( 'admin_notices', array( $this, 'admin_notice_missing_main_plugin' ) );		
@@ -154,12 +234,17 @@ final class WCF_ADDONS_Plugin {
 	 */
 	public static function plugin_activation_hook() {
 
-		if ( ! get_option('aae_installed') ) {
-			add_option('aae_installed', time(), '', false);
+		// Decide the storage-name migration state FIRST: a fresh site is
+		// complete from here, an existing database waits for consent. Every
+		// option written below goes to whichever row that decision made live.
+		\Wealcoder\AnimationAddons\Compat\Migration::on_activation();
+
+		if ( ! get_option('aaeaddon_installed') ) {
+			add_option('aaeaddon_installed', time(), '', false);
 		}
 
-		if ( ! get_option('wcf_addons_setup_wizard') ) {
-			update_option('wcf_addons_setup_wizard', 'redirect', false);
+		if ( ! get_option('aaeaddon_setup_wizard') ) {
+			update_option('aaeaddon_setup_wizard', 'redirect', false);
 		}
 
 		flush_rewrite_rules();
@@ -181,27 +266,23 @@ final class WCF_ADDONS_Plugin {
 	 */
 	public static function plugin_unregister_hook() {
 
+		// The plugin's own bookkeeping. Each name is deleted under BOTH its
+		// spellings (inc/Compat/key-map.php) — the only place the pre-4.2 rows
+		// are ever removed. Settings, templates and post data are left alone,
+		// as they always were.
 		$options = [
-			'aae_installed',
-			'aae_do_activation_redirect',
-			'wcf_addons_setup_wizard',
-			'wcf_addons_version',
-
-			'aae_activation_count',
-			'aae_deactivation_count',
-
-			'aae_last_activated',
-			'aae_last_deactivated',
-
-			// Written by the removed wizard lead capture. Kept in this list so
-			// sites that already carry the row are cleaned up on uninstall.
-			'wcf_addons_wizard_subscribed',
-
-			'aae_send_activation_event',
-			'aae_send_deactivation_event',
+			'aaeaddon_installed',
+			'aaeaddon_setup_wizard',
+			'aaeaddon_version',
+			'aaeaddon_wizard_subscribed',
+			'aaeaddon_migration_state',
+			'aaeaddon_migration_log',
 		];
 
 		foreach ($options as $option) {
+			\Wealcoder\AnimationAddons\Compat\Key_Bridge::delete_option($option);
+		}
+		foreach (\Wealcoder\AnimationAddons\Compat\Key_Bridge::map()['dead'] as $option) {
 			delete_option($option);
 		}
 	}
@@ -242,9 +323,17 @@ final class WCF_ADDONS_Plugin {
 
 		add_action( 'wp_loaded', function () {
 			// Set current version to DB
-			if ( get_option( 'wcf_addons_version' ) !== WCF_ADDONS_VERSION ) {
+			$previous_version = get_option( 'aaeaddon_version' );
+			if ( $previous_version !== AAEADDON_VERSION ) {
 				// Update plugin version
-				update_option( 'wcf_addons_version', WCF_ADDONS_VERSION );
+				update_option( 'aaeaddon_version', AAEADDON_VERSION );
+
+				/*
+				 * Decide the storage-name migration once per version: an
+				 * existing database waits for consent, a fresh one is complete.
+				 * One option write, no scan — see inc/Compat/Migration.php.
+				 */
+				\Wealcoder\AnimationAddons\Compat\Migration::on_version_change( is_string( $previous_version ) ? $previous_version : '' );
 
 				/*
 				 * Drop Elementor's cached ATOMIC BASE STYLES on every version change.
@@ -283,7 +372,7 @@ final class WCF_ADDONS_Plugin {
 			
 			if ( current_user_can( 'manage_options' ) &&  strpos( $screen->id, '_page_wcf_addons_settings' ) !== false ) {
 				// Redirect if setup is incomplete
-				if ( 'complete' !== get_option( 'wcf_addons_setup_wizard' ) ) {
+				if ( 'complete' !== get_option( 'aaeaddon_setup_wizard' ) ) {
 					wp_safe_redirect( admin_url( 'admin.php?page=wcf_addons_setup_page' ) );
 					exit; // Always exit after redirection
 				}
@@ -401,9 +490,9 @@ final class WCF_ADDONS_Plugin {
 
 		wp_enqueue_style(
 			'aaeaddon-common',
-			WCF_ADDONS_URL . 'assets/css/wcf-admin.min.css',
+			AAEADDON_URL . 'assets/css/wcf-admin.min.css',
 			[],
-			WCF_ADDONS_VERSION
+			AAEADDON_VERSION
 		);
 
 		// No script goes with the notice: its button is an ordinary link to a
@@ -461,12 +550,32 @@ final class WCF_ADDONS_Plugin {
 	
 }
 
-// ✅ Register hooks here (outside class)
-register_activation_hook( WCF_ADDONS_FILE, ['WCF_ADDONS_Plugin', 'plugin_activation_hook'] );
-register_deactivation_hook( WCF_ADDONS_FILE, ['WCF_ADDONS_Plugin', 'plugin_deactivation_hook'] );
-register_uninstall_hook( WCF_ADDONS_FILE, ['WCF_ADDONS_Plugin', 'plugin_unregister_hook'] );
+/*
+ * The pre-4.2 name of the class above, and one of the two backward-compatible
+ * shims this plugin keeps (the other is `wcf_addons_get_saved_template_list()`).
+ *
+ * `WCF_ADDONS_Plugin` is how everything outside this plugin asks whether it is
+ * installed: the paid add-on gates its whole boot on `class_exists()` of it,
+ * its own diagnostics screen reads it, and the Crowdy theme's "essential
+ * plugins" panel names it. None of those is updated at the moment this plugin
+ * auto-updates from WordPress.org, so the old name has to keep answering.
+ *
+ * Declared here rather than through the autoloader in `inc/Compat/`: this is a
+ * GLOBAL class defined in the bootstrap, not a namespaced one Composer could
+ * ever reach, and `class_exists( 'WCF_ADDONS_Plugin' )` has to be true from the
+ * moment the plugin file has finished loading.
+ *
+ * @since 4.2.0
+ */
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassnameFound -- the pre-4.2 name being aliased.
+class_alias( 'Aaeaddon_Plugin', 'WCF_ADDONS_Plugin' );
 
-// Instantiate WCF_ADDONS_Plugin.
-new WCF_ADDONS_Plugin();
+// ✅ Register hooks here (outside class)
+register_activation_hook( AAEADDON_FILE, ['Aaeaddon_Plugin', 'plugin_activation_hook'] );
+register_deactivation_hook( AAEADDON_FILE, ['Aaeaddon_Plugin', 'plugin_deactivation_hook'] );
+register_uninstall_hook( AAEADDON_FILE, ['Aaeaddon_Plugin', 'plugin_unregister_hook'] );
+
+// Instantiate Aaeaddon_Plugin.
+new Aaeaddon_Plugin();
 
 

@@ -1,11 +1,11 @@
 <?php
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Menu;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Menu;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use WCF_ADDONS\Atomic\PropTypes\Section_Anchor_Prop_Type as Base_Section_Anchor;
+use Wealcoder\AnimationAddons\Atomic\PropTypes\Section_Anchor_Prop_Type as Base_Section_Anchor;
 
 /**
  * WP Menu — responsive overrides for every CSS-variable-driven style section.
@@ -66,55 +66,55 @@ use WCF_ADDONS\Atomic\PropTypes\Section_Anchor_Prop_Type as Base_Section_Anchor;
  * found by its anchor's `$$type`, never by element type, which is what lets
  * this attach to a widget rather than to every atomic element.
  */
-class AAE_A_Menu_Items_Anchor_Prop_Type extends Base_Section_Anchor {
+class Aaeaddon_A_Menu_Items_Anchor_Prop_Type extends Base_Section_Anchor {
 	public static function get_key(): string {
 		return 'aae-section-aae-menu-items';
 	}
 }
 
-class AAE_A_Menu_Layout_Anchor_Prop_Type extends Base_Section_Anchor {
+class Aaeaddon_A_Menu_Layout_Anchor_Prop_Type extends Base_Section_Anchor {
 	public static function get_key(): string {
 		return 'aae-section-aae-menu-layout';
 	}
 }
 
-class AAE_A_Menu_Dropdown_Panel_Anchor_Prop_Type extends Base_Section_Anchor {
+class Aaeaddon_A_Menu_Dropdown_Panel_Anchor_Prop_Type extends Base_Section_Anchor {
 	public static function get_key(): string {
 		return 'aae-section-aae-menu-dropdown-panel';
 	}
 }
 
-class AAE_A_Menu_Dropdown_Items_Anchor_Prop_Type extends Base_Section_Anchor {
+class Aaeaddon_A_Menu_Dropdown_Items_Anchor_Prop_Type extends Base_Section_Anchor {
 	public static function get_key(): string {
 		return 'aae-section-aae-menu-dropdown-items';
 	}
 }
 
-class AAE_A_Menu_Toggle_Anchor_Prop_Type extends Base_Section_Anchor {
+class Aaeaddon_A_Menu_Toggle_Anchor_Prop_Type extends Base_Section_Anchor {
 	public static function get_key(): string {
 		return 'aae-section-aae-menu-toggle';
 	}
 }
 
-class AAE_A_Menu_Hamburger_Anchor_Prop_Type extends Base_Section_Anchor {
+class Aaeaddon_A_Menu_Hamburger_Anchor_Prop_Type extends Base_Section_Anchor {
 	public static function get_key(): string {
 		return 'aae-section-aae-menu-hamburger';
 	}
 }
 
-class AAE_A_Menu_Drawer_Header_Anchor_Prop_Type extends Base_Section_Anchor {
+class Aaeaddon_A_Menu_Drawer_Header_Anchor_Prop_Type extends Base_Section_Anchor {
 	public static function get_key(): string {
 		return 'aae-section-aae-menu-drawer-header';
 	}
 }
 
-class AAE_A_Menu_Drawer_Anchor_Prop_Type extends Base_Section_Anchor {
+class Aaeaddon_A_Menu_Drawer_Anchor_Prop_Type extends Base_Section_Anchor {
 	public static function get_key(): string {
 		return 'aae-section-aae-menu-drawer';
 	}
 }
 
-class AAE_A_Menu_Motion_Anchor_Prop_Type extends Base_Section_Anchor {
+class Aaeaddon_A_Menu_Motion_Anchor_Prop_Type extends Base_Section_Anchor {
 	public static function get_key(): string {
 		return 'aae-section-aae-menu-motion';
 	}
@@ -129,7 +129,7 @@ class AAE_A_Menu_Motion_Anchor_Prop_Type extends Base_Section_Anchor {
  * element id survives, and the editor bridge rewrites the same node in place
  * (`aae-mi-rs-<id>`) as the builder types.
  */
-final class AAE_A_Menu_Responsive {
+final class Aaeaddon_A_Menu_Responsive {
 
 	const ELEMENT_TYPE = 'e-aae-a-menu';
 
@@ -322,15 +322,15 @@ final class AAE_A_Menu_Responsive {
 	/** Anchor prop key => prop-type class. */
 	private static function anchor_prop_types(): array {
 		return [
-			'aae_mi_anchor'  => AAE_A_Menu_Items_Anchor_Prop_Type::class,
-			'aae_ml_anchor'  => AAE_A_Menu_Layout_Anchor_Prop_Type::class,
-			'aae_mdp_anchor' => AAE_A_Menu_Dropdown_Panel_Anchor_Prop_Type::class,
-			'aae_mdi_anchor' => AAE_A_Menu_Dropdown_Items_Anchor_Prop_Type::class,
-			'aae_mtg_anchor' => AAE_A_Menu_Toggle_Anchor_Prop_Type::class,
-			'aae_mhb_anchor' => AAE_A_Menu_Hamburger_Anchor_Prop_Type::class,
-			'aae_mdh_anchor' => AAE_A_Menu_Drawer_Header_Anchor_Prop_Type::class,
-			'aae_mdr_anchor' => AAE_A_Menu_Drawer_Anchor_Prop_Type::class,
-			'aae_mmo_anchor' => AAE_A_Menu_Motion_Anchor_Prop_Type::class,
+			'aae_mi_anchor'  => Aaeaddon_A_Menu_Items_Anchor_Prop_Type::class,
+			'aae_ml_anchor'  => Aaeaddon_A_Menu_Layout_Anchor_Prop_Type::class,
+			'aae_mdp_anchor' => Aaeaddon_A_Menu_Dropdown_Panel_Anchor_Prop_Type::class,
+			'aae_mdi_anchor' => Aaeaddon_A_Menu_Dropdown_Items_Anchor_Prop_Type::class,
+			'aae_mtg_anchor' => Aaeaddon_A_Menu_Toggle_Anchor_Prop_Type::class,
+			'aae_mhb_anchor' => Aaeaddon_A_Menu_Hamburger_Anchor_Prop_Type::class,
+			'aae_mdh_anchor' => Aaeaddon_A_Menu_Drawer_Header_Anchor_Prop_Type::class,
+			'aae_mdr_anchor' => Aaeaddon_A_Menu_Drawer_Anchor_Prop_Type::class,
+			'aae_mmo_anchor' => Aaeaddon_A_Menu_Motion_Anchor_Prop_Type::class,
 		];
 	}
 
@@ -350,7 +350,7 @@ final class AAE_A_Menu_Responsive {
 				// must emit nothing so the legacy inline var keeps winning. The
 				// panel shows the legacy value as its display default instead
 				// (see menu-sections/fields.js).
-				$schema[ $section['prefix'] . $field ] = \WCF_ADDONS\Atomic\PropTypes\Responsive_Json_Prop_Type::make()
+				$schema[ $section['prefix'] . $field ] = \Wealcoder\AnimationAddons\Atomic\PropTypes\Responsive_Json_Prop_Type::make()
 					->default( [ 'desktop' => null ] );
 			}
 		}

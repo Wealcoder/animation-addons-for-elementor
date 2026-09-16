@@ -1,8 +1,6 @@
 <?php
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\Widgets;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\Widgets;
 
 use Elementor\Group_Control_Background;
 use Elementor\Group_Control_Border;
@@ -14,7 +12,7 @@ use Elementor\Utils;
 use Elementor\Widget_Base;
 use Elementor\Controls_Manager;
 use Elementor\Group_Control_Box_Shadow;
-use WCF_ADDONS\WCF_Slider_Trait;
+use Wealcoder\AnimationAddons\Aaeaddon_Slider_Trait;
 
 if (! defined('ABSPATH')) {
 	exit; // Exit if accessed directly
@@ -29,7 +27,7 @@ if (! defined('ABSPATH')) {
  */
 class Advanced_Testimonial extends Widget_Base
 {
-	use WCF_Slider_Trait;
+	use Aaeaddon_Slider_Trait;
 
 	/**
 	 * Retrieve the widget name.

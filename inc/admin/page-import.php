@@ -1,8 +1,6 @@
 <?php
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\Admin;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\Admin;
 
 /**
  * Plugin Name: AAE Admin Buttons
@@ -11,7 +9,7 @@ namespace WCF_ADDONS\Admin;
 
 defined('ABSPATH') || exit;
 
-final class AAE_Admin_Page_Importer
+final class Aaeaddon_Admin_Page_Importer
 {
 
     const HANDLE = 'aae-admin-actions';
@@ -166,9 +164,9 @@ final class AAE_Admin_Page_Importer
         // Register + enqueue your JS
         wp_register_script(
             self::HANDLE,
-            WCF_ADDONS_URL . 'assets/js/aae-admin-actions.min.js',
+            AAEADDON_URL . 'assets/js/aae-admin-actions.min.js',
             ['jquery'],
-            wcf_asset_version(),
+            aaeaddon_asset_version(),
             true
         );
 
@@ -178,7 +176,7 @@ final class AAE_Admin_Page_Importer
             'nonce'    => wp_create_nonce('aae_admin_nonce'),
             'screen'   => $is_importer_page ? 'animation-addon_page_aae-page-importer' : '',
             'post_id'  => $post_id,
-            'logo'     => WCF_ADDONS_URL . 'assets/images/wcf-2.png',
+            'logo'     => AAEADDON_URL . 'assets/images/wcf-2.png',
             'label'    => __('Import Page', 'animation-addons-for-elementor'),
             'page_url' => esc_url(admin_url('admin.php?page=aae-page-importer')),
         ]);
@@ -250,21 +248,21 @@ final class AAE_Admin_Page_Importer
         if (strpos($screen->id, '_page_aae-page-importer') !== false) {
 
             // Load config once
-            $config = wcf_get_config();
+            $config = aaeaddon_get_config();
 
             // CSS
             wp_enqueue_style(
                 'aae-page-importer-admin',
-                WCF_ADDONS_URL . 'assets/build/modules/page-import/index.css',
-                array( \WCF_ADDONS\AAE_Fonts::ensure() ),
-                wcf_asset_version()
+                AAEADDON_URL . 'assets/build/modules/page-import/index.css',
+                array( \Wealcoder\AnimationAddons\Aaeaddon_Fonts::ensure() ),
+                aaeaddon_asset_version()
             );
 
             wp_enqueue_script(
                 'aae-page-importer-admin',
-                WCF_ADDONS_URL . 'assets/build/modules/page-import/index.js',
+                AAEADDON_URL . 'assets/build/modules/page-import/index.js',
                 array('wp-element', 'wp-i18n'),
-                wcf_asset_version(),
+                aaeaddon_asset_version(),
                 true
             );
 
@@ -279,10 +277,10 @@ final class AAE_Admin_Page_Importer
 
                 'adminURL'     => admin_url(),
                 'page_url'     => esc_url(admin_url('edit.php?post_type=page')),
-                'user_role'    => wcfaddon_get_current_user_roles(),
+                'user_role'    => aaeaddon_get_current_user_roles(),
 
-                'version'            => WCF_ADDONS_VERSION,
-                'st_template_domain' => WCF_TEMPLATE_STARTER_BASE_URL,
+                'version'            => AAEADDON_VERSION,
+                'st_template_domain' => AAEADDON_TEMPLATE_STARTER_BASE_URL,
                 'home_url'           => home_url('/'),
             );
 
@@ -292,5 +290,5 @@ final class AAE_Admin_Page_Importer
 
 }
 if (is_admin()) {
-    new AAE_Admin_Page_Importer();
+    new Aaeaddon_Admin_Page_Importer();
 }

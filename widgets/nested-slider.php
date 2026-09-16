@@ -1,8 +1,6 @@
 <?php
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\Widgets;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\Widgets;
 
 use Elementor\Controls_Manager;
 use Elementor\Icons_Manager;
@@ -12,7 +10,7 @@ use Elementor\Repeater;
 use Elementor\Plugin;
 use Elementor\Group_Control_Background;
 use Elementor\Group_Control_Border;
-use WCF_ADDONS\AAE_Nested_Slider_Trait;
+use Wealcoder\AnimationAddons\Aaeaddon_Nested_Slider_Trait;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
@@ -20,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class Nested_Slider extends Widget_Nested_Base {
 
-	use AAE_Nested_Slider_Trait;
+	use Aaeaddon_Nested_Slider_Trait;
 
 	public $num_of_carousel_items = 0;
 

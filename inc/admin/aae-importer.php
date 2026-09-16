@@ -1,8 +1,6 @@
 <?php
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\Admin\Base;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\Admin\Base;
 
 use WP_Error;
 use XMLReader;
@@ -10,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit();
 } // Exit if accessed directly
 
-class AAEImporter extends WXRImporter {
+class AAEImporter extends AaeaddonWXRImporter {
 		/**
 	 * Constructor method.
 	 *

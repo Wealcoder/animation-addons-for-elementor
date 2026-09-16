@@ -17,7 +17,7 @@
  *   - Tooltip (inline): CSS handles hover/"none" triggers entirely; this file
  *                       only wires the click-to-toggle case.
  *   - Lightbox        : moves a point's content inside the merged backdrop+
- *                       frame (AAE_A_Hotspot_Lightbox) and teleports that
+ *                       frame (Aaeaddon_A_Hotspot_Lightbox) and teleports that
  *                       into a shared portal on <body>, mirroring offcanvas.js.
  *   - Guided tour      : setInterval-based auto-cycle, mirroring
  *                       nestedslider.js's startAutoplay/stopAutoplay.
@@ -86,8 +86,8 @@ const applyMarkerAnim = ( root, containerAnim ) => {
 // lightbox rule, since initLightboxes() below teleports Content out of Point
 // and a selector requiring Point as an ancestor stops matching once that
 // happens) is now server-rendered instead — see
-// AAE_A_Hotspot_Point::define_render_context() /
-// AAE_A_Hotspot_Content::build_template_context() — specifically so it's
+// Aaeaddon_A_Hotspot_Point::define_render_context() /
+// Aaeaddon_A_Hotspot_Content::build_template_context() — specifically so it's
 // present from first paint with no flash-of-unhidden-content while this
 // script loads. Re-copying it here too is a harmless, defensive no-op on the
 // frontend (same value either way) and a real safety net in the editor,
@@ -150,7 +150,7 @@ const initLightboxes = ( root ) => {
 
 		const content = point.querySelector( '.aae-hotspot-content' );
 		const closeBtn = content?.querySelector( '.aae-hotspot-close' );
-		// Real, PHP-seeded child now (AAE_A_Hotspot_Lightbox) instead of a div
+		// Real, PHP-seeded child now (Aaeaddon_A_Hotspot_Lightbox) instead of a div
 		// created here — its color/opacity/position are Style-tab editable.
 		// Merged backdrop + centering frame in one element (was a separate
 		// Scrim + Lightbox Frame) — flex-centers Content as its own child, so

@@ -1,8 +1,6 @@
 <?php
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons;
 
 use Elementor\Controls_Manager;
 use Elementor\Group_Control_Background;
@@ -519,7 +517,7 @@ class WCFAddon_BlackList_Notice {
 				'condition' => [ 'wcf_enable_popup!' => '' ],
 			] );
 
-			$templates = function_exists( 'wcf_addons_get_saved_template_list' ) ? wcf_addons_get_saved_template_list() : [];
+			$templates = function_exists( 'aaeaddon_get_saved_template_list' ) ? aaeaddon_get_saved_template_list() : [];
 			$element->add_control( 'popup_elementor_templates', [
 				'label'       => __( 'Save Template', 'animation-addons-for-elementor' ),
 				'type'        => Controls_Manager::SELECT2,

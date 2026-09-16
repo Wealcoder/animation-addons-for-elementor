@@ -5,7 +5,7 @@
  *
  * Renders `inline-block` (not `block`) so it naturally sits on the same
  * visual line as the Author piece right after it — see
- * AAE_A_Post_Pagination_Preview::build_default_inner_children() for the
+ * Aaeaddon_A_Post_Pagination_Preview::build_default_inner_children() for the
  * default order (Date, then Author). The middle-dot separator between them
  * is a ::after pseudo-element in post-pagination.scss (can't be a base
  * style — no pseudo-element support there).
@@ -13,7 +13,7 @@
  * @package AnimationAddonsForElementor
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\PostPagination;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\PostPagination;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Widget_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Template;
@@ -36,7 +36,7 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Widg
 	return;
 }
 
-class AAE_A_Post_Pagination_Preview_Date extends Atomic_Widget_Base {
+class Aaeaddon_A_Post_Pagination_Preview_Date extends Atomic_Widget_Base {
 	use Has_Template;
 
 	public static function get_element_type(): string {
@@ -97,7 +97,7 @@ class AAE_A_Post_Pagination_Preview_Date extends Atomic_Widget_Base {
 		$settings = parent::get_atomic_settings();
 		$role     = ! empty( $settings['role'] ) ? $settings['role'] : 'next';
 
-		$ctx  = Render_Context::get( AAE_A_Post_Pagination::class );
+		$ctx  = Render_Context::get( Aaeaddon_A_Post_Pagination::class );
 		$post = isset( $ctx[ $role ] ) ? $ctx[ $role ] : null;
 
 		if ( $post && ! empty( $post['date'] ) ) {

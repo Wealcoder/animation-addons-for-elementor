@@ -1,8 +1,8 @@
 <?php
 
-namespace WCF_ADDONS\Atomic\AdvanceTooltip;
+namespace Wealcoder\AnimationAddons\Atomic\AdvanceTooltip;
 
-use WCF_ADDONS\Atomic\PropTypes\Responsive_JSON_Prop_Type;
+use Wealcoder\AnimationAddons\Atomic\PropTypes\Responsive_JSON_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
 
 if (! defined('ABSPATH')) {

@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Accordion;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Accordion;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
@@ -19,14 +19,14 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 
 require_once __DIR__ . '/class-aae-a-accordion-item.php';
 require_once __DIR__ . '/class-aae-a-items-control.php';
-use WCF_ADDONS\AtomicWidgets\Widgets\Accordion\AAE_A_Accordion_Item;
-use WCF_ADDONS\AtomicWidgets\Widgets\Accordion\AAE_A_Items_Control;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Accordion\Aaeaddon_A_Accordion_Item;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Accordion\Aaeaddon_A_Items_Control;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-class AAE_A_Accordion extends Atomic_Element_Base {
+class Aaeaddon_A_Accordion extends Atomic_Element_Base {
 	use Has_Element_Template;
 
 	public function __construct( $data = [], $args = null ) {
@@ -94,7 +94,7 @@ class AAE_A_Accordion extends Atomic_Element_Base {
 				->set_id( 'aae_presets' )
 				->set_label( __( 'Presets', 'animation-addons-for-elementor' ) )
 				->set_items( [
-					AAE_A_Preset_Picker_Control::make()
+					Aaeaddon_A_Preset_Picker_Control::make()
 						->set_label( __( 'Apply Preset', 'animation-addons-for-elementor' ) )
 						->set_meta( [ 'layout' => 'custom' ] ),
 				] ),
@@ -108,7 +108,7 @@ class AAE_A_Accordion extends Atomic_Element_Base {
 				->set_id( 'items' )
 				->set_label( __( 'Items', 'animation-addons-for-elementor' ) )
 				->set_items( [
-					AAE_A_Items_Control::make()
+					Aaeaddon_A_Items_Control::make()
 						->set_label( __( 'Items', 'animation-addons-for-elementor' ) )
 						->set_meta( [ 'layout' => 'custom' ] ),
 				] ),
@@ -168,13 +168,13 @@ class AAE_A_Accordion extends Atomic_Element_Base {
 
 	protected function define_default_children() {
 		return [
-			AAE_A_Accordion_Item::generate()
+			Aaeaddon_A_Accordion_Item::generate()
 				->editor_settings( [ 'title' => 'Accordion Item 1' ] )
 				->build(),
-			AAE_A_Accordion_Item::generate()
+			Aaeaddon_A_Accordion_Item::generate()
 				->editor_settings( [ 'title' => 'Accordion Item 2' ] )
 				->build(),
-			AAE_A_Accordion_Item::generate()
+			Aaeaddon_A_Accordion_Item::generate()
 				->editor_settings( [ 'title' => 'Accordion Item 3' ] )
 				->build(),
 		];

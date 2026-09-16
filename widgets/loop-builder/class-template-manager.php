@@ -1,7 +1,7 @@
 <?php
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\Widgets\Loop_Builder;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\Widgets\Loop_Builder;
+
+use Wealcoder\AnimationAddons\Ajax_Alias;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -51,9 +51,11 @@ class Template_Manager {
 	public function __construct() {
 		add_action( 'elementor/template-library/create_new_dialog_fields', array( $this, 'add_template_fields' ) );
 		add_filter( 'elementor/finder/categories', array( $this, 'add_finder_items' ) );
-		add_action( 'wp_ajax_create_loop_template', array( $this, 'ajax_create_template' ) );
-		add_action( 'wp_ajax_clb_duplicate_template', array( $this, 'ajax_duplicate_template' ) );
-		add_action( 'wp_ajax_clb_delete_template', array( $this, 'ajax_delete_template' ) );
+		// Editor-only; the old unprefixed name is kept for one release for a
+		// stale editor bundle -- remove the alias in 4.3.
+		// (`clb_duplicate_template` / `clb_delete_template` had no caller in
+		// either plugin and were removed in 4.2.)
+		Ajax_Alias::register( 'create_loop_template', 'aaeaddon_clb_create_template', array( $this, 'ajax_create_template' ) );
 	}
 
 	/**
@@ -195,79 +197,6 @@ class Template_Manager {
 		);
 	}
 
-	/**
-	 * Duplicate template via AJAX.
-	 *
-	 * @since 2.4.16
-	 * @return void
-	 */
-	public function ajax_duplicate_template() {
-		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'aae_loop_builder_nonce' ) ) {
-			wp_send_json_error( array( 'message' => 'Security check failed' ) );
-		}
-
-		if ( ! current_user_can( 'edit_posts' ) ) {
-			wp_send_json_error( array( 'message' => 'Insufficient permissions' ) );
-		}
-
-		$template_id   = isset( $_POST['template_id'] ) ? intval( wp_unslash( $_POST['template_id'] ) ) : '';
-		$original_post = get_post( $template_id );
-
-		if ( ! $original_post ) {
-			wp_send_json_error( 'Template not found' );
-		}
-
-		$new_template_id = wp_insert_post(
-			array(
-				'post_title'   => $original_post->post_title . ' (Copy)',
-				'post_type'    => $original_post->post_type,
-				'post_status'  => 'publish',
-				'post_content' => $original_post->post_content,
-			)
-		);
-
-		if ( is_wp_error( $new_template_id ) ) {
-			wp_send_json_error( 'Failed to duplicate template' );
-		}
-
-		$meta_data = get_post_meta( $template_id );
-		foreach ( $meta_data as $key => $values ) {
-			foreach ( $values as $value ) {
-				add_post_meta( $new_template_id, $key, maybe_unserialize( $value ) );
-			}
-		}
-
-		wp_send_json_success(
-			array(
-				'template_id' => $new_template_id,
-				'title'       => get_the_title( $new_template_id ),
-			)
-		);
-	}
-
-	/**
-	 * Delete template via AJAX.
-	 *
-	 * @since 2.4.16
-	 * @return void
-	 */
-	public function ajax_delete_template() {
-		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'aae_loop_builder_nonce' ) ) {
-			wp_send_json_error( array( 'message' => 'Security check failed' ) );
-		}
-
-		if ( ! current_user_can( 'delete_posts' ) ) {
-			wp_send_json_error( array( 'message' => 'Insufficient permissions' ) );
-		}
-
-		$template_id = isset( $_POST['template_id'] ) ? intval( wp_unslash( $_POST['template_id'] ) ) : '';
-
-		if ( wp_delete_post( $template_id, true ) ) {
-			wp_send_json_success( 'Template deleted successfully' );
-		} else {
-			wp_send_json_error( 'Failed to delete template' );
-		}
-	}
 
 	/**
 	 * Render template content.

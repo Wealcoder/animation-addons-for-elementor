@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Nav;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Nav;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Widget_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Template;
@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class AAE_A_Nav_Sub_Item extends Atomic_Widget_Base {
+class Aaeaddon_A_Nav_Sub_Item extends Atomic_Widget_Base {
 	use Has_Template;
 
 	public static function get_element_type(): string {

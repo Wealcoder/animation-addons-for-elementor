@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Btn;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Btn;
 
 use Elementor\Modules\AtomicWidgets\Controls\Base\Atomic_Control_Base;
 
@@ -15,13 +15,13 @@ if ( ! defined( 'ABSPATH' ) ) {
  * panel routes it to the React component registered under the same id in
  * the FREE plugin's shared registry
  * (src/modules/atomic/element-controls/BtnHoverStyleControl.jsx) — same
- * arrangement as AAE_Query_Chips_Control / AAE_A_Media_Url_Control.
+ * arrangement as Aaeaddon_Query_Chips_Control / AAE_A_Media_Url_Control.
  *
  * That component hides its own row unless the sibling `aae_btn_hover_effect`
  * marker is true on the selected button — this stub carries no props of its
  * own to support that; get_props() is intentionally empty.
  */
-class AAE_A_Btn_Hover_Style_Control extends Atomic_Control_Base {
+class Aaeaddon_A_Btn_Hover_Style_Control extends Atomic_Control_Base {
 
 	public function get_type(): string {
 		return 'aae-btn-hover-style';

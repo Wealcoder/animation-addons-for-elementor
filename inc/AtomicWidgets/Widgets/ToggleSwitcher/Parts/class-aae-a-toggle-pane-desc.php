@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\ToggleSwitcher;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -33,7 +33,7 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
  * class-aae-a-toggle-pane-title.php for why this can't be a reused
  * e-paragraph.
  */
-class AAE_A_Toggle_Pane_Desc extends Atomic_Widget_Base {
+class Aaeaddon_A_Toggle_Pane_Desc extends Atomic_Widget_Base {
 
 	use Has_Template;
 

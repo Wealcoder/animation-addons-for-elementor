@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider;
 
 use Elementor\Modules\AtomicWidgets\Controls\Base\Element_Control_Base;
 
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * ('aae-preset-picker') in the controls registry
  * (see src/modules/atomic/element-controls/PresetPickerControl.jsx).
  */
-class AAE_A_Slide_Preset_Picker_Control extends Element_Control_Base {
+class Aaeaddon_A_Slide_Preset_Picker_Control extends Element_Control_Base {
 
 	public function get_type(): string {
 		return 'aae-preset-picker';

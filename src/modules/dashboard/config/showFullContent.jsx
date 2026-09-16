@@ -6,6 +6,7 @@ import DemoImporting from "@/pages/DemoImporting";
 import Extensions from "@/pages/Extensions";
 import FailImport from "@/pages/FailImport";
 import Integrations from "@/pages/Integrations";
+import Migration from "@/pages/Migration";
 import Performance from "@/pages/Performance";
 import RequiredFeatures from "@/pages/RequiredFeatures";
 import StaterTemplate from "@/pages/StaterTemplate";
@@ -74,6 +75,15 @@ export const ShowContent = (item) => {
       return (
         <MainLayout.FirstLayout>
           <Integrations />
+        </MainLayout.FirstLayout>
+      );
+    // The 4.2 storage-name migration. Always routable (and always in the
+    // wp-admin submenu) so the backup and the log can be reached after the
+    // move; the sidebar lists it only while something is pending.
+    case "migration":
+      return (
+        <MainLayout.FirstLayout>
+          <Migration />
         </MainLayout.FirstLayout>
       );
     case "submissions":

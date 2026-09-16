@@ -1,8 +1,6 @@
 <?php
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\Widgets;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\Widgets;
 
 use Elementor\Controls_Manager;
 use Elementor\Group_Control_Background;
@@ -10,7 +8,7 @@ use Elementor\Group_Control_Border;
 use Elementor\Plugin;
 use Elementor\Repeater;
 use Elementor\Widget_Base;
-use WCF_ADDONS\WCF_Slider_Trait;
+use Wealcoder\AnimationAddons\Aaeaddon_Slider_Trait;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
@@ -26,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Content_Slider extends Widget_Base {
 
-	use WCF_Slider_Trait;
+	use Aaeaddon_Slider_Trait;
 
 	/**
 	 * Get widget name.
@@ -141,7 +139,7 @@ class Content_Slider extends Widget_Base {
 				'type'        => Controls_Manager::SELECT2,
 				'label_block' => false,
 				'multiple'    => false,
-				'options'     => wcf_addons_get_saved_template_list(),
+				'options'     => aaeaddon_get_saved_template_list(),
 				'condition'   => [
 					'content_type' => 'template',
 				],

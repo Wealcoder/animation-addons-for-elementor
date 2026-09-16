@@ -102,7 +102,7 @@ const TemplateShow = ({ allTemplate }) => {
           action: "aaeaddon_wishlist_option",
           wishlist: JSON.stringify(data),
           nonce: WCF_ADDONS_ADMIN.nonce,
-          settings: "wcf_save_widgets",
+          settings: "aaeaddon_save_widgets",
         }),
       })
         .then((response) => {

@@ -18,7 +18,7 @@
  * @package AnimationAddonsForElementor
  */
 
-namespace WCF_ADDONS\Forms;
+namespace Wealcoder\AnimationAddons\Forms;
 
 use Elementor\Modules\AtomicWidgets\Controls\Base\Element_Control_Base;
 

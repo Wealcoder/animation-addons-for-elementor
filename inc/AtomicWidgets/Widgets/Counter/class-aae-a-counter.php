@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Counter;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Counter;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -27,7 +27,7 @@ use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
-class AAE_A_Counter extends Atomic_Element_Base {
+class Aaeaddon_A_Counter extends Atomic_Element_Base {
 
 	use Has_Element_Template;
 

@@ -24,9 +24,9 @@
  * @since   4.0.0
  */
 
-namespace WCF_ADDONS\Forms;
+namespace Wealcoder\AnimationAddons\Forms;
 
-use WCF_ADDONS\Forms\Integrations\Integrations;
+use Wealcoder\AnimationAddons\Forms\Integrations\Integrations;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;

@@ -1,8 +1,6 @@
 <?php
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\CodeSnippet;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\CodeSnippet;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit();
@@ -13,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * Handles all AJAX operations for the CodeSnippet module
  *
- * @package WCF_ADDONS\CodeSnippet
+ * @package Wealcoder\AnimationAddons\CodeSnippet
  * @since 2.3.10
  */
 class CodeSnippetAjax {

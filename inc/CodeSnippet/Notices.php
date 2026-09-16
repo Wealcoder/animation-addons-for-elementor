@@ -1,8 +1,6 @@
 <?php
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\CodeSnippet;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\CodeSnippet;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -10,7 +8,7 @@ defined( 'ABSPATH' ) || exit;
  * Notices class for CodeSnippet.
  *
  * @since 1.0.0
- * @package WCF_ADDONS
+ * @package Wealcoder\AnimationAddons
  */
 class Notices {
 

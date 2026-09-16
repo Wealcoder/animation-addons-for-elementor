@@ -16,7 +16,7 @@
  * @package AnimationAddonsForElementor
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
@@ -46,7 +46,7 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Elem
 	return;
 }
 
-class AAE_A_Loop_Pagination extends Atomic_Element_Base {
+class Aaeaddon_A_Loop_Pagination extends Atomic_Element_Base {
 	use Has_Element_Template;
 
 	public function __construct( $data = [], $args = null ) {
@@ -148,25 +148,25 @@ class AAE_A_Loop_Pagination extends Atomic_Element_Base {
 	 */
 	protected function define_default_children() {
 		return [
-			AAE_A_Loop_Nav_Wrap::generate()
+			Aaeaddon_A_Loop_Nav_Wrap::generate()
 				->editor_settings( [ 'title' => 'Nav' ] )
 				->is_locked( true )
 				->children( [
-					AAE_A_Loop_Prev::generate()
+					Aaeaddon_A_Loop_Prev::generate()
 						->editor_settings( [ 'title' => 'Previous' ] )
 						->is_locked( true )
 						->build(),
-					AAE_A_Loop_Next::generate()
+					Aaeaddon_A_Loop_Next::generate()
 						->editor_settings( [ 'title' => 'Next' ] )
 						->is_locked( true )
 						->build(),
 				] )
 				->build(),
-			AAE_A_Loop_Numbers::generate()
+			Aaeaddon_A_Loop_Numbers::generate()
 				->editor_settings( [ 'title' => 'Page Numbers' ] )
-				->children( AAE_A_Loop_Numbers::build_number_template() )
+				->children( Aaeaddon_A_Loop_Numbers::build_number_template() )
 				->build(),
-			AAE_A_Loop_LoadMore::generate()
+			Aaeaddon_A_Loop_LoadMore::generate()
 				->editor_settings( [ 'title' => 'Load More' ] )
 				->is_locked( true )
 				->build(),
@@ -188,7 +188,7 @@ class AAE_A_Loop_Pagination extends Atomic_Element_Base {
 	 * visible. Only the load method (ajax vs page reload) is a setting.
 	 */
 	protected function build_template_context(): array {
-		$ctx = Render_Context::get( AAE_A_Loop_Grid::class );
+		$ctx = Render_Context::get( Aaeaddon_A_Loop_Grid::class );
 
 		// Load method is THIS widget's own setting. The query-derived values
 		// (current page, total pages, query params, grid id) come from the root
@@ -205,7 +205,7 @@ class AAE_A_Loop_Pagination extends Atomic_Element_Base {
 		// the two can never disagree about which grid they address. Only the
 		// three pagination-specific keys are added here.
 		$cfg = array_merge(
-			AAE_A_Loop_Grid::endpoint_config( $ctx ),
+			Aaeaddon_A_Loop_Grid::endpoint_config( $ctx ),
 			[
 				'method'  => $method,
 				'current' => $current,

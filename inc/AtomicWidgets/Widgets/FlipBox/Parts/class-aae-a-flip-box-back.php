@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\FlipBox;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\FlipBox;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -30,12 +30,12 @@ require_once __DIR__ . '/class-aae-a-flip-box-title.php';
 require_once __DIR__ . '/class-aae-a-flip-box-text.php';
 
 /**
- * AAE Flip Box — Back face. Sibling of AAE_A_Flip_Box_Front — see that file
+ * AAE Flip Box — Back face. Sibling of Aaeaddon_A_Flip_Box_Front — see that file
  * for why the flip mechanics (position/backface-visibility/hover-rotate)
  * stay in flip-box.scss while only background/color/radius/padding are
  * defined here.
  */
-class AAE_A_Flip_Box_Back extends Atomic_Element_Base {
+class Aaeaddon_A_Flip_Box_Back extends Atomic_Element_Base {
 
 	use Has_Element_Template;
 
@@ -72,7 +72,7 @@ class AAE_A_Flip_Box_Back extends Atomic_Element_Base {
 	protected static function define_props_schema(): array {
 		return [
 			// Empty on purpose — the `flip-box-back` hook class is emitted by
-			// the twig. See AAE_A_Flip_Box_Front::define_props_schema().
+			// the twig. See Aaeaddon_A_Flip_Box_Front::define_props_schema().
 			'classes'    => Classes_Prop_Type::make()->default( [] ),
 			'attributes' => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
 		];
@@ -114,14 +114,14 @@ class AAE_A_Flip_Box_Back extends Atomic_Element_Base {
 	/**
 	 * Exposed publicly so the parent Flip Box's define_default_children()
 	 * can seed a fresh Back face's title/text directly (mirrors
-	 * AAE_A_Timeline_Item::build_default_inner_children()).
+	 * Aaeaddon_A_Timeline_Item::build_default_inner_children()).
 	 */
 	public static function build_default_inner_children(
 		string $title = 'Back Title',
 		string $text = 'This is back side content.'
 	): array {
 		return [
-			AAE_A_Flip_Box_Title::generate()
+			Aaeaddon_A_Flip_Box_Title::generate()
 				->editor_settings( [ 'title' => 'Title' ] )
 				->settings( [
 					'text' => Html_V3_Prop_Type::generate( [
@@ -131,7 +131,7 @@ class AAE_A_Flip_Box_Back extends Atomic_Element_Base {
 				] )
 				->build(),
 
-			AAE_A_Flip_Box_Text::generate()
+			Aaeaddon_A_Flip_Box_Text::generate()
 				->editor_settings( [ 'title' => 'Text' ] )
 				->settings( [
 					'text' => Html_V3_Prop_Type::generate( [

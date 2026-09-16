@@ -1,6 +1,6 @@
 <?php
 /**
- * AAE_Rich_Text_Prop_Type — html-v3 that keeps inline COLOUR.
+ * Aaeaddon_Rich_Text_Prop_Type — html-v3 that keeps inline COLOUR.
  *
  * Elementor's Html_V3_Prop_Type sanitises through
  * `Html_Prop_Type::get_base_allowed_tags()`, which permits **no attributes at
@@ -40,7 +40,7 @@
  * @package AnimationAddonsForElementor
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\AdvancedHeading;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\AdvancedHeading;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -52,7 +52,7 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Ty
 
 use Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type;
 
-class AAE_Rich_Text_Prop_Type extends Html_V3_Prop_Type {
+class Aaeaddon_Rich_Text_Prop_Type extends Html_V3_Prop_Type {
 
 	/**
 	 * Re-implemented rather than delegated: the parent's own helpers

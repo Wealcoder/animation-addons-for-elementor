@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\Atomic\Mask;
+namespace Wealcoder\AnimationAddons\Atomic\Mask;
 
 use Elementor\Modules\AtomicWidgets\PropsResolver\Multi_Props;
 use Elementor\Modules\AtomicWidgets\PropsResolver\Props_Resolver_Context;

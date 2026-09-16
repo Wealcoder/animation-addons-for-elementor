@@ -5,7 +5,7 @@
  *
  * Registered into Elementor's shared controlsRegistry under the type id
  * 'aae-preset-picker' (see ./index.js) and rendered by the editing panel
- * wherever the PHP side places an AAE_A_Preset_Picker_Control.
+ * wherever the PHP side places an Aaeaddon_A_Preset_Picker_Control.
  *
  * This is an ACTION control, not a prop-bound control: it carries no stored
  * value. A button opens a Dialog showing every preset for the selected

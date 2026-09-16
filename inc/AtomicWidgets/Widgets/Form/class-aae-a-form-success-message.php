@@ -7,7 +7,7 @@
  * @since   4.0.0
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Form;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -15,11 +15,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 require_once __DIR__ . '/class-aae-a-form-message.php';
 
-if ( ! class_exists( __NAMESPACE__ . '\AAE_A_Form_Message' ) ) {
+if ( ! class_exists( __NAMESPACE__ . '\Aaeaddon_A_Form_Message' ) ) {
 	return;
 }
 
-class AAE_A_Form_Success_Message extends AAE_A_Form_Message {
+class Aaeaddon_A_Form_Success_Message extends Aaeaddon_A_Form_Message {
 
 	public static $widget_description = 'Shown when the form is submitted successfully. Hidden by default.';
 

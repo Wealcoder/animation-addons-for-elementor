@@ -1,8 +1,6 @@
 <?php
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons;
 
 use Elementor\Controls_Manager;
 use Elementor\Group_Control_Background;
@@ -15,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 } // Exit if accessed directly
 
-trait WCF_Button_Trait {
+trait Aaeaddon_Button_Trait {
 	protected function register_button_content_controls( $default_value = array(), $conditions = array() ) {
 		$default = array(
 			'btn_text' => esc_html__( 'Click here', 'animation-addons-for-elementor' ),

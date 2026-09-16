@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\AtomicWidgets\Widgets\ImageHotspot;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\ImageHotspot;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * live in define_base_styles() below, editable via the Style tab) instead of
  * a plain hardcoded <div> in image-hotspot.scss.
  *
- * Unrestricted children (mirrors AAE_A_Flip_Box) — this is exactly where a
+ * Unrestricted children (mirrors Aaeaddon_A_Flip_Box) — this is exactly where a
  * builder drops the tooltip/lightbox body, including another
  * e-aae-a-image-hotspot for drill-down hotspots.
  *
@@ -21,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * inline tooltip or a teleported lightbox — that's the PARENT Hotspot Point's
  * `tooltip_type` prop, which a child element's own twig can't read directly.
  * Instead, Point publishes it via Render_Context (define_render_context() in
- * class-aae-a-hotspot-point.php, same mechanism AAE_A_Post_Pagination uses
+ * class-aae-a-hotspot-point.php, same mechanism Aaeaddon_A_Post_Pagination uses
  * for its Prev/Next), and THIS class's own build_template_context() reads
  * that context and renders it as Content's OWN `data-aae-hotspot-mode`
  * attribute in aae-a-hotspot-content.html.twig — server-side, at first
@@ -31,7 +31,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * The base style below is always the TOOLTIP geometry (position: absolute,
  * its own inset offsets/translateX centering/margin) — Content never gets a
  * lightbox-specific position of its own anymore. Lightbox display instead
- * moves Content's live DOM node INSIDE a dedicated `AAE_A_Hotspot_Lightbox`
+ * moves Content's live DOM node INSIDE a dedicated `Aaeaddon_A_Hotspot_Lightbox`
  * frame at runtime (image-hotspot.js's initLightboxes()), which owns the
  * fixed/centered positioning on ITS OWN base style; a small nesting-scoped
  * CSS reset in image-hotspot.scss (`.aae-hotspot-lightbox .aae-hotspot-content`)
@@ -90,7 +90,7 @@ use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
-// AAE_A_Hotspot_Close is NOT required/used here anymore — Close is no longer
+// Aaeaddon_A_Hotspot_Close is NOT required/used here anymore — Close is no longer
 // seeded as a default child (see define_default_children() below). Its own
 // file (Parts/class-aae-a-hotspot-close.php) is untouched and still
 // registered independently in class-atomic.php, so it stays available if a
@@ -100,9 +100,9 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 // file, so requiring it back would be circular. `::class` below only needs
 // the name resolved at compile time, not the class actually loaded, so a
 // plain `use` for the alias is enough.
-use WCF_ADDONS\AtomicWidgets\Widgets\ImageHotspot\AAE_A_Hotspot_Point;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\ImageHotspot\Aaeaddon_A_Hotspot_Point;
 
-class AAE_A_Hotspot_Content extends Atomic_Element_Base {
+class Aaeaddon_A_Hotspot_Content extends Atomic_Element_Base {
 
 	use Has_Element_Template;
 
@@ -183,7 +183,7 @@ class AAE_A_Hotspot_Content extends Atomic_Element_Base {
 	 *  - `top` → `inset-block-start` (Size_Prop_Type; the `calc()` string
 	 *    rides the 'custom' unit — same trick this plugin already uses
 	 *    successfully for `max-width` in
-	 *    AAE_A_Post_Pagination_Preview::define_base_styles()).
+	 *    Aaeaddon_A_Post_Pagination_Preview::define_base_styles()).
 	 *  - `left` → `inset-inline-start` (Size_Prop_Type, %).
 	 *  - `margin-top` → the single `margin` prop (Dimensions_Prop_Type, only
 	 *    block-start non-zero) — margin has no per-side key, same as padding
@@ -283,7 +283,7 @@ class AAE_A_Hotspot_Content extends Atomic_Element_Base {
 		];
 	}
 
-	// Close (AAE_A_Hotspot_Close) is deliberately NOT seeded here for now — per
+	// Close (Aaeaddon_A_Hotspot_Close) is deliberately NOT seeded here for now — per
 	// user request, no cross/close icon by default. The class/file is left
 	// alone (not deleted); a builder can still drag one in manually since
 	// Content's children are unrestricted, and re-adding the generate() call
@@ -310,14 +310,14 @@ class AAE_A_Hotspot_Content extends Atomic_Element_Base {
 
 	/**
 	 * Reads the ancestor Point's `tooltip_type` off the Render_Context stack
-	 * (pushed by AAE_A_Hotspot_Point::define_render_context()) and exposes it
+	 * (pushed by Aaeaddon_A_Hotspot_Point::define_render_context()) and exposes it
 	 * to aae-a-hotspot-content.html.twig as `aae_hotspot_mode`, rendered
 	 * there as this element's OWN `data-aae-hotspot-mode` attribute. See the
 	 * class docblock for why this needs to be server-rendered rather than
 	 * left to image-hotspot.js.
 	 */
 	protected function build_template_context(): array {
-		$ctx = Render_Context::get( AAE_A_Hotspot_Point::class );
+		$ctx = Render_Context::get( Aaeaddon_A_Hotspot_Point::class );
 
 		return array_merge( $this->build_base_template_context(), [
 			'aae_hotspot_mode' => isset( $ctx['tooltip_type'] ) ? $ctx['tooltip_type'] : 'tooltip',

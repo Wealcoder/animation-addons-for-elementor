@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-class AAE_A_Slide extends Atomic_Element_Base {
+class Aaeaddon_A_Slide extends Atomic_Element_Base {
 	use Has_Element_Template;
 
 	public function __construct( $data = [], $args = null ) {
@@ -71,7 +71,7 @@ class AAE_A_Slide extends Atomic_Element_Base {
 				->set_id( 'aae_presets' )
 				->set_items(
 					[
-						AAE_A_Slide_Preset_Picker_Control::make()
+						Aaeaddon_A_Slide_Preset_Picker_Control::make()
 							->set_label( __( 'Apply Preset', 'animation-addons-for-elementor' ) )
 							->set_meta( [ 'layout' => 'custom' ] ),
 					]

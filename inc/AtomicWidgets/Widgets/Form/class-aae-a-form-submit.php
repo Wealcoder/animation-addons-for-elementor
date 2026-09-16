@@ -10,7 +10,7 @@
  * (atomic-element-base.php:113), so holding children is exactly why this is
  * not Atomic_Widget_Base any more.
  *
- * BREAKING (see the migration note in the class docblock of AAE_A_Form): the
+ * BREAKING (see the migration note in the class docblock of Aaeaddon_A_Form): the
  * base class decides how Elementor SAVES the element. As a widget it stored
  * `{"elType":"widget","widgetType":"e-aae-a-form-submit"}`; as an element it
  * stores `{"elType":"e-aae-a-form-submit"}`. Data written before this change
@@ -31,7 +31,7 @@
  * @since   4.0.0
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Form;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -63,7 +63,7 @@ use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\AtomicWidgets\Styles\Style_States;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
-class AAE_A_Form_Submit extends Atomic_Element_Base {
+class Aaeaddon_A_Form_Submit extends Atomic_Element_Base {
 
 	use Has_Element_Template;
 
@@ -408,7 +408,7 @@ class AAE_A_Form_Submit extends Atomic_Element_Base {
 					'svg'     => Svg_Src_Prop_Type::generate(
 						[
 							'id'  => null,
-							'url' => Url_Prop_Type::generate( WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/Form/assets/icons/arrow-right.svg' ),
+							'url' => Url_Prop_Type::generate( AAEADDON_URL . 'inc/AtomicWidgets/Widgets/Form/assets/icons/arrow-right.svg' ),
 						]
 					),
 				]

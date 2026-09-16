@@ -1,8 +1,6 @@
 <?php
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\Widgets;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\Widgets;
 
 use Elementor\Controls_Manager;
 use Elementor\Core\Kits\Documents\Tabs\Global_Typography;
@@ -292,7 +290,7 @@ class Breadcrumbs extends Widget_Base
 			call_user_func(['WPSEO_Breadcrumbs', 'breadcrumb'], '<' . $html_tag . ' id="breadcrumbs">', '</' . $html_tag . '>');
 		} else {
 			$separator = isset($settings['br_separator']) ? $settings['br_separator'] : ' &raquo; ';
-			aae_addon_breadcrumbs($html_tag, $separator);
+			aaeaddon_breadcrumbs($html_tag, $separator);
 		}
 	}
 }

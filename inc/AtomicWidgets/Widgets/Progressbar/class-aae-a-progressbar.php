@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Progressbar;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Progressbar;
 
 if (! defined('ABSPATH')) {
 	exit;
@@ -31,8 +31,8 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 require_once __DIR__ . '/Parts/class-aae-a-progressbar-track.php';
 require_once __DIR__ . '/Parts/class-aae-a-progressbar-label.php';
 
-use WCF_ADDONS\AtomicWidgets\Widgets\Progressbar\AAE_A_Progressbar_Track;
-use WCF_ADDONS\AtomicWidgets\Widgets\Progressbar\AAE_A_Progressbar_Label;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Progressbar\Aaeaddon_A_Progressbar_Track;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Progressbar\Aaeaddon_A_Progressbar_Label;
 
 /**
  * AAE Basic Progress Bar — an open atomic container styled like a progress
@@ -44,7 +44,7 @@ use WCF_ADDONS\AtomicWidgets\Widgets\Progressbar\AAE_A_Progressbar_Label;
  * child element the user can restyle with Elementor's own Style tab.
  *
  * The default Track/Fill/Label are each a dedicated small widget type
- * (AAE_A_Progressbar_Track/_Fill/_Label) carrying its own fixed look via its
+ * (Aaeaddon_A_Progressbar_Track/_Fill/_Label) carrying its own fixed look via its
  * own define_base_styles() — see class-aae-a-progressbar-track.php for why
  * plain Div_Block/e-paragraph reuse can't express that (base styles are
  * owned by the widget TYPE, not a per-instance override).
@@ -54,7 +54,7 @@ use WCF_ADDONS\AtomicWidgets\Widgets\Progressbar\AAE_A_Progressbar_Label;
  * stored style setting, so it animates correctly no matter which preset
  * supplied the children.
  */
-class AAE_A_Progressbar extends Atomic_Element_Base
+class Aaeaddon_A_Progressbar extends Atomic_Element_Base
 {
 	use Has_Element_Template;
 
@@ -133,7 +133,7 @@ class AAE_A_Progressbar extends Atomic_Element_Base
 				->set_label(__('Presets', 'animation-addons-for-elementor'))
 				->set_id('aae_presets')
 				->set_items([
-					AAE_A_Preset_Picker_Control::make()
+					Aaeaddon_A_Preset_Picker_Control::make()
 						->set_label(__('Apply Preset', 'animation-addons-for-elementor'))
 						->set_meta(['layout' => 'custom']),
 				]),
@@ -201,14 +201,14 @@ class AAE_A_Progressbar extends Atomic_Element_Base
 	protected function define_default_children()
 	{
 		return [
-			AAE_A_Progressbar_Track::generate()
+			Aaeaddon_A_Progressbar_Track::generate()
 				->editor_settings(['title' => 'Track'])
 				->children(
-					AAE_A_Progressbar_Track::build_default_inner_children()
+					Aaeaddon_A_Progressbar_Track::build_default_inner_children()
 				)
 				->build(),
 
-			AAE_A_Progressbar_Label::generate()
+			Aaeaddon_A_Progressbar_Label::generate()
 				->editor_settings(['title' => 'Percentage'])
 				->settings([
 					// No `classes` here on purpose: the JS hook `aae-pb-pct` is

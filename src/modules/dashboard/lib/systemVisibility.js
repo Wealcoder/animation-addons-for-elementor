@@ -52,7 +52,7 @@ export const ATOMIC_AVAILABLE =
 
 /**
  * V3's active counts come pre-computed from PHP (`get_widgets()` /
- * `get_extensions()`, i.e. the `wcf_save_widgets` / `wcf_save_extensions`
+ * `get_extensions()`, i.e. the `aaeaddon_save_widgets` / `aaeaddon_save_extensions`
  * options intersected with config.php). Atomic has no server-side pair, so it
  * is counted client-side from the same grouped shape the lists render.
  */
@@ -191,7 +191,7 @@ export const ATOMIC_UNDO_COUNTS = {
  * (`Animation_Settings::has_v3_usage()`, shipped as `v3_in_use`.)
  *
  * The active count alone is the wrong question. A site can hold 34 pages built
- * from `wcf--*` widgets while `wcf_save_widgets` is empty — an import does
+ * from `wcf--*` widgets while `aaeaddon_save_widgets` is empty — an import does
  * exactly that, and `maybe_enable_used_v3_widgets()` only heals it while the
  * option has NEVER been written. Deciding "this is a V4-only site" from the
  * count would then hide V3 from the one person who needs it most: the pages

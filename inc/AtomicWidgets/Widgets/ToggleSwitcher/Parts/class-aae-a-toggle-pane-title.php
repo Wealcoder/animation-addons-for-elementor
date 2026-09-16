@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\ToggleSwitcher;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -33,7 +33,7 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
  * reasoning (base styles are owned by the widget TYPE, not a per-instance
  * override, so a reused e-heading would mean styling every heading site-wide).
  */
-class AAE_A_Toggle_Pane_Title extends Atomic_Widget_Base {
+class Aaeaddon_A_Toggle_Pane_Title extends Atomic_Widget_Base {
 
 	use Has_Template;
 

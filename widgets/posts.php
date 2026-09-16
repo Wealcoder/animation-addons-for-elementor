@@ -1,8 +1,6 @@
 <?php
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\Widgets;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\Widgets;
 
 use Elementor\Group_Control_Background;
 use Elementor\Group_Control_Border;
@@ -13,7 +11,7 @@ use Elementor\Icons_Manager;
 use Elementor\Utils;
 use Elementor\Widget_Base;
 use Elementor\Controls_Manager;
-use WCF_ADDONS\WCF_Post_Query_Trait;
+use Wealcoder\AnimationAddons\Aaeaddon_Post_Query_Trait;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
@@ -28,7 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Posts extends Widget_Base {
 
-	use WCF_Post_Query_Trait;
+	use Aaeaddon_Post_Query_Trait;
 
 	/**
 	 * @var \WP_Query

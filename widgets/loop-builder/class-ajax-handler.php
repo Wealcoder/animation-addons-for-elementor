@@ -1,7 +1,7 @@
 <?php
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\Widgets\Loop_Builder;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\Widgets\Loop_Builder;
+
+use Wealcoder\AnimationAddons\Ajax_Alias;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -40,147 +40,13 @@ class Ajax_Handler {
 	 * @return void
 	 */
 	public function __construct() {
-		// Autocomplete actions.
-		add_action( 'wp_ajax_clb_get_posts', array( $this, 'ajax_get_posts' ) );
-		add_action( 'wp_ajax_clb_get_terms', array( $this, 'ajax_get_terms' ) );
-		add_action( 'wp_ajax_clb_get_authors', array( $this, 'ajax_get_authors' ) );
-		add_action( 'wp_ajax_clb_get_templates', array( $this, 'ajax_get_templates' ) );
-
-		// Pagination actions.
-		add_action( 'wp_ajax_clb_load_more', array( $this, 'ajax_load_more' ) );
-		add_action( 'wp_ajax_nopriv_clb_load_more', array( $this, 'ajax_load_more' ) );
-		add_action( 'wp_ajax_clb_load_page', array( $this, 'ajax_load_page' ) );
-		add_action( 'wp_ajax_nopriv_clb_load_page', array( $this, 'ajax_load_page' ) );
-
-		// Additional AJAX actions.
-		add_action( 'wp_ajax_clb_get_taxonomies', array( $this, 'ajax_get_taxonomies' ) );
-	}
-
-	/**
-	 * AJAX handler for post-autocomplete.
-	 *
-	 * @since 2.4.16
-	 * @return void
-	 */
-	public function ajax_get_posts() {
-		$this->verify_nonce();
-
-		if ( ! current_user_can( 'edit_posts' ) ) {
-			wp_send_json_error( array( 'message' => esc_html__( 'Unauthorized user.', 'animation-addons-for-elementor' ) ), 403 );
-		}
-
-		$search    = isset( $_GET['q'] ) ? sanitize_text_field( wp_unslash( $_GET['q'] ) ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended
-		$post_type = isset( $_GET['post_type'] ) ? sanitize_text_field( wp_unslash( $_GET['post_type'] ) ) : 'post'; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended
-
-		$query_manager = Query_Manager::instance();
-		$results       = $query_manager->get_posts_for_autocomplete( $search, $post_type );
-
-		wp_send_json_success( $results );
-	}
-
-	/**
-	 * AJAX handler for term autocomplete.
-	 *
-	 * @since 2.4.16
-	 * @return void
-	 */
-	public function ajax_get_terms() {
-		$this->verify_nonce();
-
-		if ( ! current_user_can( 'edit_posts' ) ) {
-			wp_send_json_error( array( 'message' => esc_html__( 'Unauthorized user.', 'animation-addons-for-elementor' ) ), 403 );
-		}
-
-		$search   = isset( $_GET['q'] ) ? sanitize_text_field( wp_unslash( $_GET['q'] ) ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended
-		$taxonomy = isset( $_GET['taxonomy'] ) ? sanitize_text_field( wp_unslash( $_GET['taxonomy'] ) ) : 'category'; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended
-
-		$query_manager = Query_Manager::instance();
-		$results       = $query_manager->get_terms_for_autocomplete( $search, $taxonomy );
-
-		wp_send_json_success( $results );
-	}
-
-	/**
-	 * AJAX handler for author autocomplete.
-	 *
-	 * @since 2.4.16
-	 * @return void
-	 */
-	public function ajax_get_authors() {
-		$this->verify_nonce();
-
-		if ( ! current_user_can( 'edit_posts' ) ) {
-			wp_send_json_error( array( 'message' => esc_html__( 'Unauthorized user.', 'animation-addons-for-elementor' ) ), 403 );
-		}
-
-		$search = isset( $_GET['q'] ) ? sanitize_text_field( wp_unslash( $_GET['q'] ) ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended
-
-		$query_manager = Query_Manager::instance();
-		$results       = $query_manager->get_authors_for_autocomplete( $search );
-
-		wp_send_json_success( $results );
-	}
-
-	/**
-	 * AJAX handler for template autocomplete.
-	 *
-	 * @since 2.4.16
-	 * @return void
-	 */
-	public function ajax_get_templates() {
-		$this->verify_nonce();
-
-		if ( ! current_user_can( 'edit_posts' ) ) {
-			wp_send_json_error( array( 'message' => esc_html__( 'Unauthorized user.', 'animation-addons-for-elementor' ) ), 403 );
-		}
-
-		$search      = isset( $_GET['q'] ) ? sanitize_text_field( wp_unslash( $_GET['q'] ) ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended
-		$source_type = isset( $_GET['source_type'] ) ? sanitize_text_field( wp_unslash( $_GET['source_type'] ) ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended
-
-		$args = array(
-			'post_type'      => 'wcf-addons-template',
-			'post_status'    => 'publish',
-			'posts_per_page' => 20,
-			'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-				array(
-					'key'     => 'wcf-addons-template-meta_type',
-					'value'   => 'loop-builder',
-					'compare' => '=',
-				),
-			),
-		);
-
-		if ( ! empty( $search ) ) {
-			$args['s'] = $search;
-		}
-
-		if ( ! empty( $source_type ) ) {
-			$args['meta_query'][] = array(
-				'key'     => '_elementor_source',
-				'value'   => $source_type,
-				'compare' => '=',
-			);
-		}
-
-		$templates = get_posts( $args );
-		$results   = array();
-
-		foreach ( $templates as $template ) {
-			$source       = get_post_meta( $template->ID, '_elementor_source', true );
-			$source_label = '';
-
-			if ( $source ) {
-				$post_type_obj = get_post_type_object( $source );
-				$source_label  = $post_type_obj ? ' (' . $post_type_obj->label . ')' : ' (' . ucfirst( $source ) . ')';
-			}
-
-			$results[] = array(
-				'id'   => $template->ID,
-				'text' => $template->post_title . $source_label,
-			);
-		}
-
-		wp_send_json_success( $results );
+		// Pagination actions, posted by the front-end bundle. The unprefixed
+		// `clb_*` names stay answered while a page cache or combined JS bundle
+		// can still be posting them; remove the aliases in 4.4.
+		// (The `clb_get_posts/terms/authors/templates/taxonomies` autocomplete
+		// actions had no caller in either plugin and were removed in 4.2.)
+		Ajax_Alias::register( 'clb_load_more', 'aaeaddon_clb_load_more', array( $this, 'ajax_load_more' ), true );
+		Ajax_Alias::register( 'clb_load_page', 'aaeaddon_clb_load_page', array( $this, 'ajax_load_page' ), true );
 	}
 
 	/**
@@ -191,9 +57,8 @@ class Ajax_Handler {
 	 */
 	public function ajax_load_more() {
 		try {
-			// Checked here rather than through verify_nonce() so the check is in
-			// the same scope as the request reads below (the sniff cannot follow
-			// a helper). Same action, same field, same 403 reply as the helper.
+			// Checked inline so the check is in the same scope as the request
+			// reads below (the sniff cannot follow a helper).
 			if ( ! check_ajax_referer( 'aae_loop_builder_nonce', 'nonce', false ) ) {
 				wp_send_json_error( array( 'message' => esc_html__( 'Security check failed.', 'animation-addons-for-elementor' ) ), 403 );
 			}
@@ -282,27 +147,6 @@ class Ajax_Handler {
 	}
 
 	/**
-	 * Verify nonce for AJAX requests.
-	 *
-	 * @since 2.4.16
-	 * @return void
-	 */
-	private function verify_nonce() {
-		$nonce = '';
-		if ( isset( $_REQUEST['nonce'] ) ) {
-			$nonce = sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) );
-		} elseif ( isset( $_GET['nonce'] ) ) {
-			$nonce = sanitize_text_field( wp_unslash( $_GET['nonce'] ) );
-		} elseif ( isset( $_POST['nonce'] ) ) {
-			$nonce = sanitize_text_field( wp_unslash( $_POST['nonce'] ) );
-		}
-
-		if ( ! $nonce || ! wp_verify_nonce( $nonce, 'aae_loop_builder_nonce' ) ) {
-			wp_send_json_error( array( 'message' => esc_html__( 'Security check failed.', 'animation-addons-for-elementor' ) ), 403 );
-		}
-	}
-
-	/**
 	 * Get post-types for autocomplete.
 	 *
 	 * @since 2.4.16
@@ -327,9 +171,8 @@ class Ajax_Handler {
 	 */
 	public function ajax_load_page() {
 		try {
-			// Checked here rather than through verify_nonce() so the check is in
-			// the same scope as the request reads below (the sniff cannot follow
-			// a helper). Same action, same field, same 403 reply as the helper.
+			// Checked inline so the check is in the same scope as the request
+			// reads below (the sniff cannot follow a helper).
 			if ( ! check_ajax_referer( 'aae_loop_builder_nonce', 'nonce', false ) ) {
 				wp_send_json_error( array( 'message' => esc_html__( 'Security check failed.', 'animation-addons-for-elementor' ) ), 403 );
 			}
@@ -430,25 +273,6 @@ class Ajax_Handler {
 		} catch ( \Exception $e ) {
 			wp_send_json_error( array( 'message' => $e->getMessage() ) );
 		}
-	}
-
-	/**
-	 * AJAX handler for getting taxonomies.
-	 *
-	 * @since 2.4.16
-	 * @return void
-	 */
-	public function ajax_get_taxonomies() {
-		$this->verify_nonce();
-
-		if ( ! current_user_can( 'edit_posts' ) ) {
-			wp_send_json_error( array( 'message' => esc_html__( 'Unauthorized user.', 'animation-addons-for-elementor' ) ), 403 );
-		}
-
-		$post_type  = isset( $_GET['post_type'] ) ? sanitize_text_field( wp_unslash( $_GET['post_type'] ) ) : 'post'; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended
-		$taxonomies = $this->get_taxonomies( $post_type );
-
-		wp_send_json_success( $taxonomies );
 	}
 
 	/**

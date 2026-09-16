@@ -1,8 +1,6 @@
 <?php
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\Widgets;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\Widgets;
 
 use Elementor\Controls_Manager;
 use Elementor\Group_Control_Background;
@@ -1181,7 +1179,7 @@ class Weather extends Widget_Base {
 	protected function render() {
 		$settings = $this->get_settings_for_display();
 
-		$weather_api_key  = get_option( 'aae_weather_api_advanced_settings' );
+		$weather_api_key  = get_option( 'aaeaddon_weather_api_settings' );
 		$weather_settings = json_decode( $weather_api_key, true );
 
 		if ( !isset( $weather_settings['api_key'] ) || empty( $weather_settings['api_key'] ) ) {
@@ -1204,8 +1202,8 @@ class Weather extends Widget_Base {
 			$unit_symbol = 'K';
 		}
 
-		$cache_key_current  = 'weather_current_' . md5( $city . $unit );
-		$cache_key_forecast = 'weather_forecast_' . md5( $city . $unit );
+		$cache_key_current  = 'aaeaddon_weather_current_' . md5( $city . $unit );
+		$cache_key_forecast = 'aaeaddon_weather_forecast_' . md5( $city . $unit );
 
 		// Try to get cached data (3 hours = 10800 seconds)
 		$current_data  = get_transient( $cache_key_current );

@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\SiteLogo;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SiteLogo;
 
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Image\Atomic_Image;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
@@ -26,7 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class AAE_A_Site_Logo extends Atomic_Element_Base {
+class Aaeaddon_A_Site_Logo extends Atomic_Element_Base {
 	use Has_Element_Template;
 
 	public function __construct( $data = [], $args = null ) {

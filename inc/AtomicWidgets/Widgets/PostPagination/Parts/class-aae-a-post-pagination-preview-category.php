@@ -7,7 +7,7 @@
  * @package AnimationAddonsForElementor
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\PostPagination;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\PostPagination;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Widget_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Template;
@@ -30,7 +30,7 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Widg
 	return;
 }
 
-class AAE_A_Post_Pagination_Preview_Category extends Atomic_Widget_Base {
+class Aaeaddon_A_Post_Pagination_Preview_Category extends Atomic_Widget_Base {
 	use Has_Template;
 
 	public static function get_element_type(): string {
@@ -94,7 +94,7 @@ class AAE_A_Post_Pagination_Preview_Category extends Atomic_Widget_Base {
 		$settings = parent::get_atomic_settings();
 		$role     = ! empty( $settings['role'] ) ? $settings['role'] : 'next';
 
-		$ctx  = Render_Context::get( AAE_A_Post_Pagination::class );
+		$ctx  = Render_Context::get( Aaeaddon_A_Post_Pagination::class );
 		$post = isset( $ctx[ $role ] ) ? $ctx[ $role ] : null;
 
 		if ( $post && ! empty( $post['category'] ) ) {

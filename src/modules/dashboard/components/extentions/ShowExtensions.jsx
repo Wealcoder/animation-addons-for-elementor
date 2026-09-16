@@ -112,10 +112,10 @@ const ShowExtensions = ({
       },
 
       body: new URLSearchParams({
-        action: "save_settings_with_ajax",
+        action: "aaeaddon_save_settings",
         fields: JSON.stringify(allExtensions),
         nonce: WCF_ADDONS_ADMIN.nonce,
-        settings: "wcf_save_extensions",
+        settings: "aaeaddon_save_extensions",
       }),
     })
       .then((response) => {

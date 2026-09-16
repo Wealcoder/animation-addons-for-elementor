@@ -3,9 +3,6 @@
  * Header Template
  *
  */
-/**
- * @phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
- */
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
@@ -19,8 +16,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 </head>
 <body <?php body_class(); ?>>
 <?php
-	global $aae_header_smoother, $aae_header_smoother_offsetY;
-	if($aae_header_smoother != 'no'){
+	global $aaeaddon_header_smoother, $aaeaddon_header_smoother_offsety;
+	if($aaeaddon_header_smoother != 'no'){
 		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility hook.
 		do_action( 'wp_body_open' ); 
 	}
@@ -29,18 +26,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 <div id="page" class="hfeed site">
  <?php do_action( 'animation_addons_header_builder_content' ); ?>
 	<?php
-		if( $aae_header_smoother == 'no' ){
+		if( $aaeaddon_header_smoother == 'no' ){
 			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility hook.
 			do_action( 'wp_body_open' ); 
-			if($aae_header_smoother_offsetY){
+			if($aaeaddon_header_smoother_offsety){
 				?>
 					<style id="aae-elementor-pro-compatibility-smoother">
 						html .admin-bar #smooth-wrapper
 						{
-							top: <?php echo esc_attr($aae_header_smoother_offsetY) + 32; ?>px !important;
+							top: <?php echo esc_attr($aaeaddon_header_smoother_offsety) + 32; ?>px !important;
 						}
 					 	body #smooth-wrapper {
-							top: <?php echo esc_attr( $aae_header_smoother_offsetY); ?>px !important;
+							top: <?php echo esc_attr( $aaeaddon_header_smoother_offsety); ?>px !important;
 						}
 					</style>	
 				<?php

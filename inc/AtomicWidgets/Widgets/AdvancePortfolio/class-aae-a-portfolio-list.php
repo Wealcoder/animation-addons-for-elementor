@@ -10,7 +10,7 @@
  * @package AnimationAddonsForElementor
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\AdvancePortfolio;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\AdvancePortfolio;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
@@ -30,7 +30,7 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Elem
 	return;
 }
 
-class AAE_A_Portfolio_List extends Atomic_Element_Base {
+class Aaeaddon_A_Portfolio_List extends Atomic_Element_Base {
 
 	use Has_Element_Template;
 

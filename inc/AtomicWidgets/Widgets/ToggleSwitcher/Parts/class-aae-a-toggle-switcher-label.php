@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\ToggleSwitcher;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -30,7 +30,7 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
  *
  * A genuine container (Atomic_Element_Base, not a leaf widget) because it
  * wraps arbitrary content (normally an e-paragraph) rather than owning fixed
- * text of its own — unlike AAE_A_Toggle_Switcher_Tab, which is a self-
+ * text of its own — unlike Aaeaddon_A_Toggle_Switcher_Tab, which is a self-
  * contained button.
  *
  * `is_after` is structural identity, not runtime state — mirrors Tab's own
@@ -45,7 +45,7 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
  * toggle-switcher.js still toggles `active`/`e--selected` on click; this
  * prop only decides which side of the Track the label renders on.
  */
-class AAE_A_Toggle_Switcher_Label extends Atomic_Element_Base {
+class Aaeaddon_A_Toggle_Switcher_Label extends Atomic_Element_Base {
 
 	use Has_Element_Template;
 
@@ -113,7 +113,7 @@ class AAE_A_Toggle_Switcher_Label extends Atomic_Element_Base {
 	 * real option in this widget's Style-panel state dropdown — the same
 	 * class toggle-switcher.js already toggles on the active label (see
 	 * applyTsState() in toggle-switcher.js), alongside `active`. Unlike
-	 * AAE_A_Toggle_Switcher_Tab (a leaf widget, whose get_initial_config()
+	 * Aaeaddon_A_Toggle_Switcher_Tab (a leaf widget, whose get_initial_config()
 	 * must wire this in manually), Atomic_Element_Base's own
 	 * get_initial_config() already calls define_atomic_style_states() on its
 	 * own, so overriding this one method is enough — no extra config

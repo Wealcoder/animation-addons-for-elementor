@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider;
 
 use Elementor\Modules\AtomicWidgets\Controls\Base\Element_Control_Base;
 
@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * repeater data to keep in sync; the list is a live projection of the element
  * tree.
  */
-class AAE_A_Slides_Control extends Element_Control_Base {
+class Aaeaddon_A_Slides_Control extends Element_Control_Base {
 
 	public function get_type(): string {
 		return 'aae-slides';

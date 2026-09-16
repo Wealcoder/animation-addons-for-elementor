@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\Atomic\Mask;
+namespace Wealcoder\AnimationAddons\Atomic\Mask;
 
 use Elementor\Modules\AtomicWidgets\PropTypes\Base\Object_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Image_Src_Prop_Type;

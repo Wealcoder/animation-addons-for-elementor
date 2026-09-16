@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\Atomic\Mask;
+namespace Wealcoder\AnimationAddons\Atomic\Mask;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

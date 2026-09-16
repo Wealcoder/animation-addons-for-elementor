@@ -19,7 +19,7 @@
  * @since   4.0.0
  */
 
-namespace WCF_ADDONS\Forms;
+namespace Wealcoder\AnimationAddons\Forms;
 
 use WP_REST_Request;
 use WP_REST_Response;
@@ -95,7 +95,7 @@ final class Rest {
 			return self::error( 400, 'aae_form_bad_request', __( 'A webhook URL is required.', 'animation-addons-for-elementor' ) );
 		}
 
-		$action = new \WCF_ADDONS\Forms\Actions\Webhook();
+		$action = new \Wealcoder\AnimationAddons\Forms\Actions\Webhook();
 		$result = $action->run(
 			[
 				'settings' => [ 'url' => $url ],

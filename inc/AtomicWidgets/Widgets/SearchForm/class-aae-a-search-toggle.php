@@ -20,7 +20,7 @@
  * @package AnimationAddonsForElementor
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\SearchForm;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SearchForm;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
@@ -37,8 +37,8 @@ use Elementor\Modules\AtomicWidgets\Styles\Style_States;
 require_once __DIR__ . '/class-aae-a-search-toggle-open.php';
 require_once __DIR__ . '/class-aae-a-search-toggle-close.php';
 
-use WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Toggle_Open;
-use WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Toggle_Close;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SearchForm\Aaeaddon_A_Search_Toggle_Open;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SearchForm\Aaeaddon_A_Search_Toggle_Close;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -48,7 +48,7 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Elem
 	return;
 }
 
-class AAE_A_Search_Toggle extends Atomic_Element_Base {
+class Aaeaddon_A_Search_Toggle extends Atomic_Element_Base {
 	use Has_Element_Template;
 
 	public function __construct( $data = [], $args = null ) {
@@ -118,12 +118,12 @@ class AAE_A_Search_Toggle extends Atomic_Element_Base {
 
 	protected function define_default_children() {
 		return [
-			AAE_A_Search_Toggle_Open::generate()
+			Aaeaddon_A_Search_Toggle_Open::generate()
 				->is_locked( true )
 				->editor_settings( [ 'title' => 'Open Icon' ] )
 				->build(),
 
-			AAE_A_Search_Toggle_Close::generate()
+			Aaeaddon_A_Search_Toggle_Close::generate()
 				->is_locked( true )
 				->editor_settings( [ 'title' => 'Close Icon' ] )
 				->build(),

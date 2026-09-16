@@ -47,12 +47,12 @@
  *
  * Switch off with `add_filter( 'aae/atomic/schema_trim', '__return_false' )`.
  *
- * @package WCF_ADDONS\Atomic\Editor
+ * @package Wealcoder\AnimationAddons\Atomic\Editor
  */
 
-namespace WCF_ADDONS\Atomic\Editor;
+namespace Wealcoder\AnimationAddons\Atomic\Editor;
 
-use WCF_ADDONS\Atomic\Bootstrap;
+use Wealcoder\AnimationAddons\Atomic\Bootstrap;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -328,13 +328,13 @@ final class Schema_Trim {
 		$rules = [];
 
 		$shared_modules = [
-			'\WCF_ADDONS\Atomic\RegularAnimation\Schema',
-			'\WCF_ADDONS\Atomic\Parallax\Schema',
-			'\WCF_ADDONS\Atomic\CursorHoverEffect\Schema',
-			'\WCF_ADDONS\Atomic\MouseMoveEffect\Schema',
-			'\WCF_ADDONS\Atomic\AdvanceTooltip\Schema',
-			'\WCF_ADDONS\Atomic\Tilt\Schema',
-			'\WCF_ADDONS\Atomic\ScrollTo\Schema',
+			'\Wealcoder\AnimationAddons\Atomic\RegularAnimation\Schema',
+			'\Wealcoder\AnimationAddons\Atomic\Parallax\Schema',
+			'\Wealcoder\AnimationAddons\Atomic\CursorHoverEffect\Schema',
+			'\Wealcoder\AnimationAddons\Atomic\MouseMoveEffect\Schema',
+			'\Wealcoder\AnimationAddons\Atomic\AdvanceTooltip\Schema',
+			'\Wealcoder\AnimationAddons\Atomic\Tilt\Schema',
+			'\Wealcoder\AnimationAddons\Atomic\ScrollTo\Schema',
 		];
 		foreach ( $shared_modules as $class ) {
 			if ( $shared && class_exists( $class ) ) {
@@ -344,19 +344,19 @@ final class Schema_Trim {
 
 		// Custom CSS: its Controls test the shared list, its Schema publishes a
 		// list of its own. Keep on the union so neither reader is starved.
-		$custom_css = '\WCF_ADDONS\Atomic\CustomCss\Schema';
+		$custom_css = '\Wealcoder\AnimationAddons\Atomic\CustomCss\Schema';
 		if ( class_exists( $custom_css ) ) {
 			$own = is_callable( [ $custom_css, 'target_element_types' ] ) ? (array) $custom_css::target_element_types() : [];
 			$rules[ ltrim( $custom_css, '\\' ) ] = array_values( array_unique( array_merge( $shared, $own ) ) );
 		}
 
 		$own_list = [
-			'\WCF_ADDONS\Atomic\TextAnimation\Schema'        => 'text_animation_widgets',
-			'\WCF_ADDONS\Atomic\ImageAnimation\Schema'       => 'image_animation_widgets',
-			'\WCF_ADDONS\Atomic\ImageHover\Schema'           => 'image_hover_widgets',
-			'\WCF_ADDONS\Atomic\Sticky\Schema'               => 'targeted_elements',
-			'\WCF_ADDONS\Atomic\HorizontalScrollAnim\Schema' => 'targeted_elements',
-			'\WCF_ADDONS\Atomic\ImageOverlay\Schema'         => 'target_element_types',
+			'\Wealcoder\AnimationAddons\Atomic\TextAnimation\Schema'        => 'text_animation_widgets',
+			'\Wealcoder\AnimationAddons\Atomic\ImageAnimation\Schema'       => 'image_animation_widgets',
+			'\Wealcoder\AnimationAddons\Atomic\ImageHover\Schema'           => 'image_hover_widgets',
+			'\Wealcoder\AnimationAddons\Atomic\Sticky\Schema'               => 'targeted_elements',
+			'\Wealcoder\AnimationAddons\Atomic\HorizontalScrollAnim\Schema' => 'targeted_elements',
+			'\Wealcoder\AnimationAddons\Atomic\ImageOverlay\Schema'         => 'target_element_types',
 		];
 		foreach ( $own_list as $class => $method ) {
 			if ( class_exists( $class ) && is_callable( [ $class, $method ] ) ) {
@@ -364,7 +364,7 @@ final class Schema_Trim {
 			}
 		}
 
-		$bgv = '\WCF_ADDONS\Atomic\BackgroundVideo\Schema';
+		$bgv = '\Wealcoder\AnimationAddons\Atomic\BackgroundVideo\Schema';
 		if ( class_exists( $bgv ) && defined( $bgv . '::TARGET_TYPES' ) ) {
 			$rules[ ltrim( $bgv, '\\' ) ] = (array) constant( $bgv . '::TARGET_TYPES' );
 		}
@@ -372,7 +372,7 @@ final class Schema_Trim {
 		// Nested Slider has no Controls class: its section is built inside the
 		// two slider widgets' own define_atomic_controls(), and those are the
 		// only types that read `aae_ns_*` (NestedSlider\Render, LoopGridSlider\Render).
-		$slider = '\WCF_ADDONS\Atomic\NestedSlider\Schema';
+		$slider = '\Wealcoder\AnimationAddons\Atomic\NestedSlider\Schema';
 		if ( class_exists( $slider ) ) {
 			$rules[ ltrim( $slider, '\\' ) ] = [ 'e-aae-a-slider', 'e-aae-a-loop-grid-slider' ];
 		}

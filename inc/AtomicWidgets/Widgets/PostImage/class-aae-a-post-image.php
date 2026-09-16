@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\AtomicWidgets\Widgets\PostImage;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\PostImage;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Widget_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
@@ -28,7 +28,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-class AAE_A_Post_Image extends Atomic_Widget_Base {
+class Aaeaddon_A_Post_Image extends Atomic_Widget_Base {
 	use Has_Element_Template;
 
 	public function __construct( $data = [], $args = null ) {
@@ -75,7 +75,7 @@ class AAE_A_Post_Image extends Atomic_Widget_Base {
 		// featured image instead (shared helper — the Post Title widget
 		// previews the SAME post, so the card reads as one real post).
 		if ( empty( $image_url ) && class_exists( '\Elementor\Plugin' ) && \Elementor\Plugin::$instance->editor->is_edit_mode() ) {
-			$sample = \WCF_ADDONS\AtomicWidgets\Atomic::get_sample_post();
+			$sample = \Wealcoder\AnimationAddons\AtomicWidgets\Atomic::get_sample_post();
 			if ( $sample ) {
 				$image_url = get_the_post_thumbnail_url( $sample, 'large' );
 				$image_alt = get_post_meta( get_post_thumbnail_id( $sample ), '_wp_attachment_image_alt', true );
@@ -239,7 +239,7 @@ class AAE_A_Post_Image extends Atomic_Widget_Base {
 		// Fallback for editor or empty images: preview the shared sample post
 		// (random, has a featured image) before resorting to the placeholder.
 		if ( empty( $settings['image_url'] ) && \Elementor\Plugin::$instance->editor->is_edit_mode() ) {
-			$sample = \WCF_ADDONS\AtomicWidgets\Atomic::get_sample_post();
+			$sample = \Wealcoder\AnimationAddons\AtomicWidgets\Atomic::get_sample_post();
 			if ( $sample ) {
 				$settings['image_url'] = get_the_post_thumbnail_url( $sample, $size );
 				$settings['image_alt'] = get_post_meta( get_post_thumbnail_id( $sample ), '_wp_attachment_image_alt', true );

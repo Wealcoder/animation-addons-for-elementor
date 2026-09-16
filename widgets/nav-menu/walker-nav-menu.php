@@ -3,15 +3,13 @@
  * MailChimp api
  */
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\Widgets\Nav_Menu;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\Widgets\Nav_Menu;
 
-use WCF_ADDONS\WCF_Theme_Builder;
+use Wealcoder\AnimationAddons\Aaeaddon_Theme_Builder;
 
 defined( 'ABSPATH' ) || die();
 
-class WCF_Menu_Walker extends \Walker_Nav_Menu {
+class Aaeaddon_Menu_Walker extends \Walker_Nav_Menu {
 
 	public $elementor_settings = [
         'remove_span'             => false,       
@@ -29,7 +27,7 @@ class WCF_Menu_Walker extends \Walker_Nav_Menu {
 		$menu_obj = wp_get_nav_menu_object( $menu_slug );
 		$menu_id  = ( ( ( gettype( $menu_obj ) == 'object' ) && ( isset( $menu_obj->slug ) ) ) ? $menu_obj->term_id : $menu_slug );
 		$return   = false;
-		$options  = get_option( "wcf_menu_options_" . $menu_id );
+		$options  = get_option( "aaeaddon_menu_options_" . $menu_id );
 
 		if ( isset( $options['enable_menu'] ) && $options['enable_menu'] == 'on' ) {
 			$return = true;
@@ -77,7 +75,7 @@ class WCF_Menu_Walker extends \Walker_Nav_Menu {
 
 		if ( $this->is_megamenu_enable( $args->menu ) && isset( $mega_item_settings['menu-item-template'] ) && ! empty( $mega_item_settings['menu-item-template'] ) ) {
 			$classes[]      = 'wcf-mega-menu';
-			$buildercontent = WCF_Theme_Builder::$_instance->render_build_content( $mega_item_settings['menu-item-template'] );
+			$buildercontent = Aaeaddon_Theme_Builder::$_instance->render_build_content( $mega_item_settings['menu-item-template'] );
 
 			if ( 'static' === $mega_item_settings['menu-item-position-type'] && ! empty( $buildercontent ) ) {
 				$classes[] = 'mega-position-static';

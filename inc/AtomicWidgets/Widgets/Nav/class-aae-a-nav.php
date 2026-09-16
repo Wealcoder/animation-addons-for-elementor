@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Nav;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Nav;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
@@ -33,9 +33,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 // required explicitly. Registering here rather than in class-atomic.php keeps
 // the element self-contained; register() is idempotent.
 require_once __DIR__ . '/class-aae-a-nav-responsive.php';
-AAE_A_Nav_Responsive::register();
+Aaeaddon_A_Nav_Responsive::register();
 
-class AAE_A_Nav extends Atomic_Element_Base {
+class Aaeaddon_A_Nav extends Atomic_Element_Base {
 	use Has_Element_Template;
 
 	public function __construct( $data = [], $args = null ) {
@@ -83,7 +83,7 @@ class AAE_A_Nav extends Atomic_Element_Base {
 		// The `aae_ndi_` icon-style props are MERGED IN, never a replacement:
 		// every prop below keeps its key, its type and its stored value, so an
 		// existing nav renders untouched. See class-aae-a-nav-responsive.php.
-		return AAE_A_Nav_Responsive::props_schema() + [
+		return Aaeaddon_A_Nav_Responsive::props_schema() + [
 			'classes'    => Classes_Prop_Type::make()->default( [] ),
 			'attributes' => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
 			/* Set when the menu was populated via "Import from WordPress menu".
@@ -103,7 +103,7 @@ class AAE_A_Nav extends Atomic_Element_Base {
 			 * label of every item that has a dropdown (see injectDropdownIcons). */
 			'show_dropdown_icon' => Boolean_Prop_Type::make()->default( true ),
 			'dropdown_icon' => Svg_Src_Prop_Type::make()
-				->default_url( WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/Nav/assets/icons/chevron-down.svg' ),
+				->default_url( AAEADDON_URL . 'inc/AtomicWidgets/Widgets/Nav/assets/icons/chevron-down.svg' ),
 			'mobile_enabled' => Boolean_Prop_Type::make()->default( false ),
 			'mobile_breakpoint' => String_Prop_Type::make()->default( '767' ),
 			'mobile_position' => String_Prop_Type::make()->default( 'right' ),
@@ -130,13 +130,13 @@ class AAE_A_Nav extends Atomic_Element_Base {
 			 * NavItemsControl reconciler. Default to the bundled icons so the
 			 * control shows the current icon and swapping is one click. */
 			'mobile_hamburger_icon' => Svg_Src_Prop_Type::make()
-				->default_url( WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/Nav/assets/icons/hamburger.svg' ),
+				->default_url( AAEADDON_URL . 'inc/AtomicWidgets/Widgets/Nav/assets/icons/hamburger.svg' ),
 			'mobile_close_icon' => Svg_Src_Prop_Type::make()
-				->default_url( WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/Nav/assets/icons/close.svg' ),
+				->default_url( AAEADDON_URL . 'inc/AtomicWidgets/Widgets/Nav/assets/icons/close.svg' ),
 			'mobile_dropdown_icon' => Svg_Src_Prop_Type::make()
-				->default_url( WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/Nav/assets/icons/chevron-down.svg' ),
+				->default_url( AAEADDON_URL . 'inc/AtomicWidgets/Widgets/Nav/assets/icons/chevron-down.svg' ),
 			'mobile_back_icon' => Svg_Src_Prop_Type::make()
-				->default_url( WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/Nav/assets/icons/chevron-left.svg' ),
+				->default_url( AAEADDON_URL . 'inc/AtomicWidgets/Widgets/Nav/assets/icons/chevron-left.svg' ),
 		];
 	}
 
@@ -247,7 +247,7 @@ class AAE_A_Nav extends Atomic_Element_Base {
 						->set_label( __( 'Dropdown Icon', 'animation-addons-for-elementor' ) ),
 					Svg_Control::bind_to( 'mobile_back_icon' )
 						->set_label( __( 'Back Icon', 'animation-addons-for-elementor' ) ),
-					AAE_A_Mobile_Nav_Lifecycle_Control::make()
+					Aaeaddon_A_Mobile_Nav_Lifecycle_Control::make()
 						->set_label( '' )
 						->set_meta( [ 'layout' => 'custom' ] ),
 				] ),
@@ -260,7 +260,7 @@ class AAE_A_Nav extends Atomic_Element_Base {
 						->set_label( __( 'Show Icon on Dropdown Items', 'animation-addons-for-elementor' ) ),
 					Svg_Control::bind_to( 'dropdown_icon' )
 						->set_label( __( 'Icon', 'animation-addons-for-elementor' ) ),
-					Text_Control::bind_to( AAE_A_Nav_Responsive::anchor( 'dropdown_icon' ) ),
+					Text_Control::bind_to( Aaeaddon_A_Nav_Responsive::anchor( 'dropdown_icon' ) ),
 				] ),
 			Section::make()
 				->set_label( __( 'Menu Items', 'animation-addons-for-elementor' ) )
@@ -268,7 +268,7 @@ class AAE_A_Nav extends Atomic_Element_Base {
 				->set_items( [
 					Switch_Control::bind_to( 'menu_autosync' )
 						->set_label( __( 'Auto-sync from WordPress', 'animation-addons-for-elementor' ) ),
-					AAE_A_Nav_Items_Control::make()
+					Aaeaddon_A_Nav_Items_Control::make()
 						->set_label( __( 'Items', 'animation-addons-for-elementor' ) )
 						->set_meta( [ 'layout' => 'custom' ] ),
 				] ),
@@ -307,7 +307,7 @@ class AAE_A_Nav extends Atomic_Element_Base {
 
 	protected function define_default_children() {
 		$make_item = function ( $title, $has_dropdown = false, array $children = [] ) {
-			$builder = AAE_A_Nav_Item::generate()
+			$builder = Aaeaddon_A_Nav_Item::generate()
 				->editor_settings( [ 'title' => $title ] )
 				->settings( [
 					'text' => Html_V3_Prop_Type::generate( [

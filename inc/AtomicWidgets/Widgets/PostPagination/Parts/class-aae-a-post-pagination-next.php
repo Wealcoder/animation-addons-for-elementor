@@ -1,12 +1,12 @@
 <?php
 /**
  * AAE Post Pagination Next — the "Next Post" button. Mirror of
- * AAE_A_Post_Pagination_Prev — see that file for the design rationale.
+ * Aaeaddon_A_Post_Pagination_Prev — see that file for the design rationale.
  *
  * @package AnimationAddonsForElementor
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\PostPagination;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\PostPagination;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
@@ -25,13 +25,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 require_once __DIR__ . '/../../LoopGrid/class-aae-a-loop-arrow.php';
 require_once __DIR__ . '/class-aae-a-post-pagination-preview.php';
 
-use WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Arrow;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_A_Loop_Arrow;
 
 if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base' ) ) {
 	return;
 }
 
-class AAE_A_Post_Pagination_Next extends Atomic_Element_Base {
+class Aaeaddon_A_Post_Pagination_Next extends Atomic_Element_Base {
 	use Has_Element_Template;
 
 	public function __construct( $data = [], $args = null ) {
@@ -96,16 +96,16 @@ class AAE_A_Post_Pagination_Next extends Atomic_Element_Base {
 		];
 
 		if ( self::type_registered( 'e-aae-a-loop-arrow' ) ) {
-			$children[] = AAE_A_Loop_Arrow::generate()
+			$children[] = Aaeaddon_A_Loop_Arrow::generate()
 				->editor_settings( [ 'title' => 'Next Icon' ] )
 				->settings( [ 'direction' => [ '$$type' => 'string', 'value' => 'next' ] ] )
 				->build();
 		}
 
 		if ( self::type_registered( 'e-aae-a-post-pagination-preview' ) ) {
-			$children[] = AAE_A_Post_Pagination_Preview::generate()
+			$children[] = Aaeaddon_A_Post_Pagination_Preview::generate()
 				->editor_settings( [ 'title' => 'Hover Preview Card' ] )
-				->children( AAE_A_Post_Pagination_Preview::build_default_inner_children( 'next' ) )
+				->children( Aaeaddon_A_Post_Pagination_Preview::build_default_inner_children( 'next' ) )
 				->build();
 		}
 
@@ -176,7 +176,7 @@ class AAE_A_Post_Pagination_Next extends Atomic_Element_Base {
 	}
 
 	protected function build_template_context(): array {
-		$ctx  = Render_Context::get( AAE_A_Post_Pagination::class );
+		$ctx  = Render_Context::get( Aaeaddon_A_Post_Pagination::class );
 		$next = isset( $ctx['next'] ) ? $ctx['next'] : null;
 
 		return array_merge( $this->build_base_template_context(), [

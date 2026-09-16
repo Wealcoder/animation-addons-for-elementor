@@ -36,7 +36,7 @@
  * @since   4.0.0
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Form;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -63,10 +63,10 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 require_once __DIR__ . '/class-aae-a-form-range.php';
 require_once __DIR__ . '/class-aae-a-form-range-value.php';
 
-use WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Range;
-use WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Range_Value;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form\Aaeaddon_A_Form_Range;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form\Aaeaddon_A_Form_Range_Value;
 
-class AAE_A_Form_Range_Group extends Atomic_Element_Base {
+class Aaeaddon_A_Form_Range_Group extends Atomic_Element_Base {
 
 	use Has_Element_Template;
 
@@ -179,11 +179,11 @@ class AAE_A_Form_Range_Group extends Atomic_Element_Base {
 				)
 				->build(),
 
-			AAE_A_Form_Range_Value::generate()
+			Aaeaddon_A_Form_Range_Value::generate()
 				->editor_settings( [ 'title' => __( 'Value', 'animation-addons-for-elementor' ) ] )
 				->build(),
 
-			AAE_A_Form_Range::generate()
+			Aaeaddon_A_Form_Range::generate()
 				->editor_settings( [ 'title' => __( 'Slider', 'animation-addons-for-elementor' ) ] )
 				->build(),
 		];

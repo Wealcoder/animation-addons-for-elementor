@@ -1,8 +1,6 @@
 <?php
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\Extensions;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\Extensions;
 
 use ZipArchive;
 
@@ -10,7 +8,7 @@ if (! defined('ABSPATH')) {
 	exit; // Exit if accessed directly
 }
 
-if (class_exists('\WCF_ADDONS\Extensions\CustomIcons')) {
+if (class_exists('\Wealcoder\AnimationAddons\Extensions\CustomIcons')) {
 	return;
 }
 
@@ -25,7 +23,7 @@ if (defined('WCF_ADDONS_PRO_VERSION') && version_compare(WCF_ADDONS_PRO_VERSION,
  * Handles custom icon management for the plugin, including uploading and processing custom icon zip files,
  * managing icon settings, and integrating with Elementor's icon manager.
  *
- * @package WCF_ADDONS\Extensions
+ * @package Wealcoder\AnimationAddons\Extensions
  * @since 1.0.0
  */
 
@@ -494,7 +492,7 @@ class CustomIcons_Lite
 
 		// 7) Process extracted files (your custom logic)
 		$msg = $this->process_icon_files($target_dir); // should return string/array
-		update_option('aae_gl_load', 'yes');
+		update_option('aaeaddon_gl_load', 'yes');
 		// 7) Done
 		wp_send_json_success(array(
 			'message'   => $msg ?: esc_html__('Icons processed successfully.', 'animation-addons-for-elementor'),
@@ -715,7 +713,7 @@ class CustomIcons_Lite
 						$style      = wp_upload_dir()['baseurl'] . '/' . $metainfo['elementor_style'];
 
 						if (file_exists($style_file)) {
-							wp_enqueue_style($slug, $style, array(), WCF_ADDONS_VERSION, 'all');
+							wp_enqueue_style($slug, $style, array(), AAEADDON_VERSION, 'all');
 						}
 					}
 				}
@@ -726,18 +724,18 @@ class CustomIcons_Lite
 	{
 		$current_screen = get_current_screen();
 		if (isset($current_screen->id) && $current_screen->id == 'edit-wcf-custom-icons') {
-			wp_enqueue_style('wcf-addon-pro-custom-icons', WCF_ADDONS_URL . 'assets/css/list.css', array(), WCF_ADDONS_VERSION);
-			wp_enqueue_script('wcf-addon-pro-custom-icons', WCF_ADDONS_URL . 'assets/js/list-actions.js', array('jquery'), WCF_ADDONS_VERSION, true);
+			wp_enqueue_style('wcf-addon-pro-custom-icons', AAEADDON_URL . 'assets/css/list.css', array(), AAEADDON_VERSION);
+			wp_enqueue_script('wcf-addon-pro-custom-icons', AAEADDON_URL . 'assets/js/list-actions.js', array('jquery'), AAEADDON_VERSION, true);
 		}
 		if (isset($current_screen->id) && $current_screen->id == 'wcf-custom-icons') {
 			wp_enqueue_media();
-			wp_enqueue_style('wcf-addon-pro-custom-icons', WCF_ADDONS_URL . 'assets/build/modules/custom-icon/main.css', array( \WCF_ADDONS\AAE_Fonts::ensure() ), WCF_ADDONS_VERSION);
-			wp_enqueue_script('wcf-addon-pro-custom-icons', WCF_ADDONS_URL . 'assets/build/modules/custom-icon/main.js', array(
+			wp_enqueue_style('wcf-addon-pro-custom-icons', AAEADDON_URL . 'assets/build/modules/custom-icon/main.css', array( \Wealcoder\AnimationAddons\Aaeaddon_Fonts::ensure() ), AAEADDON_VERSION);
+			wp_enqueue_script('wcf-addon-pro-custom-icons', AAEADDON_URL . 'assets/build/modules/custom-icon/main.js', array(
 				'react',
 				'react-dom',
 				'wp-element',
 				'wp-i18n'
-			), WCF_ADDONS_VERSION, true);
+			), AAEADDON_VERSION, true);
 		}
 
 		if (isset($current_screen->id) && ($current_screen->id == 'edit-wcf-custom-icons' || $current_screen->id == 'wcf-custom-icons')) {

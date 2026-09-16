@@ -35,7 +35,7 @@
  * @since   4.0.0
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\ImageHotspot;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\ImageHotspot;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -60,7 +60,7 @@ use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
-class AAE_A_Hotspot_Lightbox extends Atomic_Widget_Base {
+class Aaeaddon_A_Hotspot_Lightbox extends Atomic_Widget_Base {
 
 	use Has_Template;
 

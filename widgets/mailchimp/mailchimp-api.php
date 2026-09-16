@@ -3,9 +3,7 @@
  * MailChimp api
  */
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\Widgets\Mailchimp;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\Widgets\Mailchimp;
 
 defined('ABSPATH') || die();
 
@@ -112,8 +110,8 @@ class Mailchimp_Api {
         $widget_id       = ! empty( $_POST['widgetId'] ) ? sanitize_text_field( wp_unslash( $_POST['widgetId'] ) ) : '';
         $widget_settings = [];
 
-        if ( $post_id && $widget_id && function_exists( 'wcf_addons_get_widget_settings' ) ) {
-            $widget_settings = wcf_addons_get_widget_settings( $post_id, $widget_id );
+        if ( $post_id && $widget_id && function_exists( 'aaeaddon_get_widget_settings' ) ) {
+            $widget_settings = aaeaddon_get_widget_settings( $post_id, $widget_id );
             if ( ! empty( $widget_settings['mailchimp_api'] ) ) {
                 $api_key = trim( (string) $widget_settings['mailchimp_api'] );
             }
@@ -121,7 +119,7 @@ class Mailchimp_Api {
 
         // Fallback to global option if not set in widget settings
         if ( empty( $api_key ) ) {
-            $global_api = get_option( 'aae_mailchimp_api', '' );
+            $global_api = get_option( 'aaeaddon_mailchimp_api', '' );
             if ( ! empty( $global_api ) ) {
                 $api_key = trim( (string) $global_api );
             }
@@ -248,7 +246,7 @@ class Mailchimp_Api {
         $url = "https://{$dc}.api.mailchimp.com/3.0/lists/".trim($list_id)."/merge-fields?count=30";
         $res = self::request('GET', $url, $api);
         if ($res['http_code'] >= 200 && !empty($res['body']['merge_fields'])) {
-            update_option('aae_addon_mailchimp_form_field', $res['body']['merge_fields']);
+            update_option('aaeaddon_mailchimp_form_field', $res['body']['merge_fields']);
             return $res['body']['merge_fields'];
         }
         return [];

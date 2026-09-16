@@ -40,13 +40,13 @@
  * @package AnimationAddonsForElementor
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\AdvancedHeading;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\AdvancedHeading;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-class AAE_Advanced_Heading_Migration {
+class Aaeaddon_Advanced_Heading_Migration {
 
 	const ELEMENT_TYPE = 'e-aae-a-advanced-heading';
 

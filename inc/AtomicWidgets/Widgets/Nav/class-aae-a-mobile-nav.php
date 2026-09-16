@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Nav;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Nav;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
@@ -18,7 +18,7 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-class AAE_A_Mobile_Nav extends Atomic_Element_Base {
+class Aaeaddon_A_Mobile_Nav extends Atomic_Element_Base {
 	use Has_Element_Template;
 
 	const BASE_STYLE_KEY = 'base';
@@ -88,7 +88,7 @@ class AAE_A_Mobile_Nav extends Atomic_Element_Base {
 				'classes' => Classes_Prop_Type::generate( [ $class ] ),
 				'svg' => Svg_Src_Prop_Type::generate( [
 					'id' => null,
-					'url' => Url_Prop_Type::generate( WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/Nav/assets/icons/' . $file ),
+					'url' => Url_Prop_Type::generate( AAEADDON_URL . 'inc/AtomicWidgets/Widgets/Nav/assets/icons/' . $file ),
 				] ),
 			] )->build();
 	}

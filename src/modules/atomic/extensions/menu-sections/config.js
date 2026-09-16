@@ -4,7 +4,7 @@
  * WP Menu → one <ResponsiveSection> per CSS-variable-driven panel section.
  *
  * These are WIDGET sections, not extensions: each attaches to an anchor prop
- * AAE_A_Menu declares in its own schema, so they appear on e-aae-a-menu only.
+ * Aaeaddon_A_Menu declares in its own schema, so they appear on e-aae-a-menu only.
  * Same wiring as the Nested Slider's panel — the responsive framework binds by
  * anchor key, never by element type.
  *

@@ -19,7 +19,7 @@
  * @package AnimationAddonsForElementor
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Library;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Library;
 
 use Elementor\Modules\Library\Documents\Library_Document;
 
@@ -27,7 +27,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-abstract class AAE_A_Library_Document extends Library_Document {
+abstract class Aaeaddon_A_Library_Document extends Library_Document {
 
 	public static function get_properties() {
 		$properties = parent::get_properties();

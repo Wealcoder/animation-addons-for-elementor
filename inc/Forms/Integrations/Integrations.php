@@ -23,7 +23,7 @@
  * @since   4.0.0
  */
 
-namespace WCF_ADDONS\Forms\Integrations;
+namespace Wealcoder\AnimationAddons\Forms\Integrations;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -32,7 +32,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class Integrations {
 
 	/** Single option holding [ provider_id => api_key ]. */
-	const OPTION_KEYS = 'aae_form_integration_keys';
+	const OPTION_KEYS = 'aaeaddon_form_integration_keys';
 
 	/**
 	 * Concrete providers registered by pro, keyed by id.

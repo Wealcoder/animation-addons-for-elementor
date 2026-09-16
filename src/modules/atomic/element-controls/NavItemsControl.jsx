@@ -5,7 +5,7 @@
  * NavItemsControl — "Menu Items" element-control for the AAE Nav widget.
  *
  * Registered under the type id 'aae-nav-items' (see ./index.js). The PHP side
- * (AAE_A_Nav_Items_Control) places it inside the nav widget's panel.
+ * (Aaeaddon_A_Nav_Items_Control) places it inside the nav widget's panel.
  *
  * This control manages the LIST of nav-items (add / duplicate / remove /
  * reorder) and each item's own settings (title text prop, link, has_dropdown

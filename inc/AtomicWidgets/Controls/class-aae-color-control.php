@@ -18,12 +18,12 @@
  * stylesheet reads with a fallback, so an untouched control changes nothing.
  *
  *   Color_Prop_Type::make()->default( '' )            // schema
- *   AAE_Color_Control::bind_to( 'rail_color' )->set_label( … )   // panel
+ *   Aaeaddon_Color_Control::bind_to( 'rail_color' )->set_label( … )   // panel
  *
  * @package AnimationAddonsForElementor
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Controls;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Controls;
 
 use Elementor\Modules\AtomicWidgets\Controls\Base\Atomic_Control_Base;
 
@@ -31,7 +31,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class AAE_Color_Control extends Atomic_Control_Base {
+class Aaeaddon_Color_Control extends Atomic_Control_Base {
 
 	private ?string $placeholder = null;
 

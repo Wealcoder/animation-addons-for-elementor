@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Progressbar;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Progressbar;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -33,7 +33,7 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
  * class-aae-a-progressbar-track.php for why this can't be a reused
  * e-paragraph.
  */
-class AAE_A_Progressbar_Label extends Atomic_Widget_Base {
+class Aaeaddon_A_Progressbar_Label extends Atomic_Widget_Base {
 
 	use Has_Template;
 

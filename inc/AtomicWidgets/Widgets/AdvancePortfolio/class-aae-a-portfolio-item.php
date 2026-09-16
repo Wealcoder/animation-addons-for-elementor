@@ -5,7 +5,7 @@
  * The v3 skin's `article.item`, and the element that REPEATS: it reads the
  * query the root published on the Render_Context stack, runs the WP_Query, and
  * renders its own whole subtree once per post. Same mechanism as
- * AAE_A_Loop_Item against AAE_A_Loop_Grid, and for the same reasons:
+ * Aaeaddon_A_Loop_Item against Aaeaddon_A_Loop_Grid, and for the same reasons:
  *
  *   - repeating HERE and not at the root means the root's non-repeating
  *     children (the section title) still render exactly once;
@@ -20,7 +20,7 @@
  * @package AnimationAddonsForElementor
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\AdvancePortfolio;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\AdvancePortfolio;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
@@ -41,7 +41,7 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Elem
 	return;
 }
 
-class AAE_A_Portfolio_Item extends Atomic_Element_Base {
+class Aaeaddon_A_Portfolio_Item extends Atomic_Element_Base {
 
 	use Has_Element_Template;
 
@@ -160,7 +160,7 @@ class AAE_A_Portfolio_Item extends Atomic_Element_Base {
 	 * back to a single ordinary render so the card stays editable.
 	 */
 	public function print_content() {
-		$ctx = Render_Context::get( AAE_A_Advance_Portfolio::class );
+		$ctx = Render_Context::get( Aaeaddon_A_Advance_Portfolio::class );
 
 		if ( empty( $ctx ) || empty( $ctx['query_args'] ) ) {
 			$this->render();

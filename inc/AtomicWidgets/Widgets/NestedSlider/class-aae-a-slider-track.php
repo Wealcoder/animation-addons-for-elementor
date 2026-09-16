@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-class AAE_A_Slider_Track extends Atomic_Element_Base {
+class Aaeaddon_A_Slider_Track extends Atomic_Element_Base {
 	use Has_Element_Template;
 
 	public function __construct( $data = [], $args = null ) {
@@ -83,7 +83,7 @@ class AAE_A_Slider_Track extends Atomic_Element_Base {
 	 * here replaces that default on the element's own class — the native fix — and
 	 * stays overridable: a user setting padding via the Style panel regenerates the
 	 * class with their value and wins (no `!important`). Mirrors the Loop Grid
-	 * Slider's AAE_A_Loop_Slide_Track. (Atomic caches per-element CSS — a resave /
+	 * Slider's Aaeaddon_A_Loop_Slide_Track. (Atomic caches per-element CSS — a resave /
 	 * Regenerate CSS may be needed for the change to appear.)
 	 */
 	protected function define_base_styles(): array {

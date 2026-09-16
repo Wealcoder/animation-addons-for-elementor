@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Progressbar;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Progressbar;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -34,7 +34,7 @@ require_once __DIR__ . '/class-aae-a-progressbar-fill.php';
  * div-block on the site, since base styles are owned by the widget TYPE, not
  * a per-instance override (same reasoning as the AAE Timeline sub-parts).
  */
-class AAE_A_Progressbar_Track extends Atomic_Element_Base {
+class Aaeaddon_A_Progressbar_Track extends Atomic_Element_Base {
 
 	use Has_Element_Template;
 
@@ -118,11 +118,11 @@ class AAE_A_Progressbar_Track extends Atomic_Element_Base {
 	/**
 	 * Exposed publicly so the parent Progressbar's define_default_children()
 	 * can seed a fresh Track's child directly (mirrors
-	 * AAE_A_Timeline_Item::build_default_inner_children()).
+	 * Aaeaddon_A_Timeline_Item::build_default_inner_children()).
 	 */
 	public static function build_default_inner_children(): array {
 		return [
-			AAE_A_Progressbar_Fill::generate()
+			Aaeaddon_A_Progressbar_Fill::generate()
 				->editor_settings( [ 'title' => 'Fill' ] )
 				// No `classes`: the JS hook `aae-progressbar-fill` comes from the
 				// fill's own twig. A hook class in `classes` is reported by the

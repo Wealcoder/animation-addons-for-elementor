@@ -21,7 +21,7 @@
  * date pickers). A key that is not in the list — typed, or from another post
  * type — is never blanked: the control falls back to a text box holding it.
  *
- *   AAE_ACF_Field_Control::bind_to( 'acf_field' )
+ *   Aaeaddon_ACF_Field_Control::bind_to( 'acf_field' )
  *       ->set_label( __( 'ACF field', … ) )
  *       ->set_types( [ 'number', 'select', … ] )
  *
@@ -32,7 +32,7 @@
  * @package AnimationAddonsForElementor
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Controls;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Controls;
 
 use Elementor\Modules\AtomicWidgets\Controls\Base\Atomic_Control_Base;
 
@@ -40,7 +40,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class AAE_ACF_Field_Control extends Atomic_Control_Base {
+class Aaeaddon_ACF_Field_Control extends Atomic_Control_Base {
 
 	/** @var string[] ACF field types to offer; empty = every type. */
 	private array $types = array();

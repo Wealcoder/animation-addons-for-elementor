@@ -56,9 +56,9 @@
  * @package AnimationAddonsForElementor
  */
 
-namespace WCF_ADDONS\Forms;
+namespace Wealcoder\AnimationAddons\Forms;
 
-use WCF_ADDONS\AtomicWidgets\Atomic;
+use Wealcoder\AnimationAddons\AtomicWidgets\Atomic;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

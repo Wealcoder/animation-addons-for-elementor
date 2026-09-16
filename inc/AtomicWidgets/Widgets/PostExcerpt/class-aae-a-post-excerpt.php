@@ -31,7 +31,7 @@
  * @since   4.2.0
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\PostExcerpt;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\PostExcerpt;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Widget_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Template;
@@ -55,7 +55,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-class AAE_A_Post_Excerpt extends Atomic_Widget_Base {
+class Aaeaddon_A_Post_Excerpt extends Atomic_Widget_Base {
 
 	use Has_Template;
 
@@ -349,8 +349,8 @@ class AAE_A_Post_Excerpt extends Atomic_Widget_Base {
 	 * a labelled sentence when the site has nothing to sample.
 	 */
 	private static function editor_sample_text(): string {
-		if ( class_exists( '\WCF_ADDONS\AtomicWidgets\Atomic' ) ) {
-			$sample = \WCF_ADDONS\AtomicWidgets\Atomic::get_sample_post();
+		if ( class_exists( '\Wealcoder\AnimationAddons\AtomicWidgets\Atomic' ) ) {
+			$sample = \Wealcoder\AnimationAddons\AtomicWidgets\Atomic::get_sample_post();
 			if ( $sample ) {
 				$text = self::excerpt_for( $sample, 'none', 0, '' );
 				if ( '' !== $text ) {

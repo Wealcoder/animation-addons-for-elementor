@@ -1,8 +1,5 @@
 <?php
-// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\Admin\Base;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\Admin\Base;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit();
@@ -278,7 +275,7 @@ class AAEAddon_Importer {
 					Helpers::set_import_state( $msg );
 				}
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'install-elementor-settings'){
-				update_option( 'wcf_addons_setup_wizard', 'complete' );
+				update_option( 'aaeaddon_setup_wizard', 'complete' );
 				$template_data['next_step'] = 'done';
 				$progress                   = '100';		
 				// The template server labels EVERY elementor_settings file "json" --
@@ -311,7 +308,7 @@ class AAEAddon_Importer {
 				if ( isset( $template_data['elementor_settings']['content_url'] ) && 'kit-zip' === $kit_type ) {
 					// Elementor V4 demo: global classes + variables (and, on a first
 					// import, site settings) from the kit zip. See Atomic_Kit_Import.
-					$kit = \WCF_ADDONS\Admin\Base\Atomic_Kit_Import::import_from_url(
+					$kit = \Wealcoder\AnimationAddons\Admin\Base\Atomic_Kit_Import::import_from_url(
 						$template_data['elementor_settings']['content_url'],
 						! empty( $template_data['aae_site_has_atomic'] )
 					);
@@ -334,9 +331,9 @@ class AAEAddon_Importer {
 				$is_v4_template  = isset( $template_data['builder_version'] ) && 'v4' === (string) $template_data['builder_version']
 					&& 'page' !== $import_type_now
 					&& empty( $template_data['elementor_template'] );
-				if ( $is_v4_template && class_exists( '\WCF_ADDONS\Admin\Base\Atomic_V3_Switch_Off' ) ) {
-					$v3 = \WCF_ADDONS\Admin\Base\Atomic_V3_Switch_Off::run( ! empty( $template_data['aae_site_had_v3'] ) );
-					$msg .= ( '' !== $msg ? ' — ' : '' ) . \WCF_ADDONS\Admin\Base\Atomic_V3_Switch_Off::describe( $v3 );
+				if ( $is_v4_template && class_exists( '\Wealcoder\AnimationAddons\Admin\Base\Atomic_V3_Switch_Off' ) ) {
+					$v3 = \Wealcoder\AnimationAddons\Admin\Base\Atomic_V3_Switch_Off::run( ! empty( $template_data['aae_site_had_v3'] ) );
+					$msg .= ( '' !== $msg ? ' — ' : '' ) . \Wealcoder\AnimationAddons\Admin\Base\Atomic_V3_Switch_Off::describe( $v3 );
 					Helpers::set_import_state( $msg );
 				}
 				if ( isset( $template_data['elementor_template']['content_url'] ) && $template_data['elementor_template']['type'] === 'template-json' ) {
@@ -344,7 +341,7 @@ class AAEAddon_Importer {
 					// uses, from its template export. keep_create unless the user
 					// picked "match my site's design". See Atomic_Kit_Import.
 					$page_mode = ( isset( $template_data['aae_page_mode'] ) && 'match_site' === $template_data['aae_page_mode'] ) ? 'match_site' : 'keep_create';
-					$tpl = \WCF_ADDONS\Admin\Base\Atomic_Kit_Import::import_template_json_from_url(
+					$tpl = \Wealcoder\AnimationAddons\Admin\Base\Atomic_Kit_Import::import_template_json_from_url(
 						$template_data['elementor_template']['content_url'],
 						$page_mode
 					);
@@ -365,7 +362,7 @@ class AAEAddon_Importer {
 				// Atomic_Image_Localize.
 				$wants_images = ! empty( $template_data['aae_localize_images'] )
 					&& isset( $template_data['builder_version'] ) && 'v4' === (string) $template_data['builder_version']
-					&& class_exists( '\WCF_ADDONS\Admin\Base\Atomic_Image_Localize' );
+					&& class_exists( '\Wealcoder\AnimationAddons\Admin\Base\Atomic_Image_Localize' );
 				if ( $wants_images ) {
 					// Keep this step's summary (design system, V3 switch-off): the
 					// image step appends its own to it when it finishes.
@@ -381,17 +378,17 @@ class AAEAddon_Importer {
 				// Repeats until done: each request does what fits in its time
 				// budget and the client re-posts the same step. Progress climbs
 				// 95 -> 99 with the image count so the bar never looks stuck.
-				$images = \WCF_ADDONS\Admin\Base\Atomic_Image_Localize::run_batch();
+				$images = \Wealcoder\AnimationAddons\Admin\Base\Atomic_Image_Localize::run_batch();
 				if ( $images['done'] ) {
 					$template_data['next_step'] = 'done';
 					$progress                   = '100';
 					$summary                    = isset( $template_data['aae_import_summary'] ) ? (string) $template_data['aae_import_summary'] : '';
-					$msg                        = ( '' !== $summary ? $summary . ' — ' : '' ) . \WCF_ADDONS\Admin\Base\Atomic_Image_Localize::describe( $images );
+					$msg                        = ( '' !== $summary ? $summary . ' — ' : '' ) . \Wealcoder\AnimationAddons\Admin\Base\Atomic_Image_Localize::describe( $images );
 				} else {
 					$template_data['next_step'] = 'localize-images';
 					$fraction                   = $images['total'] > 0 ? min( 1, $images['processed'] / $images['total'] ) : 0;
 					$progress                   = (string) ( 95 + (int) floor( 4 * $fraction ) );
-					$msg                        = \WCF_ADDONS\Admin\Base\Atomic_Image_Localize::progress_message( $images );
+					$msg                        = \Wealcoder\AnimationAddons\Admin\Base\Atomic_Image_Localize::progress_message( $images );
 				}
 				Helpers::set_import_state( $msg );
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'install-wp-options'){
@@ -421,12 +418,12 @@ class AAEAddon_Importer {
 				// Snapshot NOW whether this site already holds V4 content. Asked at
 				// the kit step it would always be true -- this import's own pages
 				// are in the DB by then. $template_data round-trips every step.
-				$template_data['aae_site_has_atomic'] = ( class_exists( '\WCF_ADDONS\AtomicWidgets\Atomic' ) && \WCF_ADDONS\AtomicWidgets\Atomic::has_atomic_usage() ) ? 1 : 0;
+				$template_data['aae_site_has_atomic'] = ( class_exists( '\Wealcoder\AnimationAddons\AtomicWidgets\Atomic' ) && \Wealcoder\AnimationAddons\AtomicWidgets\Atomic::has_atomic_usage() ) ? 1 : 0;
 				// And whether it holds V3 content, for the same reason: a V4
 				// template import ends by switching V3 off, and the widgets
 				// that pre-existing v3 pages use must survive that. Asked at the
 				// end it would answer for the demo's pages too.
-				$template_data['aae_site_had_v3'] = ( class_exists( '\WCF_ADDONS\Admin\Base\Atomic_V3_Switch_Off' ) && \WCF_ADDONS\Admin\Base\Atomic_V3_Switch_Off::site_has_v3_content() ) ? 1 : 0;
+				$template_data['aae_site_had_v3'] = ( class_exists( '\Wealcoder\AnimationAddons\Admin\Base\Atomic_V3_Switch_Off' ) && \Wealcoder\AnimationAddons\Admin\Base\Atomic_V3_Switch_Off::site_has_v3_content() ) ? 1 : 0;
 				$progress                   = '10';	
 			
 				Helpers::set_import_state( esc_html__('Checking Setup requirement', 'animation-addons-for-elementor'));
@@ -493,8 +490,8 @@ class AAEAddon_Importer {
 	public function install_options( $settings ) {
 		global $wpdb;
 		// clean cache
-		delete_option('aae_cpts_032153');
-		delete_option('aae_taxs_933153');
+		\Wealcoder\AnimationAddons\Compat\Key_Bridge::delete_option( 'aaeaddon_cpts_cache' );
+		\Wealcoder\AnimationAddons\Compat\Key_Bridge::delete_option( 'aaeaddon_taxs_cache' );
 		foreach ( $settings as $item ) {
 			if ( empty( $item['xml_file'] ) ) {
 				continue;
@@ -566,7 +563,7 @@ class AAEAddon_Importer {
 			return false;
 		}
 		
-	    $remote_url = WCF_TEMPLATE_STARTER_BASE_URL . 'wp-json/starter-templates/download';	
+	    $remote_url = AAEADDON_TEMPLATE_STARTER_BASE_URL . 'wp-json/starter-templates/download';	
 		
 		if ( isset( $template['base_path'] ) && '' !== $template['base_path'] ) {
 			$base_path = esc_url_raw( $template['base_path'] );

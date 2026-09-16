@@ -2,7 +2,7 @@
 /**
  * AAE Post Content — native Atomic 4 widget.
  *
- * A 1:1 port of the legacy Elementor widget WCF_ADDONS\Widgets\Post_Content
+ * A 1:1 port of the legacy Elementor widget Wealcoder\AnimationAddons\Widgets\Post_Content
  * (widgets/post-content.php). It renders the current post's content, honoring
  * the Elementor builder content, the `the_content` filters, the AAE Theme
  * Builder "preview" document resolution, password-protected posts and paged
@@ -18,7 +18,7 @@
  * @since   4.0.0
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\PostContent;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\PostContent;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Widget_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Template;
@@ -31,13 +31,13 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Plugin;
 use Elementor\Utils;
-use WCF_ADDONS\WCF_Theme_Builder;
+use Wealcoder\AnimationAddons\Aaeaddon_Theme_Builder;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-class AAE_A_Post_Content extends Atomic_Widget_Base {
+class Aaeaddon_A_Post_Content extends Atomic_Widget_Base {
 
 	use Has_Template;
 
@@ -170,8 +170,8 @@ class AAE_A_Post_Content extends Atomic_Widget_Base {
 	 * @return string
 	 */
 	private static function build_editor_preview_default(): string {
-		if ( class_exists( '\WCF_ADDONS\AtomicWidgets\Atomic' ) ) {
-			$sample = \WCF_ADDONS\AtomicWidgets\Atomic::get_sample_post();
+		if ( class_exists( '\Wealcoder\AnimationAddons\AtomicWidgets\Atomic' ) ) {
+			$sample = \Wealcoder\AnimationAddons\AtomicWidgets\Atomic::get_sample_post();
 			if ( $sample ) {
 				$content = trim( (string) apply_filters( 'the_content', $sample->post_content ) );
 				if ( '' !== $content ) {
@@ -258,7 +258,7 @@ class AAE_A_Post_Content extends Atomic_Widget_Base {
 	/**
 	 * Render post content.
 	 *
-	 * Verbatim port of WCF_ADDONS\Widgets\Post_Content::render_post_content().
+	 * Verbatim port of Wealcoder\AnimationAddons\Widgets\Post_Content::render_post_content().
 	 * Keeps every behavior: recursion guard, password form, Theme Builder
 	 * preview-document resolution, edit-mode toggling for inline CSS, the
 	 * builder content pipeline, `the_content` filtering and `wp_link_pages`.
@@ -321,7 +321,7 @@ class AAE_A_Post_Content extends Atomic_Widget_Base {
 			/**
 			 * ThemeBuilder
 			 */
-			$document = class_exists( '\WCF_ADDONS\WCF_Theme_Builder' ) ? WCF_Theme_Builder::get_document( $post->ID ) : null;
+			$document = class_exists( '\Wealcoder\AnimationAddons\Aaeaddon_Theme_Builder' ) ? Aaeaddon_Theme_Builder::get_document( $post->ID ) : null;
 			// On view theme document show it's preview content.
 			if ( $document ) {
 				$preview_type = $document->get_settings( 'preview_type' );

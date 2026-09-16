@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Countdown;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Countdown;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -31,15 +31,15 @@ use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
 /**
- * Shared sub-element used by AAE_A_Countdown for each of the four time
+ * Shared sub-element used by Aaeaddon_A_Countdown for each of the four time
  * fragments. Identical structure (digit + label); only the `unit_type`
  * prop differs between the four instances so the JS handler knows which
  * piece of the remaining time to render into each one.
  *
- * Hidden from the widget panel — only spawnable inside an AAE_A_Countdown
+ * Hidden from the widget panel — only spawnable inside an Aaeaddon_A_Countdown
  * parent via `define_default_children()`.
  */
-class AAE_A_Countdown_Unit extends Atomic_Element_Base {
+class Aaeaddon_A_Countdown_Unit extends Atomic_Element_Base {
 
 	use Has_Element_Template;
 
@@ -193,7 +193,7 @@ class AAE_A_Countdown_Unit extends Atomic_Element_Base {
 	 * parent passes the correctly-labeled children directly via
 	 * `Element_Builder::children([...])` at spawn time.
 	 *
-	 * Helper exposed publicly so the parent (AAE_A_Countdown) can call
+	 * Helper exposed publicly so the parent (Aaeaddon_A_Countdown) can call
 	 * it with a per-unit label when composing each locked instance.
 	 */
 	public static function build_default_inner_children( string $label_text = 'Label' ): array {

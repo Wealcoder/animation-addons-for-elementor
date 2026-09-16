@@ -12,7 +12,7 @@
  * @since   4.0.0
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Form;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form;
 
 use Elementor\Modules\AtomicWidgets\Controls\Base\Element_Control_Base;
 
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class AAE_A_Form_Actions_Control extends Element_Control_Base {
+class Aaeaddon_A_Form_Actions_Control extends Element_Control_Base {
 
 	public function get_type(): string {
 		return 'aae-form-actions'; // MUST match the JS registry key.

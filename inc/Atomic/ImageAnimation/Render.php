@@ -1,7 +1,7 @@
 <?php
-namespace WCF_ADDONS\Atomic\ImageAnimation;
+namespace Wealcoder\AnimationAddons\Atomic\ImageAnimation;
 
-use WCF_ADDONS\Atomic\InteractionsMap;
+use Wealcoder\AnimationAddons\Atomic\InteractionsMap;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -27,7 +27,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * extension's field map; ImageAdvancedAnimation itself is untouched.
  */
 final class Render {
-	use \WCF_ADDONS\Atomic\Traits\Responsive_Config;
+	use \Wealcoder\AnimationAddons\Atomic\Traits\Responsive_Config;
 
 	/**
 	 * Field map for the cinematic-preset-specific portion of a row: snake_case

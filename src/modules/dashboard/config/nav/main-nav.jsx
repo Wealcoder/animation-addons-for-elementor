@@ -1,6 +1,7 @@
 import {
   RiApps2AddLine,
   RiCommandLine,
+  RiExchangeLine,
   RiLayoutGridLine,
   RiMagicLine,
   RiShareBoxLine,
@@ -51,6 +52,21 @@ export const MainNavData = [
     path: "animation-settings",
     role: ["administrator"],
     icon: <RiMagicLine size={20} />,
+  },
+  /*
+   * The 4.2 storage-name migration. In the sidebar only while the server
+   * says something is pending (a fresh install never sees it here); the
+   * ROUTE and the wp-admin submenu item exist regardless, so the page's
+   * backup, restore and log are reachable after the move.
+   */
+  {
+    name: "Migration",
+    path: "migration",
+    role: ["administrator"],
+    icon: <RiExchangeLine size={20} />,
+    visible: ["awaiting_consent", "needs_action"].includes(
+      window.WCF_ADDONS_ADMIN?.addons_config?.migration?.status,
+    ),
   },
   /*
    * "Free vs Pro" left the sidebar 2026-09-06 and Settings took its place.

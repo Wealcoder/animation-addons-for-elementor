@@ -13,7 +13,7 @@
  * @since   4.0.0
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\ImageHotspot;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\ImageHotspot;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -40,7 +40,7 @@ use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 
-class AAE_A_Hotspot_Close extends Atomic_Widget_Base {
+class Aaeaddon_A_Hotspot_Close extends Atomic_Widget_Base {
 
 	use Has_Template;
 
@@ -77,7 +77,7 @@ class AAE_A_Hotspot_Close extends Atomic_Widget_Base {
 
 			// Empty by default → Twig falls back to a built-in X glyph.
 			'icon' => Svg_Src_Prop_Type::make()
-				->default_url( WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/ImageHotspot/assets/icons/close.svg' ),
+				->default_url( AAEADDON_URL . 'inc/AtomicWidgets/Widgets/ImageHotspot/assets/icons/close.svg' ),
 		];
 	}
 

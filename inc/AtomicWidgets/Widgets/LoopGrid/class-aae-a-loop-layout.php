@@ -10,7 +10,7 @@
  * @package AnimationAddonsForElementor
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
@@ -31,7 +31,7 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Elem
 	return;
 }
 
-class AAE_A_Loop_Layout extends Atomic_Element_Base {
+class Aaeaddon_A_Loop_Layout extends Atomic_Element_Base {
 	use Has_Element_Template;
 
 	public function __construct( $data = [], $args = null ) {
@@ -100,18 +100,18 @@ class AAE_A_Loop_Layout extends Atomic_Element_Base {
 	 * have one — a six-item portfolio with a category filter and no second page
 	 * is an ordinary shape, and until this existed nothing in the DOM said which
 	 * grid that was, so a filter had no way to ask for it. Built by
-	 * `AAE_A_Loop_Grid::endpoint_config()`, the one builder both use.
+	 * `Aaeaddon_A_Loop_Grid::endpoint_config()`, the one builder both use.
 	 *
 	 * Editor canvas only ever gets an empty attribute: there is no render
 	 * context there, so `grid` would be '' and a runtime keying on it would bind
 	 * to a grid that does not exist.
 	 */
 	protected function build_template_context(): array {
-		$ctx = Render_Context::get( AAE_A_Loop_Grid::class );
+		$ctx = Render_Context::get( Aaeaddon_A_Loop_Grid::class );
 
 		$config = '';
-		if ( is_array( $ctx ) && ! empty( $ctx['grid_id'] ) && class_exists( AAE_A_Loop_Grid::class ) ) {
-			$config = (string) wp_json_encode( AAE_A_Loop_Grid::endpoint_config( $ctx ) );
+		if ( is_array( $ctx ) && ! empty( $ctx['grid_id'] ) && class_exists( Aaeaddon_A_Loop_Grid::class ) ) {
+			$config = (string) wp_json_encode( Aaeaddon_A_Loop_Grid::endpoint_config( $ctx ) );
 		}
 
 		return array_merge( $this->build_base_template_context(), [

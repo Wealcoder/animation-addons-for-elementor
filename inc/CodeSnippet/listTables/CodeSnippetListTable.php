@@ -1,14 +1,9 @@
 <?php
-/**
- * @phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
- */
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\CodeSnippet\listTables;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\CodeSnippet\listTables;
 
-use WCF_ADDONS\CodeSnippet\CodeSnippet;
-use WCF_ADDONS\CodeSnippet\Helpers;
-use WCF_ADDONS\CodeSnippet\listTables\AbstractListTable;
+use Wealcoder\AnimationAddons\CodeSnippet\CodeSnippet;
+use Wealcoder\AnimationAddons\CodeSnippet\Helpers;
+use Wealcoder\AnimationAddons\CodeSnippet\listTables\AbstractListTable;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -16,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
  * CodeSnippetListTable ListTable class.
  *
  * @since 1.0.0
- * @package WCF_ADDONS
+ * @package Wealcoder\AnimationAddons
  */
 class CodeSnippetListTable extends AbstractListTable {
 

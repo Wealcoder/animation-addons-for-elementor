@@ -18,7 +18,7 @@
  *      (pointer-events:none, data-aae-clone) and never become editor elements.
  *
  * Everything here is preview-cosmetic. The real output is produced server-side
- * by AAE_A_Loop_Grid::render_children_to_html(). No documents, no switch, no
+ * by Aaeaddon_A_Loop_Grid::render_children_to_html(). No documents, no switch, no
  * raw-HTML injection, no CSS stripping.
  */
 
@@ -557,7 +557,7 @@ async function fillAuthoredSample(pdoc) {
 /**
  * Preview the repeating page-number bar in the editor.
  *
- * The page numbers are ONE authored atomic template (AAE_A_Loop_Number) that
+ * The page numbers are ONE authored atomic template (Aaeaddon_A_Loop_Number) that
  * repeats per page link on the frontend (its print_content loops 1..N). The
  * editor renders that template CLIENT-side just once, so the canvas would show a
  * single number. To make the bar look real — and to let the user see their

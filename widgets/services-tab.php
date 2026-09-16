@@ -1,8 +1,6 @@
 <?php
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\Widgets;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\Widgets;
 
 use Elementor\Control_Media;
 use Elementor\Controls_Manager;
@@ -16,7 +14,7 @@ use Elementor\Plugin;
 use Elementor\Repeater;
 use Elementor\Utils;
 use Elementor\Widget_Base;
-use WCF_ADDONS\WCF_Button_Trait;
+use Wealcoder\AnimationAddons\Aaeaddon_Button_Trait;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
@@ -32,7 +30,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Services_Tab extends Widget_Base {
 
-	use  WCF_Button_Trait;
+	use  Aaeaddon_Button_Trait;
 
 	/**
 	 * Get widget name.	 

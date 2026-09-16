@@ -4,7 +4,7 @@
  * AAE Search Form — frontend runtime.
  *
  * Drives the whole composite: mode behaviour (inline / dropdown / fullscreen),
- * the Ajax live search (POSTs to the shared `live_search` admin-ajax endpoint,
+ * the Ajax live search (POSTs to the shared `aaeaddon_live_search` admin-ajax endpoint,
  * config travels inline on the wrapper's data-config) and the category / date
  * filter dropdowns. All interaction state is applied as inline styles / class
  * toggles — NO stylesheet ships. In the editor everything is force-shown so each
@@ -197,7 +197,7 @@
 		}
 
 		var body = new window.FormData();
-		body.append('action', cfg.action || 'live_search');
+		body.append('action', cfg.action || 'aaeaddon_live_search');
 		body.append('nonce', cfg.nonce || '');
 		body.append('keyword', keyword);
 

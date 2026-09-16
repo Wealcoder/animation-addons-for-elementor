@@ -42,7 +42,7 @@ Confirm with the user (don't guess defaults — they bake in silently):
 
 1. **Extension name** — kebab-case (e.g. `tilt`, `image-hover`,
    `sticky-element`). Used for:
-   - PHP namespace: `WCF_ADDONS\Atomic\Tilt`
+   - PHP namespace: `Wealcoder\AnimationAddons\Atomic\Tilt`
    - PHP dir: `inc/Atomic/Tilt/`
    - prop prefix: `aae_tilt_` (short — storage cost matters)
    - JS effect bundle: `src/modules/atomic/effects/tilt/`
@@ -105,9 +105,9 @@ Pattern (every extension is variations of this):
 
 ```php
 <?php
-namespace WCF_ADDONS\Atomic\Tilt;
+namespace Wealcoder\AnimationAddons\Atomic\Tilt;
 
-use WCF_ADDONS\Atomic\PropTypes\Responsive_Json_Prop_Type;
+use Wealcoder\AnimationAddons\Atomic\PropTypes\Responsive_Json_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
@@ -154,9 +154,9 @@ final class Schema {
 
 ```php
 <?php
-namespace WCF_ADDONS\Atomic\Tilt;
+namespace Wealcoder\AnimationAddons\Atomic\Tilt;
 
-use WCF_ADDONS\Atomic\PropTypes\Section_Anchor_Prop_Type as Base_Section_Anchor;
+use Wealcoder\AnimationAddons\Atomic\PropTypes\Section_Anchor_Prop_Type as Base_Section_Anchor;
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
@@ -185,11 +185,11 @@ it for `<ResponsiveSection>` at render time.
 
 ```php
 <?php
-namespace WCF_ADDONS\Atomic\Tilt;
+namespace Wealcoder\AnimationAddons\Atomic\Tilt;
 
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
-use WCF_ADDONS\Atomic\Bootstrap;
+use Wealcoder\AnimationAddons\Atomic\Bootstrap;
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
@@ -249,10 +249,10 @@ and enqueue the effect bundle.
 
 ```php
 <?php
-namespace WCF_ADDONS\Atomic\Tilt;
+namespace Wealcoder\AnimationAddons\Atomic\Tilt;
 
-use WCF_ADDONS\Atomic\Bootstrap;
-use WCF_ADDONS\Atomic\InteractionsMap;
+use Wealcoder\AnimationAddons\Atomic\Bootstrap;
+use Wealcoder\AnimationAddons\Atomic\InteractionsMap;
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
@@ -531,9 +531,9 @@ The handle MUST match what `Render.php::maybe_register` enqueues
 **c. inc/Atomic/Bootstrap.php** — register the three PHP classes:
 
 ```php
-( new \WCF_ADDONS\Atomic\Tilt\Schema()   )->register();
-( new \WCF_ADDONS\Atomic\Tilt\Controls() )->register();
-( new \WCF_ADDONS\Atomic\Tilt\Render()   )->register();
+( new \Wealcoder\AnimationAddons\Atomic\Tilt\Schema()   )->register();
+( new \Wealcoder\AnimationAddons\Atomic\Tilt\Controls() )->register();
+( new \Wealcoder\AnimationAddons\Atomic\Tilt\Render()   )->register();
 ```
 
 **d. src/modules/atomic/editor-bridge.js** — import + register the editor section:

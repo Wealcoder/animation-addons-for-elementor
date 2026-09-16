@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\ToggleSwitcher;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -33,7 +33,7 @@ require_once __DIR__ . '/class-aae-a-toggle-switcher-tab.php';
  * AAE Toggle Switcher — Tabs. The flex row holding the tab buttons, with the
  * shared bottom rule the active tab's own underline sits on top of.
  */
-class AAE_A_Toggle_Switcher_Tabs extends Atomic_Element_Base {
+class Aaeaddon_A_Toggle_Switcher_Tabs extends Atomic_Element_Base {
 
 	use Has_Element_Template;
 
@@ -115,7 +115,7 @@ class AAE_A_Toggle_Switcher_Tabs extends Atomic_Element_Base {
 	/**
 	 * Exposed publicly so the parent Switcher's define_default_children() can
 	 * seed a fresh Tabs row directly (mirrors
-	 * AAE_A_Timeline_Item::build_default_inner_children()). Tab identity
+	 * Aaeaddon_A_Timeline_Item::build_default_inner_children()). Tab identity
 	 * (before/after) and its default active look are set via the `is_after`
 	 * prop, never via `classes` — Tab's own twig renders
 	 * aae-ts-label-before/after + active/e--selected unconditionally from
@@ -129,7 +129,7 @@ class AAE_A_Toggle_Switcher_Tabs extends Atomic_Element_Base {
 	 */
 	public static function build_default_inner_children(): array {
 		return [
-			AAE_A_Toggle_Switcher_Tab::generate()
+			Aaeaddon_A_Toggle_Switcher_Tab::generate()
 				->editor_settings( [ 'title' => 'Tab — Monthly' ] )
 				->settings( [
 					'text' => Html_V3_Prop_Type::generate( [
@@ -139,7 +139,7 @@ class AAE_A_Toggle_Switcher_Tabs extends Atomic_Element_Base {
 				] )
 				->build(),
 
-			AAE_A_Toggle_Switcher_Tab::generate()
+			Aaeaddon_A_Toggle_Switcher_Tab::generate()
 				->editor_settings( [ 'title' => 'Tab — Yearly' ] )
 				->settings( [
 					'is_after' => Boolean_Prop_Type::generate( true ),

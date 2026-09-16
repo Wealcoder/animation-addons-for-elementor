@@ -1,7 +1,5 @@
 <?php
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\Widgets\Loop_Builder;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\Widgets\Loop_Builder;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -12,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  *  Initializes the loop builder functionality.
  */
-class AAE_Loop_Builder_Integration {
+class Aaeaddon_Loop_Builder_Integration {
 
 	/**
 	 * Instance.
@@ -76,15 +74,15 @@ class AAE_Loop_Builder_Integration {
 	 */
 	private function load_files() {
 		// Core classes.
-		require_once WCF_ADDONS_PATH . 'widgets/loop-builder/class-template-manager.php';
-		require_once WCF_ADDONS_PATH . 'widgets/loop-builder/class-query-manager.php';
-		require_once WCF_ADDONS_PATH . 'widgets/loop-builder/class-ajax-handler.php';
+		require_once AAEADDON_PATH . 'widgets/loop-builder/class-template-manager.php';
+		require_once AAEADDON_PATH . 'widgets/loop-builder/class-query-manager.php';
+		require_once AAEADDON_PATH . 'widgets/loop-builder/class-ajax-handler.php';
 
 		// Document types.
-		require_once WCF_ADDONS_PATH . 'widgets/loop-builder/documents/class-loop-item.php';
+		require_once AAEADDON_PATH . 'widgets/loop-builder/documents/class-loop-item.php';
 
 		// Controls.
-		require_once WCF_ADDONS_PATH . 'widgets/loop-builder/controls/class-template-query.php';
+		require_once AAEADDON_PATH . 'widgets/loop-builder/controls/class-template-query.php';
 	}
 
 	/**
@@ -113,16 +111,24 @@ class AAE_Loop_Builder_Integration {
 		// Register document types.
 		\Elementor\Plugin::$instance->documents->register_document_type(
 			'loop-item',
-			\WCF_ADDONS\Widgets\Loop_Builder\Documents\Loop_Item::class
+			\Wealcoder\AnimationAddons\Widgets\Loop_Builder\Documents\Loop_Item::class
 		);
 
 		add_action( 'elementor/controls/register', array( $this, 'register_controls' ) );
-		add_action( 'elementor/ajax/register_actions', array( $this, 'register_ajax_actions' ) );
+
+		// The editor bundle posts this to admin-ajax.php as a plain `action`,
+		// but it used to be registered through Elementor's ajax manager (which
+		// only answers `elementor_ajax` requests) -- so it could never reach
+		// the handler. Registered as a real wp_ajax action now, under the
+		// prefixed name; the old unprefixed name stays for one release for a
+		// stale editor bundle -- remove the alias in 4.3.
+		// (`clb_refresh_loop_items` had no caller and was removed in 4.2.)
+		\Wealcoder\AnimationAddons\Ajax_Alias::register( 'clb_get_template_preview', 'aaeaddon_clb_get_template_preview', array( $this, 'ajax_get_template_preview' ) );
 
 		// Initialize managers.
-		\WCF_ADDONS\Widgets\Loop_Builder\Template_Manager::instance();
-		\WCF_ADDONS\Widgets\Loop_Builder\Query_Manager::instance();
-		\WCF_ADDONS\Widgets\Loop_Builder\Ajax_Handler::instance();
+		\Wealcoder\AnimationAddons\Widgets\Loop_Builder\Template_Manager::instance();
+		\Wealcoder\AnimationAddons\Widgets\Loop_Builder\Query_Manager::instance();
+		\Wealcoder\AnimationAddons\Widgets\Loop_Builder\Ajax_Handler::instance();
 	}
 
 	/**
@@ -146,92 +152,7 @@ class AAE_Loop_Builder_Integration {
 	 * @return void
 	 */
 	public function register_controls( $controls_manager ) {
-		$controls_manager->register( new \WCF_ADDONS\Widgets\Loop_Builder\Controls\Template_Query() );
-	}
-
-	/**
-	 * Register AJAX actions.
-	 *
-	 * @param object $ajax_manager AJAX manager.
-	 *
-	 * @since 2.4.16
-	 * @return void
-	 */
-	public function register_ajax_actions( $ajax_manager ) {
-		$ajax_manager->register_ajax_action( 'clb_get_template_preview', array( $this, 'ajax_get_template_preview' ) );
-		$ajax_manager->register_ajax_action( 'clb_refresh_loop_items', array( $this, 'ajax_refresh_loop_items' ) );
-	}
-
-	/**
-	 * AJAX handler to refresh loop items in preview.
-	 *
-	 * @since 2.4.16
-	 * @return void
-	 */
-	public function ajax_refresh_loop_items() {
-		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'aae_loop_builder_nonce' ) ) {
-			wp_send_json_error( 'Security check failed' );
-		}
-
-		if ( ! current_user_can( 'edit_posts' ) ) {
-			wp_send_json_error( 'Insufficient permissions' );
-		}
-
-		// `isset( $x ) ?? f( $x )` never reached f() -- isset() is never null --
-		// so both were booleans and the refresh could not work.
-		$template_id = isset( $_POST['template_id'] ) ? absint( wp_unslash( $_POST['template_id'] ) ) : 0;
-		$settings    = isset( $_POST['settings'] ) && is_array( $_POST['settings'] )
-			? $this->sanitize_widget_settings( wp_unslash( $_POST['settings'] ) ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitize_widget_settings() is the per-key sanitiser; nonce + edit_posts checked above.
-			: array();
-
-		if ( ! $template_id ) {
-			wp_send_json_error( 'Invalid template ID' );
-		}
-
-		$query_manager = \WCF_ADDONS\Widgets\Loop_Builder\Query_Manager::instance();
-		$query         = $query_manager->get_query( $settings );
-
-		$html = '';
-		if ( $query->have_posts() ) {
-			while ( $query->have_posts() ) {
-				$classes = get_post_class( 'e-loop-item aae-loop-item', get_the_ID() );
-				$query->the_post();
-				$html .= '<div class="' . esc_attr( implode( ' ', $classes ) ) . '" data-elementor-type="loop-item">';
-				$html .= \WCF_ADDONS\Widgets\Loop_Builder\Template_Manager::render_template( $template_id, get_the_ID() );
-				$html .= '</div>';
-			}
-			wp_reset_postdata();
-		}
-
-		wp_send_json_success( array( 'html' => $html ) );
-	}
-
-	/**
-	 * Sanitize widget settings for AJAX.
-	 *
-	 * @param array $settings Widget settings.
-	 *
-	 * @since 2.4.16
-	 * @return array Sanitized settings.
-	 */
-	private function sanitize_widget_settings( $settings ) {
-		$sanitized = array();
-
-		$string_fields = array( 'source', 'orderby', 'order' );
-		foreach ( $string_fields as $field ) {
-			if ( isset( $settings[ $field ] ) ) {
-				$sanitized[ $field ] = sanitize_text_field( $settings[ $field ] );
-			}
-		}
-
-		$int_fields = array( 'template_id', 'posts_per_page' );
-		foreach ( $int_fields as $field ) {
-			if ( isset( $settings[ $field ] ) ) {
-				$sanitized[ $field ] = intval( $settings[ $field ] );
-			}
-		}
-
-		return $sanitized;
+		$controls_manager->register( new \Wealcoder\AnimationAddons\Widgets\Loop_Builder\Controls\Template_Query() );
 	}
 
 	/**
@@ -283,16 +204,16 @@ class AAE_Loop_Builder_Integration {
 	public function register_frontend_scripts() {
 		// Register frontend script.
 		wp_register_script(
-			'custom-loop-builder-frontend',
-			WCF_ADDONS_URL . 'assets/js/loop-builder/frontend.js',
+			'aaeaddon-loop-builder-frontend',
+			AAEADDON_URL . 'assets/js/loop-builder/frontend.js',
 			array( 'jquery' ),
-			WCF_ADDONS_VERSION,
+			AAEADDON_VERSION,
 			true
 		);
 
 		// Localize script with AJAX data.
 		wp_localize_script(
-			'custom-loop-builder-frontend',
+			'aaeaddon-loop-builder-frontend',
 			'wcf_addons_frontend',
 			array(
 				'ajax_url' => admin_url( 'admin-ajax.php' ),
@@ -310,17 +231,17 @@ class AAE_Loop_Builder_Integration {
 	public function enqueue_editor_scripts() {
 		wp_enqueue_script(
 			'aae-loop-builder-editor',
-			WCF_ADDONS_URL . 'assets/js/loop-builder/editor.js',
+			AAEADDON_URL . 'assets/js/loop-builder/editor.js',
 			array( 'elementor-common', 'elementor-editor' ),
-			WCF_ADDONS_VERSION,
+			AAEADDON_VERSION,
 			true
 		);
 
 		wp_enqueue_script(
 			'aae-loop-builder-active-document',
-			WCF_ADDONS_URL . 'assets/js/loop-builder/active-document.js',
+			AAEADDON_URL . 'assets/js/loop-builder/active-document.js',
 			array( 'elementor-common', 'elementor-editor', 'jquery' ),
-			WCF_ADDONS_VERSION,
+			AAEADDON_VERSION,
 			true
 		);
 
@@ -335,12 +256,12 @@ class AAE_Loop_Builder_Integration {
 
 		wp_enqueue_style(
 			'aae-loop-builder-editor',
-			WCF_ADDONS_URL . 'assets/css/editor-loop.css',
+			AAEADDON_URL . 'assets/css/editor-loop.css',
 			array( 'elementor-editor' ),
-			WCF_ADDONS_VERSION
+			AAEADDON_VERSION
 		);
 	}
 }
 
 // Initialize the integration.
-AAE_Loop_Builder_Integration::instance();
+Aaeaddon_Loop_Builder_Integration::instance();

@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\ImageCompare;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\ImageCompare;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -50,7 +50,7 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
  * selectors; that widget is gone (only a historical note in class-atomic.php
  * remains). Don't reintroduce references to it.
  */
-class AAE_A_Image_Compare extends Atomic_Element_Base {
+class Aaeaddon_A_Image_Compare extends Atomic_Element_Base {
 
 	use Has_Element_Template;
 
@@ -122,7 +122,7 @@ class AAE_A_Image_Compare extends Atomic_Element_Base {
 				->set_label( __( 'Presets', 'animation-addons-for-elementor' ) )
 				->set_id( 'aae_presets' )
 				->set_items( [
-					AAE_A_Preset_Picker_Control::make()
+					Aaeaddon_A_Preset_Picker_Control::make()
 						->set_label( __( 'Apply Preset', 'animation-addons-for-elementor' ) )
 						->set_meta( [ 'layout' => 'custom' ] ),
 				] ),
@@ -219,7 +219,7 @@ class AAE_A_Image_Compare extends Atomic_Element_Base {
 					'image'   => Image_Prop_Type::generate( [
 						'src'  => Image_Src_Prop_Type::generate( [
 							'id'  => null,
-							'url' => Url_Prop_Type::generate( WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/ImageCompare/assets/image/before.jpg' ),
+							'url' => Url_Prop_Type::generate( AAEADDON_URL . 'inc/AtomicWidgets/Widgets/ImageCompare/assets/image/before.jpg' ),
 						] ),
 						'size' => String_Prop_Type::generate( 'large' ),
 					] ),
@@ -233,7 +233,7 @@ class AAE_A_Image_Compare extends Atomic_Element_Base {
 					'image'   => Image_Prop_Type::generate( [
 						'src'  => Image_Src_Prop_Type::generate( [
 							'id'  => null,
-							'url' => Url_Prop_Type::generate( WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/ImageCompare/assets/image/after.jpg' ),
+							'url' => Url_Prop_Type::generate( AAEADDON_URL . 'inc/AtomicWidgets/Widgets/ImageCompare/assets/image/after.jpg' ),
 						] ),
 						'size' => String_Prop_Type::generate( 'large' ),
 					] ),
@@ -259,7 +259,7 @@ class AAE_A_Image_Compare extends Atomic_Element_Base {
 							'classes' => Classes_Prop_Type::generate( [ 'aae-a-svg-30' ] ),
 							'svg'     => Svg_Src_Prop_Type::generate( [
 								'id'  => null,
-								'url' => Url_Prop_Type::generate( WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/ImageCompare/assets/icon/handle.svg' ),
+								'url' => Url_Prop_Type::generate( AAEADDON_URL . 'inc/AtomicWidgets/Widgets/ImageCompare/assets/icon/handle.svg' ),
 							] ),
 						] )
 						->build(),

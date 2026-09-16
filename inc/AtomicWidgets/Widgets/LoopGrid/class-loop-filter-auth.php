@@ -20,7 +20,7 @@
  * authoriser has one code path and a rule added once holds on both.
  *
  * The output is a normalised `$filters` array handed to
- * AAE_A_Loop_Grid::build_query_args() as its own argument. It is deliberately
+ * Aaeaddon_A_Loop_Grid::build_query_args() as its own argument. It is deliberately
  * NOT smuggled through the settings blob: ajax_loop_post_data() (the editor
  * preview) passes client-sent settings straight into the builder, so a
  * `_filters` key there would let any `edit_posts` user hand-write a meta_query.
@@ -48,7 +48,7 @@
  * @package AnimationAddonsForElementor
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -136,7 +136,7 @@ final class Loop_Filter_Auth {
 				}
 				$type = (string) ( $el['widgetType'] ?? ( $el['elType'] ?? '' ) );
 				if ( in_array( $type, self::READOUT_TYPES, true ) ) {
-					$s      = AAE_A_Loop_Grid::unwrap( (array) ( $el['settings'] ?? [] ) );
+					$s      = Aaeaddon_A_Loop_Grid::unwrap( (array) ( $el['settings'] ?? [] ) );
 					$target = trim( (string) ( $s['target_grid'] ?? '' ) );
 					$id     = (string) ( $el['id'] ?? '' );
 					if ( '' !== $id && ( '' === $target || $target === $grid_id ) ) {
@@ -288,7 +288,7 @@ final class Loop_Filter_Auth {
 				}
 				$type = (string) ( $el['widgetType'] ?? ( $el['elType'] ?? '' ) );
 				if ( in_array( $type, self::FILTER_TYPES, true ) ) {
-					$s = AAE_A_Loop_Grid::unwrap( (array) ( $el['settings'] ?? [] ) );
+					$s = Aaeaddon_A_Loop_Grid::unwrap( (array) ( $el['settings'] ?? [] ) );
 					// An EMPTY target means "whichever grid is on this page",
 					// which is the common case and what lets a filter widget
 					// work the moment it is dropped. It is not a loosening of
@@ -382,7 +382,7 @@ final class Loop_Filter_Auth {
 		// Same per-request family: a summary was computed FROM these
 		// declarations, so keeping it after they are dropped is how a test
 		// asserts against the state it thought it had cleared.
-		AAE_A_Loop_Grid::reset_summaries();
+		Aaeaddon_A_Loop_Grid::reset_summaries();
 	}
 
 	/* ------------------------------------------------------------------ */
@@ -526,7 +526,7 @@ final class Loop_Filter_Auth {
 					// which taxonomy this instance picked. A plain `terms` is
 					// still read, for anything that sets the contract directly.
 					'chosen'           => 'chosen' === ( $s['offer'] ?? 'all' )
-						? AAE_A_Loop_Grid::extract_ids( $s[ 'terms_' . $taxonomy ] ?? ( $s['terms'] ?? null ) )
+						? Aaeaddon_A_Loop_Grid::extract_ids( $s[ 'terms_' . $taxonomy ] ?? ( $s['terms'] ?? null ) )
 						: [],
 					'include_children' => ! isset( $s['include_children'] ) || ! empty( $s['include_children'] ),
 				];
@@ -551,7 +551,7 @@ final class Loop_Filter_Auth {
 					'element_id' => $element_id,
 					'url_key'    => self::url_key( $s, self::default_url_key( 'author', 'author', $legacy_key ), $legacy_key ),
 					'legacy_key' => $legacy_key,
-					'chosen'     => 'chosen' === ( $s['offer'] ?? 'all' ) ? AAE_A_Loop_Grid::extract_ids( $s['authors'] ?? null ) : [],
+					'chosen'     => 'chosen' === ( $s['offer'] ?? 'all' ) ? Aaeaddon_A_Loop_Grid::extract_ids( $s['authors'] ?? null ) : [],
 				];
 
 			case self::TYPE_DATE:
@@ -1106,7 +1106,7 @@ final class Loop_Filter_Auth {
 	 */
 	public static function get_settings(): array {
 		if ( null === self::$settings ) {
-			$saved = get_option( 'aae_loop_grid_settings' );
+			$saved = get_option( 'aaeaddon_loop_grid_settings' );
 			if ( is_string( $saved ) ) {
 				$decoded = json_decode( $saved, true );
 				self::$settings = is_array( $decoded ) ? $decoded : [];
@@ -1922,8 +1922,8 @@ final class Loop_Filter_Auth {
 		if ( ! preg_match( '/^\s*(\d{4}-\d{2}-\d{2})?\s*\.\.\s*(\d{4}-\d{2}-\d{2})?\s*$/', $value, $m ) ) {
 			return null;
 		}
-		$after  = ! empty( $m[1] ) ? AAE_A_Loop_Grid::valid_date( $m[1] ) : null;
-		$before = ! empty( $m[2] ) ? AAE_A_Loop_Grid::valid_date( $m[2] ) : null;
+		$after  = ! empty( $m[1] ) ? Aaeaddon_A_Loop_Grid::valid_date( $m[1] ) : null;
+		$before = ! empty( $m[2] ) ? Aaeaddon_A_Loop_Grid::valid_date( $m[2] ) : null;
 		if ( ! $after && ! $before ) {
 			return null;
 		}

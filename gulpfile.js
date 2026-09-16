@@ -218,7 +218,7 @@ gulp.task('zip', () => {
         '!phpcs.xml.dist',
 
         // vendor/ is HALF required. vendor/autoload.php and vendor/composer/**
-        // carry the ONLY PSR-4 map for WCF_ADDONS\ -> inc/, and 337 namespaced
+        // carry the ONLY PSR-4 map for Wealcoder\AnimationAddons\ -> inc/, and 337 namespaced
         // files resolve through it, so dropping vendor wholesale ships a plugin
         // that activates and then fatals. Everything else under vendor/ is
         // require-dev (PHPCS/WPCS, ~3,500 files) with no runtime code at all.

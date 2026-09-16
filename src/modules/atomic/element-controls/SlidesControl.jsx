@@ -5,7 +5,7 @@
  *
  * Registered into Elementor's shared controlsRegistry under the type id
  * 'aae-slides' (see ./index.js) and rendered by the editing panel wherever the
- * PHP side places an AAE_A_Slides_Control.
+ * PHP side places an Aaeaddon_A_Slides_Control.
  *
  * This is a CUSTOM accordion list, not Elementor's <Repeater>. The Repeater's
  * row click opens a popover that internally resolves the row's element and

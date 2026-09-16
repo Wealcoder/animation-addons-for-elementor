@@ -1,8 +1,6 @@
 <?php
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\Widgets;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\Widgets;
 
 use Elementor\Group_Control_Background;
 use Elementor\Group_Control_Border;
@@ -13,7 +11,7 @@ use Elementor\Icons_Manager;
 use Elementor\Repeater;
 use Elementor\Widget_Base;
 use Elementor\Controls_Manager;
-use WCF_ADDONS\WCF_Slider_Trait;
+use Wealcoder\AnimationAddons\Aaeaddon_Slider_Trait;
 use WP_Query;
 
 if (! defined('ABSPATH')) {
@@ -30,7 +28,7 @@ if (! defined('ABSPATH')) {
 class Category_Slider extends Widget_Base
 {
 
-	use WCF_Slider_Trait;
+	use Aaeaddon_Slider_Trait;
 
 	public $query = null;
 

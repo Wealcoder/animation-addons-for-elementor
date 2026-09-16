@@ -1,16 +1,14 @@
 <?php
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\Admin;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\Admin;
 
 if (! defined('ABSPATH')) {
 	exit();
 } // Exit if accessed directly
 
-class WCF_Setup_Wizard_Init
+class Aaeaddon_Setup_Wizard_Init
 {
-	use \WCF_ADDONS\WCF_Extension_Widgets_Trait;
+	use \Wealcoder\AnimationAddons\Aaeaddon_Extension_Widgets_Trait;
 	/**
 	 * Parent Menu Page Slug
 	 */
@@ -56,7 +54,6 @@ class WCF_Setup_Wizard_Init
 
 		add_action('admin_menu', [$this, 'add_menu'], 999);
 		add_action('admin_enqueue_scripts', [$this, 'enqueue_scripts']);
-		add_action('wp_ajax_save_setup_wizard_settings', [$this, 'save_settings']);
 
 		// Hook to check the admin screen after it's loaded
 		add_action('current_screen', [$this, 'maybe_remove_admin_footer']);
@@ -135,38 +132,38 @@ class WCF_Setup_Wizard_Init
 		}
 
 		// Load config once
-		$config = wcf_get_config();
+		$config = aaeaddon_get_config();
 
 		// CSS
 		wp_enqueue_style(
 			'wcf-admin',
-			WCF_ADDONS_URL . 'assets/build/modules/dashboard/wizardSetup.css',
-			array( \WCF_ADDONS\AAE_Fonts::ensure() ),
-			WCF_ADDONS_VERSION
+			AAEADDON_URL . 'assets/build/modules/dashboard/wizardSetup.css',
+			array( \Wealcoder\AnimationAddons\Aaeaddon_Fonts::ensure() ),
+			AAEADDON_VERSION
 		);
 
 		// JS
 		wp_enqueue_script(
 			'wcf-admin',
-			WCF_ADDONS_URL . 'assets/build/modules/dashboard/wizardSetup.js',
+			AAEADDON_URL . 'assets/build/modules/dashboard/wizardSetup.js',
 			array('wp-data', 'react', 'react-dom', 'wp-element', 'wp-i18n'),
-			WCF_ADDONS_VERSION,
+			AAEADDON_VERSION,
 			true
 		);
 
 		// Count extensions & widgets
-		wcf_get_total_config_elements_by_key($config['extensions'], $total_extensions);
-		wcf_get_total_config_elements_by_key($config['widgets'], $total_widgets);
+		aaeaddon_get_total_config_elements_by_key($config['extensions'], $total_extensions);
+		aaeaddon_get_total_config_elements_by_key($config['widgets'], $total_widgets);
 
 		// Widgets
-		$widgets       = get_option('wcf_save_widgets');
+		$widgets       = get_option('aaeaddon_save_widgets');
 		$saved_widgets = is_array($widgets) ? array_keys($widgets) : [];
-		wcf_get_search_active_keys($config['widgets'], $saved_widgets, $foundKeys, $awidgets);
+		aaeaddon_get_search_active_keys($config['widgets'], $saved_widgets, $foundKeys, $awidgets);
 
 		// Extensions
-		$extensions       = get_option('wcf_save_extensions');
+		$extensions       = get_option('aaeaddon_save_extensions');
 		$saved_extensions = is_array($extensions) ? array_keys($extensions) : [];
-		wcf_get_search_active_keys($config['extensions'], $saved_extensions, $foundext, $activeext);
+		aaeaddon_get_search_active_keys($config['extensions'], $saved_extensions, $foundext, $activeext);
 
 		$active_widgets = self::get_widgets();
 		$active_ext     = self::get_extensions();
@@ -193,7 +190,7 @@ class WCF_Setup_Wizard_Init
 			],
 
 			'adminURL' => admin_url(),
-			'version'  => WCF_ADDONS_VERSION,
+			'version'  => AAEADDON_VERSION,
 
 			// Read only: the wizard shows the starter theme's state and links to
 			// Appearance > Themes. Nothing here installs or activates a theme.
@@ -210,52 +207,6 @@ class WCF_Setup_Wizard_Init
 		wp_localize_script('wcf-admin', 'WCF_ADDONS_ADMIN', $localize_data);
 	}
 
-
-	/**
-	 * Save Settings
-	 * Save EA settings data through ajax request
-	 *
-	 * @access public
-	 * @return  void
-	 * @since 1.1.2
-	 */
-	public function save_settings()
-	{
-
-		check_ajax_referer('wcf_admin_nonce', 'nonce');
-
-		if (! current_user_can('manage_options')) {
-			wp_send_json_error(esc_html__('you are not allowed to do this action', 'animation-addons-for-elementor'));
-		}
-
-		if (! isset($_POST['settings'])) {
-			return;
-		}
-
-		if (empty($_POST['settings'])) {
-			wp_send_json(esc_html__('Option name not found!', 'animation-addons-for-elementor'));
-		}
-
-		$all_settings = array_map('sanitize_text_field', wp_unslash($_POST['settings']));
-
-		foreach ($all_settings as $key => $setting) {
-
-			$option_name = $key;
-
-			wp_parse_str($setting, $settings);
-
-			$settings = array_fill_keys(array_keys($settings), true);
-
-			// update new settings
-			if (! empty($option_name)) {
-				update_option($option_name, $settings);
-			}
-		}
-
-		update_option('wcf_addons_setup_wizard', 'complete');
-
-		wp_send_json_success(['redirect_url' => esc_url(admin_url('admin.php?page=wcf_addons_settings'))]);
-	}
 
 	/**
 	 * Render wizard
@@ -295,4 +246,4 @@ class WCF_Setup_Wizard_Init
 	}
 }
 
-WCF_Setup_Wizard_Init::instance();
+Aaeaddon_Setup_Wizard_Init::instance();

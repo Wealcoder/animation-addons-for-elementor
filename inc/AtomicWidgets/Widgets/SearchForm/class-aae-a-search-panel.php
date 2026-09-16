@@ -10,7 +10,7 @@
  * @package AnimationAddonsForElementor
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\SearchForm;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SearchForm;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
@@ -24,8 +24,8 @@ use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 require_once __DIR__ . '/class-aae-a-search-field.php';
 require_once __DIR__ . '/class-aae-a-search-results.php';
 
-use WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Field;
-use WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Results;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SearchForm\Aaeaddon_A_Search_Field;
+use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SearchForm\Aaeaddon_A_Search_Results;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -35,7 +35,7 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Elem
 	return;
 }
 
-class AAE_A_Search_Panel extends Atomic_Element_Base {
+class Aaeaddon_A_Search_Panel extends Atomic_Element_Base {
 	use Has_Element_Template;
 
 	public function __construct( $data = [], $args = null ) {
@@ -91,12 +91,12 @@ class AAE_A_Search_Panel extends Atomic_Element_Base {
 
 	protected function define_default_children() {
 		return [
-			AAE_A_Search_Field::generate()
+			Aaeaddon_A_Search_Field::generate()
 				->is_locked( true )
 				->editor_settings( [ 'title' => 'Search Field' ] )
 				->build(),
 
-			AAE_A_Search_Results::generate()
+			Aaeaddon_A_Search_Results::generate()
 				->is_locked( true )
 				->editor_settings( [ 'title' => 'Search Results' ] )
 				->build(),

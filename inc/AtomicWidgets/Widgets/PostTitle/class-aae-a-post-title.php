@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\PostTitle;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\PostTitle;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Widget_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Template;
@@ -24,7 +24,7 @@ if (! defined('ABSPATH')) {
 	exit; // Exit if accessed directly.
 }
 
-class AAE_A_Post_Title extends Atomic_Widget_Base
+class Aaeaddon_A_Post_Title extends Atomic_Widget_Base
 {
 	use Has_Template;
 
@@ -62,7 +62,7 @@ class AAE_A_Post_Title extends Atomic_Widget_Base
 		// edited page's own title, which reads as broken in a loop preview.
 		$post_title = '';
 		if (class_exists('\Elementor\Plugin') && \Elementor\Plugin::$instance->editor->is_edit_mode()) {
-			$sample = \WCF_ADDONS\AtomicWidgets\Atomic::get_sample_post();
+			$sample = \Wealcoder\AnimationAddons\AtomicWidgets\Atomic::get_sample_post();
 			if ($sample) {
 				$post_title = get_the_title($sample);
 			}
@@ -186,7 +186,7 @@ class AAE_A_Post_Title extends Atomic_Widget_Base
 		// Fallback for editor if no title exists: preview the shared sample
 		// post (random, has a featured image) so the card looks real.
 		if (empty($settings['post_title']) && \Elementor\Plugin::$instance->editor->is_edit_mode()) {
-			$sample = \WCF_ADDONS\AtomicWidgets\Atomic::get_sample_post();
+			$sample = \Wealcoder\AnimationAddons\AtomicWidgets\Atomic::get_sample_post();
 			$settings['post_title'] = $sample
 				? get_the_title($sample)
 				: __('Sample Post Title', 'animation-addons-for-elementor');

@@ -152,7 +152,7 @@
 
 	/**
 	 * The page numbers are a repeat of ONE authored atomic template (server-side,
-	 * AAE_A_Loop_Number::print_content), so every link carries the same classes
+	 * Aaeaddon_A_Loop_Number::print_content), so every link carries the same classes
 	 * and styling. To keep that styling after an AJAX page change we don't build
 	 * markup from scratch \u2014 we clone the FIRST rendered number as the template and
 	 * stamp each smart-truncated page onto a fresh clone. The template is cached on

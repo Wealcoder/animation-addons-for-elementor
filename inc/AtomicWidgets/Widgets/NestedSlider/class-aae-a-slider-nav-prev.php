@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\AtomicWidgets\Widgets\NestedSlider;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\NestedSlider;
 
 if (! defined('ABSPATH')) {
 	exit; // Exit if accessed directly.
@@ -27,7 +27,7 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Box_Shadow_Prop_Type;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_States;
 
-class AAE_A_Slider_Nav_Prev extends Atomic_Element_Base {
+class Aaeaddon_A_Slider_Nav_Prev extends Atomic_Element_Base {
 	use Has_Element_Template;
 
 	const BASE_STYLE_KEY = 'base';
@@ -55,7 +55,7 @@ class AAE_A_Slider_Nav_Prev extends Atomic_Element_Base {
 					'classes' => \Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type::generate( [ 'aae-a-svg' ] ),
 					'svg' => \Elementor\Modules\AtomicWidgets\PropTypes\Svg_Src_Prop_Type::generate( [
 						'id' => null,
-						'url' => \Elementor\Modules\AtomicWidgets\PropTypes\Url_Prop_Type::generate( WCF_ADDONS_URL . 'inc/AtomicWidgets/Widgets/NestedSlider/assets/icon/prev.svg' ),
+						'url' => \Elementor\Modules\AtomicWidgets\PropTypes\Url_Prop_Type::generate( AAEADDON_URL . 'inc/AtomicWidgets/Widgets/NestedSlider/assets/icon/prev.svg' ),
 					] ),
 				] )
 				->build()

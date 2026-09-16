@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\Atomic\PropTypes;
+namespace Wealcoder\AnimationAddons\Atomic\PropTypes;
 
 use Elementor\Modules\AtomicWidgets\PropTypes\Base\Plain_Prop_Type;
 

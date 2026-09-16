@@ -34,7 +34,7 @@
 
 		// NOTE: the track's default 10px `.e-con` padding (which shrinks the slide
 		// content box and leaves a right-side gap) is zeroed via the atomic base-style
-		// in AAE_A_Loop_Slide_Track::define_base_styles() — that emits `padding: 0` on
+		// in Aaeaddon_A_Loop_Slide_Track::define_base_styles() — that emits `padding: 0` on
 		// the element's own `.e-{id}` class, which is what actually controls the
 		// padding here (not the `--padding-*` custom props). Doing it there keeps it
 		// overridable by the user's Style-panel padding. See that method for details.

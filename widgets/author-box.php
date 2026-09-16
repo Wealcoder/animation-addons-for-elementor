@@ -1,8 +1,6 @@
 <?php
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\Widgets;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\Widgets;
 
 use Elementor\Controls_Manager;
 use Elementor\Core\Kits\Documents\Tabs\Global_Colors;
@@ -23,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Elementor widget that displays an author box.
  *
  * @since 1.0.0
- * @package WCF_ADDONS\Widgets
+ * @package Wealcoder\AnimationAddons\Widgets
  */
 class Author_Box extends Widget_Base {
 	public function get_name() {

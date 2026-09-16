@@ -1,8 +1,6 @@
 <?php
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS\Widgets;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons\Widgets;
 
 use Elementor\Controls_Manager;
 use Elementor\Group_Control_Background;
@@ -2070,7 +2068,7 @@ class Post_Comment extends Widget_Base
 			if ($settings['theme_comment_style'] === 'yes') {
 				comments_template(); // Call without custom path
 			} else {
-				$plugin_comments_template = wp_normalize_path(WCF_ADDONS_PATH . 'templates/comments.php');
+				$plugin_comments_template = wp_normalize_path(AAEADDON_PATH . 'templates/comments.php');
 
 				add_filter('comments_template', function ($theme_template) use ($plugin_comments_template) {
 					if (file_exists($plugin_comments_template)) {

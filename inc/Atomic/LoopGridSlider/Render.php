@@ -13,16 +13,16 @@
  * @package AnimationAddonsForElementor
  */
 
-namespace WCF_ADDONS\Atomic\LoopGridSlider;
+namespace Wealcoder\AnimationAddons\Atomic\LoopGridSlider;
 
-use WCF_ADDONS\Atomic\NestedSlider\Schema;
+use Wealcoder\AnimationAddons\Atomic\NestedSlider\Schema;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
 final class Render {
-	use \WCF_ADDONS\Atomic\Traits\Responsive_Config;
+	use \Wealcoder\AnimationAddons\Atomic\Traits\Responsive_Config;
 
 	public function register(): void {
 		add_action( 'elementor/frontend/before_render', [ $this, 'maybe_register' ] );
@@ -112,7 +112,7 @@ final class Render {
 
 		$id = method_exists( $element, 'get_id' ) ? (string) $element->get_id() : '';
 		if ( '' !== $id ) {
-			\WCF_ADDONS\Atomic\InteractionsMap::register( 'ns', $id, $config );
+			\Wealcoder\AnimationAddons\Atomic\InteractionsMap::register( 'ns', $id, $config );
 		}
 
 		if ( ! is_admin() ) {

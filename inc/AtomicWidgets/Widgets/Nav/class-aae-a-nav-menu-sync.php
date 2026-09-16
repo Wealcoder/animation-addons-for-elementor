@@ -16,13 +16,13 @@
  * @package AnimationAddonsForElementor
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Nav;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Nav;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-class AAE_A_Nav_Menu_Sync {
+class Aaeaddon_A_Nav_Menu_Sync {
 
 	const NAV_TYPE  = 'e-aae-a-nav';
 	const ITEM_TYPE = 'e-aae-a-nav-item';
@@ -80,7 +80,7 @@ class AAE_A_Nav_Menu_Sync {
 			return;
 		}
 
-		$tree = \WCF_ADDONS\AtomicWidgets\Atomic::build_nav_menu_tree( $items );
+		$tree = \Wealcoder\AnimationAddons\AtomicWidgets\Atomic::build_nav_menu_tree( $items );
 
 		if ( ! $tree ) {
 			return;

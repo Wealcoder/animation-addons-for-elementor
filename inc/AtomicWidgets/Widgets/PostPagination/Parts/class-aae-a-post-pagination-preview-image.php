@@ -2,18 +2,18 @@
 /**
  * AAE Post Pagination Preview — Thumbnail.
  *
- * Dynamic content leaf, same mechanism as AAE_A_Post_Title/AAE_A_Post_Image:
+ * Dynamic content leaf, same mechanism as Aaeaddon_A_Post_Title/Aaeaddon_A_Post_Image:
  * `get_atomic_settings()` overrides its own `image_url` prop at render time
  * by reading the resolved adjacent-post data off
- * Render_Context::get(AAE_A_Post_Pagination::class) — keyed by `role`
- * ('prev'/'next', baked in by AAE_A_Post_Pagination_Preview::build_default_inner_children()) —
+ * Render_Context::get(Aaeaddon_A_Post_Pagination::class) — keyed by `role`
+ * ('prev'/'next', baked in by Aaeaddon_A_Post_Pagination_Preview::build_default_inner_children()) —
  * rather than the visitor typing/uploading an image, since this always has
  * to be THAT post's own featured image.
  *
  * @package AnimationAddonsForElementor
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\PostPagination;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\PostPagination;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Widget_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Template;
@@ -36,7 +36,7 @@ if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Widg
 	return;
 }
 
-class AAE_A_Post_Pagination_Preview_Image extends Atomic_Widget_Base {
+class Aaeaddon_A_Post_Pagination_Preview_Image extends Atomic_Widget_Base {
 	use Has_Template;
 
 	public static function get_element_type(): string {
@@ -77,7 +77,7 @@ class AAE_A_Post_Pagination_Preview_Image extends Atomic_Widget_Base {
 					->add_prop( 'height', Size_Prop_Type::generate( [ 'size' => 130, 'unit' => 'px' ] ) )
 					->add_prop( 'object-fit', String_Prop_Type::generate( 'cover' ) )
 					// Bleeds to the card's own edges (card padding is 12px —
-					// see AAE_A_Post_Pagination_Preview::define_base_styles())
+					// see Aaeaddon_A_Post_Pagination_Preview::define_base_styles())
 					// with only the top corners rounded to match the card.
 					->add_prop( 'width', String_Prop_Type::generate( 'calc(100% + 24px)' ) )
 					->add_prop( 'margin', Dimensions_Prop_Type::generate( [
@@ -110,7 +110,7 @@ class AAE_A_Post_Pagination_Preview_Image extends Atomic_Widget_Base {
 		$settings = parent::get_atomic_settings();
 		$role     = ! empty( $settings['role'] ) ? $settings['role'] : 'next';
 
-		$ctx  = Render_Context::get( AAE_A_Post_Pagination::class );
+		$ctx  = Render_Context::get( Aaeaddon_A_Post_Pagination::class );
 		$post = isset( $ctx[ $role ] ) ? $ctx[ $role ] : null;
 
 		if ( $post && ! empty( $post['thumbnail'] ) ) {
@@ -118,8 +118,8 @@ class AAE_A_Post_Pagination_Preview_Image extends Atomic_Widget_Base {
 			$settings['image_alt'] = isset( $post['title'] ) ? $post['title'] : '';
 		} elseif ( class_exists( '\Elementor\Plugin' ) && \Elementor\Plugin::$instance->editor->is_edit_mode() ) {
 			// Editor fallback so the piece always shows something to style,
-			// same reasoning as AAE_A_Post_Image's own sample-post fallback.
-			$sample = class_exists( '\WCF_ADDONS\AtomicWidgets\Atomic' ) ? \WCF_ADDONS\AtomicWidgets\Atomic::get_sample_post() : null;
+			// same reasoning as Aaeaddon_A_Post_Image's own sample-post fallback.
+			$sample = class_exists( '\Wealcoder\AnimationAddons\AtomicWidgets\Atomic' ) ? \Wealcoder\AnimationAddons\AtomicWidgets\Atomic::get_sample_post() : null;
 			$settings['image_url'] = $sample ? get_the_post_thumbnail_url( $sample, 'medium' ) : '';
 			if ( empty( $settings['image_url'] ) ) {
 				$settings['image_url'] = \Elementor\Utils::get_placeholder_image_src();

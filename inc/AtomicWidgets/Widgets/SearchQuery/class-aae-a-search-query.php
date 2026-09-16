@@ -16,7 +16,7 @@
  * text is computed server-side in get_atomic_settings() (mirrors Post Title).
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\SearchQuery;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SearchQuery;
 
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Widget_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Template;
@@ -39,7 +39,7 @@ if ( ! class_exists( '\\Elementor\\Modules\\AtomicWidgets\\Elements\\Base\\Atomi
 	return;
 }
 
-class AAE_A_Search_Query extends Atomic_Widget_Base {
+class Aaeaddon_A_Search_Query extends Atomic_Widget_Base {
 
 	use Has_Template;
 

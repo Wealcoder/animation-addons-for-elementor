@@ -1,8 +1,8 @@
 <?php
-namespace WCF_ADDONS\Atomic\Parallax;
+namespace Wealcoder\AnimationAddons\Atomic\Parallax;
 
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
-use WCF_ADDONS\Atomic\PropTypes\Responsive_Json_Prop_Type;
+use Wealcoder\AnimationAddons\Atomic\PropTypes\Responsive_Json_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
 
 if ( ! defined( 'ABSPATH' ) ) {

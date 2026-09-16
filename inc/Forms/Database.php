@@ -15,7 +15,7 @@
  * @since   4.0.0
  */
 
-namespace WCF_ADDONS\Forms;
+namespace Wealcoder\AnimationAddons\Forms;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class Database {
 
 	const DB_VERSION = '3';
-	const OPTION_KEY = 'aae_forms_db_version';
+	const OPTION_KEY = 'aaeaddon_forms_db_version';
 
 	public static function forms_table(): string {
 		global $wpdb;
@@ -221,7 +221,7 @@ final class Database {
 	 * Submissions are leads ("never lose a lead"), so the tables are
 	 * dropped ONLY when the site owner explicitly opted in beforehand:
 	 *
-	 *     update_option( 'aae_forms_delete_data_on_uninstall', 1 );
+	 *     update_option( 'aaeaddon_forms_delete_data_on_uninstall', 1 );
 	 *
 	 * A plain uninstall clears cron + housekeeping options and keeps
 	 * every form, schema, and submission intact for a future reinstall.
@@ -233,7 +233,7 @@ final class Database {
 		wp_clear_scheduled_hook( 'aae_form/process_queue_sweep' );
 		wp_clear_scheduled_hook( 'aae_form/cleanup_uploads' );
 
-		if ( get_option( 'aae_forms_delete_data_on_uninstall' ) ) {
+		if ( get_option( 'aaeaddon_forms_delete_data_on_uninstall' ) ) {
 			global $wpdb;
 
 			// Children before parents (values/logs reference submissions/jobs).
@@ -253,9 +253,9 @@ final class Database {
 				$wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %i', $table ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- schema teardown at uninstall.
 			}
 
-			delete_option( 'aae_forms_delete_data_on_uninstall' );
+			\Wealcoder\AnimationAddons\Compat\Key_Bridge::delete_option( 'aaeaddon_forms_delete_data_on_uninstall' );
 		}
 
-		delete_option( self::OPTION_KEY );
+		\Wealcoder\AnimationAddons\Compat\Key_Bridge::delete_option( self::OPTION_KEY );
 	}
 }

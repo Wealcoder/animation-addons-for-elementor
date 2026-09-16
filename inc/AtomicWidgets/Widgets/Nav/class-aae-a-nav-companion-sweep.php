@@ -29,13 +29,13 @@
  * @package AnimationAddonsForElementor
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Nav;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Nav;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-class AAE_A_Nav_Companion_Sweep {
+class Aaeaddon_A_Nav_Companion_Sweep {
 
 	const COMPANION_TYPE = 'e-aae-a-mobile-nav';
 

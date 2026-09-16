@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\FlipBox;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\FlipBox;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -35,7 +35,7 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
  * base styles are owned by the widget TYPE, not a per-instance override, so
  * a reused e-heading would mean styling every heading site-wide.
  */
-class AAE_A_Flip_Box_Title extends Atomic_Widget_Base {
+class Aaeaddon_A_Flip_Box_Title extends Atomic_Widget_Base {
 
 	use Has_Template;
 

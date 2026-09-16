@@ -2,7 +2,7 @@
 /**
  * AAE Form Range — atomic leaf WIDGET. Renders a single <input type="range">.
  *
- * Split out of AAE_A_Form_Input (which originally gained `range` as a Pro
+ * Split out of Aaeaddon_A_Form_Input (which originally gained `range` as a Pro
  * `type` value alongside date/time) into its own widget because a range
  * slider needs a property no other input type does: its own colour.
  * `accent-color` — the one CSS property that actually recolors a native
@@ -31,7 +31,7 @@
  * @since   4.0.0
  */
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Form;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -57,9 +57,9 @@ use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\AtomicWidgets\Styles\Style_States;
 use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
-use WCF_ADDONS\Forms\Pro_Gated;
+use Wealcoder\AnimationAddons\Forms\Pro_Gated;
 
-class AAE_A_Form_Range extends Atomic_Widget_Base {
+class Aaeaddon_A_Form_Range extends Atomic_Widget_Base {
 
 	/**
 	 * Locks this widget's PANEL CARD (not the element) without a Pro licence:

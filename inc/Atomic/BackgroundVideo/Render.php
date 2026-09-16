@@ -1,8 +1,8 @@
 <?php
 
-namespace WCF_ADDONS\Atomic\BackgroundVideo;
+namespace Wealcoder\AnimationAddons\Atomic\BackgroundVideo;
 
-use WCF_ADDONS\Atomic\InteractionsMap;
+use Wealcoder\AnimationAddons\Atomic\InteractionsMap;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -28,7 +28,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 final class Render {
 
-	use \WCF_ADDONS\Atomic\Traits\Responsive_Config;
+	use \Wealcoder\AnimationAddons\Atomic\Traits\Responsive_Config;
 
 	public function register(): void {
 		add_action( 'elementor/frontend/before_render', [ $this, 'maybe_register' ] );

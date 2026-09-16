@@ -1,8 +1,6 @@
 <?php
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -36,7 +34,7 @@ class BlackList_Widget extends \Elementor\Widget_Base {
     }  
     
     protected function render() {     
-        echo wp_kses_post( wcfaddon_get_pronotice_html());
+        echo wp_kses_post( aaeaddon_get_pronotice_html());
     }
    
 }

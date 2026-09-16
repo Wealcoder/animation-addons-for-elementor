@@ -1,11 +1,9 @@
 <?php
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
-namespace WCF_ADDONS;
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound
+namespace Wealcoder\AnimationAddons;
 
 use Elementor\Plugin as ElementorPlugin;
-use WCF_ADDONS\INC\WPML as WPML;
+use Wealcoder\AnimationAddons\INC\WPML as WPML;
 
 if (! defined('ABSPATH')) {
 	exit;
@@ -40,9 +38,9 @@ class Plugin
 	 *
 	 * @var string Plugin version.
 	 */
-	use \WCF_ADDONS\WCF_Extension_Widgets_Trait;
+	use \Wealcoder\AnimationAddons\Aaeaddon_Extension_Widgets_Trait;
 
-	const LIBRARY_OPTION_KEY = 'wcf_templates_library';
+	const LIBRARY_OPTION_KEY = 'aaeaddon_templates_library';
 
 	/**
 	 * Carrier handle for generated inline CSS (Custom Fonts, category colours).
@@ -200,7 +198,7 @@ class Plugin
 					'success' => esc_html__('Success', 'animation-addons-for-elementor'),
 					'warning' => esc_html__('Warning', 'animation-addons-for-elementor'),
 				),
-				'smoothScroller' => json_decode(get_option('wcf_smooth_scroller')),
+				'smoothScroller' => json_decode(get_option('aaeaddon_smooth_scroller')),
 				'mode'           => \Elementor\Plugin::$instance->editor->is_edit_mode(),
 				'elementor_breakpoint' => $this->get_elementor_breakpoints()
 			)
@@ -258,7 +256,7 @@ class Plugin
 		// which meant that 6.5 KB legacy stylesheet had to ship on every page
 		// just to carry them. Now they have their own handle and wcf--addons is
 		// free to load only when the legacy layer is actually in use.
-		wp_register_style(self::INLINE_STYLE_HANDLE, false, array(), WCF_ADDONS_VERSION);
+		wp_register_style(self::INLINE_STYLE_HANDLE, false, array(), AAEADDON_VERSION);
 		wp_enqueue_style(self::INLINE_STYLE_HANDLE);
 
 		// The core legacy stylesheet is only needed by v3 widgets/extensions.
@@ -293,7 +291,7 @@ class Plugin
 	 */
 	public static function asset_version($version)
 	{
-		return $version ? $version : WCF_ADDONS_VERSION;
+		return $version ? $version : AAEADDON_VERSION;
 	}
 
 	/**
@@ -308,7 +306,7 @@ class Plugin
 	{
 		wp_enqueue_script(
 			'aae-nested-sl',
-			WCF_ADDONS_URL . 'assets/build/modules/nested-slider/editor/index.js',
+			AAEADDON_URL . 'assets/build/modules/nested-slider/editor/index.js',
 			array(
 				'nested-elements',
 				'elementor-editor',
@@ -317,7 +315,7 @@ class Plugin
 				'jquery',
 			),
 			//time(),
-			WCF_ADDONS_VERSION,
+			AAEADDON_VERSION,
 			true
 		);
 		wp_enqueue_script(
@@ -326,7 +324,7 @@ class Plugin
 			array(
 				'elementor-editor',
 			),
-			WCF_ADDONS_VERSION,
+			AAEADDON_VERSION,
 			true
 		);
 
@@ -341,7 +339,7 @@ class Plugin
 		wp_localize_script('wcf-editor', 'WCF_Addons_Editor', $data);
 
 		// templates Library
-		if (class_exists('\WCF_ADDONS\Library_Source')) {
+		if (class_exists('\Wealcoder\AnimationAddons\Library_Source')) {
 			wp_enqueue_script(
 				'wcf-template-library',
 				plugins_url('/assets/js/wcf-template-library.js', __FILE__),
@@ -349,7 +347,7 @@ class Plugin
 					'jquery',
 					'wp-util',
 				),
-				WCF_ADDONS_VERSION,
+				AAEADDON_VERSION,
 				true
 			);
 
@@ -373,7 +371,7 @@ class Plugin
 				'wcf-template-library',
 				plugins_url('/assets/css/wcf-template-library.css', __FILE__),
 				array(),
-				WCF_ADDONS_VERSION
+				AAEADDON_VERSION
 			);
 		}
 	}
@@ -388,7 +386,7 @@ class Plugin
 	 */
 	public function editor_styles()
 	{
-		wp_enqueue_style('wcf--editor', plugins_url('/assets/css/editor.min.css', __FILE__), array(), WCF_ADDONS_VERSION, 'all');
+		wp_enqueue_style('wcf--editor', plugins_url('/assets/css/editor.min.css', __FILE__), array(), AAEADDON_VERSION, 'all');
 	}
 
 	/**
@@ -410,56 +408,56 @@ class Plugin
 					'handler' => 'progressbar',
 					'src'     => 'progressbar.min.js',
 					'dep'     => array(),
-					'version' => WCF_ADDONS_VERSION,
+					'version' => AAEADDON_VERSION,
 					'arg'     => true,
 				),
 				'slider'               => array(
 					'handler' => 'wcf--slider',
 					'src'     => 'widgets/slider.min.js',
 					'dep'     => array(),
-					'version' => WCF_ADDONS_VERSION,
+					'version' => AAEADDON_VERSION,
 					'arg'     => true,
 				),
 				'typewriter'           => array(
 					'handler' => 'wcf--typewriter',
 					'src'     => 'widgets/typewriter.min.js',
 					'dep'     => array('jquery'),
-					'version' => WCF_ADDONS_VERSION,
+					'version' => AAEADDON_VERSION,
 					'arg'     => true,
 				),
 				'text-hover-image'     => array(
 					'handler' => 'wcf--text-hover-image',
 					'src'     => 'widgets/text-hover-image.min.js',
 					'dep'     => array('jquery'),
-					'version' => WCF_ADDONS_VERSION,
+					'version' => AAEADDON_VERSION,
 					'arg'     => true,
 				),
 				'counter'              => array(
 					'handler' => 'wcf--counter',
 					'src'     => 'widgets/counter.min.js',
 					'dep'     => array('jquery-numerator'),
-					'version' => WCF_ADDONS_VERSION,
+					'version' => AAEADDON_VERSION,
 					'arg'     => true,
 				),
 				'nested-slider'        => array(
 					'handler' => 'aae--nested-slider',
 					'src'     => 'widgets/aae-slider-frontend.min.js',
 					'dep'     => array('jquery-numerator'),
-					'version' => WCF_ADDONS_VERSION,
+					'version' => AAEADDON_VERSION,
 					'arg'     => true,
 				),
 				'socials-shares'       => array(
 					'handler' => 'wcf--socials-share',
 					'src'     => 'widgets/social-share.min.js',
 					'dep'     => array(),
-					'version' => WCF_ADDONS_VERSION,
+					'version' => AAEADDON_VERSION,
 					'arg'     => true,
 				),
 				'progressbar'          => array(
 					'handler' => 'wcf--progressbar',
 					'src'     => 'widgets/progressbar.min.js',
 					'dep'     => array('progressbar'),
-					'version' => WCF_ADDONS_VERSION,
+					'version' => AAEADDON_VERSION,
 					'arg'     => true,
 				),
 
@@ -467,168 +465,168 @@ class Plugin
 					'handler' => 'wcf--tabs',
 					'src'     => 'widgets/tabs.min.js',
 					'dep'     => array('jquery'),
-					'version' => WCF_ADDONS_VERSION,
+					'version' => AAEADDON_VERSION,
 					'arg'     => true,
 				),
 				'nav-menu'             => array(
 					'handler' => 'wcf--nav-menu',
 					'src'     => 'widgets/nav-menu.min.js',
 					'dep'     => array(),
-					'version' => WCF_ADDONS_VERSION,
+					'version' => AAEADDON_VERSION,
 					'arg'     => true,
 				),
 				'animated-heading'     => array(
 					'handler' => 'wcf--animated-heading',
 					'src'     => 'widgets/animated-heading.min.js',
 					'dep'     => defined('WCF_ADDONS_PRO_VERSION') ? array('gsap') : array(),
-					'version' => WCF_ADDONS_VERSION,
+					'version' => AAEADDON_VERSION,
 					'arg'     => true,
 				),
 				'video-posts-tab'      => array(
 					'handler' => 'aae-video-posts-tab',
 					'src'     => 'widgets/video-posts-tab.min.js',
 					'dep'     => array('jquery'),
-					'version' => WCF_ADDONS_VERSION,
+					'version' => AAEADDON_VERSION,
 					'arg'     => true,
 				),
 				'search'               => array(
 					'handler' => 'aae--search',
 					'src'     => 'widgets/search.min.js',
 					'dep'     => array('jquery'),
-					'version' => WCF_ADDONS_VERSION,
+					'version' => AAEADDON_VERSION,
 					'arg'     => true,
 				),
 				'contact-form-7'       => array(
 					'handler' => 'aae--contact-form',
 					'src'     => 'widgets/contact-form.min.js',
 					'dep'     => array('jquery'),
-					'version' => WCF_ADDONS_VERSION,
+					'version' => AAEADDON_VERSION,
 					'arg'     => true,
 				),
 				'image-hotspot'        => array(
 					'handler' => 'aae-image-hotspot',
 					'src'     => 'widgets/image-hotspot.min.js',
 					'dep'     => array('jquery'),
-					'version' => WCF_ADDONS_VERSION,
+					'version' => AAEADDON_VERSION,
 					'arg'     => true,
 				),
 				'image-gallery'        => array(
 					'handler' => 'wcf--image-gallery-js',
 					'src'     => 'widgets/image-gallery.min.js',
 					'dep'     => array('jquery'),
-					'version' => WCF_ADDONS_VERSION,
+					'version' => AAEADDON_VERSION,
 					'arg'     => true,
 				),
 				'wcf-posts'            => array(
 					'handler' => 'wcf--posts',
 					'src'     => 'widgets/post-pro.min.js',
 					'dep'     => array(),
-					'version' => WCF_ADDONS_VERSION,
+					'version' => AAEADDON_VERSION,
 					'arg'     => true,
 				),
 				'button-pro'           => array(
 					'handler' => 'aae--button-pro',
 					'src'     => 'widgets/button-pro.min.js',
 					'dep'     => array(),
-					'version' => WCF_ADDONS_VERSION,
+					'version' => AAEADDON_VERSION,
 					'arg'     => true,
 				),
 				'category-slider'      => array(
 					'handler' => 'wcf--category-slider',
 					'src'     => 'widgets/category-slider.min.js',
 					'dep'     => array(),
-					'version' => WCF_ADDONS_VERSION,
+					'version' => AAEADDON_VERSION,
 					'arg'     => true,
 				),
 				'feature-posts'        => array(
 					'handler' => 'wcf--posts',
 					'src'     => 'widgets/post.min.js',
 					'dep'     => array(),
-					'version' => WCF_ADDONS_VERSION,
+					'version' => AAEADDON_VERSION,
 					'arg'     => true,
 				),
 				'wcf--a-accordion'     => array(
 					'handler' => 'wcf--a-accordion',
 					'src'     => 'widgets/advance-accordion.min.js',
 					'dep'     => array(),
-					'version' => WCF_ADDONS_VERSION,
+					'version' => AAEADDON_VERSION,
 					'arg'     => true,
 				),
 				'filterable-slider'    => array(
 					'handler' => 'wcf--filterable-slider',
 					'src'     => 'widgets/filterable-slider.min.js',
 					'dep'     => array(),
-					'version' => WCF_ADDONS_VERSION,
+					'version' => AAEADDON_VERSION,
 					'arg'     => true,
 				),
 				'notification'         => array(
 					'handler' => 'aae-notification',
 					'src'     => 'widgets/notification.min.js',
 					'dep'     => array(),
-					'version' => WCF_ADDONS_VERSION,
+					'version' => AAEADDON_VERSION,
 					'arg'     => true,
 				),
 				'post-rating'          => array(
 					'handler' => 'aae-post-rating',
 					'src'     => 'widgets/post-rating.min.js',
 					'dep'     => array( 'jquery' ),
-					'version' => WCF_ADDONS_VERSION,
+					'version' => AAEADDON_VERSION,
 					'arg'     => true,
 				),
 				'post-reactions-js'    => array(
 					'handler' => 'wcf--post-reactions',
 					'src'     => 'widgets/post-reactions.min.js',
 					'dep'     => array(),
-					'version' => WCF_ADDONS_VERSION,
+					'version' => AAEADDON_VERSION,
 					'arg'     => true,
 				),
 				'team-slider'          => array(
 					'handler' => 'wcf--team-slider',
 					'src'     => 'widgets/team-slider.min.js',
 					'dep'     => array(),
-					'version' => WCF_ADDONS_VERSION,
+					'version' => AAEADDON_VERSION,
 					'arg'     => true,
 				),
 				'image-compare'        => array(
 					'handler' => 'wcf--image-compare',
 					'src'     => 'widgets/image-compare.min.js',
 					'dep'     => array(),
-					'version' => WCF_ADDONS_VERSION,
+					'version' => AAEADDON_VERSION,
 					'arg'     => true,
 				),
 				'mailchimp-script'     => array(
 					'handler' => 'wcf--mailchimp',
 					'src'     => 'widgets/mailchimp.min.js',
 					'dep'     => array(),
-					'version' => WCF_ADDONS_VERSION,
+					'version' => AAEADDON_VERSION,
 					'arg'     => true,
 				),
 				'click-drop'           => array(
 					'handler' => 'wcf--click-drop',
 					'src'     => 'widgets/click-drop.min.js',
 					'dep'     => array(),
-					'version' => WCF_ADDONS_VERSION,
+					'version' => AAEADDON_VERSION,
 					'arg'     => true,
 				),
 				'wcf--countdown'       => array(
 					'handler' => 'wcf-countdown-script',
 					'src'     => 'widgets/countdown.min.js',
 					'dep'     => array(),
-					'version' => WCF_ADDONS_VERSION,
+					'version' => AAEADDON_VERSION,
 					'arg'     => true,
 				),
 				'aae--switcher-toggle' => array(
 					'handler' => 'aae--switcher-toggle',
 					'src'     => 'widgets/toggle-switch.min.js',
 					'dep'     => array(),
-					'version' => WCF_ADDONS_VERSION,
+					'version' => AAEADDON_VERSION,
 					'arg'     => true,
 				),
 				'wcf-image-accordion'  => array(
 					'handler' => 'wcf--image-accordion',
 					'src'     => 'widgets/image-accordion.min.js',
 					'dep'     => array(),
-					'version' => WCF_ADDONS_VERSION,
+					'version' => AAEADDON_VERSION,
 					'arg'     => true,
 				),
 
@@ -857,7 +855,7 @@ class Plugin
 				'media'   => 'all',
 			),
 			'grid-hover-posts'   => array(
-				'handler' => 'grid-hover-posts',
+				'handler' => 'aaeaddon-grid-hover-posts',
 				'src'     => 'widgets/grid-hover-posts.min.css',
 				'dep'     => array(),
 				'version' => false,
@@ -1044,7 +1042,7 @@ class Plugin
 					$class = explode('-', $slug);
 					$class = array_map('ucfirst', $class);
 					$class = implode('_', $class);
-					$class = 'WCF_ADDONS\\Widgets\\' . $class;
+					$class = 'Wealcoder\\AnimationAddons\\Widgets\\' . $class;
 
 					$widget = new $class();
 					self::$widget_element_keys[$widget->get_name()] = $slug;
@@ -1075,8 +1073,8 @@ class Plugin
 			}
 
 			if (! $data['is_pro'] && ! $data['is_extension']) {
-				if (file_exists(WCF_ADDONS_PATH . 'inc/class-wcf-' . $slug . '.php')) {
-					include_once WCF_ADDONS_PATH . 'inc/class-wcf-' . $slug . '.php';
+				if (file_exists(AAEADDON_PATH . 'inc/class-wcf-' . $slug . '.php')) {
+					include_once AAEADDON_PATH . 'inc/class-wcf-' . $slug . '.php';
 				}
 			}
 		}
@@ -1097,19 +1095,19 @@ class Plugin
 		 * double hit from both lists a no-op.
 		 *
 		 * Safe to call Atomic::instance() here — include_files() has already run
-		 * \WCF_ADDONS\Atomic\Bootstrap::init(), which loads the class, before it
+		 * \Wealcoder\AnimationAddons\Atomic\Bootstrap::init(), which loads the class, before it
 		 * calls this method.
 		 */
-		if (class_exists('\WCF_ADDONS\AtomicWidgets\Atomic')) {
-			$atomic = \WCF_ADDONS\AtomicWidgets\Atomic::instance();
+		if (class_exists('\Wealcoder\AnimationAddons\AtomicWidgets\Atomic')) {
+			$atomic = \Wealcoder\AnimationAddons\AtomicWidgets\Atomic::instance();
 
 			foreach (['custom-fonts', 'custom-cpt', 'custom-icon'] as $slug) {
 				if (! $atomic->is_extension_active($slug)) {
 					continue;
 				}
 
-				if (file_exists(WCF_ADDONS_PATH . 'inc/class-wcf-' . $slug . '.php')) {
-					include_once WCF_ADDONS_PATH . 'inc/class-wcf-' . $slug . '.php';
+				if (file_exists(AAEADDON_PATH . 'inc/class-wcf-' . $slug . '.php')) {
+					include_once AAEADDON_PATH . 'inc/class-wcf-' . $slug . '.php';
 				}
 			}
 		}
@@ -1179,8 +1177,8 @@ class Plugin
 	private function include_files()
 	{
 
-		//require_once WCF_ADDONS_PATH . 'config.php';
-		require_once WCF_ADDONS_PATH . 'inc/helper.php';
+		//require_once AAEADDON_PATH . 'config.php';
+		require_once AAEADDON_PATH . 'inc/helper.php';
 
 		// One class, no side effects, no hooks -- it only answers "register the
 		// bundled webfonts and tell me the handle" for the admin stylesheets
@@ -1188,39 +1186,39 @@ class Plugin
 		// ask for it (notices, code snippet, custom icon, CPT builder) each load
 		// through a different path, and a dependency that is not registered
 		// causes WordPress to silently skip the dependent stylesheet.
-		require_once WCF_ADDONS_PATH . 'inc/admin/class-aae-fonts.php';
+		require_once AAEADDON_PATH . 'inc/admin/class-aae-fonts.php';
 
 		if (is_admin()) {
-			if (get_option('wcf_addons_setup_wizard') !== 'complete') {
-				require_once WCF_ADDONS_PATH . 'inc/admin/setup-wizard.php';
+			if (get_option('aaeaddon_setup_wizard') !== 'complete') {
+				require_once AAEADDON_PATH . 'inc/admin/setup-wizard.php';
 			}
-			require_once WCF_ADDONS_PATH . 'inc/admin/dashboard.php';
+			require_once AAEADDON_PATH . 'inc/admin/dashboard.php';
 		}
 
 		// Only load theme builder when needed. added this condition at v-2.6.0
 		if (is_admin() || ! wp_doing_ajax()) {
-			require_once WCF_ADDONS_PATH . 'inc/theme-builder/theme-builder.php';
+			require_once AAEADDON_PATH . 'inc/theme-builder/theme-builder.php';
 		}
 
-		require_once WCF_ADDONS_PATH . 'inc/hook.php';
-		require_once WCF_ADDONS_PATH . 'inc/class-blacklist.php';
-		require_once WCF_ADDONS_PATH . 'inc/ajax-handler.php';
+		require_once AAEADDON_PATH . 'inc/hook.php';
+		require_once AAEADDON_PATH . 'inc/class-blacklist.php';
+		require_once AAEADDON_PATH . 'inc/ajax-handler.php';
 
 		// Loaded unconditionally, not just in admin: the front end and the Pro
 		// plugin both read Animation_Settings to decide which renderer owns a
 		// feature, so the class has to exist on every request.
-		require_once WCF_ADDONS_PATH . 'inc/AnimationSettings/class-animation-settings.php';
-		\WCF_ADDONS\AnimationSettings\Animation_Settings::instance();
+		require_once AAEADDON_PATH . 'inc/AnimationSettings/class-animation-settings.php';
+		\Wealcoder\AnimationAddons\AnimationSettings\Animation_Settings::instance();
 
-		\WCF_ADDONS\Atomic\Bootstrap::init();
-		\WCF_ADDONS\Forms\Bootstrap::init();
+		\Wealcoder\AnimationAddons\Atomic\Bootstrap::init();
+		\Wealcoder\AnimationAddons\Forms\Bootstrap::init();
 
 		/*
 		 * Template Library, gated on the V4 (Atomic) dashboard extension toggle.
 		 *
 		 * This is the ONLY require of class-wcf-template-library.php in the
 		 * plugin, and that file is the only require of inc/library-source.php —
-		 * so this line is what decides whether \WCF_ADDONS\Library_Source exists,
+		 * so this line is what decides whether \Wealcoder\AnimationAddons\Library_Source exists,
 		 * and therefore whether the two class_exists() checks below (the editor
 		 * script enqueue, and the print_templates/preview_styles hooks) fire at
 		 * all. Before this gate existed nothing required the file, so the whole
@@ -1231,8 +1229,8 @@ class Plugin
 		 * animation-addons-for-elementor.php only requires it AFTER
 		 * class-plugin.php) and calls instance() itself.
 		 */
-		if (\WCF_ADDONS\AtomicWidgets\Atomic::instance()->is_extension_active('template-library')) {
-			require_once WCF_ADDONS_PATH . 'inc/class-wcf-template-library.php';
+		if (\Wealcoder\AnimationAddons\AtomicWidgets\Atomic::instance()->is_extension_active('template-library')) {
+			require_once AAEADDON_PATH . 'inc/class-wcf-template-library.php';
 		}
 
 		/*
@@ -1245,40 +1243,40 @@ class Plugin
 		 *
 		 * These three includes moved down here from the is_admin() block above
 		 * purely because Atomic::instance() is only safe to call after
-		 * \WCF_ADDONS\Atomic\Bootstrap::init() has loaded the class. Nothing in
+		 * \Wealcoder\AnimationAddons\Atomic\Bootstrap::init() has loaded the class. Nothing in
 		 * CodeSnippet.php runs at file scope beyond its own singleton, which
 		 * registers admin_menu/ajax hooks that fire long after plugins_loaded.
 		 */
-		$code_snippet_active = wcf_addons_get_settings('wcf_save_extensions', 'code-snippet')
-			|| \WCF_ADDONS\AtomicWidgets\Atomic::instance()->is_extension_active('code-snippet');
+		$code_snippet_active = aaeaddon_get_settings('aaeaddon_save_extensions', 'code-snippet')
+			|| \Wealcoder\AnimationAddons\AtomicWidgets\Atomic::instance()->is_extension_active('code-snippet');
 
 		if ($code_snippet_active) {
 			if (is_admin()) {
 				// Include CodeSnippet Admin functionality.
-				include_once WCF_ADDONS_PATH . 'inc/CodeSnippet/CodeSnippet.php';
+				include_once AAEADDON_PATH . 'inc/CodeSnippet/CodeSnippet.php';
 			}
 
 			// Include CodeSnippet frontend functionality.
-			include_once WCF_ADDONS_PATH . 'inc/CodeSnippet/CodeSnippetFrontend.php';
-			include_once WCF_ADDONS_PATH . 'inc/CodeSnippet/CodeSnippetCompatibility.php';
+			include_once AAEADDON_PATH . 'inc/CodeSnippet/CodeSnippetFrontend.php';
+			include_once AAEADDON_PATH . 'inc/CodeSnippet/CodeSnippetCompatibility.php';
 		}
 
-		include_once WCF_ADDONS_PATH . 'inc/trait-wcf-post-query.php';
-		include_once WCF_ADDONS_PATH . 'inc/trait-wcf-button.php';
-		include_once WCF_ADDONS_PATH . 'inc/trait-wcf-slider.php';
-		include_once WCF_ADDONS_PATH . 'inc/post-rating-handler.php';
-		include_once WCF_ADDONS_PATH . 'inc/category-fields.php';
-		include_once WCF_ADDONS_PATH . 'inc/admin/page-import.php';
-		include_once WCF_ADDONS_PATH . 'widgets/mailchimp/mailchimp-api.php';
-		include_once WCF_ADDONS_PATH . 'inc/trait-wcf-nested-slider.php';
-		include_once WCF_ADDONS_PATH . 'inc/class-wcf-starter-animations.php';
+		include_once AAEADDON_PATH . 'inc/trait-wcf-post-query.php';
+		include_once AAEADDON_PATH . 'inc/trait-wcf-button.php';
+		include_once AAEADDON_PATH . 'inc/trait-wcf-slider.php';
+		include_once AAEADDON_PATH . 'inc/post-rating-handler.php';
+		include_once AAEADDON_PATH . 'inc/category-fields.php';
+		include_once AAEADDON_PATH . 'inc/admin/page-import.php';
+		include_once AAEADDON_PATH . 'widgets/mailchimp/mailchimp-api.php';
+		include_once AAEADDON_PATH . 'inc/trait-wcf-nested-slider.php';
+		include_once AAEADDON_PATH . 'inc/class-wcf-starter-animations.php';
 
 
 		// Load Loop Builder Integration.
-		require_once WCF_ADDONS_PATH . 'widgets/loop-builder/init.php';
+		require_once AAEADDON_PATH . 'widgets/loop-builder/init.php';
 
 
-		$wpml_file = WCF_ADDONS_PATH . 'inc/wpml-manager.php';
+		$wpml_file = AAEADDON_PATH . 'inc/wpml-manager.php';
 
 		if (defined('ICL_SITEPRESS_VERSION') && file_exists($wpml_file)) {
 			include_once $wpml_file;
@@ -1425,7 +1423,7 @@ class Plugin
 										<i class="eicon-external-link-square"></i>
 										<?php echo esc_html__('Go Premium', 'animation-addons-for-elementor'); ?>
 									</a>
-									<?php } elseif (class_exists('AAE_ADDONS_Plugin_Pro') && in_array($plugin_slug, $active_plugins) && get_option('aae_sc_error_status_current_support') !== 'active') { ?>
+									<?php } elseif (class_exists('AAE_ADDONS_Plugin_Pro') && in_array($plugin_slug, $active_plugins) && get_option('aaeaddon_sc_error_status_current_support') !== 'active') { ?>
 										<a href="<?php echo esc_url($dahsboard_link); ?>" class="library--action pro" target="_blank">
 											<i class="eicon-external-link-square"></i>
 												<?php echo esc_html__('Activate License', 'animation-addons-for-elementor'); ?>
@@ -1525,7 +1523,7 @@ class Plugin
 			'wcf-template-library-preview',
 			plugins_url('/assets/css/preview.css', __FILE__),
 			array(),
-			WCF_ADDONS_VERSION
+			AAEADDON_VERSION
 		);
 	}
 	public static function get_template_types()
@@ -1606,9 +1604,9 @@ class Plugin
 		if ($hook === 'plugins.php') {
 			wp_enqueue_script(
 				'aae-admin-scripts',
-				WCF_ADDONS_URL . 'assets/js/wcf-admin.js',
+				AAEADDON_URL . 'assets/js/wcf-admin.js',
 				array(),
-				WCF_ADDONS_VERSION,
+				AAEADDON_VERSION,
 				true
 			);
 
@@ -1678,12 +1676,12 @@ class Plugin
 					continue;
 				}
 
-				require_once WCF_ADDONS_WIDGETS_PATH . $slug . '/skins/' . $skin_slug . '.php';
+				require_once AAEADDON_WIDGETS_PATH . $slug . '/skins/' . $skin_slug . '.php';
 
 				$class = explode('-', $skin_slug);
 				$class = array_map('ucfirst', $class);
 				$class = implode('_', $class);
-				$class = 'WCF_ADDONS\\Widgets\\Skin\\' . $class;
+				$class = 'Wealcoder\\AnimationAddons\\Widgets\\Skin\\' . $class;
 
 				// has base base skin dont need register
 				if (isset($skin['is_base_skin'])) {
@@ -1761,7 +1759,7 @@ class Plugin
 	 */
 	public static function has_active_legacy_assets()
 	{
-		$value = get_option('wcf_save_widgets');
+		$value = get_option('aaeaddon_save_widgets');
 		
 		return is_array($value) && (bool) array_filter($value);
 	}
@@ -1776,9 +1774,9 @@ class Plugin
 		// unconditionally shipped the file on every page of the site.
 		wp_register_style(
 			'aae-starter-animations',
-			WCF_ADDONS_URL . 'assets/css/starter-animations.css',
+			AAEADDON_URL . 'assets/css/starter-animations.css',
 			[],
-			WCF_ADDONS_VERSION
+			AAEADDON_VERSION
 		);
 	}
 
@@ -1789,9 +1787,9 @@ class Plugin
 		// per-element through the control's `assets => scripts` condition.
 		wp_register_script(
 			'aae-starter-animations',
-			WCF_ADDONS_URL . 'assets/js/starter-animations.js',
+			AAEADDON_URL . 'assets/js/starter-animations.js',
 			[],
-			WCF_ADDONS_VERSION,
+			AAEADDON_VERSION,
 			true
 		);
 	}
@@ -1897,7 +1895,7 @@ class Plugin
 
 		add_action('elementor/init', array($this, 'elementor_init'), 0);
 
-		if (class_exists('\WCF_ADDONS\Library_Source')) {
+		if (class_exists('\Wealcoder\AnimationAddons\Library_Source')) {
 
 			add_action('elementor/editor/footer', array($this, 'print_templates'));
 			// enqueue modal's preview css.

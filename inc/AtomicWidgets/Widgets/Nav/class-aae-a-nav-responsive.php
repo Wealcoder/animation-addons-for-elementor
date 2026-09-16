@@ -1,12 +1,12 @@
 <?php
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Nav;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Nav;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use WCF_ADDONS\Atomic\PropTypes\Section_Anchor_Prop_Type as Base_Section_Anchor;
-use WCF_ADDONS\Atomic\PropTypes\Responsive_Json_Prop_Type;
+use Wealcoder\AnimationAddons\Atomic\PropTypes\Section_Anchor_Prop_Type as Base_Section_Anchor;
+use Wealcoder\AnimationAddons\Atomic\PropTypes\Responsive_Json_Prop_Type;
 
 /**
  * Nav — responsive style controls for the DESKTOP DROPDOWN INDICATOR.
@@ -68,7 +68,7 @@ use WCF_ADDONS\Atomic\PropTypes\Responsive_Json_Prop_Type;
  * <ResponsiveSection> tree, so the key IS the match — one subclass per panel
  * section. Stored values are never read.
  */
-class AAE_A_Nav_Dropdown_Icon_Anchor_Prop_Type extends Base_Section_Anchor {
+class Aaeaddon_A_Nav_Dropdown_Icon_Anchor_Prop_Type extends Base_Section_Anchor {
 	public static function get_key(): string {
 		return 'aae-section-aae-nav-dropdown-icon';
 	}
@@ -83,7 +83,7 @@ class AAE_A_Nav_Dropdown_Icon_Anchor_Prop_Type extends Base_Section_Anchor {
  * keyed by element id survives, and the editor bridge rewrites the same node
  * in place (`aae-nav-rs-<id>`) as the builder types.
  */
-final class AAE_A_Nav_Responsive {
+final class Aaeaddon_A_Nav_Responsive {
 
 	const ELEMENT_TYPE = 'e-aae-a-nav';
 
@@ -162,7 +162,7 @@ final class AAE_A_Nav_Responsive {
 	/** Anchor prop key => prop-type class. */
 	private static function anchor_prop_types(): array {
 		return [
-			'aae_ndi_anchor' => AAE_A_Nav_Dropdown_Icon_Anchor_Prop_Type::class,
+			'aae_ndi_anchor' => Aaeaddon_A_Nav_Dropdown_Icon_Anchor_Prop_Type::class,
 		];
 	}
 

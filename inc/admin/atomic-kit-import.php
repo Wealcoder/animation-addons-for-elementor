@@ -1,5 +1,5 @@
 <?php
-namespace WCF_ADDONS\Admin\Base;
+namespace Wealcoder\AnimationAddons\Admin\Base;
 
 use WP_Error;
 
@@ -476,7 +476,7 @@ class Atomic_Kit_Import {
 			}
 		}
 
-		$batch = get_option( 'aae_last_import_batch' );
+		$batch = get_option( 'aaeaddon_last_import_batch' );
 		if ( ! $batch ) {
 			return [];
 		}

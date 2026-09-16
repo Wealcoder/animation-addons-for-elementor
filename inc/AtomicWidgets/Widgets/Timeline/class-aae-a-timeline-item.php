@@ -1,6 +1,6 @@
 <?php
 
-namespace WCF_ADDONS\AtomicWidgets\Widgets\Timeline;
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Timeline;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -34,13 +34,13 @@ require_once __DIR__ . '/Parts/class-aae-a-timeline-desc.php';
  *
  * Structural base styles only (position/flex/gap + spacing between items).
  * The marker/year/title/desc children are each a dedicated small widget type
- * (AAE_A_Timeline_Number/_Year/_Title/_Desc) carrying its own fixed
+ * (Aaeaddon_A_Timeline_Number/_Year/_Title/_Desc) carrying its own fixed
  * typography via its own define_base_styles() — see
  * class-aae-a-timeline-number.php for why plain e-paragraph/e-heading reuse
  * can't express that (base styles are owned by the widget TYPE, not a
  * per-instance override).
  */
-class AAE_A_Timeline_Item extends Atomic_Element_Base {
+class Aaeaddon_A_Timeline_Item extends Atomic_Element_Base {
 
 	use Has_Element_Template;
 
@@ -132,7 +132,7 @@ class AAE_A_Timeline_Item extends Atomic_Element_Base {
 		string $desc = 'Describe what happened during this milestone.'
 	): array {
 		return [
-			AAE_A_Timeline_Number::generate()
+			Aaeaddon_A_Timeline_Number::generate()
 				->is_locked( true )
 				->editor_settings( [ 'title' => 'Number' ] )
 				->settings( [
@@ -144,7 +144,7 @@ class AAE_A_Timeline_Item extends Atomic_Element_Base {
 				] )
 				->build(),
 
-			AAE_A_Timeline_Year::generate()
+			Aaeaddon_A_Timeline_Year::generate()
 				->is_locked( true )
 				->editor_settings( [ 'title' => 'Year' ] )
 				->settings( [
@@ -156,7 +156,7 @@ class AAE_A_Timeline_Item extends Atomic_Element_Base {
 				] )
 				->build(),
 
-			AAE_A_Timeline_Title::generate()
+			Aaeaddon_A_Timeline_Title::generate()
 				->is_locked( true )
 				->editor_settings( [ 'title' => 'Title' ] )
 				->settings( [
@@ -168,7 +168,7 @@ class AAE_A_Timeline_Item extends Atomic_Element_Base {
 				] )
 				->build(),
 
-			AAE_A_Timeline_Desc::generate()
+			Aaeaddon_A_Timeline_Desc::generate()
 				->is_locked( true )
 				->editor_settings( [ 'title' => 'Description' ] )
 				->settings( [
