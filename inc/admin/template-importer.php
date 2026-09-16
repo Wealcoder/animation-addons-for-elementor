@@ -129,10 +129,13 @@ class AAEAddon_Importer {
 			}
 
 			if(isset($template_data['next_step']) && $template_data['next_step'] == 'plugins-importer' ){
-				// Install required plugin
-			    // Include the necessary plugin.php file
-				$progress                   = '20';	
-				require_once ABSPATH . 'wp-admin/includes/plugin.php';
+				// wp-admin/includes/plugin.php is deliberately NOT loaded here.
+				// This plugin installs and activates nothing at this step -- it
+				// only announces the user's selection on
+				// `aae/starter_template/install_plugin` -- so nothing below calls
+				// a function that file supplies. Whatever attaches to that hook
+				// loads it for itself, immediately before its own first use.
+				$progress                   = '20';
 				do_action('aaeaddon/starter-template/import/before/wp_options'); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Established plugin hook (slash-namespaced); kept for backward compatibility.
 				if(is_array($user_plugins) && $user_plugins){
 					if(isset($template_data['dependencies']['plugins']) && is_array($template_data['dependencies']['plugins'])){	
@@ -158,9 +161,7 @@ class AAEAddon_Importer {
 									 */
 									if ( has_action( 'aae/starter_template/install_plugin' ) ) {
 
-										update_option(
-											'aaeaddon_template_import_state',
-											/* translators: %s: name of the plugin being installed. */
+										Helpers::set_import_state( /* translators: %s: name of the plugin being installed. */
 											sprintf( esc_html__( 'Installing %s', 'animation-addons-for-elementor' ), $item['name'] )
 										);
 
@@ -169,9 +170,7 @@ class AAEAddon_Importer {
 								}
 							}
 
-							update_option(
-								'aaeaddon_template_import_state',
-								has_action( 'aae/starter_template/install_plugin' )
+							Helpers::set_import_state( has_action( 'aae/starter_template/install_plugin' )
 									? esc_html__( 'Plugin Installation Done', 'animation-addons-for-elementor' )
 									: esc_html__( 'Required plugins were skipped -- install them manually.', 'animation-addons-for-elementor' )
 							);
@@ -181,7 +180,7 @@ class AAEAddon_Importer {
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'check-template-status'){					
 				$tpl = $this->validate_download_file($template_data);				
 				if($tpl){
-					update_option('aaeaddon_template_import_state', esc_html__( 'Content file Downloading' , 'animation-addons-for-elementor' ) );
+					Helpers::set_import_state( esc_html__( 'Content file Downloading' , 'animation-addons-for-elementor' ) );
 					$template_data['next_step'] = 'download-xml-file';
 					$template_data['file']      = json_decode($tpl);
 					
@@ -192,7 +191,7 @@ class AAEAddon_Importer {
 					$reason = get_option( 'aaeaddon_template_import_state' );
 					if ( ! is_string( $reason ) || '' === $reason ) {
 						$reason = esc_html__( 'Invalid file', 'animation-addons-for-elementor' );
-						update_option( 'aaeaddon_template_import_state', $reason );
+						Helpers::set_import_state( $reason );
 					}
 					$msg                        = $reason;
 					$template_data['next_step'] = 'fail';
@@ -201,20 +200,20 @@ class AAEAddon_Importer {
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'download-xml-file'){	
 								
 				if(isset($template_data['file']['content_url'])){						
-					update_option('aaeaddon_template_import_state', esc_html__('Content installing', 'animation-addons-for-elementor'));
+					Helpers::set_import_state( esc_html__('Content installing', 'animation-addons-for-elementor'));
 					$template_data['next_step']  = 'install-template';
 					$template_data['local_path'] = $this->full_path;	
 							
 				}else{
 					$template_data['next_step'] = 'fail';
-					update_option('aaeaddon_template_import_state', esc_html__('Missing Content file, contact author', 'animation-addons-for-elementor'));
+					Helpers::set_import_state( esc_html__('Missing Content file, contact author', 'animation-addons-for-elementor'));
 				}
 				$progress                    = '40';			
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'install-template'){
 				$template_data['next_step'] = 'check-theme';
 				$progress                   = '50';
 				$msg                        = esc_html__('Varifying Content Import', 'animation-addons-for-elementor');
-				update_option('aaeaddon_template_import_state', 'Checking Theme');
+				Helpers::set_import_state( 'Checking Theme');
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'check-theme'){
 				/*
 				 * A starter template records the theme it was designed against.
@@ -276,7 +275,7 @@ class AAEAddon_Importer {
 							$theme_slug
 						);
 					}
-					update_option( 'aaeaddon_template_import_state', $msg );
+					Helpers::set_import_state( $msg );
 				}
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'install-elementor-settings'){
 				update_option( 'wcf_addons_setup_wizard', 'complete' );
@@ -305,7 +304,7 @@ class AAEAddon_Importer {
 						if ( is_array( $response ) && ! is_wp_error( $response ) ) {
 							$json_data = wp_remote_retrieve_body( $response );
 							$msg = $this->installElementorKit($json_data);
-							update_option('aaeaddon_template_import_state', $msg);
+							Helpers::set_import_state( $msg);
 						}
 					}
 				}
@@ -323,7 +322,7 @@ class AAEAddon_Importer {
 							esc_html__( 'Design system imported (%1$s): %2$d classes, %3$d variables, %4$d posts updated', 'animation-addons-for-elementor' ),
 							$kit['mode'], $kit['classes'], $kit['variables'], $kit['posts']
 						);
-					update_option('aaeaddon_template_import_state', $msg);
+					Helpers::set_import_state( $msg);
 				}
 				// A V4 starter TEMPLATE is a whole site: once it has landed, V3 goes
 				// off everywhere it is switched on (widgets, extensions, the Kit's
@@ -338,7 +337,7 @@ class AAEAddon_Importer {
 				if ( $is_v4_template && class_exists( '\WCF_ADDONS\Admin\Base\Atomic_V3_Switch_Off' ) ) {
 					$v3 = \WCF_ADDONS\Admin\Base\Atomic_V3_Switch_Off::run( ! empty( $template_data['aae_site_had_v3'] ) );
 					$msg .= ( '' !== $msg ? ' — ' : '' ) . \WCF_ADDONS\Admin\Base\Atomic_V3_Switch_Off::describe( $v3 );
-					update_option( 'aaeaddon_template_import_state', $msg );
+					Helpers::set_import_state( $msg );
 				}
 				if ( isset( $template_data['elementor_template']['content_url'] ) && $template_data['elementor_template']['type'] === 'template-json' ) {
 					// Elementor V4 starter PAGE: only the classes/variables this page
@@ -356,7 +355,7 @@ class AAEAddon_Importer {
 							esc_html__( 'Page design imported (%1$s): %2$d classes, %3$d variables, %4$d posts updated', 'animation-addons-for-elementor' ),
 							$tpl['mode'], $tpl['classes'], $tpl['variables'], $tpl['posts']
 						);
-					update_option('aaeaddon_template_import_state', $msg);
+					Helpers::set_import_state( $msg);
 				}
 				$this->update_blog_and_homepage_options($template_data);
 				// V4 only, and only when the user ticked it in the import dialog:
@@ -374,7 +373,7 @@ class AAEAddon_Importer {
 					$template_data['next_step']          = 'localize-images';
 					$progress                            = '95';
 					$msg                                 = esc_html__( 'Copying images to the media library', 'animation-addons-for-elementor' );
-					update_option( 'aaeaddon_template_import_state', $msg );
+					Helpers::set_import_state( $msg );
 				}
 				do_action('aaeaddon/starter-template/import/step/metasettings'); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Established plugin hook (slash-namespaced); kept for backward compatibility.
 				
@@ -394,7 +393,7 @@ class AAEAddon_Importer {
 					$progress                   = (string) ( 95 + (int) floor( 4 * $fraction ) );
 					$msg                        = \WCF_ADDONS\Admin\Base\Atomic_Image_Localize::progress_message( $images );
 				}
-				update_option( 'aaeaddon_template_import_state', $msg );
+				Helpers::set_import_state( $msg );
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'install-wp-options'){
 
 				$template_data['next_step'] = 'check-template-status';
@@ -411,11 +410,14 @@ class AAEAddon_Importer {
 					do_action('aaeaddon/starter-template/import/step/wp_options'); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Established plugin hook (slash-namespaced); kept for backward compatibility.
 				}	
 								
-				update_option('aaeaddon_template_import_state', $msg);			
+				Helpers::set_import_state( $msg);			
 			}elseif(isset($template_data['next_step']) && $template_data['next_step'] == 'fail'){
 				$msg = esc_html__('Template Demo Import fail', 'animation-addons-for-elementor');
 			}else{
-				$template_data['next_step'] = 'plugins-importer';	
+				$template_data['next_step'] = 'plugins-importer';
+				// First call of the flow: drop whatever the previous import left
+				// behind, so this one's bar opens empty rather than part-filled.
+				Helpers::clear_import_status();
 				// Snapshot NOW whether this site already holds V4 content. Asked at
 				// the kit step it would always be true -- this import's own pages
 				// are in the DB by then. $template_data round-trips every step.
@@ -427,11 +429,20 @@ class AAEAddon_Importer {
 				$template_data['aae_site_had_v3'] = ( class_exists( '\WCF_ADDONS\Admin\Base\Atomic_V3_Switch_Off' ) && \WCF_ADDONS\Admin\Base\Atomic_V3_Switch_Off::site_has_v3_content() ) ? 1 : 0;
 				$progress                   = '10';	
 			
-				update_option('aaeaddon_template_import_state', esc_html__('Checking Setup requirement', 'animation-addons-for-elementor'));
-			}			
-			
+				Helpers::set_import_state( esc_html__('Checking Setup requirement', 'animation-addons-for-elementor'));
+			}
+
 		}
-	    
+
+		// The two progress rows describe a run in flight. The summary the user
+		// reads travels in this response, not in them, so once the flow has
+		// reached its last step there is nothing left to report -- and leaving
+		// them behind is how the last import's progress ended up sitting in the
+		// options table of every site that ever ran one.
+		if ( isset( $template_data['next_step'] ) && 'done' === $template_data['next_step'] ) {
+			Helpers::clear_import_status();
+		}
+
 		wp_send_json( ['template' => wp_unslash( $template_data ),'msg' => $msg, 'progress' => $progress] );
 	}
 
@@ -551,7 +562,7 @@ class AAEAddon_Importer {
 	function validate_download_file($template) {
 	
 		if (empty($template)) {
-			update_option('aaeaddon_template_import_state', esc_html__('Template Required', 'animation-addons-for-elementor'));
+			Helpers::set_import_state( esc_html__('Template Required', 'animation-addons-for-elementor'));
 			return false;
 		}
 		
@@ -575,21 +586,21 @@ class AAEAddon_Importer {
 		$response = wp_safe_remote_get( $remote_url, apply_filters( 'aaeaddon/starter_templates/download_args', $args ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Established plugin hook (slash-namespaced); kept for backward compatibility.
 		
 		if (is_wp_error($response)) {
-			update_option('aaeaddon_template_import_state', esc_html__('Failed to validate file from remote URL.', 'animation-addons-for-elementor'));
+			Helpers::set_import_state( esc_html__('Failed to validate file from remote URL.', 'animation-addons-for-elementor'));
 			return false;
 		}
 		
 		$response_code = wp_remote_retrieve_response_code($response);		
 		
 		if ($response_code !== 200) {
-			update_option('aaeaddon_template_import_state', esc_html__('Invalid file arguments. Please check the URL.', 'animation-addons-for-elementor'));
+			Helpers::set_import_state( esc_html__('Invalid file arguments. Please check the URL.', 'animation-addons-for-elementor'));
 			return false;
 		}
 	     
 		$body = wp_remote_retrieve_body($response);
 		
 		if (empty($body)) {
-			update_option('aaeaddon_template_import_state', esc_html__('The downloadable file is empty.', 'animation-addons-for-elementor'));
+			Helpers::set_import_state( esc_html__('The downloadable file is empty.', 'animation-addons-for-elementor'));
 			return false;
 		}
 
@@ -614,7 +625,7 @@ class AAEAddon_Importer {
 		$body = wp_remote_retrieve_body($response);
 	
 		if (empty($body)) {
-			update_option('aaeaddon_template_import_state', esc_html__('The remote XML file is empty.', 'animation-addons-for-elementor'));
+			Helpers::set_import_state( esc_html__('The remote XML file is empty.', 'animation-addons-for-elementor'));
 			return esc_html__('The remote XML file is empty.', 'animation-addons-for-elementor');
 		}
 	
@@ -632,10 +643,10 @@ class AAEAddon_Importer {
 		
 		// Write the file using the filesystem API
 		if (!$wp_filesystem->put_contents($this->full_path, $body, FS_CHMOD_FILE)) {
-			update_option('aaeaddon_template_import_state', esc_html__('Failed to save the XML file.', 'animation-addons-for-elementor'));
+			Helpers::set_import_state( esc_html__('Failed to save the XML file.', 'animation-addons-for-elementor'));
 			return esc_html__('Failed to save the XML file.', 'animation-addons-for-elementor');
 		}
-		update_option('aaeaddon_template_import_state', esc_html__('File downloaded and saved successfully', 'animation-addons-for-elementor'));
+		Helpers::set_import_state( esc_html__('File downloaded and saved successfully', 'animation-addons-for-elementor'));
 		return esc_html__('File downloaded and saved successfully at ', 'animation-addons-for-elementor') . $this->full_path;
 	}
 	

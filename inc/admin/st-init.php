@@ -234,6 +234,16 @@ class OneClickImport
 			// used for this -- WXRImporter fires it on every chunk.
 			do_action('aaeaddon/content_import/fresh_start'); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- slash-namespaced plugin hook, same family as aaeaddon/after_import.
 
+			// Start from a clean progress reading. report_progress() carries the
+			// previous chunk's figure forward as a floor, so a leftover row from
+			// an earlier demo would make this import's bar open part-filled.
+			Helpers::clear_import_status();
+
+			// Collect the content files of imports that never reached the end.
+			// Age-gated, so a download belonging to an import running in another
+			// tab is never pulled out from under it.
+			Helpers::sweep_stale_import_files();
+
 			// Define log file path.
 			$this->log_file_path = Helpers::get_log_path();
 
@@ -355,9 +365,20 @@ class OneClickImport
 	 */
 	private function final_response()
 	{
+		// The content file is a complete copy of the demo sitting in uploads,
+		// readable by anyone who guesses its URL, and every later step of the
+		// import works from the database rather than from it. Nothing removed
+		// it before: 36 of them, 81 MB, had collected on the dev site.
+		if (! empty($this->selected_import_files['content'])) {
+			Helpers::cleanup_import_file($this->selected_import_files['content']);
+		}
+
 		// Delete importer data transient for current import.
 		delete_transient('aadaddon_st_importer_data');
-		delete_transient('aadaddon_st_mporter_data_failed_attachment_imports');
+		// Was misspelled twice over ('aad' for 'aae', 'mporter' for 'importer'),
+		// so this had never deleted anything and the real row -- 7 KB of failed
+		// attachment URLs -- outlived every import. Helpers owns the name now.
+		delete_transient(Helpers::FAILED_ATTACHMENT_TRANSIENT);
 		delete_transient('aadaddon_import_menu_mapping');
 		delete_transient('aaeaddon_import_posts_with_nav_block');
 

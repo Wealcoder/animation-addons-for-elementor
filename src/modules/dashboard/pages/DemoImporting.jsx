@@ -130,17 +130,22 @@ const DemoImporting = () => {
           const data = await response.json();                  
                  
           if (data?.import_porgress?.type === 'single') {
-            const importCount = data.import_porgress.progress || 0;
-            const totalCount = data.import_porgress.total_items || 1;
+            const totalCount = Math.max(data.import_porgress.total_items || 0, 1);
+            // The server clamps this, but a payload written by an older build
+            // can still read "198 of 197", which looks like a broken import.
+            const importCount = Math.min(Math.max(data.import_porgress.progress || 0, 0), totalCount);
 
             // 🔹 Content Import Only (0-100%)
             const contentProgress = Math.min(Math.round((importCount / totalCount) * 100), 100);
 
-            // 🔸 Total Import (starting from plugin/theme install)
-            const baseProgress = Math.floor(Math.random() * (44 - 40 + 1)) + 40;
-            const scaledImport = 50 * (importCount / totalCount);
-            const totalProgress = Math.min(Math.round(baseProgress + scaledImport), 100); 
-            setTemplateTitle(data.import_porgress?.title);          
+            // 🔸 Total Import: content owns the 40-90 band, and the steps
+            // either side of it report their own figure. CONTENT_BASE is a
+            // constant now: it used to be re-rolled at random between 40 and
+            // 44 on every poll, which is not progress, it is noise that the
+            // Math.max below then latched onto.
+            const CONTENT_BASE = 40;
+            const totalProgress = Math.min(Math.round(CONTENT_BASE + 50 * (importCount / totalCount)), 100);
+            setTemplateTitle(data.import_porgress?.title);
             
             // 👇 You set both
             setProgress((prev) => Math.max(prev, totalProgress));

@@ -146,7 +146,7 @@ class Helpers {
 		if ( is_wp_error( $verified_credentials ) ) {
 			return $verified_credentials;
 		}
-		update_option('aaeaddon_template_import_state', $content);
+		self::set_import_state( $content );
 		// By this point, the $wp_filesystem global should be working, so let's use it to create a file.
 		global $wp_filesystem;
 
@@ -471,7 +471,168 @@ class Helpers {
 	public static function set_st_import_data_transient( $data ) {
 		set_transient( 'aadaddon_st_importer_data', $data, 0.1 * HOUR_IN_SECONDS );
 	}
-	
+
+
+	/**
+	 * Record what the import is currently doing, for the progress screen.
+	 *
+	 * Deliberately NOT autoloaded, and this is the only writer so it cannot
+	 * drift back. The value is scratch: one polling request reads it while an
+	 * import runs and nothing reads it afterwards. Autoloaded it was fetched
+	 * on every request to the site for the rest of that site's life, and every
+	 * write to an autoloaded row makes core re-serialise the WHOLE alloptions
+	 * blob into the object cache -- 105 KB on the development site.
+	 *
+	 * @param string $message Human readable state.
+	 */
+	public static function set_import_state( $message ) {
+		update_option( 'aaeaddon_template_import_state', (string) $message, false );
+	}
+
+
+	/**
+	 * Drop the rows an import writes to report itself.
+	 *
+	 * Called when an import starts and again when it finishes: both describe a
+	 * run in flight and mean nothing once it is over. Nothing used to remove
+	 * them on the finishing side at all, so the last import's progress sat in
+	 * the options table permanently.
+	 */
+	public static function clear_import_status() {
+		delete_option( 'aaeaddon_template_import_state' );
+		delete_option( 'aaeaddon_template_import_progress' );
+	}
+
+
+	/**
+	 * The two halves of the name every downloaded content file is written under.
+	 *
+	 * Read through the same filters download_import_files() writes with, so a
+	 * site that renames its downloads can still find and remove them.
+	 *
+	 * @return array Prefix and suffix, in that order.
+	 */
+	private static function download_file_name_parts() {
+		return array(
+			self::apply_filters( 'aaeaddon/downloaded_content_file_prefix', 'demo-content-import-file_' ),
+			self::apply_filters( 'aaeaddon/downloaded_content_file_suffix_and_file_extension', '.xml' ),
+		);
+	}
+
+
+	/**
+	 * Is this path a content file THIS plugin downloaded, inside uploads?
+	 *
+	 * Two independent tests, because the answer decides whether a file is
+	 * deleted. A file the user supplied themselves keeps its own name and
+	 * cannot match the prefix, and the realpath test means no filter can point
+	 * the sweep at something outside the uploads directory.
+	 *
+	 * @param string $path Full path to check.
+	 * @return boolean
+	 */
+	private static function is_downloaded_import_file( $path ) {
+		if ( empty( $path ) || ! is_file( $path ) ) {
+			return false;
+		}
+
+		list( $prefix, $suffix ) = self::download_file_name_parts();
+
+		if ( '' === $prefix || '' === $suffix ) {
+			return false;
+		}
+
+		$name = basename( $path );
+
+		if ( 0 !== strpos( $name, $prefix ) || $suffix !== substr( $name, - strlen( $suffix ) ) ) {
+			return false;
+		}
+
+		$uploads = wp_upload_dir();
+
+		if ( ! empty( $uploads['error'] ) ) {
+			return false;
+		}
+
+		$real = wp_normalize_path( (string) realpath( $path ) );
+		$base = trailingslashit( wp_normalize_path( (string) realpath( $uploads['basedir'] ) ) );
+
+		return '' !== $real && 0 === strpos( $real, $base );
+	}
+
+
+	/**
+	 * Delete a content file this plugin downloaded for an import.
+	 *
+	 * The file is a complete copy of the demo -- 3 to 12 MB, and readable by
+	 * anyone who guesses the URL, since it sits in uploads. Nothing removed it:
+	 * 36 of them, 81 MB, had collected on the development site.
+	 *
+	 * @param string $path Full path to the file.
+	 * @return boolean Whether a file was removed.
+	 */
+	public static function cleanup_import_file( $path ) {
+		if ( ! self::is_downloaded_import_file( $path ) ) {
+			return false;
+		}
+
+		wp_delete_file( $path );
+
+		return true;
+	}
+
+
+	/**
+	 * Remove content files left behind by imports that never finished.
+	 *
+	 * An import that fails, or whose tab is closed, never reaches the cleanup
+	 * at the end, so a sweep when the next one starts is the only thing that
+	 * can collect those. Age-gated so a download belonging to an import running
+	 * in another tab is never pulled out from under it.
+	 *
+	 * @param integer $max_age Only remove files older than this, in seconds.
+	 * @return integer Number of files removed.
+	 */
+	public static function sweep_stale_import_files( $max_age = DAY_IN_SECONDS ) {
+		$uploads = wp_upload_dir();
+
+		if ( ! empty( $uploads['error'] ) ) {
+			return 0;
+		}
+
+		list( $prefix, $suffix ) = self::download_file_name_parts();
+
+		if ( '' === $prefix || '' === $suffix ) {
+			return 0;
+		}
+
+		$base    = trailingslashit( wp_normalize_path( $uploads['basedir'] ) );
+		$pattern = $prefix . '*' . $suffix;
+
+		// The year/month folders, plus the flat layout a site gets with
+		// `uploads_use_yearmonth_folders` switched off.
+		$files = array_merge(
+			(array) glob( $base . $pattern ),
+			(array) glob( $base . '*/*/' . $pattern )
+		);
+
+		$cutoff  = time() - (int) $max_age;
+		$removed = 0;
+
+		foreach ( $files as $file ) {
+			if ( ! is_string( $file ) || filemtime( $file ) > $cutoff ) {
+				continue;
+			}
+
+			if ( self::cleanup_import_file( $file ) ) {
+				$removed++;
+			}
+		}
+
+		return $removed;
+	}
+
+
 	public static function apply_filters( $hook, $default_data ) {
 		$new_data = apply_filters( $hook, $default_data );  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
 
@@ -538,19 +699,79 @@ class Helpers {
 	}	
 
 	/**
-	 * Get the failed attachment imports.
+	 * How many times an attachment may fail to download before it is skipped.
 	 *
-	 * @since 3.2.0
+	 * ONE failure used to be final, which made a single 502 from the demo host
+	 * permanently cost that image -- the visible result being a demo with holes
+	 * in it and nothing but a warning in a log file nobody reads. A chunked
+	 * import re-walks the file from the top on every AJAX call, so a second
+	 * attempt costs nothing to arrange: the next chunk simply does not skip it.
 	 *
-	 * @return mixed
+	 * @var integer
 	 */
-	public static function get_failed_attachment_imports() {
+	const FAILED_ATTACHMENT_ATTEMPTS = 2;
 
-		return get_transient( 'aaeaddon_st_importer_data_failed_attachment_imports' );
+	/**
+	 * Name of the transient holding this import's download failures.
+	 *
+	 * @var string
+	 */
+	const FAILED_ATTACHMENT_TRANSIENT = 'aaeaddon_st_importer_data_failed_attachment_imports';
+
+	/**
+	 * Failed attachment URLs mapped to how many times each has been tried.
+	 *
+	 * @return array URL => attempt count.
+	 */
+	private static function get_failed_attachment_attempts() {
+
+		$stored = get_transient( self::FAILED_ATTACHMENT_TRANSIENT );
+
+		if ( empty( $stored ) || ! is_array( $stored ) ) {
+			return [];
+		}
+
+		$attempts = [];
+
+		foreach ( $stored as $key => $value ) {
+			if ( is_int( $key ) ) {
+				// The flat list this used to store, from an import that was
+				// already in flight when the plugin updated: given up on.
+				$attempts[ (string) $value ] = self::FAILED_ATTACHMENT_ATTEMPTS;
+				continue;
+			}
+
+			$attempts[ $key ] = (int) $value;
+		}
+
+		return $attempts;
 	}
 
 	/**
-	 * Set the failed attachment imports.
+	 * Get the attachment imports that have been given up on.
+	 *
+	 * A URL that has failed fewer times than FAILED_ATTACHMENT_ATTEMPTS is
+	 * deliberately absent, so the next chunk tries it again.
+	 *
+	 * @since 3.2.0
+	 *
+	 * @return array List of attachment URLs to skip.
+	 */
+	public static function get_failed_attachment_imports() {
+
+		$given_up = [];
+
+		foreach ( self::get_failed_attachment_attempts() as $url => $attempts ) {
+			if ( $attempts >= self::FAILED_ATTACHMENT_ATTEMPTS ) {
+				$given_up[] = $url;
+			}
+		}
+
+		return $given_up;
+	}
+
+	/**
+	 * Record that an attachment failed to import.
 	 *
 	 * @since 3.2.0
 	 *
@@ -560,15 +781,18 @@ class Helpers {
 	 */
 	public static function set_failed_attachment_import( $attachment_url ) {
 
-		// Get current importer transient.
-		$failed_media_imports = self::get_failed_attachment_imports();
+		$attachment_url = (string) $attachment_url;
 
-		if ( empty( $failed_media_imports ) || ! is_array( $failed_media_imports ) ) {
-			$failed_media_imports = [];
+		if ( '' === $attachment_url ) {
+			return;
 		}
 
-		$failed_media_imports[] = $attachment_url;
+		$attempts = self::get_failed_attachment_attempts();
 
-		set_transient( 'aaeaddon_st_importer_data_failed_attachment_imports', $failed_media_imports, HOUR_IN_SECONDS );
+		$attempts[ $attachment_url ] = isset( $attempts[ $attachment_url ] )
+			? $attempts[ $attachment_url ] + 1
+			: 1;
+
+		set_transient( self::FAILED_ATTACHMENT_TRANSIENT, $attempts, HOUR_IN_SECONDS );
 	}
 }

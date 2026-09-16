@@ -249,6 +249,12 @@ class Importer
 				''
 			);
 
+			// Say where this chunk got to before handing over. The reporter is
+			// throttled, so its last reading can be up to a second old -- and
+			// the next chunk adopts that reading as the floor it counts up
+			// from, so a stale one here is carried forward rather than caught.
+			$this->importer->flush_progress();
+
 			// Set the current importer stat, so it can be continued on the next AJAX call.
 			$this->set_current_importer_data();
 			$response['state'] = get_option('aaeaddon_template_import_state');

@@ -76,6 +76,50 @@ class WXRImporter extends \WP_Importer
 	protected $logger;
 
 	/**
+	 * Shortest gap between two writes of the progress option, in seconds.
+	 *
+	 * The import screen polls that option once every five seconds, so nothing
+	 * on the other side can see a finer granularity than this. See
+	 * report_progress() for what the per-node write used to cost.
+	 */
+	const PROGRESS_INTERVAL = 1.0;
+
+	/**
+	 * Nodes handled so far in THIS pass over the file.
+	 *
+	 * @var integer
+	 */
+	protected $progress_count = 0;
+
+	/**
+	 * Nodes the file is expected to yield, for the denominator.
+	 *
+	 * @var integer
+	 */
+	protected $progress_total = 0;
+
+	/**
+	 * Title of the demo being imported, shown beside the bar.
+	 *
+	 * @var string
+	 */
+	protected $progress_title = '';
+
+	/**
+	 * Highest count reported by an earlier chunk of this same import.
+	 *
+	 * @var integer
+	 */
+	protected $progress_floor = 0;
+
+	/**
+	 * When the progress option was last written, as a float timestamp.
+	 *
+	 * @var float
+	 */
+	protected $progress_written_at = 0.0;
+
+	/**
 	 * Constructor
 	 *
 	 * @param array $options {
@@ -330,6 +374,132 @@ class WXRImporter extends \WP_Importer
 
 
 	/**
+	 * Prepare the progress counters for one pass over the file.
+	 *
+	 * The denominator counts exactly the nodes the parse loop below reports on
+	 * -- posts, media, terms and authors. `comment_count` is deliberately NOT
+	 * in it: comments are imported as part of their post and never reach
+	 * report_progress(), so including them meant the bar could never arrive,
+	 * while the counter could still overshoot the total it was divided by. The
+	 * option on the development site read `"total_items":197,"progress":198`.
+	 *
+	 * @param array|\WP_Error $data Result of get_preliminary_information().
+	 */
+	protected function start_progress($data)
+	{
+		$this->progress_count      = 0;
+		$this->progress_written_at = 0.0;
+		$this->progress_total      = 0;
+		$this->progress_title      = '';
+
+		if (! is_wp_error($data)) {
+			$this->progress_total = (int) $data['post_count']
+				+ (int) $data['media_count']
+				+ (int) $data['term_count']
+				+ (isset($data['users']) ? count((array) $data['users']) : 0);
+
+			$this->progress_title = isset($data['title']) ? (string) $data['title'] : '';
+		}
+
+		// An import runs in several AJAX chunks and every chunk re-reads the
+		// file from the top, so this pass's raw count starts at 1 again while
+		// the import as a whole is much further along. Carry the last reported
+		// figure forward as a floor; OneClickImport clears the option when a
+		// genuinely new import starts, so a previous demo cannot leak in.
+		$previous = get_option('aaeaddon_template_import_progress');
+
+		$this->progress_floor = (is_array($previous) && isset($previous['progress']))
+			? (int) $previous['progress']
+			: 0;
+	}
+
+	/**
+	 * Report one handled node to the import screen.
+	 *
+	 * Throttled, and written to a NON-autoloaded row. This is reached once per
+	 * parsed node, and because each chunk re-walks the whole file a 217-node
+	 * demo reaches it about 1085 times across five AJAX calls. Writing straight
+	 * through to an autoloaded option cost ~4.4 s of a ~60 s import on the
+	 * development site -- core re-serialises the entire alloptions blob (105 KB
+	 * there) into the object cache on every write to an autoloaded row. The
+	 * screen polls this value every five seconds, so the per-node granularity
+	 * it was paying for was never visible to anyone.
+	 *
+	 * @param string $label Human label for the kind of node just handled.
+	 */
+	protected function report_progress($label)
+	{
+		$this->progress_count++;
+
+		$now = microtime(true);
+
+		// Unconditional, with no "but always write the last one" exception.
+		// The denominator is a PREDICTION, so a count that runs past it would
+		// make every remaining node take that exception and write unthrottled
+		// -- the churn this exists to remove, reappearing exactly on the files
+		// that predict badly. finish_progress() is what lands the bar on 100%.
+		if (($now - $this->progress_written_at) < self::PROGRESS_INTERVAL) {
+			return;
+		}
+
+		$this->progress_written_at = $now;
+		$this->write_progress($label, max($this->progress_count, $this->progress_floor));
+	}
+
+	/**
+	 * Write where this pass has got to, whatever the throttle was doing.
+	 *
+	 * Called when a chunk hands over to the next AJAX request. That is the
+	 * moment the screen is most likely to poll -- the request it was watching
+	 * has just returned -- and it is also the reading the NEXT chunk adopts as
+	 * its floor, so a stale one here is carried forward rather than corrected.
+	 */
+	public function flush_progress()
+	{
+		$this->progress_written_at = microtime(true);
+		$this->write_progress('📝 Imported', max($this->progress_count, $this->progress_floor));
+	}
+
+	/**
+	 * Report the bar as full, whatever the throttle was doing.
+	 *
+	 * The throttle can swallow the last node -- and the "is this the last one"
+	 * test cannot be trusted to catch it, because the denominator is a
+	 * PREDICTION made by get_preliminary_information() and a node it skipped as
+	 * malformed is one the parse loop never reports. That leaves a finished
+	 * import sitting at 96%, which reads as a hang. Called once, at the end of
+	 * the pass that actually completes the file.
+	 */
+	protected function finish_progress()
+	{
+		$done = max($this->progress_count, $this->progress_floor, $this->progress_total);
+
+		$this->progress_written_at = microtime(true);
+		$this->write_progress('📝 Imported', $done);
+	}
+
+	/**
+	 * Put one progress reading in the option the import screen polls.
+	 *
+	 * @param string  $label Human label for the kind of node just handled.
+	 * @param integer $done  Nodes handled so far.
+	 */
+	private function write_progress($label, $done)
+	{
+		update_option(
+			'aaeaddon_template_import_progress',
+			array(
+				'type'        => 'single',
+				'total_items' => $this->progress_total,
+				'title'       => $this->progress_title,
+				'progress'    => $this->progress_total > 0 ? min($done, $this->progress_total) : $done,
+				'data'        => array($label . ': ' . $done),
+			),
+			false
+		);
+	}
+
+	/**
 	 * The main controller for the actual import stage.
 	 *
 	 * @param string $file Path to the WXR file for importing.
@@ -354,14 +524,9 @@ class WXRImporter extends \WP_Importer
 		if (is_wp_error($result)) {
 			return $result;
 		}
-		$data = (array) $this->get_preliminary_information($file);
-		$total_init = 0;
-		$temp_title = '';
-		if (!is_wp_error($data)) {	
-			$total_init = $data['post_count'] + $data['media_count'] + $data['comment_count'] + $data['term_count'];
-			$temp_title = isset($data['title']) ? $data['title'] : '';
-		}		
-		
+		$data = $this->get_preliminary_information($file);
+		$this->start_progress(is_wp_error($data) ? $data : (array) $data);
+
 		// Let's run the actual importer now, woot
 		$reader = $this->get_reader($file);
 		if (is_wp_error($reader)) {
@@ -373,8 +538,6 @@ class WXRImporter extends \WP_Importer
 
 		// Reset other variables
 		$this->base_url = '';
-	
-		$aae_counter_progress = 0;	
 
 		// Start parsing!
 		while ($reader->read()) {
@@ -412,16 +575,7 @@ class WXRImporter extends \WP_Importer
 				case 'item':
 					$node = $reader->expand();
 					$parsed = $this->parse_post_node($node);
-					$aae_counter_progress += 1;
-					update_option('aaeaddon_template_import_progress', [
-						'type' => 'single',
-						'total_items' => $total_init,
-						'title' => $temp_title,
-						'progress' => $aae_counter_progress,						
-						'data' => [						
-							'📝 Posts: ' . $aae_counter_progress,		
-						]
-					]);
+					$this->report_progress('📝 Posts');
 					if (is_wp_error($parsed)) {
 						$this->log_error($parsed);
 						// Skip the rest of this post
@@ -439,7 +593,7 @@ class WXRImporter extends \WP_Importer
 					$node = $reader->expand();
 
 					$parsed = $this->parse_author_node($node);
-					$aae_counter_progress += 1;
+					$this->report_progress('📝 Authors');
 					if (is_wp_error($parsed)) {
 						$this->log_error($parsed);
 
@@ -447,15 +601,6 @@ class WXRImporter extends \WP_Importer
 						$reader->next();
 						break;
 					}
-					update_option('aaeaddon_template_import_progress', [
-						'type' => 'single',
-						'total_items' => $total_init,
-						'title' => $temp_title,
-						'progress' => $aae_counter_progress,
-						'data' => [						
-							'📝 Posts: ' . $aae_counter_progress,		
-						]
-					]);
 					$status = $this->process_author($parsed['data'], $parsed['meta']);
 					if (is_wp_error($status)) {
 						$this->log_error($status);
@@ -469,6 +614,7 @@ class WXRImporter extends \WP_Importer
 					$node = $reader->expand();
 
 					$parsed = $this->parse_term_node($node, 'category');
+					$this->report_progress('📝 Category');
 					if (is_wp_error($parsed)) {
 						$this->log_error($parsed);
 
@@ -476,16 +622,6 @@ class WXRImporter extends \WP_Importer
 						$reader->next();
 						break;
 					}
-					$aae_counter_progress += 1;
-					update_option('aaeaddon_template_import_progress', [
-						'type' => 'single',
-						'total_items' => $total_init,
-						'title' => $temp_title,
-						'progress' => $aae_counter_progress,
-						'data' => [						
-							'📝 Category: ' . $aae_counter_progress,		
-						]
-					]);
 					$status = $this->process_term($parsed['data'], $parsed['meta']);
 
 					// Handled everything in this node, move on to the next
@@ -496,16 +632,7 @@ class WXRImporter extends \WP_Importer
 					$node = $reader->expand();
 
 					$parsed = $this->parse_term_node($node, 'tag');
-					$aae_counter_progress += 1;
-					update_option('aaeaddon_template_import_progress', [
-						'type' => 'single',
-						 'total_items' => $total_init,
-						 'title' => $temp_title,
-						'progress' => $aae_counter_progress,
-						'data' => [						
-							'📝 Terms: ' . $aae_counter_progress,		
-						]
-					]);
+					$this->report_progress('📝 Terms');
 					if (is_wp_error($parsed)) {
 						$this->log_error($parsed);
 
@@ -524,7 +651,7 @@ class WXRImporter extends \WP_Importer
 					$node = $reader->expand();
 
 					$parsed = $this->parse_term_node($node);
-					$aae_counter_progress += 1;
+					$this->report_progress('📝 Terms');
 					if (is_wp_error($parsed)) {
 						$this->log_error($parsed);
 
@@ -532,15 +659,6 @@ class WXRImporter extends \WP_Importer
 						$reader->next();
 						break;
 					}
-					update_option('aaeaddon_template_import_progress', [
-						'type' => 'single',
-						'progress' => $aae_counter_progress,
-						'title' => $temp_title,
-						'total_items' => $total_init,
-						'data' => [						
-							'📝 Terms: ' . $aae_counter_progress,		
-						]
-					]);
 					$status = $this->process_term($parsed['data'], $parsed['meta']);
 
 					// Handled everything in this node, move on to the next
@@ -559,9 +677,15 @@ class WXRImporter extends \WP_Importer
 
 		if ($this->options['aggressive_url_search']) {
 			$this->replace_attachment_urls_in_content();
-			$aae_counter_progress += 1;
-		}		
+		}
 		$this->remap_featured_images();
+
+		// Only the chunk that reaches the end of the file gets here -- the
+		// earlier ones leave through wp_send_json() inside the
+		// wxr_importer.pre_process.post filter -- so this is the one honest
+		// place to say the content import is complete.
+		$this->finish_progress();
+
 		$this->import_end();
 	}
 
@@ -922,7 +1046,7 @@ class WXRImporter extends \WP_Importer
 			$remote_url = ! empty($data['attachment_url']) ? $data['attachment_url'] : $data['guid'];
 			//$this->background_attachments[] = 
 			if (! $this->options['fetch_attachments']) {
-				update_option('aaeaddon_template_import_state', __('fetching attachments disabled', 'animation-addons-for-elementor'));
+				Helpers::set_import_state( __('fetching attachments disabled', 'animation-addons-for-elementor'));
 				return false;
 			}
 
@@ -1992,15 +2116,15 @@ class WXRImporter extends \WP_Importer
 		// Time to tackle any left-over bits
 
 		if (! empty($this->requires_remapping['post'])) {
-			update_option('aaeaddon_template_import_state', esc_html__('Processing Posts', 'animation-addons-for-elementor'));
+			Helpers::set_import_state( esc_html__('Processing Posts', 'animation-addons-for-elementor'));
 			$this->post_process_posts($this->requires_remapping['post']);
 		}
 		if (! empty($this->requires_remapping['comment'])) {
-			update_option('aaeaddon_template_import_state', esc_html__('Processing Comments', 'animation-addons-for-elementor'));
+			Helpers::set_import_state( esc_html__('Processing Comments', 'animation-addons-for-elementor'));
 			$this->post_process_comments($this->requires_remapping['comment']);
 		}
 		if (! empty($this->requires_remapping['term'])) {
-			update_option('aaeaddon_template_import_state', esc_html__('Processing Terms', 'animation-addons-for-elementor'));
+			Helpers::set_import_state( esc_html__('Processing Terms', 'animation-addons-for-elementor'));
 			$this->post_process_terms($this->requires_remapping['term']);
 		}
 	}
@@ -2325,7 +2449,7 @@ class WXRImporter extends \WP_Importer
 			return;
 		}
 
-		update_option('aaeaddon_template_import_state', esc_html__('Starting remapping of featured images', 'animation-addons-for-elementor'));
+		Helpers::set_import_state( esc_html__('Starting remapping of featured images', 'animation-addons-for-elementor'));
 		// Cycle through posts that have a featured image.
 		foreach ($this->featured_images as $post_id => $value) {
 			if (isset($this->mapping['post'][$value])) {
@@ -2463,7 +2587,7 @@ class WXRImporter extends \WP_Importer
 	protected function prefill_existing_comments()
 	{
 		global $wpdb;
-		update_option('aaeaddon_template_import_state', esc_html__('Comment checking', 'animation-addons-for-elementor'));
+		Helpers::set_import_state( esc_html__('Comment checking', 'animation-addons-for-elementor'));
 		// One-time import dedup prefill; results held in memory, object caching does not apply.
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 		$posts = $wpdb->get_results("SELECT comment_ID, comment_author, comment_date FROM {$wpdb->comments}");
