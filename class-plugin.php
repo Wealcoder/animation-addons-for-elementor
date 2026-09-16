@@ -1266,7 +1266,15 @@ class Plugin
 		include_once AAEADDON_PATH . 'inc/trait-wcf-slider.php';
 		include_once AAEADDON_PATH . 'inc/post-rating-handler.php';
 		include_once AAEADDON_PATH . 'inc/category-fields.php';
-		include_once AAEADDON_PATH . 'inc/admin/page-import.php';
+
+		// The Page Import screen. Every hook it registers is an admin one, and
+		// its single front-end-capable hook -- pre_get_posts -- opens with
+		// `is_admin() && 'edit.php' === $pagenow`, so on a visitor's request the
+		// class was parsed to do nothing at all.
+		if (is_admin()) {
+			include_once AAEADDON_PATH . 'inc/admin/page-import.php';
+		}
+
 		include_once AAEADDON_PATH . 'widgets/mailchimp/mailchimp-api.php';
 		include_once AAEADDON_PATH . 'inc/trait-wcf-nested-slider.php';
 		include_once AAEADDON_PATH . 'inc/class-wcf-starter-animations.php';

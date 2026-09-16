@@ -57,6 +57,18 @@ final class Bootstrap {
 
 		// Milestone 9 — admin data API + CSV export for the dashboard's
 		// "Form Submissions" tab (React, inside the wcf_addons_settings app).
-		Admin_Rest::init();
+		//
+		// init() registers five things and four of them -- admin_post_aae_form_csv,
+		// admin_enqueue_scripts, admin_menu, submenu_file -- cannot fire outside
+		// wp-admin. The fifth is rest_api_init, so off-admin we register THAT and
+		// nothing else: a class-string callable is not resolved until the hook
+		// runs, so the 38 KB file is parsed on a REST request and on no other.
+		// Calling register_routes() from inside rest_api_init at the default
+		// priority is exactly what init() would have arranged.
+		if ( is_admin() ) {
+			Admin_Rest::init();
+		} else {
+			add_action( 'rest_api_init', [ Admin_Rest::class, 'register_routes' ] );
+		}
 	}
 }

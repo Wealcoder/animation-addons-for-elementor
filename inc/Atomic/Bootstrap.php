@@ -213,7 +213,18 @@ final class Bootstrap {
 		// adds its props to every type; the server keeps that (it is what
 		// protects saved data on save), the client does not need it. See the
 		// class docblock for the rule that keeps this safe.
-		( new \Wealcoder\AnimationAddons\Atomic\Editor\Schema_Trim() )->register();
+		//
+		// is_admin() gates the CONSTRUCTION, not the behaviour: its two hooks
+		// are elementor/editor/localize_settings and
+		// elementor/ajax/register_actions, and the editor (post.php?action=
+		// elementor) and elementor_ajax both answer is_admin(). Neither can
+		// fire on a visitor's request, so off-admin the class was 16 KB parsed
+		// for nothing. The preview iframe is deliberately not a concern --
+		// localize_settings is not fired there, and the SERVER schema it must
+		// never trim is registered by the modules above, not here.
+		if ( is_admin() ) {
+			( new \Wealcoder\AnimationAddons\Atomic\Editor\Schema_Trim() )->register();
+		}
 
 		// Remote preset system — the same-origin proxy route the editor's JS
 		// fetches (merges remote + local presets; see Atomic\Presets\Cache).
@@ -226,7 +237,13 @@ final class Bootstrap {
 		// requires — and Pro owns what is behind it, so a site without Pro gets
 		// an honest "nothing can install this" instead of a 400 from an action
 		// nobody registered. See Presets\Requires.
-		( new \Wealcoder\AnimationAddons\Atomic\Presets\Requires() )->register();
+		//
+		// wp_ajax_ is the only hook it registers, so it is admin by definition
+		// -- the door is opened from the editor panel, which posts to
+		// admin-ajax. Nothing here is reachable from a visitor's request.
+		if ( is_admin() ) {
+			( new \Wealcoder\AnimationAddons\Atomic\Presets\Requires() )->register();
+		}
 	}
 
 	/**

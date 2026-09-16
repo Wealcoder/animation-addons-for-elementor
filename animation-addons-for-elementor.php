@@ -220,7 +220,16 @@ final class Aaeaddon_Plugin {
 		add_action('admin_head', [$this,'print_admin_menu_icon_style']);
 		// The storage-name migration screen, notices and endpoints. Before
 		// init() and NOT gated on Elementor: the bridge serves options either way.
-		add_action( 'plugins_loaded', array( '\Wealcoder\AnimationAddons\Compat\Migration', 'init' ), 5 );
+		//
+		// is_admin() only, because every hook Migration::init() registers is an
+		// admin one -- admin_menu, admin_init, submenu_file, after_plugin_row_*,
+		// five wp_ajax_* and the dashboard config filter. On a visitor's request
+		// not one of them can fire, so loading the class there parsed 29 KB to
+		// register callbacks nothing would ever call. The BRIDGE is what a
+		// front-end request needs and that is a different file, booted above.
+		if ( is_admin() ) {
+			add_action( 'plugins_loaded', array( '\Wealcoder\AnimationAddons\Compat\Migration', 'init' ), 5 );
+		}
 		// Init Plugin
 		add_action( 'plugins_loaded', array( $this, 'init' ) );
 		add_action( 'admin_notices', array( $this, 'admin_notice_missing_main_plugin' ) );		
