@@ -67,7 +67,7 @@ function aaeaddon_lite_post_rating_custom_column_content($column, $post_id)
 	switch ($column) {
 		case 'reviewed_post_type':
 			$type = get_post_meta($post_id, 'reviewed_post_type', true);
-			echo $type ? esc_html($type) : 'N/A';
+			echo esc_html( $type ?: 'N/A' );
 			break;
 
 		case 'name':
@@ -81,7 +81,7 @@ function aaeaddon_lite_post_rating_custom_column_content($column, $post_id)
 			break;
 
 		case 'rating':
-			echo intval(get_post_meta($post_id, 'rating', true)) ?: 'N/A';
+			echo esc_html( intval( get_post_meta( $post_id, 'rating', true ) ) ?: 'N/A' );
 			break;
 
 		case 'review':
@@ -115,13 +115,13 @@ function aaeaddon_lite_review_meta_box_callback($post)
 		<label><strong>Name:</strong></label><br>
 		<input type="text" name="aae_name"
 			value="<?php echo esc_attr($user_id ? get_the_author_meta('display_name', $user_id) : $name); ?>"
-			<?php echo $user_id ? 'readonly' : ''; ?> class="widefat" />
+			<?php echo esc_attr( $user_id ? 'readonly' : '' ); ?> class="widefat" />
 	</p>
 	<p>
 		<label><strong><?php echo esc_html__('Email:', 'animation-addons-for-elementor') ?></strong></label><br>
 		<input type="email" name="aae_email"
 			value="<?php echo esc_attr($user_id ? get_the_author_meta('user_email', $user_id) : $email); ?>"
-			<?php echo $user_id ? 'readonly' : ''; ?> class="widefat" />
+			<?php echo esc_attr( $user_id ? 'readonly' : '' ); ?> class="widefat" />
 	</p>
 	<p>
 		<label><strong><?php echo esc_html__('Rating (1-5):', 'animation-addons-for-elementor')  ?></strong></label><br>

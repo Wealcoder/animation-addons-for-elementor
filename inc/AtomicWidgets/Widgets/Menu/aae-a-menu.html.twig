@@ -132,7 +132,7 @@
 --aae-menu-dropdown-min-width: {{ settings.dropdown_min_width | default(220) }}px;
 --aae-menu-dropdown-radius: {{ settings.dropdown_radius      | default(8) }}px;
 --aae-menu-drawer-width: {{ settings.drawer_width     | default(320) }}px;
---aae-menu-transition: {{ settings.transition_ms | default(250) }}ms cubic-bezier(.4,0,.2,1);
+--aae-menu-transition: {{ settings.transition_ms | default(250) }}ms;
 {% endset %}
 
 <div class="{{ classes }} {{ editor_classes | default('') }}"

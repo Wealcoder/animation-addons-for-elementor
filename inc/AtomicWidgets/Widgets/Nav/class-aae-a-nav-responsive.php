@@ -216,7 +216,10 @@ final class AAE_A_Nav_Responsive {
 		// Render_Props_Resolver, which returns null for `aae-rj` (no settings
 		// transformer registered) — the envelopes have to be read unresolved.
 		$settings = method_exists( $element, 'get_settings' ) ? $element->get_settings() : [];
-		$id       = method_exists( $element, 'get_id' ) ? (string) $element->get_id() : '';
+		// The id is interpolated into selectors and printed as an attribute;
+		// an Elementor id is hex, and anything else is refused rather than
+		// escaped, so a crafted id cannot close the selector or the block.
+		$id       = method_exists( $element, 'get_id' ) ? preg_replace( '/[^a-z0-9_-]/i', '', (string) $element->get_id() ) : '';
 
 		if ( '' === $id || empty( $settings ) ) {
 			return;
@@ -247,7 +250,7 @@ final class AAE_A_Nav_Responsive {
 			printf(
 				'<style id="aae-nav-rs-%s">%s</style>',
 				esc_attr( $id ),
-				$css // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from sanitize_value(); see rules_for().
+				wp_strip_all_tags( $css )
 			);
 		}
 

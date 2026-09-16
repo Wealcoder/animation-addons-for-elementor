@@ -174,7 +174,7 @@ class AAE_A_Loop_Item extends Atomic_Element_Base {
         $query = new \WP_Query( $ctx['query_args'] );
 
         if ( ! $query->have_posts() ) {
-            echo self::empty_state( $ctx ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped inside.
+            echo wp_kses_post( self::empty_state( $ctx ) );
             return;
         }
 
@@ -189,7 +189,7 @@ class AAE_A_Loop_Item extends Atomic_Element_Base {
 
             ob_start();
             $this->render();
-            echo self::ensure_image_alt( ob_get_clean() ); // phpcs:ignore WordPress.Security.EscapeOutput -- re-emitting Elementor's own rendered output, only an alt attribute is added.
+            echo aaeaddon_kses_builder_html( self::ensure_image_alt( ob_get_clean() ) );
         }
         wp_reset_postdata();
     }

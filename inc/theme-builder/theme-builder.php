@@ -544,9 +544,8 @@ class WCF_Theme_Builder
 
 		$archive_template_id = $this->get_template_id('header');
 		if ($archive_template_id != '0') {
-			// PHPCS - should not be escaped.
 			
-			echo self::render_build_content($archive_template_id); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo aaeaddon_kses_builder_html( self::render_build_content( $archive_template_id ) );
 		}
 	}
 
@@ -554,8 +553,7 @@ class WCF_Theme_Builder
 	{
 		$archive_template_id = $this->get_template_id('footer');
 		if ($archive_template_id != '0') {
-			// PHPCS - should not be escaped.
-			echo self::render_build_content($archive_template_id); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo aaeaddon_kses_builder_html( self::render_build_content( $archive_template_id ) );
 		}
 	}
 
@@ -1242,8 +1240,7 @@ class WCF_Theme_Builder
 	{
 		$archive_template_id = $this->get_template_id('archive');
 		if ($archive_template_id != '0') {
-			// PHPCS - should not be escaped.
-			echo self::render_build_content($archive_template_id); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo aaeaddon_kses_builder_html( self::render_build_content( $archive_template_id ) );
 		}
 	}
 
@@ -1252,8 +1249,7 @@ class WCF_Theme_Builder
 	{
 		$archive_template_id = $this->get_template_id('single');
 		if ($archive_template_id != '0') {
-			// PHPCS - should not be escaped.
-			echo self::render_build_content($archive_template_id); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo aaeaddon_kses_builder_html( self::render_build_content( $archive_template_id ) );
 		}
 	}
 
@@ -1367,8 +1363,7 @@ class WCF_Theme_Builder
 		}
 
 		if ($column_name === 'type') {
-			// PHPCS - should not be escaped.
-			echo isset(self::get_template_type()[$tmpType]) ? '<div class="column-tmptype">' . self::get_template_type()[$tmpType]['label'] . '</div>' : '-'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo isset( self::get_template_type()[ $tmpType ] ) ? '<div class="column-tmptype">' . esc_html( self::get_template_type()[ $tmpType ]['label'] ) . '</div>' : '-';
 		}
 
 		if ($column_name === 'status') {

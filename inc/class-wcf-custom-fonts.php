@@ -342,12 +342,12 @@ Class CustomFonts_Lite{
         $handle = \WCF_ADDONS\Plugin::INLINE_STYLE_HANDLE;
 
         if ( ! $this->is_load_in_head() && ! wp_style_is( $handle, 'done' ) ) {
-            wp_add_inline_style( $handle, $custom_css );
+            wp_add_inline_style( $handle, wp_strip_all_tags( $custom_css ) );
 
             return;
         }
 
-        printf( '<style id="wcf-custom-fonts">%s</style>', wp_strip_all_tags( $custom_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+        printf( '<style id="wcf-custom-fonts">%s</style>', wp_strip_all_tags( $custom_css ) );
     }
 
     /**

@@ -39,6 +39,23 @@
 		<exclude name="Generic.Commenting.DocComment.MissingShort"/>
 	</rule>
 
+	<rule ref="WordPress.Security.EscapeOutput">
+		<properties>
+			<property name="customEscapingFunctions" type="array">
+				<!-- wp_kses() with the allow-list a page builder's output needs
+				     (SVG, iframe, form, media) and <style> blocks carried beside
+				     kses, because kses turns a stray `>` in text into `&gt;`
+				     and breaks every child selector. inc/helper.php, inc/Kses.php. -->
+				<element value="aaeaddon_kses_builder_html"/>
+				<!-- CSS printed inside a <style> element, and only there: core
+				     has no escaper for CSS text (esc_html would rewrite `a > b`
+				     and every quoted url()), and stripping tags is what closes
+				     the one thing CSS text can do to a page: end the block. -->
+				<element value="wp_strip_all_tags"/>
+			</property>
+		</properties>
+	</rule>
+
 	<rule ref="WordPress.WP.I18n">
 		<properties>
 			<property name="text_domain" type="array">

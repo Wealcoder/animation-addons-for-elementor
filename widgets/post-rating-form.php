@@ -836,7 +836,7 @@ class Post_Rating_Form extends Widget_Base {
 		$is_logged_in = is_user_logged_in();
 		?>
 
-		<div class="aae--post-rating-form <?php echo ! $is_logged_in ? 'aae-logged-out' : 'aae-logged-in'; ?>" data-is-logged-in="<?php echo $is_logged_in ? 'true' : 'false'; ?>" data-element-id="<?php echo esc_attr( $this->get_id() ); ?>" data-require-approval="<?php echo esc_attr( $settings['require_approval'] ); ?>">
+		<div class="aae--post-rating-form <?php echo esc_attr( $is_logged_in ? 'aae-logged-in' : 'aae-logged-out' ); ?>" data-is-logged-in="<?php echo esc_attr( $is_logged_in ? 'true' : 'false' ); ?>" data-element-id="<?php echo esc_attr( $this->get_id() ); ?>" data-require-approval="<?php echo esc_attr( $settings['require_approval'] ); ?>">
 			<<?php Utils::print_validated_html_tag( $settings['title_tag'] ); ?> class="title">
 				<?php echo esc_html( $settings['title'] ); ?>
 			</<?php Utils::print_validated_html_tag( $settings['title_tag'] ); ?>>
@@ -869,7 +869,7 @@ class Post_Rating_Form extends Widget_Base {
 					? ( ! empty( $settings['login_btn_text'] ) ? $settings['login_btn_text'] : esc_html__( 'Log In to Rate', 'animation-addons-for-elementor' ) )
 					: $settings['btn_text'];
 				?>
-				<button type="submit" id="aae-post-rating-btn" class="submit-btn <?php echo ! $is_logged_in ? 'aae-login-trigger-btn' : ''; ?>">
+				<button type="submit" id="aae-post-rating-btn" class="submit-btn <?php echo esc_attr( $is_logged_in ? '' : 'aae-login-trigger-btn' ); ?>">
 					<?php echo esc_html( $button_text ); ?>
 				</button>
 			</div>

@@ -584,7 +584,7 @@ class Toggle_Switcher extends Widget_Base {
 						if ( 'content' === $item['content_type'] ) {
 							$this->print_text_editor( $item['switch_content'] );
 						} elseif ( ! empty( $item['elementor_templates'] ) ) {
-								echo Plugin::$instance->frontend->get_builder_content( $item['elementor_templates'], true ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+								echo aaeaddon_kses_builder_html( Plugin::$instance->frontend->get_builder_content( $item['elementor_templates'], true ) );
 
 						}
 						?>

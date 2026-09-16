@@ -1157,7 +1157,9 @@ class Timeline extends Widget_Base {
 					<<?php Utils::print_validated_html_tag( $settings['title_tag'] ); ?> class="title">
 						<?php
 						if ( ! empty( $item['link']['url'] ) ) :
-							echo '<a ' . $this->get_render_attribute_string( $link_key ) . '>'; // phpcs:ignore
+							echo '<a ';
+							$this->print_render_attribute_string( $link_key );
+							echo '>';
 						endif;
 							$this->print_unescaped_setting( 'timeline_title', 'timelines', $index );
 						if ( ! empty( $item['link']['url'] ) ) :

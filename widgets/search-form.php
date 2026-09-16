@@ -2303,7 +2303,7 @@ class Search_Form extends Widget_Base {
 		<?php
 
 		if ( 'default' === $settings['preset'] ) {
-			echo get_search_form();
+			get_search_form();
 			echo '<div class="aae--live-search-results"></div>';
 		}
 

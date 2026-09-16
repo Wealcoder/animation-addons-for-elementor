@@ -389,7 +389,9 @@ final class AAE_A_Menu_Responsive {
 		// transformer registered) — the envelopes have to be read unresolved,
 		// exactly like the Atomic extension Render classes do.
 		$settings = method_exists( $element, 'get_settings' ) ? $element->get_settings() : [];
-		$id       = method_exists( $element, 'get_id' ) ? (string) $element->get_id() : '';
+		// Interpolated into selectors and printed as an attribute: an
+		// Elementor id is hex, and anything else is refused rather than escaped.
+		$id       = method_exists( $element, 'get_id' ) ? preg_replace( '/[^a-z0-9_-]/i', '', (string) $element->get_id() ) : '';
 
 		if ( '' === $id || empty( $settings ) ) {
 			return;
@@ -421,7 +423,7 @@ final class AAE_A_Menu_Responsive {
 			printf(
 				'<style id="aae-mi-rs-%s">%s</style>',
 				esc_attr( $id ),
-				$css // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from sanitize_value(); see build_css().
+				wp_strip_all_tags( $css )
 			);
 		}
 
@@ -527,10 +529,15 @@ final class AAE_A_Menu_Responsive {
 			return is_numeric( $raw ) ? ( (float) $raw ) . 'px' : null;
 		}
 
-		// Duration only — the easing curve is fixed, matching the Twig, so a
-		// builder can never inject an arbitrary transition value.
+		// Duration only. The easing curve lives in the stylesheet
+		// (`--t: var(--aae-menu-transition, 250ms) cubic-bezier(...)`), so a
+		// builder can never inject an arbitrary transition value -- and the
+		// inline declaration carries no function call, which is what lets it
+		// through safecss_filter_attr() when a header template is escaped for
+		// output (see Kses::builder_html()). menu.js parseInt()s the value, so
+		// it reads the same either way.
 		if ( 'transition' === $kind ) {
-			return is_numeric( $raw ) ? ( (float) $raw ) . 'ms cubic-bezier(.4,0,.2,1)' : null;
+			return is_numeric( $raw ) ? ( (float) $raw ) . 'ms' : null;
 		}
 
 		if ( 'enum' === $kind ) {

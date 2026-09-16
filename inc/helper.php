@@ -431,7 +431,6 @@ if ( ! function_exists( 'wcf_get_search_active_keys' ) ) {
 				$value['is_active'] = 1;
 				$active[ $key ]     = $value;
 			}
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			if ( is_array( $value ) ) {
 				wcf_get_search_active_keys( $value, $keysToFind, $foundKeys, $active );
 			}
@@ -886,4 +885,23 @@ function wcf_asset_version() {
 	$version = $is_dev ? (string) time() : WCF_ADDONS_VERSION;
 
 	return $version;
+}
+
+if ( ! function_exists( 'aaeaddon_kses_builder_html' ) ) {
+	/**
+	 * Escape markup another renderer produced -- an Elementor template, a
+	 * theme-builder document, a Loop Item, a post's the_content -- for output.
+	 *
+	 * It is wp_kses() with the allow-list a page builder's output needs (SVG,
+	 * iframe, form, media), <style> blocks carried beside kses with their
+	 * CSS tag-stripped, <script> blocks removed with their contents. A plain
+	 * function rather than the static method it wraps because that is what an
+	 * escaping-function list can name. The whole of it: \WCF_ADDONS\Kses.
+	 *
+	 * @param string $html Rendered markup.
+	 * @return string
+	 */
+	function aaeaddon_kses_builder_html( $html ) {
+		return \WCF_ADDONS\Kses::builder_html( $html );
+	}
 }

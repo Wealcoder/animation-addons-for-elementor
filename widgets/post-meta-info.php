@@ -2458,7 +2458,7 @@ class Post_Meta_Info extends Widget_Base {
 		$content       = (string) get_the_content();
 		$clean_content = (string) esc_html( $content );
 		$word_count    = str_word_count( $clean_content );
-		$time          = ceil( $word_count / 200 );
+		$time          = (int) ceil( $word_count / 200 );
 
 		?>
 		<?php if ( '1' == $settings['layout_style'] ): ?>
@@ -2469,7 +2469,7 @@ class Post_Meta_Info extends Widget_Base {
                     <?php } ?>
 				<?php Icons_Manager::render_icon( $meta['list_icon'], [ 'aria-hidden' => 'true' ] ); ?>
 				<?php echo esc_html( $time ); ?>
-				<?php echo $time <= 1 ? esc_html__( 'minute read', 'animation-addons-for-elementor' ) : esc_html__( 'minutes read', 'animation-addons-for-elementor' ); ?>
+				<?php echo esc_html( _n( 'minute read', 'minutes read', (int) $time, 'animation-addons-for-elementor' ) ); ?>
                 </li>
 		<?php endif; ?>
 
@@ -2481,7 +2481,7 @@ class Post_Meta_Info extends Widget_Base {
                     </div>
                     <div class="wcf--meta-view">
 					<?php echo esc_html( $time ); ?>&nbsp;
-                        <span><?php echo $time <= 1 ? esc_html__( 'minute read', 'animation-addons-for-elementor' ) : esc_html__( 'minutes read', 'animation-addons-for-elementor' ); ?></span>
+                        <span><?php echo esc_html( _n( 'minute read', 'minutes read', (int) $time, 'animation-addons-for-elementor' ) ); ?></span>
                     </div>
                 </li>
 		<?php endif; ?>

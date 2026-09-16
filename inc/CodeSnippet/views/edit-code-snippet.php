@@ -222,7 +222,7 @@ if ( 'php' === $snippet_details['code_type'] ) {
 				<div id="wp-code-editor-container" class="code-editor-wrapper">
 					<!-- CodeMirror will be initialized here -->
 				</div>
-				<input type="hidden" id="code-content-hidden" name="code_content" value="<?php echo $snippet_details['code_content'] ? esc_textarea( $snippet_details['code_content'] ) : ''; ?>">
+				<input type="hidden" id="code-content-hidden" name="code_content" value="<?php echo esc_textarea( $snippet_details['code_content'] ?? '' ); ?>">
 				<div class="aae-csp-editor__footer">
 					<div id="editor-stats" class="editor-stats"></div>
 					<button class="aae-csp-editor__insertBtn" type="button" id="insert-example-btn">

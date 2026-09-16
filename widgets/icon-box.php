@@ -900,7 +900,7 @@ class Icon_Box extends Widget_Base
 
 			<?php if (! Utils::is_empty($settings['description_text'])) : ?>
 				<div class="desc">
-					<?php echo $this->parse_text_editor($settings['description_text']) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped 
+					<?php $this->print_text_editor( $settings['description_text'] );
 					?>
 				</div>
 			<?php endif; ?>

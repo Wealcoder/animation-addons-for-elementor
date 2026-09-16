@@ -53,7 +53,7 @@ $stacked-inner: ':is(:where(.aae-a-menu--mobile)[data-hamburger="true"], [data-l
 	--aae-dd-min:  var(--aae-menu-dropdown-min-width, 220px);
 	--aae-dd-r:    var(--aae-menu-dropdown-radius, 12px);
 	--aae-drawer-w: var(--aae-menu-drawer-width, 320px);
-	--t:           var(--aae-menu-transition, 250ms cubic-bezier(.4, 0, .2, 1));
+	--t:           var(--aae-menu-transition, 250ms) cubic-bezier(.4, 0, .2, 1);
 	/* Grace period before a hovered dropdown closes. Reaching a nested panel
 	   means travelling DIAGONALLY, and that path leaves the parent <li> for a
 	   moment — over the gap, or across a sibling item. With no delay the menu

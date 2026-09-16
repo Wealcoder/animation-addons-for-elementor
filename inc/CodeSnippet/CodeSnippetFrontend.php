@@ -630,7 +630,7 @@ class CodeSnippetFrontend {
 	private function execute_css_snippet( $content ) {
 		if ( ! empty( $content ) ) {
 			echo '<style type="text/css">' . "\n";
-			echo wp_strip_all_tags( $content ) . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo wp_strip_all_tags( $content ) . "\n";
 			echo '</style>' . "\n";
 		}
 	}
@@ -645,12 +645,14 @@ class CodeSnippetFrontend {
 	 */
 	private function execute_javascript_snippet( $content ) {
 		if ( ! empty( $content ) ) {
-			echo '<script type="text/javascript">' . "\n";
-			echo wp_strip_all_tags( $content ) . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo '</script>' . "\n";
+			// Core's inline-script printer. wp_strip_all_tags() used to run over
+			// the code, and strip_tags() eats everything from a `<` to the next
+			// `>` -- so `if ( a < b ) { ... } c > d` lost the middle of the
+			// snippet. The snippet is written by an administrator, on the screen
+			// that exists to run it; the tag around it is what has to be right.
+			wp_print_inline_script_tag( $content . "\n" );
 		}
 	}
-
 }
 
 CodeSnippetFrontend::instance();

@@ -108,11 +108,11 @@ class Ajax_Handler {
 					printf(
 						'<style id="aae-popup-live-css-%d">%s</style>',
 						(int) $live_template,
-						$inline_css // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built by Elementor's own Styles_Renderer.
+						wp_strip_all_tags( $inline_css )
 					);
 				}
 
-				echo \Elementor\Plugin::$instance->frontend->get_builder_content( $settings['popup_elementor_templates'], true ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo aaeaddon_kses_builder_html( \Elementor\Plugin::$instance->frontend->get_builder_content( $settings['popup_elementor_templates'], true ) );
 			} else {
 
 				$content = $settings['popup_content'] ?? 'Nothing to show.';

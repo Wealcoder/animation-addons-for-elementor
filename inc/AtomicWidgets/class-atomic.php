@@ -6401,7 +6401,7 @@ final class Atomic
 			if ( $class && is_callable( [ $class, 'get_frontend_css_override' ] ) ) {
 				$css = $class::get_frontend_css_override();
 				if ( '' !== $css ) {
-					wp_add_inline_style( $handle, $css );
+					wp_add_inline_style( $handle, wp_strip_all_tags( $css ) );
 				}
 			}
 		}
@@ -6925,7 +6925,7 @@ window.addEventListener('load',all);
 })();
 JS;
 
-		echo "<script id=\"aae-a-menu-breakpoint-bootstrap\">{$js}</script>\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static literal, no dynamic data.
+		wp_print_inline_script_tag( $js, array( 'id' => 'aae-a-menu-breakpoint-bootstrap' ) );
 	}
 
 	public function register_atomic_scripts($loader)
