@@ -508,15 +508,15 @@ class Ajax_Handler {
 	 * @return string Current page URL.
 	 */
 	private function get_current_page_url() {
-		if ( isset( $_SERVER['HTTPS'] ) && 'on' === $_SERVER['HTTPS'] ) {
-			$protocol = 'https://';
-		} else {
-			$protocol = 'http://';
+		// `isset( $x ) ?? f( $x )` never reached f() -- isset() is never null --
+		// so this returned "1" and every pagination link was built on it.
+		$host = isset( $_SERVER['HTTP_HOST'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) : '';
+		$uri  = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
+
+		if ( '' === $host ) {
+			return home_url( $uri );
 		}
 
-		$host = isset( $_SERVER['HTTP_HOST'] ) ?? wp_unslash( $_SERVER['HTTP_HOST'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended
-		$uri  = isset( $_SERVER['REQUEST_URI'] ) ?? wp_unslash( $_SERVER['REQUEST_URI'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended
-
-		return $protocol . $host . $uri;
+		return esc_url_raw( ( is_ssl() ? 'https://' : 'http://' ) . $host . $uri );
 	}
 }

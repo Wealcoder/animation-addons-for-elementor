@@ -177,8 +177,12 @@ class AAE_Loop_Builder_Integration {
 			wp_send_json_error( 'Insufficient permissions' );
 		}
 
-		$template_id = isset( $_POST['template_id'] ) ?? absint( wp_unslash( $_POST['template_id'] ) );
-		$settings    = isset( $_POST['settings'] ) ?? $this->sanitize_widget_settings( wp_unslash( $_POST['settings'] ) ?? array() ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		// `isset( $x ) ?? f( $x )` never reached f() -- isset() is never null --
+		// so both were booleans and the refresh could not work.
+		$template_id = isset( $_POST['template_id'] ) ? absint( wp_unslash( $_POST['template_id'] ) ) : 0;
+		$settings    = isset( $_POST['settings'] ) && is_array( $_POST['settings'] )
+			? $this->sanitize_widget_settings( wp_unslash( $_POST['settings'] ) ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitize_widget_settings() is the per-key sanitiser; nonce + edit_posts checked above.
+			: array();
 
 		if ( ! $template_id ) {
 			wp_send_json_error( 'Invalid template ID' );
@@ -245,7 +249,7 @@ class AAE_Loop_Builder_Integration {
 			wp_send_json_error( 'Insufficient permissions' );
 		}
 
-		$template_id = isset( $_POST['template_id'] ) ?? absint( wp_unslash( $_POST['template_id'] ) );
+		$template_id = isset( $_POST['template_id'] ) ? absint( wp_unslash( $_POST['template_id'] ) ) : 0;
 
 		if ( ! $template_id ) {
 			wp_send_json_error( 'Invalid template ID' );
