@@ -1261,9 +1261,15 @@ class Plugin
 			include_once AAEADDON_PATH . 'inc/CodeSnippet/CodeSnippetCompatibility.php';
 		}
 
-		include_once AAEADDON_PATH . 'inc/trait-wcf-post-query.php';
-		include_once AAEADDON_PATH . 'inc/trait-wcf-button.php';
-		include_once AAEADDON_PATH . 'inc/trait-wcf-slider.php';
+		// The four widget traits (Post_Query, Button, Slider, Nested_Slider) used to
+		// be included here, 123 KB parsed on every request. Their files are named
+		// after their classes now, so Composer's PSR-4 map loads each one at the
+		// moment a widget class that `use`s it is DECLARED -- which is what PHP
+		// already does for a trait. A request that registers no v3 widget (REST,
+		// admin-ajax, a page with no Elementor content) now parses none of them.
+		//
+		// It also makes the pre-4.2 aliases for those trait names resolve on demand
+		// instead of only after this include had run.
 		include_once AAEADDON_PATH . 'inc/post-rating-handler.php';
 		include_once AAEADDON_PATH . 'inc/category-fields.php';
 
@@ -1276,7 +1282,6 @@ class Plugin
 		}
 
 		include_once AAEADDON_PATH . 'widgets/mailchimp/mailchimp-api.php';
-		include_once AAEADDON_PATH . 'inc/trait-wcf-nested-slider.php';
 		include_once AAEADDON_PATH . 'inc/class-wcf-starter-animations.php';
 
 
