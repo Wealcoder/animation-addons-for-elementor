@@ -302,23 +302,19 @@ class WCF_Admin_Init
 	 */
 	public function include()
 	{
-		// base/WXRImporter.php below declares `class WXRImporter extends
-		// \WP_Importer`, so the core class has to exist before that file is
-		// parsed. Core does not autoload it; require_once, used immediately.
-		if (! class_exists('\WP_Importer')) {
-			require_once ABSPATH . 'wp-admin/includes/class-wp-importer.php';
-		}
 		require_once 'row-actions.php';
 		require_once 'plugin-installer.php';
 		require_once 'base/Helpers.php';
 		require_once 'base/Downloader.php';
-		require_once 'base/WPImporterLogger.php';
-		require_once 'base/WPImporterLoggerCLI.php';
-		require_once 'base/WXRImporter.php';
-		require_once 'base/WXRImportInfo.php';
-		require_once 'aae-importer.php';
-		require_once 'Logger.php';
-		require_once 'Importer.php';
+
+		// The import engine is NOT loaded here: Importer.php itself, plus
+		// WPImporterLogger, WPImporterLoggerCLI, WXRImporter, WXRImportInfo,
+		// AAEImporter, Logger and core's class-wp-importer.php. This method
+		// runs on every admin request, admin-ajax included, and those files
+		// declare classes and nothing else -- the only code that names them
+		// is OneClickImport::setup_st_importer(), which runs during an
+		// import and nowhere else. It requires them itself; read its
+		// docblock before moving any of them back up here.
 		require_once 'atomic-attachment-remap.php';
 		require_once 'atomic-kit-import.php';
 		require_once 'atomic-v3-switch-off.php';

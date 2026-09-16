@@ -25,7 +25,7 @@ class OneClickImport
 	 *
 	 * @var array
 	 */
-	public $import_files;
+	public $import_files = array();
 
 	/**
 	 * The path of the log file.
@@ -99,7 +99,14 @@ class OneClickImport
 	protected function __construct()
 	{
 		add_action('wp_ajax_aaeaddon_upload_manual_import_file', [$this, 'import_demo_data_ajax_callback']);
-		add_action('admin_init', [$this, 'setup_st_importer']);
+
+		// setup_st_importer() is deliberately NOT on admin_init. Building the
+		// importer pulls in the whole WXR engine, and admin_init fires on
+		// every wp-admin page AND every admin-ajax request -- heartbeat,
+		// another plugin's dashboard widget, all of it -- so hooking it there
+		// loaded ~99 KB of import machinery on requests that have nothing to
+		// do with importing. The two places that touch $this->importer call
+		// setup_st_importer() themselves; it is idempotent.
 		add_action('set_object_terms', array($this, 'add_imported_terms'), 10, 6);
 		add_filter('wxr_importer.pre_process.post', [$this, 'skip_failed_attachment_import']);
 		add_action('wxr_importer.process_failed.post', [$this, 'handle_failed_attachment_import'], 10, 5);
@@ -294,6 +301,7 @@ class OneClickImport
 		 * Returns any errors greater then the "warning" logger level, that will be displayed on front page.
 		 */
 		if (! empty($this->selected_import_files['content'])) {
+			$this->setup_st_importer();
 			$this->append_to_frontend_error_messages($this->importer->import_content($this->selected_import_files['content']));
 		}
 
@@ -378,6 +386,14 @@ class OneClickImport
 	private function use_existing_importer_data()
 	{
 		if ($data = get_transient('aadaddon_st_importer_data')) {
+
+			// FIRST -- setup_st_importer() clears $this->import_files, so
+			// building the importer after restoring the transient would wipe
+			// the value this method exists to restore. Reached only when a
+			// previous chunk left importer data behind, i.e. an import really
+			// is in progress.
+			$this->setup_st_importer();
+
 			$this->frontend_error_messages = empty($data['frontend_error_messages']) ? array() : $data['frontend_error_messages'];
 			$this->log_file_path           = empty($data['log_file_path']) ? '' : $data['log_file_path'];
 			$this->selected_index          = empty($data['selected_index']) ? 0 : $data['selected_index'];
@@ -466,10 +482,19 @@ class OneClickImport
 
 
 	/**
-	 * Get data from filters, after the theme has loaded and instantiate the importer.
+	 * Build the importer, once, at the point something needs it.
+	 *
+	 * Called from the import flow rather than from admin_init -- see the
+	 * note beside the removed hook in __construct(). Idempotent, so the
+	 * call sites do not have to know whether it has already run.
 	 */
 	public function setup_st_importer()
 	{
+		// Null check, not `instanceof Importer` -- naming the class here
+		// would be asking about a class this method has not required yet.
+		if (null !== $this->importer) {
+			return;
+		}
 
 		// Get info of import data files and filter it.
 		$this->import_files = array();
@@ -484,6 +509,15 @@ class OneClickImport
 		$logger_options = array(
 			'logger_min_level' => 'warning',
 		);
+
+		// This method is the only code in either plugin that names Importer,
+		// so its file is required here rather than on every admin request.
+		// load_engine() then brings in the rest -- it has to run before the
+		// Logger line below, not inside Importer's own constructor, because
+		// Logger extends WPImporterLoggerCLI. Everything is require_once, so
+		// a second import step asking again costs nothing.
+		require_once __DIR__ . '/Importer.php';
+		Importer::load_engine();
 
 		// Configure logger instance and set it to the importer.
 		$logger            = new Logger();

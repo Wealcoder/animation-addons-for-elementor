@@ -59,16 +59,40 @@ class Importer
 	private $ob_level = null;
 
 	/**
-	 * Include required files.
+	 * Load the WXR import engine, at the point it is first used.
+	 *
+	 * These six files declare classes and do nothing else -- no hooks, no
+	 * instances -- so there is nothing to gain by having them in memory
+	 * before an import actually starts. They used to be required from
+	 * `WCF_Admin_Init::include()`, which runs on EVERY admin request,
+	 * admin-ajax included: ~99 KB parsed on every page of wp-admin for two
+	 * lines of code that only run during an import.
+	 *
+	 * Loading them here rather than behind a request test is deliberate.
+	 * The import runs over admin-ajax in several chunks, so a test on the
+	 * requested page or action would have to enumerate every import step
+	 * and stay in step with it; one missed name is not a missing file but
+	 * a fatal in the middle of someone's import. Here the trigger is the
+	 * use itself: if a class below is being instantiated, this has just run.
+	 *
+	 * Order is dependency order -- each class's parent must already be
+	 * declared when PHP parses it, and core autoloads none of them.
 	 */
-	private function include_required_files()
+	public static function load_engine()
 	{
-		// AAEImporter extends WXRImporter, which extends the core \WP_Importer
-		// class. Core does not autoload that class, so it is loaded here with
-		// require_once and used immediately by the constructor below.
+		// AAEImporter extends WXRImporter, which extends the core
+		// \WP_Importer class. Core does not autoload it, and WXRImporter.php
+		// below cannot be parsed without it.
 		if (! class_exists('\WP_Importer')) {
 			require_once ABSPATH . 'wp-admin/includes/class-wp-importer.php';
 		}
+
+		require_once __DIR__ . '/base/WPImporterLogger.php';
+		require_once __DIR__ . '/base/WPImporterLoggerCLI.php';
+		require_once __DIR__ . '/base/WXRImporter.php';
+		require_once __DIR__ . '/base/WXRImportInfo.php';
+		require_once __DIR__ . '/aae-importer.php';
+		require_once __DIR__ . '/Logger.php';
 	}
 
 
@@ -260,7 +284,7 @@ class Importer
 	public function __construct($importer_options = array(), $logger = null)
 	{
 		// Include files that are needed for WordPress Importer v2.
-		$this->include_required_files();
+		self::load_engine();
 
 		// Set the WordPress Importer v2 as the importer used in this plugin.
 		// More: https://github.com/humanmade/WordPress-Importer.

@@ -403,8 +403,11 @@ class CustomIcons_Lite
 			], 400 );
 		}
 
-		// 3) Use WP upload API with strict MIME
-		require_once ABSPATH . 'wp-admin/includes/file.php';
+		// 3) Use WP upload API with strict MIME. wp_handle_upload() is used a
+		// few lines down; file.php is only loaded when core has not already.
+		if ( ! function_exists( 'wp_handle_upload' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+		}
 		$overrides = array(
 			'test_form' => false,
 			'mimes'     => array(
@@ -460,9 +463,14 @@ class CustomIcons_Lite
 			
 		}
 		
-		// 5) Unzip safely with WP API
-		require_once ABSPATH . 'wp-admin/includes/file.php';
-		require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php'; // includes unzip_file()
+		// 5) Unzip safely with WP API.
+		//
+		// unzip_file() is supplied by file.php. It is NOT in
+		// class-wp-upgrader.php, which used to be loaded here for it and
+		// supplies nothing this method uses, so that require is gone.
+		if ( ! function_exists( 'unzip_file' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+		}
 		$unzipped = unzip_file( $zip_file_path, $target_dir );
 		
 		// Always remove the uploaded zip after processing

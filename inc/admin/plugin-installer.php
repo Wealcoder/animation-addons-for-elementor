@@ -116,7 +116,11 @@ class WCF_Plugin_Installer
     function check_plugin_status($base_path)
     {
 
-        require_once ABSPATH . 'wp-admin/includes/plugin.php';
+        // is_plugin_active() is used immediately below; plugin.php is only
+        // loaded when core has not already done so.
+        if ( ! function_exists( 'is_plugin_active' ) ) {
+            require_once ABSPATH . 'wp-admin/includes/plugin.php';
+        }
         if (file_exists(WP_PLUGIN_DIR . '/' . $base_path)) {
             return is_plugin_active($base_path) ? 'Active' : 'Inactive';
         }
