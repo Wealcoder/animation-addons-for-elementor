@@ -1,7 +1,6 @@
 import { UploadCloud, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import axios from "axios";
 
 export default function DropIcon() {
   const [uploadedFiles, setUploadedFiles] = useState([]);
@@ -43,49 +42,81 @@ export default function DropIcon() {
       formData.append("action", "aaeaddon_upload_custom_icon_zip");
       formData.append("nonce", WCF_ADDONS_ADMIN.nonce);
 
-      axios
-        .post(WCF_ADDONS_ADMIN.ajaxurl, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-          onUploadProgress: (progressEvent) => {
-            const progress = Math.round(
-              (progressEvent.loaded / (progressEvent.total ?? 0)) * 100
-            );
+      // Plain XMLHttpRequest: it is the one browser API with upload
+      // progress and abort, which is all this needs. axios used to do this
+      // and was never a declared dependency -- it resolved by accident
+      // through the build tooling's own lockfile.
+      const xhr = new XMLHttpRequest();
+      let cancelled = false;
 
-            setFilesToUpload((prevUploadProgress) =>
-              prevUploadProgress.map((item) =>
-                item.File.name === file.name ? { ...item, progress } : item
-              )
-            );
-          },
-          cancelToken: new axios.CancelToken((cancel) => {
-            setFilesToUpload((prevUploadProgress) =>
-              prevUploadProgress.map((item) =>
-                item.File.name === file.name
-                  ? { ...item, source: { cancel } }
-                  : item
-              )
-            );
-          }),
-        })
-        .then((res) => {
-          setUploadedFiles([file]);
-          setMessage(res?.data?.data?.message);
-          setFilesToUpload((prevUploadProgress) =>
-            prevUploadProgress.filter((item) => item.File !== file)
-          );
+      setFilesToUpload((prevUploadProgress) =>
+        prevUploadProgress.map((item) =>
+          item.File.name === file.name
+            ? {
+                ...item,
+                source: {
+                  cancel: () => {
+                    cancelled = true;
+                    xhr.abort();
+                  },
+                },
+              }
+            : item
+        )
+      );
 
-          resolve();
-        })
-        .catch((err) => {
-          if (axios.isCancel(err)) {
-            console.log("Upload canceled", err.message);
-          } else {
-            console.error(err.message);
-          }
-          reject(err);
-        });
+      xhr.upload.addEventListener("progress", (event) => {
+        const progress = event.lengthComputable
+          ? Math.round((event.loaded / event.total) * 100)
+          : 0;
+
+        setFilesToUpload((prevUploadProgress) =>
+          prevUploadProgress.map((item) =>
+            item.File.name === file.name ? { ...item, progress } : item
+          )
+        );
+      });
+
+      xhr.addEventListener("load", () => {
+        let body = null;
+        try {
+          body = JSON.parse(xhr.responseText);
+        } catch (e) {
+          body = null;
+        }
+
+        if (xhr.status < 200 || xhr.status >= 300 || !body || body.success === false) {
+          const reason =
+            body?.data?.message || `Upload failed (HTTP ${xhr.status})`;
+          console.error(reason);
+          reject(new Error(reason));
+          return;
+        }
+
+        setUploadedFiles([file]);
+        setMessage(body?.data?.message);
+        setFilesToUpload((prevUploadProgress) =>
+          prevUploadProgress.filter((item) => item.File !== file)
+        );
+
+        resolve();
+      });
+
+      xhr.addEventListener("error", () => {
+        console.error("Network error");
+        reject(new Error("Network error"));
+      });
+
+      xhr.addEventListener("abort", () => {
+        if (cancelled) {
+          console.log("Upload canceled");
+        }
+        reject(new Error("Upload canceled"));
+      });
+
+      // No Content-Type header: the browser writes the multipart boundary.
+      xhr.open("POST", WCF_ADDONS_ADMIN.ajaxurl);
+      xhr.send(formData);
     });
   };
 
