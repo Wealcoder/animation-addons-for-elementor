@@ -295,7 +295,16 @@ final class Key_Bridge {
 			self::mark_missing( $option );
 			return false;
 		}
-		return $value;
+
+		/*
+		 * The REQUESTED name's own read filter, which get_option() would have
+		 * applied and now cannot: a pre_option_{name} short-circuit returns
+		 * before option_{name} ever runs. get_option( $target ) above applied
+		 * the LIVE name's filter; both spellings are views of one row, so both
+		 * filters belong. Pro filters option_wcf_save_extensions -- the old
+		 * spelling, i.e. the redirected one once the new rows go live.
+		 */
+		return apply_filters( "option_{$option}", $value, $option );
 	}
 
 	/**
@@ -311,13 +320,62 @@ final class Key_Bridge {
 			return $value;
 		}
 		self::$suspended++;
+		$existed = ( self::$missing !== get_option( $target, self::$missing ) );
 		update_option( $target, $value );
 		if ( self::NEW_LIVE === self::$phase ) {
 			// $option is the OLD spelling here: keep it current for a downgrade.
 			update_option( $option, $value );
 		}
 		self::$suspended--;
+
+		self::replay_write_hooks( $option, $value, $old_value, $existed );
+
 		return $old_value;
+	}
+
+	/**
+	 * Re-fire the REQUESTED name's own option hooks after a redirected write.
+	 *
+	 * redirect_write() returns $old_value, which tells WordPress nothing
+	 * changed. That is what stops it writing a second row -- and it equally
+	 * stops it firing update_option_{$option} / add_option_{$option} and their
+	 * generic twins, so anything listening on the spelling the CALLER used is
+	 * silently dead.
+	 *
+	 * In phase A that is every listener on a NEW name, which is all of ours.
+	 * Measured 2026-09-16: update_option( 'aaeaddon_animation_settings', ... )
+	 * never ran Animation_Settings::flush_cache(), so get() kept serving the
+	 * PRE-save value for the rest of that request -- the settings screen read
+	 * back what the user had just replaced, and Pro's renderer was handed the
+	 * old answer through the same cache. Pro's Performance::flush_cache() is
+	 * hooked identically and had the identical hole.
+	 *
+	 * Skipped in phase B, where the mirror write above targets $option's own row
+	 * and fires these hooks naturally -- replaying them there would run every
+	 * listener twice.
+	 *
+	 * @param string $option   The name the caller used.
+	 * @param mixed  $value    The value now stored.
+	 * @param mixed  $old_value What the caller's own read returned beforehand.
+	 * @param bool   $existed  Whether the live row existed before this write.
+	 */
+	private static function replay_write_hooks( $option, $value, $old_value, $existed ) {
+		if ( self::NEW_LIVE === self::$phase ) {
+			return;
+		}
+
+		// update_option() fires nothing when the value did not actually change.
+		if ( maybe_serialize( $value ) === maybe_serialize( $old_value ) ) {
+			return;
+		}
+
+		if ( $existed ) {
+			do_action( "update_option_{$option}", $old_value, $value, $option );
+			do_action( 'updated_option', $option, $old_value, $value );
+		} else {
+			do_action( "add_option_{$option}", $option, $value );
+			do_action( 'added_option', $option, $value );
+		}
 	}
 
 	/** add_option_{name}: a row was created under one spelling — copy it to the other. */
