@@ -382,6 +382,17 @@ class OneClickImport
 		delete_transient('aadaddon_import_menu_mapping');
 		delete_transient('aaeaddon_import_posts_with_nav_block');
 
+		// The CPT Builder caches its registrations in these two options and
+		// returns early while the cache is non-empty. The content just
+		// imported may carry new post-type and taxonomy definitions; a cache
+		// built before they existed would keep them unregistered on every
+		// later request until someone opened the CPT Builder screen. The
+		// template importer clears them BEFORE the content step, which is the
+		// wrong side of it; this is the right one. Plain deletes, because the
+		// builder's class is only loaded while its extension is switched on.
+		delete_option('aae_cpts_032153');
+		delete_option('aae_taxs_933153');
+
 		$response['msg'] = esc_html__('Congrats, your demo has been imported.', 'animation-addons-for-elementor');
 		$response['progress'] = 80;
 		check_ajax_referer('wcf_admin_nonce', 'nonce');
@@ -422,6 +433,7 @@ class OneClickImport
 			$this->import_files            = empty($data['import_files']) ? array() : $data['import_files'];
 			$this->before_import_executed  = empty($data['before_import_executed']) ? false : $data['before_import_executed'];
 			$this->imported_terms          = empty($data['imported_terms']) ? [] : $data['imported_terms'];
+
 			$this->importer->set_importer_data($data);
 
 			return true;

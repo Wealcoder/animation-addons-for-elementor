@@ -106,6 +106,46 @@ class CustomCpt_Lite {
         add_action( 'init', [$this,'setup_post_type'], 8 );
         add_action( 'init', [$this,'register_cpt'] , 100);
         add_action( 'init', [$this,'register_taxonomes'] , 60);
+
+        // A demo's post types and taxonomies arrive INSIDE the content
+        // import, as ordinary items of the definition post types above. By
+        // then register_cpt() has already run for this request, from a
+        // cache built before those rows existed -- so every item of the new
+        // type that follows in the same file fails process_post()'s
+        // get_post_type_object() test and is dropped without a word.
+        // Measured on a real demo: definition at item #11, its six posts at
+        // #163, none imported. Re-register as soon as a definition is written.
+        add_action( 'wxr_importer.processed.post', [ $this, 'register_from_import' ], 10, 2 );
+    }
+
+    /**
+     * Re-read the definitions and register everything they declare, now.
+     *
+     * Drops both caches first: register_cpt() returns early on a non-empty
+     * cache, so a stale one from before the import would keep answering for
+     * the rest of the request -- and, measured, for every later request too,
+     * until someone opened the CPT Builder screen.
+     */
+    public function refresh_registrations() {
+        delete_option( $this->cache_key );
+        delete_option( $this->cache_tax_key );
+        $this->register_taxonomes();
+        $this->register_cpt();
+    }
+
+    /**
+     * Importer callback: a definition post has just been written, meta
+     * included (the hook fires after process_post_meta()).
+     *
+     * @param int   $post_id New post ID.
+     * @param array $data    Raw imported post data.
+     */
+    public function register_from_import( $post_id, $data ) {
+        $type = isset( $data['post_type'] ) ? $data['post_type'] : '';
+        if ( $this->post_type !== $type && $this->tax_type !== $type ) {
+            return;
+        }
+        $this->refresh_registrations();
     }
     
     public function get_all_flat_caps() {
@@ -507,7 +547,22 @@ class CustomCpt_Lite {
     }
 
     public function latest_data($post_type) {
-        $posts = get_posts( array( 'post_type' => $post_type, 'post_status' => array( 'hidden' ) ) );
+        // get_posts() defaults to numberposts = 5, so a site with six or more
+        // definitions never registered the oldest ones. Every row.
+        //
+        // Definitions are stored with post_status 'hidden', which nothing
+        // registers -- deliberately: a generic name in the global status
+        // namespace is a collision waiting to happen, and every demo export
+        // and Pro's PresetRequires already carry the literal. WP_Query keeps
+        // only statuses get_post_stati() knows, so asking for 'hidden' by
+        // name carried NO status clause and returned trash too. 'any' is the
+        // honest spelling: every row except the internal statuses (trash,
+        // auto-draft), an unregistered one included.
+        $posts = get_posts( array(
+            'post_type'   => $post_type,
+            'post_status' => 'any',
+            'numberposts' => -1,
+        ) );
         $result = array();
         $taxonomies = get_taxonomies();
         $post_types = $this->get_post_type();
