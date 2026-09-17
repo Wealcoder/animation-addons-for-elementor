@@ -137,8 +137,8 @@ final class Loop_Query_Woo {
 
 		// The same index every price filter and price sort already reads, so a
 		// store whose prices work at all can answer this.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$row = $wpdb->get_row( "SELECT MIN(min_price) AS lo, MAX(max_price) AS hi FROM {$table} WHERE min_price IS NOT NULL" );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$row = $wpdb->get_row( $wpdb->prepare( 'SELECT MIN(min_price) AS lo, MAX(max_price) AS hi FROM %i WHERE min_price IS NOT NULL', $table ) );
 
 		if ( ! $row || null === $row->lo || null === $row->hi ) {
 			return null;
@@ -434,7 +434,7 @@ final class Loop_Query_Woo {
 		if ( null === self::$tax_classes ) {
 			global $wpdb;
 			$lookup            = $wpdb->prefix . 'wc_product_meta_lookup';
-			self::$tax_classes = (array) $wpdb->get_col( "SELECT DISTINCT tax_class FROM {$lookup};" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			self::$tax_classes = (array) $wpdb->get_col( $wpdb->prepare( 'SELECT DISTINCT tax_class FROM %i', $lookup ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		}
 		return self::$tax_classes;
 	}

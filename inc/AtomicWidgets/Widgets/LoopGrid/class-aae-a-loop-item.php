@@ -189,7 +189,7 @@ class Aaeaddon_A_Loop_Item extends Atomic_Element_Base {
 
             ob_start();
             $this->render();
-            echo aaeaddon_kses_builder_html( self::ensure_image_alt( ob_get_clean() ) );
+            aaeaddon_print_builder_html( self::ensure_image_alt( ob_get_clean() ) );
         }
         wp_reset_postdata();
     }

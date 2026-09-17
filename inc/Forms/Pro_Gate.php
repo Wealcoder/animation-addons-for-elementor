@@ -1,4 +1,12 @@
 <?php
+namespace Wealcoder\AnimationAddons\Forms;
+
+use Wealcoder\AnimationAddons\AtomicWidgets\Atomic;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Licence gate for the Pro form fields and the multi-step feature.
  *
@@ -55,14 +63,6 @@
  *
  * @package AnimationAddonsForElementor
  */
-
-namespace Wealcoder\AnimationAddons\Forms;
-
-use Wealcoder\AnimationAddons\AtomicWidgets\Atomic;
-
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
 
 final class Pro_Gate {
 

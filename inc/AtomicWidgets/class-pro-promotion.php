@@ -1,4 +1,10 @@
 <?php
+namespace Wealcoder\AnimationAddons\AtomicWidgets;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Panel upsell cards for the Pro-owned atomic widgets.
  *
@@ -51,12 +57,6 @@
  *
  * @package AnimationAddonsForElementor
  */
-
-namespace Wealcoder\AnimationAddons\AtomicWidgets;
-
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
 
 final class Pro_Promotion {
 

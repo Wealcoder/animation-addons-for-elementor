@@ -322,7 +322,7 @@ class Helpers {
 	 * Check if the AJAX call is valid.
 	 */
 	public static function verify_ajax_call() {
-		Nonce::check_ajax( Nonce::ADMIN, 'nonce' );
+		check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
 
 		// Check if user has the WP capability to import data.
 		if ( ! current_user_can( 'import' ) ) {

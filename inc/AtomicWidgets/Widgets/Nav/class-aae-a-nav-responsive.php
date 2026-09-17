@@ -246,12 +246,10 @@ final class Aaeaddon_A_Nav_Responsive {
 	}
 
 	public static function print_blocks(): void {
+		// Printed by WP_Styles' inline printer, so the element's id is
+		// `aae-css-nav-rs-<id>-inline-css`; the editor mirror looks that up.
 		foreach ( self::$blocks as $id => $css ) {
-			printf(
-				'<style id="aae-nav-rs-%s">%s</style>',
-				esc_attr( $id ),
-				wp_strip_all_tags( $css )
-			);
+			aaeaddon_print_css( $css, 'nav-rs-' . $id );
 		}
 
 		self::$blocks = [];

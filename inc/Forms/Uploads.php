@@ -116,7 +116,7 @@ final class Uploads {
 
 		// Same origin proof as submit (nonce rides the multipart body).
 		$nonce = (string) $request->get_param( 'nonce' );
-		if ( ! Nonce::verify( $nonce, Rest::NONCE_ACTION ) ) {
+		if ( ! wp_verify_nonce( $nonce, Nonce::action_for( $nonce, Rest::NONCE_ACTION ) ) ) {
 			Spam_Log::record( $form_key, 'upload_bad_nonce' );
 
 			return self::error( 403, 'aae_form_security', __( 'We could not upload the file. Please reload the page and try again.', 'animation-addons-for-elementor' ) );

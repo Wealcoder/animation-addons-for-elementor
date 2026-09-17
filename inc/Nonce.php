@@ -136,6 +136,49 @@ final class Nonce {
 	}
 
 	/**
+	 * The spelling a submitted nonce answers to, for a CORE verification
+	 * call at the request boundary:
+	 *
+	 *     check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
+	 *     wp_verify_nonce( $nonce, Nonce::action_for( $nonce, Nonce::FRONTEND ) );
+	 *
+	 * The handler's own line is core's function, which is what a static
+	 * analyser -- the Plugin Directory's included -- looks for when it asks
+	 * whether a `$_POST` read is nonce-checked. `Nonce::check_ajax()` did the
+	 * same work and was invisible to it: 265 handlers read as unchecked. This
+	 * helper only decides WHICH spelling core verifies against: the current
+	 * one, or the pre-4.2 one a page cached before the rename still posts.
+	 * When neither verifies it returns the current spelling, so core's own
+	 * call fails and dies exactly as it would have.
+	 *
+	 * @param string       $action    One of the class constants.
+	 * @param string|false $query_arg Request key holding the nonce.
+	 * @return string The action string to hand to core.
+	 */
+	public static function action( $action, $query_arg = 'nonce' ) {
+		$nonce = '';
+		if ( false !== $query_arg && isset( $_REQUEST[ $query_arg ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- resolving the spelling for the verification that follows.
+			$nonce = sanitize_text_field( wp_unslash( $_REQUEST[ $query_arg ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		}
+		return self::action_for( $nonce, $action );
+	}
+
+	/**
+	 * action() for a nonce value already in hand.
+	 *
+	 * @param string $nonce  The value posted back.
+	 * @param string $action One of the class constants.
+	 * @return string
+	 */
+	public static function action_for( $nonce, $action ) {
+		$nonce = is_string( $nonce ) ? $nonce : '';
+		if ( '' !== $nonce && isset( self::LEGACY[ $action ] ) && false === wp_verify_nonce( $nonce, $action ) && false !== wp_verify_nonce( $nonce, self::LEGACY[ $action ] ) ) {
+			return self::LEGACY[ $action ];
+		}
+		return $action;
+	}
+
+	/**
 	 * `wp_verify_nonce()` that also accepts the legacy spelling.
 	 *
 	 * @param string $nonce  The value posted back.

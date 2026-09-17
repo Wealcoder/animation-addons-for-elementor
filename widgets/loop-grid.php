@@ -1347,7 +1347,7 @@ class Loop_Grid extends \Elementor\Widget_Base {
 		if ( ! empty( $template_output ) ) :
 			?>
 			<article class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>" data-elementor-type="loop-item">
-				<?php echo aaeaddon_kses_builder_html( $template_output ); ?>
+				<?php aaeaddon_print_builder_html( $template_output ); ?>
 			</article>
 			<?php
 		endif;

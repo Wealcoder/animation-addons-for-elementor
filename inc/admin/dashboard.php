@@ -683,7 +683,7 @@ class Aaeaddon_Admin_Init
 	{
 
 	
-		Nonce::check_ajax( Nonce::ADMIN, 'nonce');
+		check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
 
 		if (! current_user_can('manage_options')) {
 			wp_send_json_error(esc_html__('you are not allowed to do this action', 'animation-addons-for-elementor'));
@@ -746,7 +746,7 @@ class Aaeaddon_Admin_Init
 	 */
 	public function complete_setup_wizard()
 	{
-		Nonce::check_ajax( Nonce::ADMIN, 'nonce');
+		check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
 
 		if (! current_user_can('manage_options')) {
 			wp_send_json_error(esc_html__('Permission denied.', 'animation-addons-for-elementor'));
@@ -759,7 +759,7 @@ class Aaeaddon_Admin_Init
 
 	public function get_dynamic_settings()
 	{
-		Nonce::check_ajax( Nonce::ADMIN, 'nonce');
+		check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
 
 		if (! current_user_can('manage_options')) {
 			wp_send_json_error(esc_html__('You are not allowed to do this action', 'animation-addons-for-elementor'));
@@ -802,7 +802,7 @@ class Aaeaddon_Admin_Init
 	public function save_dynamic_settings()
 	{
 
-		Nonce::check_ajax( Nonce::ADMIN, 'nonce');
+		check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
 
 		if (! current_user_can('manage_options')) {
 			wp_send_json_error(esc_html__('you are not allowed to do this action', 'animation-addons-for-elementor'));
@@ -845,7 +845,7 @@ class Aaeaddon_Admin_Init
 	 */
 	public function flush_known_taxonomies()
 	{
-		Nonce::check_ajax( Nonce::ADMIN, 'nonce');
+		check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
 
 		if (! current_user_can('manage_options')) {
 			wp_send_json_error(esc_html__('Permission denied.', 'animation-addons-for-elementor'));
@@ -890,7 +890,7 @@ class Aaeaddon_Admin_Init
 	public function notice_store()
 	{
 
-		Nonce::check_ajax( Nonce::ADMIN, 'nonce');
+		check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
 
 		if (! current_user_can('manage_options')) {
 			wp_send_json_error(esc_html__('you are not allowed to do this action', 'animation-addons-for-elementor'));
@@ -912,7 +912,7 @@ class Aaeaddon_Admin_Init
 	public function get_notice()
 	{
 
-		Nonce::check_ajax( Nonce::ADMIN, 'nonce');
+		check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
 
 		if (! current_user_can('manage_options')) {
 			wp_send_json_error(esc_html__('you are not allowed to do this action', 'animation-addons-for-elementor'));
@@ -941,7 +941,7 @@ class Aaeaddon_Admin_Init
 	 */
 	public function request_new_feature()
 	{
-		Nonce::check_ajax( Nonce::ADMIN, 'nonce');
+		check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
 
 		if (! current_user_can('manage_options')) {
 			wp_send_json_error(esc_html__('you are not allowed to do this action', 'animation-addons-for-elementor'));
@@ -1104,7 +1104,7 @@ class Aaeaddon_Admin_Init
 	public function save_settings_dashboard()
 	{
 
-		Nonce::check_ajax( Nonce::ADMIN, 'nonce');
+		check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
 
 		if (! current_user_can('manage_options')) {
 			wp_send_json_error(esc_html__('you are not allowed to do this action', 'animation-addons-for-elementor'));
@@ -1168,7 +1168,7 @@ class Aaeaddon_Admin_Init
 	public function save_smooth_scroller_settings()
 	{
 
-		Nonce::check_ajax( Nonce::ADMIN, 'nonce');
+		check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
 
 		if (! current_user_can('manage_options')) {
 			wp_send_json_error(esc_html__('you are not allowed to do this action', 'animation-addons-for-elementor'));

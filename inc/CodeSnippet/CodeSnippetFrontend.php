@@ -624,9 +624,7 @@ class CodeSnippetFrontend {
 	 */
 	private function execute_css_snippet( $content ) {
 		if ( ! empty( $content ) ) {
-			echo '<style type="text/css">' . "\n";
-			echo wp_strip_all_tags( $content ) . "\n";
-			echo '</style>' . "\n";
+			aaeaddon_print_css( $content );
 		}
 	}
 

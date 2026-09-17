@@ -3,7 +3,7 @@
 /**
  * Nav — live canvas preview for every icon style row.
  *
- * The frontend gets these overrides as a footer <style id="aae-nav-rs-{id}">
+ * The frontend gets these overrides as a footer <style id="aae-css-nav-rs-{id}-inline-css">
  * printed by Widgets/Nav/class-aae-a-nav-responsive.php. In the editor that
  * node exists too (the canvas is a real front-end render), but PHP never runs
  * again while the builder types — so this module rebuilds the SAME node's text
@@ -172,7 +172,11 @@ export function syncNavResponsiveCss( win, container ) {
 	// getElementById finds the node wherever it is — the PHP block printed in
 	// the footer on canvas load, or the one this function created earlier — so
 	// there is never a second, competing copy.
-	let node = doc.getElementById( `aae-nav-rs-${ id }` );
+	// The PHP block goes through WP_Styles' inline printer, so its id carries
+	// core's `-inline-css` suffix; the node this module creates keeps the bare id.
+	let node =
+		doc.getElementById( `aae-css-nav-rs-${ id }-inline-css` ) ||
+		doc.getElementById( `aae-nav-rs-${ id }` );
 
 	if ( ! css ) {
 		if ( node ) node.remove();

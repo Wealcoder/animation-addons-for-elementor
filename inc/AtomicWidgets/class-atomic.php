@@ -2741,7 +2741,7 @@ final class Atomic
 	 */
 	public function ajax_loop_sample_post()
 	{
-		Nonce::check_ajax( Nonce::LOOP_GRID, 'nonce');
+		check_ajax_referer( Nonce::action( Nonce::LOOP_GRID, 'nonce' ), 'nonce' );
 
 		if (! current_user_can('edit_posts')) {
 			wp_send_json_error(['message' => 'Access denied.'], 403);
@@ -2840,7 +2840,7 @@ final class Atomic
 	 */
 	public function ajax_loop_query_options()
 	{
-		Nonce::check_ajax( Nonce::LOOP_GRID, 'nonce');
+		check_ajax_referer( Nonce::action( Nonce::LOOP_GRID, 'nonce' ), 'nonce' );
 
 		if (! current_user_can('edit_posts')) {
 			wp_send_json_error(['message' => 'Access denied.'], 403);
@@ -2950,7 +2950,7 @@ final class Atomic
 
 	public function ajax_loop_post_data()
 	{
-		Nonce::check_ajax( Nonce::LOOP_GRID, 'nonce');
+		check_ajax_referer( Nonce::action( Nonce::LOOP_GRID, 'nonce' ), 'nonce' );
 
 		if (! current_user_can('edit_posts')) {
 			wp_send_json_error(['message' => 'Access denied.'], 403);
@@ -3023,7 +3023,7 @@ final class Atomic
 	 * Nonce: `Nonce::LOOP_GRID_FRONT` (public). Only reads published post content.
 	 */
 	public function ajax_loop_grid_page() {
-		Nonce::check_ajax( Nonce::LOOP_GRID_FRONT, 'nonce');
+		check_ajax_referer( Nonce::action( Nonce::LOOP_GRID_FRONT, 'nonce' ), 'nonce' );
 
 		$post_id  = isset($_POST['post_id']) ? absint($_POST['post_id']) : 0;
 		$grid_id  = isset($_POST['grid_id']) ? sanitize_key(wp_unslash($_POST['grid_id'])) : '';
@@ -4700,7 +4700,7 @@ JS;
 	 */
 	public function ajax_save_settings(): void
 	{
-		Nonce::check_ajax( Nonce::ADMIN, 'nonce');
+		check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
 
 		if (! current_user_can('manage_options')) {
 			wp_send_json_error(esc_html__('Permission denied.', 'animation-addons-for-elementor'));
@@ -4785,7 +4785,7 @@ JS;
 	 */
 	public function ajax_get_settings(): void
 	{
-		Nonce::check_ajax( Nonce::ADMIN, 'nonce');
+		check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
 
 		if (! current_user_can('manage_options')) {
 			wp_send_json_error(esc_html__('Permission denied.', 'animation-addons-for-elementor'));
@@ -4806,7 +4806,7 @@ JS;
 		// `rendered_menu` server-side, so menu.js never reaches this. The
 		// nonce rides AAE_MENU_CFG next to the ajax URL, and the action is
 		// the same one every other editor-only endpoint in this class uses.
-		Nonce::check_ajax( Nonce::LOOP_GRID, 'nonce');
+		check_ajax_referer( Nonce::action( Nonce::LOOP_GRID, 'nonce' ), 'nonce' );
 
 		if (! current_user_can('edit_posts')) {
 			wp_send_json_error(esc_html__('Permission denied.', 'animation-addons-for-elementor'));
@@ -4837,7 +4837,7 @@ JS;
 	 */
 	public function ajax_get_nav_menus(): void
 	{
-		Nonce::check_ajax( Nonce::LOOP_GRID, 'nonce');
+		check_ajax_referer( Nonce::action( Nonce::LOOP_GRID, 'nonce' ), 'nonce' );
 
 		if (! current_user_can('edit_posts')) {
 			wp_send_json_error(['message' => 'Access denied.'], 403);
@@ -4897,7 +4897,7 @@ JS;
 	 */
 	public function ajax_save_extension_settings(): void
 	{
-		Nonce::check_ajax( Nonce::ADMIN, 'nonce');
+		check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
 
 		if (! current_user_can('manage_options')) {
 			wp_send_json_error(esc_html__('Permission denied.', 'animation-addons-for-elementor'));
@@ -4974,7 +4974,7 @@ JS;
 	 */
 	public function ajax_get_extension_settings(): void
 	{
-		Nonce::check_ajax( Nonce::ADMIN, 'nonce');
+		check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
 
 		if (! current_user_can('manage_options')) {
 			wp_send_json_error(esc_html__('Permission denied.', 'animation-addons-for-elementor'));
@@ -5812,7 +5812,7 @@ JS;
 	 */
 	public function ajax_atomic_optin(): void
 	{
-		Nonce::check_ajax( Nonce::ADMIN, 'nonce');
+		check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
 
 		if (! current_user_can('manage_options')) {
 			wp_send_json_error(__('Permission denied.', 'animation-addons-for-elementor'));
@@ -5903,7 +5903,7 @@ JS;
 	 */
 	public function ajax_atomic_optin_undo(): void
 	{
-		Nonce::check_ajax( Nonce::ADMIN, 'nonce');
+		check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
 
 		if (! current_user_can('manage_options')) {
 			wp_send_json_error(__('Permission denied.', 'animation-addons-for-elementor'));

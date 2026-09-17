@@ -144,7 +144,7 @@ class Template_Manager {
 	 * @return void
 	 */
 	public function ajax_create_template() {
-		if ( ! isset( $_POST['nonce'] ) || ! Nonce::verify( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), Nonce::LOOP_BUILDER ) ) {
+		if ( ! isset( $_POST['nonce'] ) || ! check_ajax_referer( Nonce::action( Nonce::LOOP_BUILDER, 'nonce' ), 'nonce', false ) ) {
 			wp_send_json_error( array( 'message' => 'Security check failed' ) );
 		}
 
@@ -199,6 +199,32 @@ class Template_Manager {
 		);
 	}
 
+
+	/**
+	 * May a public (unauthenticated) request render this document as a loop
+	 * template?
+	 *
+	 * The load-more / load-page endpoints are wp_ajax_nopriv and take the
+	 * template id from the request. Unchecked, that id reached
+	 * get_builder_content_for_display() as any post at all -- a draft, a
+	 * private page, a password-protected post, another plugin's private CPT --
+	 * so a visitor could read any Elementor document on the site by number.
+	 * A loop template is a published `wcf-addons-template` of the loop-builder
+	 * type, and that is the only thing this endpoint exists to render.
+	 *
+	 * @param int $template_id Requested template id.
+	 * @return bool
+	 */
+	public static function is_public_loop_template( $template_id ) {
+		$template = get_post( (int) $template_id );
+		if ( ! $template instanceof \WP_Post ) {
+			return false;
+		}
+		if ( self::TEMPLATE_POST_TYPE !== $template->post_type || 'publish' !== $template->post_status || post_password_required( $template ) ) {
+			return false;
+		}
+		return self::LOOP_ITEM_TYPE === get_post_meta( $template->ID, 'wcf-addons-template-meta_type', true );
+	}
 
 	/**
 	 * Render template content.

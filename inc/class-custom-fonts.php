@@ -151,7 +151,7 @@ Class CustomFonts_Lite{
 	
 	public function custom_font_settings() {
 
-		Nonce::check_ajax( Nonce::ADMIN, 'nonce' );
+		check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( esc_html__( 'you are not allowed to do this action','animation-addons-for-elementor' ) );
@@ -349,7 +349,7 @@ Class CustomFonts_Lite{
             return;
         }
 
-        printf( '<style id="wcf-custom-fonts">%s</style>', wp_strip_all_tags( $custom_css ) );
+        aaeaddon_print_css( $custom_css, 'custom-fonts' );
     }
 
     /**
@@ -596,7 +596,7 @@ Class CustomFonts_Lite{
 	}
 	
 	public function save_global_settings() {
-        Nonce::check_ajax( Nonce::ADMIN, 'nonce' );
+        check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( esc_html__( 'you are not allowed to do this action', 'animation-addons-for-elementor' ) );
@@ -616,7 +616,7 @@ Class CustomFonts_Lite{
     }
 	public function save_settings() {
 
-		Nonce::check_ajax( Nonce::ADMIN, 'nonce' );
+		check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( esc_html__( 'you are not allowed to do this action', 'animation-addons-for-elementor' ) );

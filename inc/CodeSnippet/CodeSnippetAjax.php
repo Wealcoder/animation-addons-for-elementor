@@ -76,7 +76,7 @@ class CodeSnippetAjax {
 		// Verify nonce.
 		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
 
-		if ( ! Nonce::verify( $nonce, Nonce::CODE_SNIPPET ) ) {
+		if ( ! wp_verify_nonce( $nonce, Nonce::action_for( $nonce, Nonce::CODE_SNIPPET ) ) ) {
 			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'animation-addons-for-elementor' ) ) );
 			return false;
 		}

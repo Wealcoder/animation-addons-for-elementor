@@ -535,7 +535,7 @@ class Aaeaddon_Theme_Builder
 		$archive_template_id = $this->get_template_id('header');
 		if ($archive_template_id != '0') {
 			
-			echo aaeaddon_kses_builder_html( self::render_build_content( $archive_template_id ) );
+			aaeaddon_print_builder_html( self::render_build_content( $archive_template_id ) );
 		}
 	}
 
@@ -543,7 +543,7 @@ class Aaeaddon_Theme_Builder
 	{
 		$archive_template_id = $this->get_template_id('footer');
 		if ($archive_template_id != '0') {
-			echo aaeaddon_kses_builder_html( self::render_build_content( $archive_template_id ) );
+			aaeaddon_print_builder_html( self::render_build_content( $archive_template_id ) );
 		}
 	}
 
@@ -1230,7 +1230,7 @@ class Aaeaddon_Theme_Builder
 	{
 		$archive_template_id = $this->get_template_id('archive');
 		if ($archive_template_id != '0') {
-			echo aaeaddon_kses_builder_html( self::render_build_content( $archive_template_id ) );
+			aaeaddon_print_builder_html( self::render_build_content( $archive_template_id ) );
 		}
 	}
 
@@ -1239,7 +1239,7 @@ class Aaeaddon_Theme_Builder
 	{
 		$archive_template_id = $this->get_template_id('single');
 		if ($archive_template_id != '0') {
-			echo aaeaddon_kses_builder_html( self::render_build_content( $archive_template_id ) );
+			aaeaddon_print_builder_html( self::render_build_content( $archive_template_id ) );
 		}
 	}
 

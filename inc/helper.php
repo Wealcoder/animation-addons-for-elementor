@@ -891,6 +891,38 @@ if ( ! function_exists( 'aaeaddon_kses_builder_html' ) ) {
 	}
 }
 
+if ( ! function_exists( 'aaeaddon_print_builder_html' ) ) {
+	/**
+	 * Print markup another renderer produced -- the `echo` form of
+	 * aaeaddon_kses_builder_html(), with the same allow-list and the same
+	 * result on the page. Every piece goes out through core: the markup by
+	 * `echo wp_kses()`, a <style> block by WP_Styles' inline printer, a data
+	 * <script> by wp_print_inline_script_tag(). See Kses::print_builder_html().
+	 *
+	 * @param string $html Rendered markup.
+	 * @return void
+	 */
+	function aaeaddon_print_builder_html( $html ) {
+		\Wealcoder\AnimationAddons\Kses::print_builder_html( $html );
+	}
+}
+
+if ( ! function_exists( 'aaeaddon_print_css' ) ) {
+	/**
+	 * Print CSS inside a <style> element through WP_Styles' own inline
+	 * printer: tag-stripped, registered on a src-less handle, printed by
+	 * core. Works in the head, the body, the footer and an admin-ajax
+	 * response alike. The element's id is `aae-css-<id>-inline-css`.
+	 *
+	 * @param string       $css   CSS text.
+	 * @param string|array $attrs Handle suffix, or an attribute map (`id`, `media`).
+	 * @return void
+	 */
+	function aaeaddon_print_css( $css, $attrs = '' ) {
+		\Wealcoder\AnimationAddons\Kses::print_css( $css, $attrs );
+	}
+}
+
 if ( ! function_exists( 'aaeaddon_key_map' ) ) {
 	/**
 	 * The key map: every persisted name this plugin and the paid add-on own,

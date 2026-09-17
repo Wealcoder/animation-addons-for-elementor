@@ -512,7 +512,7 @@ class Content_Slider extends Widget_Base {
 	        } else {
 		        if ( ! empty( $item['elementor_templates'] ) ) {
 					if('publish' === get_post_status( $item['elementor_templates'] )){
-			            echo aaeaddon_kses_builder_html( Plugin::$instance->frontend->get_builder_content( $item['elementor_templates'] ) );
+			            aaeaddon_print_builder_html( Plugin::$instance->frontend->get_builder_content( $item['elementor_templates'] ) );
 		            }
 		        }
 	        }

@@ -1,4 +1,12 @@
 <?php
+namespace Wealcoder\AnimationAddons\Atomic\Editor;
+
+use Wealcoder\AnimationAddons\Atomic\Bootstrap;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Editor-side schema trim for AAE's atomic extension props.
  *
@@ -49,14 +57,6 @@
  *
  * @package Wealcoder\AnimationAddons\Atomic\Editor
  */
-
-namespace Wealcoder\AnimationAddons\Atomic\Editor;
-
-use Wealcoder\AnimationAddons\Atomic\Bootstrap;
-
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
 
 final class Schema_Trim {
 

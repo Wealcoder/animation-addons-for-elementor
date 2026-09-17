@@ -164,7 +164,7 @@ class Aaeaddon_Loop_Builder_Integration {
 	 * @return void
 	 */
 	public function ajax_get_template_preview() {
-		if ( ! isset( $_POST['nonce'] ) || ! Nonce::verify( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), Nonce::LOOP_BUILDER ) ) {
+		if ( ! isset( $_POST['nonce'] ) || ! check_ajax_referer( Nonce::action( Nonce::LOOP_BUILDER, 'nonce' ), 'nonce', false ) ) {
 			wp_send_json_error( 'Security check failed' );
 		}
 

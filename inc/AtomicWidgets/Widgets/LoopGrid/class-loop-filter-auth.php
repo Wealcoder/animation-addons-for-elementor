@@ -1,4 +1,10 @@
 <?php
+namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Loop Filters — the authoriser.
  *
@@ -47,12 +53,6 @@
  *
  * @package AnimationAddonsForElementor
  */
-
-namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid;
-
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
 
 final class Loop_Filter_Auth {
 

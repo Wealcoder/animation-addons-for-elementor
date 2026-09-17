@@ -150,7 +150,7 @@ function aaeaddon_save_category_light_custom_fields( $term_id, $tt_id = null ) {
 
     $nonce =  sanitize_text_field( wp_unslash( $_POST['aaeaddon_category_meta_nonce'] ) ); // Input comes from $_POST, so unslash
 
-    if ( ! \Wealcoder\AnimationAddons\Nonce::verify( $nonce, \Wealcoder\AnimationAddons\Nonce::CATEGORY_META ) ) {
+    if ( ! wp_verify_nonce( $nonce, \Wealcoder\AnimationAddons\Nonce::action_for( $nonce, \Wealcoder\AnimationAddons\Nonce::CATEGORY_META ) ) ) {
         return;
     }
 

@@ -319,7 +319,7 @@ class CodeSnippet {
 	}
 
 	public function handle_add_code_snippet() {
-		Nonce::check_admin( Nonce::CODE_SNIPPET_FORM );
+		check_admin_referer( Nonce::action( Nonce::CODE_SNIPPET_FORM, '_wpnonce' ), '_wpnonce' );
 
 		// This stores code_content unsanitised — it is executed PHP/JS/CSS — so
 		// authorization cannot rest on the nonce alone. The snippet screen this
@@ -435,7 +435,7 @@ class CodeSnippet {
 				wp_send_json_error( array( 'message' => esc_html__( 'You do not have permission to perform this action.', 'animation-addons-for-elementor' ) ) );
 			}
 
-			if ( ! Nonce::verify( $nonce, Nonce::CODE_SNIPPET ) ) {
+			if ( ! wp_verify_nonce( $nonce, Nonce::action_for( $nonce, Nonce::CODE_SNIPPET ) ) ) {
 				$errormessage = array(
 					'message' => esc_html__( 'Nonce Varification Failed!', 'animation-addons-for-elementor' ),
 				);

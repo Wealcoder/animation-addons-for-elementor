@@ -574,7 +574,7 @@ class CustomCpt_Lite {
 
     public function add_or_update_post_type() {
 
-        Nonce::check_ajax( Nonce::ADMIN, 'nonce' );
+        check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
         if ( ! current_user_can( 'manage_options' ) ) {
             wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor' ) );
         }
@@ -613,7 +613,7 @@ class CustomCpt_Lite {
     }
 
     public function delete_post_type() {
-        Nonce::check_ajax( Nonce::ADMIN, 'nonce' );
+        check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
 
         if ( ! current_user_can( 'manage_options' ) ) {
             wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor' ) );
@@ -634,7 +634,7 @@ class CustomCpt_Lite {
     public function post_type_list() {   
 
         $nonce = isset($_REQUEST['wcf_nonce']) ? sanitize_text_field( wp_unslash( $_REQUEST['wcf_nonce'] ) ) : null;
-        if ( ! Nonce::verify( $nonce, Nonce::ADMIN ) ) {
+        if ( ! wp_verify_nonce( $nonce, Nonce::action_for( $nonce, Nonce::ADMIN ) ) ) {
             wp_send_json_error( esc_html__( 'Invalid nonce', 'animation-addons-for-elementor' ) );
         } 
 
@@ -647,7 +647,7 @@ class CustomCpt_Lite {
     }
 
     public function post_type_single_item() {
-        Nonce::check_ajax( Nonce::ADMIN, 'nonce' );
+        check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
 
         if ( ! current_user_can( 'manage_options' ) ) {
             wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor' ) );
@@ -665,7 +665,7 @@ class CustomCpt_Lite {
 
     public function post_type_exist() {
 
-        Nonce::check_ajax( Nonce::ADMIN, 'nonce' );
+        check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
 
         if ( ! current_user_can( 'manage_options' ) ) {
             wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor' ) );
@@ -678,7 +678,7 @@ class CustomCpt_Lite {
     }
 
     public function add_or_update_taxonomy() {
-        Nonce::check_ajax( Nonce::ADMIN, 'nonce' );
+        check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
 
         if ( ! current_user_can( 'manage_options' ) ) {
             wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor' ) );
@@ -718,7 +718,7 @@ class CustomCpt_Lite {
     }
 
     public function delete_taxonomy() {
-        Nonce::check_ajax( Nonce::ADMIN, 'nonce' );
+        check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
 
         if ( ! current_user_can( 'manage_options' ) ) {
             wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor' ) );
@@ -737,7 +737,7 @@ class CustomCpt_Lite {
     public function taxonomy_list() {
      
         $nonce = isset($_REQUEST['wcf_nonce']) ? sanitize_text_field( wp_unslash($_REQUEST['wcf_nonce']) ) : null;
-        if ( ! Nonce::verify( $nonce, Nonce::ADMIN ) ) {
+        if ( ! wp_verify_nonce( $nonce, Nonce::action_for( $nonce, Nonce::ADMIN ) ) ) {
             wp_send_json_error( esc_html__( 'Invalid nonce', 'animation-addons-for-elementor' ) );
         } 
 
@@ -749,7 +749,7 @@ class CustomCpt_Lite {
     }
 
     public function taxonomy_single_item() {
-        Nonce::check_ajax( Nonce::ADMIN, 'nonce' );
+        check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
 
         if ( ! current_user_can( 'manage_options' ) ) {
             wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor' ) );
@@ -783,7 +783,7 @@ class CustomCpt_Lite {
     }
 
     public function taxonomy_exist() {
-        Nonce::check_ajax( Nonce::ADMIN, 'nonce' );
+        check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
 
         if ( ! current_user_can( 'manage_options' ) ) {
             wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor' ) );

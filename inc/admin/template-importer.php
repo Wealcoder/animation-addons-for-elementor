@@ -45,7 +45,7 @@ class Aaeaddon_Template_Importer {
 	}
 
 	public function heartbeat_data(){
-		Nonce::check_ajax( Nonce::ADMIN, 'nonce' );
+		check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
 
 		// Nonce alone only proves the request came from this site; this
 		// reports import progress, so it needs an authority check too.
@@ -60,7 +60,7 @@ class Aaeaddon_Template_Importer {
 	}
 
 	public function wishlist() {
-    	Nonce::check_ajax( Nonce::ADMIN, 'nonce');
+    	check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
 
     	if (!current_user_can('install_plugins')) {
         	wp_send_json_error(__('You are not allowed to perform this action.', 'animation-addons-for-elementor'));
@@ -96,7 +96,7 @@ class Aaeaddon_Template_Importer {
 
 	public function template_installer(){
   
-		Nonce::check_ajax( Nonce::ADMIN, 'nonce' );
+		check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
 		if ( ! current_user_can( 'install_plugins' ) ) {
 			wp_send_json_error( __( 'you are not allowed to do this action', 'animation-addons-for-elementor' ) );
 		}

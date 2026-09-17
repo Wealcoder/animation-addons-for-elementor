@@ -430,7 +430,7 @@ class Aaeaddon_Theme_Builder_Admin
 
 			$nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
 
-			if (! Nonce::verify( $nonce, Nonce::THEME_BUILDER )) {
+			if (! wp_verify_nonce( $nonce, Nonce::action_for( $nonce, Nonce::THEME_BUILDER ) )) {
 				$errormessage = array(
 					'message' => esc_html__('Nonce Varification Faild !', 'animation-addons-for-elementor'),
 				);
@@ -497,7 +497,7 @@ class Aaeaddon_Theme_Builder_Admin
 
 			$nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
 
-			if (! Nonce::verify( $nonce, Nonce::THEME_BUILDER )) {
+			if (! wp_verify_nonce( $nonce, Nonce::action_for( $nonce, Nonce::THEME_BUILDER ) )) {
 				$errormessage = array(
 					'message' => esc_html__('Nonce Varification Failed !', 'animation-addons-for-elementor'),
 				);
@@ -590,7 +590,7 @@ class Aaeaddon_Theme_Builder_Admin
 
 			$nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
 
-			if (! Nonce::verify( $nonce, Nonce::THEME_BUILDER )) {
+			if (! wp_verify_nonce( $nonce, Nonce::action_for( $nonce, Nonce::THEME_BUILDER ) )) {
 				$errormessage = array(
 					'message' => esc_html__('Nonce Verification Failed!', 'animation-addons-for-elementor'),
 				);

@@ -337,7 +337,7 @@ class CustomIcons_Lite
 	public function settings_state()
 	{
 
-		Nonce::check_ajax( Nonce::ADMIN, 'nonce');
+		check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
 
 		if (! current_user_can('manage_options')) {
 			wp_send_json_error(esc_html__('you are not allowed to do this action', 'animation-addons-for-elementor'));
@@ -375,7 +375,7 @@ class CustomIcons_Lite
 	public function upload_zip()
 	{
 		// 1) Security: nonce + capability
-		Nonce::check_ajax( Nonce::ADMIN, 'nonce' );
+		check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( [
 				'message' =>esc_html__( 'You are not allowed to do this action.', 'animation-addons-for-elementor' ),
@@ -617,7 +617,7 @@ class CustomIcons_Lite
 
 	public function update_custom_icon_delete()
 	{
-		Nonce::check_ajax( Nonce::ADMIN, 'nonce');
+		check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
 
 		if (! current_user_can('manage_options')) {
 			wp_send_json_error(esc_html__('you are not allowed to do this action', 'animation-addons-for-elementor'));
@@ -626,7 +626,13 @@ class CustomIcons_Lite
 		if (! isset($_POST['id'])) {
 			return;
 		}
-		$this->process_id = sanitize_text_field(wp_unslash($_POST['id']));
+		// The id names a directory under uploads/aaeaddon-icons/ that is deleted
+		// RECURSIVELY. sanitize_text_field() keeps "../", so it must be the
+		// same shape upload_zip() wrote it as: one path segment, nothing else.
+		$this->process_id = sanitize_key( wp_unslash( $_POST['id'] ) );
+		if ( '' === $this->process_id || false !== strpos( $this->process_id, '.' ) ) {
+			wp_send_json_error( array( 'message' => esc_html__( 'Invalid icon pack.', 'animation-addons-for-elementor' ) ), 400 );
+		}
 		$msg = $this->delete_uploads_directory('aaeaddon-icons/' . $this->process_id);
 		delete_post_meta($this->process_id, 'wcf_addon_custom_icons');
 		delete_post_meta($this->process_id, 'wcf_addon_custom_icontype');
@@ -664,7 +670,7 @@ class CustomIcons_Lite
 
 	public function update_custom_icon_title()
 	{
-		Nonce::check_ajax( Nonce::ADMIN, 'nonce');
+		check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
 
 		if (! current_user_can('manage_options')) {
 			wp_send_json_error(esc_html__('you are not allowed to do this action', 'animation-addons-for-elementor'));

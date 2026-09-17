@@ -2100,7 +2100,7 @@ JS;
 	 * ------------------------------------------------------------------ */
 
 	private function guard(): void {
-		Nonce::check_ajax( self::NONCE, 'nonce' );
+		check_ajax_referer( Nonce::action( self::NONCE, 'nonce' ), 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( esc_html__( 'Permission denied.', 'animation-addons-for-elementor' ) );

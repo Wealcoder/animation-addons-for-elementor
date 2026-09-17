@@ -46,7 +46,7 @@ class Aaeaddon_Plugin_Installer
      */
     public function atomic_import_status()
     {
-        Nonce::check_ajax( Nonce::ADMIN, 'nonce');
+        check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
 
         if ( ! current_user_can( 'manage_options' ) ) {
             wp_send_json_error( __( 'You are not allowed to do this action', 'animation-addons-for-elementor' ) );
@@ -65,7 +65,7 @@ class Aaeaddon_Plugin_Installer
     public function ajax_activate_plugin()
     {
 
-        Nonce::check_ajax( Nonce::ADMIN, 'nonce');
+        check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
 
         if (!current_user_can('activate_plugins')) {
             wp_send_json_error(__('You are not allowed to do this action', 'animation-addons-for-elementor'));
@@ -91,7 +91,7 @@ class Aaeaddon_Plugin_Installer
     public function activate_from_editor_plugin()
     {
 
-        Nonce::check_ajax( Nonce::TEMPLATE_LIBRARY, 'nonce');
+        check_ajax_referer( Nonce::action( Nonce::TEMPLATE_LIBRARY, 'nonce' ), 'nonce' );
 
         if (!current_user_can('activate_plugins')) {
             wp_send_json_error(__('You are not allowed to do this action', 'animation-addons-for-elementor'));
@@ -148,7 +148,7 @@ class Aaeaddon_Plugin_Installer
     public function dependency_status()
     {
 
-        Nonce::check_ajax( Nonce::ADMIN, 'nonce');
+        check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
 
         if ( ! current_user_can( 'manage_options' ) ) {
             wp_send_json_error( __( 'You are not allowed to do this action', 'animation-addons-for-elementor' ) );

@@ -101,10 +101,18 @@ class Mailchimp_Api {
         // 0) Basic nonce check
         $nonce = isset($_REQUEST['nonce']) ? sanitize_text_field(wp_unslash($_REQUEST['nonce'])) : '';
 
-        if (!isset($_REQUEST['nonce']) || !Nonce::verify( $nonce, Nonce::FRONTEND )) {
+        if (!isset($_REQUEST['nonce']) || !wp_verify_nonce( $nonce, Nonce::action_for( $nonce, Nonce::FRONTEND ) )) {
             wp_send_json_error('Invalid nonce');
         }
-  
+
+        // The front-end nonce is printed on every public page, so it proves
+        // nothing about the sender. Without a limit one client can fill the
+        // site owner's audience with addresses at network speed. Ten per
+        // visitor per ten minutes leaves room for a typo and a retry.
+        if ( function_exists( 'aaeaddon_public_rate_limited' ) && aaeaddon_public_rate_limited( 'mailchimp-subscribe', 10, 10 * MINUTE_IN_SECONDS ) ) {
+            return ['status' => 0, 'msg' => esc_html__('Too many attempts. Please wait a moment and try again.', 'animation-addons-for-elementor')];
+        }
+
         // 1) Retrieve API key securely on the server side
         $api_key         = '';
         $post_id         = ! empty( $_POST['postId'] ) ? absint( $_POST['postId'] ) : 0;
@@ -126,12 +134,26 @@ class Mailchimp_Api {
             }
         }
 
-        $list_id = isset( $_POST['listId'] ) ? trim( (string) sanitize_text_field( wp_unslash( $_POST['listId'] ) ) ) : '';
-        if ( empty( $list_id ) && ! empty( $widget_settings['mailchimp_lists'] ) ) {
-            $list_id = trim( (string) $widget_settings['mailchimp_lists'] );
+        // The SAVED widget decides which audience, whether double opt-in is
+        // on, and which tags apply. Those used to be read from the request
+        // first, which let a visitor subscribe any address to ANY list in the
+        // owner's account, switch the confirmation email off, and attach
+        // arbitrary tags. The posted values are honoured only when the
+        // request names no saved widget at all (a page built before the
+        // widget printed its ids).
+        $from_widget = $post_id && $widget_id && ! empty( $widget_settings );
+        $list_id     = '';
+        $double      = false;
+        $tags_raw    = '';
+        if ( $from_widget ) {
+            $list_id  = trim( (string) ( $widget_settings['mailchimp_lists'] ?? '' ) );
+            $double   = 'yes' === ( $widget_settings['enable_double_opt_in'] ?? '' );
+            $tags_raw = (string) ( $widget_settings['mailchimp_list_tags'] ?? '' );
+        } else {
+            $list_id  = isset( $_POST['listId'] ) ? trim( (string) sanitize_text_field( wp_unslash( $_POST['listId'] ) ) ) : '';
+            $double   = ( isset( $_POST['doubleOpt'] ) && 'yes' === $_POST['doubleOpt'] );
+            $tags_raw = isset( $_POST['listTags'] ) ? sanitize_text_field( wp_unslash( $_POST['listTags'] ) ) : '';
         }
-
-        $double  = ( isset( $_POST['doubleOpt'] ) && 'yes' === $_POST['doubleOpt'] );
 
         if ( ! $api_key || ! $list_id ) {
             return ['status' => 0, 'msg' => esc_html__('Missing API key or List ID.', 'animation-addons-for-elementor')];
@@ -152,8 +174,8 @@ class Mailchimp_Api {
 
         // 3) Optional tags (array of strings)
         $tags = [];
-        if (!empty($_POST['listTags'])) {
-            $tags = array_filter(array_map('trim', preg_split('/\s*,\s*/', sanitize_text_field(wp_unslash($_POST['listTags'])))));
+        if ( '' !== trim( $tags_raw ) ) {
+            $tags = array_filter( array_map( 'trim', preg_split( '/\s*,\s*/', sanitize_text_field( $tags_raw ) ) ) );
         }
 
         // 4) Build merge_fields safely

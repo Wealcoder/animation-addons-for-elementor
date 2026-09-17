@@ -61,7 +61,7 @@ class Ajax_Handler {
 		try {
 			// Checked inline so the check is in the same scope as the request
 			// reads below (the sniff cannot follow a helper).
-			if ( ! Nonce::check_ajax( Nonce::LOOP_BUILDER, 'nonce', false ) ) {
+			if ( ! check_ajax_referer( Nonce::action( Nonce::LOOP_BUILDER, 'nonce' ), 'nonce', false ) ) {
 				wp_send_json_error( array( 'message' => esc_html__( 'Security check failed.', 'animation-addons-for-elementor' ) ), 403 );
 			}
 
@@ -72,6 +72,10 @@ class Ajax_Handler {
 
 			if ( empty( $settings['template_id'] ) ) {
 				wp_send_json_error( array( 'message' => 'No template specified' ) );
+			}
+			// A public endpoint must not render any document a visitor names.
+			if ( ! Template_Manager::is_public_loop_template( $settings['template_id'] ) ) {
+				wp_send_json_error( array( 'message' => esc_html__( 'Invalid template.', 'animation-addons-for-elementor' ) ), 403 );
 			}
 
 			// Security: Enforce a hard maximum limit on posts per page to prevent DoS via heavy queries.
@@ -175,7 +179,7 @@ class Ajax_Handler {
 		try {
 			// Checked inline so the check is in the same scope as the request
 			// reads below (the sniff cannot follow a helper).
-			if ( ! Nonce::check_ajax( Nonce::LOOP_BUILDER, 'nonce', false ) ) {
+			if ( ! check_ajax_referer( Nonce::action( Nonce::LOOP_BUILDER, 'nonce' ), 'nonce', false ) ) {
 				wp_send_json_error( array( 'message' => esc_html__( 'Security check failed.', 'animation-addons-for-elementor' ) ), 403 );
 			}
 
@@ -186,6 +190,10 @@ class Ajax_Handler {
 
 			if ( empty( $settings['template_id'] ) ) {
 				wp_send_json_error( array( 'message' => 'No template specified' ) );
+			}
+			// A public endpoint must not render any document a visitor names.
+			if ( ! Template_Manager::is_public_loop_template( $settings['template_id'] ) ) {
+				wp_send_json_error( array( 'message' => esc_html__( 'Invalid template.', 'animation-addons-for-elementor' ) ), 403 );
 			}
 
 			// Security: Enforce a hard maximum limit on posts per page to prevent DoS via heavy queries.

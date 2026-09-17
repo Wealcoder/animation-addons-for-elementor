@@ -1007,7 +1007,7 @@ final class Admin_Rest {
 		if ( ! current_user_can( self::CAP ) ) {
 			wp_die( esc_html__( 'Not allowed.', 'animation-addons-for-elementor' ) );
 		}
-		Nonce::check_admin( Nonce::FORM_CSV );
+		check_admin_referer( Nonce::action( Nonce::FORM_CSV, '_wpnonce' ), '_wpnonce' );
 
 		global $wpdb;
 

@@ -195,6 +195,17 @@ gulp.task('zip', () => {
 
         '!.git/**',
         '!.github/**',
+        // AI/editor instruction directories and files: the Plugin Directory's
+        // own checker (Plugin Check 2.1) rejects a package carrying them.
+        '!.claude/**',
+        '!CLAUDE.md',
+        // A stray export folder whose file names carry spaces and dashes;
+        // nothing reads it (presets load from `presets/`), and Plugin Check
+        // refuses a package with "badly named files".
+        '!**/presetssss/**',
+        // Playwright probes that were committed to the plugin root; they
+        // belong to E:\Local Testing and are not plugin code.
+        '!verify-*.mjs',
         '!.vscode/**',
         '!.eslintignore',
         '!.eslintrc',

@@ -419,12 +419,10 @@ final class Aaeaddon_A_Menu_Responsive {
 	}
 
 	public static function print_blocks(): void {
+		// Printed by WP_Styles' inline printer, so the element's id is
+		// `aae-css-mi-rs-<id>-inline-css`; the editor mirror looks that up.
 		foreach ( self::$blocks as $id => $css ) {
-			printf(
-				'<style id="aae-mi-rs-%s">%s</style>',
-				esc_attr( $id ),
-				wp_strip_all_tags( $css )
-			);
+			aaeaddon_print_css( $css, 'mi-rs-' . $id );
 		}
 
 		self::$blocks = [];

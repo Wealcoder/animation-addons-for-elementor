@@ -41,7 +41,7 @@ class Ajax_Handler {
 	 * @return void
 	 */
 	public static function popup_content() {
-		if ( empty( $_REQUEST['nonce'] ) || ! Nonce::verify( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ), Nonce::FRONTEND ) ) {
+		if ( empty( $_REQUEST['nonce'] ) || ! check_ajax_referer( Nonce::action( Nonce::FRONTEND, 'nonce' ), 'nonce', false ) ) {
 			wp_send_json_error( 'Missing or Invalid nonce' );
 		}
 
@@ -109,14 +109,10 @@ class Ajax_Handler {
 		try {
 			if ( isset( $settings['popup_content_type'] ) && 'template' === $settings['popup_content_type'] ) {
 				if ( '' !== $inline_css ) {
-					printf(
-						'<style id="aae-popup-live-css-%d">%s</style>',
-						(int) $live_template,
-						wp_strip_all_tags( $inline_css )
-					);
+					aaeaddon_print_css( $inline_css, 'popup-live-' . (int) $live_template );
 				}
 
-				echo aaeaddon_kses_builder_html( \Elementor\Plugin::$instance->frontend->get_builder_content( $settings['popup_elementor_templates'], true ) );
+				aaeaddon_print_builder_html( \Elementor\Plugin::$instance->frontend->get_builder_content( $settings['popup_elementor_templates'], true ) );
 			} else {
 
 				$content = $settings['popup_content'] ?? 'Nothing to show.';
@@ -204,14 +200,20 @@ class Ajax_Handler {
 	 * @return void
 	 */
 	public static function handle_live_search() {
-		if ( empty( $_REQUEST['nonce'] ) || ! Nonce::verify( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ), Nonce::FRONTEND ) ) {
+		if ( empty( $_REQUEST['nonce'] ) || ! check_ajax_referer( Nonce::action( Nonce::FRONTEND, 'nonce' ), 'nonce', false ) ) {
 			wp_send_json_error( 'Missing or Invalid nonce' );
 		}
 
-		$keyword    = isset( $_POST['keyword'] ) ? sanitize_text_field( wp_unslash( $_POST['keyword'] ) ) : '';
+		// A search is a LIKE over every post on the site, and this endpoint is
+		// public. Generous -- it fires per keystroke -- but bounded.
+		if ( function_exists( 'aaeaddon_public_rate_limited' ) && aaeaddon_public_rate_limited( 'live-search', 120, 5 * MINUTE_IN_SECONDS ) ) {
+			wp_send_json_error( esc_html__( 'Too many attempts. Please wait a moment and try again.', 'animation-addons-for-elementor' ), 429 );
+		}
+
+		$keyword    = isset( $_POST['keyword'] ) ? mb_substr( sanitize_text_field( wp_unslash( $_POST['keyword'] ) ), 0, 200 ) : '';
 		$from_date  = isset( $_POST['from_date'] ) ? sanitize_text_field( wp_unslash( $_POST['from_date'] ) ) : '';
 		$to_date    = isset( $_POST['to_date'] ) ? sanitize_text_field( wp_unslash( $_POST['to_date'] ) ) : '';
-		$categories = isset( $_POST['category'] ) ? array_map( 'intval', wp_unslash( $_POST['category'] ) ) : array();
+		$categories = isset( $_POST['category'] ) ? array_map( 'intval', (array) wp_unslash( $_POST['category'] ) ) : array();
 
 		$args = array(
 			'post_type'      => 'post',
@@ -284,11 +286,16 @@ class Ajax_Handler {
 
 		$nonce = sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) );
 
-		if ( ! Nonce::verify( $nonce, Nonce::EDITOR ) ) {
+		if ( ! wp_verify_nonce( $nonce, Nonce::action_for( $nonce, Nonce::EDITOR ) ) ) {
 			exit( 'No naughty business please' );
 		}
 		$api = isset( $_REQUEST['api'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['api'] ) ) : '';
-		update_option( 'aaeaddon_mailchimp_api', $api );
+		// The key typed into a widget becomes the site-wide fallback key. That
+		// is a site setting, so only someone who may change site settings
+		// writes it; an editor still gets their lists for the key they typed.
+		if ( '' !== $api && current_user_can( 'manage_options' ) ) {
+			update_option( 'aaeaddon_mailchimp_api', $api );
+		}
 		$response = \Wealcoder\AnimationAddons\Widgets\Mailchimp\Mailchimp_Api::get_mailchimp_lists( $api );
 
 		wp_send_json( $response );
@@ -306,7 +313,7 @@ class Ajax_Handler {
 		// Verify nonce
 		$nonce = sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) );
 
-		if ( ! Nonce::verify( $nonce, Nonce::EDITOR ) ) {
+		if ( ! wp_verify_nonce( $nonce, Nonce::action_for( $nonce, Nonce::EDITOR ) ) ) {
 			exit( 'No naughty business please' );
 		}
 		$api     = isset( $_REQUEST['api'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['api'] ) ) : '';
@@ -328,7 +335,7 @@ class Ajax_Handler {
 
 		$nonce = sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) );
 
-		if ( ! Nonce::verify( $nonce, Nonce::FRONTEND ) ) {
+		if ( ! wp_verify_nonce( $nonce, Nonce::action_for( $nonce, Nonce::FRONTEND ) ) ) {
 			exit( 'No naughty business please' );
 		}
 

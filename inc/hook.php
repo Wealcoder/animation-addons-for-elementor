@@ -57,12 +57,41 @@ if (! function_exists('aaeaddon_public_counter_throttled')) {
     }
 }
 
+/**
+ * Has this visitor used `$bucket` more than `$limit` times inside `$window`?
+ *
+ * The counting twin of aaeaddon_public_counter_throttled(): that one allows
+ * ONE action per window (a vote), this one allows a handful (a search, a
+ * subscribe, a retry after a typo). Same visitor key. Returns true when the
+ * request should be REFUSED; every call inside the limit counts.
+ *
+ * @param string $bucket What is being limited, e.g. 'mailchimp-subscribe'.
+ * @param int    $limit  Calls allowed per window.
+ * @param int    $window Seconds.
+ * @return bool
+ */
+if ( ! function_exists( 'aaeaddon_public_rate_limited' ) ) {
+    function aaeaddon_public_rate_limited( $bucket, $limit = 10, $window = 600 )
+    {
+        $key   = 'aaeaddon_prl_' . md5( $bucket . '|' . aaeaddon_public_counter_visitor_key() );
+        $count = (int) get_transient( $key );
+
+        if ( $count >= (int) $limit ) {
+            return true;
+        }
+
+        set_transient( $key, $count + 1, (int) $window );
+
+        return false;
+    }
+}
+
 if ( ! function_exists( 'aaeaddon_handle_post_shares_count' ) ) :
 function aaeaddon_handle_post_shares_count()
 {
     $nonce = isset($_REQUEST['nonce']) ? sanitize_text_field(wp_unslash($_REQUEST['nonce'])) : '';
 
-    if (! $nonce || ! \Wealcoder\AnimationAddons\Nonce::verify( $nonce, \Wealcoder\AnimationAddons\Nonce::FRONTEND )) {
+    if (! $nonce || ! wp_verify_nonce( $nonce, \Wealcoder\AnimationAddons\Nonce::action_for( $nonce, \Wealcoder\AnimationAddons\Nonce::FRONTEND ) )) {
         wp_send_json_error(['message' => esc_html__('Security check failed.', 'animation-addons-for-elementor')], 403);
     }
 
@@ -165,7 +194,7 @@ if (!function_exists('aaeaddon_post_lite_reaction_ajax')) {
         
         $nonce = isset($_REQUEST['nonce']) ? sanitize_text_field( wp_unslash($_REQUEST['nonce']) ) : '';
 
-        if ( ! $nonce || ! \Wealcoder\AnimationAddons\Nonce::verify( $nonce, \Wealcoder\AnimationAddons\Nonce::FRONTEND ) ) {
+        if ( ! $nonce || ! wp_verify_nonce( $nonce, \Wealcoder\AnimationAddons\Nonce::action_for( $nonce, \Wealcoder\AnimationAddons\Nonce::FRONTEND ) ) ) {
             // For JSON endpoints:
             if ( defined('DOING_AJAX') && DOING_AJAX ) {
                 wp_send_json_error(['message' => __('Invalid request.', 'animation-addons-for-elementor')], 403);

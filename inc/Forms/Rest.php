@@ -218,7 +218,7 @@ final class Rest {
 		// (spec step 6) while the REAL reason goes to the Spam_Log for
 		// admins — never a clean submission, never an action job.
 		$nonce = isset( $params['nonce'] ) && is_string( $params['nonce'] ) ? $params['nonce'] : '';
-		if ( ! Nonce::verify( $nonce, self::NONCE_ACTION ) ) {
+		if ( ! wp_verify_nonce( $nonce, Nonce::action_for( $nonce, self::NONCE_ACTION ) ) ) {
 			Spam_Log::record( $form_key, 'bad_nonce' );
 
 			return self::error( 403, 'aae_form_security', self::generic_block_message() );

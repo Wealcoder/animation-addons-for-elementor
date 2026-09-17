@@ -147,7 +147,7 @@ class OneClickImport
 		// phpcs:disable WordPress.Security.NonceVerification.Missing
 		if (
 			! isset( $_POST['nonce'] ) ||
-			! Nonce::verify( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), Nonce::ADMIN )
+			! check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce', false )
 		) {
 			wp_send_json_error( [ 'message' => 'Invalid or missing nonce' ], 403 );
 		}
@@ -249,7 +249,7 @@ class OneClickImport
 			// Get selected file index or set it to 0.
 			$this->selected_index = 0;
 			$template_data = [];
-			Nonce::check_ajax( Nonce::ADMIN, 'nonce');
+			check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
 			if (isset($_POST['template_data'])) {
 
 				$json_data     = sanitize_text_field(wp_unslash($_POST['template_data']));  // Remove slashes if added by WP		
@@ -394,7 +394,7 @@ class OneClickImport
 
 		$response['msg'] = esc_html__('Congrats, your demo has been imported.', 'animation-addons-for-elementor');
 		$response['progress'] = 80;
-		Nonce::check_ajax( Nonce::ADMIN, 'nonce');
+		check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
 		if (isset($_POST['template_data'])) {
 			if (isset($template_data['local_path'])) {
 				unset($template_data['local_path']);

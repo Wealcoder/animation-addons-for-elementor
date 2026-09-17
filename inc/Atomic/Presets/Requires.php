@@ -76,7 +76,7 @@ final class Requires {
 	 * anything.
 	 */
 	public function ajax_install(): void {
-		Nonce::check_ajax( Nonce::ADMIN, 'nonce' );
+		check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
 
 		// NOT edit_posts. The preset picker opens at edit_posts, and a
 		// contributor who could make this site install a plugin the remote

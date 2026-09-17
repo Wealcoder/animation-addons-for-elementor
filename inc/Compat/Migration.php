@@ -597,7 +597,7 @@ final class Migration {
 	/* ------------------------------------------------------------------ */
 
 	private static function guard() {
-		Nonce::check_ajax( self::NONCE, 'nonce' );
+		check_ajax_referer( Nonce::action( self::NONCE, 'nonce' ), 'nonce' );
 		if ( ! current_user_can( self::CAP ) ) {
 			wp_send_json_error( array( 'message' => __( 'You are not allowed to do that.', 'animation-addons-for-elementor' ) ), 403 );
 		}
@@ -632,6 +632,9 @@ final class Migration {
 	}
 
 	public static function ajax_import() {
+		// guard() verifies the nonce too; this handler reads the request body
+		// itself, so the verification is stated where the read is.
+		check_ajax_referer( Nonce::action( self::NONCE, 'nonce' ), 'nonce' );
 		self::guard();
 		$raw = isset( $_POST['payload'] ) ? wp_unslash( $_POST['payload'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- JSON, decoded and validated below.
 		if ( ! is_string( $raw ) || strlen( $raw ) > 2 * MB_IN_BYTES ) {
