@@ -116,7 +116,7 @@ class CustomIcons_Lite
 
 
 	/**
-	 * Update option `aae_gl_load` when post is saved
+	 * Update the `aae_gl_load` POST META (the per-icon-set switch) when the set is saved
 	 *
 	 * @param int     $post_id
 	 * @param WP_Post $post

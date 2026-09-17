@@ -10,7 +10,7 @@ import { register } from '@elementor/frontend-handlers';
 
    Deliberately GSAP-free (same approach as the Progressbar widget). The
    `gsap` handle is registered ONLY by the Pro plugin, and only when the
-   `wcf_save_extensions` option exists — so on a free site, or with the
+   `aaeaddon_save_extensions` option exists — so on a free site, or with the
    GSAP extensions toggled off, `window.gsap` is simply absent and the old
    implementation degraded to stamping the final number in with no
    animation at all. requestAnimationFrame always exists, so the counter

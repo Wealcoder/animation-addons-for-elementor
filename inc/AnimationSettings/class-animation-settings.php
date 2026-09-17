@@ -311,7 +311,7 @@ class Animation_Settings {
 	 * The gap this closes, found by importing a real starter template:
 	 * `maybe_reactivate_legacy()` correctly notices the imported v3 content and
 	 * turns `legacy_v3` back on — but that flag governs UI VISIBILITY only.
-	 * Registration is driven by `wcf_save_widgets`, which a template import
+	 * Registration is driven by `aaeaddon_save_widgets`, which a template import
 	 * never writes. So on a fresh site the demo lands with 34 pages built from
 	 * `wcf--title` / `wcf--image` / `wcf--counter` and every one of them renders
 	 * COMPLETELY BLANK: an unregistered widget emits nothing at all, not even a
@@ -319,7 +319,7 @@ class Animation_Settings {
 	 *
 	 * Two rules make this safe:
 	 *
-	 *   1. Only when `wcf_save_widgets` is ABSENT — a site that has ever saved
+	 *   1. Only when `aaeaddon_save_widgets` is ABSENT — a site that has ever saved
 	 *      the widgets screen has made a deliberate choice, and an import must
 	 *      not overrule it. (An empty array is a choice; only "never set" is
 	 *      not.)
@@ -350,7 +350,7 @@ class Animation_Settings {
 
 	/**
 	 * Dashboard slugs of every v3 widget this site's CONTENT references, in
-	 * the shape `wcf_save_widgets` stores (`slug => true`).
+	 * the shape `aaeaddon_save_widgets` stores (`slug => true`).
 	 *
 	 * Two callers, pulling in opposite directions, share it on purpose:
 	 * maybe_enable_used_v3_widgets() switches exactly these ON after an import
@@ -614,7 +614,7 @@ class Animation_Settings {
 	 * Carry a v3 Smooth Scroller configuration into the v4 panel.
 	 *
 	 * Separate from import_from_kit() because smooth scroll never lived in the
-	 * Kit — its v3 home is the `wcf_smooth_scroller` option, written by the
+	 * Kit — its v3 home is the `aaeaddon_smooth_scroller` option, written by the
 	 * Extensions screen and shaped for the runtime rather than for storage.
 	 *
 	 * Runs at bootstrap only, so it cannot overwrite anyone's later edits. The
@@ -866,7 +866,7 @@ class Animation_Settings {
 	/**
 	 * The preloader layouts, value => label.
 	 *
-	 * Deliberately duplicated from pro/inc/settings/wcf-preloader.php rather
+	 * Deliberately duplicated from pro/inc/settings/preloader.php rather
 	 * than imported: the dashboard is a FREE-plugin screen and has to render
 	 * the list (locked, behind the PRO badge) on sites with no Pro installed.
 	 */
@@ -967,7 +967,7 @@ class Animation_Settings {
 			/*
 			 * Smooth Scroll has no `kit` keys, because unlike the other four it
 			 * was never an Elementor Site Settings tab — its v3 form is the
-			 * "Smooth Scroller" EXTENSION, stored in the `wcf_smooth_scroller`
+			 * "Smooth Scroller" EXTENSION, stored in the `aaeaddon_smooth_scroller`
 			 * option and read straight off `WCF_ADDONS_JS.smoothScroller` by
 			 * wcf-addons-ex.js. So the handover is a different shape: Pro
 			 * overrides that localized payload rather than the Kit. Fields with

@@ -10,10 +10,10 @@ import { proAction } from "../../lib/proAction";
  * Performance tab. It writes NOTHING of its own: every step drives an endpoint
  * that already exists and is already tested —
  *
- *   - v3 widgets / extensions / chrome  -> aae_wizard_toggle_v3   (Pro, reversible)
+ *   - v3 widgets / extensions / chrome  -> aaeaddon_wizard_toggle_v3   (Pro, reversible)
  *   - legacy (v3) UI visibility         -> aaeaddon_save_animation_settings
- *   - theme assets / WordPress assets   -> aae_save_performance_settings
- *   - completion marker                 -> aae_complete_performance_wizard
+ *   - theme assets / WordPress assets   -> aaeaddon_save_performance_settings
+ *   - completion marker                 -> aaeaddon_complete_performance_wizard
  *
  * The step LIST is derived from the payload, so a fresh v4-only site (no v3 to
  * clean, companion theme already active) never sees the steps that would do

@@ -26,7 +26,7 @@ class Plugin
 	/**
 	 * Registered widget element name => dashboard widget key.
 	 * Filled while widgets register (free and pro), so Elementor's
-	 * Element Manager names can be translated back to wcf_save_widgets keys.
+	 * Element Manager names can be translated back to aaeaddon_save_widgets keys.
 	 */
 	public static $widget_element_keys = array();
 	/**

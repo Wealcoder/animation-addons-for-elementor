@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Regular (preset-based) animation: fade / 3D-move / custom. Applied to every
  * atomic widget in Bootstrap::target_element_types(). Mirrors the v3
- * wcf-animation-effects.php Animation + Parallax sections.
+ * inc/extensions/animation-effects.php Animation + Parallax sections.
  *
  * Atomic widgets validate that every control's bind_to() points at a TOP-LEVEL
  * key in the props schema. So we register one top-level prop per control;

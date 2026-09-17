@@ -21,8 +21,8 @@ use Wealcoder\AnimationAddons\AnimationSettings\Animation_Settings;
  *
  *   | what                          | where it lives                          | off means            |
  *   |-------------------------------|-----------------------------------------|----------------------|
- *   | v3 widgets                    | option `wcf_save_widgets` (slug => true) | empty array          |
- *   | v3 extensions                 | option `wcf_save_extensions`             | empty array          |
+ *   | v3 widgets                    | option `aaeaddon_save_widgets` (slug => true) | empty array     |
+ *   | v3 extensions                 | option `aaeaddon_save_extensions`        | empty array          |
  *   | preloader / cursor / to-top / | the ACTIVE Elementor Kit,                | key cleared          |
  *   |   scroll indicator            |   `wcf_enable_*` page settings           |                      |
  *   | v3 popups                     | published `wcf-addons-template` posts   | status → draft       |
@@ -50,7 +50,7 @@ use Wealcoder\AnimationAddons\AnimationSettings\Animation_Settings;
  * and must not touch that site's V3 at all — the importer gates on
  * `builder_version === 'v4'` AND `import_type !== 'page'`.
  *
- * Everything switched off is written to `aae_v4_import_v3_off` — previous
+ * Everything switched off is written to `aaeaddon_v4_import_v3_off` — previous
  * option values, the Kit keys as they were, the popup ids that were drafted —
  * so what happened is inspectable and restore() can put it back.
  */

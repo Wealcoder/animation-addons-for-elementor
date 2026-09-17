@@ -78,7 +78,7 @@ final class Atomic
 	 * offered_absent, signal, time ]`. See capture_atomic_undo().
 	 *
 	 * ABSENT IS NOT EMPTY, and this is the reason each value has a companion
-	 * boolean rather than a null. `aae_atomic_extensions` missing means "fresh
+	 * boolean rather than a null. `aaeaddon_atomic_extensions` missing means "fresh
 	 * install, the wizard decides" to migrate_newly_offered_extensions(), which
 	 * bails only while the option has NEVER been written — restoring an empty
 	 * array where there had been no row would end that state permanently and
@@ -1191,7 +1191,7 @@ final class Atomic
 
 		// AAE Nav: list WordPress menus + their nested item trees so the Nav
 		// panel's "Import from WordPress menu" control can rebuild them as
-		// atomic nav-items. Reuses the `aae_loop_grid` editor nonce.
+		// atomic nav-items. Reuses the `Nonce::LOOP_GRID` editor nonce.
 		// 'aae_get_nav_menus' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
 		\Wealcoder\AnimationAddons\Ajax_Alias::register( 'aae_get_nav_menus', 'aaeaddon_get_nav_menus', [$this, 'ajax_get_nav_menus'] );
 
@@ -1677,7 +1677,7 @@ final class Atomic
 		$widgets = [
 			// Counter — deliberately GSAP-free (rAF + IntersectionObserver), so it
 			// needs no `script_deps`. The `gsap` handle only ever exists when the
-			// Pro plugin registers it AND the `wcf_save_extensions` option is set,
+			// Pro plugin registers it AND the `aaeaddon_save_extensions` option is set,
 			// which made a GSAP-driven counter fire on some pages and not others.
 			'aae-a-counter' => [
 				'class' => '\Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Counter\Aaeaddon_A_Counter',
@@ -3020,7 +3020,7 @@ final class Atomic
 	 * (keyed like Aaeaddon_A_Loop_Grid does), and renders the loop-item element — the
 	 * exact same path used server-side, so the markup + style classes match.
 	 *
-	 * Nonce: aae_loop_grid_front (public). Only reads published post content.
+	 * Nonce: `Nonce::LOOP_GRID_FRONT` (public). Only reads published post content.
 	 */
 	public function ajax_loop_grid_page() {
 		Nonce::check_ajax( Nonce::LOOP_GRID_FRONT, 'nonce');
@@ -4833,7 +4833,7 @@ JS;
 	 * AJAX handler — return every registered WordPress menu together with its
 	 * items pre-assembled into a nested tree. The AAE Nav panel's import control
 	 * consumes this to build atomic nav-items (with dropdowns) that mirror the
-	 * WP menu hierarchy. Reuses the `aae_loop_grid` editor nonce.
+	 * WP menu hierarchy. Reuses the `Nonce::LOOP_GRID` editor nonce.
 	 */
 	public function ajax_get_nav_menus(): void
 	{
@@ -5061,13 +5061,13 @@ JS;
 	 * error, no wrapper — so a starter template built from `e-aae-a-*` elements
 	 * imports into a site where nothing has switched them on and every page
 	 * comes up blank, looking exactly like a missing-class problem. Nothing on
-	 * the import path wrote `aae_atomic_widgets` before this; only the dashboard
+	 * the import path wrote `aaeaddon_atomic_widgets` before this; only the dashboard
 	 * save handlers and the opt-in flow did.
 	 *
 	 * Two differences from the v3 guard, both deliberate:
 	 *
 	 * 1. It MERGES into the saved option and only ever switches ON. The v3 guard
-	 *    bails once `wcf_save_widgets` has been written by hand; here an
+	 *    bails once `aaeaddon_save_widgets` has been written by hand; here an
 	 *    explicit switch-off is still honoured for everything the imported
 	 *    content does not use, but the widgets it DOES use come on — importing
 	 *    a demo is the user asking for those pages to render.

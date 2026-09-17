@@ -481,7 +481,7 @@ class Aaeaddon_Admin_Init
 			 *
 			 * The dashboard hides the era a site does not use, and the active
 			 * COUNT is not enough to decide that: a site can hold 34 pages
-			 * built from wcf--* widgets while `wcf_save_widgets` is empty —
+			 * built from wcf--* widgets while `aaeaddon_save_widgets` is empty —
 			 * that is the exact shape maybe_enable_used_v3_widgets() exists to
 			 * heal, and it deliberately bails once the option has been written
 			 * by hand. Hiding V3 from that user would take away the only screen
@@ -734,7 +734,7 @@ class Aaeaddon_Admin_Init
 	 * Mark the setup wizard finished.
 	 *
 	 * save_settings() used to be the only thing that wrote this flag, as a side
-	 * effect of persisting wcf_save_widgets. The V4 wizard saves through
+	 * effect of persisting aaeaddon_save_widgets. The V4 wizard saves through
 	 * class-atomic.php's own aae_save_atomic_* handlers instead and never calls
 	 * save_settings(), so without this endpoint the flag is never written and
 	 * class-plugin.php's admin_init redirect sends the user back into the wizard

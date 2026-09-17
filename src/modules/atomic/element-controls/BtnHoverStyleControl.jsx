@@ -22,7 +22,7 @@
  *
  * The picked value drives a `btn-{value}` hook class from the twig
  * (aae-a-btn.html.twig), matching the classic V3 wcf__btn `btn_hover_list`
- * option values (inc/trait-wcf-button.php) 1:1 — the actual animation CSS
+ * option values (inc/Aaeaddon_Button_Trait.php) 1:1 — the actual animation CSS
  * lives in btn.scss, hardcoded per value against this preset's real
  * e-divider child (see that file's comment block).
  */

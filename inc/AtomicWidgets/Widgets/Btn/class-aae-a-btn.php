@@ -156,7 +156,7 @@ class Aaeaddon_A_Btn extends Atomic_Element_Base
 			// its own row whenever that marker is false. aae_btn_hover_style carries the
 			// picked variant and drives a 'btn-{value}' hook class from the twig,
 			// matching the classic V3 wcf__btn `btn_hover_list` option values
-			// (inc/trait-wcf-button.php) so its CSS could be adapted 1:1 in btn.scss.
+			// (inc/Aaeaddon_Button_Trait.php) so its CSS could be adapted 1:1 in btn.scss.
 			'aae_btn_hover_effect' => Boolean_Prop_Type::make()->default(false),
 			'aae_btn_hover_style'  => String_Prop_Type::make()->default('hover-cross'),
 

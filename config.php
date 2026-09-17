@@ -3266,7 +3266,7 @@ return array(
 								// comes back — so a `true` here is how a brand-new site
 								// ends up with an extension nobody asked for. Nothing
 								// registers from this flag directly (get_extensions()
-								// only matches slugs already in wcf_save_extensions),
+								// only matches slugs already in aaeaddon_save_extensions),
 								// which is why it was easy to miss.
 								'is_active'    => false,
 								'is_extension' => true,

@@ -146,7 +146,7 @@
 /* Clone-refetch ghost cells.
  *
  * The cold-load skeleton above dies the moment the FIRST authored item mounts,
- * but the clone cards only arrive after the `aae_loop_post_data` AJAX
+ * but the clone cards only arrive after the `aaeaddon_loop_post_data` AJAX
  * round-trip — and on a genuine QUERY change (source / filters / order) the
  * preview module strips the old clones before awaiting the fresh fetch. During
  * that window the grid collapses to a single card, which is indistinguishable

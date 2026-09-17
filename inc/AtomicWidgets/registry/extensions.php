@@ -201,7 +201,7 @@ return [
 				'order'        => 12,
 			],
 
-			// Implemented in the Pro plugin (inc/extensions/wcf-dynamic-tags.php +
+			// Implemented in the Pro plugin (inc/extensions/dynamic-tags.php +
 			// inc/core/dynamic-tags/). It used to be reachable ONLY through the v3
 			// extension list, so a site working purely in v4 had no way to switch it
 			// on and dynamic tags silently did nothing on atomic widgets. Pro loads
@@ -440,7 +440,7 @@ return [
 			 *
 			 * `default` is false on purpose: these have shipped for a long time
 			 * and every site already has a deliberate answer for them stored in
-			 * `wcf_save_extensions`. Defaulting to true would make
+			 * `aaeaddon_save_extensions`. Defaulting to true would make
 			 * migrate_newly_offered_extensions() switch four features on for
 			 * everybody, including the people who turned them off. The real
 			 * answer is copied across once by backfill_v3_admin_extensions().
