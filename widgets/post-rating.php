@@ -599,7 +599,17 @@ class Post_Rating extends Widget_Base
 					<?php Icons_Manager::render_icon($settings['rating_icon'], ['aria-hidden' => 'true']); ?>
 				</div>
 				<p>
-					<span><?php echo esc_html($average_rating); ?></span>/<?php echo esc_html__('5', 'animation-addons-for-elementor'); ?>
+					<?php
+					echo wp_kses(
+						sprintf(
+							/* translators: 1: the average rating (wrapped in a <span>), 2: the highest possible rating. */
+							__('%1$s/%2$s', 'animation-addons-for-elementor'),
+							'<span>' . esc_html($average_rating) . '</span>',
+							esc_html(number_format_i18n(5))
+						),
+						['span' => []]
+					);
+					?>
 				</p>
 			</div>
 		</div>
@@ -677,9 +687,9 @@ class Post_Rating extends Widget_Base
 				<div class="rating-item">
 					<div class="content">
 						<div class="name-wrap">
-							<div class="name">Mr. Johnson</div>
+							<div class="name"><?php echo esc_html__('Mr. Johnson', 'animation-addons-for-elementor'); ?></div>
 							<span class="dash"></span>
-							<div class="date">June 17, 2025</div>
+							<div class="date"><?php echo esc_html(date_i18n(get_option('date_format'))); ?></div>
 						</div>
 						<div class="stars">
 							<?php for ($i = 1; $i <= 5; $i++) :
@@ -691,7 +701,7 @@ class Post_Rating extends Widget_Base
 							<?php endfor; ?>
 						</div>
 					</div>
-					<p class="review">Absolutely loved the content — informative and well-presented!</p>
+					<p class="review"><?php echo esc_html__('Absolutely loved the content — informative and well-presented!', 'animation-addons-for-elementor'); ?></p>
 				</div>
 				<?php
 			}
