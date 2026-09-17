@@ -35,7 +35,7 @@ class Notices {
 	private static function key() {
 		$user_id = get_current_user_id();
 
-		return $user_id ? 'wcf_code_snippet_flash_' . $user_id : '';
+		return $user_id ? 'aaeaddon_code_snippet_flash_' . $user_id : '';
 	}
 
 	/**

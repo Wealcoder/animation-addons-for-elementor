@@ -45,7 +45,7 @@ if (! function_exists('aaeaddon_public_counter_visitor_key')) {
 if (! function_exists('aaeaddon_public_counter_throttled')) {
     function aaeaddon_public_counter_throttled($post_id, $bucket, $window = HOUR_IN_SECONDS)
     {
-        $key = 'aae_pc_' . md5($post_id . '|' . $bucket . '|' . aaeaddon_public_counter_visitor_key());
+        $key = 'aaeaddon_pc_' . md5($post_id . '|' . $bucket . '|' . aaeaddon_public_counter_visitor_key());
 
         if (false !== get_transient($key)) {
             return true;

@@ -80,8 +80,20 @@ final class Token {
 		$data = get_transient( self::key( $token ) );
 
 		if ( ! is_array( $data ) ) {
+			// A token minted under the pre-4.2 key is still in flight for up to
+			// TTL after the update (the visitor loaded the form before it). Read
+			// that row once and retire it -- remove in 4.3.
+			$legacy = 'aae_ftok_' . md5( $token );
+			$data   = get_transient( $legacy );
+			if ( is_array( $data ) ) {
+				delete_transient( $legacy );
+				set_transient( self::key( $token ), $data, self::TTL );
+			}
+		}
+
+		if ( ! is_array( $data ) ) {
 			// Never issued/expired — or already spent (replay gets its own answer).
-			$was_used = get_transient( self::used_key( $token ) );
+			$was_used = get_transient( self::used_key( $token ) ) ?: get_transient( 'aae_ftok_used_' . md5( $token ) );
 
 			return [
 				'ok'     => false,
@@ -140,10 +152,10 @@ final class Token {
 	}
 
 	private static function key( string $token ): string {
-		return 'aae_ftok_' . md5( $token );
+		return 'aaeaddon_ftok_' . md5( $token );
 	}
 
 	private static function used_key( string $token ): string {
-		return 'aae_ftok_used_' . md5( $token );
+		return 'aaeaddon_ftok_used_' . md5( $token );
 	}
 }

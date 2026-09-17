@@ -965,7 +965,7 @@ class Aaeaddon_Admin_Init
 		 * impatient admin could exhaust the allowance for everybody on a
 		 * multi-user install and the next person would just see a failure.
 		 */
-		$throttle_key = 'wcf_feature_request_' . get_current_user_id();
+		$throttle_key = 'aaeaddon_feature_request_' . get_current_user_id();
 
 		if (get_transient($throttle_key)) {
 			wp_send_json_error(

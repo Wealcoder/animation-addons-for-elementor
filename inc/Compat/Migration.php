@@ -417,7 +417,7 @@ final class Migration {
 		return array(
 			'options'     => array( 'label' => __( 'Settings', 'animation-addons-for-elementor' ), 'total' => 0, 'done' => 0, 'skipped' => 0, 'errors' => 0, 'status' => 'waiting', 'items' => array() ),
 			'options_pro' => array( 'label' => __( 'Pro settings', 'animation-addons-for-elementor' ), 'total' => 0, 'done' => 0, 'skipped' => 0, 'errors' => 0, 'status' => 'waiting', 'items' => array() ),
-			'prefixes'    => array( 'label' => __( 'Menu settings', 'animation-addons-for-elementor' ), 'total' => 0, 'done' => 0, 'skipped' => 0, 'errors' => 0, 'status' => 'waiting', 'items' => array() ),
+			'prefixes'    => array( 'label' => __( 'Menu settings and dismissed notices', 'animation-addons-for-elementor' ), 'total' => 0, 'done' => 0, 'skipped' => 0, 'errors' => 0, 'status' => 'waiting', 'items' => array() ),
 		);
 	}
 

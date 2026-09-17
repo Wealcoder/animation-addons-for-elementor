@@ -607,7 +607,7 @@ class Aaeaddon_A_Video extends Atomic_Element_Base {
 	 * @param string $oembed_url     Full oEmbed request URL, already built.
 	 */
 	private static function fetch_oembed_thumbnail( string $cache_key_part, string $oembed_url ): string {
-		$key    = 'aae_video_thumb_' . $cache_key_part;
+		$key    = 'aaeaddon_video_thumb_' . $cache_key_part;
 		$cached = get_transient( $key );
 
 		if ( false !== $cached ) {

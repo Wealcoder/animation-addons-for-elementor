@@ -691,7 +691,7 @@ class Aaeaddon_A_Post_Pagination extends Atomic_Element_Base {
 			isset( $settings['meta_type'] ) ? $settings['meta_type'] : '',
 		];
 
-		return 'aae_pp_' . md5( implode( '|', $parts ) );
+		return 'aaeaddon_pp_' . md5( implode( '|', $parts ) );
 	}
 
 	/** @return int[] */

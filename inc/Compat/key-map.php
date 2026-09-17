@@ -127,6 +127,8 @@ return array(
 	 */
 	'prefixes'    => array(
 		'wcf_menu_options_' => 'aaeaddon_menu_options_',
+		// Dismissed admin notices (Notices.php): one "yes" row per notice id.
+		'aae_notice__'      => 'aaeaddon_notice_',
 	),
 
 	/*
@@ -188,7 +190,12 @@ return array(
 		'aaeaddon_st_importer_data', 'aaeaddon_st_importer_data_failed_attachment_imports',
 		'aaeaddon_import_menu_mapping', 'aaeaddon_import_posts_with_nav_block',
 		'aaeaddon_weather_current_*', 'aaeaddon_weather_forecast_*', 'aae_frl_*', 'aaeaddon_frl_*',
-		'aae_addon_pro_plugin_update_notice', 'aae_pro_ping_cooldown', 'aaeaddon_pro_ping_cooldown',
+		'aae_addon_pro_plugin_update_notice', 'aaeaddon_pro_plugin_update_notice', 'aae_pro_ping_cooldown', 'aaeaddon_pro_ping_cooldown',
+		// Renamed 2026-09-17, every one short-lived; both spellings listed for uninstall.
+		'aae_templates_data_*', 'aaeaddon_templates_data_*', 'wcf_code_snippet_flash_*', 'aaeaddon_code_snippet_flash_*',
+		'aae_ftok_*', 'aaeaddon_ftok_*', 'aae_video_thumb_*', 'aaeaddon_video_thumb_*', 'aae_pp_*', 'aaeaddon_pp_*',
+		'wcf_feature_request_*', 'aaeaddon_feature_request_*', 'aae_pc_*', 'aaeaddon_pc_*', 'aae_rate_lock_*', 'aaeaddon_rate_lock_*',
+		'aae_notice__*', 'aaeaddon_notice_*',
 	),
 	'cron'        => array( 'aae_form/process_queue', 'aae_form/process_queue_sweep', 'aae_form/cleanup_uploads' ),
 	'tables'      => array( 'aae_forms', 'aae_form_schemas', 'aae_submissions', 'aae_submission_values', 'aae_action_jobs', 'aae_action_logs', 'aae_attachments' ),

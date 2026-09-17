@@ -311,7 +311,7 @@ function aaeaddon_handle_lite_post_rating_submission()
 	$email   = $user ? $user->user_email : '';
 
 	// 7. Prevent rapid duplicate submissions (Rate limiting)
-	$rate_lock_key = 'aae_rate_lock_' . md5('user_' . $user_id . '_' . $post_id);
+	$rate_lock_key = 'aaeaddon_rate_lock_' . md5('user_' . $user_id . '_' . $post_id);
 
 	if (get_transient($rate_lock_key)) {
 		wp_send_json_error(['message' => esc_html__('You have submitted a review recently. Please wait a moment before trying again.', 'animation-addons-for-elementor')]);

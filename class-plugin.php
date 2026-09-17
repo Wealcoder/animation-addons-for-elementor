@@ -1589,7 +1589,7 @@ class Plugin
 	private static function get_templates_data($force_update = false)
 	{
 
-		$cache_key      = 'aae_templates_data_' . 3.1;
+		$cache_key      = 'aaeaddon_templates_data_' . 3.1;
 		$templates_data = get_transient($cache_key);
 
 		if ($force_update || false === $templates_data) {
