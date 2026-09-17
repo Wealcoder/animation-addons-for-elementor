@@ -67,6 +67,16 @@ class Notices {
 	 * @return void
 	 */
 	public function enqueue_scripts() {
+		// `Aaeaddon_Fonts` lives in inc/admin/class-fonts.php, which is NOT
+		// PSR-4 loadable and is required from Plugin::include_files() — a path
+		// that never runs without Elementor. This class, however, is booted by
+		// the storage-name Migration on every admin request whether Elementor
+		// is active or not (the bridge serves options either way), so on a site
+		// with Elementor deactivated every wp-admin screen fataled here. Measured
+		// over real HTTP (verify-plugin-cases.mjs, case elementor-off).
+		if ( ! class_exists( '\Wealcoder\AnimationAddons\Aaeaddon_Fonts', false ) ) {
+			require_once AAEADDON_PATH . 'inc/admin/class-fonts.php';
+		}
 		wp_register_style( 'aae-notice', AAEADDON_URL . 'assets/css/css/notice.css', array( \Wealcoder\AnimationAddons\Aaeaddon_Fonts::ensure() ), AAEADDON_VERSION );
 		wp_register_script( 'aae-notice', AAEADDON_URL . 'assets/js/js/notice.js', array( 'jquery' ), AAEADDON_VERSION, true );
 	}

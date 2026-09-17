@@ -12,8 +12,17 @@
  * Two mechanisms, both WordPress's own:
  *
  *   1. A request for an OLD slug is redirected (301) to the new one with the
- *      rest of the query string intact, on `admin_init` -- which runs before
- *      admin.php decides whether `$plugin_page` is registered.
+ *      rest of the query string intact, on `admin_menu` at priority 0.
+ *
+ *      NOT `admin_init`, which is where it shipped first (2026-09-17) and
+ *      where it never fired: wp-admin/admin.php requires wp-admin/menu.php
+ *      (line 163) BEFORE `do_action( 'admin_init' )` (line 180), and
+ *      wp-admin/includes/menu.php ends in the `user_can_access_admin_page()`
+ *      check that `wp_die()`s 403 for a `?page=` nobody registered. The old
+ *      slug is exactly such a page, so every request for it died before the
+ *      redirect had its turn -- measured over real HTTP, while a suite that
+ *      fired `admin_init` by hand had reported it working. `admin_menu` is
+ *      fired at the TOP of includes/menu.php, before the check.
  *
  *   2. `$_wp_real_parent_file[ old ] = new`, the alias table core keeps for
  *      `edit.php?post_type=post` -> `edit.php`. `add_submenu_page()` and
@@ -41,8 +50,11 @@ final class Admin_Page_Alias {
 	);
 
 	public static function init() {
-		add_action( 'admin_init', array( __CLASS__, 'redirect_old_slug' ), 1 );
-		add_action( 'admin_menu', array( __CLASS__, 'alias_parent_slug' ), 1 );
+		// Both at priority 0, alias first: the parent alias must be in place
+		// before any plugin's add_submenu_page(), and the redirect must run
+		// before includes/menu.php's access check (see the header).
+		add_action( 'admin_menu', array( __CLASS__, 'alias_parent_slug' ), 0 );
+		add_action( 'admin_menu', array( __CLASS__, 'redirect_old_slug' ), 0 );
 	}
 
 	/**
@@ -78,7 +90,7 @@ final class Admin_Page_Alias {
 
 	/**
 	 * Let a submenu registered under the OLD parent slug attach to the new
-	 * top-level menu. Priority 1 on admin_menu, so it is in place before any
+	 * top-level menu. Priority 0 on admin_menu, so it is in place before any
 	 * plugin's add_submenu_page() runs.
 	 */
 	public static function alias_parent_slug() {
