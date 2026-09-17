@@ -698,6 +698,10 @@ distributed:
 
 * /src -- React and JavaScript for the dashboard, page importer and editor
   bundles, compiled by webpack into /assets/build (see webpack.config.js)
+* /inc/AtomicWidgets/Widgets/<Widget>/assets/js and .../assets/scss -- the
+  atomic widgets' front-end scripts and styles, bundled by webpack into
+  /assets/atomic/js and /assets/atomic/css; each .min file there is the
+  gulp minification of the file of the same name beside it
 * /assets/src -- SCSS, compiled by gulp into /assets/css (see gulpfile.js)
 * /assets/js and /assets/js/widgets -- front-end scripts; each .min.js is the
   build of the .js of the same name beside it
