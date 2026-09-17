@@ -32,10 +32,10 @@ const SLOW_AFTER_MS = 8000;
 const TIMEOUT_MS = 30000;
 
 const config = () => window.AAEFormConfig || { restUrl: '/wp-json/aae/v1/', i18n: {} };
-const t = ( key, fallback ) => config().i18n?.[ key ] || fallback;
+const t = (key, fallback) => config().i18n?.[key] || fallback;
 
 const isEditMode = () =>
-	!! ( window.elementorFrontend?.isEditMode?.() || window.elementor );
+	!!(window.elementorFrontend?.isEditMode?.() || window.elementor);
 
 /* ------------------------------------------------------------------ */
 /* Extension hooks (WP-style, browser-side)                            */
@@ -47,39 +47,39 @@ const isEditMode = () =>
 /* load order between free and pro bundles never matters.              */
 /* ------------------------------------------------------------------ */
 
-const hooks = ( window.AAEFormHooks = window.AAEFormHooks || {
+const hooks = (window.AAEFormHooks = window.AAEFormHooks || {
 	actions: {},
 	filters: {},
-	addAction( name, fn ) {
-		( this.actions[ name ] = this.actions[ name ] || [] ).push( fn );
-		if ( 'aae_form/init' === name ) {
+	addAction(name, fn) {
+		(this.actions[name] = this.actions[name] || []).push(fn);
+		if ('aae_form/init' === name) {
 			document
-				.querySelectorAll( 'form[data-aae-form-ready="true"]' )
-				.forEach( ( form ) => fn( form ) );
+				.querySelectorAll('form[data-aae-form-ready="true"]')
+				.forEach((form) => fn(form));
 		}
 	},
-	doAction( name, ...args ) {
-		( this.actions[ name ] || [] ).forEach( ( fn ) => fn( ...args ) );
+	doAction(name, ...args) {
+		(this.actions[name] || []).forEach((fn) => fn(...args));
 	},
-	addFilter( name, fn ) {
-		( this.filters[ name ] = this.filters[ name ] || [] ).push( fn );
+	addFilter(name, fn) {
+		(this.filters[name] = this.filters[name] || []).push(fn);
 	},
-	applyFilters( name, value, ...args ) {
-		return ( this.filters[ name ] || [] ).reduce( ( acc, fn ) => fn( acc, ...args ), value );
+	applyFilters(name, value, ...args) {
+		return (this.filters[name] || []).reduce((acc, fn) => fn(acc, ...args), value);
 	},
-} );
+});
 
 /* ------------------------------------------------------------------ */
 /* Token                                                               */
 /* ------------------------------------------------------------------ */
 
-const fetchToken = async ( formKey ) => {
+const fetchToken = async (formKey) => {
 	const response = await fetch(
-		`${ config().restUrl }forms/${ encodeURIComponent( formKey ) }/token`,
+		`${config().restUrl}forms/${encodeURIComponent(formKey)}/token`,
 		{ method: 'POST', cache: 'no-store' }
 	);
-	if ( ! response.ok ) {
-		const error = new Error( 'token' );
+	if (!response.ok) {
+		const error = new Error('token');
 		error.status = response.status;
 		throw error;
 	}
@@ -97,43 +97,43 @@ const fetchToken = async ( formKey ) => {
 
 let recaptchaScriptPromise = null;
 
-const loadRecaptchaScript = ( siteKey ) => {
-	if ( recaptchaScriptPromise ) {
+const loadRecaptchaScript = (siteKey) => {
+	if (recaptchaScriptPromise) {
 		return recaptchaScriptPromise;
 	}
-	recaptchaScriptPromise = new Promise( ( resolve, reject ) => {
-		if ( window.grecaptcha ) {
-			resolve( window.grecaptcha );
+	recaptchaScriptPromise = new Promise((resolve, reject) => {
+		if (window.grecaptcha) {
+			resolve(window.grecaptcha);
 			return;
 		}
-		const script = document.createElement( 'script' );
-		script.src = `https://www.google.com/recaptcha/api.js?render=${ encodeURIComponent( siteKey ) }`;
+		const script = document.createElement('script');
+		script.src = `https://www.google.com/recaptcha/api.js?render=${encodeURIComponent(siteKey)}`;
 		script.async = true;
 		script.defer = true;
-		script.onload = () => resolve( window.grecaptcha );
-		script.onerror = () => reject( new Error( 'recaptcha-load-failed' ) );
-		document.head.appendChild( script );
-	} );
+		script.onload = () => resolve(window.grecaptcha);
+		script.onerror = () => reject(new Error('recaptcha-load-failed'));
+		document.head.appendChild(script);
+	});
 	return recaptchaScriptPromise;
 };
 
 /** Resolves to a fresh v3 token, or '' if reCAPTCHA can't run (no site key, script failed, …). */
-const getRecaptchaToken = async ( action ) => {
+const getRecaptchaToken = async (action) => {
 	const siteKey = config().recaptchaSiteKey;
-	if ( ! siteKey ) {
+	if (!siteKey) {
 		return '';
 	}
 	try {
-		const grecaptcha = await loadRecaptchaScript( siteKey );
-		return await new Promise( ( resolve ) => {
-			grecaptcha.ready( () => {
+		const grecaptcha = await loadRecaptchaScript(siteKey);
+		return await new Promise((resolve) => {
+			grecaptcha.ready(() => {
 				grecaptcha
-					.execute( siteKey, { action } )
-					.then( resolve )
-					.catch( () => resolve( '' ) );
-			} );
-		} );
-	} catch ( _e ) {
+					.execute(siteKey, { action })
+					.then(resolve)
+					.catch(() => resolve(''));
+			});
+		});
+	} catch (_e) {
 		return ''; // server-side treats a missing/empty token as a failed check.
 	}
 };
@@ -146,21 +146,21 @@ const getRecaptchaToken = async ( action ) => {
 // an editor-styleable sample span, hidden on the frontend. Its classes (base
 // + user styles) are mirrored onto every injected error span, and its text
 // is the form's required-field message. Absent → stylesheet defaults.
-const errorSourceOf = ( form ) =>
-	form.querySelector( '[data-element_type="e-aae-a-form-field-error"]' );
+const errorSourceOf = (form) =>
+	form.querySelector('[data-element_type="e-aae-a-form-field-error"]');
 
-const requiredMessage = ( form ) => {
-	const text = errorSourceOf( form )?.textContent.trim();
-	return text || t( 'required', 'This field is required.' );
+const requiredMessage = (form) => {
+	const text = errorSourceOf(form)?.textContent.trim();
+	return text || t('required', 'This field is required.');
 };
 
 // Per-field override: the field widget's "Error message" setting (rendered
 // as data-aae-error-message) wins over every default for that field —
 // required, format and range errors alike.
-const messageFor = ( control, fallback ) =>
+const messageFor = (control, fallback) =>
 	control.dataset.aaeErrorMessage || fallback;
 
-const errorAnchor = ( control ) =>
+const errorAnchor = (control) =>
 	// The error belongs after the field's whole visual block, never inside
 	// it: a radio group's wrapper (not between its option rows), a checkbox/
 	// radio row (not between box and label), the multi-select enhancement
@@ -170,42 +170,42 @@ const errorAnchor = ( control ) =>
 	// visible star row — inserting after the input alone breaks the error
 	// out of the flex-basis:100% row-break and squeezes it in next to the
 	// stars/Submit instead of onto its own line).
-	control.closest( '.aae-form-radio-group' ) ||
-	control.closest( '.aae-form-checkbox-row' ) ||
-	control.closest( '.aae-ms' ) ||
-	control.closest( '.aae-a-form-rating' ) ||
+	control.closest('.aae-form-radio-group') ||
+	control.closest('.aae-form-checkbox-row') ||
+	control.closest('.aae-ms') ||
+	control.closest('.aae-a-form-rating') ||
 	// Password: the input lives inside the styled wrapper alongside the
 	// reveal button — anchoring to the input alone would paint the error
 	// INSIDE the field box (same class of bug as Rating's, 2026-07-20).
-	control.closest( '.aae-a-form-password' ) ||
+	control.closest('.aae-a-form-password') ||
 	control;
 
-const clearFieldError = ( control ) => {
-	const anchor = errorAnchor( control );
+const clearFieldError = (control) => {
+	const anchor = errorAnchor(control);
 	anchor.parentNode
-		?.querySelector( `.aae-form-field-error[data-for="${ control.name }"]` )
+		?.querySelector(`.aae-form-field-error[data-for="${control.name}"]`)
 		?.remove();
-	control.removeAttribute( 'aria-invalid' );
-	control.removeAttribute( 'aria-describedby' );
-	control.classList.remove( 'aae-form-invalid' );
+	control.removeAttribute('aria-invalid');
+	control.removeAttribute('aria-describedby');
+	control.classList.remove('aae-form-invalid');
 };
 
-const clearAllErrors = ( form ) => {
-	form.querySelectorAll( '.aae-form-field-error' ).forEach( ( el ) => el.remove() );
-	form.querySelectorAll( '[aria-invalid]' ).forEach( ( el ) => {
-		el.removeAttribute( 'aria-invalid' );
-		el.removeAttribute( 'aria-describedby' );
-		el.classList.remove( 'aae-form-invalid' );
-	} );
+const clearAllErrors = (form) => {
+	form.querySelectorAll('.aae-form-field-error').forEach((el) => el.remove());
+	form.querySelectorAll('[aria-invalid]').forEach((el) => {
+		el.removeAttribute('aria-invalid');
+		el.removeAttribute('aria-describedby');
+		el.classList.remove('aae-form-invalid');
+	});
 };
 
-const showFieldError = ( form, control, message ) => {
-	clearFieldError( control );
+const showFieldError = (form, control, message) => {
+	clearFieldError(control);
 
-	const anchor = errorAnchor( control );
-	const errorId = `aae-err-${ form.dataset.id || 'f' }-${ control.name.replace( /\W/g, '_' ) }`;
+	const anchor = errorAnchor(control);
+	const errorId = `aae-err-${form.dataset.id || 'f'}-${control.name.replace(/\W/g, '_')}`;
 
-	const el = document.createElement( 'span' );
+	const el = document.createElement('span');
 	el.className = 'aae-form-field-error';
 	el.id = errorId;
 	el.dataset.for = control.name;
@@ -214,61 +214,61 @@ const showFieldError = ( form, control, message ) => {
 	// Mirror the Field Error style-source widget's classes (its base style +
 	// whatever the user styled in the panel) so injected errors look like the
 	// sample. The source itself stays hidden via its data-element_type.
-	const source = errorSourceOf( form );
-	if ( source ) {
-		source.classList.forEach( ( cls ) => el.classList.add( cls ) );
+	const source = errorSourceOf(form);
+	if (source) {
+		source.classList.forEach((cls) => el.classList.add(cls));
 
 		// Invalid-control border colour rides the same element: an explicit
 		// Border → Color set in its panel wins; otherwise border computes to
 		// currentColor, i.e. the message's text colour. One CSS var keeps the
 		// stylesheet rule (.aae-form-invalid) as the single border owner.
-		const cs = window.getComputedStyle( source );
+		const cs = window.getComputedStyle(source);
 		const invalidColor = cs.borderTopColor || cs.color;
-		if ( invalidColor ) {
-			form.style.setProperty( '--aae-form-invalid-color', invalidColor );
+		if (invalidColor) {
+			form.style.setProperty('--aae-form-invalid-color', invalidColor);
 		}
 	}
 
-	anchor.insertAdjacentElement( 'afterend', el );
-	control.setAttribute( 'aria-invalid', 'true' );
-	control.setAttribute( 'aria-describedby', errorId );
-	control.classList.add( 'aae-form-invalid' );
+	anchor.insertAdjacentElement('afterend', el);
+	control.setAttribute('aria-invalid', 'true');
+	control.setAttribute('aria-describedby', errorId);
+	control.classList.add('aae-form-invalid');
 
 	// Field errors clear as soon as the visitor edits that field. For a radio
 	// group the edit can land on ANY radio in the group — not just the first
 	// one (which is what validation anchored the error to) — so listen on all.
-	const clearOnEdit = () => clearFieldError( control );
+	const clearOnEdit = () => clearFieldError(control);
 	const targets =
 		'radio' === control.type && control.form
-			? Array.from( control.form.querySelectorAll( `input[type="radio"][name="${ CSS.escape( control.name ) }"]` ) )
-			: [ control ];
-	targets.forEach( ( el ) => {
-		el.addEventListener( 'input', clearOnEdit, { once: true } );
-		el.addEventListener( 'change', clearOnEdit, { once: true } );
-	} );
+			? Array.from(control.form.querySelectorAll(`input[type="radio"][name="${CSS.escape(control.name)}"]`))
+			: [control];
+	targets.forEach((el) => {
+		el.addEventListener('input', clearOnEdit, { once: true });
+		el.addEventListener('change', clearOnEdit, { once: true });
+	});
 };
 
-const focusFirstInvalid = ( form ) => {
-	const control = form.querySelector( '[aria-invalid="true"]' );
-	if ( ! control ) {
+const focusFirstInvalid = (form) => {
+	const control = form.querySelector('[aria-invalid="true"]');
+	if (!control) {
 		return;
 	}
 	// Reveal-before-focus, minimal pass: open any collapsed <details>
 	// ancestors so focus doesn't land on a hidden field. Accordion/tab/popup
 	// integrations join when those widgets expose a programmatic API.
-	let details = control.closest( 'details:not([open])' );
-	while ( details ) {
+	let details = control.closest('details:not([open])');
+	while (details) {
 		details.open = true;
-		details = details.parentElement?.closest( 'details:not([open])' );
+		details = details.parentElement?.closest('details:not([open])');
 	}
 	// An enhanced control may not be the element the visitor sees: the PRO
 	// date picker turns the real input into type=hidden and shows its own —
 	// focusing a hidden input does nothing, silently, and scrollIntoView on
 	// it scrolls nowhere. Let the enhancement name what should receive focus.
 	// Free stays neutral: with nothing hooked the control itself is used.
-	const target = hooks.applyFilters( 'aae_form/focus_target', control, form ) || control;
-	target.scrollIntoView( { block: 'center', behavior: 'auto' } );
-	target.focus( { preventScroll: true } );
+	const target = hooks.applyFilters('aae_form/focus_target', control, form) || control;
+	target.scrollIntoView({ block: 'center', behavior: 'auto' });
+	target.focus({ preventScroll: true });
 };
 
 /* ------------------------------------------------------------------ */
@@ -286,10 +286,10 @@ const TEL_RE = /^\+?[0-9\-().\s]{3,30}$/;
  * `.elements` collection on a plain `<div>`) — scoping validation to just
  * that step's controls without touching the rest of the form.
  */
-const controlsOf = ( root ) => {
-	const all = root.elements ? Array.from( root.elements ) : Array.from( root.querySelectorAll( 'input, select, textarea' ) );
+const controlsOf = (root) => {
+	const all = root.elements ? Array.from(root.elements) : Array.from(root.querySelectorAll('input, select, textarea'));
 	return all.filter(
-		( el ) => el.name && ! el.disabled && ! [ 'submit', 'button', 'reset' ].includes( el.type )
+		(el) => el.name && !el.disabled && !['submit', 'button', 'reset'].includes(el.type)
 	);
 };
 
@@ -298,28 +298,28 @@ const controlsOf = ( root ) => {
 // a multi-step form back on its FIRST step. The delay rides the form's
 // "Reset After Success (seconds)" setting (data-aae-form-reset-delay);
 // 0 disables — the success state then stays until the page reloads.
-const scheduleSuccessReset = ( form ) => {
-	const raw = parseFloat( form.dataset.aaeFormResetDelay );
-	const seconds = Number.isFinite( raw ) ? raw : 5;
-	if ( seconds <= 0 ) {
+const scheduleSuccessReset = (form) => {
+	const raw = parseFloat(form.dataset.aaeFormResetDelay);
+	const seconds = Number.isFinite(raw) ? raw : 5;
+	if (seconds <= 0) {
 		return;
 	}
 
-	clearTimeout( form.__aaeSuccessResetTimer );
-	form.__aaeSuccessResetTimer = setTimeout( () => {
-		setFormState( form, 'default' );
-		showRuntimeMessage( form, '', 'error' );
-		clearAllErrors( form );
+	clearTimeout(form.__aaeSuccessResetTimer);
+	form.__aaeSuccessResetTimer = setTimeout(() => {
+		setFormState(form, 'default');
+		showRuntimeMessage(form, '', 'error');
+		clearAllErrors(form);
 		// The reset brings the form back, so undo any success-hide with it —
 		// otherwise a form with both settings would reset into an empty box.
-		showFormBody( form );
+		showFormBody(form);
 
 		const state = form.__aaeStepState;
-		if ( state ) {
+		if (state) {
 			state.current = 0;
-			resyncSteps( form );
+			resyncSteps(form);
 		}
-	}, seconds * 1000 );
+	}, seconds * 1000);
 };
 
 /* ------------------------------------------------------------------ */
@@ -342,115 +342,115 @@ const MESSAGE_TYPES = [
 // NOTE: the attribute is `data-element_type` with an UNDERSCORE, so it is
 // NOT reachable via `dataset.elementType` (that maps to data-element-type).
 // getAttribute is the only correct read here.
-const isMessageContainer = ( el ) =>
-	MESSAGE_TYPES.includes( el.getAttribute?.( 'data-element_type' ) ) ||
-	MESSAGE_TYPES.some( ( type ) => el.querySelector?.( `[data-element_type="${ type }"]` ) );
+const isMessageContainer = (el) =>
+	MESSAGE_TYPES.includes(el.getAttribute?.('data-element_type')) ||
+	MESSAGE_TYPES.some((type) => el.querySelector?.(`[data-element_type="${type}"]`));
 
-const hideFormBody = ( form ) => {
-	Array.from( form.children ).forEach( ( child ) => {
-		if ( ! isMessageContainer( child ) ) {
-			child.classList.add( HIDDEN_CLASS );
+const hideFormBody = (form) => {
+	Array.from(form.children).forEach((child) => {
+		if (!isMessageContainer(child)) {
+			child.classList.add(HIDDEN_CLASS);
 		}
-	} );
+	});
 };
 
-const showFormBody = ( form ) => {
+const showFormBody = (form) => {
 	form
-		.querySelectorAll( `.${ HIDDEN_CLASS }` )
-		.forEach( ( el ) => el.classList.remove( HIDDEN_CLASS ) );
+		.querySelectorAll(`.${HIDDEN_CLASS}`)
+		.forEach((el) => el.classList.remove(HIDDEN_CLASS));
 };
 
-const scheduleSuccessHide = ( form ) => {
-	if ( 'true' !== form.dataset.aaeFormHideOnSuccess ) {
+const scheduleSuccessHide = (form) => {
+	if ('true' !== form.dataset.aaeFormHideOnSuccess) {
 		return;
 	}
 
-	const raw = parseFloat( form.dataset.aaeFormHideDelay );
-	const seconds = Number.isFinite( raw ) && raw > 0 ? raw : 0;
+	const raw = parseFloat(form.dataset.aaeFormHideDelay);
+	const seconds = Number.isFinite(raw) && raw > 0 ? raw : 0;
 
-	clearTimeout( form.__aaeSuccessHideTimer );
-	if ( seconds <= 0 ) {
-		hideFormBody( form );
+	clearTimeout(form.__aaeSuccessHideTimer);
+	if (seconds <= 0) {
+		hideFormBody(form);
 		return;
 	}
-	form.__aaeSuccessHideTimer = setTimeout( () => hideFormBody( form ), seconds * 1000 );
+	form.__aaeSuccessHideTimer = setTimeout(() => hideFormBody(form), seconds * 1000);
 };
 
-const validateFrontend = ( form, scopeEl ) => {
+const validateFrontend = (form, scopeEl) => {
 	const errors = [];
 	const seenRadioGroups = new Set();
-	const requiredMsg = requiredMessage( form );
+	const requiredMsg = requiredMessage(form);
 
-	for ( const control of controlsOf( scopeEl || form ) ) {
+	for (const control of controlsOf(scopeEl || form)) {
 		// Conditionally-hidden fields never block submit (spec). The marker is
 		// set by the pro Conditional Display runtime — free only respects it.
 		// The filter lets other engines skip controls by their own criteria.
-		if ( hooks.applyFilters( 'aae_form/validate/skip_control', !! control.closest( '[data-aae-cond-hidden]' ), control, form ) ) {
+		if (hooks.applyFilters('aae_form/validate/skip_control', !!control.closest('[data-aae-cond-hidden]'), control, form)) {
 			continue;
 		}
 
 		const value = control.value.trim();
 
-		if ( 'radio' === control.type ) {
-			if ( seenRadioGroups.has( control.name ) ) {
+		if ('radio' === control.type) {
+			if (seenRadioGroups.has(control.name)) {
 				continue;
 			}
-			seenRadioGroups.add( control.name );
-			const group = Array.from( form.querySelectorAll( `input[type="radio"][name="${ CSS.escape( control.name ) }"]` ) );
-			if ( group.some( ( radio ) => radio.required ) && ! group.some( ( radio ) => radio.checked ) ) {
+			seenRadioGroups.add(control.name);
+			const group = Array.from(form.querySelectorAll(`input[type="radio"][name="${CSS.escape(control.name)}"]`));
+			if (group.some((radio) => radio.required) && !group.some((radio) => radio.checked)) {
 				// The message may sit on ANY radio widget of the group.
-				const custom = group.map( ( radio ) => radio.dataset.aaeErrorMessage ).find( Boolean );
-				errors.push( [ control, custom || requiredMsg ] );
+				const custom = group.map((radio) => radio.dataset.aaeErrorMessage).find(Boolean);
+				errors.push([control, custom || requiredMsg]);
 			}
 			continue;
 		}
 
-		if ( 'checkbox' === control.type ) {
-			if ( control.required && ! control.checked ) {
-				errors.push( [ control, messageFor( control, requiredMsg ) ] );
+		if ('checkbox' === control.type) {
+			if (control.required && !control.checked) {
+				errors.push([control, messageFor(control, requiredMsg)]);
 			}
 			continue;
 		}
 
-		if ( 'file' === control.type ) {
+		if ('file' === control.type) {
 			// Size/type/count rules from the widget's own settings (the server
 			// re-validates all of it from the schema at upload time).
-			const files = Array.from( control.files || [] );
+			const files = Array.from(control.files || []);
 
-			if ( ! files.length ) {
-				if ( control.required ) {
-					errors.push( [ control, messageFor( control, requiredMsg ) ] );
+			if (!files.length) {
+				if (control.required) {
+					errors.push([control, messageFor(control, requiredMsg)]);
 				}
 				continue;
 			}
 
-			const maxFiles = control.multiple ? parseInt( control.dataset.aaeMaxFiles, 10 ) || 10 : 1;
-			const maxMb = parseFloat( control.dataset.aaeMaxSize ) || 10;
-			const accept = ( control.dataset.aaeAccept || '' )
+			const maxFiles = control.multiple ? parseInt(control.dataset.aaeMaxFiles, 10) || 10 : 1;
+			const maxMb = parseFloat(control.dataset.aaeMaxSize) || 10;
+			const accept = (control.dataset.aaeAccept || '')
 				.toLowerCase()
-				.split( ',' )
-				.map( ( s ) => s.trim() )
-				.filter( Boolean );
+				.split(',')
+				.map((s) => s.trim())
+				.filter(Boolean);
 
-			if ( files.length > maxFiles ) {
-				errors.push( [ control, messageFor( control, t( 'tooManyFiles', `Please choose at most ${ maxFiles } file(s).` ) ) ] );
-			} else if ( files.some( ( file ) => file.size > maxMb * 1024 * 1024 ) ) {
-				errors.push( [ control, messageFor( control, t( 'fileTooLarge', `File is too large. Maximum size is ${ maxMb } MB.` ) ) ] );
+			if (files.length > maxFiles) {
+				errors.push([control, messageFor(control, t('tooManyFiles', `Please choose at most ${maxFiles} file(s).`))]);
+			} else if (files.some((file) => file.size > maxMb * 1024 * 1024)) {
+				errors.push([control, messageFor(control, t('fileTooLarge', `File is too large. Maximum size is ${maxMb} MB.`))]);
 			} else if (
 				accept.length &&
-				files.some( ( file ) => ! accept.includes( ( file.name.split( '.' ).pop() || '' ).toLowerCase() ) )
+				files.some((file) => !accept.includes((file.name.split('.').pop() || '').toLowerCase()))
 			) {
-				errors.push( [ control, messageFor( control, t( 'fileType', 'This file type is not allowed.' ) ) ] );
+				errors.push([control, messageFor(control, t('fileType', 'This file type is not allowed.'))]);
 			}
 			continue;
 		}
 
-		if ( control.required && '' === value ) {
-			errors.push( [ control, messageFor( control, requiredMsg ) ] );
+		if (control.required && '' === value) {
+			errors.push([control, messageFor(control, requiredMsg)]);
 			continue;
 		}
 
-		if ( '' === value ) {
+		if ('' === value) {
 			continue;
 		}
 
@@ -459,58 +459,58 @@ const validateFrontend = ( form, scopeEl ) => {
 		// both from the schema snapshot (never trust the frontend alone).
 		// `control.type` is unreliable here — the reveal toggle flips it to
 		// 'text' — so key off the wrapper class instead.
-		if ( control.closest( '.aae-a-form-password' ) ) {
-			const min = parseInt( control.dataset.aaePasswordMin, 10 );
-			if ( min > 0 && value.length < min ) {
-				errors.push( [
+		if (control.closest('.aae-a-form-password')) {
+			const min = parseInt(control.dataset.aaePasswordMin, 10);
+			if (min > 0 && value.length < min) {
+				errors.push([
 					control,
-					messageFor( control, t( 'passwordTooShort', `Please use at least ${ min } characters.` ) ),
-				] );
+					messageFor(control, t('passwordTooShort', `Please use at least ${min} characters.`)),
+				]);
 				continue;
 			}
 
 			const matchId = control.dataset.aaePasswordMatch;
-			if ( matchId ) {
-				const other = form.querySelector( `#${ CSS.escape( matchId ) }` );
-				if ( other && other.value !== control.value ) {
-					errors.push( [
+			if (matchId) {
+				const other = form.querySelector(`#${CSS.escape(matchId)}`);
+				if (other && other.value !== control.value) {
+					errors.push([
 						control,
 						control.dataset.aaePasswordMismatchMessage ||
-							t( 'passwordMismatch', 'Passwords do not match.' ),
-					] );
+						t('passwordMismatch', 'Passwords do not match.'),
+					]);
 					continue;
 				}
 			}
 			continue;
 		}
 
-		if ( 'email' === control.type && ! EMAIL_RE.test( value ) ) {
-			errors.push( [ control, messageFor( control, t( 'invalidEmail', 'Please enter a valid email address.' ) ) ] );
-		} else if ( 'url' === control.type && ! /^https?:\/\/\S+\.\S+/.test( value ) ) {
-			errors.push( [ control, messageFor( control, t( 'invalidUrl', 'Please enter a valid URL.' ) ) ] );
-		} else if ( 'number' === control.type ) {
+		if ('email' === control.type && !EMAIL_RE.test(value)) {
+			errors.push([control, messageFor(control, t('invalidEmail', 'Please enter a valid email address.'))]);
+		} else if ('url' === control.type && ! /^https?:\/\/\S+\.\S+/.test(value)) {
+			errors.push([control, messageFor(control, t('invalidUrl', 'Please enter a valid URL.'))]);
+		} else if ('number' === control.type) {
 			// Rules the builder typed into the widget's Min/Max value inputs
 			// (or min/max attributes) — "age must be 18" style range checks.
-			const num = Number( value );
-			if ( Number.isNaN( num ) ) {
-				errors.push( [ control, messageFor( control, t( 'invalidNumber', 'Please enter a number.' ) ) ] );
-			} else if ( '' !== control.min && num < Number( control.min ) ) {
-				errors.push( [ control, messageFor( control, t( 'numberMin', `Please enter ${ control.min } or more.` ) ) ] );
-			} else if ( '' !== control.max && num > Number( control.max ) ) {
-				errors.push( [ control, messageFor( control, t( 'numberMax', `Please enter ${ control.max } or less.` ) ) ] );
+			const num = Number(value);
+			if (Number.isNaN(num)) {
+				errors.push([control, messageFor(control, t('invalidNumber', 'Please enter a number.'))]);
+			} else if ('' !== control.min && num < Number(control.min)) {
+				errors.push([control, messageFor(control, t('numberMin', `Please enter ${control.min} or more.`))]);
+			} else if ('' !== control.max && num > Number(control.max)) {
+				errors.push([control, messageFor(control, t('numberMax', `Please enter ${control.max} or less.`))]);
 			}
-		} else if ( 'tel' === control.type && ! TEL_RE.test( value ) ) {
-			errors.push( [ control, messageFor( control, t( 'invalidTel', 'Please enter a valid phone number.' ) ) ] );
+		} else if ('tel' === control.type && !TEL_RE.test(value)) {
+			errors.push([control, messageFor(control, t('invalidTel', 'Please enter a valid phone number.'))]);
 		}
 
-		// Extension point mirroring the server's 'aae_form/validator/value_error'
+		// Extension point mirroring the server's 'aaeaddon_form/validator/value_error'
 		// filter: extra per-value checks (pro Validation's regex rules) run only
 		// when every built-in check above passed. Return a message to fail.
-		const builtinFailed = errors.length && errors[ errors.length - 1 ][ 0 ] === control;
-		if ( ! builtinFailed ) {
-			const extra = hooks.applyFilters( 'aae_form/validate/value_error', '', control, value, form );
-			if ( extra && 'string' === typeof extra ) {
-				errors.push( [ control, extra ] );
+		const builtinFailed = errors.length && errors[errors.length - 1][0] === control;
+		if (!builtinFailed) {
+			const extra = hooks.applyFilters('aae_form/validate/value_error', '', control, value, form);
+			if (extra && 'string' === typeof extra) {
+				errors.push([control, extra]);
 			}
 		}
 	}
@@ -522,28 +522,28 @@ const validateFrontend = ( form, scopeEl ) => {
 /* Payload                                                             */
 /* ------------------------------------------------------------------ */
 
-const collectFields = ( form ) => {
+const collectFields = (form) => {
 	const fields = {};
 
 	// FormData can't tell which control a value came from, so resolve the
 	// conditionally-hidden set up front and drop their names entirely.
 	const hiddenNames = new Set();
-	form.querySelectorAll( '[data-aae-cond-hidden] [name], [name][data-aae-cond-hidden]' ).forEach( ( control ) => {
-		hiddenNames.add( control.name );
-	} );
+	form.querySelectorAll('[data-aae-cond-hidden] [name], [name][data-aae-cond-hidden]').forEach((control) => {
+		hiddenNames.add(control.name);
+	});
 
-	for ( const [ rawName, value ] of new FormData( form ) ) {
-		if ( value instanceof File ) {
+	for (const [rawName, value] of new FormData(form)) {
+		if (value instanceof File) {
 			continue; // files ride as pre-upload refs, never inline (JSON body).
 		}
-		if ( hooks.applyFilters( 'aae_form/collect/skip_field', hiddenNames.has( rawName ), rawName, form ) ) {
+		if (hooks.applyFilters('aae_form/collect/skip_field', hiddenNames.has(rawName), rawName, form)) {
 			continue; // conditionally hidden — its value must not submit.
 		}
-		if ( rawName.endsWith( '[]' ) ) {
-			const name = rawName.slice( 0, -2 );
-			( fields[ name ] = fields[ name ] || [] ).push( value );
+		if (rawName.endsWith('[]')) {
+			const name = rawName.slice(0, -2);
+			(fields[name] = fields[name] || []).push(value);
 		} else {
-			fields[ rawName ] = value;
+			fields[rawName] = value;
 		}
 	}
 
@@ -556,38 +556,38 @@ const collectFields = ( form ) => {
  * payload. Throws a tagged error ({ uploadControl, uploadMessage }) so the
  * submit handler can paint the failure on the right field.
  */
-const uploadPendingFiles = async ( form, formKey, nonce ) => {
+const uploadPendingFiles = async (form, formKey, nonce) => {
 	const refs = {};
 
-	for ( const input of form.querySelectorAll( 'input[type="file"]' ) ) {
-		const files = Array.from( input.files || [] );
-		if ( ! files.length || ! input.name ) {
+	for (const input of form.querySelectorAll('input[type="file"]')) {
+		const files = Array.from(input.files || []);
+		if (!files.length || !input.name) {
 			continue;
 		}
 
-		const fieldKey = input.name.replace( /\[\]$/, '' );
-		refs[ fieldKey ] = [];
+		const fieldKey = input.name.replace(/\[\]$/, '');
+		refs[fieldKey] = [];
 
-		for ( const file of files ) {
+		for (const file of files) {
 			const body = new FormData();
-			body.append( 'file', file );
-			body.append( 'field_key', fieldKey );
-			body.append( 'nonce', nonce );
+			body.append('file', file);
+			body.append('field_key', fieldKey);
+			body.append('nonce', nonce);
 
 			const response = await fetch(
-				`${ config().restUrl }forms/${ encodeURIComponent( formKey ) }/uploads`,
+				`${config().restUrl}forms/${encodeURIComponent(formKey)}/uploads`,
 				{ method: 'POST', cache: 'no-store', body }
 			);
-			const data = await response.json().catch( () => ( {} ) );
+			const data = await response.json().catch(() => ({}));
 
-			if ( ! response.ok ) {
-				const error = new Error( 'upload_failed' );
+			if (!response.ok) {
+				const error = new Error('upload_failed');
 				error.uploadControl = input;
 				error.uploadMessage = data.message || '';
 				throw error;
 			}
 
-			refs[ fieldKey ].push( { id: data.id, key: data.key } );
+			refs[fieldKey].push({ id: data.id, key: data.key });
 		}
 	}
 
@@ -598,25 +598,25 @@ const uploadPendingFiles = async ( form, formKey, nonce ) => {
 /* UI state                                                            */
 /* ------------------------------------------------------------------ */
 
-const setFormState = ( form, state ) => {
-	form.classList.remove( 'form-state-default', 'form-state-success', 'form-state-error' );
-	form.classList.add( `form-state-${ state }` );
+const setFormState = (form, state) => {
+	form.classList.remove('form-state-default', 'form-state-success', 'form-state-error');
+	form.classList.add(`form-state-${state}`);
 };
 
-const runtimeMessageEl = ( form ) => {
-	let el = form.querySelector( '.aae-form-runtime-message' );
-	if ( ! el ) {
-		el = document.createElement( 'div' );
+const runtimeMessageEl = (form) => {
+	let el = form.querySelector('.aae-form-runtime-message');
+	if (!el) {
+		el = document.createElement('div');
 		el.className = 'aae-form-runtime-message';
-		el.setAttribute( 'role', 'status' );
-		el.setAttribute( 'aria-live', 'polite' );
-		form.appendChild( el );
+		el.setAttribute('role', 'status');
+		el.setAttribute('aria-live', 'polite');
+		form.appendChild(el);
 	}
 	return el;
 };
 
 /** The authored (styleable) status container for a tone, if the form has one. */
-const messageContainer = ( form, tone ) =>
+const messageContainer = (form, tone) =>
 	form.querySelector(
 		'success' === tone
 			? '[data-element_type="e-aae-a-form-success-message"]'
@@ -631,45 +631,45 @@ const messageContainer = ( form, tone ) =>
  * before the containers existed fall back to the injected div. 'info' hints
  * (slow connection) stay in the div — transient progress, not a form state.
  */
-const showRuntimeMessage = ( form, message, tone ) => {
-	if ( 'info' === tone && message ) {
-		const el = runtimeMessageEl( form );
+const showRuntimeMessage = (form, message, tone) => {
+	if ('info' === tone && message) {
+		const el = runtimeMessageEl(form);
 		el.textContent = message;
 		el.dataset.tone = 'info';
 		el.hidden = false;
 		return;
 	}
 
-	const container = messageContainer( form, tone );
+	const container = messageContainer(form, tone);
 
-	if ( ! container ) {
-		const el = runtimeMessageEl( form );
+	if (!container) {
+		const el = runtimeMessageEl(form);
 		el.textContent = message;
 		el.dataset.tone = tone || 'error';
-		el.hidden = ! message;
+		el.hidden = !message;
 		return;
 	}
 
 	// Routed to the authored container — silence the fallback div (it may
 	// still hold a stale 'slow connection' hint from this same request).
-	const legacy = form.querySelector( '.aae-form-runtime-message' );
-	if ( legacy ) {
+	const legacy = form.querySelector('.aae-form-runtime-message');
+	if (legacy) {
 		legacy.hidden = true;
 	}
 
-	const paragraph = container.querySelector( 'p' ) || container;
+	const paragraph = container.querySelector('p') || container;
 
-	if ( message ) {
-		if ( undefined === container.dataset.aaeAuthoredText ) {
+	if (message) {
+		if (undefined === container.dataset.aaeAuthoredText) {
 			container.dataset.aaeAuthoredText = paragraph.textContent;
 		}
 		paragraph.textContent = message;
-		container.setAttribute( 'role', 'status' );
-		container.setAttribute( 'aria-live', 'polite' );
+		container.setAttribute('role', 'status');
+		container.setAttribute('aria-live', 'polite');
 		container.style.display = 'block'; // inline beats the display:none base style
-		container.scrollIntoView( { block: 'nearest', behavior: 'auto' } );
+		container.scrollIntoView({ block: 'nearest', behavior: 'auto' });
 	} else {
-		if ( undefined !== container.dataset.aaeAuthoredText ) {
+		if (undefined !== container.dataset.aaeAuthoredText) {
 			paragraph.textContent = container.dataset.aaeAuthoredText;
 			delete container.dataset.aaeAuthoredText;
 		}
@@ -688,8 +688,8 @@ const showRuntimeMessage = ( form, message, tone ) => {
  * making. Falls back to the button itself for the plain-text buttons
  * multi-step.js injects.
  */
-const labelElOf = ( button ) =>
-	button.querySelector( 'h1, h2, h3, h4, h5, h6, p, span' ) || button;
+const labelElOf = (button) =>
+	button.querySelector('h1, h2, h3, h4, h5, h6, p, span') || button;
 
 /**
  * Swap the button into its loading state.
@@ -698,22 +698,22 @@ const labelElOf = ( button ) =>
  * `button.textContent` would delete the icon child for the duration of the
  * request — a visible flicker on every submit.
  */
-const setLoading = ( form, button, loading ) => {
-	if ( ! button ) {
+const setLoading = (form, button, loading) => {
+	if (!button) {
 		return;
 	}
 
-	const label = labelElOf( button );
+	const label = labelElOf(button);
 
-	if ( loading ) {
+	if (loading) {
 		button.dataset.originalHtml = label.innerHTML;
 		button.disabled = true;
-		button.setAttribute( 'aria-busy', 'true' );
-		label.textContent = button.dataset.loadingLabel || t( 'sending', 'Sending…' );
+		button.setAttribute('aria-busy', 'true');
+		label.textContent = button.dataset.loadingLabel || t('sending', 'Sending…');
 	} else {
 		button.disabled = false;
-		button.removeAttribute( 'aria-busy' );
-		if ( button.dataset.originalHtml ) {
+		button.removeAttribute('aria-busy');
+		if (button.dataset.originalHtml) {
 			label.innerHTML = button.dataset.originalHtml;
 			delete button.dataset.originalHtml;
 		}
@@ -735,21 +735,21 @@ const setLoading = ( form, button, loading ) => {
  * the multi-select UI, a builder needs to see/style every step; only the
  * Next-button VALIDATION gate is frontend-only.
  */
-const bindStepsFor = ( form ) => {
+const bindStepsFor = (form) => {
 	initSteps(
 		form,
-		isEditMode() ? null : ( stepEl ) => validateFrontend( form, stepEl ),
+		isEditMode() ? null : (stepEl) => validateFrontend(form, stepEl),
 		isEditMode()
 			? null
-			: ( stepEl, errors ) => {
-				errors.forEach( ( [ control, message ] ) => showFieldError( form, control, message ) );
-				focusFirstInvalid( form );
+			: (stepEl, errors) => {
+				errors.forEach(([control, message]) => showFieldError(form, control, message));
+				focusFirstInvalid(form);
 			}
 	);
 };
 
-const initForm = ( form ) => {
-	if ( form.dataset.aaeFormReady === 'true' ) {
+const initForm = (form) => {
+	if (form.dataset.aaeFormReady === 'true') {
 		return;
 	}
 	form.dataset.aaeFormReady = 'true';
@@ -757,40 +757,40 @@ const initForm = ( form ) => {
 	// Checkbox multi-select UI over any native select[multiple]. Runs in the
 	// editor preview too (it's pure UI — no submit), and stays inert on forms
 	// without a multi-select, so the module is only touched when needed.
-	const hasMultiSelect = !! form.querySelector( 'select[multiple]' );
-	if ( hasMultiSelect ) {
-		initMultiSelect( form );
+	const hasMultiSelect = !!form.querySelector('select[multiple]');
+	if (hasMultiSelect) {
+		initMultiSelect(form);
 	}
 
 	// Star-rating UI over any [data-aae-rating] wrapper (Multi-Step Forms
 	// precedent — Pro-marketed, free-plugin code). Runs in the editor preview
 	// too (pure UI, no submit) and stays inert on forms without one.
-	const hasRating = !! form.querySelector( '[data-aae-rating]' );
-	if ( hasRating ) {
-		initRating( form );
+	const hasRating = !!form.querySelector('[data-aae-rating]');
+	if (hasRating) {
+		initRating(form);
 	}
 
 	// Range colour bridge (Style tab → Background Color → accent-color).
 	// Runs in the editor preview too (pure UI, no submit) and stays inert on
 	// forms without a range field.
-	if ( form.querySelector( '[data-aae-range="true"]' ) ) {
-		initRange( form );
+	if (form.querySelector('[data-aae-range="true"]')) {
+		initRange(form);
 	}
 
 	// Password reveal (eye) toggle. Editor preview too (pure UI, no submit);
 	// inert on forms without a password field.
-	const hasPassword = !! form.querySelector( '.aae-a-form-password' );
-	if ( hasPassword ) {
-		initPassword( form );
+	const hasPassword = !!form.querySelector('.aae-a-form-password');
+	if (hasPassword) {
+		initPassword(form);
 	}
 
 	// Live totals for [data-aae-calc] fields. Editor preview too (builders
 	// need to see their formula working while styling) and inert on forms
 	// without one. The server recomputes every total on submit, so this is
 	// display/UX only — never the source of truth.
-	const hasCalculation = !! form.querySelector( '[data-aae-calc]' );
-	if ( hasCalculation ) {
-		initCalculations( form );
+	const hasCalculation = !!form.querySelector('[data-aae-calc]');
+	if (hasCalculation) {
+		initCalculations(form);
 	}
 
 	// A Reset/Clear button (submit widget with button_type=reset) fires the
@@ -803,43 +803,43 @@ const initForm = ( form ) => {
 	// the success state it just set. suppressNextReset lets the submit
 	// handler mark that one reset as "ours" so only a real user click on a
 	// Reset/Clear button clears the form-state classes.
-	form.addEventListener( 'reset', () => {
-		if ( form.dataset.aaeSuppressResetState === 'true' ) {
+	form.addEventListener('reset', () => {
+		if (form.dataset.aaeSuppressResetState === 'true') {
 			delete form.dataset.aaeSuppressResetState;
 			return;
 		}
 		// Defer: on `reset` the field values haven't been cleared yet.
-		setTimeout( () => {
-			if ( hasMultiSelect ) {
-				syncMultiSelect( form );
+		setTimeout(() => {
+			if (hasMultiSelect) {
+				syncMultiSelect(form);
 			}
-			if ( hasRating ) {
-				syncRating( form );
+			if (hasRating) {
+				syncRating(form);
 			}
-			if ( hasPassword ) {
+			if (hasPassword) {
 				// Never leave a revealed password on screen after a reset —
 				// including the reset that follows a successful submit.
-				resetPassword( form );
+				resetPassword(form);
 			}
-			if ( hasCalculation ) {
+			if (hasCalculation) {
 				// Totals must fall back to their placeholder once the fields
 				// they read from are cleared.
-				syncCalculations( form );
+				syncCalculations(form);
 			}
-			clearAllErrors( form );
-			showRuntimeMessage( form, '', 'error' );
-			form.classList.remove( 'form-state-default', 'form-state-success', 'form-state-error' );
+			clearAllErrors(form);
+			showRuntimeMessage(form, '', 'error');
+			form.classList.remove('form-state-default', 'form-state-success', 'form-state-error');
 			// A real Reset/Clear click must restore a success-hidden form, and
 			// cancel a pending hide so it can't fire onto the fresh form.
-			clearTimeout( form.__aaeSuccessHideTimer );
-			showFormBody( form );
-		}, 0 );
-	} );
+			clearTimeout(form.__aaeSuccessHideTimer);
+			showFormBody(form);
+		}, 0);
+	});
 
-	bindStepsFor( form );
+	bindStepsFor(form);
 
 	// Previews must never create real submissions (spec principle #9).
-	if ( isEditMode() ) {
+	if (isEditMode()) {
 		return;
 	}
 
@@ -849,14 +849,14 @@ const initForm = ( form ) => {
 	// above, and the planned Validation Pro / Conditional Display engines can
 	// drive the same element without fighting CSS. Inline display beats the
 	// widget's own display:block base style; [hidden] alone would lose to it.
-	const errorSource = errorSourceOf( form );
-	if ( errorSource ) {
-		errorSource.setAttribute( 'hidden', '' );
+	const errorSource = errorSourceOf(form);
+	if (errorSource) {
+		errorSource.setAttribute('hidden', '');
 		errorSource.style.display = 'none';
 	}
 
 	const formKey = form.dataset.aaeFormKey;
-	if ( ! formKey ) {
+	if (!formKey) {
 		return; // never saved yet — no schema to submit against.
 	}
 
@@ -865,13 +865,13 @@ const initForm = ( form ) => {
 	let inFlight = false;
 
 	const ensureAuth = () => {
-		if ( auth ) {
-			return Promise.resolve( auth );
+		if (auth) {
+			return Promise.resolve(auth);
 		}
-		if ( ! authPromise ) {
-			authPromise = fetchToken( formKey )
-				.then( ( data ) => ( auth = data ) )
-				.finally( () => ( authPromise = null ) );
+		if (!authPromise) {
+			authPromise = fetchToken(formKey)
+				.then((data) => (auth = data))
+				.finally(() => (authPromise = null));
 		}
 		return authPromise;
 	};
@@ -879,151 +879,151 @@ const initForm = ( form ) => {
 	// Prefetch on first interaction: by submit time the token is already
 	// there, and its issue timestamp makes the server's minimum-submit-time
 	// check measure real filling time.
-	const prefetch = () => ensureAuth().catch( () => {} );
+	const prefetch = () => ensureAuth().catch(() => { });
 	const armPrefetch = () => {
 		// Same function reference — re-adding while still armed is a no-op,
 		// re-adding after the once-listener fired arms it again.
-		form.addEventListener( 'focusin', prefetch, { once: true } );
-		form.addEventListener( 'pointerdown', prefetch, { once: true } );
+		form.addEventListener('focusin', prefetch, { once: true });
+		form.addEventListener('pointerdown', prefetch, { once: true });
 	};
 	armPrefetch();
 
 	// Same idea for reCAPTCHA: load Google's script on first interaction so
 	// grecaptcha.execute() at submit time doesn't wait on a script fetch.
-	if ( 'v3' === form.dataset.aaeFormRecaptcha ) {
+	if ('v3' === form.dataset.aaeFormRecaptcha) {
 		const prefetchRecaptcha = () => {
 			const siteKey = config().recaptchaSiteKey;
-			if ( siteKey ) {
-				loadRecaptchaScript( siteKey ).catch( () => {} );
+			if (siteKey) {
+				loadRecaptchaScript(siteKey).catch(() => { });
 			}
 		};
-		form.addEventListener( 'focusin', prefetchRecaptcha, { once: true } );
-		form.addEventListener( 'pointerdown', prefetchRecaptcha, { once: true } );
+		form.addEventListener('focusin', prefetchRecaptcha, { once: true });
+		form.addEventListener('pointerdown', prefetchRecaptcha, { once: true });
 	}
 
-	form.addEventListener( 'submit', async ( event ) => {
+	form.addEventListener('submit', async (event) => {
 		event.preventDefault();
 
-		if ( inFlight ) {
+		if (inFlight) {
 			return; // double-submit guard #2 (the button is disabled too).
 		}
 
-		clearAllErrors( form );
-		showRuntimeMessage( form, '', 'error' );
-		setFormState( form, 'default' );
+		clearAllErrors(form);
+		showRuntimeMessage(form, '', 'error');
+		setFormState(form, 'default');
 
-		const frontendErrors = validateFrontend( form );
-		if ( frontendErrors.length ) {
-			frontendErrors.forEach( ( [ control, message ] ) => showFieldError( form, control, message ) );
-			focusFirstInvalid( form );
+		const frontendErrors = validateFrontend(form);
+		if (frontendErrors.length) {
+			frontendErrors.forEach(([control, message]) => showFieldError(form, control, message));
+			focusFirstInvalid(form);
 			return;
 		}
 
-		const button = form.querySelector( 'button[type="submit"]' );
+		const button = form.querySelector('button[type="submit"]');
 		inFlight = true;
-		setLoading( form, button, true );
+		setLoading(form, button, true);
 
-		const slowTimer = setTimeout( () => {
-			showRuntimeMessage( form, t( 'slow', 'Your connection seems slow. Please wait a moment.' ), 'info' );
-		}, SLOW_AFTER_MS );
+		const slowTimer = setTimeout(() => {
+			showRuntimeMessage(form, t('slow', 'Your connection seems slow. Please wait a moment.'), 'info');
+		}, SLOW_AFTER_MS);
 
 		const abort = new AbortController();
-		const timeoutTimer = setTimeout( () => abort.abort(), TIMEOUT_MS );
+		const timeoutTimer = setTimeout(() => abort.abort(), TIMEOUT_MS);
 
 		try {
 			const { token, nonce } = await ensureAuth();
 
 			// Files first: each rides its own multipart request to the uploads
 			// endpoint; the JSON submit then carries only the returned refs.
-			const fileRefs = await uploadPendingFiles( form, formKey, nonce );
+			const fileRefs = await uploadPendingFiles(form, formKey, nonce);
 
 			// A fresh v3 token per submit attempt (Google's tokens are
 			// short-lived and single-use in practice) — only fetched for
 			// forms that actually opted into reCAPTCHA.
 			const recaptchaToken = 'v3' === form.dataset.aaeFormRecaptcha
-				? await getRecaptchaToken( 'aae_form_submit' )
+				? await getRecaptchaToken('aae_form_submit')
 				: '';
 
 			const response = await fetch(
-				`${ config().restUrl }forms/${ encodeURIComponent( formKey ) }/submit`,
+				`${config().restUrl}forms/${encodeURIComponent(formKey)}/submit`,
 				{
 					method: 'POST',
 					cache: 'no-store',
 					headers: { 'Content-Type': 'application/json' },
 					signal: abort.signal,
-					body: JSON.stringify( {
+					body: JSON.stringify({
 						token,
 						nonce,
-						fields: { ...collectFields( form ), ...fileRefs },
+						fields: { ...collectFields(form), ...fileRefs },
 						source_url: window.location.href,
 						referrer_url: document.referrer || '',
-						...( recaptchaToken ? { recaptcha_token: recaptchaToken } : {} ),
-					} ),
+						...(recaptchaToken ? { recaptcha_token: recaptchaToken } : {}),
+					}),
 				}
 			);
 
 			auth = null; // single-use: spent (or rejected) either way.
 
-			const data = await response.json().catch( () => ( {} ) );
+			const data = await response.json().catch(() => ({}));
 
-			if ( response.ok ) {
+			if (response.ok) {
 				// Redirect is the immediate UX action — it must not wait for
 				// queued email/webhook jobs (spec). Success state still shows
 				// for the instant before navigation.
-				setFormState( form, 'success' );
-				showRuntimeMessage( form, '', 'success' );
+				setFormState(form, 'success');
+				showRuntimeMessage(form, '', 'success');
 				form.dataset.aaeSuppressResetState = 'true';
 				form.reset();
 				// The suppressed reset skips the handler above, so re-lock any
 				// revealed password here — a sent form must never leave one
 				// readable on screen.
-				if ( hasPassword ) {
-					resetPassword( form );
+				if (hasPassword) {
+					resetPassword(form);
 				}
-				if ( data.redirect_url ) {
-					window.location.assign( data.redirect_url );
+				if (data.redirect_url) {
+					window.location.assign(data.redirect_url);
 					return;
 				}
-				form.querySelector( '[data-element_type="e-aae-a-form-success-message"]' )
-					?.scrollIntoView( { block: 'nearest', behavior: 'auto' } );
-				scheduleSuccessHide( form );
-				scheduleSuccessReset( form );
+				form.querySelector('[data-element_type="e-aae-a-form-success-message"]')
+					?.scrollIntoView({ block: 'nearest', behavior: 'auto' });
+				scheduleSuccessHide(form);
+				scheduleSuccessReset(form);
 				return;
 			}
 
 			// Response-code table → distinct states.
-			switch ( response.status ) {
+			switch (response.status) {
 				case 422: {
 					const errors = data.errors || {};
 					let mappedAny = false;
-					for ( const [ name, message ] of Object.entries( errors ) ) {
+					for (const [name, message] of Object.entries(errors)) {
 						const control =
-							form.querySelector( `[name="${ CSS.escape( name ) }"]` ) ||
-							form.querySelector( `[name="${ CSS.escape( name ) }[]"]` );
-						if ( control ) {
-							showFieldError( form, control, String( message ) );
+							form.querySelector(`[name="${CSS.escape(name)}"]`) ||
+							form.querySelector(`[name="${CSS.escape(name)}[]"]`);
+						if (control) {
+							showFieldError(form, control, String(message));
 							mappedAny = true;
 						}
 					}
-					if ( mappedAny ) {
-						focusFirstInvalid( form );
+					if (mappedAny) {
+						focusFirstInvalid(form);
 					} else {
-						showRuntimeMessage( form, data.message || t( 'genericError', 'We could not submit the form. Please try again.' ), 'error' );
+						showRuntimeMessage(form, data.message || t('genericError', 'We could not submit the form. Please try again.'), 'error');
 					}
 					break;
 				}
 				case 409:
-					setFormState( form, 'error' );
-					showRuntimeMessage( form, t( 'duplicate', 'This form was already submitted.' ), 'error' );
+					setFormState(form, 'error');
+					showRuntimeMessage(form, t('duplicate', 'This form was already submitted.'), 'error');
 					break;
 				case 429:
-					setFormState( form, 'error' );
-					showRuntimeMessage( form, t( 'rateLimit', 'Too many attempts. Please wait a moment and try again.' ), 'error' );
+					setFormState(form, 'error');
+					showRuntimeMessage(form, t('rateLimit', 'Too many attempts. Please wait a moment and try again.'), 'error');
 					break;
 				default:
 					// 400 / 403 / 404 / 500 — authored error message + copy.
-					setFormState( form, 'error' );
-					showRuntimeMessage( form, data.message || t( 'genericError', 'We could not submit the form. Please try again.' ), 'error' );
+					setFormState(form, 'error');
+					showRuntimeMessage(form, data.message || t('genericError', 'We could not submit the form. Please try again.'), 'error');
 			}
 
 			// Fetch the NEXT attempt's token immediately: the server's
@@ -1034,24 +1034,24 @@ const initForm = ( form ) => {
 			// never fires and the token would be fetched at click time (age
 			// ~0s → an honest retry gets blocked as too_fast).
 			prefetch();
-		} catch ( error ) {
+		} catch (error) {
 			auth = null;
 			prefetch(); // same reasoning as the non-ok branch above.
-			if ( error && error.uploadControl ) {
+			if (error && error.uploadControl) {
 				// A pre-upload was rejected (type/size/rate limit) — paint it
 				// on the field; the visitor's other input is untouched.
-				showFieldError( form, error.uploadControl, error.uploadMessage || t( 'uploadFailed', 'We could not upload your file. Please try again.' ) );
-				focusFirstInvalid( form );
-			} else if ( false === navigator.onLine ) {
-				showRuntimeMessage( form, t( 'offline', 'You appear to be offline. Please reconnect and try again.' ), 'error' );
+				showFieldError(form, error.uploadControl, error.uploadMessage || t('uploadFailed', 'We could not upload your file. Please try again.'));
+				focusFirstInvalid(form);
+			} else if (false === navigator.onLine) {
+				showRuntimeMessage(form, t('offline', 'You appear to be offline. Please reconnect and try again.'), 'error');
 			} else {
 				// Abort/timeout/network — input is untouched, retry gets a fresh token.
-				showRuntimeMessage( form, t( 'timeout', 'We could not submit the form. Your information is still here. Please try again.' ), 'error' );
+				showRuntimeMessage(form, t('timeout', 'We could not submit the form. Your information is still here. Please try again.'), 'error');
 			}
 		} finally {
-			clearTimeout( slowTimer );
-			clearTimeout( timeoutTimer );
-			setLoading( form, button, false );
+			clearTimeout(slowTimer);
+			clearTimeout(timeoutTimer);
+			setLoading(form, button, false);
 			inFlight = false;
 			// The token is spent (or was never granted) either way — re-arm the
 			// interaction prefetch so the NEXT attempt's fresh token is issued
@@ -1061,26 +1061,26 @@ const initForm = ( form ) => {
 			// retry after a 422/409/500 — or a second fill after success-reset.
 			armPrefetch();
 		}
-	} );
+	});
 
 	// Extension point: the PRO Conditional Display engine (and any future
 	// engine) binds per-form here. Frontend only — the editor early-return
 	// above means canvas forms never fire it. Late registrations replay.
-	hooks.doAction( 'aae_form/init', form );
+	hooks.doAction('aae_form/init', form);
 };
 
-register( {
+register({
 	elementType: 'e-aae-a-form',
 	id: 'aae-a-form-handler',
-	callback: ( { element } ) => {
-		const root = element.classList.contains( 'aae-a-form' )
+	callback: ({ element }) => {
+		const root = element.classList.contains('aae-a-form')
 			? element
-			: element.querySelector( '.aae-a-form' );
-		if ( root ) {
-			initForm( root );
+			: element.querySelector('.aae-a-form');
+		if (root) {
+			initForm(root);
 		}
 	},
-} );
+});
 
 // ---------------------------------------------------------------------------
 // Dynamically-injected forms (custom AJAX, third-party popups, anything that
@@ -1092,29 +1092,29 @@ register( {
 //     works even without the manual call. initForm's data-aaeFormReady guard
 //     keeps both paths idempotent (no double-init).
 // ---------------------------------------------------------------------------
-const initFormsIn = ( root ) => {
+const initFormsIn = (root) => {
 	const scope = root || document;
-	if ( scope.nodeType === 1 && scope.classList?.contains( 'aae-a-form' ) ) {
-		initForm( scope );
+	if (scope.nodeType === 1 && scope.classList?.contains('aae-a-form')) {
+		initForm(scope);
 	}
-	scope.querySelectorAll?.( '.aae-a-form' ).forEach( initForm );
+	scope.querySelectorAll?.('.aae-a-form').forEach(initForm);
 };
 
 // Public hook.
 window.aaeInitForms = initFormsIn;
 
 // Auto-detect injected forms.
-if ( typeof MutationObserver !== 'undefined' ) {
-	const observer = new MutationObserver( ( mutations ) => {
-		for ( const m of mutations ) {
-			for ( const node of m.addedNodes ) {
-				if ( node.nodeType !== 1 ) {
+if (typeof MutationObserver !== 'undefined') {
+	const observer = new MutationObserver((mutations) => {
+		for (const m of mutations) {
+			for (const node of m.addedNodes) {
+				if (node.nodeType !== 1) {
 					continue; // element nodes only
 				}
-				if ( node.classList.contains( 'aae-a-form' ) ) {
-					initForm( node );
-				} else if ( node.querySelector?.( '.aae-a-form' ) ) {
-					node.querySelectorAll( '.aae-a-form' ).forEach( initForm );
+				if (node.classList.contains('aae-a-form')) {
+					initForm(node);
+				} else if (node.querySelector?.('.aae-a-form')) {
+					node.querySelectorAll('.aae-a-form').forEach(initForm);
 				}
 
 				// A <select multiple> can render AFTER its form was already
@@ -1125,53 +1125,53 @@ if ( typeof MutationObserver !== 'undefined' ) {
 				// enhance its form directly (initMultiSelect is idempotent via
 				// data-aae-ms-bound). This is the editor-preview case the
 				// Playwright probe caught (formReady:1 but enhanced:0).
-				const late = node.matches?.( 'select[multiple]' )
-					? [ node ]
-					: node.querySelectorAll?.( 'select[multiple]' );
-				if ( late && late.length ) {
+				const late = node.matches?.('select[multiple]')
+					? [node]
+					: node.querySelectorAll?.('select[multiple]');
+				if (late && late.length) {
 					const seen = new Set();
-					late.forEach( ( sel ) => {
-						const form = sel.closest( '.aae-a-form' );
-						if ( form && ! seen.has( form ) ) {
-							seen.add( form );
-							initMultiSelect( form );
+					late.forEach((sel) => {
+						const form = sel.closest('.aae-a-form');
+						if (form && !seen.has(form)) {
+							seen.add(form);
+							initMultiSelect(form);
 						}
-					} );
+					});
 				}
 
 				// Same class of problem as the late multi-select above: a
 				// rating field can also render/get injected after its form
 				// already passed initForm's one-time guard. initRating is
 				// idempotent (data-aae-rating-bound guard).
-				const lateRatings = node.matches?.( '[data-aae-rating]' )
-					? [ node ]
-					: node.querySelectorAll?.( '[data-aae-rating]' );
-				if ( lateRatings && lateRatings.length ) {
+				const lateRatings = node.matches?.('[data-aae-rating]')
+					? [node]
+					: node.querySelectorAll?.('[data-aae-rating]');
+				if (lateRatings && lateRatings.length) {
 					const seenRatingForms = new Set();
-					lateRatings.forEach( ( wrap ) => {
-						const form = wrap.closest( '.aae-a-form' );
-						if ( form && ! seenRatingForms.has( form ) ) {
-							seenRatingForms.add( form );
-							initRating( form );
+					lateRatings.forEach((wrap) => {
+						const form = wrap.closest('.aae-a-form');
+						if (form && !seenRatingForms.has(form)) {
+							seenRatingForms.add(form);
+							initRating(form);
 						}
-					} );
+					});
 				}
 
 				// Same class of problem: a range field rendering/getting
 				// injected after its form already passed initForm's guard.
 				// initRange is idempotent (a plain computed-style re-copy).
-				const lateRanges = node.matches?.( '[data-aae-range="true"]' )
-					? [ node ]
-					: node.querySelectorAll?.( '[data-aae-range="true"]' );
-				if ( lateRanges && lateRanges.length ) {
+				const lateRanges = node.matches?.('[data-aae-range="true"]')
+					? [node]
+					: node.querySelectorAll?.('[data-aae-range="true"]');
+				if (lateRanges && lateRanges.length) {
 					const seenRangeForms = new Set();
-					lateRanges.forEach( ( input ) => {
-						const form = input.closest( '.aae-a-form' );
-						if ( form && ! seenRangeForms.has( form ) ) {
-							seenRangeForms.add( form );
-							initRange( form );
+					lateRanges.forEach((input) => {
+						const form = input.closest('.aae-a-form');
+						if (form && !seenRangeForms.has(form)) {
+							seenRangeForms.add(form);
+							initRange(form);
 						}
-					} );
+					});
 				}
 
 				// Same class of problem, Multi-Step's version: applying the
@@ -1182,30 +1182,30 @@ if ( typeof MutationObserver !== 'undefined' ) {
 				// and bind navigation directly; initSteps is itself
 				// idempotent (aaeStepsBound guard) and requires 2+ steps, so
 				// this is a no-op until the 2nd step actually lands.
-				const lateSteps = node.matches?.( '[data-aae-form-step="true"]' )
-					? [ node ]
-					: node.querySelectorAll?.( '[data-aae-form-step="true"]' );
-				if ( lateSteps && lateSteps.length ) {
+				const lateSteps = node.matches?.('[data-aae-form-step="true"]')
+					? [node]
+					: node.querySelectorAll?.('[data-aae-form-step="true"]');
+				if (lateSteps && lateSteps.length) {
 					const seenForms = new Set();
-					lateSteps.forEach( ( stepEl ) => {
-						const form = stepEl.closest( 'form.aae-a-form' );
-						if ( form && ! seenForms.has( form ) ) {
-							seenForms.add( form );
-							bindStepsFor( form );
+					lateSteps.forEach((stepEl) => {
+						const form = stepEl.closest('form.aae-a-form');
+						if (form && !seenForms.has(form)) {
+							seenForms.add(form);
+							bindStepsFor(form);
 						}
-					} );
+					});
 				}
 			}
 		}
-	} );
+	});
 
 	const start = () =>
-		observer.observe( document.body, { childList: true, subtree: true } );
+		observer.observe(document.body, { childList: true, subtree: true });
 
-	if ( document.body ) {
+	if (document.body) {
 		start();
 	} else {
-		document.addEventListener( 'DOMContentLoaded', start );
+		document.addEventListener('DOMContentLoaded', start);
 	}
 }
 
@@ -1229,16 +1229,16 @@ if ( typeof MutationObserver !== 'undefined' ) {
 //      + classList.toggle calls) and fully idempotent.
 // Both only run in the editor (isEditMode), never on the real frontend,
 // where forms don't change after load.
-if ( isEditMode() ) {
-	setInterval( () => {
-		document.querySelectorAll( 'form.aae-a-form' ).forEach( ( form ) => {
-			if ( form.dataset.aaeStepsBound !== 'true' ) {
-				bindStepsFor( form );
+if (isEditMode()) {
+	setInterval(() => {
+		document.querySelectorAll('form.aae-a-form').forEach((form) => {
+			if (form.dataset.aaeStepsBound !== 'true') {
+				bindStepsFor(form);
 			} else {
-				resyncSteps( form );
+				resyncSteps(form);
 			}
-		} );
-	}, 1000 );
+		});
+	}, 1000);
 }
 
 // Initial scan — catches forms ALREADY in the DOM when this script loads.
@@ -1246,7 +1246,7 @@ if ( isEditMode() ) {
 // the editor preview atomic widgets render client-side and that callback may
 // not fire (and the observer only sees *newly added* nodes) — so scan once on
 // load and again on DOM ready to cover both. Idempotent via data-aaeFormReady.
-initFormsIn( document );
-if ( 'loading' === document.readyState ) {
-	document.addEventListener( 'DOMContentLoaded', () => initFormsIn( document ) );
+initFormsIn(document);
+if ('loading' === document.readyState) {
+	document.addEventListener('DOMContentLoaded', () => initFormsIn(document));
 }

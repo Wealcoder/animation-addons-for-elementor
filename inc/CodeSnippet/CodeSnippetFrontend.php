@@ -137,7 +137,7 @@ class CodeSnippetFrontend {
 	 */
 	public function run_php_code_snippets() {
 		// Guard: Do not process PHP snippets unless Pro handler is registered and file editing is allowed.
-		if ( ! has_action( 'wcf_code_snippet_execute_php' ) ) {
+		if ( ! has_action( 'aaeaddon_code_snippet_execute_php' ) ) {
 			return;
 		}
 
@@ -288,7 +288,7 @@ class CodeSnippetFrontend {
 		$should_load = $this->check_visibility_conditions( $snippet_data );
 
 		// Allow developers to filter the result.
-		return apply_filters( 'wcf_code_snippet_should_load', $should_load, $snippet_data ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility with existing wcf hooks.
+		return apply_filters( 'aaeaddon_code_snippet_should_load', $should_load, $snippet_data );
 	}
 
 	/**
@@ -478,8 +478,42 @@ class CodeSnippetFrontend {
 	 * @since 2.3.10
 	 * @return void
 	 */
-	public function execute_content_before_snippets() {
+	public function execute_content_before_snippets( $source = null ) {
+		if ( $this->content_location_done( 'content_before', $source ) ) {
+			return;
+		}
 		$this->execute_snippets_by_location( 'content_before' );
+	}
+
+	/**
+	 * A "before/after content" snippet prints ONCE per request, and only for
+	 * the main loop.
+	 *
+	 * `loop_start` / `loop_end` fire for EVERY WP_Query loop on the page and
+	 * `elementor/frontend/before|after_get_content` for every document
+	 * Elementor renders -- a header, a footer, a popup, and every card of an
+	 * Elementor Pro Loop Grid / Loop Carousel or an AAE Loop Grid, each of
+	 * which is its own loop and (for Pro's) its own document. A snippet
+	 * placed "before content" was therefore printed inside every grid card
+	 * and repeated once per secondary loop, on top of the copy the main loop
+	 * printed. One latch per location, and a secondary WP_Query is skipped
+	 * outright so the copy that lands is the main loop's.
+	 *
+	 * @param string $location content_before | content_after
+	 * @param mixed  $source   the WP_Query or Document the hook handed over
+	 * @return bool true when this call must NOT print
+	 */
+	private function content_location_done( $location, $source ) {
+		static $done = array();
+
+		if ( $source instanceof \WP_Query && ! $source->is_main_query() ) {
+			return true;
+		}
+		if ( ! empty( $done[ $location ] ) ) {
+			return true;
+		}
+		$done[ $location ] = true;
+		return false;
 	}
 
 	/**
@@ -488,7 +522,10 @@ class CodeSnippetFrontend {
 	 * @since 2.3.10
 	 * @return void
 	 */
-	public function execute_content_after_snippets() {
+	public function execute_content_after_snippets( $source = null ) {
+		if ( $this->content_location_done( 'content_after', $source ) ) {
+			return;
+		}
 		$this->execute_snippets_by_location( 'content_after' );
 	}
 
@@ -525,7 +562,7 @@ class CodeSnippetFrontend {
 		}
 
 		// Fire action before snippet execution.
-		do_action( 'wcf_code_snippet_before_execute', $snippet ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility with existing wcf hooks.
+		do_action( 'aaeaddon_code_snippet_before_execute', $snippet );
 
 		// Sanitize and prepare code content.
 		$code_content = $this->prepare_code_content( $code_content, $code_type );
@@ -546,7 +583,7 @@ class CodeSnippetFrontend {
 
 			case 'php':
 				// PHP snippet execution is handled by Animation Addons Pro.
-				do_action( 'wcf_code_snippet_execute_php', $code_content, $snippet );
+				do_action( 'aaeaddon_code_snippet_execute_php', $code_content, $snippet );
 				break;
 
 			default:
@@ -556,7 +593,7 @@ class CodeSnippetFrontend {
 		}
 
 		// Fire action after snippet execution.
-		do_action( 'wcf_code_snippet_after_execute', $snippet ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility with existing wcf hooks.
+		do_action( 'aaeaddon_code_snippet_after_execute', $snippet );
 	}
 
 	/**

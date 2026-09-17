@@ -24,6 +24,13 @@ class CodeSnippet {
 	 */
 	const CPTTYPE = 'wcf-code-snippet';
 
+	/**
+	 * The admin page slug (`admin.php?page=...`). Distinct from CPTTYPE, which is
+	 * the post type stored on every saved snippet and never changes; the old
+	 * `wcf-code-snippet` page slug 301s here via Compat\Admin_Page_Alias.
+	 */
+	const PAGE_SLUG = 'aaeaddon-code-snippet';
+
 
 	/**
 	 * [$_instance]
@@ -74,13 +81,13 @@ class CodeSnippet {
 	 * @return void
 	 */
 	public function remove_query_vars() {
-		if ( isset( $_GET['page'] ) && 'wcf-code-snippet' === $_GET['page'] && isset( $_GET['_wp_http_referer'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( isset( $_GET['page'] ) && self::PAGE_SLUG === $_GET['page'] && isset( $_GET['_wp_http_referer'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			// FIXED: Better redirect handling to avoid WooCommerce issues.
-			$redirect_url = admin_url( 'admin.php?page=wcf-code-snippet' );
+			$redirect_url = admin_url( 'admin.php?page=' . self::PAGE_SLUG );
 
 			// Only use referer if it's safe and contains our page.
 			$referer = wp_get_referer();
-			if ( $referer && strpos( $referer, 'wcf-code-snippet' ) !== false ) {
+			if ( $referer && strpos( $referer, 'page=' . self::PAGE_SLUG ) !== false ) {
 				$redirect_url = remove_query_arg(
 					array( 'action', 'action2', 'ids', 'id', '_wpnonce', '_wp_http_referer' ),
 					$referer
@@ -177,7 +184,7 @@ class CodeSnippet {
 			esc_html__( 'Code Snippet', 'animation-addons-for-elementor' ),
 			esc_html__( 'Code Snippet', 'animation-addons-for-elementor' ),
 			'manage_options',
-			self::CPTTYPE,
+			self::PAGE_SLUG,
 			array( $this, 'code_snippet_page_admin_page' )
 		);
 	}
@@ -212,7 +219,7 @@ class CodeSnippet {
 	 * @return void
 	 */
 	public function enqueue_scripts( $hook ) {
-		if ( 'animation-addon_page_wcf-code-snippet' === $hook ) {
+		if ( 'animation-addon_page_' . self::PAGE_SLUG === $hook ) {
 			wp_enqueue_style( 'aae-code-snippet', AAEADDON_URL . 'assets/css/code-snippet.min.css', array( \Wealcoder\AnimationAddons\Aaeaddon_Fonts::ensure() ), AAEADDON_VERSION, 'all' );
 			wp_enqueue_style( 'aae-code-snippet-ajax', AAEADDON_URL . 'assets/css/code-snippet-ajax.css', null, AAEADDON_VERSION, 'all' );
 			wp_enqueue_style( 'select2', AAEADDON_URL . 'assets/css/select2.min.css', null, AAEADDON_VERSION, 'all' );
@@ -256,7 +263,7 @@ class CodeSnippet {
 				'ajaxurl'       => admin_url( 'admin-ajax.php' ),
 				'nonce'         => Nonce::create( Nonce::CODE_SNIPPET ),
 				'adminURL'      => admin_url(),
-				'snippet_page'  => admin_url( 'admin.php?page=wcf-code-snippet' ),
+				'snippet_page'  => admin_url( 'admin.php?page=' . self::PAGE_SLUG ),
 				'serverDetails' => array(
 					'currentVersion' => PHP_VERSION,
 					'majorVersion'   => PHP_MAJOR_VERSION,
@@ -305,6 +312,15 @@ class CodeSnippet {
 	 * @since 4.1.0
 	 * @return bool
 	 */
+	/**
+	 * Whether PHP snippets are offered at all (Pro answers the filter).
+	 *
+	 * @return bool
+	 */
+	public static function php_snippets_allowed() {
+		return (bool) apply_filters( 'aaeaddon_allow_php_snippets', false );
+	}
+
 	public static function can_manage_php() {
 
 		if ( defined( 'DISALLOW_FILE_EDIT' ) && DISALLOW_FILE_EDIT ) {
@@ -342,7 +358,7 @@ class CodeSnippet {
 			);
 		}
 
-		if ( 'php' === $posted_code_type && ( ! apply_filters( 'wcf_allow_php_snippets', false ) || ! self::can_manage_php() ) ) {
+		if ( 'php' === $posted_code_type && ( ! self::php_snippets_allowed() || ! self::can_manage_php() ) ) {
 			wp_die(
 				esc_html__( 'PHP snippets are only available in Animation Addons Pro and require plugin editing capabilities.', 'animation-addons-for-elementor' ),
 				esc_html__( 'Permission denied', 'animation-addons-for-elementor' ),
@@ -403,7 +419,7 @@ class CodeSnippet {
 		// Established public hook name (no plugin prefix); kept for backward compatibility.
 		do_action( 'aaeaddon_after_update_code_snippet_post_data', $snippet_id );
 
-		$redirect_to = admin_url( 'admin.php?page=wcf-code-snippet&edit=' . $snippet_id );
+		$redirect_to = admin_url( 'admin.php?page=' . self::PAGE_SLUG . '&edit=' . $snippet_id );
 		if ( isset( $_POST['snippet_id'] ) && ! empty( $_POST['snippet_id'] ) ) {
 			Helpers::add_flash_message(
 				__( 'Code Snippet Updated Successfully!', 'animation-addons-for-elementor' ),

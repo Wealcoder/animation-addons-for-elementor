@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 get_header();
 ?>
 <main id="content" class="site-main">
-	<?php do_action( 'animation_addons_archive_builder_content' ); ?>
+	<?php do_action( 'aaeaddon_animation_addons_archive_builder_content' ); ?>
 </main>
 <?php
 get_footer();

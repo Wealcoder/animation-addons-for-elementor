@@ -49,7 +49,7 @@ final class Validator {
 			 * @param array $posted Full posted payload.
 			 * @param array $schema Active schema snapshot.
 			 */
-			if ( apply_filters( 'aae_form/validator/skip_field', false, $field, $posted, $schema ) ) {
+			if ( apply_filters( 'aaeaddon_form/validator/skip_field', false, $field, $posted, $schema ) ) {
 				continue;
 			}
 
@@ -348,7 +348,7 @@ final class Validator {
 		 * @param array       $posted Full posted payload.
 		 * @param array       $schema Active schema snapshot.
 		 */
-		$error = apply_filters( 'aae_form/validator/value_error', null, $value, $field, $posted, $schema );
+		$error = apply_filters( 'aaeaddon_form/validator/value_error', null, $value, $field, $posted, $schema );
 
 		return is_string( $error ) && '' !== $error ? $error : null;
 	}
@@ -396,7 +396,7 @@ final class Validator {
 		 * @param string      $value Sanitized posted value.
 		 * @param array       $field Schema field entry.
 		 */
-		return apply_filters( 'aae_form/validator/check_format', null, $type, $value, $field );
+		return apply_filters( 'aaeaddon_form/validator/check_format', null, $type, $value, $field );
 	}
 
 	/**

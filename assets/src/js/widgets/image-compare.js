@@ -42,9 +42,6 @@
                 edgeResistance: 1,
                 throwProps: true,
                 onDrag: onHandleDrag,
-                onLockAxis() {
-                    console.log("onLockAxis");
-                }
             });
         }
 

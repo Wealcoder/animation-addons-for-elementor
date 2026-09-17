@@ -70,7 +70,6 @@ const ShowAllTaxonomy = () => {
           return response.json();
         })
         .then((return_content) => {
-          console.log(return_content?.data);
           setAllTaxonomy(return_content?.data);
         });
     } catch (error) {

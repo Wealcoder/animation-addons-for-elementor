@@ -105,7 +105,7 @@ function aaeaddon_handle_post_shares_count()
         // nobody is actually sharing. Filterable, so adding a network stays a
         // one-line change rather than a reason to leave it open.
         $allowed_social = apply_filters(
-            'aae_post_share_networks',
+            'aaeaddon_post_share_networks',
             array( 'facebook', 'twitter', 'linkedin', 'pinterest', 'tumblr', 'blogger', 'reddit' )
         );
 

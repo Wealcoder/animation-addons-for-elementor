@@ -48,12 +48,12 @@ if ( ! defined( 'ABSPATH' ) ) {
  *    says — a drifted rule degrades to "not trimmed", never to a broken panel.
  *  - Only keys prefixed `aae_` are ever candidates. Core keys are untouched.
  *  - A module with no rule is never trimmed. Pro modules add their rules via
- *    the `aae/atomic/schema_trim_rules` filter; FlexboxChildHover applies to
+ *    the `aaeaddon/atomic/schema_trim_rules` filter; FlexboxChildHover applies to
  *    every atomic element by design and so registers none.
  *  - `dependencies_per_target_mapping` is pruned to the surviving keys, since
  *    Elementor derives it from the same schema.
  *
- * Switch off with `add_filter( 'aae/atomic/schema_trim', '__return_false' )`.
+ * Switch off with `add_filter( 'aaeaddon/atomic/schema_trim', '__return_false' )`.
  *
  * @package Wealcoder\AnimationAddons\Atomic\Editor
  */
@@ -61,7 +61,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class Schema_Trim {
 
 	const SCHEMA_FILTER = 'elementor/atomic-widgets/props-schema';
-	const RULES_FILTER  = 'aae/atomic/schema_trim_rules';
+	const RULES_FILTER  = 'aaeaddon/atomic/schema_trim_rules';
 
 	/** @var array<string, string[]>|null Schema class => element types that KEEP its props. */
 	private ?array $rules = null;
@@ -70,22 +70,24 @@ final class Schema_Trim {
 	private ?array $module_keys = null;
 
 	/** @var array<string, string[]> Element type => keys to drop (memo). */
-	private array $drop_cache = [];
+	private array $drop_cache = array();
 
 	public function register(): void {
-		if ( ! apply_filters( 'aae/atomic/schema_trim', true ) ) {
+		if ( ! apply_filters( 'aaeaddon/atomic/schema_trim', true ) ) {
 			return;
 		}
 
 		// Initial editor load — `initial_document.widgets` + `elements`.
-		add_filter( 'elementor/editor/localize_settings', [ $this, 'trim_localized' ], 1000 );
+		add_filter( 'elementor/editor/localize_settings', array( $this, 'trim_localized' ), 1000 );
 
 		// The two AJAX paths that can replace widgetsCache entries after load.
-		add_action( 'elementor/ajax/register_actions', [ $this, 'wrap_ajax_actions' ], 1000 );
+		add_action( 'elementor/ajax/register_actions', array( $this, 'wrap_ajax_actions' ), 1000 );
 	}
 
-	/* ------------------------------------------------------------------ */
-	/* Entry points                                                          */
+	/*
+	------------------------------------------------------------------ */
+	/*
+	Entry points                                                          */
 	/* ------------------------------------------------------------------ */
 
 	/**
@@ -149,8 +151,10 @@ final class Schema_Trim {
 		}
 	}
 
-	/* ------------------------------------------------------------------ */
-	/* Trimming                                                              */
+	/*
+	------------------------------------------------------------------ */
+	/*
+	Trimming                                                              */
 	/* ------------------------------------------------------------------ */
 
 	/**
@@ -207,12 +211,12 @@ final class Schema_Trim {
 		$keys  = $this->module_keys();
 
 		if ( ! $rules || ! $keys ) {
-			return [];
+			return array();
 		}
 
 		if ( ! isset( $this->drop_cache[ $type ] ) ) {
-			$drop = [];
-			$keep = [];
+			$drop = array();
+			$keep = array();
 
 			foreach ( $keys as $class => $module_keys ) {
 				if ( ! isset( $rules[ $class ] ) ) {
@@ -248,12 +252,12 @@ final class Schema_Trim {
 
 		$drop = $this->drop_cache[ $type ];
 		if ( ! $drop ) {
-			return [];
+			return array();
 		}
 
 		// Belt and braces: never remove a prop a control on THIS type binds.
 		if ( ! empty( $config['atomic_controls'] ) && is_array( $config['atomic_controls'] ) ) {
-			$bound = [];
+			$bound = array();
 			$this->collect_bound_props( $config['atomic_controls'], $bound );
 			$drop = array_diff_key( $drop, $bound );
 		}
@@ -296,17 +300,21 @@ final class Schema_Trim {
 			if ( ! is_array( $dependents ) ) {
 				continue;
 			}
-			$mapping[ $source ] = array_values( array_filter(
-				$dependents,
-				static fn( $dependent ) => ! is_string( $dependent ) || ! isset( $drop[ $dependent ] )
-			) );
+			$mapping[ $source ] = array_values(
+				array_filter(
+					$dependents,
+					static fn( $dependent ) => ! is_string( $dependent ) || ! isset( $drop[ $dependent ] )
+				)
+			);
 		}
 
 		return $mapping;
 	}
 
-	/* ------------------------------------------------------------------ */
-	/* Rules + keys                                                          */
+	/*
+	------------------------------------------------------------------ */
+	/*
+	Rules + keys                                                          */
 	/* ------------------------------------------------------------------ */
 
 	/**
@@ -321,13 +329,13 @@ final class Schema_Trim {
 			return $this->rules;
 		}
 
-		$shared = is_callable( [ Bootstrap::class, 'target_element_types' ] )
+		$shared = is_callable( array( Bootstrap::class, 'target_element_types' ) )
 			? (array) Bootstrap::target_element_types()
-			: [];
+			: array();
 
-		$rules = [];
+		$rules = array();
 
-		$shared_modules = [
+		$shared_modules = array(
 			'\Wealcoder\AnimationAddons\Atomic\RegularAnimation\Schema',
 			'\Wealcoder\AnimationAddons\Atomic\Parallax\Schema',
 			'\Wealcoder\AnimationAddons\Atomic\CursorHoverEffect\Schema',
@@ -335,7 +343,7 @@ final class Schema_Trim {
 			'\Wealcoder\AnimationAddons\Atomic\AdvanceTooltip\Schema',
 			'\Wealcoder\AnimationAddons\Atomic\Tilt\Schema',
 			'\Wealcoder\AnimationAddons\Atomic\ScrollTo\Schema',
-		];
+		);
 		foreach ( $shared_modules as $class ) {
 			if ( $shared && class_exists( $class ) ) {
 				$rules[ ltrim( $class, '\\' ) ] = $shared;
@@ -346,20 +354,20 @@ final class Schema_Trim {
 		// list of its own. Keep on the union so neither reader is starved.
 		$custom_css = '\Wealcoder\AnimationAddons\Atomic\CustomCss\Schema';
 		if ( class_exists( $custom_css ) ) {
-			$own = is_callable( [ $custom_css, 'target_element_types' ] ) ? (array) $custom_css::target_element_types() : [];
+			$own                                 = is_callable( array( $custom_css, 'target_element_types' ) ) ? (array) $custom_css::target_element_types() : array();
 			$rules[ ltrim( $custom_css, '\\' ) ] = array_values( array_unique( array_merge( $shared, $own ) ) );
 		}
 
-		$own_list = [
+		$own_list = array(
 			'\Wealcoder\AnimationAddons\Atomic\TextAnimation\Schema'        => 'text_animation_widgets',
 			'\Wealcoder\AnimationAddons\Atomic\ImageAnimation\Schema'       => 'image_animation_widgets',
 			'\Wealcoder\AnimationAddons\Atomic\ImageHover\Schema'           => 'image_hover_widgets',
 			'\Wealcoder\AnimationAddons\Atomic\Sticky\Schema'               => 'targeted_elements',
 			'\Wealcoder\AnimationAddons\Atomic\HorizontalScrollAnim\Schema' => 'targeted_elements',
 			'\Wealcoder\AnimationAddons\Atomic\ImageOverlay\Schema'         => 'target_element_types',
-		];
+		);
 		foreach ( $own_list as $class => $method ) {
-			if ( class_exists( $class ) && is_callable( [ $class, $method ] ) ) {
+			if ( class_exists( $class ) && is_callable( array( $class, $method ) ) ) {
 				$rules[ ltrim( $class, '\\' ) ] = (array) $class::$method();
 			}
 		}
@@ -374,7 +382,7 @@ final class Schema_Trim {
 		// only types that read `aae_ns_*` (NestedSlider\Render, LoopGridSlider\Render).
 		$slider = '\Wealcoder\AnimationAddons\Atomic\NestedSlider\Schema';
 		if ( class_exists( $slider ) ) {
-			$rules[ ltrim( $slider, '\\' ) ] = [ 'e-aae-a-slider', 'e-aae-a-loop-grid-slider' ];
+			$rules[ ltrim( $slider, '\\' ) ] = array( 'e-aae-a-slider', 'e-aae-a-loop-grid-slider' );
 		}
 
 		/**
@@ -385,7 +393,7 @@ final class Schema_Trim {
 		 */
 		$rules = apply_filters( self::RULES_FILTER, $rules );
 
-		$clean = [];
+		$clean = array();
 		foreach ( (array) $rules as $class => $types ) {
 			if ( is_string( $class ) && is_array( $types ) ) {
 				$clean[ ltrim( $class, '\\' ) ] = array_values( array_filter( $types, 'is_string' ) );
@@ -410,7 +418,7 @@ final class Schema_Trim {
 			return $this->module_keys;
 		}
 
-		$this->module_keys = [];
+		$this->module_keys = array();
 
 		global $wp_filter;
 		$hook = $wp_filter[ self::SCHEMA_FILTER ] ?? null;
@@ -433,14 +441,14 @@ final class Schema_Trim {
 				}
 
 				try {
-					$out = call_user_func( $fn, [] );
+					$out = call_user_func( $fn, array() );
 				} catch ( \Throwable $e ) {
 					continue;
 				}
 
 				if ( is_array( $out ) && $out ) {
 					$this->module_keys[ $class ] = array_merge(
-						$this->module_keys[ $class ] ?? [],
+						$this->module_keys[ $class ] ?? array(),
 						array_map( 'strval', array_keys( $out ) )
 					);
 				}

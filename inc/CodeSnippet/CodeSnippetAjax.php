@@ -114,7 +114,7 @@ class CodeSnippetAjax {
 			return true;
 		}
 
-		if ( ! apply_filters( 'wcf_allow_php_snippets', false ) ) {
+		if ( ! CodeSnippet::php_snippets_allowed() ) {
 			return false;
 		}
 
@@ -192,7 +192,7 @@ class CodeSnippetAjax {
 						esc_attr( mysql2date( 'c', get_the_modified_date( 'Y-m-d H:i:s' ) ) ),
 						esc_html( human_time_diff( strtotime( get_the_modified_date( 'Y-m-d H:i:s' ) ), current_time( 'timestamp' ) ) . ' ago' ) // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
 					),
-					'edit_url'        => admin_url( 'admin.php?page=wcf-code-snippet&edit=' . $snippet_id ),
+					'edit_url'        => admin_url( 'admin.php?page=' . CodeSnippet::PAGE_SLUG . '&edit=' . $snippet_id ),
 				);
 			}
 		}

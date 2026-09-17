@@ -27,7 +27,7 @@
 		     only way to reach them and WP object caching doesn't apply. -->
 		<exclude name="WordPress.DB.DirectDatabaseQuery"/>
 		<!-- Hook names deliberately use the Elementor-style slash namespace
-		     (aae_form/submission_saved) to match the rest of the plugin. -->
+		     (aaeaddon_form/submission_saved) to match the rest of the plugin. -->
 		<exclude name="WordPress.NamingConventions.ValidHookName.UseUnderscores"/>
 		<!-- Docblock completeness is not enforced retroactively; headers and
 		     complex functions are documented, trivial accessors are not. -->

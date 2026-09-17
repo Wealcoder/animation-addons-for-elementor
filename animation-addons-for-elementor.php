@@ -3,7 +3,7 @@
  * Plugin Name:                Animation Addons
  * Description:                Animation Addons for Elementor comes with GSAP Animation Builder, Customizable Widgets, Header Footer, Single Post, Archive Page Builder, and more.
  * Plugin URI:                 https://animation-addons.com/
- * Version:                    4.2.0
+ * Version:                    4.2.1
  * Author:                     Wealcoder
  * Author URI:                 https://animation-addons.com/
  * License:                    GPL v2 or later
@@ -96,7 +96,7 @@ aaeaddon_define( 'AAEADDON_DASHBOARD_V2', true, 'WCF_ADDONS_DASHBOARD_V2' );
 /**
  * Plugin Version.
  */
-aaeaddon_define( 'AAEADDON_VERSION', '4.2.0', 'WCF_ADDONS_VERSION' );
+aaeaddon_define( 'AAEADDON_VERSION', '4.2.1', 'WCF_ADDONS_VERSION' );
 
 /**
  * Plugin File Ref.
@@ -450,8 +450,21 @@ final class Aaeaddon_Plugin {
 		require_once 'class-plugin.php';
 		require_once 'inc/AtomicWidgets/class-atomic.php';
 
-		//wcf plugin loaded
-		do_action('wcf_plugins_loaded');
+		/*
+		 * The plugin is fully loaded and its classes are available.
+		 *
+		 * Renamed in 4.2.1 for WordPress.org's unique-prefix rule. Nothing in
+		 * either plugin, nor in the Crowdy theme, ever listened to the old
+		 * spelling — but it has been a public extension point for years and a
+		 * customer's child theme is exactly the kind of place it would be used,
+		 * so the pre-4.2 name keeps firing. `do_action_deprecated` still runs
+		 * every listener; it only adds a notice under WP_DEBUG, which is how a
+		 * site owner finds out before the name goes away.
+		 *
+		 * Remove the deprecated call in 4.4, with the AJAX aliases.
+		 */
+		do_action( 'aaeaddon_plugins_loaded' );
+		do_action_deprecated( 'wcf_plugins_loaded', array(), '4.2.1', 'aaeaddon_plugins_loaded' );
 	}
 
 	/**

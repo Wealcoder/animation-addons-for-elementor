@@ -47,7 +47,7 @@ final class Cache {
 		 *
 		 * @param int $ttl Default 12 hours.
 		 */
-		return (int) apply_filters( 'aae_preset_cache_ttl', 12 * HOUR_IN_SECONDS );
+		return (int) apply_filters( 'aaeaddon_preset_cache_ttl', 12 * HOUR_IN_SECONDS );
 	}
 
 	/**

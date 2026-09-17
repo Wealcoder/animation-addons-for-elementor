@@ -17,9 +17,6 @@
         api: $api,
         list_id: $list_id,
       },
-      success: function (response) {
-        console.log(response);
-      },
     });
   };
   function MailpushOptions(data, $mailchimp_lists) {

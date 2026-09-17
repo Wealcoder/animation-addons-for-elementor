@@ -260,7 +260,7 @@ class Aaeaddon_A_Loop_Grid extends Atomic_Element_Base {
 	 *     Evidence only ever ADDS to the option — same ratchet shape as
 	 *     `legacy_v3` and maybe_enable_used_v3_widgets().
 	 *
-	 * Filterable through `aae/loop_grid/query_taxonomies` for a taxonomy that
+	 * Filterable through `aaeaddon/loop_grid/query_taxonomies` for a taxonomy that
 	 * is deliberately non-public but should still be offered.
 	 *
 	 * @return array<string, \WP_Taxonomy|object>
@@ -283,7 +283,7 @@ class Aaeaddon_A_Loop_Grid extends Atomic_Element_Base {
 		/**
 		 * @param array<string, \WP_Taxonomy> $taxes Registered taxonomies offered as filters.
 		 */
-		$taxes = (array) apply_filters( 'aae/loop_grid/query_taxonomies', $taxes );
+		$taxes = (array) apply_filters( 'aaeaddon/loop_grid/query_taxonomies', $taxes );
 		$taxes = array_filter( $taxes, static fn( $t ) => is_object( $t ) && ! empty( $t->name ) && taxonomy_exists( $t->name ) );
 
 		// The ratchet: remember what we saw, restore what we no longer see.
@@ -337,12 +337,12 @@ class Aaeaddon_A_Loop_Grid extends Atomic_Element_Base {
 	 * the filter, for a site that knows a slug is gone for good (a renamed
 	 * taxonomy, a test run that aborted before restoring the option):
 	 *
-	 *   add_filter( 'aae/loop_grid/known_taxonomies', fn( $k ) => array_diff_key( $k, [ 'old_slug' => 1 ] ) );
+	 *   add_filter( 'aaeaddon/loop_grid/known_taxonomies', fn( $k ) => array_diff_key( $k, [ 'old_slug' => 1 ] ) );
 	 */
 	public static function known_taxonomies(): array {
 		$known = get_option( self::KNOWN_TAXONOMIES_OPTION, [] );
 		$known = is_array( $known ) ? $known : [];
-		return (array) apply_filters( 'aae/loop_grid/known_taxonomies', $known );
+		return (array) apply_filters( 'aaeaddon/loop_grid/known_taxonomies', $known );
 	}
 
 	/** Forget the per-request taxonomy memo (a test registering a taxonomy mid-run). */
@@ -393,6 +393,7 @@ class Aaeaddon_A_Loop_Grid extends Atomic_Element_Base {
 			}
 
 			$needle = '"' . self::tax_prop_name( $name ) . '"';
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- "does any page still reference this taxonomy prop" has no WP API; one LIKE per UNREGISTERED slug, on the dashboard's Forget Unused button only.
 			$hit    = $wpdb->get_var(
 				$wpdb->prepare(
 					"SELECT meta_id FROM {$wpdb->postmeta} WHERE meta_key = '_elementor_data' AND meta_value LIKE %s LIMIT 1",
@@ -1032,8 +1033,6 @@ class Aaeaddon_A_Loop_Grid extends Atomic_Element_Base {
 	private static function count_by_term( array $ids, string $taxonomy ): array {
 		global $wpdb;
 
-		$placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
-
 		// One grouped query rather than a count per term: a sidebar with thirty
 		// categories would otherwise issue thirty queries to draw one list.
 		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
@@ -1043,7 +1042,7 @@ class Aaeaddon_A_Loop_Grid extends Atomic_Element_Base {
 				 FROM {$wpdb->term_relationships} tr
 				 INNER JOIN {$wpdb->term_taxonomy} tt ON tt.term_taxonomy_id = tr.term_taxonomy_id
 				 INNER JOIN {$wpdb->terms} t ON t.term_id = tt.term_id
-				 WHERE tt.taxonomy = %s AND tr.object_id IN ({$placeholders})
+				 WHERE tt.taxonomy = %s AND tr.object_id IN (" . implode( ',', array_fill( 0, count( $ids ), '%d' ) ) . ")
 				 GROUP BY t.slug",
 				array_merge( [ $taxonomy ], $ids )
 			)
@@ -1064,8 +1063,6 @@ class Aaeaddon_A_Loop_Grid extends Atomic_Element_Base {
 	private static function count_by_author( array $ids ): array {
 		global $wpdb;
 
-		$placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
-
 		// Keyed by NICENAME, because that is what the author filter puts in the
 		// URL — ids are refused on both sides so the endpoint cannot become a
 		// user-enumeration oracle, and a count keyed by id would have to be
@@ -1076,7 +1073,7 @@ class Aaeaddon_A_Loop_Grid extends Atomic_Element_Base {
 				"SELECT u.user_nicename AS slug, COUNT(*) AS n
 				 FROM {$wpdb->posts} p
 				 INNER JOIN {$wpdb->users} u ON u.ID = p.post_author
-				 WHERE p.ID IN ({$placeholders})
+				 WHERE p.ID IN (" . implode( ',', array_fill( 0, count( $ids ), '%d' ) ) . ")
 				 GROUP BY u.user_nicename",
 				$ids
 			)

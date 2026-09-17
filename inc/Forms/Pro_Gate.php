@@ -39,7 +39,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *      sees it. A REQUIRED gated field would then reject every submission with
  *      "this field is required" for a field that is not on the page. Conditional
  *      Display hit the identical problem first and left the seam behind
- *      (`aae_form/validator/skip_field`), so this reuses it.
+ *      (`aaeaddon_form/validator/skip_field`), so this reuses it.
  *   4. UPSELL COPY — our own title/body/CTA on Elementor's promotion card via
  *      `v4Promotions`, so a locked card sells this plugin rather than showing
  *      Elementor's generic Pro pitch.
@@ -127,8 +127,8 @@ final class Pro_Gate {
 		// before anything spends work decorating it.
 		add_filter( 'elementor/widget/render_content', [ $this, 'blank_gated_widget' ], 5, 2 );
 
-		add_filter( 'aae_form/schema_walker/schema', [ $this, 'drop_gated_fields' ], 10, 2 );
-		add_filter( 'aae_form/validator/skip_field', [ $this, 'skip_gated_field' ], 10, 2 );
+		add_filter( 'aaeaddon_form/schema_walker/schema', [ $this, 'drop_gated_fields' ], 10, 2 );
+		add_filter( 'aaeaddon_form/validator/skip_field', [ $this, 'skip_gated_field' ], 10, 2 );
 
 		if ( is_admin() ) {
 			add_filter( 'elementor/editor/localize_settings', [ $this, 'add_promotion_copy' ] );

@@ -6,7 +6,7 @@
  * sync (Brevo, Mailchimp, ActiveCampaign, …). The FREE plugin owns this
  * interface, the global-key store, and the provider registry; PRO ships
  * the concrete providers (real API calls) and registers them via the
- * `aae_form/integrations` filter — mirroring how Actions\Registry lets the
+ * `aaeaddon_form/integrations` filter — mirroring how Actions\Registry lets the
  * queue resolve action types.
  *
  * A provider is a lightweight descriptor + three network operations. The

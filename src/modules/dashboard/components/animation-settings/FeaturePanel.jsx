@@ -166,7 +166,10 @@ const FeaturePanel = ({
               set(key, next === "__default__" ? "" : next)
             }
           >
-            <SelectTrigger className="h-10" data-aae-field={`${feature}.${key}`}>
+            <SelectTrigger
+              className="h-10"
+              data-aae-field={`${feature}.${key}`}
+            >
               <SelectValue
                 placeholder={__("Select", "animation-addons-for-elementor")}
               />
@@ -217,7 +220,10 @@ const FeaturePanel = ({
                 data-aae-field={`${feature}.${key}`}
               >
                 <SelectValue
-                  placeholder={__("Select an icon", "animation-addons-for-elementor")}
+                  placeholder={__(
+                    "Select an icon",
+                    "animation-addons-for-elementor",
+                  )}
                 />
               </SelectTrigger>
               <SelectContent>
@@ -437,6 +443,27 @@ const FeaturePanel = ({
             {note}
           </p>
         </div>
+      )}
+
+      {/* A status the RENDERER decided (`notice` in the server schema, via the
+          `aaeaddon/animation_settings/feature_notice` filter) — e.g. Pro handing
+          smooth scrolling to MotionKit while that plugin is active. Always
+          visible, never dismissable: it says why the switch above does nothing
+          on the front end right now. The controls stay editable on purpose;
+          the value is saved and applies the moment the reason goes away. */}
+      {schema?.notice?.text && (
+        <p
+          role="status"
+          data-aae-feature-notice={feature}
+          data-tone={schema.notice.tone || "info"}
+          className={`mt-3 rounded-md border px-3 py-2 text-[12px] leading-5 ${
+            schema.notice.tone === "warn"
+              ? "border-[#F5D48A] bg-[#FFF8E6] text-[#7A5A00]"
+              : "border-[#CFE2FF] bg-[#F1F6FF] text-[#2B4C7E]"
+          }`}
+        >
+          {schema.notice.text}
+        </p>
       )}
 
       {locked && (

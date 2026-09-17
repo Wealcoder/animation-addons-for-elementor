@@ -101,7 +101,7 @@ final class Schema_Walker {
 		 * @param array $schema Canonical schema (shape above).
 		 * @param array $form   Raw e-aae-a-form element node.
 		 */
-		return apply_filters( 'aae_form/schema_walker/schema', $schema, $form );
+		return apply_filters( 'aaeaddon_form/schema_walker/schema', $schema, $form );
 	}
 
 	/** Stable hash of a canonical schema (key order is construction order). */
@@ -291,7 +291,7 @@ final class Schema_Walker {
 		 * @param mixed $settings Raw element settings.
 		 * @param array $element  Raw element node.
 		 */
-		return apply_filters( 'aae_form/schema_walker/field', $field, $settings, $element );
+		return apply_filters( 'aaeaddon_form/schema_walker/field', $field, $settings, $element );
 	}
 
 	/**

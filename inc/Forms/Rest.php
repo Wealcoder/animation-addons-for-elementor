@@ -6,7 +6,7 @@
  *                                         (no-store, itself rate-limited)
  *   POST /aae/v1/forms/{form_key}/submit  token + nonce + validation, then
  *                                         hands the clean submission to the
- *                                         `aae_form/submission_validated`
+ *                                         `aaeaddon_form/submission_validated`
  *                                         action (Milestone 6 persists it)
  *
  * Submissions go through REST ONLY — never public admin-ajax (spec pipeline
@@ -228,7 +228,7 @@ final class Rest {
 		// Submit-attempt rate limit, per hashed visitor + form (counts every
 		// attempt, valid or not — that's the point).
 		$rate = apply_filters(
-			'aae_form/submit_rate_limit',
+			'aaeaddon_form/submit_rate_limit',
 			[
 				'limit'  => 5,
 				'window' => 5 * MINUTE_IN_SECONDS,
@@ -345,7 +345,7 @@ final class Rest {
 		 * @param array $schema Active schema snapshot.
 		 * @param array $meta   form_key / schema_version / source_url / … .
 		 */
-		do_action( 'aae_form/submission_raw', $result['clean'], $schema, $meta );
+		do_action( 'aaeaddon_form/submission_raw', $result['clean'], $schema, $meta );
 
 		// Passwords never travel past validation in readable form: replace
 		// every password value with its mask / one-way hash BEFORE anything
@@ -355,7 +355,7 @@ final class Rest {
 		$result['clean'] = Validator::redact_passwords( $result['clean'], $schema );
 
 		// Observability seam — fires whether or not storage is enabled.
-		do_action( 'aae_form/submission_validated', $form_key, $result['clean'], $schema, $meta );
+		do_action( 'aaeaddon_form/submission_validated', $form_key, $result['clean'], $schema, $meta );
 
 		// --- Step 7: save FIRST ("never lose a lead"). Storage failing is a
 		// real 500 — success is never faked over a lost lead. Behavior
@@ -373,7 +373,7 @@ final class Rest {
 
 		// --- Step 8 seam: Milestone 7+ hooks here to enqueue action jobs
 		// (email/webhook/…). Nothing external runs inside this request.
-		do_action( 'aae_form/submission_saved', $submission_id, $form_key, $result['clean'], $schema, $meta );
+		do_action( 'aaeaddon_form/submission_saved', $submission_id, $form_key, $result['clean'], $schema, $meta );
 
 		// --- Step 9: success AFTER save, never after third-party actions.
 		// Redirect is the one immediate UX action (spec): it rides the

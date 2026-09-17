@@ -637,7 +637,7 @@ final class Atomic_Admin
 
 		// $sql is whichever of the two literals above the branch chose; the only
 		// variable part of it is the generated run of %d.
-		$rows = $wpdb->get_col( $wpdb->prepare( $sql, $args ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- one %d per id; the sniff cannot count through array_merge().
+		$rows = $wpdb->get_col( $wpdb->prepare( $sql, $args ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one %d per id; the sniff cannot count through array_merge(). A content scan no WP API answers, run once at import_end for the posts that arrived.
 
 		if ( empty( $rows ) ) {
 			return [ 'widgets' => [], 'extensions' => [] ];

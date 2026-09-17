@@ -100,6 +100,7 @@ class Aaeaddon_A_Nav_Menu_Sync {
 	private static function candidate_post_ids(): array {
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- "which pages hold a syncing Nav" has no WP API; runs only when a nav menu is saved, and must see the current rows.
 		$ids = $wpdb->get_col(
 			"SELECT p.ID FROM {$wpdb->postmeta} m
 			 INNER JOIN {$wpdb->posts} p ON p.ID = m.post_id

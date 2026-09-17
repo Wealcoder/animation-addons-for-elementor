@@ -319,7 +319,6 @@
                     $('#wcf-code-loading').show();
                 },
                 success: function(response) {
-                    console.log(response);
                     if (response.success) {
                         setTimeout(function() {
                             CodeSnippetAjax.showErrorMessage(response.data.message);

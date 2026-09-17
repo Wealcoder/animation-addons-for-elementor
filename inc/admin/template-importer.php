@@ -130,7 +130,7 @@ class Aaeaddon_Template_Importer {
 				// wp-admin/includes/plugin.php is deliberately NOT loaded here.
 				// This plugin installs and activates nothing at this step -- it
 				// only announces the user's selection on
-				// `aae/starter_template/install_plugin` -- so nothing below calls
+				// `aaeaddon/starter_template/install_plugin` -- so nothing below calls
 				// a function that file supplies. Whatever attaches to that hook
 				// loads it for itself, immediately before its own first use.
 				$progress                   = '20';
@@ -157,18 +157,18 @@ class Aaeaddon_Template_Importer {
 									 * attaches. With nothing attached the dependency is skipped
 									 * and the import continues.
 									 */
-									if ( has_action( 'aae/starter_template/install_plugin' ) ) {
+									if ( has_action( 'aaeaddon/starter_template/install_plugin' ) ) {
 
 										Helpers::set_import_state( /* translators: %s: name of the plugin being installed. */
 											sprintf( esc_html__( 'Installing %s', 'animation-addons-for-elementor' ), $item['name'] )
 										);
 
-										do_action( 'aae/starter_template/install_plugin', $item, $user_plugins );
+										do_action( 'aaeaddon/starter_template/install_plugin', $item, $user_plugins );
 									}
 								}
 							}
 
-							Helpers::set_import_state( has_action( 'aae/starter_template/install_plugin' )
+							Helpers::set_import_state( has_action( 'aaeaddon/starter_template/install_plugin' )
 									? esc_html__( 'Plugin Installation Done', 'animation-addons-for-elementor' )
 									: esc_html__( 'Required plugins were skipped -- install them manually.', 'animation-addons-for-elementor' )
 							);

@@ -528,7 +528,7 @@ class Aaeaddon_Admin_Init
 			 * the React page reads it as "Pro is not here" and renders the
 			 * locked upsell state.
 			 */
-			'performance' => apply_filters('aae/performance/dashboard_payload', array()),
+			'performance' => apply_filters('aaeaddon/performance/dashboard_payload', array()),
 
 			/*
 			 * Widget usage counts. Free ships the button and the per-card
@@ -543,7 +543,7 @@ class Aaeaddon_Admin_Init
 			 * counts with the page would re-introduce exactly the cost the
 			 * on-demand design exists to avoid.
 			 */
-			'usage' => apply_filters('aae/usage/dashboard_payload', array()),
+			'usage' => apply_filters('aaeaddon/usage/dashboard_payload', array()),
 		);
 
 		wp_localize_script('wcf-admin', 'WCF_ADDONS_ADMIN', $localize_data);

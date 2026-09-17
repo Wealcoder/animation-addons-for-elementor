@@ -244,7 +244,7 @@ final class Atomic
 	private $available_widgets = null;
 
 	/**
-	 * Signature of the `aae/atomic/available_widgets` callback set at the moment
+	 * Signature of the `aaeaddon/atomic/available_widgets` callback set at the moment
 	 * $available_widgets was cached. A change means someone hooked (or unhooked)
 	 * the filter after we cached, so the cache is stale.
 	 *
@@ -329,13 +329,13 @@ final class Atomic
 		static $cache = null;
 		static $signature = null;
 
-		$current = $this->filter_signature('aae/atomic/widgets_registry');
+		$current = $this->filter_signature('aaeaddon/atomic/widgets_registry');
 
 		if (null !== $cache && $current === $signature) {
 			return $cache;
 		}
 
-		$registry = (array) apply_filters('aae/atomic/widgets_registry', $this->widgets_registry());
+		$registry = (array) apply_filters('aaeaddon/atomic/widgets_registry', $this->widgets_registry());
 
 		if (did_action('init')) {
 			$cache = $registry;
@@ -683,10 +683,10 @@ final class Atomic
 		static $cache = null;
 		static $signature = null;
 
-		$current = $this->filter_signature('aae/atomic/always_active_widgets');
+		$current = $this->filter_signature('aaeaddon/atomic/always_active_widgets');
 
 		if (null === $cache || $current !== $signature) {
-			$cache = (array) apply_filters('aae/atomic/always_active_widgets', self::ALWAYS_ACTIVE_WIDGETS);
+			$cache = (array) apply_filters('aaeaddon/atomic/always_active_widgets', self::ALWAYS_ACTIVE_WIDGETS);
 			$signature = $current;
 		}
 
@@ -710,7 +710,7 @@ final class Atomic
 		static $cache = null;
 		static $signature = null;
 
-		$current = $this->filter_signature('aae/atomic/always_active_widgets');
+		$current = $this->filter_signature('aaeaddon/atomic/always_active_widgets');
 
 		if (null === $cache || $current !== $signature) {
 			$cache = array_flip($this->always_active_widgets());
@@ -726,10 +726,10 @@ final class Atomic
 		static $cache = null;
 		static $signature = null;
 
-		$current = $this->filter_signature('aae/atomic/widget_parent_map');
+		$current = $this->filter_signature('aaeaddon/atomic/widget_parent_map');
 
 		if (null === $cache || $current !== $signature) {
-			$cache = (array) apply_filters('aae/atomic/widget_parent_map', self::WIDGET_PARENT_MAP);
+			$cache = (array) apply_filters('aaeaddon/atomic/widget_parent_map', self::WIDGET_PARENT_MAP);
 			$signature = $current;
 		}
 
@@ -1364,7 +1364,7 @@ final class Atomic
 		// TWO GUARDS, both load-bearing:
 		//
 		// 1. NEVER CACHE BEFORE `init`. Pro injects ~20 widgets through
-		//    `aae/atomic/available_widgets`, and it adds that filter at
+		//    `aaeaddon/atomic/available_widgets`, and it adds that filter at
 		//    `plugins_loaded` priority 11. Caching a call made before that would
 		//    freeze a pre-Pro registry and PERMANENTLY DELETE every Pro atomic
 		//    widget from the site — silently, with no error. do_action()
@@ -1377,7 +1377,7 @@ final class Atomic
 		//    third-party addon that hooks the filter on `elementor/init` at a
 		//    priority after our first read, nor remove_filter(). Comparing a
 		//    signature of the callback set catches both.
-		$signature = $this->filter_signature('aae/atomic/available_widgets');
+		$signature = $this->filter_signature('aaeaddon/atomic/available_widgets');
 
 		if (null !== $this->available_widgets && $signature === $this->available_widgets_signature) {
 			return $this->available_widgets;
@@ -2481,11 +2481,11 @@ final class Atomic
 		 * entry keeps working untouched.
 		 *
 		 * A slug added here still needs its dashboard card via
-		 * `aae/atomic/widgets_registry`, or nothing can switch it on.
+		 * `aaeaddon/atomic/widgets_registry`, or nothing can switch it on.
 		 *
 		 * @param array<string,array> $widgets
 		 */
-		return (array) apply_filters('aae/atomic/available_widgets', $widgets);
+		return (array) apply_filters('aaeaddon/atomic/available_widgets', $widgets);
 	}
 
 	/**
@@ -2964,7 +2964,7 @@ final class Atomic
 	/**
 	 * Where a registry entry's files live.
 	 *
-	 * Entries added through `aae/atomic/available_widgets` may sit in another
+	 * Entries added through `aaeaddon/atomic/available_widgets` may sit in another
 	 * plugin, so they carry their own `base_path` / `base_url` (both ending in a
 	 * slash). Everything shipped by this plugin omits them and keeps the
 	 * original constants — so no existing entry had to be touched.
@@ -3287,7 +3287,7 @@ JS;
 	 * The registry re-keyed by element type (`e-<slug>`) instead of slug.
 	 *
 	 * Built from the memoised registry, so it inherits its invalidation: when the
-	 * `aae/atomic/available_widgets` callback set changes the registry is rebuilt
+	 * `aaeaddon/atomic/available_widgets` callback set changes the registry is rebuilt
 	 * and this map is rebuilt with it.
 	 *
 	 * @return array<string,array>
@@ -3297,7 +3297,7 @@ JS;
 		static $map = null;
 		static $signature = null;
 
-		$current = $this->filter_signature('aae/atomic/available_widgets');
+		$current = $this->filter_signature('aaeaddon/atomic/available_widgets');
 
 		if (null !== $map && $current === $signature) {
 			return $map;
@@ -3984,6 +3984,7 @@ JS;
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- a content scan no WP API answers; cached in USAGE_TRANSIENT above, busted (negative only) on save_post.
 		$found = (bool) $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT 1 FROM {$wpdb->postmeta}
@@ -4027,6 +4028,7 @@ JS;
 
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- a content count no WP API answers; cached in USAGE_COUNT_TRANSIENT above, busted with the boolean.
 		$count = (int) $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT COUNT(DISTINCT pm.post_id)

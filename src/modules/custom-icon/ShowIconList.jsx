@@ -17,9 +17,6 @@ const ShowIconList = () => {
       })
         .then((response) => {
           return response.json();
-        })
-        .then((return_content) => {
-          console.log("Animation Delete Successfully");
         });
     } catch (error) {
       console.log(error);

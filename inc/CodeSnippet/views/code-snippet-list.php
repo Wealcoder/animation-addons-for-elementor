@@ -44,7 +44,7 @@ if ( isset( $_GET['message'] ) ) { // phpcs:ignore WordPress.Security.NonceVerif
 		<div class="wcf-header-content">
 			<h1 class="wp-heading-inline">
 				<?php esc_html_e( 'Code Snippets', 'animation-addons-for-elementor' ); ?>
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=wcf-code-snippet&new=1' ) ); ?>" class="page-title-action">
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=' . \Wealcoder\AnimationAddons\CodeSnippet\CodeSnippet::PAGE_SLUG . '&new=1' ) ); ?>" class="page-title-action">
 					<?php esc_html_e( 'Add New Snippet', 'animation-addons-for-elementor' ); ?>
 				</a>
 			</h1>

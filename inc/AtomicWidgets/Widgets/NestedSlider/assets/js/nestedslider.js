@@ -362,11 +362,6 @@ const initSlider = (container, signal) => {
 		},
 		evtOpts
 	);
-
-	console.log('slider render', {
-		id: getElementId(container),
-		container,
-	});
 };
 
 const refreshSliderById = (id, reason = 'manual') => {
@@ -386,12 +381,6 @@ const refreshSliderById = (id, reason = 'manual') => {
 
 	requestAnimationFrame(() => {
 		requestAnimationFrame(() => {
-			console.log('AAE slider refresh by id', {
-				id,
-				reason,
-				element,
-			});
-
 			initSlider(element, signal);
 		});
 	});

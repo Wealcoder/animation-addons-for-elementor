@@ -4,7 +4,7 @@
  *
  * Single lookup used by the Queue to resolve a job's action_type into a
  * runnable Action_Base. Later milestones (webhook, Sheets, Telegram, …)
- * and the pro plugin add theirs via the `aae_form/actions` filter instead
+ * and the pro plugin add theirs via the `aaeaddon_form/actions` filter instead
  * of hardcoding — the spec's "adapters, not one-off code" rule.
  *
  * @package AnimationAddonsForElementor
@@ -25,7 +25,7 @@ final class Registry {
 
 		if ( null === $actions ) {
 			$actions = apply_filters(
-				'aae_form/actions',
+				'aaeaddon_form/actions',
 				[
 					Admin_Email::type() => new Admin_Email(),
 					Auto_Reply::type()  => new Auto_Reply(),

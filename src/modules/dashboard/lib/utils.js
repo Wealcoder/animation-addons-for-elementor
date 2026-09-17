@@ -182,7 +182,6 @@ export const filterGsapExtension = (mainContent, filterKey) => {
 };
 
 export const generateWidgetSearchContent = (mainContent) => {
-  console.log(mainContent)
   let storeData = [];
   Object.entries(mainContent || {}).map(([key, val]) => {
     Object.entries(val.elements || {}).map(([key2, val2]) => {

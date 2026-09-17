@@ -8,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 ?>
-<?php do_action( 'animation_addons_footer_builder_content' ); ?>
+<?php do_action( 'aaeaddon_animation_addons_footer_builder_content' ); ?>
 </div><!-- #page -->
 <?php wp_footer(); ?>
 </body>

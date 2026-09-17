@@ -46,6 +46,29 @@ final class Key_Bridge {
 	const OLD_LIVE = 'old';
 	const NEW_LIVE = 'new';
 
+	/**
+	 * Small settings this plugin reads on EVERY request (measured: custom
+	 * fonts, YouTube, the GSAP library toggles, reCAPTCHA keys, the Loop Grid
+	 * settings + taxonomy ratchet, smooth scroller, setup wizard). Most of them
+	 * are ABSENT rows on most sites, and an absent option costs a miss query
+	 * per request wherever there is no persistent object cache -- eight
+	 * queries a page for eight rows that do not exist. One
+	 * wp_prime_option_caches() over the LIVE spellings makes that one query
+	 * and fills `notoptions` for the misses. NEW spellings here; boot()
+	 * resolves each to whichever row is live in this phase.
+	 */
+	const EVERY_REQUEST = array(
+		'aaeaddon_custom_font_setting',
+		'aaeaddon_youtube_video_settings',
+		'aaeaddon_save_gsap_library',
+		'aaeaddon_form_recaptcha_keys',
+		'aaeaddon_loop_grid_known_taxonomies',
+		'aaeaddon_loop_grid_settings',
+		'aaeaddon_smooth_scroller',
+		'aaeaddon_disable_smoother_in_editor',
+		'aaeaddon_setup_wizard',
+	);
+
 	/** @var array|null the decoded key-map.php */
 	private static $map = null;
 
@@ -107,6 +130,30 @@ final class Key_Bridge {
 		if ( is_multisite() ) {
 			add_action( 'switch_blog', array( __CLASS__, 'on_switch_blog' ), 1, 2 );
 		}
+
+		self::prime( self::EVERY_REQUEST );
+	}
+
+	/**
+	 * Warm the option cache for a set of names in ONE query, absent rows
+	 * included. Names may be either spelling; each is resolved to the row
+	 * that is live in the current phase, so the later redirected read is a
+	 * cache hit. Pure optimisation: with no wp_prime_option_caches() (WP <
+	 * 6.4) or no names, nothing happens and every read still works.
+	 *
+	 * @param string[] $names
+	 */
+	public static function prime( array $names ) {
+		if ( ! function_exists( 'wp_prime_option_caches' ) || empty( $names ) ) {
+			return;
+		}
+		$live = array();
+		foreach ( $names as $name ) {
+			$live[] = self::is_mapped( $name ) ? self::live_name( $name ) : $name;
+		}
+		self::$suspended++;
+		wp_prime_option_caches( array_values( array_unique( $live ) ) );
+		self::$suspended--;
 	}
 
 	/**

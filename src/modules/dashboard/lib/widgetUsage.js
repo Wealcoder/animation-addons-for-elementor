@@ -2,7 +2,7 @@
  * "Where is this widget actually used?" — the free half.
  *
  * The screen is free, the scan is Pro (pro/inc/Usage/class-widget-usage.php).
- * `WCF_ADDONS_ADMIN.usage` arrives through the `aae/usage/dashboard_payload`
+ * `WCF_ADDONS_ADMIN.usage` arrives through the `aaeaddon/usage/dashboard_payload`
  * filter Pro answers; with Pro absent it is `{}` and USAGE_AVAILABLE is false,
  * which is how the button knows to be an upsell rather than firing a request at
  * an endpoint nobody registered. Same seam Performance uses.

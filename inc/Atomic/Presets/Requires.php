@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * `is_plugin_active()` and ACF's own lookup are all free to ask — so the panel
  * can show the requirement whatever licence the site holds. Acting on it is a
  * separate question with a much higher bar, and it lives in Pro behind
- * `aae/preset/requires/install`; `installable()` reports whether anything is
+ * `aaeaddon/preset/requires/install`; `installable()` reports whether anything is
  * listening, exactly as the starter template's dependency screen reports
  * `needs_pro` per row rather than offering a checkbox that would do nothing.
  *
@@ -107,7 +107,7 @@ final class Requires {
 		 * @param array $results  Per-item outcome, keyed "<kind>:<slug>".
 		 * @param array $requires An ALREADY-NORMALISED requires block.
 		 */
-		$results = (array) apply_filters( 'aae/preset/requires/install', [], $requires );
+		$results = (array) apply_filters( 'aaeaddon/preset/requires/install', [], $requires );
 
 		// The status is re-read rather than inferred from $results: an install
 		// can report success and still leave the requirement unmet (a plugin
@@ -392,6 +392,6 @@ final class Requires {
 	 * starter template's `needs_pro` per dependency.
 	 */
 	public static function installable(): bool {
-		return (bool) has_filter( 'aae/preset/requires/install' );
+		return (bool) has_filter( 'aaeaddon/preset/requires/install' );
 	}
 }

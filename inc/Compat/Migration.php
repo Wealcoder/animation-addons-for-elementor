@@ -304,8 +304,8 @@ final class Migration {
 		$old_names = array_merge( array_keys( $map['options'] ), array_keys( $map['options_pro'] ) );
 		$autoloads = array();
 		if ( $old_names ) {
-			$placeholders = implode( ',', array_fill( 0, count( $old_names ), '%s' ) );
-			foreach ( (array) $wpdb->get_results( $wpdb->prepare( "SELECT option_name, autoload FROM {$wpdb->options} WHERE option_name IN ($placeholders)", $old_names ) ) as $row ) { // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- placeholders only.
+			$rows = $wpdb->get_results( $wpdb->prepare( "SELECT option_name, autoload FROM {$wpdb->options} WHERE option_name IN (" . implode( ',', array_fill( 0, count( $old_names ), '%s' ) ) . ')', $old_names ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one read of the raw rows, autoload flag included, which get_option() cannot answer.
+			foreach ( (array) $rows as $row ) {
 				$autoloads[ $row->option_name ] = $row->autoload;
 			}
 		}
@@ -346,7 +346,7 @@ final class Migration {
 		global $wpdb;
 		$cat = &$categories['prefixes'];
 		foreach ( $map['prefixes'] as $old_prefix => $new_prefix ) {
-			$rows = $wpdb->get_results( $wpdb->prepare( "SELECT option_name, autoload FROM {$wpdb->options} WHERE option_name LIKE %s", $wpdb->esc_like( $old_prefix ) . '%' ) );
+			$rows = $wpdb->get_results( $wpdb->prepare( "SELECT option_name, autoload FROM {$wpdb->options} WHERE option_name LIKE %s", $wpdb->esc_like( $old_prefix ) . '%' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- "every option starting with this prefix" has no WP API; runs once, when the user consents to the migration.
 			foreach ( (array) $rows as $row ) {
 				$cat['total']++;
 				$new   = $new_prefix . substr( $row->option_name, strlen( $old_prefix ) );
@@ -457,7 +457,7 @@ final class Migration {
 		global $wpdb;
 		$n = 0;
 		foreach ( array_keys( $map['prefixes'] ) as $old_prefix ) {
-			$n += (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->options} WHERE option_name LIKE %s", $wpdb->esc_like( $old_prefix ) . '%' ) );
+			$n += (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->options} WHERE option_name LIKE %s", $wpdb->esc_like( $old_prefix ) . '%' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- prefix count for the Migration screen only; no WP API lists options by prefix.
 		}
 		$counts['prefixes'] = $n;
 		return $counts;
@@ -553,7 +553,7 @@ final class Migration {
 		}
 		global $wpdb;
 		foreach ( array_keys( $map['prefixes'] ) as $old_prefix ) {
-			$names = $wpdb->get_col( $wpdb->prepare( "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s", $wpdb->esc_like( $old_prefix ) . '%' ) );
+			$names = $wpdb->get_col( $wpdb->prepare( "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s", $wpdb->esc_like( $old_prefix ) . '%' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- the rollback snapshot of every prefixed row; taken once, and it must read the table, not a cache.
 			foreach ( (array) $names as $name ) {
 				$rows[ $name ] = Key_Bridge::raw_get( $name );
 			}

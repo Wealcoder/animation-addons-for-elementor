@@ -8,7 +8,7 @@
  * job's self-contained payload and reports success plus loggable snapshots;
  * the Queue owns attempts/retries/logging, actions own only their work.
  *
- * Register additional actions via the `aae_form/actions` filter (see
+ * Register additional actions via the `aaeaddon_form/actions` filter (see
  * Registry).
  *
  * @package AnimationAddonsForElementor

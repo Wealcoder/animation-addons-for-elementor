@@ -47,6 +47,7 @@ final class Admin_Page_Alias {
 		'wcf_addons_setup_page' => 'aaeaddon_setup_page',
 		'aae-page-importer'     => 'aaeaddon-page-importer',
 		'wcf-cpt-builder'       => 'aaeaddon-cpt-builder',
+		'wcf-code-snippet'      => 'aaeaddon-code-snippet',
 	);
 
 	public static function init() {

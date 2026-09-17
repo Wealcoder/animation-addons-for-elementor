@@ -81,10 +81,10 @@ class Aaeaddon_Theme_Builder
 		add_filter('template_include', array($this, 'template_loader'), 30);
 
 		// Archive Page
-		add_action('animation_addons_archive_builder_content', array($this, 'archive_page_builder_content'));
+		add_action('aaeaddon_animation_addons_archive_builder_content', array($this, 'archive_page_builder_content'));
 
 		// single
-		add_action('animation_addons_single_builder_content', array($this, 'single_post_builder_content'));
+		add_action('aaeaddon_animation_addons_single_builder_content', array($this, 'single_post_builder_content'));
 
 		// Body classes
 		add_filter('body_class', array($this, 'body_classes'));
@@ -92,8 +92,8 @@ class Aaeaddon_Theme_Builder
 		// header footer
 		add_action('get_header', array($this, 'override_header'));
 		add_action('get_footer', array($this, 'override_footer'));
-		add_action('animation_addons_header_builder_content', array($this, 'header_builder_content'));
-		add_action('animation_addons_footer_builder_content', array($this, 'footer_builder_content'));
+		add_action('aaeaddon_aaeaddon_animation_addons_header_builder_content', array($this, 'header_builder_content'));
+		add_action('aaeaddon_animation_addons_footer_builder_content', array($this, 'footer_builder_content'));
 
 		// Must run while wp_head() is still open — see the method docblock.
 		add_action('wp_enqueue_scripts', array($this, 'register_builder_template_assets'), 5);
@@ -125,7 +125,7 @@ class Aaeaddon_Theme_Builder
 	 * WHY THIS EXISTS:
 	 * A header/footer template is an Elementor document rendered OUTSIDE the main
 	 * loop. templates/header.php calls wp_head() first and only then fires
-	 * `animation_addons_header_builder_content`, so the document renders after the
+	 * `aaeaddon_aaeaddon_animation_addons_header_builder_content`, so the document renders after the
 	 * stylesheets for the page have already been printed.
 	 *
 	 * Elementor's atomic styles manager only walks the MAIN queried document, so
@@ -358,7 +358,7 @@ class Aaeaddon_Theme_Builder
 		 *
 		 * @param bool $renders Whether the header/footer will be output.
 		 */
-		return (bool) apply_filters('aae_theme_builder_renders_theme_parts', $renders);
+		return (bool) apply_filters('aaeaddon_theme_builder_renders_theme_parts', $renders);
 	}
 
 	private function get_rendered_template_ids()
@@ -725,6 +725,12 @@ class Aaeaddon_Theme_Builder
 		
 		$query              = new \WP_Query($query_args);
 		$count              = $query->post_count;
+		// fields => ids skips WP_Query's own meta priming, so every
+		// get_post_meta() below was one query per template, per template TYPE,
+		// per request. One query for all of them instead.
+		if ( ! empty( $query->posts ) ) {
+			update_meta_cache( 'post', $query->posts );
+		}
 		$templates          = array();
 		$templates_specific = array('specifics' => array());
 
@@ -992,6 +998,12 @@ class Aaeaddon_Theme_Builder
 
 		$query              = new \WP_Query($query_args);
 		$count              = $query->post_count;
+		// fields => ids skips WP_Query's own meta priming, so every
+		// get_post_meta() below was one query per template, per template TYPE,
+		// per request. One query for all of them instead.
+		if ( ! empty( $query->posts ) ) {
+			update_meta_cache( 'post', $query->posts );
+		}
 		$templates          = array();
 		$templates_specific = array('specifics' => array());
 

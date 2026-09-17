@@ -308,6 +308,14 @@ if ( ! function_exists( 'aaeaddon_set_postview' ) ) {
 			return;
 		}
 
+		// Pro counts the same key on the same `wp` hook (its counter also feeds
+		// the trending score and skips logged-in / cookied repeat views). With
+		// both running every uncached visit added 2 -- measured 3 -> 4 in one
+		// request -- and paid three UPDATEs. One owner: Pro when it is there.
+		if ( function_exists( 'aaeaddon_track_post_views_and_update_score' ) ) {
+			return;
+		}
+
 		$post_id  = get_the_ID();
 		$meta_key = 'wcf_post_views_count';
 

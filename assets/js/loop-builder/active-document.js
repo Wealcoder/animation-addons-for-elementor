@@ -419,7 +419,6 @@
             
             if (this.baseDocumentId) {
                 const baseUrl = `${window.location.origin}/wp-admin/post.php?post=${this.baseDocumentId}&action=elementor`;
-                console.log('Redirecting to:', baseUrl);
                 window.location.href = baseUrl;
             } else {
                 console.error('Cannot fallback exit - no base document ID');

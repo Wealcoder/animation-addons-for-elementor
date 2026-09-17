@@ -251,7 +251,7 @@ final class Loop_Query_Woo {
 		// @param bool  $apply Whether to exclude hidden / out-of-stock products.
 		// @param array $args  The query args being built.
 		$not_in = [];
-		if ( (bool) apply_filters( 'aae/loop_grid/woo_visibility', true, $args ) ) {
+		if ( (bool) apply_filters( 'aaeaddon/loop_grid/woo_visibility', true, $args ) ) {
 			$not_in = [ ! empty( $args['s'] ) ? ( $terms['exclude-from-search'] ?? 0 ) : ( $terms['exclude-from-catalog'] ?? 0 ) ];
 			if ( 'yes' === get_option( 'woocommerce_hide_out_of_stock_items' ) && ! empty( $terms['outofstock'] ) ) {
 				$not_in[] = $terms['outofstock'];

@@ -110,7 +110,7 @@ final class Captcha {
 		 * reported as false — the caller decides what "no verifier" means
 		 * for that form (fail-closed vs. skip).
 		 */
-		$verifier = apply_filters( 'aae_form/recaptcha_verifier', null );
+		$verifier = apply_filters( 'aaeaddon_form/recaptcha_verifier', null );
 
 		if ( ! is_callable( $verifier ) ) {
 			return [
@@ -133,6 +133,6 @@ final class Captcha {
 
 	/** The pass/fail score threshold — filterable per the spec's config knobs. */
 	public static function threshold(): float {
-		return (float) apply_filters( 'aae_form/recaptcha_threshold', self::DEFAULT_THRESHOLD );
+		return (float) apply_filters( 'aaeaddon_form/recaptcha_threshold', self::DEFAULT_THRESHOLD );
 	}
 }

@@ -47,7 +47,6 @@ export default function DropIcon() {
       // and was never a declared dependency -- it resolved by accident
       // through the build tooling's own lockfile.
       const xhr = new XMLHttpRequest();
-      let cancelled = false;
 
       setFilesToUpload((prevUploadProgress) =>
         prevUploadProgress.map((item) =>
@@ -56,7 +55,6 @@ export default function DropIcon() {
                 ...item,
                 source: {
                   cancel: () => {
-                    cancelled = true;
                     xhr.abort();
                   },
                 },
@@ -108,9 +106,6 @@ export default function DropIcon() {
       });
 
       xhr.addEventListener("abort", () => {
-        if (cancelled) {
-          console.log("Upload canceled");
-        }
         reject(new Error("Upload canceled"));
       });
 

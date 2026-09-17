@@ -5,7 +5,7 @@ Tags: animation, elementor, elementor addons, elementor templates, elementor wid
 Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 4.2.0
+Stable tag: 4.2.1
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -713,6 +713,17 @@ upstream, so their projects are the source:
 * Select2 4.1.0 (admin select control) -- https://github.com/select2/select2
 
 == Changelog ==
+
+= 🌀 Animation Addons for Elementor v4.2.1 – 17th September 2026 =
+
+  - **Changed:** Every function, class, constant and namespace this plugin defines now carries a unique `aaeaddon` prefix, which is what WordPress.org asks of every plugin. The previous names still resolve, so a site running the Pro add-on keeps working while both are updated.
+  - **Changed:** Settings are moving to matching storage names, and nothing happens on its own. A new **Migration** screen shows exactly what will be copied, per category, and copies it only when you press Start — with a progress report you can leave and come back to. Your existing data is **copied, never deleted**, so the previous version can be reinstalled at any time and finds everything where it left it.
+  - **Fixed:** Security. Three endpoints a visitor can reach checked a nonce but not what they were being asked to act on: a loop template could be rendered by number, a newsletter signup could be pointed at a different mailing list, and an icon-pack id could carry a file path. All three now resolve what they are given against the saved page, and the public counters and searches carry a per-visitor rate limit.
+  - **Changed:** Faster for visitors. A page view now parses about 440 KB less PHP than 4.1.0 — roughly a quarter of the plugin — because the dashboard, importer, editor and admin halves are loaded only where they can actually run. Nothing about what renders has changed.
+  - **Fixed:** The plugin now passes WordPress.org's Plugin Check with no errors reported.
+  - **Fixed:** The admin screens moved to the new prefixed addresses; a bookmark or a link to an old one redirects to the right screen instead of showing an empty page.
+  - **Fixed:** The settings screens no longer produce a fatal error when Elementor is deactivated.
+  - **Fixed:** The Post Rating widget's sample review and its "/5" line can now be translated.
 
 = 🌀 Animation Addons for Elementor v4.1.0 – 8th September 2026 =
 

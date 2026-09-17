@@ -39,7 +39,7 @@ trait CodeSnippetSettingsTrait {
 		 *
 		 * @param array $defaults The default settings.
 		 */
-		$defaults = apply_filters( 'wcf_code_snippet_default_settings', $defaults ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility with existing wcf hooks.
+		$defaults = apply_filters( 'aaeaddon_code_snippet_default_settings', $defaults );
 
 		$settings = array();
 		if ( ! empty( $id ) ) {
@@ -69,6 +69,6 @@ trait CodeSnippetSettingsTrait {
 		 * @param array $settings The code snippet settings.
 		 * @param array $defaults The default settings.
 		 */
-		return apply_filters( 'wcf_code_snippet_settings', $settings, $defaults ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility with existing wcf hooks.
+		return apply_filters( 'aaeaddon_code_snippet_settings', $settings, $defaults );
 	}
 }

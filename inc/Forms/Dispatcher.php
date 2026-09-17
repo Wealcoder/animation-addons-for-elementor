@@ -2,7 +2,7 @@
 /**
  * AAE Forms — after-submit action dispatcher (Milestone 7).
  *
- * Bridges the submit pipeline to the Queue: on `aae_form/submission_saved`
+ * Bridges the submit pipeline to the Queue: on `aaeaddon_form/submission_saved`
  * (fired AFTER storage — save-before-actions) it decides which actions the
  * form wants, enqueues one self-contained job each, and drains the queue on
  * `shutdown` — attempt 1 runs in this request but after the visitor's 200
@@ -35,7 +35,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class Dispatcher {
 
 	public static function init(): void {
-		add_action( 'aae_form/submission_saved', [ self::class, 'on_submission_saved' ], 10, 5 );
+		add_action( 'aaeaddon_form/submission_saved', [ self::class, 'on_submission_saved' ], 10, 5 );
 		add_action( Queue::CRON_HOOK, [ Queue::class, 'process_due' ] );
 		add_action( 'init', [ self::class, 'ensure_sweeper' ], 20 );
 	}
@@ -48,7 +48,7 @@ final class Dispatcher {
 		add_action( Queue::CRON_HOOK . '_sweep', [ Queue::class, 'process_due' ] );
 	}
 
-	/** `aae_form/submission_saved` callback — enqueue this form's actions. */
+	/** `aaeaddon_form/submission_saved` callback — enqueue this form's actions. */
 	public static function on_submission_saved( $submission_id, $form_key, $clean, $schema, $meta ): void {
 		if ( ! is_array( $clean ) || ! is_array( $schema ) ) {
 			return;

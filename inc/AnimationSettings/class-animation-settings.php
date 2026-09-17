@@ -370,6 +370,7 @@ class Animation_Settings {
 		// get_name() values read out of this plugin's own widget files -- no
 		// request data reaches it. It is still BOUND rather than pasted into the
 		// query, so the SQL here is entirely literal.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- "which saved pages contain a v3 widget" has no WP API; runs once per import behind has_v3_usage(), and a cache would need the postmeta write hooks that fire many times per save.
 		$rows = $wpdb->get_col(
 			$wpdb->prepare(
 				"SELECT meta_value FROM {$wpdb->postmeta}
@@ -572,6 +573,7 @@ class Animation_Settings {
 
 		// Same fixed pattern as above, built from this plugin's own widget names
 		// and bound as a value.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- a content scan no WP API answers; cached in the aaeaddon_v3_usage transient above, busted (negative only) on save_post.
 		$found = (bool) $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT 1 FROM {$wpdb->postmeta}
@@ -1177,6 +1179,29 @@ class Animation_Settings {
 
 			if ( ! empty( $config['width'] ) ) {
 				$out[ $feature ]['width'] = $config['width'];
+			}
+
+			/**
+			 * A status line for the panel, decided by whoever RENDERS the feature.
+			 *
+			 * The panel cannot know on its own that its setting is inert for a
+			 * reason other than "Pro is absent" — Pro hands smooth scrolling to
+			 * MotionKit whenever that plugin is active, for instance, and a switch
+			 * that reads "on" over a page that never smooths is a support ticket.
+			 * So the renderer answers here, per feature, and the panel prints it
+			 * beside the controls. The settings stay editable: they are saved and
+			 * take effect the moment the reason goes away.
+			 *
+			 * @param array|null $notice  `[ 'text' => string, 'tone' => 'info'|'warn' ]`, or null for none.
+			 * @param string     $feature The schema key (`smooth_scroll`, `preloader`, …).
+			 */
+			$notice = apply_filters( 'aaeaddon/animation_settings/feature_notice', null, $feature );
+
+			if ( is_array( $notice ) && ! empty( $notice['text'] ) ) {
+				$out[ $feature ]['notice'] = [
+					'text' => (string) $notice['text'],
+					'tone' => in_array( $notice['tone'] ?? '', [ 'info', 'warn' ], true ) ? $notice['tone'] : 'info',
+				];
 			}
 		}
 

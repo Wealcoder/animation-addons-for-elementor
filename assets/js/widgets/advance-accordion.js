@@ -12,7 +12,6 @@
         }
 
         item.on('click', function () {
-             console.log('clicked');
             let currentItem = $(this).parent();
 
             // Remove active class + hide all others

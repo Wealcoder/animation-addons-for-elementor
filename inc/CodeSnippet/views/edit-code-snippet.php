@@ -34,7 +34,7 @@ if ( 'php' === $snippet_details['code_type'] ) {
 		<div class="aae-csp-top">
 			<div class="aae-csp-top__start">
 				<div>
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=wcf-code-snippet' ) ); ?>" class="aae-csp-top__backward-btn">
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=' . \Wealcoder\AnimationAddons\CodeSnippet\CodeSnippet::PAGE_SLUG ) ); ?>" class="aae-csp-top__backward-btn">
 					<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none" class="w-[14px] h-[14px] flex-shrink-0">
 						<path d="M3.34988 6.1001H14V7.90001H3.34988L8.04335 12.7273L6.80593 14L0 7.00005L6.80593 0L8.04335 1.27273L3.34988 6.1001Z" fill="#717784"></path>
 					</svg>
@@ -57,7 +57,7 @@ if ( 'php' === $snippet_details['code_type'] ) {
 				<input type="hidden" name="action" value="aaeaddon_add_code_snippet"/>
 				<?php wp_nonce_field( \Wealcoder\AnimationAddons\Nonce::CODE_SNIPPET_FORM ); ?>
 				<?php if ( isset( $_GET['edit'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended ?>
-					<a href="<?php echo esc_url( admin_url( 'admin.php?page=wcf-code-snippet&new=1' ) ); ?>" class="aae-csp-top__tools-btn">
+					<a href="<?php echo esc_url( admin_url( 'admin.php?page=' . \Wealcoder\AnimationAddons\CodeSnippet\CodeSnippet::PAGE_SLUG . '&new=1' ) ); ?>" class="aae-csp-top__tools-btn">
 						<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
 							<path d="M7.99992 14.6667C11.6666 14.6667 14.6666 11.6667 14.6666 8.00004C14.6666 4.33337 11.6666 1.33337 7.99992 1.33337C4.33325 1.33337 1.33325 4.33337 1.33325 8.00004C1.33325 11.6667 4.33325 14.6667 7.99992 14.6667Z" stroke="#525866" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 							<path d="M5.33325 8H10.6666" stroke="#525866" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>

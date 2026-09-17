@@ -514,11 +514,11 @@ final class Assets
 	 * (`{ $$type: string, value: any, disabled?: boolean }`). A future
 	 * Elementor that changes any of that degrades to "no patch" — never to a
 	 * broken editor. `window.__aaeFastProps` is true when it applied, and the
-	 * `aae/atomic/editor_fast_props` filter switches it off.
+	 * `aaeaddon/atomic/editor_fast_props` filter switches it off.
 	 */
 	private function patch_editor_props(): void
 	{
-		if (! apply_filters('aae/atomic/editor_fast_props', true)) {
+		if (! apply_filters('aaeaddon/atomic/editor_fast_props', true)) {
 			return;
 		}
 
@@ -586,7 +586,7 @@ JS;
 	 *    itself permanently and the original serves every later call.
 	 * A future Elementor that reshapes any of this degrades to "no index",
 	 * never to a wrong element. `window.__aaeFastLookup` is true when it
-	 * applied, and `aae/atomic/editor_fast_lookup` switches it off.
+	 * applied, and `aaeaddon/atomic/editor_fast_lookup` switches it off.
 	 *
 	 * The install polls because the document component does not exist until
 	 * `elementor.start()` runs `initComponents()`, which is long after this
@@ -594,7 +594,7 @@ JS;
 	 */
 	private function patch_editor_lookup(): void
 	{
-		if (! apply_filters('aae/atomic/editor_fast_lookup', true)) {
+		if (! apply_filters('aaeaddon/atomic/editor_fast_lookup', true)) {
 			return;
 		}
 

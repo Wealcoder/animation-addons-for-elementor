@@ -956,7 +956,7 @@ final class Admin_Rest {
 	 * verifier is registered (Captcha::verify() reports `available`).
 	 */
 	public static function get_recaptcha(): WP_REST_Response {
-		$has_verifier = is_callable( apply_filters( 'aae_form/recaptcha_verifier', null ) );
+		$has_verifier = is_callable( apply_filters( 'aaeaddon_form/recaptcha_verifier', null ) );
 
 		return new WP_REST_Response(
 			[

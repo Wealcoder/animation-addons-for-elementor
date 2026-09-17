@@ -9,7 +9,7 @@
  *      aae_attachments row, returns { id, key } (key = claim secret).
  *   2. The submit payload carries [{ id, key }] as the file field's value;
  *      the Validator verifies every ref (id+key+form_key+pending).
- *   3. After the submission row exists (aae_form/submission_saved), the
+ *   3. After the submission row exists (aaeaddon_form/submission_saved), the
  *      refs are CLAIMED: submission_id set, status â†’ attached.
  *   4. Un-claimed rows older than PENDING_TTL are deleted (file + row) by
  *      a daily cron â€” abandoned uploads never pile up.
@@ -67,7 +67,7 @@ final class Uploads {
 
 		// Claim pending uploads once the submission row exists (never before â€”
 		// save-before-actions applies to files too).
-		add_action( 'aae_form/submission_saved', [ self::class, 'claim_for_submission' ], 5, 5 );
+		add_action( 'aaeaddon_form/submission_saved', [ self::class, 'claim_for_submission' ], 5, 5 );
 
 		// Daily orphan sweep.
 		add_action( self::CLEANUP_HOOK, [ self::class, 'cleanup' ] );
@@ -339,7 +339,7 @@ final class Uploads {
 	}
 
 	/**
-	 * aae_form/submission_saved: attach the submission's verified uploads.
+	 * aaeaddon_form/submission_saved: attach the submission's verified uploads.
 	 * File-field clean values are arrays of ['id'=>â€¦] entries (see
 	 * Validator) â€” collect the ids and claim their pending rows.
 	 */

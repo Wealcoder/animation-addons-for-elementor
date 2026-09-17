@@ -318,7 +318,7 @@ final class Loop_Filter_Auth {
 		 * @param array  $out     Declarations.
 		 * @param string $grid_id Grid element id.
 		 */
-		return (array) apply_filters( 'aae/loop_grid/filter_declarations', $out, $grid_id );
+		return (array) apply_filters( 'aaeaddon/loop_grid/filter_declarations', $out, $grid_id );
 	}
 
 	/**
@@ -1087,7 +1087,7 @@ final class Loop_Filter_Auth {
 		 *
 		 * @param string[] $names Reserved names.
 		 */
-		$names = (array) apply_filters( 'aae/loop_grid/reserved_url_keys', $names );
+		$names = (array) apply_filters( 'aaeaddon/loop_grid/reserved_url_keys', $names );
 
 		$map = [];
 		foreach ( $names as $name ) {
@@ -1201,7 +1201,7 @@ final class Loop_Filter_Auth {
 		 *
 		 * @param bool $on Default true.
 		 */
-		return (bool) apply_filters( 'aae/loop_grid/wc_url_aliases', $on );
+		return (bool) apply_filters( 'aaeaddon/loop_grid/wc_url_aliases', $on );
 	}
 
 	/**

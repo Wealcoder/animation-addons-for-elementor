@@ -92,7 +92,7 @@ class Aaeaddon_A_Form_Input extends Atomic_Widget_Base {
 		 *
 		 * @param array $options [ [ 'value' => string, 'label' => string ], … ]
 		 */
-		return (array) apply_filters( 'aae_form/input_types', $options );
+		return (array) apply_filters( 'aaeaddon_form/input_types', $options );
 	}
 
 	/**
@@ -181,7 +181,7 @@ class Aaeaddon_A_Form_Input extends Atomic_Widget_Base {
 	 * Type values that only a Pro plugin ever OFFERS, but that free must always
 	 * ACCEPT.
 	 *
-	 * Pro adds these to type_options() through `aae_form/input_types`. Free has
+	 * Pro adds these to type_options() through `aaeaddon_form/input_types`. Free has
 	 * to know them anyway, because the validation enum is not the same question
 	 * as the dropdown — see type_values().
 	 */

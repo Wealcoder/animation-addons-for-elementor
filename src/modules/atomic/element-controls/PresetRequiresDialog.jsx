@@ -21,7 +21,7 @@
  * `edit_posts` that opens the picker — because a contributor who could make
  * this site install a plugin the remote preset server named would be remote
  * code execution by proxy. `installable` mirrors whether anything is listening
- * on `aae/preset/requires/install` at all, i.e. whether Pro is here. An editor
+ * on `aaeaddon/preset/requires/install` at all, i.e. whether Pro is here. An editor
  * on a licensed site, and anyone on an unlicensed one, gets the requirement
  * line and no button — the same shape the starter template's dependency screen
  * already uses for a row it cannot satisfy.
@@ -144,7 +144,9 @@ function RequirementRow({ item }) {
         >
           {item.name}
         </Typography>
-        <Typography sx={{ fontSize: "11px", lineHeight: 1.3, color: INK_MUTED }}>
+        <Typography
+          sx={{ fontSize: "11px", lineHeight: 1.3, color: INK_MUTED }}
+        >
           {KIND_LABEL[item.kind] || item.kind}
         </Typography>
       </Stack>
@@ -190,7 +192,7 @@ function installRequirements(elementType, presetId) {
     .then((data) => {
       if (!data || !data.success) {
         throw new Error(
-          data?.data?.message || "That could not be set up. Please try again."
+          data?.data?.message || "That could not be set up. Please try again.",
         );
       }
       return data.data;
@@ -209,7 +211,12 @@ function hasDeferred(results) {
 }
 
 /* eslint-disable react/prop-types */
-export function PresetRequiresDialog({ preset, elementType, onApply, onClose }) {
+export function PresetRequiresDialog({
+  preset,
+  elementType,
+  onApply,
+  onClose,
+}) {
   const config = window.AAE_PRESET_CONFIG || {};
 
   const [status, setStatus] = React.useState(null);
@@ -232,7 +239,8 @@ export function PresetRequiresDialog({ preset, elementType, onApply, onClose }) 
 
   const items = status?.items || [];
   const missing = items.filter((i) => i.status !== "ok").length;
-  const canInstall = !!config.canInstall && !!status?.installable && missing > 0;
+  const canInstall =
+    !!config.canInstall && !!status?.installable && missing > 0;
 
   const handleInstall = () => {
     setBusy(true);
@@ -256,7 +264,9 @@ export function PresetRequiresDialog({ preset, elementType, onApply, onClose }) 
         // is what the button promised. Anything short of that (a plugin that
         // downloaded but would not activate, an ACF group deferred) keeps the
         // dialog open, because the remaining rows are now its whole point.
-        const left = (fresh?.items || []).filter((i) => i.status !== "ok").length;
+        const left = (fresh?.items || []).filter(
+          (i) => i.status !== "ok",
+        ).length;
         if (fresh && 0 === left && !waiting) {
           onApply(preset);
         }
@@ -278,7 +288,12 @@ export function PresetRequiresDialog({ preset, elementType, onApply, onClose }) 
     >
       <DialogTitle sx={{ bgcolor: SHEET, pb: 1.5 }}>
         <Typography
-          sx={{ fontWeight: 700, fontSize: "16px", lineHeight: 1.3, color: INK }}
+          sx={{
+            fontWeight: 700,
+            fontSize: "16px",
+            lineHeight: 1.3,
+            color: INK,
+          }}
         >
           {"This design needs a few things"}
         </Typography>
@@ -300,12 +315,12 @@ export function PresetRequiresDialog({ preset, elementType, onApply, onClose }) 
         </Stack>
 
         {/*
-          * The sentence that stands in for the button. Two different readers
-          * need two different sentences: an administrator on a site with no
-          * installer is looking at a licence, and an editor is looking at a
-          * wp-admin capability they cannot buy their way out of — telling the
-          * second one about Pro would send them to a shop for nothing.
-          */}
+         * The sentence that stands in for the button. Two different readers
+         * need two different sentences: an administrator on a site with no
+         * installer is looking at a licence, and an editor is looking at a
+         * wp-admin capability they cannot buy their way out of — telling the
+         * second one about Pro would send them to a shop for nothing.
+         */}
         {!canInstall && missing > 0 ? (
           <Box sx={NOTE_BOX}>
             <Typography sx={{ fontSize: "12px", lineHeight: 1.5, color: INK }}>
@@ -328,7 +343,12 @@ export function PresetRequiresDialog({ preset, elementType, onApply, onClose }) 
 
         {error ? (
           <Typography
-            sx={{ mt: 1.5, fontSize: "12px", lineHeight: 1.5, color: "#b42318" }}
+            sx={{
+              mt: 1.5,
+              fontSize: "12px",
+              lineHeight: 1.5,
+              color: "#b42318",
+            }}
           >
             {error}
           </Typography>

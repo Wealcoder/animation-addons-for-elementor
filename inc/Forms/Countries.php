@@ -8,7 +8,7 @@
  * the three can never drift apart.
  *
  * Names are translatable; the whole list is filterable via
- * `aae_form/countries` (add/remove/rename entries — keys must stay ISO
+ * `aaeaddon_form/countries` (add/remove/rename entries — keys must stay ISO
  * alpha-2 style codes, they are what gets submitted and stored).
  *
  * @package AnimationAddonsForElementor
@@ -278,7 +278,7 @@ final class Countries {
 		 *
 		 * @param array<string,string> $countries code => label.
 		 */
-		return apply_filters( 'aae_form/countries', $countries );
+		return apply_filters( 'aaeaddon_form/countries', $countries );
 	}
 
 	/**

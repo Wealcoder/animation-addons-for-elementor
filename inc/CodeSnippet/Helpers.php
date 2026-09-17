@@ -80,7 +80,7 @@ class Helpers {
 			'javascript' => __( 'JavaScript', 'animation-addons-for-elementor' ),
 		);
 
-		return apply_filters( 'wcf_code_type_list', $code_type_list ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility with existing wcf hooks.
+		return apply_filters( 'aaeaddon_code_type_list', $code_type_list );
 	}
 
 	/**
@@ -98,6 +98,6 @@ class Helpers {
 			'content_after'  => __( 'After Content', 'animation-addons-for-elementor' ),
 		);
 
-		return apply_filters( 'wcf_load_location_list', $load_location_list ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility with existing wcf hooks.
+		return apply_filters( 'aaeaddon_load_location_list', $load_location_list );
 	}
 }

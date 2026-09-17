@@ -6,7 +6,7 @@
  * all provider-agnostic:
  *
  *   1. A provider REGISTRY — pro adds concrete providers (Brevo, …) via the
- *      `aae_form/integrations` filter (mirrors Actions\Registry). Free ships
+ *      `aaeaddon_form/integrations` filter (mirrors Actions\Registry). Free ships
  *      NO providers, so on a free-only site the registry is empty and the
  *      Integrations UI shows every known provider as "Requires Pro".
  *   2. The global API-KEY store — one key per provider id, in a single
@@ -16,7 +16,7 @@
  *   3. Key MASKING for display — the UI shows `••••abcd`, never the raw key.
  *
  * The list of provider ids the UI should surface (even when no pro provider
- * backs them yet) is the `aae_form/integration_catalog` filter — so the
+ * backs them yet) is the `aaeaddon_form/integration_catalog` filter — so the
  * free "Requires Pro" card can appear before pro is installed.
  *
  * @package AnimationAddonsForElementor
@@ -43,7 +43,7 @@ final class Integrations {
 		static $providers = null;
 
 		if ( null === $providers ) {
-			$registered = apply_filters( 'aae_form/integrations', [] );
+			$registered = apply_filters( 'aaeaddon_form/integrations', [] );
 
 			$providers = [];
 			foreach ( (array) $registered as $provider ) {
@@ -72,7 +72,7 @@ final class Integrations {
 		// Providers AAE plans to support; label is a plain string here since
 		// no concrete Provider class need exist yet.
 		$catalog = apply_filters(
-			'aae_form/integration_catalog',
+			'aaeaddon_form/integration_catalog',
 			[
 				'brevo'     => 'Brevo',
 				'mailchimp' => 'Mailchimp',

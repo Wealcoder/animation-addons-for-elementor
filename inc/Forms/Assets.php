@@ -30,7 +30,7 @@ final class Assets {
 		// Force-load form assets on a page that has no form at render time but
 		// injects one later (custom AJAX / popup). Runs BEFORE localize so the
 		// handle exists to attach config to. Off by default — opt in with:
-		// add_filter( 'aae_form/force_assets', '__return_true' );
+		// add_filter( 'aaeaddon_form/force_assets', '__return_true' );
 		// (or return true only for specific pages/conditions).
 		add_action( 'wp_enqueue_scripts', [ self::class, 'maybe_force_assets' ], 15 );
 
@@ -54,7 +54,7 @@ final class Assets {
 		 *
 		 * @param bool $force Default false.
 		 */
-		if ( ! apply_filters( 'aae_form/force_assets', false ) ) {
+		if ( ! apply_filters( 'aaeaddon_form/force_assets', false ) ) {
 			return;
 		}
 

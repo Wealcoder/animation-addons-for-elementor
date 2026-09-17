@@ -173,7 +173,7 @@ class Aaeaddon_Plugin_Installer
         // all, so when nothing is, the import screen says so per row instead of
         // offering a checkbox that would quietly do nothing.
         $not_installed       = __('Not Installed', 'animation-addons-for-elementor');
-        $can_install_plugins = (bool) has_action('aae/starter_template/install_plugin');
+        $can_install_plugins = (bool) has_action('aaeaddon/starter_template/install_plugin');
         $can_install_themes  = (bool) has_filter('aae/starter_template/install_theme');
 
         // Check plugin dependencies

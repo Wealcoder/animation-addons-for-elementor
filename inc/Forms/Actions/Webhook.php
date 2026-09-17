@@ -57,7 +57,7 @@ class Webhook extends Action_Base {
 				'timeout'   => self::TIMEOUT,
 				'headers'   => [ 'Content-Type' => 'application/json; charset=utf-8' ],
 				'body'      => wp_json_encode( $body ),
-				'sslverify' => apply_filters( 'aae_form/webhook_sslverify', true ),
+				'sslverify' => apply_filters( 'aaeaddon_form/webhook_sslverify', true ),
 			]
 		);
 

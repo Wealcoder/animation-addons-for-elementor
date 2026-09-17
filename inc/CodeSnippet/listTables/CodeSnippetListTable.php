@@ -33,7 +33,7 @@ class CodeSnippetListTable extends AbstractListTable {
 			)
 		);
 		$this->screen   = get_current_screen();
-		$this->base_url = admin_url( 'admin.php?page=wcf-code-snippet' );
+		$this->base_url = admin_url( 'admin.php?page=' . \Wealcoder\AnimationAddons\CodeSnippet\CodeSnippet::PAGE_SLUG );
 		parent::__construct( $args );
 	}
 
@@ -485,7 +485,7 @@ class CodeSnippetListTable extends AbstractListTable {
 				break;
 
 			default:
-				$value = apply_filters( 'wcf_code_snippet_list_table_column_' . $column_name, $value, $item ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility with existing wcf hooks.
+				$value = apply_filters( 'aaeaddon_code_snippet_list_table_column_' . $column_name, $value, $item );
 		}
 
 		return $value;

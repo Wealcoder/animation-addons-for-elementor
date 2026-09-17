@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { __ } from "@wordpress/i18n";
 import { useState } from "react";
 import { toast } from "sonner";
-
+
 import { proAction } from "../lib/proAction";
 /**
  * Performance — how AAE's animation runtime is DELIVERED, as opposed to what it
@@ -15,8 +15,8 @@ import { proAction } from "../lib/proAction";
  *
  * This SCREEN is the free plugin's; everything behind it is Pro. The settings
  * store, the AJAX endpoints and the script-delivery pipeline all live in
- * pro/inc/Performance/, and the payload reaches us through the
- * `aae/performance/dashboard_payload` filter Pro answers. Without Pro that
+ * paaeaddon/performance/dashboard_payloadoad reaches us through the
+ * `aaeaddon/performance/dashboard_payload` filter Pro answers. Without Pro that
  * payload is an empty array, which is exactly how this page knows to render the
  * locked state rather than an empty one.
  *
@@ -135,16 +135,28 @@ const ServerHealth = ({ server, onReset, resetting, resetNote }) => {
       className={`rounded-lg border p-4 mt-4 ${tone}`}
       data-aae-server-advice={server.state}
     >
-      <p className="text-[13px] font-semibold leading-snug">{server.headline}</p>
-      <p className="text-[12px] leading-relaxed mt-1.5 opacity-90">{server.body}</p>
+      <p className="text-[13px] font-semibold leading-snug">
+        {server.headline}
+      </p>
+      <p className="text-[12px] leading-relaxed mt-1.5 opacity-90">
+        {server.body}
+      </p>
 
       <ul className="mt-3 space-y-1 list-none">
         {server.rows.map((row) => {
-          const expandable = !!(row.why || row.steps?.length || row.snippet?.length);
+          const expandable = !!(
+            row.why ||
+            row.steps?.length ||
+            row.snippet?.length
+          );
           const open = openRow === row.id;
 
           return (
-            <li key={row.id} data-aae-server-row={row.id} data-state={row.state}>
+            <li
+              key={row.id}
+              data-aae-server-row={row.id}
+              data-state={row.state}
+            >
               <button
                 type="button"
                 disabled={!expandable}
@@ -206,10 +218,7 @@ const ServerHealth = ({ server, onReset, resetting, resetNote }) => {
         <p className="text-[11px] mt-3 opacity-70 break-all">
           Loaded php.ini: <code>{server.ini.loaded}</code>
           {!!server.ini.scanned?.length && (
-            <>
-              {" "}
-              (+{server.ini.scanned.length} more scanned)
-            </>
+            <> (+{server.ini.scanned.length} more scanned)</>
           )}
         </p>
       )}
@@ -226,10 +235,12 @@ const ServerHealth = ({ server, onReset, resetting, resetNote }) => {
             {resetting ? "Flushing…" : "Flush compiled code cache"}
           </button>
           <p className="text-[11px] mt-1 opacity-70">
-            Only useful right after deploying code. On shared PHP-FPM this clears
-            the cache for every site in the pool, and they all recompile.
+            Only useful right after deploying code. On shared PHP-FPM this
+            clears the cache for every site in the pool, and they all recompile.
           </p>
-          {resetNote && <p className="text-[11px] mt-1 font-medium">{resetNote}</p>}
+          {resetNote && (
+            <p className="text-[11px] mt-1 font-medium">{resetNote}</p>
+          )}
         </div>
       )}
     </div>
@@ -405,7 +416,10 @@ const Performance = ({ embedded = false }) => {
     if (!WCF_ADDONS_ADMIN?.nonce || !WCF_ADDONS_ADMIN?.ajaxurl) return null;
     const response = await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
       method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded", Accept: "application/json" },
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Accept: "application/json",
+      },
       credentials: "same-origin",
       body: new URLSearchParams({
         action: proAction("save_performance_settings"),
@@ -441,7 +455,10 @@ const Performance = ({ embedded = false }) => {
     try {
       const response = await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
         method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded", Accept: "application/json" },
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Accept: "application/json",
+        },
         credentials: "same-origin",
         body: new URLSearchParams({
           action: proAction("server_opcache_reset"),
@@ -449,7 +466,9 @@ const Performance = ({ embedded = false }) => {
         }),
       });
       const body = await response.json();
-      setOpcacheNote(body?.data?.message || (body?.success ? "Done." : "Could not flush."));
+      setOpcacheNote(
+        body?.data?.message || (body?.success ? "Done." : "Could not flush."),
+      );
     } catch (e) {
       setOpcacheNote("Could not reach the server.");
     } finally {
@@ -561,7 +580,11 @@ const Performance = ({ embedded = false }) => {
   // (Theme Assets is only offered while the companion theme is active), which
   // would otherwise leave the strip with nothing selected.
   const current =
-    active === DIAGNOSTICS_TAB && hasDiagnostics ? DIAGNOSTICS_TAB : schema[active] ? active : groups[0][0];
+    active === DIAGNOSTICS_TAB && hasDiagnostics
+      ? DIAGNOSTICS_TAB
+      : schema[active]
+      ? active
+      : groups[0][0];
 
   return (
     <div>
@@ -587,11 +610,10 @@ const Performance = ({ embedded = false }) => {
                     or the report only reaches people who already went looking.
                     A dot does that without a number to argue about.
                   */}
-                  {(diagnosticsState === "warn" || diagnosticsState === "info") && (
+                  {(diagnosticsState === "warn" ||
+                    diagnosticsState === "info") && (
                     <span
-                      className={`inline-block w-1.5 h-1.5 rounded-full ml-1.5 align-middle ${
-                        ROW_DOT[diagnosticsState]
-                      }`}
+                      className={`inline-block w-1.5 h-1.5 rounded-full ml-1.5 align-middle ${ROW_DOT[diagnosticsState]}`}
                       aria-hidden="true"
                     />
                   )}
@@ -624,7 +646,10 @@ const Performance = ({ embedded = false }) => {
               <p className="text-[13px] font-medium text-[var(--900,#181B25)]">
                 {wizardDone
                   ? __("Performance setup", "animation-addons-for-elementor")
-                  : __("Set up performance in a few steps", "animation-addons-for-elementor")}
+                  : __(
+                      "Set up performance in a few steps",
+                      "animation-addons-for-elementor",
+                    )}
               </p>
               <p className="text-[12px] text-[var(--600,#525866)] mt-1">
                 {__(
@@ -647,7 +672,11 @@ const Performance = ({ embedded = false }) => {
         )}
 
         {hasDiagnostics && (
-          <TabsContent value={DIAGNOSTICS_TAB} className="mt-6" data-aae-diagnostics-panel>
+          <TabsContent
+            value={DIAGNOSTICS_TAB}
+            className="mt-6"
+            data-aae-diagnostics-panel
+          >
             {/*
               Cache advice first: a page cache removes most server time
               outright, so it is the thing to get right before anything below it

@@ -207,6 +207,12 @@ final class Bootstrap {
 
 		( new Assets() )->register();
 
+		// Elementor's own atomic handler bundles (YouTube, Tabs, action links)
+		// are webpack chunks that never execute on a V4-only page, because the
+		// runtime they need only ships with a CLASSIC element. One added
+		// dependency; see the class docblock for the measurement.
+		( new \Wealcoder\AnimationAddons\Atomic\Compat\Elementor_Chunk_Runtime() )->register();
+
 		// Editor schema trim — strips each extension's props from the EDITOR
 		// copy of every atomic type the extension does not apply to. The
 		// props-schema filter has no element argument, so every module above

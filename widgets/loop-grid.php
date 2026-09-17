@@ -1231,6 +1231,19 @@ class Loop_Grid extends \Elementor\Widget_Base {
 			return;
 		}
 
+		// The Loop Builder module (Template_Manager / Query_Manager / the AJAX
+		// handler) stands down when Elementor Pro is active — its document type
+		// is also called `loop-item`, and registering it twice hands every
+		// Elementor Pro loop template to the wrong class. This widget stays
+		// registered, so a page saved with it used to FATAL on the first render
+		// after Elementor Pro was activated: "Class Query_Manager not found",
+		// a white page. Render nothing (the editor gets the usual notice) and
+		// leave the saved settings intact for when the module is back.
+		if ( ! class_exists( Query_Manager::class ) || ! class_exists( Template_Manager::class ) ) {
+			$this->render_empty_view();
+			return;
+		}
+
 		// Get the current page for pagination.
 		$paged             = $this->get_current_page();
 		$settings['paged'] = $paged;

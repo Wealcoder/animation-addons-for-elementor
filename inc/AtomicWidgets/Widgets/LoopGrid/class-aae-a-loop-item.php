@@ -178,6 +178,14 @@ class Aaeaddon_A_Loop_Item extends Atomic_Element_Base {
             return;
         }
 
+        // Prime every card's featured image in two queries. WP_Query primes
+        // posts, meta and terms but never thumbnails — core only does that for
+        // the MAIN loop (get_the_post_thumbnail() -> in_the_loop()). Without
+        // this, every Post Image (and Pro's featured-image dynamic tag) fetched
+        // its attachment post + meta on its own: measured 24 queries for a
+        // 12-card grid, on the page and again on every AJAX page/filter.
+        update_post_thumbnail_cache( $query );
+
         // Repeat the WHOLE card once per post. Each iteration runs the Loop Item's
         // Twig template (render()) — NOT parent::print_content(), which is the bare
         // Element_Base loop-children method and would skip the item's own wrapper
@@ -215,7 +223,7 @@ class Aaeaddon_A_Loop_Item extends Atomic_Element_Base {
      *                      controls, which on a mobile drawer are behind a
      *                      toggle the visitor has to reopen.
      *
-     * `aae/loop_grid/empty_message` is the seam for a site that wants its own
+     * `aaeaddon/loop_grid/empty_message` is the seam for a site that wants its own
      * words; it runs through wp_kses_post(), so a link in it survives.
      */
     private static function empty_state( array $ctx ): string {
@@ -255,7 +263,7 @@ class Aaeaddon_A_Loop_Item extends Atomic_Element_Base {
          * @param bool   $filtered Is this an empty RESULT, or an empty collection?
          * @param array  $ctx      The grid's render context.
          */
-        $message = apply_filters( 'aae/loop_grid/empty_message', $message, (bool) $filters, $ctx );
+        $message = apply_filters( 'aaeaddon/loop_grid/empty_message', $message, (bool) $filters, $ctx );
 
         return '<div class="aae-a-loop-grid-empty">'
             . '<p class="aae-a-loop-grid-empty-text">' . wp_kses_post( $message ) . '</p>'
