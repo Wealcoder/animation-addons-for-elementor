@@ -2,7 +2,7 @@
  * AAE Forms — "Form Submissions" dashboard tab (Milestone 9).
  *
  * Lives inside the Animation Addon React dashboard
- * (admin.php?page=wcf_addons_settings&tab=submissions) and reuses its
+ * (admin.php?page=aaeaddon_settings&tab=submissions) and reuses its
  * shadcn UI kit so it inherits the dashboard theme. Data comes from the
  * aae/v1/admin/* REST routes (cookie auth + X-WP-Nonce, manage_options),
  * localized as AAE_FORMS_ADMIN on the dashboard bundle.

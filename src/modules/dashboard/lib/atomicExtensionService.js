@@ -213,7 +213,7 @@ export const countAtomicExtensions = (allAtomicExtensions) => {
 };
 
 // Flattens the category-grouped state back to the `{ slug: true }` map the
-// `aae_save_atomic_extensions` AJAX handler
+// `aaeaddon_save_atomic_extensions` AJAX handler
 // (class-atomic.php::ajax_save_extension_settings) expects. Unlike the
 // atomic widgets list, every extension in the registry is shown on this
 // dashboard page (none are hidden as internal/demo-only), so there is no

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 const WizCongratulation = () => {
   const gotoDashboard = () => {
     setTimeout(() => {
-      window.location.href = `${WCF_ADDONS_ADMIN.adminURL}/admin.php?page=wcf_addons_settings&tab=dashboard`;
+      window.location.href = `${WCF_ADDONS_ADMIN.adminURL}/admin.php?page=aaeaddon_settings&tab=dashboard`;
     }, 100);
   };
 

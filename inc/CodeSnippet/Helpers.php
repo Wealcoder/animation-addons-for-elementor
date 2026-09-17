@@ -56,7 +56,7 @@ class Helpers {
 	 * @since 2.3.10
 	 * @return object
 	 */
-	public static function aae_get_list_table( $type ) {
+	public static function get_list_table( $type ) {
 		switch ( $type ) {
 			case 'wcf-code-snippet':
 			default:

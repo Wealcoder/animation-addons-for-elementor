@@ -31,7 +31,7 @@ const GlobalSettings = () => {
       },
 
       body: new URLSearchParams({
-        action: "wcf_save_custom_fonts_settings",
+        action: "aaeaddon_save_custom_fonts_settings",
         custom_font_global: JSON.stringify(isChecked),
         nonce: WCF_ADDONS_ADMIN.nonce,
         id: WCF_ADDONS_ADMIN.id,

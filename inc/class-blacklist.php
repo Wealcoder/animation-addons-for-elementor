@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * None of the controls have `frontend_available => true` or functional JS,
  * so they render in the panel but do nothing.
  */
-class WCFAddon_BlackList_Notice {
+class Aaeaddon_BlackList_Notice {
 
 	private static function pro_notice( $element, $id ) {
 		$element->add_control( $id, [
@@ -1273,5 +1273,5 @@ class WCFAddon_BlackList_Notice {
 }
 
 if ( ! defined( 'WCF_ADDONS_PRO_FILE' ) ) {
-	WCFAddon_BlackList_Notice::init();
+	Aaeaddon_BlackList_Notice::init();
 }

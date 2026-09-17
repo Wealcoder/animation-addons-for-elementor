@@ -13,7 +13,7 @@ trait Aaeaddon_Post_Handler_Legacy_Trait
 {
 
 
-	function wcf_wrap_first_n_words($text, $n, $class = 'highlight')
+	function wrap_first_n_words($text, $n, $class = 'highlight')
 	{
 		// Split the text into an array of words
 		$words = explode(' ', $text);
@@ -51,7 +51,7 @@ trait Aaeaddon_Post_Handler_Legacy_Trait
 					$title                  = $this->trim_words(get_the_title(), $max_length);
 					$highlight_title_length = (int) $this->get_settings('highlight_title_length');
 
-					echo wp_kses_post($this->wcf_wrap_first_n_words($title, $highlight_title_length)); // Wrap first 2 words
+					echo wp_kses_post($this->wrap_first_n_words($title, $highlight_title_length)); // Wrap first 2 words
 
 				} else {
 					the_title();

@@ -12,7 +12,7 @@
  * elements, this module:
  *   1. watches the preview for each loop-grid wrap,
  *   2. wraps the single authored card in a `.aae-a-loop-grid` grid container,
- *   3. fetches the queried posts' data (ajax: aae_loop_post_data) and appends
+ *   3. fetches the queried posts' data (ajax: aaeaddon_loop_post_data) and appends
  *      inert CLONES of the authored card — one per remaining post — each filled
  *      with that post's title/image/url. Clones are display-only
  *      (pointer-events:none, data-aae-clone) and never become editor elements.
@@ -175,7 +175,7 @@ async function fetchPosts(s, sig) {
 		return null;
 	}
 	const body = new FormData();
-	body.append('action', 'aae_loop_post_data');
+	body.append('action', 'aaeaddon_loop_post_data');
 	body.append('nonce', c.nonce);
 	body.append('post_type', s.post_type);
 	body.append('posts_per_page', String(s.posts_per_page));
@@ -515,7 +515,7 @@ async function fillAuthoredSample(pdoc) {
 		return;
 	}
 	const body = new FormData();
-	body.append('action', 'aae_loop_sample_post');
+	body.append('action', 'aaeaddon_loop_sample_post');
 	body.append('nonce', c.nonce);
 	body.append('sample_id', String(id));
 	let data = null;

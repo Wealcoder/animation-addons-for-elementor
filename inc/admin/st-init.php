@@ -1,6 +1,7 @@
 <?php
 namespace Wealcoder\AnimationAddons\Admin\Base;
 
+use Wealcoder\AnimationAddons\Nonce;
 use WP_Error;
 
 if (! defined('ABSPATH')) {
@@ -110,7 +111,8 @@ class OneClickImport
 		add_action('wp_import_insert_post', [$this, 'save_wp_navigation_import_mapping'], 10, 4);
 		add_action('wp_import_insert_post', [$this, 'save_wp_page_import_track'], 10, 4);
 		add_action('aaeaddon/after_import', [$this, 'fix_imported_wp_navigation']);
-		add_action('wp_ajax_aae_lite_get_latest_imported_pages', [$this,'aae_get_latest_imported_pages']);	
+		// 'aae_lite_get_latest_imported_pages' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
+		\Wealcoder\AnimationAddons\Ajax_Alias::register( 'aae_lite_get_latest_imported_pages', 'aaeaddon_lite_get_latest_imported_pages', [$this,'get_latest_imported_pages'] );
 			
 	}
 
@@ -141,11 +143,11 @@ class OneClickImport
 		}
 	}
 
-	function aae_get_latest_imported_pages() {
+	function get_latest_imported_pages() {
 		// phpcs:disable WordPress.Security.NonceVerification.Missing
 		if (
 			! isset( $_POST['nonce'] ) ||
-			! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'wcf_admin_nonce' )
+			! Nonce::verify( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), Nonce::ADMIN )
 		) {
 			wp_send_json_error( [ 'message' => 'Invalid or missing nonce' ], 403 );
 		}
@@ -247,7 +249,7 @@ class OneClickImport
 			// Get selected file index or set it to 0.
 			$this->selected_index = 0;
 			$template_data = [];
-			check_ajax_referer('wcf_admin_nonce', 'nonce');
+			Nonce::check_ajax( Nonce::ADMIN, 'nonce');
 			if (isset($_POST['template_data'])) {
 
 				$json_data     = sanitize_text_field(wp_unslash($_POST['template_data']));  // Remove slashes if added by WP		
@@ -392,7 +394,7 @@ class OneClickImport
 
 		$response['msg'] = esc_html__('Congrats, your demo has been imported.', 'animation-addons-for-elementor');
 		$response['progress'] = 80;
-		check_ajax_referer('wcf_admin_nonce', 'nonce');
+		Nonce::check_ajax( Nonce::ADMIN, 'nonce');
 		if (isset($_POST['template_data'])) {
 			if (isset($template_data['local_path'])) {
 				unset($template_data['local_path']);

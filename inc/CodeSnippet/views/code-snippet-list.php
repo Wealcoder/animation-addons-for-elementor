@@ -14,7 +14,7 @@ defined( 'ABSPATH' ) || exit;
 // These view files are included in global scope, so a variable named after a
 // WordPress global would overwrite it. Hence the wcf_ prefixes below.
 
-$list_table = Helpers::aae_get_list_table( 'wcf-code-snippet' );  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility with existing wcf hooks.
+$list_table = Helpers::get_list_table( 'wcf-code-snippet' );  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility with existing wcf hooks.
 $wcf_action     = $list_table->current_action();
 if ( $wcf_action ) {
 	$list_table->process_bulk_action( $wcf_action );

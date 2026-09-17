@@ -24,6 +24,7 @@
 
 namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SearchForm;
 
+use Wealcoder\AnimationAddons\Nonce;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
@@ -230,7 +231,7 @@ class Aaeaddon_A_Search_Form extends Atomic_Element_Base {
 
 		$settings['search_config'] = wp_json_encode( [
 			'ajaxUrl'    => admin_url( 'admin-ajax.php' ),
-			'nonce'      => wp_create_nonce( 'wcf-addons-frontend' ),
+			'nonce'      => Nonce::create( Nonce::FRONTEND ),
 			'action'     => 'aaeaddon_live_search',
 			'mode'       => isset( $settings['mode'] ) ? $settings['mode'] : 'inline',
 			'position'   => isset( $settings['position'] ) ? $settings['position'] : 'left',

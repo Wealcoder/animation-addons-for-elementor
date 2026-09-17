@@ -30,7 +30,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 final class Cache {
 
-	const TYPE_TRANSIENT_PREFIX = 'aae_preset_type_';
+	const TYPE_TRANSIENT_PREFIX = 'aaeaddon_preset_type_';
 	const MANIFEST_OPTION       = 'aaeaddon_preset_manifest_cache';
 
 	private Remote_Client $remote;

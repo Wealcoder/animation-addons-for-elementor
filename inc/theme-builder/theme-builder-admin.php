@@ -2,8 +2,7 @@
 
 namespace Wealcoder\AnimationAddons;
 
-use Elementor\Modules\Library\Documents\Library_Document;
-use Elementor\Plugin as ElementorPlugin;
+use Wealcoder\AnimationAddons\Nonce;
 
 if (! defined('ABSPATH')) {
 	exit();
@@ -64,12 +63,15 @@ class Aaeaddon_Theme_Builder_Admin
 		add_action('admin_footer', array($this, 'print_popup'));
 
 		// Template store ajax action
-		add_action('wp_ajax_wcf_save_template', array($this, 'save_template_request'));
+		// 'wcf_save_template' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
+		\Wealcoder\AnimationAddons\Ajax_Alias::register( 'wcf_save_template', 'aaeaddon_save_template', array($this, 'save_template_request') );
 
 		// Get template data Ajax action
-		add_action('wp_ajax_wcf_get_template', array($this, 'get_post_By_id'));
+		// 'wcf_get_template' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
+		\Wealcoder\AnimationAddons\Ajax_Alias::register( 'wcf_get_template', 'aaeaddon_get_template', array($this, 'get_post_By_id') );
 
-		add_action('wp_ajax_wcf_get_posts_by_query', array($this, 'get_posts_by_query'));
+		// 'wcf_get_posts_by_query' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
+		\Wealcoder\AnimationAddons\Ajax_Alias::register( 'wcf_get_posts_by_query', 'aaeaddon_get_posts_by_query', array($this, 'get_posts_by_query') );
 
 		// Load Scripts
 		add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
@@ -428,7 +430,7 @@ class Aaeaddon_Theme_Builder_Admin
 
 			$nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
 
-			if (! wp_verify_nonce($nonce, 'wcf_tmp_nonce')) {
+			if (! Nonce::verify( $nonce, Nonce::THEME_BUILDER )) {
 				$errormessage = array(
 					'message' => esc_html__('Nonce Varification Faild !', 'animation-addons-for-elementor'),
 				);
@@ -495,7 +497,7 @@ class Aaeaddon_Theme_Builder_Admin
 
 			$nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
 
-			if (! wp_verify_nonce($nonce, 'wcf_tmp_nonce')) {
+			if (! Nonce::verify( $nonce, Nonce::THEME_BUILDER )) {
 				$errormessage = array(
 					'message' => esc_html__('Nonce Varification Failed !', 'animation-addons-for-elementor'),
 				);
@@ -588,7 +590,7 @@ class Aaeaddon_Theme_Builder_Admin
 
 			$nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
 
-			if (! wp_verify_nonce($nonce, 'wcf_tmp_nonce')) {
+			if (! Nonce::verify( $nonce, Nonce::THEME_BUILDER )) {
 				$errormessage = array(
 					'message' => esc_html__('Nonce Verification Failed!', 'animation-addons-for-elementor'),
 				);
@@ -850,7 +852,7 @@ class Aaeaddon_Theme_Builder_Admin
 
 			$localize_data = array(
 				'ajaxurl'         => admin_url('admin-ajax.php'),
-				'nonce'           => wp_create_nonce('wcf_tmp_nonce'),
+				'nonce'           => Nonce::create( Nonce::THEME_BUILDER ),
 				'adminURL'        => admin_url(),
 				'hflocation'      => Aaeaddon_Theme_Builder::get_hf_location_selections(),
 				'archivelocation' => Aaeaddon_Theme_Builder::get_archive_location_selections(),
@@ -889,7 +891,6 @@ class Aaeaddon_Theme_Builder_Admin
 		}
 	}
 
-
 	/**
 	 * [admin_menu] Add Post type Submenu
 	 *
@@ -899,7 +900,7 @@ class Aaeaddon_Theme_Builder_Admin
 	{
 		$link_custom_post = 'edit.php?post_type=' . Aaeaddon_Theme_Builder::CPTTYPE;
 		add_submenu_page(
-			'wcf_addons_page',
+			'aaeaddon_page',
 			esc_html__('Theme Builder', 'animation-addons-for-elementor'),
 			esc_html__('Theme Builder', 'animation-addons-for-elementor'),
 			'manage_options',

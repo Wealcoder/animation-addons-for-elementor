@@ -21,6 +21,7 @@
 
 namespace Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid;
 
+use Wealcoder\AnimationAddons\Nonce;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
@@ -810,8 +811,11 @@ class Aaeaddon_A_Loop_Grid extends Atomic_Element_Base {
 			'query'     => isset( $ctx['query'] ) ? $ctx['query'] : [],
 			// (object) so an empty map encodes as {} — JS reads it as an object.
 			'filters'   => (object) ( isset( $ctx['filters'] ) && is_array( $ctx['filters'] ) ? $ctx['filters'] : [] ),
-			'nonce'     => wp_create_nonce( 'aae_loop_grid_front' ),
+			'nonce'     => Nonce::create( Nonce::LOOP_GRID_FRONT ),
 			'ajaxUrl'   => admin_url( 'admin-ajax.php' ),
+			// The endpoint's action name, so Pro's runtime never has to spell it
+			// (4.2 renamed it; Pro falls back to the old name when this is absent).
+			'action'    => 'aaeaddon_loop_grid_page',
 		];
 	}
 

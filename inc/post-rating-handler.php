@@ -272,7 +272,7 @@ function aaeaddon_handle_lite_post_rating_submission()
 
 	// 2. Nonce verification
 	$nonce = isset($_REQUEST['nonce']) ? sanitize_text_field(wp_unslash($_REQUEST['nonce'])) : '';
-	if (! $nonce || ! wp_verify_nonce($nonce, 'wcf-addons-frontend')) {
+	if (! $nonce || ! \Wealcoder\AnimationAddons\Nonce::verify( $nonce, \Wealcoder\AnimationAddons\Nonce::FRONTEND )) {
 		wp_send_json_error(['message' => esc_html__('Security check failed.', 'animation-addons-for-elementor')], 403);
 	}
 

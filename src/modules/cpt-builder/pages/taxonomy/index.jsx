@@ -16,7 +16,7 @@ const Taxonomy = () => {
           Accept: "application/json",
         },
         body: new URLSearchParams({
-          action: "aae_add_or_update_new_taxonomy_builder",
+          action: "aaeaddon_add_or_update_new_taxonomy_builder",
           taxonomy_title: "New Taxonomy",
           nonce: WCF_ADDONS_ADMIN.nonce,
         }),

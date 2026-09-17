@@ -14,7 +14,7 @@
  * WP_Query on the server (Aaeaddon_A_Loop_Grid::build_query_args), the label
  * re-hydrates the chip when the panel reopens, no lookup round-trip needed.
  *
- * Search goes through admin-ajax `aae_loop_query_options` (kind: 'post'
+ * Search goes through admin-ajax `aaeaddon_loop_query_options` (kind: 'post'
  * searches titles/IDs across public post types, kind: 'term' searches one
  * taxonomy's terms). An empty search returns the 20 most recent / first 20 —
  * so opening the field shows browsable options immediately.
@@ -54,7 +54,7 @@ async function fetchOptions( { kind, taxonomy, search, postType } ) {
 		return [];
 	}
 	const body = new FormData();
-	body.append( 'action', 'aae_loop_query_options' );
+	body.append( 'action', 'aaeaddon_loop_query_options' );
 	body.append( 'nonce', cfg.nonce );
 	body.append( 'kind', kind );
 	if ( taxonomy ) {

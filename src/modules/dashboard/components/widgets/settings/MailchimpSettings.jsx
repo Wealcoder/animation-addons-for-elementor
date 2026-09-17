@@ -39,7 +39,7 @@ const MailchimpSettings = () => {
         Accept: "application/json",
       },
       body: new URLSearchParams({
-        action: "aae_get_dynamic_settings",
+        action: "aaeaddon_get_dynamic_settings",
         setting_name: "aaeaddon_mailchimp_api",
         nonce: WCF_ADDONS_ADMIN.nonce,
       }),
@@ -70,7 +70,7 @@ const MailchimpSettings = () => {
         Accept: "application/json",
       },
       body: new URLSearchParams({
-        action: "aae_save_dynamic_settings",
+        action: "aaeaddon_save_dynamic_settings",
         setting_name: "aaeaddon_mailchimp_api",
         form_fields: data.api_key,
         nonce: WCF_ADDONS_ADMIN.nonce,

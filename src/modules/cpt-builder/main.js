@@ -14,5 +14,5 @@ wp.element.render(
   <AppContextProvider>
     <MainLayout />
   </AppContextProvider>,
-  document.getElementById("wcf-cpt-builder")
+  document.getElementById("aaeaddon-cpt-builder")
 );

@@ -96,6 +96,34 @@ final class Key_Bridge {
 		self::$prefixes = $map['prefixes'];
 
 		self::set_phase( self::phase_from_state( get_option( self::STATE_OPTION ) ) );
+
+		// MULTISITE. The phase is a property of ONE site's database (its own
+		// migration state, its own option rows) and the bridge memoises it,
+		// so a switch_to_blog() -- a network loop, an importer, WooCommerce --
+		// would keep redirecting reads with the PREVIOUS site's answer. The
+		// `switch_blog` action fires for both switch_to_blog() and
+		// restore_current_blog(); re-decide from the site now current. One
+		// autoloaded read per actual change of site, nothing on a single site.
+		if ( is_multisite() ) {
+			add_action( 'switch_blog', array( __CLASS__, 'on_switch_blog' ), 1, 2 );
+		}
+	}
+
+	/**
+	 * `switch_blog`: re-read the migration state of the site now current and
+	 * put the bridge in that site's phase. Also drops Migration's own memo.
+	 *
+	 * @param int $new_blog_id  Site switched to.
+	 * @param int $prev_blog_id Site switched from.
+	 */
+	public static function on_switch_blog( $new_blog_id, $prev_blog_id ) {
+		if ( (int) $new_blog_id === (int) $prev_blog_id ) {
+			return;
+		}
+		self::set_phase( self::phase_from_state( self::raw_get( self::STATE_OPTION ) ) );
+		if ( class_exists( __NAMESPACE__ . '\Migration', false ) ) {
+			Migration::forget_state();
+		}
 	}
 
 	/** The key map (key-map.php), loaded once. */

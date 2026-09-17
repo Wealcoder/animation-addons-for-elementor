@@ -9,6 +9,8 @@
  */
 
 /** Is the Pro scan endpoint there to answer? */
+import { proAction } from "./proAction";
+
 export const USAGE_AVAILABLE = !!WCF_ADDONS_ADMIN?.usage?.available;
 
 /**
@@ -30,7 +32,7 @@ export const fetchWidgetUsage = async () => {
       Accept: "application/json",
     },
     body: new URLSearchParams({
-      action: "aae_scan_widget_usage",
+      action: proAction("scan_widget_usage"),
       nonce: WCF_ADDONS_ADMIN.nonce,
     }),
   });

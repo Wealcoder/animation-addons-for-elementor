@@ -1,6 +1,8 @@
 <?php
 namespace Wealcoder\AnimationAddons\Widgets;
 
+use Wealcoder\AnimationAddons\Nonce;
+
 use Elementor\Group_Control_Background;
 use Wealcoder\AnimationAddons\Aaeaddon_Post_Query_Trait;
 use Wealcoder\AnimationAddons\Aaeaddon_Post_Handler_Trait;
@@ -1266,7 +1268,7 @@ class Loop_Grid extends \Elementor\Widget_Base {
 					'orderby'              => isset( $settings['orderby'] ) ? $settings['orderby'] : 'date',
 					'order'                => isset( $settings['order'] ) ? $settings['order'] : 'DESC',
 					'widget_id'            => $this->get_id(),
-					'nonce'                => wp_create_nonce( 'aae_loop_builder_nonce' ),
+					'nonce'                => Nonce::create( Nonce::LOOP_BUILDER ),
 				)
 			),
 		);

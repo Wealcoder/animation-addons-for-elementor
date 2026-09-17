@@ -61,7 +61,7 @@ const ShowAllTaxonomy = () => {
           Accept: "application/json",
         },
         body: new URLSearchParams({
-          action: "aae_delete_taxonomy_builder",
+          action: "aaeaddon_delete_taxonomy_builder",
           taxonomy_id: value,
           nonce: WCF_ADDONS_ADMIN.nonce,
         }),

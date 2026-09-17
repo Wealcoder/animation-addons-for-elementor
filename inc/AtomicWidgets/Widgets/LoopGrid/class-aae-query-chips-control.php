@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * fills the gap: it serialises as { type: 'aae-query-chips' } and the editing
  * panel routes it to the React component registered under the same id in
  * src/modules/atomic/element-controls/QueryChipsControl.jsx (an MUI
- * Autocomplete, multiple, fed by the `aae_loop_query_options` admin-ajax
+ * Autocomplete, multiple, fed by the `aaeaddon_loop_query_options` admin-ajax
  * search endpoint).
  *
  * Each selected option is stored as ONE string of the bound String_Array:

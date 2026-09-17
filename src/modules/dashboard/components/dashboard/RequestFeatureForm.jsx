@@ -11,7 +11,7 @@ import SubmitIcon from "../../../../../public/images/submit-icon.png";
 const initialForm = { name: "", email: "", feature: "" };
 
 /**
- * Posts to the `wcf_request_new_feature` admin-ajax action
+ * Posts to the `aaeaddon_request_new_feature` admin-ajax action
  * (Dashboard::request_new_feature in inc/admin/dashboard.php), which relays
  * the submission server-to-server to animation-addons.com. The shared key
  * lives in PHP for exactly that reason — it must never reach this bundle.
@@ -39,7 +39,7 @@ const RequestFeatureForm = () => {
           Accept: "application/json",
         },
         body: new URLSearchParams({
-          action: "wcf_request_new_feature",
+          action: "aaeaddon_request_new_feature",
           name: form.name,
           email: form.email,
           feature: form.feature,

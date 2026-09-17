@@ -15,7 +15,7 @@
                         url: WCF_ADDONS_JS.ajaxUrl, // WordPress AJAX handler
                         type: 'POST',
                         data: {
-                            action: 'aae_post_shares', // Custom action name
+                            action: 'aaeaddon_post_shares', // Custom action name
                             post_id: WCF_ADDONS_JS.post_id, // Post ID to update share count
                             nonce : WCF_ADDONS_JS._wpnonce,
                             social: type

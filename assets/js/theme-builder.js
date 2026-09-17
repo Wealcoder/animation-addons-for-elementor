@@ -77,7 +77,7 @@
             return {
               q: params.term, // search term
               page: params.page || 1,
-              action: "wcf_get_posts_by_query",
+              action: "aaeaddon_get_posts_by_query",
               nonce: Aaeaddon_Theme_Builder.nonce,
             };
           },
@@ -184,7 +184,7 @@
         $.ajax({
           url: Aaeaddon_Theme_Builder.ajaxurl,
           data: {
-            action: "wcf_get_template",
+            action: "aaeaddon_get_template",
             nonce: Aaeaddon_Theme_Builder.nonce,
             tmpId: tmpId,
           },
@@ -372,7 +372,7 @@
       }
 
       let data = {
-        action: "wcf_save_template",
+        action: "aaeaddon_save_template",
         nonce: Aaeaddon_Theme_Builder.nonce,
         tmpId: tmpId,
         title: title,

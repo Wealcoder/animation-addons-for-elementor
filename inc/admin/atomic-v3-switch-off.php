@@ -207,7 +207,7 @@ class Atomic_V3_Switch_Off {
 		// for up to an hour on a site that no longer has anything v3 to show.
 		// Only a NEGATIVE is ever kept stale on purpose (see maybe_invalidate_v3_usage());
 		// dropping the row here just makes the next read honest.
-		delete_transient( 'aae_v3_usage' );
+		delete_transient( 'aaeaddon_v3_usage' );
 
 		update_option( self::RECORD_OPTION, $record, false );
 
@@ -263,7 +263,7 @@ class Atomic_V3_Switch_Off {
 			Animation_Settings::set_legacy_v3( (bool) $record['legacy_v3'] );
 		}
 
-		delete_transient( 'aae_v3_usage' );
+		delete_transient( 'aaeaddon_v3_usage' );
 		\Wealcoder\AnimationAddons\Compat\Key_Bridge::delete_option( self::RECORD_OPTION );
 
 		return true;

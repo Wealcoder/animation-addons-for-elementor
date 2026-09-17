@@ -3,7 +3,8 @@ import { RiPuzzle2Line } from "react-icons/ri";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
 import { useLibrary } from "@/hooks/app.hooks";
-
+
+import { proAction } from "../../lib/proAction";
 const IntegrationTopBar = () => {
   const { allLibrary } = useLibrary();
 
@@ -20,7 +21,7 @@ const IntegrationTopBar = () => {
       },
 
       body: new URLSearchParams({
-        action: "save_settings_dashboard_library_ajax",
+        action: proAction("save_library_settings"),
         fields: JSON.stringify(allLibrary),
         nonce: WCF_ADDONS_ADMIN.nonce,
       }),

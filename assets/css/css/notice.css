@@ -1,5 +1,5 @@
 /* Fonts are bundled with the plugin and enqueued as the 'aae-fonts'
-   stylesheet (see inc/admin/class-aae-fonts.php). They used to be pulled
+   stylesheet (see inc/admin/class-fonts.php). They used to be pulled
    from fonts.googleapis.com with an @import here, which contacted a third
    party on every admin page and could not be dequeued or filtered. */
 * {

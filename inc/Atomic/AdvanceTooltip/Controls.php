@@ -3,7 +3,6 @@
 namespace Wealcoder\AnimationAddons\Atomic\AdvanceTooltip;
 
 use Elementor\Modules\AtomicWidgets\Controls\Section;
-use Elementor\Modules\AtomicWidgets\Controls\Types\Switch_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Wealcoder\AnimationAddons\Atomic\Bootstrap;
 

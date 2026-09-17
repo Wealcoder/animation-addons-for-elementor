@@ -229,6 +229,10 @@ final class Aaeaddon_Plugin {
 		// front-end request needs and that is a different file, booted above.
 		if ( is_admin() ) {
 			add_action( 'plugins_loaded', array( '\Wealcoder\AnimationAddons\Compat\Migration', 'init' ), 5 );
+			// The pre-4.2 admin page slugs (?page=wcf_addons_settings ...) keep
+			// resolving: a redirect for the URL, a parent-slug alias for the
+			// submenus an older Pro registers under `wcf_addons_page`.
+			\Wealcoder\AnimationAddons\Compat\Admin_Page_Alias::init();
 		}
 		// Init Plugin
 		add_action( 'plugins_loaded', array( $this, 'init' ) );
@@ -241,7 +245,19 @@ final class Aaeaddon_Plugin {
 	 *
 	 * @since 1.0.0
 	 */
-	public static function plugin_activation_hook() {
+	public static function plugin_activation_hook( $network_wide = false ) {
+
+		// MULTISITE: a network activation fires this ONCE, on the main site.
+		// Every option below is per site, so the work runs once per site.
+		\Wealcoder\AnimationAddons\Compat\Migration::for_each_site( array( __CLASS__, 'activate_site' ), (bool) $network_wide );
+	}
+
+	/**
+	 * The per-site half of activation (the migration decision, the install
+	 * markers, the wizard redirect, the rewrite flush). Runs with the site in
+	 * question current.
+	 */
+	public static function activate_site() {
 
 		// Decide the storage-name migration state FIRST: a fresh site is
 		// complete from here, an existing database waits for consent. Every
@@ -274,6 +290,12 @@ final class Aaeaddon_Plugin {
 	 * @since 1.0.0
 	 */
 	public static function plugin_unregister_hook() {
+		// MULTISITE: uninstall runs once for the network; the rows are per site.
+		\Wealcoder\AnimationAddons\Compat\Migration::for_each_site( array( __CLASS__, 'uninstall_site' ), is_multisite() );
+	}
+
+	/** The per-site half of uninstall. Runs with the site in question current. */
+	public static function uninstall_site() {
 
 		// The plugin's own bookkeeping. Each name is deleted under BOTH its
 		// spellings (inc/Compat/key-map.php) — the only place the pre-4.2 rows
@@ -379,10 +401,10 @@ final class Aaeaddon_Plugin {
 		add_action( 'current_screen', function ( $screen ) {
 			// Check if user has required capabilities
 			
-			if ( current_user_can( 'manage_options' ) &&  strpos( $screen->id, '_page_wcf_addons_settings' ) !== false ) {
+			if ( current_user_can( 'manage_options' ) &&  strpos( $screen->id, '_page_aaeaddon_settings' ) !== false ) {
 				// Redirect if setup is incomplete
 				if ( 'complete' !== get_option( 'aaeaddon_setup_wizard' ) ) {
-					wp_safe_redirect( admin_url( 'admin.php?page=wcf_addons_setup_page' ) );
+					wp_safe_redirect( admin_url( 'admin.php?page=aaeaddon_setup_page' ) );
 					exit; // Always exit after redirection
 				}
 			}
@@ -459,7 +481,7 @@ final class Aaeaddon_Plugin {
 	 */
 	public function print_admin_menu_icon_style() {
 
-		echo '<style id="aae-admin-menu-icon">#adminmenu .toplevel_page_wcf_addons_page .wp-menu-image img{opacity:1;padding:7px 0 0}</style>';
+		echo '<style id="aae-admin-menu-icon">#adminmenu .toplevel_page_aaeaddon_page .wp-menu-image img{opacity:1;padding:7px 0 0}</style>';
 	}
 
 	/**

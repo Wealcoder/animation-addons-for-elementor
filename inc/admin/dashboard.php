@@ -2,6 +2,7 @@
 
 namespace Wealcoder\AnimationAddons\Admin;
 
+use Wealcoder\AnimationAddons\Nonce;
 use Elementor\Modules\ElementManager\Options;
 use Elementor\Plugin;
 
@@ -55,7 +56,7 @@ class Aaeaddon_Admin_Init
 	/**
 	 * Parent Menu Page Slug
 	 */
-	const MENU_PAGE_SLUG = 'wcf_addons_page';
+	const MENU_PAGE_SLUG = 'aaeaddon_page';
 
 	/**
 	 * Menu capability
@@ -110,7 +111,7 @@ class Aaeaddon_Admin_Init
 		}
 
 		// Check if we are on the correct page
-		if ($screen && strpos($screen->id, '_page_wcf_addons_settings') !== false) {
+		if ($screen && strpos($screen->id, '_page_aaeaddon_settings') !== false) {
 			$classes .= ' wcf-anim2024';
 		}
 
@@ -128,16 +129,23 @@ class Aaeaddon_Admin_Init
 
 		add_action('admin_menu', array($this, 'add_menu'), 25);
 		add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
-		add_action('wp_ajax_aae_save_dynamic_settings', array($this, 'save_dynamic_settings'));
-		add_action('wp_ajax_aae_get_dynamic_settings', array($this, 'get_dynamic_settings'));
-		add_action('wp_ajax_aae_flush_known_taxonomies', array($this, 'flush_known_taxonomies'));
+		// 'aae_save_dynamic_settings' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
+		\Wealcoder\AnimationAddons\Ajax_Alias::register( 'aae_save_dynamic_settings', 'aaeaddon_save_dynamic_settings', array($this, 'save_dynamic_settings') );
+		// 'aae_get_dynamic_settings' is a deprecated alias (Pro posts the old name until Pro 4.3) -- remove in 4.4.
+		\Wealcoder\AnimationAddons\Ajax_Alias::register( 'aae_get_dynamic_settings', 'aaeaddon_get_dynamic_settings', array($this, 'get_dynamic_settings') );
+		// 'aae_flush_known_taxonomies' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
+		\Wealcoder\AnimationAddons\Ajax_Alias::register( 'aae_flush_known_taxonomies', 'aaeaddon_flush_known_taxonomies', array($this, 'flush_known_taxonomies') );
 		// The three unprefixed names below are kept as deprecated aliases for one
 		// release (a cached dashboard bundle) -- remove the aliases in 4.3.
 		\Wealcoder\AnimationAddons\Ajax_Alias::register('save_settings_with_ajax', 'aaeaddon_save_settings', array($this, 'save_settings'));
-		add_action('wp_ajax_aae_complete_setup_wizard', array($this, 'complete_setup_wizard'));
-		add_action('wp_ajax_wcf_dashboard_notice_store', array($this, 'notice_store'));
-		add_action('wp_ajax_wcf_get_notice_data', array($this, 'get_notice'));
-		add_action('wp_ajax_wcf_request_new_feature', array($this, 'request_new_feature'));
+		// 'aae_complete_setup_wizard' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
+		\Wealcoder\AnimationAddons\Ajax_Alias::register( 'aae_complete_setup_wizard', 'aaeaddon_complete_setup_wizard', array($this, 'complete_setup_wizard') );
+		// 'wcf_dashboard_notice_store' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
+		\Wealcoder\AnimationAddons\Ajax_Alias::register( 'wcf_dashboard_notice_store', 'aaeaddon_dashboard_notice_store', array($this, 'notice_store') );
+		// 'wcf_get_notice_data' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
+		\Wealcoder\AnimationAddons\Ajax_Alias::register( 'wcf_get_notice_data', 'aaeaddon_get_notice_data', array($this, 'get_notice') );
+		// 'wcf_request_new_feature' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
+		\Wealcoder\AnimationAddons\Ajax_Alias::register( 'wcf_request_new_feature', 'aaeaddon_request_new_feature', array($this, 'request_new_feature') );
 		\Wealcoder\AnimationAddons\Ajax_Alias::register('save_settings_with_ajax_dashboard', 'aaeaddon_save_settings_dashboard', array($this, 'save_settings_dashboard'));
 
 		\Wealcoder\AnimationAddons\Ajax_Alias::register('save_smooth_scroller_settings', 'aaeaddon_save_smooth_scroller_settings', array($this, 'save_smooth_scroller_settings'));
@@ -311,7 +319,7 @@ class Aaeaddon_Admin_Init
 
 		// The import engine is NOT loaded here: Importer.php itself, plus
 		// WPImporterLogger, WPImporterLoggerCLI, AaeaddonWXRImporter, AaeaddonWXRImportInfo,
-		// AAEImporter, Logger and core's class-wp-importer.php. This method
+		// Aaeaddon_Content_Importer, Logger and core's class-wp-importer.php. This method
 		// runs on every admin request, admin-ajax included, and those files
 		// declare classes and nothing else -- the only code that names them
 		// is OneClickImport::setup_st_importer(), which runs during an
@@ -364,7 +372,7 @@ class Aaeaddon_Admin_Init
 			esc_html__('Settings', 'animation-addons-for-elementor'),
 			esc_html__('Settings', 'animation-addons-for-elementor'),
 			'manage_options',
-			'wcf_addons_settings',
+			'aaeaddon_settings',
 			array($this, 'plugin_dashboard_entry_page')
 		);
 
@@ -384,7 +392,7 @@ class Aaeaddon_Admin_Init
 		$total_extensions = $total_widgets = 0;
 
 		$screen = get_current_screen();
-		if ( ! $screen || strpos($screen->id, '_page_wcf_addons_settings') === false) {
+		if ( ! $screen || strpos($screen->id, '_page_aaeaddon_settings') === false) {
 			return;
 		}
 
@@ -431,7 +439,7 @@ class Aaeaddon_Admin_Init
 		$localize_data = array(
 			'ajaxurl'        => admin_url('admin-ajax.php'),
 			'isSettingsPage' => true,
-			'nonce'          => wp_create_nonce('wcf_admin_nonce'),
+			'nonce'          => Nonce::create( Nonce::ADMIN ),
 
 			'addons_config'  => apply_filters('wcf_addons_dashboard_config', $config),  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 
@@ -469,7 +477,7 @@ class Aaeaddon_Admin_Init
 			/*
 			 * Does this site's CONTENT use v3 widgets, regardless of what the
 			 * toggles say? `_elementor_data LIKE '%"widgetType":"wcf--%'` plus
-			 * the Kit's chrome keys, cached an hour (aae_v3_usage transient).
+			 * the Kit's chrome keys, cached an hour (aaeaddon_v3_usage transient).
 			 *
 			 * The dashboard hides the era a site does not use, and the active
 			 * COUNT is not enough to decide that: a site can hold 34 pages
@@ -629,7 +637,7 @@ class Aaeaddon_Admin_Init
 		$screen = get_current_screen();
 
 		// Check if we are on the correct admin page
-		if ($screen && strpos($screen->id, '_page_wcf_addons_settings') !== false) {
+		if ($screen && strpos($screen->id, '_page_aaeaddon_settings') !== false) {
 			echo '<div id="wcf-admin-toast"></div>';
 		}
 	}
@@ -652,7 +660,7 @@ class Aaeaddon_Admin_Init
 			'in_admin_header',
 			function () {
 				$screen = get_current_screen();
-				if ($screen && strpos($screen->id, '_page_wcf_addons_settings') !== false) {
+				if ($screen && strpos($screen->id, '_page_aaeaddon_settings') !== false) {
 					remove_all_actions('admin_notices');
 					remove_all_actions('all_admin_notices');
 					remove_all_actions('user_admin_notices');
@@ -675,7 +683,7 @@ class Aaeaddon_Admin_Init
 	{
 
 	
-		check_ajax_referer('wcf_admin_nonce', 'nonce');
+		Nonce::check_ajax( Nonce::ADMIN, 'nonce');
 
 		if (! current_user_can('manage_options')) {
 			wp_send_json_error(esc_html__('you are not allowed to do this action', 'animation-addons-for-elementor'));
@@ -738,7 +746,7 @@ class Aaeaddon_Admin_Init
 	 */
 	public function complete_setup_wizard()
 	{
-		check_ajax_referer('wcf_admin_nonce', 'nonce');
+		Nonce::check_ajax( Nonce::ADMIN, 'nonce');
 
 		if (! current_user_can('manage_options')) {
 			wp_send_json_error(esc_html__('Permission denied.', 'animation-addons-for-elementor'));
@@ -751,7 +759,7 @@ class Aaeaddon_Admin_Init
 
 	public function get_dynamic_settings()
 	{
-		check_ajax_referer('wcf_admin_nonce', 'nonce');
+		Nonce::check_ajax( Nonce::ADMIN, 'nonce');
 
 		if (! current_user_can('manage_options')) {
 			wp_send_json_error(esc_html__('You are not allowed to do this action', 'animation-addons-for-elementor'));
@@ -794,7 +802,7 @@ class Aaeaddon_Admin_Init
 	public function save_dynamic_settings()
 	{
 
-		check_ajax_referer('wcf_admin_nonce', 'nonce');
+		Nonce::check_ajax( Nonce::ADMIN, 'nonce');
 
 		if (! current_user_can('manage_options')) {
 			wp_send_json_error(esc_html__('you are not allowed to do this action', 'animation-addons-for-elementor'));
@@ -837,7 +845,7 @@ class Aaeaddon_Admin_Init
 	 */
 	public function flush_known_taxonomies()
 	{
-		check_ajax_referer('wcf_admin_nonce', 'nonce');
+		Nonce::check_ajax( Nonce::ADMIN, 'nonce');
 
 		if (! current_user_can('manage_options')) {
 			wp_send_json_error(esc_html__('Permission denied.', 'animation-addons-for-elementor'));
@@ -882,7 +890,7 @@ class Aaeaddon_Admin_Init
 	public function notice_store()
 	{
 
-		check_ajax_referer('wcf_admin_nonce', 'nonce');
+		Nonce::check_ajax( Nonce::ADMIN, 'nonce');
 
 		if (! current_user_can('manage_options')) {
 			wp_send_json_error(esc_html__('you are not allowed to do this action', 'animation-addons-for-elementor'));
@@ -904,7 +912,7 @@ class Aaeaddon_Admin_Init
 	public function get_notice()
 	{
 
-		check_ajax_referer('wcf_admin_nonce', 'nonce');
+		Nonce::check_ajax( Nonce::ADMIN, 'nonce');
 
 		if (! current_user_can('manage_options')) {
 			wp_send_json_error(esc_html__('you are not allowed to do this action', 'animation-addons-for-elementor'));
@@ -933,7 +941,7 @@ class Aaeaddon_Admin_Init
 	 */
 	public function request_new_feature()
 	{
-		check_ajax_referer('wcf_admin_nonce', 'nonce');
+		Nonce::check_ajax( Nonce::ADMIN, 'nonce');
 
 		if (! current_user_can('manage_options')) {
 			wp_send_json_error(esc_html__('you are not allowed to do this action', 'animation-addons-for-elementor'));
@@ -1096,7 +1104,7 @@ class Aaeaddon_Admin_Init
 	public function save_settings_dashboard()
 	{
 
-		check_ajax_referer('wcf_admin_nonce', 'nonce');
+		Nonce::check_ajax( Nonce::ADMIN, 'nonce');
 
 		if (! current_user_can('manage_options')) {
 			wp_send_json_error(esc_html__('you are not allowed to do this action', 'animation-addons-for-elementor'));
@@ -1160,7 +1168,7 @@ class Aaeaddon_Admin_Init
 	public function save_smooth_scroller_settings()
 	{
 
-		check_ajax_referer('wcf_admin_nonce', 'nonce');
+		Nonce::check_ajax( Nonce::ADMIN, 'nonce');
 
 		if (! current_user_can('manage_options')) {
 			wp_send_json_error(esc_html__('you are not allowed to do this action', 'animation-addons-for-elementor'));

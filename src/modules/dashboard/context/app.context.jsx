@@ -365,7 +365,7 @@ const useMainContext = (state) => {
         },
 
         body: new URLSearchParams({
-          action: "wcf_dashboard_notice_store",
+          action: "aaeaddon_dashboard_notice_store",
           notice: JSON.stringify(result),
           nonce: WCF_ADDONS_ADMIN.nonce,
         }),

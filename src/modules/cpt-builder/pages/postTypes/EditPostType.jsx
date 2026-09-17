@@ -64,7 +64,7 @@ const EditPostType = () => {
           Accept: "application/json",
         },
         body: new URLSearchParams({
-          action: "aae_post_type_builder_single_item",
+          action: "aaeaddon_post_type_builder_single_item",
           post_type_id: value,
           nonce: WCF_ADDONS_ADMIN.nonce,
         }),
@@ -109,7 +109,7 @@ const EditPostType = () => {
             Accept: "application/json",
           },
           body: new URLSearchParams({
-            action: "aae_post_type_exist",
+            action: "aaeaddon_post_type_exist",
             post_type: value,
             nonce: WCF_ADDONS_ADMIN.nonce,
           }),
@@ -145,7 +145,7 @@ const EditPostType = () => {
             Accept: "application/json",
           },
           body: new URLSearchParams({
-            action: "aae_add_or_update_new_post_type_builder",
+            action: "aaeaddon_add_or_update_new_post_type_builder",
             post_meta: JSON.stringify(postTypeData),
             post_type_id: postId,
             post_type_title: postTypeTitle,

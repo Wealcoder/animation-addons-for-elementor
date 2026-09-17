@@ -167,7 +167,7 @@ const YoutubeVideoSettings = () => {
         Accept: "application/json",
       },
       body: new URLSearchParams({
-        action: "aae_get_dynamic_settings",
+        action: "aaeaddon_get_dynamic_settings",
         setting_name: "aaeaddon_youtube_video_settings",
         nonce: WCF_ADDONS_ADMIN.nonce,
       }),
@@ -201,7 +201,7 @@ const YoutubeVideoSettings = () => {
         Accept: "application/json",
       },
       body: new URLSearchParams({
-        action: "aae_save_dynamic_settings",
+        action: "aaeaddon_save_dynamic_settings",
         setting_name: "aaeaddon_youtube_video_settings",
         form_fields: JSON.stringify(data),
         nonce: WCF_ADDONS_ADMIN.nonce,

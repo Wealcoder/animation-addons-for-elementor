@@ -2,6 +2,7 @@
 
 namespace Wealcoder\AnimationAddons\Admin;
 
+use Wealcoder\AnimationAddons\Nonce;
 if (!defined('ABSPATH')) {
     exit();
 } // Exit if accessed directly
@@ -23,7 +24,8 @@ class Aaeaddon_Plugin_Installer
     {
         if (!$reload) {
 
-            add_action('wp_ajax_wcf_active_plugin', [$this, 'ajax_activate_plugin']);
+            // 'wcf_active_plugin' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
+            \Wealcoder\AnimationAddons\Ajax_Alias::register( 'wcf_active_plugin', 'aaeaddon_active_plugin', [$this, 'ajax_activate_plugin'] );
             // Old unprefixed name kept for one release for a cached editor bundle -- remove the alias in 4.3.
             \Wealcoder\AnimationAddons\Ajax_Alias::register('activate_from_editor_plugin', 'aaeaddon_activate_from_editor_plugin', [$this, 'activate_from_editor_plugin']);
             add_action('wp_ajax_aaeaddon_template_dependency_status', [$this, 'dependency_status']);
@@ -44,7 +46,7 @@ class Aaeaddon_Plugin_Installer
      */
     public function atomic_import_status()
     {
-        check_ajax_referer('wcf_admin_nonce', 'nonce');
+        Nonce::check_ajax( Nonce::ADMIN, 'nonce');
 
         if ( ! current_user_can( 'manage_options' ) ) {
             wp_send_json_error( __( 'You are not allowed to do this action', 'animation-addons-for-elementor' ) );
@@ -63,7 +65,7 @@ class Aaeaddon_Plugin_Installer
     public function ajax_activate_plugin()
     {
 
-        check_ajax_referer('wcf_admin_nonce', 'nonce');
+        Nonce::check_ajax( Nonce::ADMIN, 'nonce');
 
         if (!current_user_can('activate_plugins')) {
             wp_send_json_error(__('You are not allowed to do this action', 'animation-addons-for-elementor'));
@@ -89,7 +91,7 @@ class Aaeaddon_Plugin_Installer
     public function activate_from_editor_plugin()
     {
 
-        check_ajax_referer('wcf-template-library', 'nonce');
+        Nonce::check_ajax( Nonce::TEMPLATE_LIBRARY, 'nonce');
 
         if (!current_user_can('activate_plugins')) {
             wp_send_json_error(__('You are not allowed to do this action', 'animation-addons-for-elementor'));
@@ -146,7 +148,7 @@ class Aaeaddon_Plugin_Installer
     public function dependency_status()
     {
 
-        check_ajax_referer('wcf_admin_nonce', 'nonce');
+        Nonce::check_ajax( Nonce::ADMIN, 'nonce');
 
         if ( ! current_user_can( 'manage_options' ) ) {
             wp_send_json_error( __( 'You are not allowed to do this action', 'animation-addons-for-elementor' ) );

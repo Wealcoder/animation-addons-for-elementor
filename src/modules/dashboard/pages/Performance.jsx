@@ -7,7 +7,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { __ } from "@wordpress/i18n";
 import { useState } from "react";
 import { toast } from "sonner";
-
+
+import { proAction } from "../lib/proAction";
 /**
  * Performance — how AAE's animation runtime is DELIVERED, as opposed to what it
  * does.
@@ -366,7 +367,7 @@ const Performance = ({ embedded = false }) => {
         },
         credentials: "same-origin",
         body: new URLSearchParams({
-          action: "aae_save_performance_settings",
+          action: proAction("save_performance_settings"),
           settings: JSON.stringify(next),
           nonce: WCF_ADDONS_ADMIN.nonce,
         }),
@@ -407,7 +408,7 @@ const Performance = ({ embedded = false }) => {
       headers: { "Content-Type": "application/x-www-form-urlencoded", Accept: "application/json" },
       credentials: "same-origin",
       body: new URLSearchParams({
-        action: "aae_save_performance_settings",
+        action: proAction("save_performance_settings"),
         settings: JSON.stringify(nextAll),
         nonce: WCF_ADDONS_ADMIN.nonce,
       }),
@@ -443,7 +444,7 @@ const Performance = ({ embedded = false }) => {
         headers: { "Content-Type": "application/x-www-form-urlencoded", Accept: "application/json" },
         credentials: "same-origin",
         body: new URLSearchParams({
-          action: "aae_server_opcache_reset",
+          action: proAction("server_opcache_reset"),
           nonce: WCF_ADDONS_ADMIN.nonce,
         }),
       });

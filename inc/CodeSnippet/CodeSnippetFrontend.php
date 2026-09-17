@@ -155,7 +155,7 @@ class CodeSnippetFrontend {
 				continue;
 			}
 
-			$snippet_data = $this->aae_get_code_snippet_settings( $snippet->ID );
+			$snippet_data = $this->get_code_snippet_settings( $snippet->ID );
 
 			// Leave a query-dependent snippet for the 'wp' pass rather than
 			// asking is_singular() before there is a query to ask about: that
@@ -207,7 +207,7 @@ class CodeSnippetFrontend {
 		if ( 'php' === $code_type ) {
 			$php = array();
 			foreach ( $this->get_all_active_posts() as $snippet ) {
-				$data = $this->aae_get_code_snippet_settings( $snippet->ID );
+				$data = $this->get_code_snippet_settings( $snippet->ID );
 				if ( isset( $data['code_type'] ) && 'php' === $data['code_type'] ) {
 					$php[] = $snippet;
 				}
@@ -222,7 +222,7 @@ class CodeSnippetFrontend {
 
 		$active_snippets = array();
 		foreach ( $this->get_all_active_posts() as $snippet ) {
-			$snippet_data = $this->aae_get_code_snippet_settings( $snippet->ID );
+			$snippet_data = $this->get_code_snippet_settings( $snippet->ID );
 			if ( $this->should_load_snippet( $snippet_data ) ) {
 				$active_snippets[] = $snippet_data;
 			}

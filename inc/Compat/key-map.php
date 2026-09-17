@@ -181,11 +181,14 @@ return array(
 	'termmeta'    => array( 'aae_cat_bg_color', 'aae_cat_color', 'aae_cate_additional_text', 'aae_category_icon', 'aae_category_image' ),
 	'usermeta'    => array( 'wcf_phone_number', 'author_social_profiles', 'aae_free_version_notice_dismissed', 'aae_theme_assets_notice_dismissed' ),
 	'transients'  => array(
+		// Both spellings: the pre-4.2 rows an upgraded site may still hold (they
+		// expire within the hour) and the names the code writes now.
 		'aae_v3_usage', 'aae_atomic_usage', 'aae_atomic_usage_count', 'aae_cat_badge_css', 'aae_preset_type_*',
+		'aaeaddon_v3_usage', 'aaeaddon_atomic_usage', 'aaeaddon_atomic_usage_count', 'aaeaddon_cat_badge_css', 'aaeaddon_preset_type_*',
 		'aaeaddon_st_importer_data', 'aaeaddon_st_importer_data_failed_attachment_imports',
 		'aaeaddon_import_menu_mapping', 'aaeaddon_import_posts_with_nav_block',
-		'aaeaddon_weather_current_*', 'aaeaddon_weather_forecast_*', 'aae_frl_*',
-		'aae_addon_pro_plugin_update_notice', 'aae_pro_ping_cooldown',
+		'aaeaddon_weather_current_*', 'aaeaddon_weather_forecast_*', 'aae_frl_*', 'aaeaddon_frl_*',
+		'aae_addon_pro_plugin_update_notice', 'aae_pro_ping_cooldown', 'aaeaddon_pro_ping_cooldown',
 	),
 	'cron'        => array( 'aae_form/process_queue', 'aae_form/process_queue_sweep', 'aae_form/cleanup_uploads' ),
 	'tables'      => array( 'aae_forms', 'aae_form_schemas', 'aae_submissions', 'aae_submission_values', 'aae_action_jobs', 'aae_action_logs', 'aae_attachments' ),

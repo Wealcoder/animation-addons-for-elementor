@@ -110,7 +110,7 @@ const AnimationSettings = () => {
         },
         credentials: "same-origin",
         body: new URLSearchParams({
-          action: "aae_save_animation_settings",
+          action: "aaeaddon_save_animation_settings",
           settings: JSON.stringify(next),
           nonce: WCF_ADDONS_ADMIN.nonce,
         }),

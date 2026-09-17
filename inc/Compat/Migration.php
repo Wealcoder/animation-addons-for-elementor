@@ -12,7 +12,7 @@
  *      block in the main file) calls `on_version_change()`, which writes
  *      `aaeaddon_migration_state = { status: awaiting_consent }`. ONE option
  *      write; no table scan, no count.
- *   3. The Migration screen (`?page=wcf_addons_settings&tab=migration`, also
+ *   3. The Migration screen (`?page=aaeaddon_settings&tab=migration`, also
  *      its own submenu item) and a notice on the plugin's own screens tell
  *      the administrator what would be copied. The counts are taken when
  *      that PAGE is opened, never on a visitor's request.
@@ -39,6 +39,7 @@
 
 namespace Wealcoder\AnimationAddons\Compat;
 
+use Wealcoder\AnimationAddons\Nonce;
 defined( 'ABSPATH' ) || exit;
 
 final class Migration {
@@ -55,10 +56,10 @@ final class Migration {
 	 */
 	const PRO_COMPAT_VERSION = '4.3.0';
 
-	const NONCE = 'wcf_admin_nonce';
+	const NONCE = Nonce::ADMIN;
 	const CAP   = 'manage_options';
 
-	const PAGE_URL = 'admin.php?page=wcf_addons_settings&tab=migration';
+	const PAGE_URL = 'admin.php?page=aaeaddon_settings&tab=migration';
 
 	/** Old rows whose presence proves this site ran a pre-4.2 release. */
 	const SENTINELS = array(
@@ -109,6 +110,14 @@ final class Migration {
 			self::$state = is_array( $state ) ? $state : array();
 		}
 		return self::$state;
+	}
+
+	/**
+	 * Drop the per-process memo of the state option. The bridge calls this on
+	 * `switch_blog`: the state is per site, the memo was for the previous one.
+	 */
+	public static function forget_state() {
+		self::$state = null;
 	}
 
 	public static function status() {
@@ -211,6 +220,30 @@ final class Migration {
 			self::await_consent( (string) Key_Bridge::raw_get( 'wcf_addons_version', '' ) );
 		} else {
 			self::complete_fresh();
+		}
+	}
+
+	/**
+	 * Run `$callback` once per site of the network when the activation was
+	 * network-wide, else once for the current site. WordPress fires the
+	 * activation hook ONCE, on the main site, for a network activation; the
+	 * migration state is per site, so every site has to be decided here or
+	 * an existing sub-site would wait for its first request to be noticed.
+	 * A site created later needs nothing: its first request runs the version
+	 * bump, finds no old rows and completes as fresh.
+	 *
+	 * @param callable $callback Per-site work; runs with that site current.
+	 * @param bool     $network_wide The activation hook's own argument.
+	 */
+	public static function for_each_site( $callback, $network_wide ) {
+		if ( ! $network_wide || ! is_multisite() ) {
+			$callback();
+			return;
+		}
+		foreach ( get_sites( array( 'fields' => 'ids', 'number' => 0 ) ) as $site_id ) {
+			switch_to_blog( (int) $site_id );
+			$callback();
+			restore_current_blog();
 		}
 	}
 
@@ -369,9 +402,9 @@ final class Migration {
 		self::log( sprintf( 'Done: %d row(s) copied to the new storage names. The old rows are kept as a live copy.', $result['copied'] ) );
 
 		// Caches that key on the old rows.
-		delete_transient( 'aae_v3_usage' );
-		delete_transient( 'aae_atomic_usage' );
-		delete_transient( 'aae_atomic_usage_count' );
+		delete_transient( 'aaeaddon_v3_usage' );
+		delete_transient( 'aaeaddon_atomic_usage' );
+		delete_transient( 'aaeaddon_atomic_usage_count' );
 
 		return $state;
 	}
@@ -564,7 +597,7 @@ final class Migration {
 	/* ------------------------------------------------------------------ */
 
 	private static function guard() {
-		check_ajax_referer( self::NONCE, 'nonce' );
+		Nonce::check_ajax( self::NONCE, 'nonce' );
 		if ( ! current_user_can( self::CAP ) ) {
 			wp_send_json_error( array( 'message' => __( 'You are not allowed to do that.', 'animation-addons-for-elementor' ) ), 403 );
 		}
@@ -631,7 +664,7 @@ final class Migration {
 	 */
 	public static function register_menu() {
 		add_submenu_page(
-			'wcf_addons_page',
+			'aaeaddon_page',
 			esc_html__( 'Storage Migration', 'animation-addons-for-elementor' ),
 			esc_html__( 'Migration', 'animation-addons-for-elementor' ),
 			self::CAP,
@@ -643,7 +676,7 @@ final class Migration {
 
 	public static function highlight_menu( $submenu_file ) {
 		if ( isset( $_GET['page'], $_GET['tab'] ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			&& 'wcf_addons_settings' === $_GET['page'] // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			&& 'aaeaddon_settings' === $_GET['page'] // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			&& 'migration' === $_GET['tab'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			return self::PAGE_URL;
 		}
@@ -695,7 +728,7 @@ final class Migration {
 
 		$pro = self::pro_info();
 		if ( 'complete' === $status && $pro['installed'] && ! $pro['ok'] && current_user_can( 'update_plugins' ) ) {
-			$target = $pro['licensed'] ? admin_url( 'plugins.php' ) : admin_url( 'admin.php?page=wcf_addons_settings&tab=dashboard' );
+			$target = $pro['licensed'] ? admin_url( 'plugins.php' ) : admin_url( 'admin.php?page=aaeaddon_settings&tab=dashboard' );
 			$notices->add( array(
 				'notice_id'   => 'aaeaddon_pro_update_' . $pro['version'],
 				'type'        => 'info',
@@ -726,6 +759,13 @@ final class Migration {
 	 * "you just updated this, here is the next step". Shown while pending.
 	 */
 	public static function plugin_row( $plugin_file ) {
+		// The Network Admin's plugin list is one screen for every site, and the
+		// migration state is per site: a row there could only report the main
+		// site's. Say so instead of implying the network is done or pending.
+		if ( is_multisite() && is_network_admin() ) {
+			self::network_plugin_row();
+			return;
+		}
 		$status = self::status();
 		if ( 'awaiting_consent' !== $status && 'needs_action' !== $status ) {
 			return;
@@ -745,5 +785,43 @@ final class Migration {
 			esc_html__( 'Open migration', 'animation-addons-for-elementor' )
 		);
 	}
+
+	/**
+	 * The Network Admin variant of plugin_row(): one line pointing at the
+	 * per-site screens, shown only while at least one site is still pending.
+	 */
+	private static function network_plugin_row() {
+		if ( ! current_user_can( 'manage_network_plugins' ) ) {
+			return;
+		}
+		$pending = 0;
+		foreach ( get_sites( array( 'fields' => 'ids', 'number' => 0 ) ) as $site_id ) {
+			switch_to_blog( (int) $site_id );
+			$status = self::status();
+			restore_current_blog();
+			if ( in_array( $status, array( 'awaiting_consent', 'needs_action' ), true ) ) {
+				$pending++;
+			}
+		}
+		if ( 0 === $pending ) {
+			return;
+		}
+		printf(
+			'<tr class="plugin-update-tr"><td colspan="4" class="plugin-update colspanchange"><div class="update-message notice inline notice-info notice-alt"><p>%s</p></div></td></tr>',
+			esc_html(
+				sprintf(
+					/* translators: %d: number of sites */
+					_n(
+						'Animation Addons: %d site still has its storage-name migration pending. It runs per site -- open that site\'s Animation Addons &rsaquo; Migration screen.',
+						'Animation Addons: %d sites still have their storage-name migration pending. It runs per site -- open each site\'s Animation Addons &rsaquo; Migration screen.',
+						$pending,
+						'animation-addons-for-elementor'
+					),
+					$pending
+				)
+			)
+		);
+	}
 }
+
 

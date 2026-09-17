@@ -61,7 +61,7 @@ const ShowAllPostType = () => {
           Accept: "application/json",
         },
         body: new URLSearchParams({
-          action: "aae_delete_post_type_builder",
+          action: "aaeaddon_delete_post_type_builder",
           post_type_id: value,
           nonce: WCF_ADDONS_ADMIN.nonce,
         }),

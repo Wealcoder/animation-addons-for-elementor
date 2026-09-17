@@ -21,6 +21,8 @@
 
 namespace Wealcoder\AnimationAddons\Forms;
 
+use Wealcoder\AnimationAddons\Nonce;
+
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
@@ -32,7 +34,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class Rest {
 
 	const REST_NAMESPACE = 'aae/v1';
-	const NONCE_ACTION   = 'aae_form_submit';
+	const NONCE_ACTION   = Nonce::FORM_SUBMIT;
 
 	/** Route regex for form keys ('aaef_' + hex normally, but tolerant). */
 	const KEY_PATTERN = '(?P<form_key>[A-Za-z0-9_\-]{1,64})';
@@ -188,7 +190,7 @@ final class Rest {
 				// Fresh nonce next to the fresh token — both fetched no-store,
 				// so page/CDN caches can never serve a stale pair (the classic
 				// "cache plugin breaks forms" failure).
-				'nonce'      => wp_create_nonce( self::NONCE_ACTION ),
+				'nonce'      => Nonce::create( self::NONCE_ACTION ),
 			],
 			200
 		);
@@ -216,7 +218,7 @@ final class Rest {
 		// (spec step 6) while the REAL reason goes to the Spam_Log for
 		// admins — never a clean submission, never an action job.
 		$nonce = isset( $params['nonce'] ) && is_string( $params['nonce'] ) ? $params['nonce'] : '';
-		if ( ! wp_verify_nonce( $nonce, self::NONCE_ACTION ) ) {
+		if ( ! Nonce::verify( $nonce, self::NONCE_ACTION ) ) {
 			Spam_Log::record( $form_key, 'bad_nonce' );
 
 			return self::error( 403, 'aae_form_security', self::generic_block_message() );

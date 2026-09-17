@@ -25,7 +25,7 @@ const ExtensionMissingDialog = ({ open, setOpen }) => {
             </h2>
 
             <a
-              href={`${WCF_ADDONS_ADMIN.adminURL}/admin.php?page=wcf_addons_settings&tab=integrations`}
+              href={`${WCF_ADDONS_ADMIN.adminURL}/admin.php?page=aaeaddon_settings&tab=integrations`}
               className={cn(
                 buttonVariants({ variant: "pro" }),
                 "w-full mt-6 no-underline"

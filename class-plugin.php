@@ -2,6 +2,7 @@
 
 namespace Wealcoder\AnimationAddons;
 
+use Wealcoder\AnimationAddons\Nonce;
 use Elementor\Plugin as ElementorPlugin;
 use Wealcoder\AnimationAddons\INC\WPML as WPML;
 
@@ -189,8 +190,18 @@ class Plugin
 			'wcf-addons/js/data', // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 			array(
 				'ajaxUrl'        => admin_url('admin-ajax.php'),
-				'_wpnonce'       => wp_create_nonce('wcf-addons-frontend'),
+				'_wpnonce'       => Nonce::create( Nonce::FRONTEND ),
 				'post_id'        => get_the_ID(),
+				// The admin-ajax actions this plugin answers, for a script that
+				// is not ours to rebuild -- the Pro runtime reads these and falls
+				// back to the pre-4.2 spelling when the key is absent (older free).
+				'actions'        => array(
+					'live_search'        => 'aaeaddon_live_search',
+					'load_popup_content' => 'aaeaddon_load_popup_content',
+					'mailchimp_ajax'     => 'aaeaddon_mailchimp_ajax',
+					'post_shares'        => 'aaeaddon_post_shares',
+					'loop_grid_page'     => 'aaeaddon_loop_grid_page',
+				),
 				'i18n'           => array(
 					'okay'    => esc_html__('Okay', 'animation-addons-for-elementor'),
 					'cancel'  => esc_html__('Cancel', 'animation-addons-for-elementor'),
@@ -332,7 +343,7 @@ class Plugin
 			'wcf-addons-editor/js/data', // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 			array(
 				'ajaxUrl'  => admin_url('admin-ajax.php'),
-				'_wpnonce' => wp_create_nonce('wcf-addons-editor'),
+				'_wpnonce' => Nonce::create( Nonce::EDITOR ),
 			)
 		);
 
@@ -357,8 +368,8 @@ class Plugin
 				array(
 					'ajaxurl'        => admin_url('admin-ajax.php'),
 					'template_types' => self::get_template_types(),
-					'nonce'          => wp_create_nonce('wcf-template-library'),
-					'dashboard_link' => admin_url('admin.php?page=wcf_addons_settings'),
+					'nonce'          => Nonce::create( Nonce::TEMPLATE_LIBRARY ),
+					'dashboard_link' => admin_url('admin.php?page=aaeaddon_settings'),
 					'config'         => apply_filters('wcf_addons_editor_config', array()), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 					'pro_installed'  => file_exists(WP_PLUGIN_DIR . '/animation-addons-for-elementor-pro/animation-addons-for-elementor-pro'), // change below code at version 2.5.9
 					'pro_active' 	 => class_exists('\AAE_ADDONS_Plugin_Pro'),
@@ -1062,6 +1073,19 @@ class Plugin
 	 * @since 1.0.0
 	 * @access public
 	 */
+	/**
+	 * The free extension modules register_extensions() can load, by dashboard
+	 * slug. Used to be derived as `inc/class-wcf-<slug>.php` + file_exists();
+	 * naming them stops a future `inc/class-<something>.php` from being picked
+	 * up because a slug happens to match it.
+	 */
+	const EXTENSION_MODULES = array(
+		'custom-cpt'   => 'inc/class-custom-cpt.php',
+		'custom-css'   => 'inc/class-custom-css.php',
+		'custom-fonts' => 'inc/class-custom-fonts.php',
+		'custom-icon'  => 'inc/class-custom-icon.php',
+	);
+
 	public function register_extensions()
 	{
 
@@ -1072,10 +1096,8 @@ class Plugin
 				continue;
 			}
 
-			if (! $data['is_pro'] && ! $data['is_extension']) {
-				if (file_exists(AAEADDON_PATH . 'inc/class-wcf-' . $slug . '.php')) {
-					include_once AAEADDON_PATH . 'inc/class-wcf-' . $slug . '.php';
-				}
+			if (! $data['is_pro'] && ! $data['is_extension'] && isset(self::EXTENSION_MODULES[$slug])) {
+				include_once AAEADDON_PATH . self::EXTENSION_MODULES[$slug];
 			}
 		}
 
@@ -1106,9 +1128,7 @@ class Plugin
 					continue;
 				}
 
-				if (file_exists(AAEADDON_PATH . 'inc/class-wcf-' . $slug . '.php')) {
-					include_once AAEADDON_PATH . 'inc/class-wcf-' . $slug . '.php';
-				}
+				include_once AAEADDON_PATH . self::EXTENSION_MODULES[$slug];
 			}
 		}
 	}
@@ -1186,7 +1206,7 @@ class Plugin
 		// ask for it (notices, code snippet, custom icon, CPT builder) each load
 		// through a different path, and a dependency that is not registered
 		// causes WordPress to silently skip the dependent stylesheet.
-		require_once AAEADDON_PATH . 'inc/admin/class-aae-fonts.php';
+		require_once AAEADDON_PATH . 'inc/admin/class-fonts.php';
 
 		if (is_admin()) {
 			if (get_option('aaeaddon_setup_wizard') !== 'complete') {
@@ -1216,7 +1236,7 @@ class Plugin
 		/*
 		 * Template Library, gated on the V4 (Atomic) dashboard extension toggle.
 		 *
-		 * This is the ONLY require of class-wcf-template-library.php in the
+		 * This is the ONLY require of class-template-library.php in the
 		 * plugin, and that file is the only require of inc/library-source.php —
 		 * so this line is what decides whether \Wealcoder\AnimationAddons\Library_Source exists,
 		 * and therefore whether the two class_exists() checks below (the editor
@@ -1230,7 +1250,7 @@ class Plugin
 		 * class-plugin.php) and calls instance() itself.
 		 */
 		if (\Wealcoder\AnimationAddons\AtomicWidgets\Atomic::instance()->is_extension_active('template-library')) {
-			require_once AAEADDON_PATH . 'inc/class-wcf-template-library.php';
+			require_once AAEADDON_PATH . 'inc/class-template-library.php';
 		}
 
 		/*
@@ -1282,7 +1302,7 @@ class Plugin
 		}
 
 		include_once AAEADDON_PATH . 'widgets/mailchimp/mailchimp-api.php';
-		include_once AAEADDON_PATH . 'inc/class-wcf-starter-animations.php';
+		include_once AAEADDON_PATH . 'inc/class-starter-animations.php';
 
 
 		// Load Loop Builder Integration.
@@ -1344,7 +1364,7 @@ class Plugin
 		$all_plugins    = get_plugins();
 		$plugin_slug    = 'animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php';
 		$active_plugins = get_option('active_plugins');
-		$dahsboard_link = admin_url('admin.php?page=wcf_addons_settings');
+		$dahsboard_link = admin_url('admin.php?page=aaeaddon_settings');
 ?>
 		<script type="text/template" id="tmpl-wcf-templates-header">
 			<div class="dialog-header dialog-lightbox-header">

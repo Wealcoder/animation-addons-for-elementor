@@ -62,7 +62,7 @@ function aaeaddon_handle_post_shares_count()
 {
     $nonce = isset($_REQUEST['nonce']) ? sanitize_text_field(wp_unslash($_REQUEST['nonce'])) : '';
 
-    if (! $nonce || ! wp_verify_nonce($nonce, 'wcf-addons-frontend')) {
+    if (! $nonce || ! \Wealcoder\AnimationAddons\Nonce::verify( $nonce, \Wealcoder\AnimationAddons\Nonce::FRONTEND )) {
         wp_send_json_error(['message' => esc_html__('Security check failed.', 'animation-addons-for-elementor')], 403);
     }
 
@@ -136,8 +136,8 @@ function aaeaddon_handle_post_shares_count()
 
 }
 endif;
-add_action('wp_ajax_aae_post_shares', 'aaeaddon_handle_post_shares_count'); // For logged-in users
-add_action('wp_ajax_nopriv_aae_post_shares', 'aaeaddon_handle_post_shares_count'); // For non-logged-in users
+// 'aae_post_shares' is a deprecated alias (a page cache or combined bundle can still post the old name) -- remove in 4.4.
+\Wealcoder\AnimationAddons\Ajax_Alias::register( 'aae_post_shares', 'aaeaddon_post_shares', 'aaeaddon_handle_post_shares_count', true );
 
 if ( ! function_exists( 'aaeaddon_disable_comments_for_custom_post_type' ) ) :
 function aaeaddon_disable_comments_for_custom_post_type()
@@ -165,7 +165,7 @@ if (!function_exists('aaeaddon_post_lite_reaction_ajax')) {
         
         $nonce = isset($_REQUEST['nonce']) ? sanitize_text_field( wp_unslash($_REQUEST['nonce']) ) : '';
 
-        if ( ! $nonce || ! wp_verify_nonce( $nonce, 'wcf-addons-frontend' ) ) {
+        if ( ! $nonce || ! \Wealcoder\AnimationAddons\Nonce::verify( $nonce, \Wealcoder\AnimationAddons\Nonce::FRONTEND ) ) {
             // For JSON endpoints:
             if ( defined('DOING_AJAX') && DOING_AJAX ) {
                 wp_send_json_error(['message' => __('Invalid request.', 'animation-addons-for-elementor')], 403);

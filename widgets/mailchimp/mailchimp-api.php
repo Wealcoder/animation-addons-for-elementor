@@ -5,6 +5,7 @@
 
 namespace Wealcoder\AnimationAddons\Widgets\Mailchimp;
 
+use Wealcoder\AnimationAddons\Nonce;
 defined('ABSPATH') || die();
 
 class Mailchimp_Api {
@@ -100,7 +101,7 @@ class Mailchimp_Api {
         // 0) Basic nonce check
         $nonce = isset($_REQUEST['nonce']) ? sanitize_text_field(wp_unslash($_REQUEST['nonce'])) : '';
 
-        if (!isset($_REQUEST['nonce']) || !wp_verify_nonce($nonce , 'wcf-addons-frontend')) {
+        if (!isset($_REQUEST['nonce']) || !Nonce::verify( $nonce, Nonce::FRONTEND )) {
             wp_send_json_error('Invalid nonce');
         }
   

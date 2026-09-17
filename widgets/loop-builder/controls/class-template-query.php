@@ -1,6 +1,8 @@
 <?php
 namespace Wealcoder\AnimationAddons\Widgets\Loop_Builder\Controls;
 
+use Wealcoder\AnimationAddons\Nonce;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
@@ -125,7 +127,7 @@ class Template_Query extends \Elementor\Base_Data_Control {
 			'aaeLoopBuilderTemplateQuery',
 			array(
 				'ajax_url'            => admin_url( 'admin-ajax.php' ),
-				'nonce'               => wp_create_nonce( 'aae_loop_builder_nonce' ),
+				'nonce'               => Nonce::create( Nonce::LOOP_BUILDER ),
 				'create_template_url' => admin_url( 'post-new.php?post_type=elementor_library&template_type=loop-item' ),
 			)
 		);

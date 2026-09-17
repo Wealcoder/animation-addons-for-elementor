@@ -6,7 +6,7 @@
  * The grid + first page are server-rendered. This wires the Pagination widget's
  * Prev / Page-Numbers / Next / Load-More controls to either:
  *   - AJAX   : fetch the requested page's loop-item cells (full HTML, styles
- *              intact) via `aae_loop_grid_page` and swap/append them, updating
+ *              intact) via `aaeaddon_loop_grid_page` and swap/append them, updating
  *              the URL (?aae_page=N) without a reload; or
  *   - Reload : navigate to ?aae_page=N and let the server render it.
  *
@@ -52,7 +52,7 @@
 
 	function request(cfg, paged) {
 		var body = new window.FormData();
-		body.append('action', 'aae_loop_grid_page');
+		body.append('action', 'aaeaddon_loop_grid_page');
 		body.append('nonce', cfg.nonce);
 		body.append('post_id', cfg.postId);
 		body.append('grid_id', cfg.grid);

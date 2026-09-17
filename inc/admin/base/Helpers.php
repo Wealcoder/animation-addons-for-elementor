@@ -7,6 +7,7 @@
  */
 namespace Wealcoder\AnimationAddons\Admin\Base;
 
+use Wealcoder\AnimationAddons\Nonce;
 defined( 'ABSPATH' ) || die();
 /**
  * Class with static helper functions.
@@ -211,9 +212,9 @@ class Helpers {
 	 */
 	public static function get_plugin_page_setup_data() {
 		return Helpers::apply_filters( 'aaeaddon/plugin_page_setup', array(
-			'parent_slug' => 'wcf_addons_settings',	
+			'parent_slug' => 'aaeaddon_settings',	
 			'capability'  => 'import',
-			'menu_slug'   => 'wcf_addons_settings',
+			'menu_slug'   => 'aaeaddon_settings',
 		) );
 	}
 
@@ -321,7 +322,7 @@ class Helpers {
 	 * Check if the AJAX call is valid.
 	 */
 	public static function verify_ajax_call() {
-		check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
+		Nonce::check_ajax( Nonce::ADMIN, 'nonce' );
 
 		// Check if user has the WP capability to import data.
 		if ( ! current_user_can( 'import' ) ) {

@@ -82,7 +82,7 @@ function clearClones( track ) {
  * Fetch real, VARIED post data for the editor preview (title / image / url),
  * so cloned slides show different actual posts instead of repeating the one
  * authored card (and never the edited page's own title). Uses the editor-only
- * `aae_loop_post_data` endpoint (localized as window.AAE_LOOP_GRID). Cached per
+ * `aaeaddon_loop_post_data` endpoint (localized as window.AAE_LOOP_GRID). Cached per
  * slider id + count on the slider node so we don't refetch on every re-scan.
  */
 function fetchPreviewPosts( win, slider, count ) {
@@ -98,7 +98,7 @@ function fetchPreviewPosts( win, slider, count ) {
 	}
 
 	const body = new win.FormData();
-	body.append( 'action', 'aae_loop_post_data' );
+	body.append( 'action', 'aaeaddon_loop_post_data' );
 	body.append( 'nonce', cfg.nonce );
 	body.append( 'posts_per_page', String( Math.max( 1, count ) ) );
 

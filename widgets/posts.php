@@ -2457,7 +2457,7 @@ class Posts extends Widget_Base {
 		<?php
 	}
 
-	public static function wcf_wrap_first_n_words( $text, $n, $class = 'highlight' ) {
+	public static function wrap_first_n_words( $text, $n, $class = 'highlight' ) {
 		// Split the text into an array of words
 		$words = explode( ' ', $text );
 		// Check if the text has enough words to wrap
@@ -2494,7 +2494,7 @@ class Posts extends Widget_Base {
 
 				$highlight_title_length = (int) $this->get_settings( 'highlight_title_length' );
 
-				echo wp_kses_post( $this->wcf_wrap_first_n_words( $title, $highlight_title_length ) ); // Wrap first 2 words
+				echo wp_kses_post( $this->wrap_first_n_words( $title, $highlight_title_length ) ); // Wrap first 2 words
 
 			} else {
 				the_title();

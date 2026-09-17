@@ -482,7 +482,7 @@ function fetchWpMenus() {
 	}
 
 	const body = new window.FormData();
-	body.append( 'action', 'aae_get_nav_menus' );
+	body.append( 'action', 'aaeaddon_get_nav_menus' );
 	body.append( 'nonce', cfg.nonce || '' );
 
 	return window.fetch( cfg.ajaxUrl, { method: 'POST', body, credentials: 'same-origin' } )
@@ -612,7 +612,7 @@ function useWpMenus() {
 		}
 		let alive = true;
 		const body = new window.FormData();
-		body.append( 'action', 'aae_get_nav_menus' );
+		body.append( 'action', 'aaeaddon_get_nav_menus' );
 		body.append( 'nonce', cfg.nonce || '' );
 		window.fetch( cfg.ajaxUrl, { method: 'POST', body, credentials: 'same-origin' } )
 			.then( ( r ) => r.json() )

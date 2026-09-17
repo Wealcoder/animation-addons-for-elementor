@@ -1,6 +1,8 @@
 <?php
 namespace Wealcoder\AnimationAddons\CodeSnippet;
 
+use Wealcoder\AnimationAddons\Nonce;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit();
 } // Exit if accessed directly
@@ -55,7 +57,7 @@ class CodeSnippet {
 		add_action( 'init', array( $this, 'register_code_snippet_post_type' ) );
 		add_action( 'admin_menu', array( $this, 'admin_menu' ), 225 );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
-		add_action( 'admin_post_add_wcf_code_snippet', array( $this, 'handle_add_wcf_code_snippet' ) );
+		add_action( 'admin_post_aaeaddon_add_code_snippet', array( $this, 'handle_add_code_snippet' ) );
 		// Page search for the snippet location select. Old unprefixed name kept
 		// for one release for a cached admin bundle -- remove the alias in 4.3.
 		\Wealcoder\AnimationAddons\Ajax_Alias::register( 'add_custom_page', 'aaeaddon_snippet_page_search', array( $this, 'add_custom_page' ) );
@@ -171,7 +173,7 @@ class CodeSnippet {
 	 */
 	public function admin_menu() {
 		add_submenu_page(
-			'wcf_addons_page',
+			'aaeaddon_page',
 			esc_html__( 'Code Snippet', 'animation-addons-for-elementor' ),
 			esc_html__( 'Code Snippet', 'animation-addons-for-elementor' ),
 			'manage_options',
@@ -191,10 +193,10 @@ class CodeSnippet {
 		$code_snippet_id = isset( $_GET['edit'] ) ? absint( wp_unslash( $_GET['edit'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 		if ( $add_new_tab ) {
-			$snippet_details = $this->aae_get_code_snippet_settings();
+			$snippet_details = $this->get_code_snippet_settings();
 			include __DIR__ . '/views/edit-code-snippet.php';
 		} elseif ( $code_snippet_id ) {
-			$snippet_details = $this->aae_get_code_snippet_settings( $code_snippet_id );
+			$snippet_details = $this->get_code_snippet_settings( $code_snippet_id );
 			include __DIR__ . '/views/edit-code-snippet.php';
 		} else {
 			include __DIR__ . '/views/code-snippet-list.php';
@@ -252,7 +254,7 @@ class CodeSnippet {
 			);
 			$localize_data = array(
 				'ajaxurl'       => admin_url( 'admin-ajax.php' ),
-				'nonce'         => wp_create_nonce( 'wcf_custom_code_security' ),
+				'nonce'         => Nonce::create( Nonce::CODE_SNIPPET ),
 				'adminURL'      => admin_url(),
 				'snippet_page'  => admin_url( 'admin.php?page=wcf-code-snippet' ),
 				'serverDetails' => array(
@@ -261,10 +263,10 @@ class CodeSnippet {
 					'minorVersion'   => PHP_MINOR_VERSION,
 				),
 				'ajaxActions'   => array(
-					'search' => 'wcf_search_snippets',
-					'delete' => 'wcf_delete_snippet',
-					'bulk'   => 'wcf_bulk_action_snippets',
-					'toggle' => 'wcf_toggle_snippet_status',
+					'search' => 'aaeaddon_search_snippets',
+					'delete' => 'aaeaddon_delete_snippet',
+					'bulk'   => 'aaeaddon_bulk_action_snippets',
+					'toggle' => 'aaeaddon_toggle_snippet_status',
 				),
 				'messages'      => array(
 					'confirmDelete'     => __( 'Are you sure you want to delete this snippet?', 'animation-addons-for-elementor' ),
@@ -316,8 +318,8 @@ class CodeSnippet {
 		return current_user_can( 'edit_plugins' );
 	}
 
-	public function handle_add_wcf_code_snippet() {
-		check_admin_referer( 'wcf_code_snippet' );
+	public function handle_add_code_snippet() {
+		Nonce::check_admin( Nonce::CODE_SNIPPET_FORM );
 
 		// This stores code_content unsanitised — it is executed PHP/JS/CSS — so
 		// authorization cannot rest on the nonce alone. The snippet screen this
@@ -367,7 +369,7 @@ class CodeSnippet {
 			exit();
 		}
 
-		$settings = $this->aae_get_code_snippet_settings();
+		$settings = $this->get_code_snippet_settings();
 		foreach ( $settings as $key => $default_value ) {
 			if ( isset( $_POST[ $key ] ) ) {
 				if ( 'code_content' === $key ) {
@@ -433,7 +435,7 @@ class CodeSnippet {
 				wp_send_json_error( array( 'message' => esc_html__( 'You do not have permission to perform this action.', 'animation-addons-for-elementor' ) ) );
 			}
 
-			if ( ! wp_verify_nonce( $nonce, 'wcf_custom_code_security' ) ) {
+			if ( ! Nonce::verify( $nonce, Nonce::CODE_SNIPPET ) ) {
 				$errormessage = array(
 					'message' => esc_html__( 'Nonce Varification Failed!', 'animation-addons-for-elementor' ),
 				);

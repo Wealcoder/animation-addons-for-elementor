@@ -8,7 +8,7 @@ if (!defined('ABSPATH')) {
     exit();
 } // Exit if accessed directly
 
-class AAEAddon_Row_Actions {
+class Aaeaddon_Row_Actions {
 
     /**
 	 * [$_instance]
@@ -18,7 +18,7 @@ class AAEAddon_Row_Actions {
 
 	/**
 	 * [instance] Initializes a singleton instance
-	 * @return [AAEAddon_Row_Actions]
+	 * @return [Aaeaddon_Row_Actions]
 	 */
 	public static function instance() {
 		if ( is_null( self::$_instance ) ) {
@@ -71,7 +71,7 @@ class AAEAddon_Row_Actions {
 	    if ( basename(AAEADDON_BASE) === basename($plugin_file) ) {
 			$new_actions['aaeaddon-dsb-settings'] = sprintf(
 				'<a href="%s">%s</a>',
-				esc_url( admin_url( 'admin.php?page=wcf_addons_settings' ) ),
+				esc_url( admin_url( 'admin.php?page=aaeaddon_settings' ) ),
 				esc_html__('Settings', 'animation-addons-for-elementor' )
 			);
 			
@@ -82,4 +82,4 @@ class AAEAddon_Row_Actions {
 
 }
 
-new AAEAddon_Row_Actions();
+new Aaeaddon_Row_Actions();

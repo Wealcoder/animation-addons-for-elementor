@@ -637,7 +637,7 @@ class Post_Title extends Widget_Base {
 
 		if ( 'yes' === $settings['show_title_highlight'] ) {
 			$highlight_title_length = (int) $settings['highlight_title_length'];
-			$title                  = $this->wcf_wrap_first_n_words( $title, $highlight_title_length );
+			$title                  = $this->wrap_first_n_words( $title, $highlight_title_length );
 		}
 
 		if ( ! empty( $ellipsis_html ) && ! $use_line_clamp ) {
@@ -733,7 +733,7 @@ class Post_Title extends Widget_Base {
 	 *
 	 * @return string
 	 */
-	private function wcf_wrap_first_n_words( $text, $n, $class_name = 'highlight' ) {
+	private function wrap_first_n_words( $text, $n, $class_name = 'highlight' ) {
 		$words = preg_split( '/\s+/', wp_strip_all_tags( $text ) );
 
 		if ( count( $words ) <= $n ) {

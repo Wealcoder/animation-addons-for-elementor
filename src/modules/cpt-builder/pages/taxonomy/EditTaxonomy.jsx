@@ -65,7 +65,7 @@ const EditTaxonomy = () => {
           Accept: "application/json",
         },
         body: new URLSearchParams({
-          action: "aae_taxonomy_builder_single_item",
+          action: "aaeaddon_taxonomy_builder_single_item",
           taxonomy_id: value,
           nonce: WCF_ADDONS_ADMIN.nonce,
         }),
@@ -111,7 +111,7 @@ const EditTaxonomy = () => {
             Accept: "application/json",
           },
           body: new URLSearchParams({
-            action: "aae_taxonomy_exist",
+            action: "aaeaddon_taxonomy_exist",
             taxonomy_type: value,
             nonce: WCF_ADDONS_ADMIN.nonce,
           }),
@@ -147,7 +147,7 @@ const EditTaxonomy = () => {
             Accept: "application/json",
           },
           body: new URLSearchParams({
-            action: "aae_add_or_update_new_taxonomy_builder",
+            action: "aaeaddon_add_or_update_new_taxonomy_builder",
             taxonomy_meta: JSON.stringify(taxonomyData),
             taxonomy_id: taxonomyId,
             taxonomy_title: taxonomyTitle,

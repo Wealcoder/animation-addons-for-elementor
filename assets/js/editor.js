@@ -12,7 +12,7 @@
       dataType: "json",
       url: config.ajaxUrl,
       data: {
-        action: "wcf_mailchimp_list_fields",
+        action: "aaeaddon_mailchimp_list_fields",
         nonce: config._wpnonce,
         api: $api,
         list_id: $list_id,

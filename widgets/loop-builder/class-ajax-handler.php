@@ -1,6 +1,8 @@
 <?php
 namespace Wealcoder\AnimationAddons\Widgets\Loop_Builder;
 
+use Wealcoder\AnimationAddons\Nonce;
+
 use Wealcoder\AnimationAddons\Ajax_Alias;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -59,7 +61,7 @@ class Ajax_Handler {
 		try {
 			// Checked inline so the check is in the same scope as the request
 			// reads below (the sniff cannot follow a helper).
-			if ( ! check_ajax_referer( 'aae_loop_builder_nonce', 'nonce', false ) ) {
+			if ( ! Nonce::check_ajax( Nonce::LOOP_BUILDER, 'nonce', false ) ) {
 				wp_send_json_error( array( 'message' => esc_html__( 'Security check failed.', 'animation-addons-for-elementor' ) ), 403 );
 			}
 
@@ -173,7 +175,7 @@ class Ajax_Handler {
 		try {
 			// Checked inline so the check is in the same scope as the request
 			// reads below (the sniff cannot follow a helper).
-			if ( ! check_ajax_referer( 'aae_loop_builder_nonce', 'nonce', false ) ) {
+			if ( ! Nonce::check_ajax( Nonce::LOOP_BUILDER, 'nonce', false ) ) {
 				wp_send_json_error( array( 'message' => esc_html__( 'Security check failed.', 'animation-addons-for-elementor' ) ), 403 );
 			}
 

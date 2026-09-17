@@ -2,6 +2,7 @@
 
 namespace Wealcoder\AnimationAddons\Extensions;
 
+use Wealcoder\AnimationAddons\Nonce;
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
@@ -84,9 +85,11 @@ Class CustomFonts_Lite{
 		add_action( 'admin_menu', [ $this, 'register_sub_menu_post' ] , 30);
 		add_action( 'add_meta_boxes', [$this ,'custom_metabox' ]);
 		add_action( 'admin_enqueue_scripts', [ $this, 'admin_scripts' ] );
-		add_action( 'wp_ajax_wcf_save_custom_fonts', [ $this, 'save_settings' ] );
-		add_action( 'wp_ajax_wcf_save_custom_fonts_settings', [ $this, 'save_global_settings' ] );
-		//add_filter( 'upload_mimes', [$this ,'wcf_addon_pro_allow_custom_font_uploads'], 100);
+		// 'wcf_save_custom_fonts' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
+		\Wealcoder\AnimationAddons\Ajax_Alias::register( 'wcf_save_custom_fonts', 'aaeaddon_save_custom_fonts', [ $this, 'save_settings' ] );
+		// 'wcf_save_custom_fonts_settings' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
+		\Wealcoder\AnimationAddons\Ajax_Alias::register( 'wcf_save_custom_fonts_settings', 'aaeaddon_save_custom_fonts_settings', [ $this, 'save_global_settings' ] );
+		//add_filter( 'upload_mimes', [$this ,'allow_custom_font_uploads'], 100);
         add_filter( 'wcf_addin_pro_custom_webfonts' , [ $this, '_custom_webfonts' ] , 4 , 2 );
         add_filter( 'wcf_addin_pro_custom_webfonts' , [ $this, 'global_custom_webfonts' ] , 9 );
 		add_filter( 'elementor/fonts/additional_fonts' , [ $this, 'elementor_additional_fonts' ] , 12 );
@@ -122,7 +125,8 @@ Class CustomFonts_Lite{
 
         add_action( 'wp_enqueue_scripts',  array( $this, 'push_dynamic_style' ) , 20 );
         add_action( 'wp_head',  array( $this, 'wp_push_style' ) , 20 );
-        add_action( 'wp_ajax_wcf_addon_custom_font_settings', [ $this, 'custom_font_settings' ] );
+        // 'wcf_addon_custom_font_settings' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
+        \Wealcoder\AnimationAddons\Ajax_Alias::register( 'wcf_addon_custom_font_settings', 'aaeaddon_custom_font_settings', [ $this, 'custom_font_settings' ] );
         $this->gl_settings = aaeaddon_validate_content_json( wp_unslash( get_option('aaeaddon_custom_font_setting')) );
         add_filter( 'post_row_actions', [$this,'remove_quick_edit_button'], 10, 2 );
 		add_filter( 'display_post_states', [$this,'remove_post_states'], 10, 2);
@@ -147,7 +151,7 @@ Class CustomFonts_Lite{
 	
 	public function custom_font_settings() {
 
-		check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
+		Nonce::check_ajax( Nonce::ADMIN, 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( esc_html__( 'you are not allowed to do this action','animation-addons-for-elementor' ) );
@@ -579,7 +583,7 @@ Class CustomFonts_Lite{
     }
 	
 	
-	function wcf_addon_pro_allow_custom_font_uploads($mime_types) {
+	function allow_custom_font_uploads($mime_types) {
 		// Add support for font file types
 		$mime_types['woff'] = 'font/woff';
 		$mime_types['woff2'] = 'font/woff2';
@@ -592,7 +596,7 @@ Class CustomFonts_Lite{
 	}
 	
 	public function save_global_settings() {
-        check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
+        Nonce::check_ajax( Nonce::ADMIN, 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( esc_html__( 'you are not allowed to do this action', 'animation-addons-for-elementor' ) );
@@ -612,7 +616,7 @@ Class CustomFonts_Lite{
     }
 	public function save_settings() {
 
-		check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
+		Nonce::check_ajax( Nonce::ADMIN, 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( esc_html__( 'you are not allowed to do this action', 'animation-addons-for-elementor' ) );
@@ -651,7 +655,7 @@ Class CustomFonts_Lite{
             
 			$localize_data = [
 				'ajaxurl'        => admin_url( 'admin-ajax.php' ),
-				'nonce'          => wp_create_nonce( 'wcf_admin_nonce' ),
+				'nonce'          => Nonce::create( Nonce::ADMIN ),
 				'data' => wp_unslash( $font ),
 				'id'		 => get_the_id(),
 				'custom_font_global'		 =>get_post_meta(get_the_id(),'custom_font_global', true)
@@ -692,7 +696,7 @@ Class CustomFonts_Lite{
 	}
 	public function register_sub_menu_post() { 
 	
-        add_submenu_page( 'wcf_addons_page' , esc_html__('Custom Fonts', 'animation-addons-for-elementor') , esc_html__('Custom Fonts', 'animation-addons-for-elementor') , 'manage_options' , "edit.php?post_type=$this->post_type", null );      
+        add_submenu_page( 'aaeaddon_page' , esc_html__('Custom Fonts', 'animation-addons-for-elementor') , esc_html__('Custom Fonts', 'animation-addons-for-elementor') , 'manage_options' , "edit.php?post_type=$this->post_type", null );      
     }
 	function custom_post_type(){
    

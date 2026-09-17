@@ -48,7 +48,7 @@ const GetProButton = ({ btnClassName, showLicense, upsellOnly = false }) => {
       },
 
       body: new URLSearchParams({
-        action: "wcf_active_plugin",
+        action: "aaeaddon_active_plugin",
         action_base:
           "animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php",
         nonce: WCF_ADDONS_ADMIN.nonce,

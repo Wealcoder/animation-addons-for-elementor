@@ -2,6 +2,7 @@
 
 namespace Wealcoder\AnimationAddons\Extensions;
 
+use Wealcoder\AnimationAddons\Nonce;
 use ZipArchive;
 
 if (! defined('ABSPATH')) {
@@ -336,7 +337,7 @@ class CustomIcons_Lite
 	public function settings_state()
 	{
 
-		check_ajax_referer('wcf_admin_nonce', 'nonce');
+		Nonce::check_ajax( Nonce::ADMIN, 'nonce');
 
 		if (! current_user_can('manage_options')) {
 			wp_send_json_error(esc_html__('you are not allowed to do this action', 'animation-addons-for-elementor'));
@@ -374,7 +375,7 @@ class CustomIcons_Lite
 	public function upload_zip()
 	{
 		// 1) Security: nonce + capability
-		check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
+		Nonce::check_ajax( Nonce::ADMIN, 'nonce' );
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( [
 				'message' =>esc_html__( 'You are not allowed to do this action.', 'animation-addons-for-elementor' ),
@@ -616,7 +617,7 @@ class CustomIcons_Lite
 
 	public function update_custom_icon_delete()
 	{
-		check_ajax_referer('wcf_admin_nonce', 'nonce');
+		Nonce::check_ajax( Nonce::ADMIN, 'nonce');
 
 		if (! current_user_can('manage_options')) {
 			wp_send_json_error(esc_html__('you are not allowed to do this action', 'animation-addons-for-elementor'));
@@ -663,7 +664,7 @@ class CustomIcons_Lite
 
 	public function update_custom_icon_title()
 	{
-		check_ajax_referer('wcf_admin_nonce', 'nonce');
+		Nonce::check_ajax( Nonce::ADMIN, 'nonce');
 
 		if (! current_user_can('manage_options')) {
 			wp_send_json_error(esc_html__('you are not allowed to do this action', 'animation-addons-for-elementor'));
@@ -741,7 +742,7 @@ class CustomIcons_Lite
 		if (isset($current_screen->id) && ($current_screen->id == 'edit-wcf-custom-icons' || $current_screen->id == 'wcf-custom-icons')) {
 			$localize_data = [
 				'ajaxurl'     => admin_url('admin-ajax.php'),
-				'nonce'       => wp_create_nonce('wcf_admin_nonce'),
+				'nonce'       => Nonce::create( Nonce::ADMIN ),
 				'id'          => get_the_id(),
 				'custom_icon' => get_post_meta(get_the_id(), 'wcf_addon_custom_icons', true)
 			];
@@ -775,7 +776,7 @@ class CustomIcons_Lite
 	public function register_sub_menu_post()
 	{
 
-		add_submenu_page('wcf_addons_page', esc_html__('Custom Icons', 'animation-addons-for-elementor'), esc_html__('Custom Icons', 'animation-addons-for-elementor'), 'manage_options', "edit.php?post_type=$this->post_type", null);
+		add_submenu_page('aaeaddon_page', esc_html__('Custom Icons', 'animation-addons-for-elementor'), esc_html__('Custom Icons', 'animation-addons-for-elementor'), 'manage_options', "edit.php?post_type=$this->post_type", null);
 	}
 
 	function custom_post_type()

@@ -70,7 +70,7 @@ const PagePicker = ({ ids, disabled, onChange, titles, onResolve, testid }) => {
 
     clearTimeout(timer.current);
     timer.current = setTimeout(async () => {
-      const data = await post("aae_search_content", { search: term });
+      const data = await post("aaeaddon_search_content", { search: term });
       setResults(data?.results || []);
       setOpen(true);
     }, 300);
@@ -168,7 +168,7 @@ const ConditionsField = ({ field, feature, name, value, disabled, onChange }) =>
 
     let live = true;
 
-    post("aae_search_content", { ids: [...new Set(unknown)] }).then((data) => {
+    post("aaeaddon_search_content", { ids: [...new Set(unknown)] }).then((data) => {
       if (!live || !data?.results?.length) return;
 
       setTitles((prev) => ({

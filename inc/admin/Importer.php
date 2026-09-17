@@ -78,7 +78,7 @@ class Importer
 	 */
 	public static function load_engine()
 	{
-		// AAEImporter extends AaeaddonWXRImporter, which extends the core
+		// Aaeaddon_Content_Importer extends AaeaddonWXRImporter, which extends the core
 		// \WP_Importer class. Core does not autoload it, and AaeaddonWXRImporter.php
 		// below cannot be parsed without it.
 		if (! class_exists('\WP_Importer')) {
@@ -89,7 +89,7 @@ class Importer
 		require_once __DIR__ . '/base/WPImporterLoggerCLI.php';
 		require_once __DIR__ . '/base/AaeaddonWXRImporter.php';
 		require_once __DIR__ . '/base/AaeaddonWXRImportInfo.php';
-		require_once __DIR__ . '/aae-importer.php';
+		require_once __DIR__ . '/content-importer.php';
 		require_once __DIR__ . '/Logger.php';
 	}
 
@@ -292,7 +292,7 @@ class Importer
 
 		// Set the WordPress Importer v2 as the importer used in this plugin.
 		// More: https://github.com/humanmade/WordPress-Importer.
-		$this->importer = new AAEImporter($importer_options);
+		$this->importer = new Aaeaddon_Content_Importer($importer_options);
 
 		// Set logger to the importer.
 		$this->logger = $logger;

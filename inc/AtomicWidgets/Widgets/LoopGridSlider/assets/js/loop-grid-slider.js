@@ -6,7 +6,7 @@
  * The slider MOTION (transform / autoplay / effect / loop) is owned entirely by
  * the shared nested-slider runtime (aae-effect-nested-slider). This file adds
  * ONLY the paging layer: it wires the Pagination child's Load-More / Prev / Next
- * / page-number controls to the existing `aae_loop_grid_page` AJAX endpoint,
+ * / page-number controls to the existing `aaeaddon_loop_grid_page` AJAX endpoint,
  * fetches the next page of loop-item cells (already carrying `.aae-a-slide`),
  * appends them INTO the slider track, and then asks the shared slider runtime to
  * re-bind so it recounts slides, rebuilds loop clones, and recomputes widths.
@@ -63,7 +63,7 @@
 
 	function request(cfg, paged) {
 		var body = new window.FormData();
-		body.append('action', 'aae_loop_grid_page');
+		body.append('action', 'aaeaddon_loop_grid_page');
 		body.append('nonce', cfg.nonce);
 		body.append('post_id', cfg.postId);
 		body.append('grid_id', cfg.grid);

@@ -1,6 +1,8 @@
 <?php
 namespace Wealcoder\AnimationAddons\Widgets\Loop_Builder;
 
+use Wealcoder\AnimationAddons\Nonce;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
@@ -162,7 +164,7 @@ class Aaeaddon_Loop_Builder_Integration {
 	 * @return void
 	 */
 	public function ajax_get_template_preview() {
-		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'aae_loop_builder_nonce' ) ) {
+		if ( ! isset( $_POST['nonce'] ) || ! Nonce::verify( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), Nonce::LOOP_BUILDER ) ) {
 			wp_send_json_error( 'Security check failed' );
 		}
 
@@ -217,7 +219,7 @@ class Aaeaddon_Loop_Builder_Integration {
 			'wcf_addons_frontend',
 			array(
 				'ajax_url' => admin_url( 'admin-ajax.php' ),
-				'nonce'    => wp_create_nonce( 'aae_loop_builder_nonce' ),
+				'nonce'    => Nonce::create( Nonce::LOOP_BUILDER ),
 			)
 		);
 	}
@@ -250,7 +252,7 @@ class Aaeaddon_Loop_Builder_Integration {
 			'aaeLoopBuilderEditor',
 			array(
 				'ajax_url' => admin_url( 'admin-ajax.php' ),
-				'nonce'    => wp_create_nonce( 'aae_loop_builder_nonce' ),
+				'nonce'    => Nonce::create( Nonce::LOOP_BUILDER ),
 			)
 		);
 

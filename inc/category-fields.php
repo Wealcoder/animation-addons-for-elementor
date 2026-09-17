@@ -132,7 +132,7 @@ add_action('category_edit_form_fields', 'aaeaddon_category_meta_nonce_field');
 
 if ( ! function_exists( 'aaeaddon_category_meta_nonce_field' ) ) :
 function aaeaddon_category_meta_nonce_field( $term = null ) {
-    wp_nonce_field( 'aae_category_meta_action', 'aae_category_meta_nonce' );
+    wp_nonce_field( \Wealcoder\AnimationAddons\Nonce::CATEGORY_META, 'aaeaddon_category_meta_nonce' );
 }
 endif;
 
@@ -144,13 +144,13 @@ if ( ! function_exists( 'aaeaddon_save_category_light_custom_fields' ) ) :
 function aaeaddon_save_category_light_custom_fields( $term_id, $tt_id = null ) {
     // 1) Nonce check
     // phpcs:ignore WordPress.Security.NonceVerification.Missing
-    if ( ! isset( $_POST['aae_category_meta_nonce'] ) ) {
+    if ( ! isset( $_POST['aaeaddon_category_meta_nonce'] ) ) {
         return;
     }
 
-    $nonce =  sanitize_text_field( wp_unslash( $_POST['aae_category_meta_nonce'] ) ); // Input comes from $_POST, so unslash
+    $nonce =  sanitize_text_field( wp_unslash( $_POST['aaeaddon_category_meta_nonce'] ) ); // Input comes from $_POST, so unslash
 
-    if ( ! wp_verify_nonce( $nonce, 'aae_category_meta_action' ) ) {
+    if ( ! \Wealcoder\AnimationAddons\Nonce::verify( $nonce, \Wealcoder\AnimationAddons\Nonce::CATEGORY_META ) ) {
         return;
     }
 
@@ -228,7 +228,7 @@ function aaeaddon_inline_category_light_media_uploader( $hook_suffix ) {
     // (Optional) Pass data / i18n / nonce to JS
     wp_localize_script( 'aae-category-media', 'AAECategoryMedia', [
         'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-        'nonce'   => wp_create_nonce( 'aae_category_media' ),
+        'nonce'   => \Wealcoder\AnimationAddons\Nonce::create( \Wealcoder\AnimationAddons\Nonce::CATEGORY_MEDIA ),
         'i18n'    => [
             'choose' => __( 'Choose image', 'animation-addons-for-elementor' ),
             'use'    => __( 'Use this image', 'animation-addons-for-elementor' ),
@@ -259,7 +259,7 @@ function aaeaddon_build_cat_badge_css()
     // String literal, not a top-level const: this file returns early (line ~9)
     // when the Pro plugin is present, so a const there would never be defined,
     // yet the function declarations below are hoisted and could still be called.
-    $transient = 'aae_cat_badge_css';
+    $transient = 'aaeaddon_cat_badge_css';
 
     $cached = get_transient($transient);
     if (false !== $cached) {
@@ -301,7 +301,7 @@ function aaeaddon_flush_cat_badge_css($meta_id = 0, $object_id = 0, $meta_key = 
     if ('' !== $meta_key && ! in_array($meta_key, array('aae_cat_bg_color', 'aae_cat_color'), true)) {
         return;
     }
-    delete_transient('aae_cat_badge_css');
+    delete_transient('aaeaddon_cat_badge_css');
 }
 endif;
 add_action('added_term_meta', 'aaeaddon_flush_cat_badge_css', 10, 3);

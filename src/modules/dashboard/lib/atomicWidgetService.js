@@ -337,7 +337,7 @@ export const countAtomicWidgets = (allAtomicWidgets) => {
 };
 
 // Flattens the category-grouped state back to the `{ slug: true }` map the
-// `aae_save_atomic_widgets` AJAX handler (class-atomic.php::ajax_save_settings)
+// `aaeaddon_save_atomic_widgets` AJAX handler (class-atomic.php::ajax_save_settings)
 // expects. That handler does a full `update_option()` replace, so the
 // payload must include every widget slug it knows about — not just the
 // ones this list shows — or hidden ("Main"/internal/demo) widgets would be

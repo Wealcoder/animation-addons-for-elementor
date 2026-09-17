@@ -16,7 +16,7 @@ if (document.getElementById("wcf--custom-fonts-meta-box-side-setting")) {
 
 
 document.addEventListener("DOMContentLoaded", () => {
-  const dId = document.getElementById("toplevel_page_wcf_addons_page");
+  const dId = document.getElementById("toplevel_page_aaeaddon_page");
 
   if (dId) {
     dId.classList.remove("wp-not-current-submenu");

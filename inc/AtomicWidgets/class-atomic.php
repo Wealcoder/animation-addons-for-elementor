@@ -12,6 +12,7 @@
 
 namespace Wealcoder\AnimationAddons\AtomicWidgets;
 
+use Wealcoder\AnimationAddons\Nonce;
 if (! defined('ABSPATH')) {
 	exit; // Exit if accessed directly.
 }
@@ -54,7 +55,7 @@ final class Atomic
 	 * Cached answer to "does this site's CONTENT use Elementor V4 elements?".
 	 * One hour, negative-only invalidation — see maybe_invalidate_atomic_usage().
 	 */
-	const USAGE_TRANSIENT = 'aae_atomic_usage';
+	const USAGE_TRANSIENT = 'aaeaddon_atomic_usage';
 
 	/**
 	 * Cached answer to "HOW MANY posts use Elementor V4 elements?".
@@ -67,7 +68,7 @@ final class Atomic
 	 * screen -- see atomic_optin_signal(), which asks for it last and only when
 	 * the notice will show.
 	 */
-	const USAGE_COUNT_TRANSIENT = 'aae_atomic_usage_count';
+	const USAGE_COUNT_TRANSIENT = 'aaeaddon_atomic_usage_count';
 
 	/**
 	 * The exact atomic state this site had immediately BEFORE it accepted the
@@ -1065,12 +1066,18 @@ final class Atomic
 		// Admin: supply config to dashboard and handle AJAX save.
 		if (is_admin()) {
 			add_filter('wcf_addons_dashboard_config', [$this, 'inject_dashboard_config'], 12);
-			add_action('wp_ajax_aae_save_atomic_widgets', [$this, 'ajax_save_settings']);
-			add_action('wp_ajax_aae_get_atomic_widgets', [$this, 'ajax_get_settings']);
-			add_action('wp_ajax_aae_save_atomic_extensions', [$this, 'ajax_save_extension_settings']);
-			add_action('wp_ajax_aae_get_atomic_extensions', [$this, 'ajax_get_extension_settings']);
-			add_action('wp_ajax_aae_atomic_optin', [$this, 'ajax_atomic_optin']);
-			add_action('wp_ajax_aae_atomic_optin_undo', [$this, 'ajax_atomic_optin_undo']);
+			// 'aae_save_atomic_widgets' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
+			\Wealcoder\AnimationAddons\Ajax_Alias::register( 'aae_save_atomic_widgets', 'aaeaddon_save_atomic_widgets', [$this, 'ajax_save_settings'] );
+			// 'aae_get_atomic_widgets' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
+			\Wealcoder\AnimationAddons\Ajax_Alias::register( 'aae_get_atomic_widgets', 'aaeaddon_get_atomic_widgets', [$this, 'ajax_get_settings'] );
+			// 'aae_save_atomic_extensions' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
+			\Wealcoder\AnimationAddons\Ajax_Alias::register( 'aae_save_atomic_extensions', 'aaeaddon_save_atomic_extensions', [$this, 'ajax_save_extension_settings'] );
+			// 'aae_get_atomic_extensions' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
+			\Wealcoder\AnimationAddons\Ajax_Alias::register( 'aae_get_atomic_extensions', 'aaeaddon_get_atomic_extensions', [$this, 'ajax_get_extension_settings'] );
+			// 'aae_atomic_optin' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
+			\Wealcoder\AnimationAddons\Ajax_Alias::register( 'aae_atomic_optin', 'aaeaddon_atomic_optin', [$this, 'ajax_atomic_optin'] );
+			// 'aae_atomic_optin_undo' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
+			\Wealcoder\AnimationAddons\Ajax_Alias::register( 'aae_atomic_optin_undo', 'aaeaddon_atomic_optin_undo', [$this, 'ajax_atomic_optin_undo'] );
 		}
 
 		// Let a new page CHANGE the answer to has_atomic_usage(). Registered
@@ -1163,25 +1170,30 @@ final class Atomic
 		add_action('elementor/editor/after_enqueue_scripts', [$this, 'enqueue_atomic_editor_scripts'], 100);
 
 		// AJAX endpoints for Editor previews
-		add_action('wp_ajax_aae_get_menu_html', [$this, 'ajax_get_menu_html']);
+		// 'aae_get_menu_html' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
+		\Wealcoder\AnimationAddons\Ajax_Alias::register( 'aae_get_menu_html', 'aaeaddon_get_menu_html', [$this, 'ajax_get_menu_html'] );
 
 		// Loop Grid: per-post data for the editor "full grid live" preview (the
 		// atomic preview is client-side and can't run our PHP WP_Query).
-		add_action('wp_ajax_aae_loop_post_data', [$this, 'ajax_loop_post_data']);
+		// 'aae_loop_post_data' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
+		\Wealcoder\AnimationAddons\Ajax_Alias::register( 'aae_loop_post_data', 'aaeaddon_loop_post_data', [$this, 'ajax_loop_post_data'] );
 
 		// Loop Grid: one post's title/image for the editor's authored-card
 		// sample — used after "Apply & Preview" (Page Settings → Preview
 		// Settings) so the chosen post shows without a full editor reload.
-		add_action('wp_ajax_aae_loop_sample_post', [$this, 'ajax_loop_sample_post']);
+		// 'aae_loop_sample_post' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
+		\Wealcoder\AnimationAddons\Ajax_Alias::register( 'aae_loop_sample_post', 'aaeaddon_loop_sample_post', [$this, 'ajax_loop_sample_post'] );
 
 		// Loop Grid: AJAX search options for the panel's `aae-query-chips`
 		// controls (posts by title/ID, taxonomy terms by name).
-		add_action('wp_ajax_aae_loop_query_options', [$this, 'ajax_loop_query_options']);
+		// 'aae_loop_query_options' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
+		\Wealcoder\AnimationAddons\Ajax_Alias::register( 'aae_loop_query_options', 'aaeaddon_loop_query_options', [$this, 'ajax_loop_query_options'] );
 
 		// AAE Nav: list WordPress menus + their nested item trees so the Nav
 		// panel's "Import from WordPress menu" control can rebuild them as
 		// atomic nav-items. Reuses the `aae_loop_grid` editor nonce.
-		add_action('wp_ajax_aae_get_nav_menus', [$this, 'ajax_get_nav_menus']);
+		// 'aae_get_nav_menus' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
+		\Wealcoder\AnimationAddons\Ajax_Alias::register( 'aae_get_nav_menus', 'aaeaddon_get_nav_menus', [$this, 'ajax_get_nav_menus'] );
 
 		// Dynamic tags editor preview: `ajax_render_tags` switches to the EDITED
 		// document before resolving tags, so a Featured Image / Post Title tag
@@ -1193,8 +1205,8 @@ final class Atomic
 
 		// Loop Grid: frontend paginated cells (AJAX + Load More). Available to
 		// logged-out visitors too, so both hooks are registered.
-		add_action('wp_ajax_aae_loop_grid_page', [$this, 'ajax_loop_grid_page']);
-		add_action('wp_ajax_nopriv_aae_loop_grid_page', [$this, 'ajax_loop_grid_page']);
+		// 'aae_loop_grid_page' is a deprecated alias (a page cache or combined bundle can still post the old name) -- remove in 4.4.
+		\Wealcoder\AnimationAddons\Ajax_Alias::register( 'aae_loop_grid_page', 'aaeaddon_loop_grid_page', [$this, 'ajax_loop_grid_page'], true );
 
 		// Loop Grid query-level hooks: the WooCommerce lookup-table clauses.
 		// A no-op unless a query carries one of the grid's private vars, so it
@@ -2729,7 +2741,7 @@ final class Atomic
 	 */
 	public function ajax_loop_sample_post()
 	{
-		check_ajax_referer('aae_loop_grid', 'nonce');
+		Nonce::check_ajax( Nonce::LOOP_GRID, 'nonce');
 
 		if (! current_user_can('edit_posts')) {
 			wp_send_json_error(['message' => 'Access denied.'], 403);
@@ -2828,7 +2840,7 @@ final class Atomic
 	 */
 	public function ajax_loop_query_options()
 	{
-		check_ajax_referer('aae_loop_grid', 'nonce');
+		Nonce::check_ajax( Nonce::LOOP_GRID, 'nonce');
 
 		if (! current_user_can('edit_posts')) {
 			wp_send_json_error(['message' => 'Access denied.'], 403);
@@ -2938,7 +2950,7 @@ final class Atomic
 
 	public function ajax_loop_post_data()
 	{
-		check_ajax_referer('aae_loop_grid', 'nonce');
+		Nonce::check_ajax( Nonce::LOOP_GRID, 'nonce');
 
 		if (! current_user_can('edit_posts')) {
 			wp_send_json_error(['message' => 'Access denied.'], 403);
@@ -3011,7 +3023,7 @@ final class Atomic
 	 * Nonce: aae_loop_grid_front (public). Only reads published post content.
 	 */
 	public function ajax_loop_grid_page() {
-		check_ajax_referer('aae_loop_grid_front', 'nonce');
+		Nonce::check_ajax( Nonce::LOOP_GRID_FRONT, 'nonce');
 
 		$post_id  = isset($_POST['post_id']) ? absint($_POST['post_id']) : 0;
 		$grid_id  = isset($_POST['grid_id']) ? sanitize_key(wp_unslash($_POST['grid_id'])) : '';
@@ -4258,7 +4270,7 @@ JS;
 						[
 							'ajaxUrl' => admin_url( 'admin-ajax.php' ),
 							// Verified by ajax_get_menu_html().
-							'nonce'   => wp_create_nonce( 'aae_loop_grid' ),
+							'nonce'   => Nonce::create( Nonce::LOOP_GRID ),
 						]
 					);
 				}
@@ -4688,7 +4700,7 @@ JS;
 	 */
 	public function ajax_save_settings(): void
 	{
-		check_ajax_referer('wcf_admin_nonce', 'nonce');
+		Nonce::check_ajax( Nonce::ADMIN, 'nonce');
 
 		if (! current_user_can('manage_options')) {
 			wp_send_json_error(esc_html__('Permission denied.', 'animation-addons-for-elementor'));
@@ -4773,7 +4785,7 @@ JS;
 	 */
 	public function ajax_get_settings(): void
 	{
-		check_ajax_referer('wcf_admin_nonce', 'nonce');
+		Nonce::check_ajax( Nonce::ADMIN, 'nonce');
 
 		if (! current_user_can('manage_options')) {
 			wp_send_json_error(esc_html__('Permission denied.', 'animation-addons-for-elementor'));
@@ -4794,7 +4806,7 @@ JS;
 		// `rendered_menu` server-side, so menu.js never reaches this. The
 		// nonce rides AAE_MENU_CFG next to the ajax URL, and the action is
 		// the same one every other editor-only endpoint in this class uses.
-		check_ajax_referer('aae_loop_grid', 'nonce');
+		Nonce::check_ajax( Nonce::LOOP_GRID, 'nonce');
 
 		if (! current_user_can('edit_posts')) {
 			wp_send_json_error(esc_html__('Permission denied.', 'animation-addons-for-elementor'));
@@ -4825,7 +4837,7 @@ JS;
 	 */
 	public function ajax_get_nav_menus(): void
 	{
-		check_ajax_referer('aae_loop_grid', 'nonce');
+		Nonce::check_ajax( Nonce::LOOP_GRID, 'nonce');
 
 		if (! current_user_can('edit_posts')) {
 			wp_send_json_error(['message' => 'Access denied.'], 403);
@@ -4885,7 +4897,7 @@ JS;
 	 */
 	public function ajax_save_extension_settings(): void
 	{
-		check_ajax_referer('wcf_admin_nonce', 'nonce');
+		Nonce::check_ajax( Nonce::ADMIN, 'nonce');
 
 		if (! current_user_can('manage_options')) {
 			wp_send_json_error(esc_html__('Permission denied.', 'animation-addons-for-elementor'));
@@ -4962,7 +4974,7 @@ JS;
 	 */
 	public function ajax_get_extension_settings(): void
 	{
-		check_ajax_referer('wcf_admin_nonce', 'nonce');
+		Nonce::check_ajax( Nonce::ADMIN, 'nonce');
 
 		if (! current_user_can('manage_options')) {
 			wp_send_json_error(esc_html__('Permission denied.', 'animation-addons-for-elementor'));
@@ -5800,7 +5812,7 @@ JS;
 	 */
 	public function ajax_atomic_optin(): void
 	{
-		check_ajax_referer('wcf_admin_nonce', 'nonce');
+		Nonce::check_ajax( Nonce::ADMIN, 'nonce');
 
 		if (! current_user_can('manage_options')) {
 			wp_send_json_error(__('Permission denied.', 'animation-addons-for-elementor'));
@@ -5891,7 +5903,7 @@ JS;
 	 */
 	public function ajax_atomic_optin_undo(): void
 	{
-		check_ajax_referer('wcf_admin_nonce', 'nonce');
+		Nonce::check_ajax( Nonce::ADMIN, 'nonce');
 
 		if (! current_user_can('manage_options')) {
 			wp_send_json_error(__('Permission denied.', 'animation-addons-for-elementor'));
@@ -5996,7 +6008,7 @@ JS;
 			'AAE_LOOP_GRID',
 			[
 				'ajaxUrl' => admin_url('admin-ajax.php'),
-				'nonce'   => wp_create_nonce('aae_loop_grid'),
+				'nonce'   => Nonce::create( Nonce::LOOP_GRID ),
 				'notices' => [
 					'taxonomies' => self::loop_grid_taxonomy_notices(),
 				],

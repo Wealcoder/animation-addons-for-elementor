@@ -21,7 +21,7 @@ trait CodeSnippetSettingsTrait {
 	 * @since 2.3.10
 	 * @return array
 	 */
-	public function aae_get_code_snippet_settings( $id = null ) {
+	public function get_code_snippet_settings( $id = null ) {
 		$defaults = array(
 			'code_type'            => '',
 			'load_location'        => '',

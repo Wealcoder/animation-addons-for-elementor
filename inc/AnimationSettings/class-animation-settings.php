@@ -38,6 +38,7 @@
 
 namespace Wealcoder\AnimationAddons\AnimationSettings;
 
+use Wealcoder\AnimationAddons\Nonce;
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -45,7 +46,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Animation_Settings {
 
 	const OPTION_NAME = 'aaeaddon_animation_settings';
-	const NONCE       = 'wcf_admin_nonce';
+	const NONCE       = Nonce::ADMIN;
 
 	/** Features this module can own. Only `preloader` is implemented so far. */
 	const FEATURES = [ 'smooth_scroll', 'preloader', 'cursor', 'scroll_to_top', 'scroll_indicator', 'popup' ];
@@ -85,9 +86,12 @@ class Animation_Settings {
 	}
 
 	public function __construct() {
-		add_action( 'wp_ajax_aae_get_animation_settings', [ $this, 'ajax_get' ] );
-		add_action( 'wp_ajax_aae_save_animation_settings', [ $this, 'ajax_save' ] );
-		add_action( 'wp_ajax_aae_search_content', [ $this, 'ajax_search_content' ] );
+		// 'aae_get_animation_settings' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
+		\Wealcoder\AnimationAddons\Ajax_Alias::register( 'aae_get_animation_settings', 'aaeaddon_get_animation_settings', [ $this, 'ajax_get' ] );
+		// 'aae_save_animation_settings' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
+		\Wealcoder\AnimationAddons\Ajax_Alias::register( 'aae_save_animation_settings', 'aaeaddon_save_animation_settings', [ $this, 'ajax_save' ] );
+		// 'aae_search_content' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
+		\Wealcoder\AnimationAddons\Ajax_Alias::register( 'aae_search_content', 'aaeaddon_search_content', [ $this, 'ajax_search_content' ] );
 
 		// The request-level cache has to die whenever the option changes, no
 		// matter who changed it — a WP-CLI script, a migration, another plugin.
@@ -157,11 +161,11 @@ class Animation_Settings {
 			return;
 		}
 
-		if ( '0' !== get_transient( 'aae_v3_usage' ) ) {
+		if ( '0' !== get_transient( 'aaeaddon_v3_usage' ) ) {
 			return;
 		}
 
-		delete_transient( 'aae_v3_usage' );
+		delete_transient( 'aaeaddon_v3_usage' );
 	}
 
 	/**
@@ -558,7 +562,7 @@ class Animation_Settings {
 	 * when someone imports or builds something.
 	 */
 	public static function has_v3_usage(): bool {
-		$cached = get_transient( 'aae_v3_usage' );
+		$cached = get_transient( 'aaeaddon_v3_usage' );
 
 		if ( false !== $cached ) {
 			return '1' === $cached;
@@ -583,7 +587,7 @@ class Animation_Settings {
 			$found = self::kit_has_legacy_chrome();
 		}
 
-		set_transient( 'aae_v3_usage', $found ? '1' : '0', HOUR_IN_SECONDS );
+		set_transient( 'aaeaddon_v3_usage', $found ? '1' : '0', HOUR_IN_SECONDS );
 
 		return $found;
 	}
@@ -2096,7 +2100,7 @@ JS;
 	 * ------------------------------------------------------------------ */
 
 	private function guard(): void {
-		check_ajax_referer( self::NONCE, 'nonce' );
+		Nonce::check_ajax( self::NONCE, 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( esc_html__( 'Permission denied.', 'animation-addons-for-elementor' ) );

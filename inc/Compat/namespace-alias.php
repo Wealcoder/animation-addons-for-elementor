@@ -75,8 +75,11 @@ spl_autoload_register(
 
 		// Under the CURRENT namespace there is nothing to translate unless the
 		// class name itself is a pre-4.2 spelling. Testing the two families
-		// here is what keeps the map off every ordinary autoload miss.
-		if ( $new_ns && 0 !== strncmp( $short, 'AAE_', 4 ) && 0 !== strncmp( $short, 'WCF_', 4 ) ) {
+		// here is what keeps the map off every ordinary autoload miss. Three
+		// characters, not four: `AAEImporter` and `WCFAddon_BlackList_Notice`
+		// carried the family without the underscore (case-sensitive, so the
+		// current `Aaeaddon_` names never match).
+		if ( $new_ns && 0 !== strncmp( $short, 'AAE', 3 ) && 0 !== strncmp( $short, 'WCF', 3 ) ) {
 			return;
 		}
 

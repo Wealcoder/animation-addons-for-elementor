@@ -20,7 +20,7 @@ const MainLayout = () => {
       },
 
       body: new URLSearchParams({
-        action: "wcf_get_notice_data",
+        action: "aaeaddon_get_notice_data",
 
         nonce: WCF_ADDONS_ADMIN.nonce,
       }),

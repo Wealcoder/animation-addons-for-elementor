@@ -480,7 +480,7 @@ const initMenu = (root) => {
 		// the same block that supplies ajaxUrl.
 		const nonce = (window.AAE_MENU_CFG && window.AAE_MENU_CFG.nonce) || '';
 		fetch(
-			`${ajaxUrl}?action=aae_get_menu_html&menu=${encodeURIComponent(slug)}`
+			`${ajaxUrl}?action=aaeaddon_get_menu_html&menu=${encodeURIComponent(slug)}`
 			+ `&nonce=${encodeURIComponent(nonce)}`,
 			{
 				// admin-ajax authenticates by cookie; without this the request is

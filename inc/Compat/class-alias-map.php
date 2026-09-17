@@ -220,6 +220,12 @@ return array(
 	'AAE_Post_Handler_Trait'             => 'Aaeaddon_Post_Handler_Trait',
 	'AAE_Query_Chips_Control'            => 'Aaeaddon_Query_Chips_Control',
 	'AAE_Rich_Text_Prop_Type'            => 'Aaeaddon_Rich_Text_Prop_Type',
+	// Four names that carried the family WITHOUT the underscore and slipped
+	// the 4.2.0 codemod; renamed 2026-09-17 with the rest of the prefix work.
+	'AAEImporter'                        => 'Aaeaddon_Content_Importer',
+	'AAEAddon_Importer'                  => 'Aaeaddon_Template_Importer',
+	'AAEAddon_Row_Actions'               => 'Aaeaddon_Row_Actions',
+	'WCFAddon_BlackList_Notice'          => 'Aaeaddon_BlackList_Notice',
 	'WCF_ADDONS_Plugin'                  => 'Aaeaddon_Plugin',
 	'WCF_Admin_Init'                     => 'Aaeaddon_Admin_Init',
 	'WCF_Button_Trait'                   => 'Aaeaddon_Button_Trait',

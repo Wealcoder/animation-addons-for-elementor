@@ -2,6 +2,7 @@
 
 namespace Wealcoder\AnimationAddons\Atomic;
 
+use Wealcoder\AnimationAddons\Nonce;
 if (! defined('ABSPATH')) {
 	exit;
 }
@@ -451,7 +452,7 @@ final class Assets
 				// a UI must never offer a control the server would refuse.
 				'canInstall'       => current_user_can( 'manage_options' ),
 				'adminNonce'       => current_user_can( 'manage_options' )
-					? wp_create_nonce( 'wcf_admin_nonce' )
+					? Nonce::create( Nonce::ADMIN )
 					: '',
 				'ajaxUrl'          => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
 				'requiresAction'   => \Wealcoder\AnimationAddons\Atomic\Presets\Requires::ACTION,

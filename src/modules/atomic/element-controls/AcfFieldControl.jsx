@@ -18,7 +18,7 @@
  * With nothing resolved every post-scoped field is offered. Fields whose
  * group sits on another post type are hidden, because they can never match.
  *
- * The catalogue is fetched once per session (`aae_loop_query_options`,
+ * The catalogue is fetched once per session (`aaeaddon_loop_query_options`,
  * kind=acf_field); a failed fetch is not memoised so a later mount retries.
  *
  * A key the list does not hold — typed by hand, or a field from a post type
@@ -55,7 +55,7 @@ export function loadAcfCatalog() {
 		return Promise.resolve( { acf: false, fields: [] } );
 	}
 	const body = new FormData();
-	body.append( 'action', 'aae_loop_query_options' );
+	body.append( 'action', 'aaeaddon_loop_query_options' );
 	body.append( 'nonce', cfg.nonce );
 	body.append( 'kind', 'acf_field' );
 	catalogPromise = fetch( cfg.ajaxUrl, { method: 'POST', body, credentials: 'same-origin' } )

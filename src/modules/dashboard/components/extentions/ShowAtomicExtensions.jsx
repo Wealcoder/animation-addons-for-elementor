@@ -88,7 +88,7 @@ const ShowAtomicExtensions = ({
       },
 
       body: new URLSearchParams({
-        action: "aae_save_atomic_extensions",
+        action: "aaeaddon_save_atomic_extensions",
         fields: JSON.stringify(fields),
         nonce: WCF_ADDONS_ADMIN.nonce,
       }),

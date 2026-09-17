@@ -52,7 +52,7 @@ const TikTokSettings = () => {
         Accept: "application/json",
       },
       body: new URLSearchParams({
-        action: "aae_get_dynamic_settings",
+        action: "aaeaddon_get_dynamic_settings",
         setting_name: "aaeaddon_tiktok_api_settings",
         nonce: WCF_ADDONS_ADMIN.nonce,
       }),
@@ -77,7 +77,7 @@ const TikTokSettings = () => {
         Accept: "application/json",
       },
       body: new URLSearchParams({
-        action: "aae_save_dynamic_settings",
+        action: "aaeaddon_save_dynamic_settings",
         setting_name: "aaeaddon_tiktok_api_settings",
         form_fields: JSON.stringify(data),
         nonce: WCF_ADDONS_ADMIN.nonce,
@@ -99,7 +99,7 @@ const TikTokSettings = () => {
       </div>
       <div className="px-6 py-5 border-b border-[#F2F5F8]">
         <a
-          href={`https://feed.animation-addons.com/callback?redirect_uri=${WCF_ADDONS_ADMIN.adminURL}/admin.php&page=wcf_addons_settings&tab=widgets&cTab=all#tiktok-feed`}
+          href={`https://feed.animation-addons.com/callback?redirect_uri=${WCF_ADDONS_ADMIN.adminURL}/admin.php&page=aaeaddon_settings&tab=widgets&cTab=all#tiktok-feed`}
           target="_blank"
           rel="noreferrer"
           className={cn(

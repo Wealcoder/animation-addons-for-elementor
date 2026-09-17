@@ -121,7 +121,7 @@ final class Token {
 	 * are keyed by salted visitor hash + bucket name, never raw IP.
 	 */
 	public static function over_limit( string $bucket, int $limit, int $window ): bool {
-		$key   = 'aae_frl_' . md5( self::visitor_hash() . '|' . $bucket );
+		$key   = 'aaeaddon_frl_' . md5( self::visitor_hash() . '|' . $bucket );
 		$count = (int) get_transient( $key );
 
 		if ( $count >= $limit ) {

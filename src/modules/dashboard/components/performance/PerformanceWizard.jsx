@@ -3,14 +3,15 @@ import { Switch } from "@/components/ui/switch";
 import { __ } from "@wordpress/i18n";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-
+
+import { proAction } from "../../lib/proAction";
 /**
  * Performance Wizard — a guided, self-contained setup that lives under the
  * Performance tab. It writes NOTHING of its own: every step drives an endpoint
  * that already exists and is already tested —
  *
  *   - v3 widgets / extensions / chrome  -> aae_wizard_toggle_v3   (Pro, reversible)
- *   - legacy (v3) UI visibility         -> aae_save_animation_settings
+ *   - legacy (v3) UI visibility         -> aaeaddon_save_animation_settings
  *   - theme assets / WordPress assets   -> aae_save_performance_settings
  *   - completion marker                 -> aae_complete_performance_wizard
  *
@@ -63,7 +64,7 @@ const CleanV3 = ({ onCleaned }) => {
   const run = async () => {
     setBusy(true);
     try {
-      const data = await ajax("aae_wizard_clean_v3", { confirm: "DELETE" });
+      const data = await ajax(proAction("wizard_clean_v3"), { confirm: "DELETE" });
       setDone(true);
       setOpen(false);
       setText("");
@@ -223,7 +224,7 @@ const PerformanceWizard = ({ wizard, perfSettings, onSavePerf, onDone, onExit })
     setV3((s) => ({ ...s, [key]: !enabled ? false : true }));
     setBusy(true);
     try {
-      const data = await ajax("aae_wizard_toggle_v3", { target, enabled: enabled ? "1" : "0" });
+      const data = await ajax(proAction("wizard_toggle_v3"), { target, enabled: enabled ? "1" : "0" });
       setV3((s) => ({ ...s, [key]: !!data.on }));
 
       // Asked to turn it on, but the server reports it still off: there was
@@ -253,7 +254,7 @@ const PerformanceWizard = ({ wizard, perfSettings, onSavePerf, onDone, onExit })
     setBusy(true);
     try {
       const cur = WCF_ADDONS_ADMIN?.animation_settings?.settings || {};
-      const data = await ajax("aae_save_animation_settings", {
+      const data = await ajax("aaeaddon_save_animation_settings", {
         settings: JSON.stringify({ ...cur, legacy_v3: enabled }),
       });
       if (WCF_ADDONS_ADMIN?.animation_settings) {
@@ -289,7 +290,7 @@ const PerformanceWizard = ({ wizard, perfSettings, onSavePerf, onDone, onExit })
   const finish = async () => {
     setBusy(true);
     try {
-      await ajax("aae_complete_performance_wizard", {});
+      await ajax(proAction("complete_performance_wizard"), {});
       onDone?.();
       toast.success(__("Performance setup complete", "animation-addons-for-elementor"), {
         position: "top-right",

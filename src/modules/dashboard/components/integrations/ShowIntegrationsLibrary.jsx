@@ -23,7 +23,8 @@ import {
   DialogTitle,
 } from "../ui/dialog";
 import ConditionsField from "../animation-settings/ConditionsField";
-
+
+import { proAction } from "../../lib/proAction";
 /** The visual meaning of "no rules saved": load on every page. */
 const DEFAULT_RULES = [{ action: "include", location: "entire" }];
 
@@ -81,7 +82,7 @@ const ShowIntegrationsLibrary = ({ embedded = false }) => {
         },
         credentials: "same-origin",
         body: new URLSearchParams({
-          action: "save_settings_dashboard_library_ajax",
+          action: proAction("save_library_settings"),
           fields: JSON.stringify(blob),
           nonce: WCF_ADDONS_ADMIN.nonce,
         }),

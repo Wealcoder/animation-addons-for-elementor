@@ -118,7 +118,7 @@ const ShowAtomicWidgets = ({
       },
 
       body: new URLSearchParams({
-        action: "aae_save_atomic_widgets",
+        action: "aaeaddon_save_atomic_widgets",
         fields: JSON.stringify(fields),
         nonce: WCF_ADDONS_ADMIN.nonce,
       }),

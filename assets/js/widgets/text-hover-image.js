@@ -27,3 +27,4 @@
         elementorFrontend.hooks.addAction( 'frontend/element_ready/wcf--t-h-image.default', WcfTextHoverImage );
     } );
 } )( jQuery );
+//# sourceMappingURL=text-hover-image.js.map

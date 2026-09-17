@@ -2,6 +2,7 @@
 
 namespace Wealcoder\AnimationAddons\Admin;
 
+use Wealcoder\AnimationAddons\Nonce;
 if (! defined('ABSPATH')) {
 	exit();
 } // Exit if accessed directly
@@ -12,7 +13,7 @@ class Aaeaddon_Setup_Wizard_Init
 	/**
 	 * Parent Menu Page Slug
 	 */
-	const MENU_PAGE_SLUG = 'wcf_addons_setup_page';
+	const MENU_PAGE_SLUG = 'aaeaddon_setup_page';
 
 	/**
 	 * Menu capability
@@ -69,8 +70,8 @@ class Aaeaddon_Setup_Wizard_Init
 			return;
 		}
 
-		//if ($screen->id === 'animation-addon_page_wcf_addons_setup_page') {
-		if ($screen && strpos($screen->id, '_page_wcf_addons_setup_page') !== false) {
+		//if ($screen->id === 'animation-addon_page_aaeaddon_setup_page') {
+		if ($screen && strpos($screen->id, '_page_aaeaddon_setup_page') !== false) {
 			add_filter('admin_footer_text', '__return_empty_string');
 			add_filter('update_footer', '__return_empty_string', 11);
 		}
@@ -106,7 +107,7 @@ class Aaeaddon_Setup_Wizard_Init
 	{
 
 		add_submenu_page(
-			'wcf_addons_page',
+			'aaeaddon_page',
 			esc_html__('Setup', 'animation-addons-for-elementor'),
 			esc_html__('Setup', 'animation-addons-for-elementor'),
 			self::MENU_CAPABILITY,
@@ -127,7 +128,7 @@ class Aaeaddon_Setup_Wizard_Init
 		$total_extensions = $total_widgets = 0;
 
 		$screen = get_current_screen();
-		if (!$screen || strpos($screen->id, '_page_wcf_addons_setup_page') === false) {
+		if (!$screen || strpos($screen->id, '_page_aaeaddon_setup_page') === false) {
 			return;
 		}
 
@@ -172,7 +173,7 @@ class Aaeaddon_Setup_Wizard_Init
 
 		$localize_data = [
 			'ajaxurl'       => admin_url('admin-ajax.php'),
-			'nonce'         => wp_create_nonce('wcf_admin_nonce'),
+			'nonce'         => Nonce::create( Nonce::ADMIN ),
 
 			'addons_config' => apply_filters(
 				'wcf_addons_dashboard_config',  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
@@ -234,8 +235,8 @@ class Aaeaddon_Setup_Wizard_Init
 			if (
 				$screen &&
 				(
-					strpos($screen->id, '_page_wcf_addons_setup_page') !== false ||
-					strpos($screen->id, '_page_wcf-cpt-builder') !== false
+					strpos($screen->id, '_page_aaeaddon_setup_page') !== false ||
+					strpos($screen->id, '_page_aaeaddon-cpt-builder') !== false
 				)
 			) {
 				remove_all_actions('admin_notices');

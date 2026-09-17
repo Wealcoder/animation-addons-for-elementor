@@ -43,7 +43,7 @@ trait Aaeaddon_Post_Query_Trait {
 	 *
 	 * @return bool
 	 */
-	protected function aae_is_editor_request() {
+	protected function is_editor_request() {
 		if ( is_admin() ) {
 			return true;
 		}
@@ -67,7 +67,7 @@ trait Aaeaddon_Post_Query_Trait {
 	 * registration) is pure waste there. Skip it off the editor.
 	 */
 	protected function get_taxonomy_terms( $taxonomy ) {
-		if ( ! $this->aae_is_editor_request() ) {
+		if ( ! $this->is_editor_request() ) {
 			return [];
 		}
 
@@ -799,7 +799,7 @@ trait Aaeaddon_Post_Query_Trait {
 	/**
 	 * Get current paged number (1 if not paginated)
 	 */
-	function aae_get_paged(): int {
+	function get_paged(): int {
 		$paged = absint( get_query_var('paged') );
 		if ( ! $paged ) {
 			// On static front page or paginated Page templates WP uses 'page'
@@ -838,7 +838,7 @@ trait Aaeaddon_Post_Query_Trait {
 				$GLOBALS['wp_query'] = new \WP_Query( [
 					'post_type' => $this->get_settings( 'post_type' ),
 					'tax_query' => $tax_query,
-					'paged'               => $this->aae_get_paged(),
+					'paged'               => $this->get_paged(),
 					'posts_per_page'      => $this->get_settings( 'posts_per_page' ),
 				] );
 			

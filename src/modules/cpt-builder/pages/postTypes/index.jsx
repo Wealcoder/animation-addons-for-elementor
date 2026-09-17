@@ -16,7 +16,7 @@ const PostTypes = () => {
           Accept: "application/json",
         },
         body: new URLSearchParams({
-          action: "aae_add_or_update_new_post_type_builder",
+          action: "aaeaddon_add_or_update_new_post_type_builder",
           post_type_title: "New Post Type",
           nonce: WCF_ADDONS_ADMIN.nonce,
         }),

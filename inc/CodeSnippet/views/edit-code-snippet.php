@@ -54,8 +54,8 @@ if ( 'php' === $snippet_details['code_type'] ) {
 				</div>
 			</div>
 			<div class="aae-csp-top__end">
-				<input type="hidden" name="action" value="add_wcf_code_snippet"/>
-				<?php wp_nonce_field( 'wcf_code_snippet' ); ?>
+				<input type="hidden" name="action" value="aaeaddon_add_code_snippet"/>
+				<?php wp_nonce_field( \Wealcoder\AnimationAddons\Nonce::CODE_SNIPPET_FORM ); ?>
 				<?php if ( isset( $_GET['edit'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended ?>
 					<a href="<?php echo esc_url( admin_url( 'admin.php?page=wcf-code-snippet&new=1' ) ); ?>" class="aae-csp-top__tools-btn">
 						<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">

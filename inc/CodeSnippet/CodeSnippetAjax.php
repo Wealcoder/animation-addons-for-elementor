@@ -2,6 +2,8 @@
 
 namespace Wealcoder\AnimationAddons\CodeSnippet;
 
+use Wealcoder\AnimationAddons\Nonce;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit();
 } // Exit if accessed directly
@@ -54,10 +56,14 @@ class CodeSnippetAjax {
 	 */
 	private function init_hooks() {
 		// AJAX handlers for list table operations.
-		add_action( 'wp_ajax_wcf_search_snippets', array( $this, 'ajax_search_snippets' ) );
-		add_action( 'wp_ajax_wcf_delete_snippet', array( $this, 'ajax_delete_snippet' ) );
-		add_action( 'wp_ajax_wcf_bulk_action_snippets', array( $this, 'ajax_bulk_action_snippets' ) );
-		add_action( 'wp_ajax_wcf_toggle_snippet_status', array( $this, 'ajax_toggle_snippet_status' ) );
+		// 'wcf_search_snippets' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
+		\Wealcoder\AnimationAddons\Ajax_Alias::register( 'wcf_search_snippets', 'aaeaddon_search_snippets', array( $this, 'ajax_search_snippets' ) );
+		// 'wcf_delete_snippet' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
+		\Wealcoder\AnimationAddons\Ajax_Alias::register( 'wcf_delete_snippet', 'aaeaddon_delete_snippet', array( $this, 'ajax_delete_snippet' ) );
+		// 'wcf_bulk_action_snippets' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
+		\Wealcoder\AnimationAddons\Ajax_Alias::register( 'wcf_bulk_action_snippets', 'aaeaddon_bulk_action_snippets', array( $this, 'ajax_bulk_action_snippets' ) );
+		// 'wcf_toggle_snippet_status' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
+		\Wealcoder\AnimationAddons\Ajax_Alias::register( 'wcf_toggle_snippet_status', 'aaeaddon_toggle_snippet_status', array( $this, 'ajax_toggle_snippet_status' ) );
 	}
 
 	/**
@@ -70,7 +76,7 @@ class CodeSnippetAjax {
 		// Verify nonce.
 		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
 
-		if ( ! wp_verify_nonce( $nonce, 'wcf_custom_code_security' ) ) {
+		if ( ! Nonce::verify( $nonce, Nonce::CODE_SNIPPET ) ) {
 			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'animation-addons-for-elementor' ) ) );
 			return false;
 		}

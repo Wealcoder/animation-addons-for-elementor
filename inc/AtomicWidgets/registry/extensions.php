@@ -380,14 +380,14 @@ return [
 
 			/*
 			 * Template Library — the "Add AAE Template" modal in the Elementor
-			 * editor (Library_Source + inc/class-wcf-template-library.php, driven
+			 * editor (Library_Source + inc/class-template-library.php, driven
 			 * by assets/js/wcf-template-library.js).
 			 *
 			 * There is a `template-library` entry in the V3 registry (config.php)
 			 * too, but NOTHING reads that key — it is a display-only card, so the
 			 * feature has never actually been switchable. This entry is the one
 			 * that works: class-plugin.php::include_files() gates the require of
-			 * inc/class-wcf-template-library.php on it, which in turn is what
+			 * inc/class-template-library.php on it, which in turn is what
 			 * defines Library_Source and therefore satisfies the two
 			 * class_exists('\Wealcoder\AnimationAddons\Library_Source') checks that register the
 			 * editor script and the modal's Underscore templates.

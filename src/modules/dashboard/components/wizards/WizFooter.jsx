@@ -74,7 +74,7 @@ const WizFooter = ({ NavigateComponent }) => {
   const saveWidget = async () => {
     if (hasAtomicWidgets) {
       return post({
-        action: "aae_save_atomic_widgets",
+        action: "aaeaddon_save_atomic_widgets",
         fields: JSON.stringify(flattenAtomicWidgets(allAtomicWidgets)),
         nonce: WCF_ADDONS_ADMIN.nonce,
       });
@@ -91,7 +91,7 @@ const WizFooter = ({ NavigateComponent }) => {
   const saveExtension = async () => {
     if (hasAtomicExtensions) {
       return post({
-        action: "aae_save_atomic_extensions",
+        action: "aaeaddon_save_atomic_extensions",
         fields: JSON.stringify(flattenAtomicExtensions(allAtomicExtensions)),
         nonce: WCF_ADDONS_ADMIN.nonce,
       });
@@ -122,7 +122,7 @@ const WizFooter = ({ NavigateComponent }) => {
         // don't, and an unflipped flag means class-plugin.php redirects the
         // user straight back into the wizard on every admin page load.
         post({
-          action: "aae_complete_setup_wizard",
+          action: "aaeaddon_complete_setup_wizard",
           nonce: WCF_ADDONS_ADMIN.nonce,
         });
       } catch (error) {

@@ -29,7 +29,7 @@ const CompleteImport = () => {
     try {
       const formData = new URLSearchParams();
 
-      formData.append("action", "aae_lite_get_latest_imported_pages");
+      formData.append("action", "aaeaddon_lite_get_latest_imported_pages");
       formData.append("nonce", WCF_ADDONS_ADMIN.nonce);
       formData.append("per_page", 1);
 

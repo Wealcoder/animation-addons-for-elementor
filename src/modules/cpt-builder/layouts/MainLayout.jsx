@@ -45,7 +45,7 @@ const MainLayout = () => {
           Accept: "application/json",
         },
         body: new URLSearchParams({
-          action: "aae_post_type_builder_list",
+          action: "aaeaddon_post_type_builder_list",
           wcf_nonce: WCF_ADDONS_ADMIN.nonce,
         }),
       })
@@ -69,7 +69,7 @@ const MainLayout = () => {
           Accept: "application/json",
         },
         body: new URLSearchParams({
-          action: "aae_taxonomy_builder_list",
+          action: "aaeaddon_taxonomy_builder_list",
           wcf_nonce: WCF_ADDONS_ADMIN.nonce,
         }),
       })

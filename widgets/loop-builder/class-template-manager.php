@@ -1,6 +1,8 @@
 <?php
 namespace Wealcoder\AnimationAddons\Widgets\Loop_Builder;
 
+use Wealcoder\AnimationAddons\Nonce;
+
 use Wealcoder\AnimationAddons\Ajax_Alias;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -142,7 +144,7 @@ class Template_Manager {
 	 * @return void
 	 */
 	public function ajax_create_template() {
-		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'aae_loop_builder_nonce' ) ) {
+		if ( ! isset( $_POST['nonce'] ) || ! Nonce::verify( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), Nonce::LOOP_BUILDER ) ) {
 			wp_send_json_error( array( 'message' => 'Security check failed' ) );
 		}
 

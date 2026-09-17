@@ -56,9 +56,9 @@ final class Bootstrap {
 		Dispatcher::init();
 
 		// Milestone 9 — admin data API + CSV export for the dashboard's
-		// "Form Submissions" tab (React, inside the wcf_addons_settings app).
+		// "Form Submissions" tab (React, inside the aaeaddon_settings app).
 		//
-		// init() registers five things and four of them -- admin_post_aae_form_csv,
+		// init() registers five things and four of them -- admin_post_aaeaddon_form_csv,
 		// admin_enqueue_scripts, admin_menu, submenu_file -- cannot fire outside
 		// wp-admin. The fifth is rest_api_init, so off-admin we register THAT and
 		// nothing else: a class-string callable is not resolved until the hook

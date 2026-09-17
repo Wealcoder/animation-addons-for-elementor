@@ -30,7 +30,8 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useActivate, useNotification } from "@/hooks/app.hooks";
-
+
+import { proAction } from "../../lib/proAction";
 const FormSchema = z.object({
   license: z.string().min(1, {
     message: "Please enter your license",
@@ -56,8 +57,8 @@ const LicenseDialog = ({ open, setOpen }) => {
     const body_args = {
       action:
         activated?.product_status?.item_id === 13
-          ? "wcf_addon_pro_sl_deactivate"
-          : "wcf_addon_pro_sl_activate",
+          ? proAction("pro_sl_deactivate")
+          : proAction("pro_sl_activate"),
       wcf_addon_sl_license_key: data.license,
       email: "",
       nonce: WCF_ADDONS_ADMIN.nonce,

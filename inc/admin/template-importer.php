@@ -1,11 +1,12 @@
 <?php
 namespace Wealcoder\AnimationAddons\Admin\Base;
 
+use Wealcoder\AnimationAddons\Nonce;
 if ( ! defined( 'ABSPATH' ) ) {
 	exit();
 } // Exit if accessed directly
 
-class AAEAddon_Importer {
+class Aaeaddon_Template_Importer {
 
 	public $file_path = 'aaeaddon_tpl_file.xml';
 	public $full_path = null;
@@ -44,7 +45,7 @@ class AAEAddon_Importer {
 	}
 
 	public function heartbeat_data(){
-		check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
+		Nonce::check_ajax( Nonce::ADMIN, 'nonce' );
 
 		// Nonce alone only proves the request came from this site; this
 		// reports import progress, so it needs an authority check too.
@@ -59,7 +60,7 @@ class AAEAddon_Importer {
 	}
 
 	public function wishlist() {
-    	check_ajax_referer('wcf_admin_nonce', 'nonce');
+    	Nonce::check_ajax( Nonce::ADMIN, 'nonce');
 
     	if (!current_user_can('install_plugins')) {
         	wp_send_json_error(__('You are not allowed to perform this action.', 'animation-addons-for-elementor'));
@@ -95,7 +96,7 @@ class AAEAddon_Importer {
 
 	public function template_installer(){
   
-		check_ajax_referer( 'wcf_admin_nonce', 'nonce' );
+		Nonce::check_ajax( Nonce::ADMIN, 'nonce' );
 		if ( ! current_user_can( 'install_plugins' ) ) {
 			wp_send_json_error( __( 'you are not allowed to do this action', 'animation-addons-for-elementor' ) );
 		}
@@ -650,4 +651,4 @@ class AAEAddon_Importer {
 	
 }
 
-AAEAddon_Importer::instance();
+Aaeaddon_Template_Importer::instance();

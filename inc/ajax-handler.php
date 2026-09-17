@@ -2,6 +2,7 @@
 
 namespace Wealcoder\AnimationAddons;
 
+use Wealcoder\AnimationAddons\Nonce;
 use Elementor\Modules\AtomicWidgets\Styles\Atomic_Widget_Styles;
 use Elementor\Modules\AtomicWidgets\Styles\Styles_Renderer;
 use Elementor\Modules\AtomicWidgets\Utils\Utils as Atomic_Utils;
@@ -23,14 +24,15 @@ class Ajax_Handler {
 		// `mailchimp_api` too and posts it from its own widget until Pro 4.3;
 		// remove the alias in 4.4.
 		Ajax_Alias::register( 'mailchimp_api', 'aaeaddon_mailchimp_api', array( __CLASS__, 'mailchimp_lists' ) );
-		add_action( 'wp_ajax_wcf_mailchimp_list_fields', array( __CLASS__, 'wcf_mailchimp_list_fields' ) );
+		// 'wcf_mailchimp_list_fields' is a deprecated alias (Pro posts the old name until Pro 4.3) -- remove in 4.4.
+		\Wealcoder\AnimationAddons\Ajax_Alias::register( 'wcf_mailchimp_list_fields', 'aaeaddon_mailchimp_list_fields', array( __CLASS__, 'mailchimp_list_fields' ) );
 
 		// Mailchimp frontend subscription.
-		add_action( 'wp_ajax_wcf_mailchimp_ajax', array( __CLASS__, 'mailchimp_prepare_ajax' ) );
-		add_action( 'wp_ajax_nopriv_wcf_mailchimp_ajax', array( __CLASS__, 'mailchimp_prepare_ajax' ) );
+		// 'wcf_mailchimp_ajax' is a deprecated alias (a page cache or combined bundle can still post the old name) -- remove in 4.4.
+		\Wealcoder\AnimationAddons\Ajax_Alias::register( 'wcf_mailchimp_ajax', 'aaeaddon_mailchimp_ajax', array( __CLASS__, 'mailchimp_prepare_ajax' ), true );
 
-		add_action( 'wp_ajax_wcf_load_popup_content', array( __CLASS__, 'wcf__popup_content' ) );
-		add_action( 'wp_ajax_nopriv_wcf_load_popup_content', array( __CLASS__, 'wcf__popup_content' ) );
+		// 'wcf_load_popup_content' is a deprecated alias (a page cache or combined bundle can still post the old name) -- remove in 4.4.
+		\Wealcoder\AnimationAddons\Ajax_Alias::register( 'wcf_load_popup_content', 'aaeaddon_load_popup_content', array( __CLASS__, 'popup_content' ), true );
 	}
 
 	/**
@@ -38,8 +40,8 @@ class Ajax_Handler {
 	 *
 	 * @return void
 	 */
-	public static function wcf__popup_content() {
-		if ( empty( $_REQUEST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ), 'wcf-addons-frontend' ) ) {
+	public static function popup_content() {
+		if ( empty( $_REQUEST['nonce'] ) || ! Nonce::verify( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ), Nonce::FRONTEND ) ) {
 			wp_send_json_error( 'Missing or Invalid nonce' );
 		}
 
@@ -202,7 +204,7 @@ class Ajax_Handler {
 	 * @return void
 	 */
 	public static function handle_live_search() {
-		if ( empty( $_REQUEST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ), 'wcf-addons-frontend' ) ) {
+		if ( empty( $_REQUEST['nonce'] ) || ! Nonce::verify( sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ), Nonce::FRONTEND ) ) {
 			wp_send_json_error( 'Missing or Invalid nonce' );
 		}
 
@@ -282,7 +284,7 @@ class Ajax_Handler {
 
 		$nonce = sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) );
 
-		if ( ! wp_verify_nonce( $nonce, 'wcf-addons-editor' ) ) {
+		if ( ! Nonce::verify( $nonce, Nonce::EDITOR ) ) {
 			exit( 'No naughty business please' );
 		}
 		$api = isset( $_REQUEST['api'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['api'] ) ) : '';
@@ -292,7 +294,7 @@ class Ajax_Handler {
 		wp_send_json( $response );
 	}
 
-	public static function wcf_mailchimp_list_fields() {
+	public static function mailchimp_list_fields() {
 
 		if ( ! current_user_can( 'edit_posts' ) ) {
 			wp_send_json_error( esc_html__( 'Permission denied.', 'animation-addons-for-elementor' ), 403 );
@@ -304,7 +306,7 @@ class Ajax_Handler {
 		// Verify nonce
 		$nonce = sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) );
 
-		if ( ! wp_verify_nonce( $nonce, 'wcf-addons-editor' ) ) {
+		if ( ! Nonce::verify( $nonce, Nonce::EDITOR ) ) {
 			exit( 'No naughty business please' );
 		}
 		$api     = isset( $_REQUEST['api'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['api'] ) ) : '';
@@ -326,7 +328,7 @@ class Ajax_Handler {
 
 		$nonce = sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) );
 
-		if ( ! wp_verify_nonce( $nonce, 'wcf-addons-frontend' ) ) {
+		if ( ! Nonce::verify( $nonce, Nonce::FRONTEND ) ) {
 			exit( 'No naughty business please' );
 		}
 

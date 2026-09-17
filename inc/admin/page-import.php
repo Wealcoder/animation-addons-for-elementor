@@ -2,6 +2,7 @@
 
 namespace Wealcoder\AnimationAddons\Admin;
 
+use Wealcoder\AnimationAddons\Nonce;
 /**
  * Plugin Name: AAE Admin Buttons
  * Description: Adds a custom button and loads JS on Pages list & Page edit screens.
@@ -84,7 +85,7 @@ final class Aaeaddon_Admin_Page_Importer
     {
         $screen = get_current_screen();
 
-       if ($screen && strpos($screen->id, '_page_aae-page-importer') !== false) {
+       if ($screen && strpos($screen->id, '_page_aaeaddon-page-importer') !== false) {
             remove_all_actions('admin_notices');
             remove_all_actions('all_admin_notices');
         }
@@ -101,7 +102,7 @@ final class Aaeaddon_Admin_Page_Importer
         }
 
         // Check if we are on the correct page
-        if ($screen && strpos($screen->id, '_page_aae-page-importer') !== false) {
+        if ($screen && strpos($screen->id, '_page_aaeaddon-page-importer') !== false) {
             $classes .= ' wcf-anim2024';
         }
 
@@ -117,18 +118,18 @@ final class Aaeaddon_Admin_Page_Importer
             return;
         }
         add_submenu_page(
-            'wcf_addons_page',                 // 👈 null keeps it hidden from UI
+            'aaeaddon_page',                 // 👈 null keeps it hidden from UI
             'Page Import',          // Page title
             'Page Import',          // Menu title (ignored since it's hidden)
             'manage_options',       // Capability
-            'aae-page-importer',       // Slug
+            'aaeaddon-page-importer',       // Slug
             [$this, 'page_html']   // Callback
         );
     }
 
     function page_html()
     {
-        echo '<div id="aae-page-importer"></div>';
+        echo '<div id="aaeaddon-page-importer"></div>';
     }
 
     /** Load JS only on the screens we care about */
@@ -170,15 +171,15 @@ final class Aaeaddon_Admin_Page_Importer
             true
         );
 
-        $is_importer_page = ( $screen &&  strpos($screen->id, '_page_aae-page-importer') !== false );
+        $is_importer_page = ( $screen &&  strpos($screen->id, '_page_aaeaddon-page-importer') !== false );
 
         wp_localize_script(self::HANDLE, 'AAE_PAGE_IMPORT', [
-            'nonce'    => wp_create_nonce('aae_admin_nonce'),
-            'screen'   => $is_importer_page ? 'animation-addon_page_aae-page-importer' : '',
+            'nonce'    => Nonce::create( Nonce::ADMIN ),
+            'screen'   => $is_importer_page ? 'animation-addon_page_aaeaddon-page-importer' : '',
             'post_id'  => $post_id,
             'logo'     => AAEADDON_URL . 'assets/images/wcf-2.png',
             'label'    => __('Import Page', 'animation-addons-for-elementor'),
-            'page_url' => esc_url(admin_url('admin.php?page=aae-page-importer')),
+            'page_url' => esc_url(admin_url('admin.php?page=aaeaddon-page-importer')),
         ]);
 
         wp_enqueue_script(self::HANDLE);
@@ -245,21 +246,21 @@ final class Aaeaddon_Admin_Page_Importer
             return;
         }
 
-        if (strpos($screen->id, '_page_aae-page-importer') !== false) {
+        if (strpos($screen->id, '_page_aaeaddon-page-importer') !== false) {
 
             // Load config once
             $config = aaeaddon_get_config();
 
             // CSS
             wp_enqueue_style(
-                'aae-page-importer-admin',
+                'aaeaddon-page-importer-admin',
                 AAEADDON_URL . 'assets/build/modules/page-import/index.css',
                 array( \Wealcoder\AnimationAddons\Aaeaddon_Fonts::ensure() ),
                 aaeaddon_asset_version()
             );
 
             wp_enqueue_script(
-                'aae-page-importer-admin',
+                'aaeaddon-page-importer-admin',
                 AAEADDON_URL . 'assets/build/modules/page-import/index.js',
                 array('wp-element', 'wp-i18n'),
                 aaeaddon_asset_version(),
@@ -268,7 +269,7 @@ final class Aaeaddon_Admin_Page_Importer
 
             $localize_data = array(
                 'ajaxurl'      => admin_url('admin-ajax.php'),
-                'nonce'        => wp_create_nonce('wcf_admin_nonce'),
+                'nonce'        => Nonce::create( Nonce::ADMIN ),
 
                 'addons_config' => apply_filters(
                     'wcf_addons_dashboard_config',  // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
@@ -284,7 +285,7 @@ final class Aaeaddon_Admin_Page_Importer
                 'home_url'           => home_url('/'),
             );
 
-            wp_localize_script('aae-page-importer-admin', 'WCF_ADDONS_ADMIN', $localize_data);
+            wp_localize_script('aaeaddon-page-importer-admin', 'WCF_ADDONS_ADMIN', $localize_data);
         }
     }
 

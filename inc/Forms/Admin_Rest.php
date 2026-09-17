@@ -3,7 +3,7 @@
  * AAE Forms — admin data API (Milestone 9).
  *
  * Serves the "Form Submissions" tab of the Animation Addon React dashboard
- * (admin.php?page=wcf_addons_settings&tab=submissions). Cookie auth +
+ * (admin.php?page=aaeaddon_settings&tab=submissions). Cookie auth +
  * X-WP-Nonce (wp_rest) + manage_options on every route:
  *
  *   GET  /aae/v1/admin/submissions        list (filters + pagination)
@@ -15,7 +15,7 @@
  *   GET  /aae/v1/admin/health             per-form health check
  *
  * CSV export stays a classic admin-post download (streams a file):
- *   admin-post.php?action=aae_form_csv&…filters&_wpnonce
+ *   admin-post.php?action=aaeaddon_form_csv&…filters&_wpnonce
  *
  * Config for the React side is localized as AAE_FORMS_ADMIN onto the
  * existing 'wcf-admin' dashboard bundle.
@@ -25,6 +25,8 @@
  */
 
 namespace Wealcoder\AnimationAddons\Forms;
+
+use Wealcoder\AnimationAddons\Nonce;
 
 use Wealcoder\AnimationAddons\Forms\Integrations\Integrations;
 use WP_REST_Request;
@@ -56,7 +58,7 @@ final class Admin_Rest {
 
 	public static function init(): void {
 		add_action( 'rest_api_init', [ self::class, 'register_routes' ] );
-		add_action( 'admin_post_aae_form_csv', [ self::class, 'handle_csv_export' ] );
+		add_action( 'admin_post_aaeaddon_form_csv', [ self::class, 'handle_csv_export' ] );
 		add_action( 'admin_enqueue_scripts', [ self::class, 'localize' ], 30 );
 
 		// "Submissions" as its OWN item under the Animation Addon menu (like
@@ -67,7 +69,7 @@ final class Admin_Rest {
 
 	/**
 	 * The submenu slug is a full admin URL into the dashboard app with the
-	 * tab query preset — the page itself is the wcf_addons_settings React
+	 * tab query preset — the page itself is the aaeaddon_settings React
 	 * app, which routes ?tab=submissions to the Submissions view. A slug
 	 * containing "admin.php?" is used by WP as the href VERBATIM (the same
 	 * mechanism as core's "edit.php?post_type=…" submenus); a bare
@@ -75,11 +77,11 @@ final class Admin_Rest {
 	 * Keeps one bundle, one screen id (the dashboard's own asset gating
 	 * keeps working) and the dashboard theme.
 	 */
-	const MENU_SLUG = 'admin.php?page=wcf_addons_settings&tab=submissions';
+	const MENU_SLUG = 'admin.php?page=aaeaddon_settings&tab=submissions';
 
 	public static function register_menu(): void {
 		add_submenu_page(
-			'wcf_addons_page',
+			'aaeaddon_page',
 			esc_html__( 'Form Submissions', 'animation-addons-for-elementor' ),
 			esc_html__( 'Submissions', 'animation-addons-for-elementor' ),
 			self::CAP,
@@ -92,7 +94,7 @@ final class Admin_Rest {
 	/** Keep OUR submenu item highlighted (not Settings) when the tab is open. */
 	public static function highlight_menu( $submenu_file ) {
 		if ( isset( $_GET['page'], $_GET['tab'] ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			&& 'wcf_addons_settings' === $_GET['page'] // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			&& 'aaeaddon_settings' === $_GET['page'] // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			&& 'submissions' === $_GET['tab'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			return self::MENU_SLUG;
 		}
@@ -118,8 +120,8 @@ final class Admin_Rest {
 				// appended after it.
 				'csvUrl'  => add_query_arg(
 					[
-						'action'   => 'aae_form_csv',
-						'_wpnonce' => wp_create_nonce( 'aae_form_csv' ),
+						'action'   => 'aaeaddon_form_csv',
+						'_wpnonce' => Nonce::create( Nonce::FORM_CSV ),
 					],
 					admin_url( 'admin-post.php' )
 				),
@@ -1005,7 +1007,7 @@ final class Admin_Rest {
 		if ( ! current_user_can( self::CAP ) ) {
 			wp_die( esc_html__( 'Not allowed.', 'animation-addons-for-elementor' ) );
 		}
-		check_admin_referer( 'aae_form_csv' );
+		Nonce::check_admin( Nonce::FORM_CSV );
 
 		global $wpdb;
 

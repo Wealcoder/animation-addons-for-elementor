@@ -86,7 +86,7 @@ const CustomFont = () => {
       },
 
       body: new URLSearchParams({
-        action: "wcf_save_custom_fonts",
+        action: "aaeaddon_save_custom_fonts",
         fields: JSON.stringify(allFont),
         nonce: WCF_ADDONS_ADMIN.nonce,
         id: WCF_ADDONS_ADMIN.id,

@@ -8,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit();
 } // Exit if accessed directly
 
-class AAEImporter extends AaeaddonWXRImporter {
+class Aaeaddon_Content_Importer extends AaeaddonWXRImporter {
 		/**
 	 * Constructor method.
 	 *
