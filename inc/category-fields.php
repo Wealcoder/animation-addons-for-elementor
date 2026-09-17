@@ -2,7 +2,7 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-if(defined('WCF_ADDONS_PRO_WIDGETS_PATH')) {
+if(aaeaddon_pro_defined( 'WIDGETS_PATH' )) {
     return; // Prevents redeclaration if already defined
 }
 

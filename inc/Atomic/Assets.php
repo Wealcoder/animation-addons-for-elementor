@@ -183,42 +183,38 @@ final class Assets
 	 */
 	private function ensure_gsap_registered(): void
 	{
-		if (! defined('WCF_ADDONS_PRO_URL')) {
+		if (! aaeaddon_pro_defined( 'URL' )) {
 			return;
 		}
 		if (! wp_script_is('gsap', 'registered')) {
 			wp_register_script(
 				'gsap',
-				WCF_ADDONS_PRO_URL . 'assets/lib/gsap.min.js',
-				[],
-				defined('WCF_ADDONS_PRO_VERSION') ? WCF_ADDONS_PRO_VERSION : AAEADDON_VERSION,
+				aaeaddon_pro_constant( 'URL' ) . 'assets/lib/gsap.min.js',
+				[], aaeaddon_pro_defined( 'VERSION' ) ? aaeaddon_pro_constant( 'VERSION' ) : AAEADDON_VERSION,
 				true
 			);
 		}
 		if (! wp_script_is('ScrollTrigger', 'registered')) {
 			wp_register_script(
 				'ScrollTrigger',
-				WCF_ADDONS_PRO_URL . 'assets/lib/ScrollTrigger.min.js',
-				['gsap'],
-				defined('WCF_ADDONS_PRO_VERSION') ? WCF_ADDONS_PRO_VERSION : AAEADDON_VERSION,
+				aaeaddon_pro_constant( 'URL' ) . 'assets/lib/ScrollTrigger.min.js',
+				['gsap'], aaeaddon_pro_defined( 'VERSION' ) ? aaeaddon_pro_constant( 'VERSION' ) : AAEADDON_VERSION,
 				true
 			);
 		}
 		if (! wp_script_is('SplitText', 'registered')) {
 			wp_register_script(
 				'SplitText',
-				WCF_ADDONS_PRO_URL . 'assets/lib/SplitText.min.js',
-				['gsap'],
-				defined('WCF_ADDONS_PRO_VERSION') ? WCF_ADDONS_PRO_VERSION : AAEADDON_VERSION,
+				aaeaddon_pro_constant( 'URL' ) . 'assets/lib/SplitText.min.js',
+				['gsap'], aaeaddon_pro_defined( 'VERSION' ) ? aaeaddon_pro_constant( 'VERSION' ) : AAEADDON_VERSION,
 				true
 			);
 		}
 		if (! wp_script_is('ScrollToPlugin', 'registered')) {
 			wp_register_script(
 				'ScrollToPlugin',
-				WCF_ADDONS_PRO_URL . 'assets/lib/ScrollToPlugin.min.js',
-				['gsap'],
-				defined('WCF_ADDONS_PRO_VERSION') ? WCF_ADDONS_PRO_VERSION : AAEADDON_VERSION,
+				aaeaddon_pro_constant( 'URL' ) . 'assets/lib/ScrollToPlugin.min.js',
+				['gsap'], aaeaddon_pro_defined( 'VERSION' ) ? aaeaddon_pro_constant( 'VERSION' ) : AAEADDON_VERSION,
 				true
 			);
 		}
@@ -228,18 +224,16 @@ final class Assets
 		if (! wp_script_is('DrawSVGPlugin', 'registered')) {
 			wp_register_script(
 				'DrawSVGPlugin',
-				WCF_ADDONS_PRO_URL . 'assets/lib/DrawSVGPlugin.min.js',
-				['gsap'],
-				defined('WCF_ADDONS_PRO_VERSION') ? WCF_ADDONS_PRO_VERSION : AAEADDON_VERSION,
+				aaeaddon_pro_constant( 'URL' ) . 'assets/lib/DrawSVGPlugin.min.js',
+				['gsap'], aaeaddon_pro_defined( 'VERSION' ) ? aaeaddon_pro_constant( 'VERSION' ) : AAEADDON_VERSION,
 				true
 			);
 		}
 		if (! wp_script_is('MotionPathPlugin', 'registered')) {
 			wp_register_script(
 				'MotionPathPlugin',
-				WCF_ADDONS_PRO_URL . 'assets/lib/MotionPathPlugin.min.js',
-				['gsap'],
-				defined('WCF_ADDONS_PRO_VERSION') ? WCF_ADDONS_PRO_VERSION : AAEADDON_VERSION,
+				aaeaddon_pro_constant( 'URL' ) . 'assets/lib/MotionPathPlugin.min.js',
+				['gsap'], aaeaddon_pro_defined( 'VERSION' ) ? aaeaddon_pro_constant( 'VERSION' ) : AAEADDON_VERSION,
 				true
 			);
 		}
@@ -408,7 +402,7 @@ final class Assets
 			self::HANDLE . '-editor-bridge',
 			'aaeAtomicBridge',
 			[
-				'is_pro' => defined( 'WCF_ADDONS_PRO_FILE' ),
+				'is_pro' => aaeaddon_pro_defined( 'FILE' ),
 
 				// Mask shape catalogue for the Style-tab section's picker.
 				// Sent from PHP rather than rebuilt in JS so the panel and the
@@ -433,7 +427,7 @@ final class Assets
 			[
 				'restUrl'          => esc_url_raw( rest_url( 'aae/v1/presets' ) ),
 				'nonce'            => wp_create_nonce( 'wp_rest' ),
-				'proActive'        => defined( 'WCF_ADDONS_PRO_VERSION' ),
+				'proActive'        => aaeaddon_pro_defined( 'VERSION' ),
 
 				// What a preset is WIRED TO, and who may set it up.
 				//

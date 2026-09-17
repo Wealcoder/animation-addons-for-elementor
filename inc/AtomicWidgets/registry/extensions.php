@@ -205,7 +205,7 @@ return [
 			// inc/core/dynamic-tags/). It used to be reachable ONLY through the v3
 			// extension list, so a site working purely in v4 had no way to switch it
 			// on and dynamic tags silently did nothing on atomic widgets. Pro loads
-			// it from this toggle as well — see WCFAddonsPro\Plugin::register_extensions().
+			// it from this toggle as well — see Pro's Plugin::register_extensions().
 			'dynamic-tags' => [
 				'label'        => 'Dynamic Tags',
 				'usage_prop'   => false,

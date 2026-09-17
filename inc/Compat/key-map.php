@@ -107,6 +107,8 @@ return array(
 		'aae_performance_wizard'                  => 'aaeaddon_performance_wizard',
 		'aae_anim_builder_settings'               => 'aaeaddon_anim_builder_settings',
 		'aae_v3_kit_chrome_backup'                => 'aaeaddon_v3_kit_chrome_backup',    // a BACKUP of the customer's Kit chrome
+		'aae_v3_widgets_backup'                   => 'aaeaddon_v3_widgets_backup',      // the Performance wizard's reversible-toggle backups
+		'aae_v3_extensions_backup'                => 'aaeaddon_v3_extensions_backup',
 		'aae_v4_popup_chrome_migrated'            => 'aaeaddon_v4_popup_chrome_migrated',
 		'aae_v4_popup_anim_migrated'              => 'aaeaddon_v4_popup_anim_migrated',
 		'aae_speed_preview_secret'                => 'aaeaddon_speed_preview_secret',

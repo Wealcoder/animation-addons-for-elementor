@@ -231,7 +231,7 @@ class Plugin
 			}
 		}
 
-		if (defined('WCF_ADDONS_PRO_VERSION') && version_compare(WCF_ADDONS_PRO_VERSION, '2.4.14', '<=')) {
+		if (aaeaddon_pro_defined( 'VERSION' ) && version_compare(aaeaddon_pro_constant( 'VERSION' ), '2.4.14', '<=')) {
 			wp_enqueue_script('aae--switcher-toggle');
 		}
 	}
@@ -372,9 +372,9 @@ class Plugin
 					'dashboard_link' => admin_url('admin.php?page=aaeaddon_settings'),
 					'config'         => apply_filters('wcf_addons_editor_config', array()), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 					'pro_installed'  => file_exists(WP_PLUGIN_DIR . '/animation-addons-for-elementor-pro/animation-addons-for-elementor-pro'), // change below code at version 2.5.9
-					'pro_active' 	 => class_exists('\AAE_ADDONS_Plugin_Pro'),
+					'pro_active' 	 => aaeaddon_pro_defined( 'VERSION' ),
 					// 'pro_installed'  => array_key_exists('animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php', get_plugins()),
-					// 'pro_active'     => class_exists('\AAE_ADDONS_Plugin_Pro') && array_key_exists('animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php', get_plugins()),
+					// 'pro_active'     => aaeaddon_pro_defined( 'VERSION' ) && array_key_exists('animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php', get_plugins()),
 				)
 			);
 
@@ -489,7 +489,7 @@ class Plugin
 				'animated-heading'     => array(
 					'handler' => 'wcf--animated-heading',
 					'src'     => 'widgets/animated-heading.min.js',
-					'dep'     => defined('WCF_ADDONS_PRO_VERSION') ? array('gsap') : array(),
+					'dep'     => aaeaddon_pro_defined( 'VERSION' ) ? array('gsap') : array(),
 					'version' => AAEADDON_VERSION,
 					'arg'     => true,
 				),
@@ -1451,12 +1451,12 @@ class Plugin
 								<#
 								} else {
 								#>
-								<?php if (! class_exists('AAE_ADDONS_Plugin_Pro') && ! array_key_exists($plugin_slug, $all_plugins)) { ?>
+								<?php if (! aaeaddon_pro_defined( 'VERSION' ) && ! array_key_exists($plugin_slug, $all_plugins)) { ?>
 									<a href="https://animation-addons.com" class="library--action pro" target="_blank">
 										<i class="eicon-external-link-square"></i>
 										<?php echo esc_html__('Go Premium', 'animation-addons-for-elementor'); ?>
 									</a>
-									<?php } elseif (class_exists('AAE_ADDONS_Plugin_Pro') && in_array($plugin_slug, $active_plugins) && get_option('aaeaddon_sc_error_status_current_support') !== 'active') { ?>
+									<?php } elseif (aaeaddon_pro_defined( 'VERSION' ) && in_array($plugin_slug, $active_plugins) && get_option('aaeaddon_sc_error_status_current_support') !== 'active') { ?>
 										<a href="<?php echo esc_url($dahsboard_link); ?>" class="library--action pro" target="_blank">
 											<i class="eicon-external-link-square"></i>
 												<?php echo esc_html__('Activate License', 'animation-addons-for-elementor'); ?>
@@ -1688,9 +1688,12 @@ class Plugin
 		// The pro plugin ships the same widgets with the same skin ids; two
 		// skin sources on one element name duplicate every skin control
 		// ("Cannot redeclare control with same name").
-		$pro_skins = class_exists('\WCFAddonsPro\Plugin')
-			? \WCFAddonsPro\Plugin::get_widget_skins()
-			: array();
+		// Pro 4.3 lives in `Wealcoder\AnimationAddonsPro\`; an older Pro in
+		// `WCFAddonsPro\`. Either one answers the same static call.
+		$pro_plugin = class_exists( '\Wealcoder\AnimationAddonsPro\Plugin' )
+			? '\Wealcoder\AnimationAddonsPro\Plugin'
+			: ( class_exists( '\WCFAddonsPro\Plugin' ) ? '\WCFAddonsPro\Plugin' : '' );
+		$pro_skins  = $pro_plugin ? $pro_plugin::get_widget_skins() : array();
 
 		foreach (self::get_widget_skins() as $slug => $data) {
 

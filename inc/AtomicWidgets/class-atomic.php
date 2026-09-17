@@ -1844,7 +1844,7 @@ final class Atomic
 				// Pro-only handles; advance-portfolio.js already returns early
 				// when window.gsap / window.ScrollTrigger are absent, so the grid
 				// still renders on a free-only install, just unanimated.
-				'script_deps' => defined( 'WCF_ADDONS_PRO_VERSION' ) ? [ 'gsap', 'ScrollTrigger' ] : [],
+				'script_deps' => aaeaddon_pro_defined( 'VERSION' ) ? [ 'gsap', 'ScrollTrigger' ] : [],
 				'has_script' => true,
 				'style_handle' => 'aae-a-advance-portfolio-css',
 				'style_path' => '/assets/atomic/css/advance-portfolio.css',
@@ -2264,7 +2264,7 @@ final class Atomic
 				// Ripple + polygon magnetic-move effects need GSAP, but the handle
 				// is Pro-only. btn-pro.js guards each GSAP-driven effect on
 				// `typeof gsap`, so the button's other behaviour still works.
-				'script_deps'   => defined( 'WCF_ADDONS_PRO_VERSION' ) ? [ 'gsap' ] : [],
+				'script_deps'   => aaeaddon_pro_defined( 'VERSION' ) ? [ 'gsap' ] : [],
 				'has_script'    => true,
 				'style_handle'  => 'aae-a-btn-pro-css',
 				'style_path'    => '/assets/atomic/css/btn-pro.css',
@@ -3843,7 +3843,7 @@ final class Atomic
 	 * Licence-only, with NO version floor: it answers "has this customer
 	 * paid", which is the only question a feature gate needs. Anything that
 	 * must ALSO know "is the Pro here new enough" has to check
-	 * WCF_ADDONS_PRO_VERSION itself rather than widening this.
+	 * aaeaddon_pro_constant( 'VERSION' ) itself rather than widening this.
 	 *
 	 * Pro memoises the underlying option read in a static, so repeat calls are
 	 * free.

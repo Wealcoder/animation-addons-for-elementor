@@ -9,13 +9,10 @@ if ( ! function_exists( 'aaeaddon_get_saved_template_list' ) ) :
 	 * Every Elementor library template, as id => title, for a widget's
 	 * template picker.
 	 *
-	 * Renamed from `wcf_addons_get_saved_template_list()` in 4.2.0; the old
-	 * name is still declared below and is one of the two backward-compatible
-	 * shims this plugin keeps (the other is the `WCF_ADDONS_Plugin` class
-	 * alias). Seven widgets in the paid add-on call the old name UNGUARDED,
-	 * and the add-on is updated by hand weeks after this plugin auto-updates —
-	 * so dropping it is a fatal on every one of those sites, on the editor
-	 * screen and on the front end alike.
+	 * Renamed from its `wcf_addons_` spelling in 4.2.0. The old name is
+	 * declared by the paid add-on (inc/Compat/legacy-functions.php
+	 * there, since Pro 4.3) and by nothing here — the released add-on calls it
+	 * on seven lines, so that add-on must be updated together with this one.
 	 *
 	 * @since 4.2.0
 	 *
@@ -61,26 +58,6 @@ if ( ! function_exists( 'aaeaddon_get_saved_template_list' ) ) :
 		$cache = $post_list;
 
 		return $post_list;
-	}
-endif;
-
-if ( ! function_exists( 'wcf_addons_get_saved_template_list' ) ) :
-	/**
-	 * The pre-4.2 name of `aaeaddon_get_saved_template_list()`.
-	 *
-	 * Kept indefinitely, not for two releases: the paid add-on calls it on
-	 * seven lines with no `function_exists()` around any of them, and an
-	 * add-on that is never updated must keep working. The add-on carries its
-	 * own guarded copy for the opposite case (new add-on, pre-4.2 free), so
-	 * both declarations are guarded and whichever plugin loads first wins.
-	 *
-	 * @since 4.2.0
-	 *
-	 * @param array|null $args Optional `get_posts()` overrides.
-	 * @return array<int,string>
-	 */
-	function wcf_addons_get_saved_template_list( $args = null ) {
-		return aaeaddon_get_saved_template_list( $args );
 	}
 endif;
 
@@ -277,7 +254,7 @@ if ( ! function_exists( 'aaeaddon_element_status' ) ) :
 			if ( $element['is_pro'] || $element['is_extension'] ) {
 
 				// pro elements
-				if ( $element['is_pro'] && ! defined( 'WCF_ADDONS_PRO_VERSION' ) ) {
+				if ( $element['is_pro'] && ! aaeaddon_pro_defined( 'VERSION' ) ) {
 					$status = 'disabled';
 				}
 

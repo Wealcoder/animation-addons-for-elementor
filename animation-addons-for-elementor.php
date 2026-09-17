@@ -55,6 +55,42 @@ function aaeaddon_define( $name, $value, $legacy = null ) {
 }
 endif;
 
+if ( ! function_exists( 'aaeaddon_pro_constant' ) ) :
+	/**
+	 * One of the paid add-on's constants, whichever Pro version is installed.
+	 *
+	 * Pro 4.3 renamed its constants to `AAEADDON_PRO_*` and keeps the old
+	 * `WCF_ADDONS_PRO_*` names as aliases; a Pro older than that defines only
+	 * the old names. This plugin asks for the new one first and falls back, so
+	 * it spells no `WCF_` name of its own and still runs beside either Pro.
+	 *
+	 * @param string $suffix  'VERSION', 'PATH', 'URL', 'FILE', 'BASE', 'WIDGETS_PATH'.
+	 * @param mixed  $default Returned when no Pro is active.
+	 * @return mixed
+	 */
+	function aaeaddon_pro_constant( $suffix, $default = null ) {
+		if ( defined( 'AAEADDON_PRO_' . $suffix ) ) {
+			return constant( 'AAEADDON_PRO_' . $suffix );
+		}
+		if ( defined( 'WCF_ADDONS_PRO_' . $suffix ) ) {
+			return constant( 'WCF_ADDONS_PRO_' . $suffix );
+		}
+		return $default;
+	}
+endif;
+
+if ( ! function_exists( 'aaeaddon_pro_defined' ) ) :
+	/**
+	 * `defined()` for one of the add-on's constants under either spelling.
+	 *
+	 * @param string $suffix See aaeaddon_pro_constant().
+	 * @return bool
+	 */
+	function aaeaddon_pro_defined( $suffix ) {
+		return defined( 'AAEADDON_PRO_' . $suffix ) || defined( 'WCF_ADDONS_PRO_' . $suffix );
+	}
+endif;
+
 aaeaddon_define( 'AAEADDON_DASHBOARD_V2', true, 'WCF_ADDONS_DASHBOARD_V2' );
 
 /**
@@ -583,7 +619,7 @@ final class Aaeaddon_Plugin {
 
 /*
  * The pre-4.2 name of the class above, and one of the two backward-compatible
- * shims this plugin keeps (the other is `wcf_addons_get_saved_template_list()`).
+ * shims this plugin keeps (the other is `wcf_addons_get_settings()` in inc/helper.php).
  *
  * `WCF_ADDONS_Plugin` is how everything outside this plugin asks whether it is
  * installed: the paid add-on gates its whole boot on `class_exists()` of it,

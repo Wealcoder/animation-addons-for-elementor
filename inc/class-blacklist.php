@@ -1272,6 +1272,6 @@ class Aaeaddon_BlackList_Notice {
 	}
 }
 
-if ( ! defined( 'WCF_ADDONS_PRO_FILE' ) ) {
+if ( ! aaeaddon_pro_defined( 'FILE' ) ) {
 	Aaeaddon_BlackList_Notice::init();
 }

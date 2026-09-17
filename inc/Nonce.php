@@ -197,7 +197,7 @@ final class Nonce {
 	 * @return bool
 	 */
 	private static function old_pro_active() {
-		return defined( 'WCF_ADDONS_PRO_VERSION' )
-			&& version_compare( WCF_ADDONS_PRO_VERSION, self::PRO_KNOWS_NEW_NAMES, '<' );
+		return aaeaddon_pro_defined( 'VERSION' )
+			&& version_compare( aaeaddon_pro_constant( 'VERSION' ), self::PRO_KNOWS_NEW_NAMES, '<' );
 	}
 }

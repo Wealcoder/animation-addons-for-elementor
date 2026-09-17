@@ -444,8 +444,8 @@ class Animation_Settings {
 		$config = aaeaddon_get_config();
 		$dirs   = [ AAEADDON_PATH . 'widgets/' ];
 
-		if ( defined( 'WCF_ADDONS_PRO_PATH' ) ) {
-			$dirs[] = WCF_ADDONS_PRO_PATH . 'widgets/';
+		if (aaeaddon_pro_defined( 'PATH' ) ) {
+			$dirs[] = aaeaddon_pro_constant( 'PATH' ) . 'widgets/';
 		}
 
 		$map = [];
@@ -2212,6 +2212,6 @@ JS;
 
 	/** Is the Pro plugin — which owns every renderer for these features — active? */
 	public static function has_pro(): bool {
-		return defined( 'WCF_ADDONS_PRO_VERSION' ) || defined( 'WCF_ADDONS_PRO_PATH' );
+		return aaeaddon_pro_defined( 'VERSION' ) || aaeaddon_pro_defined( 'PATH' );
 	}
 }

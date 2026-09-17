@@ -11,7 +11,7 @@ if(class_exists('\Wealcoder\AnimationAddons\Extensions\CustomCpt_Pro')){
     return;
 }
 
-if (defined('WCF_ADDONS_PRO_VERSION') && version_compare(WCF_ADDONS_PRO_VERSION, '2.4.11', '<=')) {
+if (aaeaddon_pro_defined( 'VERSION' ) && version_compare(aaeaddon_pro_constant( 'VERSION' ), '2.4.11', '<=')) {
     return;
 }
 

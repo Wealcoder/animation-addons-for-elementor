@@ -91,8 +91,8 @@ final class Migration {
 		add_filter( 'wcf_addons_dashboard_config', array( __CLASS__, 'inject_dashboard_config' ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 		add_action( 'admin_init', array( __CLASS__, 'register_notices' ), 11 );
 		add_action( 'after_plugin_row_' . AAEADDON_BASE, array( __CLASS__, 'plugin_row' ), 10, 1 );
-		if ( defined( 'WCF_ADDONS_PRO_BASE' ) ) {
-			add_action( 'after_plugin_row_' . WCF_ADDONS_PRO_BASE, array( __CLASS__, 'plugin_row' ), 10, 1 );
+		if (aaeaddon_pro_defined( 'BASE' ) ) {
+			add_action( 'after_plugin_row_' . aaeaddon_pro_constant( 'BASE' ), array( __CLASS__, 'plugin_row' ), 10, 1 );
 		}
 
 		foreach ( array( 'start', 'status', 'export', 'import', 'report' ) as $action ) {
@@ -383,7 +383,7 @@ final class Migration {
 			'user_id'     => (int) $user_id,
 			'time'        => time(),
 			'map_version' => $map['map_version'],
-			'pro_version' => defined( 'WCF_ADDONS_PRO_VERSION' ) ? WCF_ADDONS_PRO_VERSION : '',
+			'pro_version' => aaeaddon_pro_defined( 'VERSION' ) ? aaeaddon_pro_constant( 'VERSION' ) : '',
 		);
 		$state['categories'] = $result['categories'];
 		$user                = get_userdata( $user_id );
@@ -464,12 +464,12 @@ final class Migration {
 	}
 
 	public static function pro_info() {
-		$installed = defined( 'WCF_ADDONS_PRO_VERSION' );
+		$installed = aaeaddon_pro_defined( 'VERSION' );
 		return array(
 			'installed' => $installed,
-			'version'   => $installed ? WCF_ADDONS_PRO_VERSION : '',
+			'version'   => $installed ? aaeaddon_pro_constant( 'VERSION' ) : '',
 			'min'       => self::PRO_COMPAT_VERSION,
-			'ok'        => ! $installed || version_compare( WCF_ADDONS_PRO_VERSION, self::PRO_COMPAT_VERSION, '>=' ),
+			'ok'        => ! $installed || version_compare( aaeaddon_pro_constant( 'VERSION' ), self::PRO_COMPAT_VERSION, '>=' ),
 			'licensed'  => 'valid' === Key_Bridge::raw_get( 'wcf_addon_sl_license_status' ),
 		);
 	}
@@ -516,7 +516,7 @@ final class Migration {
 		$lines[] = 'Animation Addons — storage-name migration report';
 		$lines[] = 'Site: ' . home_url();
 		$lines[] = 'Generated: ' . gmdate( 'c' );
-		$lines[] = 'Animation Addons: ' . AAEADDON_VERSION . ' · Pro: ' . ( defined( 'WCF_ADDONS_PRO_VERSION' ) ? WCF_ADDONS_PRO_VERSION : 'not installed' ) . ' · WordPress: ' . get_bloginfo( 'version' ) . ' · PHP: ' . PHP_VERSION;
+		$lines[] = 'Animation Addons: ' . AAEADDON_VERSION . ' · Pro: ' . (aaeaddon_pro_defined( 'VERSION' ) ? aaeaddon_pro_constant( 'VERSION' ) : 'not installed' ) . ' · WordPress: ' . get_bloginfo( 'version' ) . ' · PHP: ' . PHP_VERSION;
 		$lines[] = 'Status: ' . self::status() . ( isset( $state['site'] ) ? ' (' . $state['site'] . ' site' . ( ! empty( $state['from'] ) ? ', updated from ' . $state['from'] : '' ) . ')' : '' );
 		if ( ! empty( $state['consent'] ) ) {
 			$c = $state['consent'];
