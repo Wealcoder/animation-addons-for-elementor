@@ -92,7 +92,7 @@ class Aaeaddon_Theme_Builder
 		// header footer
 		add_action('get_header', array($this, 'override_header'));
 		add_action('get_footer', array($this, 'override_footer'));
-		add_action('aaeaddon_aaeaddon_animation_addons_header_builder_content', array($this, 'header_builder_content'));
+		add_action('aaeaddon_animation_addons_header_builder_content', array($this, 'header_builder_content'));
 		add_action('aaeaddon_animation_addons_footer_builder_content', array($this, 'footer_builder_content'));
 
 		// Must run while wp_head() is still open — see the method docblock.
@@ -125,7 +125,7 @@ class Aaeaddon_Theme_Builder
 	 * WHY THIS EXISTS:
 	 * A header/footer template is an Elementor document rendered OUTSIDE the main
 	 * loop. templates/header.php calls wp_head() first and only then fires
-	 * `aaeaddon_aaeaddon_animation_addons_header_builder_content`, so the document renders after the
+	 * `aaeaddon_animation_addons_header_builder_content`, so the document renders after the
 	 * stylesheets for the page have already been printed.
 	 *
 	 * Elementor's atomic styles manager only walks the MAIN queried document, so

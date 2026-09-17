@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	
 ?>
 <div id="page" class="hfeed site">
- <?php do_action( 'aaeaddon_aaeaddon_animation_addons_header_builder_content' ); ?>
+ <?php do_action( 'aaeaddon_animation_addons_header_builder_content' ); ?>
 	<?php
 		if( $aaeaddon_header_smoother == 'no' ){
 			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Backward compatibility hook.

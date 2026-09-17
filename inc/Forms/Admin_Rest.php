@@ -290,62 +290,90 @@ final class Admin_Rest {
 		$table  = Database::submissions_table();
 		$values = Database::submission_values_table();
 
-		$where = [ '1=1' ];
-		$args  = [];
+		// ONE static SQL string, no interpolation. Every optional filter is a
+		// "( %s = '' OR <column test> )" pair: an empty filter value makes the
+		// left side true and MySQL drops the clause; a set value makes it false
+		// and the column test decides. That keeps the template a literal -- the
+		// Plugins Team's analyser refuses a WHERE assembled from fragments even
+		// when every fragment is a literal, and it cannot see through
+		// implode() -- while every value still reaches the query only through
+		// prepare(). The two subquery filters short-circuit the same way: a
+		// constant TRUE on the left means the IN () is never evaluated.
+		// `s` searches every field's value (find-by-email for DSAR/support);
+		// `field_key` narrows to ONE field, and with `field_value` empty still
+		// narrows to submissions that HAVE that field at all.
+		$s_like  = '%' . $wpdb->esc_like( $filters['s'] ) . '%';
+		$fv_like = '%' . $wpdb->esc_like( $filters['field_value'] ) . '%';
+		// The date pair is compared even when the filter is empty (the OR only
+		// decides whether the comparison COUNTS), and under strict SQL mode
+		// `created_at >= ''` is a hard error, not false. So the value handed to
+		// the comparison is always a valid DATETIME -- the edge of the type's
+		// range when the filter is empty, which the OR then discards anyway.
+		$from = '' === $filters['from'] ? '1000-01-01 00:00:00' : $filters['from'] . ' 00:00:00';
+		$to   = '' === $filters['to'] ? '9999-12-31 23:59:59' : $filters['to'] . ' 23:59:59';
 
-		if ( '' !== $filters['form_key'] ) {
-			$where[] = 'form_key = %s';
-			$args[]  = $filters['form_key'];
-		}
-		if ( '' !== $filters['status'] ) {
-			$where[] = 'status = %s';
-			$args[]  = $filters['status'];
-		}
-		if ( '' !== $filters['from'] ) {
-			$where[] = 'created_at >= %s';
-			$args[]  = $filters['from'] . ' 00:00:00';
-		}
-		if ( '' !== $filters['to'] ) {
-			$where[] = 'created_at <= %s';
-			$args[]  = $filters['to'] . ' 23:59:59';
-		}
-		if ( '' !== $filters['s'] ) {
-			// Find-by-value — incl. find-by-email for DSAR/support requests.
-			$where[] = 'id IN ( SELECT submission_id FROM %i WHERE field_value LIKE %s )';
-			$args[]  = $values;
-			$args[]  = '%' . $wpdb->esc_like( $filters['s'] ) . '%';
-		}
-		if ( '' !== $filters['field_key'] ) {
-			// Field-wise filter: ONE field key (e.g. "experience") plus the
-			// value to match within it — unlike `s` above, which searches
-			// every field's value with no key filter. An empty field_value
-			// with a field_key set still narrows to submissions that HAVE
-			// that field at all.
-			if ( '' !== $filters['field_value'] ) {
-				$where[] = 'id IN ( SELECT submission_id FROM %i WHERE field_key = %s AND field_value LIKE %s )';
-				$args[]  = $values;
-				$args[]  = $filters['field_key'];
-				$args[]  = '%' . $wpdb->esc_like( $filters['field_value'] ) . '%';
-			} else {
-				$where[] = 'id IN ( SELECT submission_id FROM %i WHERE field_key = %s )';
-				$args[]  = $values;
-				$args[]  = $filters['field_key'];
-			}
-		}
-
-		// Every fragment above is a literal written in this method; the only
-		// things that vary are the VALUES, and they are all in $args, in
-		// placeholder order. $where_sql itself never carries request data.
-		$where_sql = implode( ' AND ', $where );
-
+		// Both statements list their values LITERALLY, in placeholder order, so
+		// the placeholder-count sniff can count them; a shared array or a spread
+		// reads as ONE argument to it. The COUNT and the page take the same 17.
 		$total = (int) $wpdb->get_var(
-			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $where_sql is assembled from the literal fragments above; every value is a prepare() argument.
-			$wpdb->prepare( "SELECT COUNT(*) FROM %i WHERE {$where_sql}", array_merge( [ $table ], $args ) )
+			$wpdb->prepare(
+				"SELECT COUNT(*) FROM %i
+				 WHERE ( %s = '' OR form_key = %s )
+				   AND ( %s = '' OR status = %s )
+				   AND ( %s = '' OR created_at >= %s )
+				   AND ( %s = '' OR created_at <= %s )
+				   AND ( %s = '' OR id IN ( SELECT submission_id FROM %i WHERE field_value LIKE %s ) )
+				   AND ( %s = '' OR id IN ( SELECT submission_id FROM %i WHERE field_key = %s AND ( %s = '' OR field_value LIKE %s ) ) )",
+				$table,
+				$filters['form_key'],
+				$filters['form_key'],
+				$filters['status'],
+				$filters['status'],
+				$filters['from'],
+				$from,
+				$filters['to'],
+				$to,
+				$filters['s'],
+				$values,
+				$s_like,
+				$filters['field_key'],
+				$values,
+				$filters['field_key'],
+				$filters['field_value'],
+				$fv_like
+			)
 		);
 
 		$rows = $wpdb->get_results(
-			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- same $where_sql, same argument order, plus the paging pair; the sniff cannot count through array_merge().
-			$wpdb->prepare( "SELECT * FROM %i WHERE {$where_sql} ORDER BY id DESC LIMIT %d OFFSET %d", array_merge( [ $table ], $args, [ $limit, $offset ] ) )
+			$wpdb->prepare(
+				"SELECT * FROM %i
+				 WHERE ( %s = '' OR form_key = %s )
+				   AND ( %s = '' OR status = %s )
+				   AND ( %s = '' OR created_at >= %s )
+				   AND ( %s = '' OR created_at <= %s )
+				   AND ( %s = '' OR id IN ( SELECT submission_id FROM %i WHERE field_value LIKE %s ) )
+				   AND ( %s = '' OR id IN ( SELECT submission_id FROM %i WHERE field_key = %s AND ( %s = '' OR field_value LIKE %s ) ) )
+				 ORDER BY id DESC LIMIT %d OFFSET %d",
+				$table,
+				$filters['form_key'],
+				$filters['form_key'],
+				$filters['status'],
+				$filters['status'],
+				$filters['from'],
+				$from,
+				$filters['to'],
+				$to,
+				$filters['s'],
+				$values,
+				$s_like,
+				$filters['field_key'],
+				$values,
+				$filters['field_key'],
+				$filters['field_value'],
+				$fv_like,
+				$limit,
+				$offset
+			)
 		);
 
 		return [
@@ -366,7 +394,7 @@ final class Admin_Rest {
 		// One query for all previews: first two values per listed submission.
 		$previews = [];
 		if ( $result['rows'] ) {
-			$ids          = array_map( static fn( $r ) => (int) $r->id, $result['rows'] );
+			$ids = array_map( static fn( $r ) => (int) $r->id, $result['rows'] );
 			// $wpdb->prepare() has no placeholder for a variable-length IN () list,
 			// so the run of %d is generated here. It is built from count( $ids )
 			// and the literal '%d' -- no request data can reach the SQL string.
@@ -623,7 +651,7 @@ final class Admin_Rest {
 			return new WP_REST_Response( [ 'deleted' => 0 ], 200 );
 		}
 
-		$ids          = array_values( $ids );
+		$ids = array_values( $ids );
 		// One %d per id, generated from count( $ids ) and the literal '%d';
 		// the ids themselves travel as prepare() arguments.
 		$placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
@@ -1025,7 +1053,7 @@ final class Admin_Rest {
 		$values_by_submission = [];
 		$columns              = []; // field_key => header label.
 		if ( $rows ) {
-			$ids          = array_map( static fn( $r ) => (int) $r->id, $rows );
+			$ids = array_map( static fn( $r ) => (int) $r->id, $rows );
 			// One %d per id, generated from count( $ids ) and the literal '%d';
 			// the ids themselves travel as prepare() arguments.
 			$placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );

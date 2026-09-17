@@ -396,10 +396,10 @@ final class Key_Bridge {
 		}
 		self::$suspended++;
 		$existed = ( self::$missing !== get_option( $target, self::$missing ) );
-		update_option( $target, $value );
+		self::write_like( $target, $value, $option );
 		if ( self::NEW_LIVE === self::$phase ) {
 			// $option is the OLD spelling here: keep it current for a downgrade.
-			update_option( $option, $value );
+			self::write_like( $option, $value, $target );
 		}
 		self::$suspended--;
 
@@ -467,7 +467,7 @@ final class Key_Bridge {
 			return;
 		}
 		self::$suspended++;
-		update_option( $other, $value );
+		self::write_like( $other, $value, $option );
 		self::$suspended--;
 	}
 
@@ -481,7 +481,7 @@ final class Key_Bridge {
 			return;
 		}
 		self::$suspended++;
-		update_option( $other, $value );
+		self::write_like( $other, $value, $option );
 		self::$suspended--;
 	}
 
@@ -590,6 +590,30 @@ final class Key_Bridge {
 		$value = get_option( $name, $default_value );
 		self::$suspended--;
 		return $value;
+	}
+
+	/**
+	 * Write $name and, when that row does not exist yet, give it the AUTOLOAD
+	 * CLASS of $like -- the row the caller actually wrote. update_option() with
+	 * no hint lets WordPress decide (`auto`, i.e. autoloaded), so every mirror
+	 * of a deliberately non-autoloaded option -- the two popup migration
+	 * markers, the import's V3 restore record, `aae_pp_cache_versions`, the
+	 * speed-preview secret -- used to gain an autoloaded twin: 1.2 KB of restore
+	 * record in alloptions on every request. Measured 2026-09-17 (old row
+	 * `auto`, live row `off`, same value). The raw autoload string is passed
+	 * through untouched -- `auto`, `auto-on`, `on`, `off`, `yes`, `no` are all
+	 * accepted by wp_determine_option_autoload_value() -- so the class is
+	 * copied, never rewritten. An existing row keeps its own class:
+	 * update_option() only reads the hint when it inserts.
+	 *
+	 * @param string $name  Row to write.
+	 * @param mixed  $value Value.
+	 * @param string $like  Row whose autoload class a NEW $name row copies.
+	 */
+	private static function write_like( $name, $value, $like ) {
+		global $wpdb;
+		$autoload = $wpdb->get_var( $wpdb->prepare( "SELECT autoload FROM {$wpdb->options} WHERE option_name = %s LIMIT 1", $like ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- get_option() cannot answer the autoload column; this runs on a write, never on a read.
+		update_option( $name, $value, is_string( $autoload ) && '' !== $autoload ? $autoload : null );
 	}
 
 	/** update_option() with the bridge out of the way — writes exactly this name. */

@@ -301,12 +301,19 @@ final class Migration {
 		// The exact autoload flag of every old row, one query: WordPress 6.6
 		// stores on/off/auto/auto-on/auto-off and older rows still say yes/no.
 		// A boolean from wp_load_alloptions() would rewrite them all to `on`.
-		$old_names = array_merge( array_keys( $map['options'] ), array_keys( $map['options_pro'] ) );
-		$autoloads = array();
+		$old_names     = array_merge( array_keys( $map['options'] ), array_keys( $map['options_pro'] ) );
+		$new_names     = array_merge( array_values( $map['options'] ), array_values( $map['options_pro'] ) );
+		$autoloads     = array();
+		$autoloads_new = array();
 		if ( $old_names ) {
-			$rows = $wpdb->get_results( $wpdb->prepare( "SELECT option_name, autoload FROM {$wpdb->options} WHERE option_name IN (" . implode( ',', array_fill( 0, count( $old_names ), '%s' ) ) . ')', $old_names ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one read of the raw rows, autoload flag included, which get_option() cannot answer.
+			$all_names = array_merge( $old_names, $new_names );
+			$rows      = $wpdb->get_results( $wpdb->prepare( "SELECT option_name, autoload FROM {$wpdb->options} WHERE option_name IN (" . implode( ',', array_fill( 0, count( $all_names ), '%s' ) ) . ')', $all_names ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one read of the raw rows, autoload flag included, which get_option() cannot answer.
 			foreach ( (array) $rows as $row ) {
-				$autoloads[ $row->option_name ] = $row->autoload;
+				if ( in_array( $row->option_name, $new_names, true ) ) {
+					$autoloads_new[ $row->option_name ] = $row->autoload;
+				} else {
+					$autoloads[ $row->option_name ] = $row->autoload;
+				}
 			}
 		}
 
@@ -324,6 +331,17 @@ final class Migration {
 				$existing = Key_Bridge::raw_get( $new, self::missing() );
 				$same     = self::missing() !== $existing && maybe_serialize( $existing ) === maybe_serialize( $value );
 				if ( $same ) {
+					// Same VALUE is not the same ROW: a stale copy from the downgrade
+					// window can carry the wrong autoload class, and update_option()
+					// never touches autoload on an unchanged value. The old row is
+					// the truth here, so its class wins (on/off; `auto` reads as on).
+					if ( null !== $autoload && function_exists( 'wp_set_option_autoload' ) ) {
+						$want = in_array( $autoload, array( 'yes', 'on', 'auto-on', 'auto' ), true );
+						$have = isset( $autoloads_new[ $new ] ) ? in_array( $autoloads_new[ $new ], array( 'yes', 'on', 'auto-on', 'auto' ), true ) : null;
+						if ( null !== $have && $have !== $want ) {
+							wp_set_option_autoload( $new, $want );
+						}
+					}
 					$cat['items'][ $old ] = 'already current';
 					$cat['done']++;
 					continue;

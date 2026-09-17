@@ -1,12 +1,12 @@
 <?php
-if (! defined('ABSPATH')) {
-    exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
 } // Exit if accessed directly
 
 use Elementor\Plugin;
 
-if (function_exists('aaeaddon_set_postview')) {
-   add_action('wp', 'aaeaddon_set_postview');
+if ( function_exists( 'aaeaddon_set_postview' ) ) {
+	add_action( 'wp', 'aaeaddon_set_postview' );
 }
 
 /**
@@ -17,14 +17,13 @@ if (function_exists('aaeaddon_set_postview')) {
  * "no raw IP without opt-in" rule. Good enough to stop trivial inflation from
  * one client; it is not identity, and is not meant to be.
  */
-if (! function_exists('aaeaddon_public_counter_visitor_key')) {
-    function aaeaddon_public_counter_visitor_key()
-    {
-        $ip = isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])) : '';
-        $ua = isset($_SERVER['HTTP_USER_AGENT']) ? sanitize_text_field(wp_unslash($_SERVER['HTTP_USER_AGENT'])) : '';
+if ( ! function_exists( 'aaeaddon_public_counter_visitor_key' ) ) {
+	function aaeaddon_public_counter_visitor_key() {
+		$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
+		$ua = isset( $_SERVER['HTTP_USER_AGENT'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ) : '';
 
-        return substr(wp_hash($ip . '|' . $ua), 0, 16);
-    }
+		return substr( wp_hash( $ip . '|' . $ua ), 0, 16 );
+	}
 }
 
 /**
@@ -42,19 +41,18 @@ if (! function_exists('aaeaddon_public_counter_visitor_key')) {
  * @param int    $window  Seconds the vote is remembered for.
  * @return bool
  */
-if (! function_exists('aaeaddon_public_counter_throttled')) {
-    function aaeaddon_public_counter_throttled($post_id, $bucket, $window = HOUR_IN_SECONDS)
-    {
-        $key = 'aaeaddon_pc_' . md5($post_id . '|' . $bucket . '|' . aaeaddon_public_counter_visitor_key());
+if ( ! function_exists( 'aaeaddon_public_counter_throttled' ) ) {
+	function aaeaddon_public_counter_throttled( $post_id, $bucket, $window = HOUR_IN_SECONDS ) {
+		$key = 'aaeaddon_pc_' . md5( $post_id . '|' . $bucket . '|' . aaeaddon_public_counter_visitor_key() );
 
-        if (false !== get_transient($key)) {
-            return true;
-        }
+		if ( false !== get_transient( $key ) ) {
+			return true;
+		}
 
-        set_transient($key, 1, $window);
+		set_transient( $key, 1, $window );
 
-        return false;
-    }
+		return false;
+	}
 }
 
 /**
@@ -71,110 +69,110 @@ if (! function_exists('aaeaddon_public_counter_throttled')) {
  * @return bool
  */
 if ( ! function_exists( 'aaeaddon_public_rate_limited' ) ) {
-    function aaeaddon_public_rate_limited( $bucket, $limit = 10, $window = 600 )
-    {
-        $key   = 'aaeaddon_prl_' . md5( $bucket . '|' . aaeaddon_public_counter_visitor_key() );
-        $count = (int) get_transient( $key );
+	function aaeaddon_public_rate_limited( $bucket, $limit = 10, $window = 600 ) {
+		$key   = 'aaeaddon_prl_' . md5( $bucket . '|' . aaeaddon_public_counter_visitor_key() );
+		$count = (int) get_transient( $key );
 
-        if ( $count >= (int) $limit ) {
-            return true;
-        }
+		if ( $count >= (int) $limit ) {
+			return true;
+		}
 
-        set_transient( $key, $count + 1, (int) $window );
+		set_transient( $key, $count + 1, (int) $window );
 
-        return false;
-    }
+		return false;
+	}
 }
 
 if ( ! function_exists( 'aaeaddon_handle_post_shares_count' ) ) :
-function aaeaddon_handle_post_shares_count()
-{
-    $nonce = isset($_REQUEST['nonce']) ? sanitize_text_field(wp_unslash($_REQUEST['nonce'])) : '';
+	function aaeaddon_handle_post_shares_count() {
+		$nonce = isset( $_REQUEST['nonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ) : '';
 
-    if (! $nonce || ! wp_verify_nonce( $nonce, \Wealcoder\AnimationAddons\Nonce::action_for( $nonce, \Wealcoder\AnimationAddons\Nonce::FRONTEND ) )) {
-        wp_send_json_error(['message' => esc_html__('Security check failed.', 'animation-addons-for-elementor')], 403);
-    }
+		if ( ! $nonce || ! wp_verify_nonce( $nonce, \Wealcoder\AnimationAddons\Nonce::action_for( $nonce, \Wealcoder\AnimationAddons\Nonce::FRONTEND ) ) ) {
+			wp_send_json_error( array( 'message' => esc_html__( 'Security check failed.', 'animation-addons-for-elementor' ) ), 403 );
+		}
 
-    if (isset($_POST['post_id']) && isset($_POST['social'])) {
-        $post_id = absint(sanitize_text_field(wp_unslash($_POST['post_id'])));
-        $social  = sanitize_key(wp_unslash($_POST['social']));
+		if ( isset( $_POST['post_id'] ) && isset( $_POST['social'] ) ) {
+			$post_id = absint( sanitize_text_field( wp_unslash( $_POST['post_id'] ) ) );
+			$social  = sanitize_key( wp_unslash( $_POST['social'] ) );
 
-        // The vendor list is a fixed SELECT in the Social Share widget, and
-        // this value becomes a POST META KEY. Left open, one unauthenticated
-        // client can mint an unbounded number of distinct meta rows on a post
-        // nobody is actually sharing. Filterable, so adding a network stays a
-        // one-line change rather than a reason to leave it open.
-        $allowed_social = apply_filters(
-            'aaeaddon_post_share_networks',
-            array( 'facebook', 'twitter', 'linkedin', 'pinterest', 'tumblr', 'blogger', 'reddit' )
-        );
+			// The vendor list is a fixed SELECT in the Social Share widget, and
+			// this value becomes a POST META KEY. Left open, one unauthenticated
+			// client can mint an unbounded number of distinct meta rows on a post
+			// nobody is actually sharing. Filterable, so adding a network stays a
+			// one-line change rather than a reason to leave it open.
+			$allowed_social = apply_filters(
+				'aaeaddon_post_share_networks',
+				array( 'facebook', 'twitter', 'linkedin', 'pinterest', 'tumblr', 'blogger', 'reddit' )
+			);
 
-        if (! in_array($social, (array) $allowed_social, true)) {
-            wp_send_json_error(['message' => esc_html__('Invalid network.', 'animation-addons-for-elementor')]);
-        }
+			if ( ! in_array( $social, (array) $allowed_social, true ) ) {
+				wp_send_json_error( array( 'message' => esc_html__( 'Invalid network.', 'animation-addons-for-elementor' ) ) );
+			}
 
-        // The target must be a real, published post — otherwise this writes
-        // share meta onto arbitrary or non-existent ids.
-        $post = get_post($post_id);
-        if (! $post || 'publish' !== $post->post_status) {
-            wp_send_json_error(['message' => esc_html__('Invalid post ID.', 'animation-addons-for-elementor')]);
-        }
+			// The target must be a real, published post — otherwise this writes
+			// share meta onto arbitrary or non-existent ids.
+			$post = get_post( $post_id );
+			if ( ! $post || 'publish' !== $post->post_status ) {
+				wp_send_json_error( array( 'message' => esc_html__( 'Invalid post ID.', 'animation-addons-for-elementor' ) ) );
+			}
 
-        // Retrieve current share count, increment it, or set it if it doesn't exist
-        $current_shares = get_post_meta($post_id, 'aae_post_shares', true);
+			// Retrieve current share count, increment it, or set it if it doesn't exist
+			$current_shares = get_post_meta( $post_id, 'aae_post_shares', true );
 
-        if (! is_array($current_shares)) {
-            $current_shares = [];
-        }
+			if ( ! is_array( $current_shares ) ) {
+				$current_shares = array();
+			}
 
-        // One count per visitor per network per window — a repeat is a graceful
-        // no-op returning the current totals, so the UI still reflects state
-        // without letting one client inflate the number.
-        if (aaeaddon_public_counter_throttled($post_id, 'share:' . $social)) {
-            wp_send_json_success(array(
-                'share_count' => array_sum(array_values($current_shares)),
-                'post_shares' => $current_shares,
-                'counted'     => false,
-            ));
-        }
+			// One count per visitor per network per window — a repeat is a graceful
+			// no-op returning the current totals, so the UI still reflects state
+			// without letting one client inflate the number.
+			if ( aaeaddon_public_counter_throttled( $post_id, 'share:' . $social ) ) {
+				wp_send_json_success(
+					array(
+						'share_count' => array_sum( array_values( $current_shares ) ),
+						'post_shares' => $current_shares,
+						'counted'     => false,
+					)
+				);
+			}
 
-        if (isset($current_shares[$social])) {
-            $current_shares[$social]++;
-        } else {
-            $current_shares[$social] = 1;
-        }
+			if ( isset( $current_shares[ $social ] ) ) {
+				++$current_shares[ $social ];
+			} else {
+				$current_shares[ $social ] = 1;
+			}
 
-        $shares_count = array_sum(array_values($current_shares));
+			$shares_count = array_sum( array_values( $current_shares ) );
 
-        foreach ($current_shares as $k => $single) {
-            update_post_meta($post_id, 'aae_post_shares_' . $k, $single);
-        }
+			foreach ( $current_shares as $k => $single ) {
+				update_post_meta( $post_id, 'aae_post_shares_' . $k, $single );
+			}
 
-        update_post_meta($post_id, 'aae_post_shares_count', $shares_count);
-        update_post_meta($post_id, 'aae_post_shares', $current_shares);
+			update_post_meta( $post_id, 'aae_post_shares_count', $shares_count );
+			update_post_meta( $post_id, 'aae_post_shares', $current_shares );
 
-        // Return updated share count as a response
-        wp_send_json_success(array(
-            'share_count' => $shares_count,
-            'post_shares' => $current_shares
-        ));
+			// Return updated share count as a response
+			wp_send_json_success(
+				array(
+					'share_count' => $shares_count,
+					'post_shares' => $current_shares,
+				)
+			);
 
-    } else {
-        wp_send_json_error(['message' => esc_html__('Invalid post ID.', 'animation-addons-for-elementor')]);
-    }
-
-}
+		} else {
+			wp_send_json_error( array( 'message' => esc_html__( 'Invalid post ID.', 'animation-addons-for-elementor' ) ) );
+		}
+	}
 endif;
 // 'aae_post_shares' is a deprecated alias (a page cache or combined bundle can still post the old name) -- remove in 4.4.
 \Wealcoder\AnimationAddons\Ajax_Alias::register( 'aae_post_shares', 'aaeaddon_post_shares', 'aaeaddon_handle_post_shares_count', true );
 
 if ( ! function_exists( 'aaeaddon_disable_comments_for_custom_post_type' ) ) :
-function aaeaddon_disable_comments_for_custom_post_type()
-{
-    remove_post_type_support('wcf-addons-template', 'comments');
-}
+	function aaeaddon_disable_comments_for_custom_post_type() {
+		remove_post_type_support( 'wcf-addons-template', 'comments' );
+	}
 endif;
-add_action('init', 'aaeaddon_disable_comments_for_custom_post_type', 100);
+add_action( 'init', 'aaeaddon_disable_comments_for_custom_post_type', 100 );
 
 // Btn / BtnPro / Social Share preset interactions used to load unconditionally
 // on every page via a shared "global preset" bundle. They're now registered
@@ -188,81 +186,71 @@ add_action('init', 'aaeaddon_disable_comments_for_custom_post_type', 100);
 // separate wiring is needed here.
 // post reaction ajax handeler
 
-if (!function_exists('aaeaddon_post_lite_reaction_ajax')) {
-    function aaeaddon_post_lite_reaction_ajax()
-    {
-        
-        $nonce = isset($_REQUEST['nonce']) ? sanitize_text_field( wp_unslash($_REQUEST['nonce']) ) : '';
+if ( ! function_exists( 'aaeaddon_post_lite_reaction_ajax' ) ) {
+	function aaeaddon_post_lite_reaction_ajax() {
 
-        if ( ! $nonce || ! wp_verify_nonce( $nonce, \Wealcoder\AnimationAddons\Nonce::action_for( $nonce, \Wealcoder\AnimationAddons\Nonce::FRONTEND ) ) ) {
-            // For JSON endpoints:
-            if ( defined('DOING_AJAX') && DOING_AJAX ) {
-                wp_send_json_error(['message' => __('Invalid request.', 'animation-addons-for-elementor')], 403);
-            }
-            // For normal requests:
-            wp_die( esc_html__('Invalid request.', 'animation-addons-for-elementor'), 403 );
-        }
+		$nonce = isset( $_REQUEST['nonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ) : '';
 
-        $post_id = isset($_POST['post_id']) ? absint(sanitize_text_field( wp_unslash( $_POST['post_id'] ) )) : '';
-        $reaction = isset($_POST['reaction']) ? sanitize_text_field(wp_unslash( $_POST['reaction'] )) : [];
+		if ( ! $nonce || ! wp_verify_nonce( $nonce, \Wealcoder\AnimationAddons\Nonce::action_for( $nonce, \Wealcoder\AnimationAddons\Nonce::FRONTEND ) ) ) {
+			// For JSON endpoints:
+			if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+				wp_send_json_error( array( 'message' => __( 'Invalid request.', 'animation-addons-for-elementor' ) ), 403 );
+			}
+			// For normal requests:
+			wp_die( esc_html__( 'Invalid request.', 'animation-addons-for-elementor' ), 403 );
+		}
 
-        if (! $post_id || ! $reaction) {
-            wp_send_json_error('Invalid data');
-        }
+		$post_id  = isset( $_POST['post_id'] ) ? absint( sanitize_text_field( wp_unslash( $_POST['post_id'] ) ) ) : '';
+		$reaction = isset( $_POST['reaction'] ) ? sanitize_text_field( wp_unslash( $_POST['reaction'] ) ) : array();
 
-        // Same reason as the share vendors: this value becomes a meta key,
-        // and the widget's Type control is a fixed SELECT — anything else
-        // arriving here was not sent by the widget.
-        $allowed_reactions = apply_filters(
-            'aae_post_reaction_types',
-            array( 'emoji', 'like', 'dislike', 'funny', 'wow', 'love', 'sad', 'angry' )
-        );
+		if ( ! $post_id || ! $reaction ) {
+			wp_send_json_error( 'Invalid data' );
+		}
 
-        if (! in_array($reaction, (array) $allowed_reactions, true)) {
-            wp_send_json_error('Invalid data');
-        }
+		// Same reason as the share vendors: this value becomes a meta key,
+		// and the widget's Type control is a fixed SELECT — anything else
+		// arriving here was not sent by the widget.
+		$allowed_reactions = apply_filters(
+			'aaeaddon_post_reaction_types',
+			array( 'emoji', 'like', 'dislike', 'funny', 'wow', 'love', 'sad', 'angry' )
+		);
 
-        // Real, published post only — no reaction meta on arbitrary ids.
-        $post = get_post($post_id);
-        if (! $post || 'publish' !== $post->post_status) {
-            wp_send_json_error('Invalid data');
-        }
+		if ( ! in_array( $reaction, (array) $allowed_reactions, true ) ) {
+			wp_send_json_error( 'Invalid data' );
+		}
 
-        $reactions = get_post_meta($post_id, 'aaeaddon_post_reactions', true);
-        if (! is_array($reactions)) {
-            $reactions = [];
-        }
+		// Real, published post only — no reaction meta on arbitrary ids.
+		$post = get_post( $post_id );
+		if ( ! $post || 'publish' !== $post->post_status ) {
+			wp_send_json_error( 'Invalid data' );
+		}
 
-        // One reaction per visitor per post per window; a repeat returns the
-        // current tally unchanged instead of inflating it.
-        if (aaeaddon_public_counter_throttled($post_id, 'reaction')) {
-            wp_send_json_success($reactions);
-        }
+		$reactions = get_post_meta( $post_id, 'aaeaddon_post_reactions', true );
+		if ( ! is_array( $reactions ) ) {
+			$reactions = array();
+		}
 
-        if (isset($reactions[$reaction])) {
-            $reactions[$reaction]++;
-        } else {
-            $reactions[$reaction] = 1;
-        }
+		// One reaction per visitor per post per window; a repeat returns the
+		// current tally unchanged instead of inflating it.
+		if ( aaeaddon_public_counter_throttled( $post_id, 'reaction' ) ) {
+			wp_send_json_success( $reactions );
+		}
 
-        $reactions_count = array_sum(array_values($reactions));
+		if ( isset( $reactions[ $reaction ] ) ) {
+			++$reactions[ $reaction ];
+		} else {
+			$reactions[ $reaction ] = 1;
+		}
 
-        foreach ($reactions as $k => $single) {
-            update_post_meta( $post_id, 'aaeaddon_post_reactions_' . $k, $single);
-        }
-        update_post_meta($post_id, 'aaeaddon_post_reactions', $reactions);
-        update_post_meta($post_id, 'aaeaddon_post_total_reactions', $reactions_count);
-        wp_send_json_success($reactions);
-    }
-    add_action('wp_ajax_nopriv_aaeaddon_post_reaction', 'aaeaddon_post_lite_reaction_ajax');
-    add_action('wp_ajax_aaeaddon_post_reaction', 'aaeaddon_post_lite_reaction_ajax');
+		$reactions_count = array_sum( array_values( $reactions ) );
+
+		foreach ( $reactions as $k => $single ) {
+			update_post_meta( $post_id, 'aaeaddon_post_reactions_' . $k, $single );
+		}
+		update_post_meta( $post_id, 'aaeaddon_post_reactions', $reactions );
+		update_post_meta( $post_id, 'aaeaddon_post_total_reactions', $reactions_count );
+		wp_send_json_success( $reactions );
+	}
+	add_action( 'wp_ajax_nopriv_aaeaddon_post_reaction', 'aaeaddon_post_lite_reaction_ajax' );
+	add_action( 'wp_ajax_aaeaddon_post_reaction', 'aaeaddon_post_lite_reaction_ajax' );
 }
-
-
-
-
-
-
-
-
-
