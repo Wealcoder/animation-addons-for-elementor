@@ -274,9 +274,11 @@ if ( ! function_exists( 'aaeaddon_get_settings' ) ) {
 	/**
 	 * Return saved settings.
 	 *
-	 * Renamed from `wcf_addons_get_settings()` in 4.2.0. The old name is still
-	 * declared below — see its docblock for why that one cannot move to the
-	 * paid add-on the way the rest of the pre-4.2 names did.
+	 * Renamed in 4.2.0 (the `aaeaddon_` prefix replaced the pre-4.2 family).
+	 * The old spelling is declared by the paid add-on (inc/Compat/legacy-functions.php
+	 * there, since Pro 4.3) and by nothing here. The RELEASED add-on calls it
+	 * unguarded on its boot path, so that add-on must be updated before — or
+	 * together with — this plugin; see that file's header for the trade.
 	 *
 	 * @since 4.2.0
 	 *
@@ -287,31 +289,6 @@ if ( ! function_exists( 'aaeaddon_get_settings' ) ) {
 	function aaeaddon_get_settings( $option_name, $element = null ) {
 		$elements = get_option( $option_name );
 		return ( isset( $element ) ? ( isset( $elements[ $element ] ) ? $elements[ $element ] : 0 ) : array_keys( array_filter( $elements ) ) );
-	}
-}
-
-if ( ! function_exists( 'wcf_addons_get_settings' ) ) {
-	/**
-	 * The pre-4.2 name of `aaeaddon_get_settings()`.
-	 *
-	 * This is the SECOND of the two old function names this plugin keeps, and
-	 * the reason is measured, not precautionary: the paid add-on reads it on
-	 * eighteen lines and **fifteen of them have no `function_exists()` guard**
-	 * — including `class-plugin.php`, `global-elements.php` and `hook.php`,
-	 * which run on every front-end request. Every other pre-4.2 name is
-	 * either unused outside this plugin or guarded at its add-on call site,
-	 * so those wrappers live in the add-on instead (`inc/Compat/legacy-functions.php`
-	 * there). This one cannot: an add-on that is never updated would take the
-	 * whole site down.
-	 *
-	 * @since 4.2.0
-	 *
-	 * @param string      $option_name Option to read.
-	 * @param string|null $element     Single key to return, or null for every truthy key.
-	 * @return mixed
-	 */
-	function wcf_addons_get_settings( $option_name, $element = null ) {
-		return aaeaddon_get_settings( $option_name, $element );
 	}
 }
 

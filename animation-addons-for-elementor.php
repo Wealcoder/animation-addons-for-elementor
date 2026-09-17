@@ -618,8 +618,9 @@ final class Aaeaddon_Plugin {
 }
 
 /*
- * The pre-4.2 name of the class above, and one of the two backward-compatible
- * shims this plugin keeps (the other is `wcf_addons_get_settings()` in inc/helper.php).
+ * The pre-4.2 name of the class above, and the ONLY backward-compatible shim
+ * this plugin keeps: every pre-4.2 function name lives in the paid add-on's
+ * inc/Compat/legacy-functions.php.
  *
  * `WCF_ADDONS_Plugin` is how everything outside this plugin asks whether it is
  * installed: the paid add-on gates its whole boot on `class_exists()` of it,
