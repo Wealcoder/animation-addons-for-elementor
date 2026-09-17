@@ -82,13 +82,6 @@ Class CustomFonts_Lite{
 	public function __construct() {
 	
 		add_action( 'init', [ $this,'custom_post_type' ]);
-		add_action( 'admin_menu', [ $this, 'register_sub_menu_post' ] , 30);
-		add_action( 'add_meta_boxes', [$this ,'custom_metabox' ]);
-		add_action( 'admin_enqueue_scripts', [ $this, 'admin_scripts' ] );
-		// 'wcf_save_custom_fonts' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
-		\Wealcoder\AnimationAddons\Ajax_Alias::register( 'wcf_save_custom_fonts', 'aaeaddon_save_custom_fonts', [ $this, 'save_settings' ] );
-		// 'wcf_save_custom_fonts_settings' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
-		\Wealcoder\AnimationAddons\Ajax_Alias::register( 'wcf_save_custom_fonts_settings', 'aaeaddon_save_custom_fonts_settings', [ $this, 'save_global_settings' ] );
 		//add_filter( 'upload_mimes', [$this ,'allow_custom_font_uploads'], 100);
         add_filter( 'wcf_addin_pro_custom_webfonts' , [ $this, '_custom_webfonts' ] , 4 , 2 );
         add_filter( 'wcf_addin_pro_custom_webfonts' , [ $this, 'global_custom_webfonts' ] , 9 );
@@ -125,47 +118,14 @@ Class CustomFonts_Lite{
 
         add_action( 'wp_enqueue_scripts',  array( $this, 'push_dynamic_style' ) , 20 );
         add_action( 'wp_head',  array( $this, 'wp_push_style' ) , 20 );
-        // 'wcf_addon_custom_font_settings' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
-        \Wealcoder\AnimationAddons\Ajax_Alias::register( 'wcf_addon_custom_font_settings', 'aaeaddon_custom_font_settings', [ $this, 'custom_font_settings' ] );
         $this->gl_settings = aaeaddon_validate_content_json( wp_unslash( get_option('aaeaddon_custom_font_setting')) );
-        add_filter( 'post_row_actions', [$this,'remove_quick_edit_button'], 10, 2 );
-		add_filter( 'display_post_states', [$this,'remove_post_states'], 10, 2);
+
+		if ( is_admin() ) {
+			require_once __DIR__ . '/class-custom-fonts-admin.php';
+			CustomFonts_Fonts_Admin::instance();
+		}
 	}
 
-    function remove_post_states($states, $post) {		
-		if (isset($post->post_type) && $post->post_type === $this->post_type) {
-			return []; 
-		}
-		return $states;
-	}
-
-	function remove_quick_edit_button($actions, $post) {
-		// Replace 'your_custom_post_type' with your actual custom post type slug
-		if ($post->post_type === $this->post_type) {
-			unset($actions['inline hide-if-no-js']); // Remove the Quick Edit button
-			unset($actions['edit']); // Remove the Quick Edit button
-		}
-		return $actions;
-	}
-	
-	
-	public function custom_font_settings() {
-
-		check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
-
-		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( esc_html__( 'you are not allowed to do this action','animation-addons-for-elementor' ) );
-		}
-
-		if ( ! isset( $_POST['settings'] ) ) {
-			return;
-		}
-	
-		$settings = sanitize_text_field( wp_unslash( $_POST['settings'] ) );
-			
-		update_option( 'aaeaddon_custom_font_setting', $settings );
-		wp_send_json( $settings );
-	}
 	
 	function global_custom_webfonts($return_fonts){
         $configs = $this->get_custom_font_from_user_globally();
@@ -580,123 +540,6 @@ Class CustomFonts_Lite{
         }
 
         return $this->global_fonts_cache;
-    }
-	
-	
-	function allow_custom_font_uploads($mime_types) {
-		// Add support for font file types
-		$mime_types['woff'] = 'font/woff';
-		$mime_types['woff2'] = 'font/woff2';
-        $mime_types['ttf'] = 'font/ttf';
-		$mime_types['otf'] = 'font/otf';
-		$mime_types['eot'] = 'application/vnd.ms-fontobject'; // Add support for .eot
-        $mime_types['zip']  = 'application/zip';
-        $mime_types['x-zip'] = 'application/x-zip-compressed';
-		return $mime_types;
-	}
-	
-	public function save_global_settings() {
-        check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
-
-		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( esc_html__( 'you are not allowed to do this action', 'animation-addons-for-elementor' ) );
-		}
-
-		if ( ! isset( $_POST['custom_font_global'] ) ) {
-			return;
-		}
-        
-        if ( ! isset( $_POST['id'] ) ) {
-			return;
-		}
-        $sanitize_id = sanitize_text_field( wp_unslash($_POST['id']) );
-        $sanitize_data = sanitize_text_field( wp_unslash($_POST['custom_font_global']) );
-        update_post_meta($sanitize_id, 'custom_font_global', $sanitize_data);
-		wp_send_json( esc_html__( 'Updated', 'animation-addons-for-elementor' ) );
-    }
-	public function save_settings() {
-
-		check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
-
-		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( esc_html__( 'you are not allowed to do this action', 'animation-addons-for-elementor' ) );
-		}
-
-		if ( ! isset( $_POST['fields'] ) ) {
-			return;
-		}
-
-		if ( ! isset( $_POST['id'] ) ) {
-			return;
-		}
-
-		$sanitize_data = sanitize_text_field( wp_unslash($_POST['fields']) );
-		$sanitize_id = sanitize_text_field( wp_unslash($_POST['id']) );
-		$data = json_decode($sanitize_data, true);
-		update_post_meta($sanitize_id, 'wcf_addon_custom_fonts', $data);
-		wp_send_json( esc_html__( 'Updated', 'animation-addons-for-elementor' ) );
-	}
-
-	public function admin_scripts() {
-		$current_screen = get_current_screen();
-		
-		if(isset($current_screen->id) && $current_screen->id == 'wcf-custom-fonts'){
-			wp_enqueue_media();
-			wp_enqueue_style( 'wcf-addon-pro-custom-fonts', AAEADDON_URL . 'assets/build/modules/custom-font/main.css', array(), AAEADDON_VERSION );
-			wp_enqueue_script( 'wcf-addon-pro-custom-fonts', AAEADDON_URL . 'assets/build/modules/custom-font/main.js', array(
-				'react', 'react-dom', 'wp-element' , 'wp-i18n'
-			), AAEADDON_VERSION, true );
-            $font = get_post_meta(get_the_id(),'wcf_addon_custom_fonts',true);
-            if(is_array($font)){
-                $font = wp_json_encode($font);
-            } else {
-                $font = wp_json_encode([]);
-            }
-            
-			$localize_data = [
-				'ajaxurl'        => admin_url( 'admin-ajax.php' ),
-				'nonce'          => Nonce::create( Nonce::ADMIN ),
-				'data' => wp_unslash( $font ),
-				'id'		 => get_the_id(),
-				'custom_font_global'		 =>get_post_meta(get_the_id(),'custom_font_global', true)
-				
-			];
-			
-			wp_localize_script( 'wcf-addon-pro-custom-fonts', 'WCF_ADDONS_ADMIN', $localize_data );
-		}
-	
-	}
-
-	function custom_metabox() {
-
-		add_meta_box(
-			'wcf_proaddon_custom_fonts_metabox',          
-			esc_html__('Custom Fonts','animation-addons-for-elementor'),      
-			[$this,'metabox_callback'],    
-			$this->post_type,                  
-			'normal',                   
-			'high'                
-		);
-
-        add_meta_box(
-			'wcf_proaddon_custom_fonts_metabox_settings',          
-			esc_html__('Settings','animation-addons-for-elementor'),      
-			[$this,'metabox_side_settings_callback'],    
-			$this->post_type,                  
-			'side',                   
-			'high'                
-		);
-
-	}
-	public function metabox_callback(){
-		echo '<div id="wcf--custom-fonts-meta-box">Loading</div>';
-	}
-	public function metabox_side_settings_callback(){
-		echo '<div id="wcf--custom-fonts-meta-box-side-setting">Loading</div>';
-	}
-	public function register_sub_menu_post() { 
-	
-        add_submenu_page( 'aaeaddon_page' , esc_html__('Custom Fonts', 'animation-addons-for-elementor') , esc_html__('Custom Fonts', 'animation-addons-for-elementor') , 'manage_options' , "edit.php?post_type=$this->post_type", null );      
     }
 	function custom_post_type(){
    

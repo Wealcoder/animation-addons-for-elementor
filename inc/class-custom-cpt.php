@@ -89,28 +89,6 @@ class CustomCpt_Lite {
     public function __construct() {
        
       
-        add_action( 'admin_menu', [ $this, 'register_sub_menu' ], 30 );
-        add_action( 'admin_enqueue_scripts', [ $this, 'admin_scripts' ] );
-        // 'aae_add_or_update_new_post_type_builder' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
-        \Wealcoder\AnimationAddons\Ajax_Alias::register( 'aae_add_or_update_new_post_type_builder', 'aaeaddon_add_or_update_new_post_type_builder', [ $this, 'add_or_update_post_type' ] );
-        // 'aae_delete_post_type_builder' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
-        \Wealcoder\AnimationAddons\Ajax_Alias::register( 'aae_delete_post_type_builder', 'aaeaddon_delete_post_type_builder', [ $this, 'delete_post_type' ] );
-        // 'aae_post_type_builder_list' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
-        \Wealcoder\AnimationAddons\Ajax_Alias::register( 'aae_post_type_builder_list', 'aaeaddon_post_type_builder_list', [ $this, 'post_type_list' ] );
-        // 'aae_post_type_builder_single_item' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
-        \Wealcoder\AnimationAddons\Ajax_Alias::register( 'aae_post_type_builder_single_item', 'aaeaddon_post_type_builder_single_item', [ $this, 'post_type_single_item' ] );
-        // 'aae_post_type_exist' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
-        \Wealcoder\AnimationAddons\Ajax_Alias::register( 'aae_post_type_exist', 'aaeaddon_post_type_exist', [ $this, 'post_type_exist' ] );
-        // 'aae_add_or_update_new_taxonomy_builder' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
-        \Wealcoder\AnimationAddons\Ajax_Alias::register( 'aae_add_or_update_new_taxonomy_builder', 'aaeaddon_add_or_update_new_taxonomy_builder', [ $this, 'add_or_update_taxonomy' ] );
-        // 'aae_delete_taxonomy_builder' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
-        \Wealcoder\AnimationAddons\Ajax_Alias::register( 'aae_delete_taxonomy_builder', 'aaeaddon_delete_taxonomy_builder', [ $this, 'delete_taxonomy' ] );
-        // 'aae_taxonomy_builder_list' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
-        \Wealcoder\AnimationAddons\Ajax_Alias::register( 'aae_taxonomy_builder_list', 'aaeaddon_taxonomy_builder_list', [ $this, 'taxonomy_list' ] );
-        // 'aae_taxonomy_builder_single_item' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
-        \Wealcoder\AnimationAddons\Ajax_Alias::register( 'aae_taxonomy_builder_single_item', 'aaeaddon_taxonomy_builder_single_item', [ $this, 'taxonomy_single_item' ] );
-        // 'aae_taxonomy_exist' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
-        \Wealcoder\AnimationAddons\Ajax_Alias::register( 'aae_taxonomy_exist', 'aaeaddon_taxonomy_exist', [ $this, 'taxonomy_exist' ] );
         add_action( 'init', [$this,'setup_post_type'], 8 );
         add_action( 'init', [$this,'register_cpt'] , 100);
         add_action( 'init', [$this,'register_taxonomes'] , 60);
@@ -124,7 +102,13 @@ class CustomCpt_Lite {
         // Measured on a real demo: definition at item #11, its six posts at
         // #163, none imported. Re-register as soon as a definition is written.
         add_action( 'wxr_importer.processed.post', [ $this, 'register_from_import' ], 10, 2 );
+
+        if ( is_admin() ) {
+            require_once __DIR__ . '/class-custom-cpt-admin.php';
+            CustomCpt_Cpt_Admin::instance();
+        }
     }
+
 
     /**
      * Re-read the definitions and register everything they declare, now.
@@ -154,40 +138,6 @@ class CustomCpt_Lite {
             return;
         }
         $this->refresh_registrations();
-    }
-    
-    public function get_all_flat_caps() {
-        // Initialize an empty array to store all capabilities
-        $all_caps = [];
-    
-        // Get user roles and their capabilities
-        $user_roles = get_editable_roles();
-        foreach ($user_roles as $role_name => $role_info) {
-            foreach ($role_info['capabilities'] as $cap => $has_cap) {
-                $all_caps[] = $cap; // Add the capability to the array
-            }
-        }
-    
-        // Get all post types and their capabilities
-        $post_types = get_post_types([], 'objects');
-        foreach ($post_types as $post_type_name => $post_type_object) {
-            foreach ($post_type_object->cap as $cap => $cap_name) {
-                $all_caps[] = $cap_name; // Add the capability to the array
-            }
-        }
-    
-        // Get all taxonomies and their capabilities
-        $taxonomies = get_taxonomies([], 'objects');
-        foreach ($taxonomies as $taxonomy_name => $taxonomy_object) {
-            foreach ($taxonomy_object->cap as $cap => $cap_name) {
-                $all_caps[] = $cap_name; // Add the tax to the array
-            }
-        }
-    
-        // Remove duplicate capabilities
-        $all_caps = array_values( array_unique($all_caps) );
-    
-        return $all_caps;
     }
 
     public function register_cpt() {
@@ -504,33 +454,6 @@ class CustomCpt_Lite {
         register_post_type( $this->post_type, $args );
     }
 
-    /**
-     * Register submenu
-     *
-     * Adds a submenu under a parent menu.
-     */
-    public function register_sub_menu() {
-        add_submenu_page(
-            'aaeaddon_page',
-            esc_html__( 'CPT Builder', 'animation-addons-for-elementor' ),
-            esc_html__( 'CPT Builder', 'animation-addons-for-elementor' ),
-            'manage_options',
-            'aaeaddon-cpt-builder',
-            [ $this, 'cpt_callback' ]
-        );
-    }
-
-    /**
-     * Render submenu
-     *
-     * Outputs the submenu content.
-     */
-    public function cpt_callback() {
-        echo '<div class="wrap">';
-        echo '<div id="aaeaddon-cpt-builder"></div>';
-        echo '</div>';
-    }
-
 
     public function latest_data($post_type) {
         // get_posts() defaults to numberposts = 5, so a site with six or more
@@ -571,202 +494,6 @@ class CustomCpt_Lite {
         }       
     }
 
-
-    public function add_or_update_post_type() {
-
-        check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
-        if ( ! current_user_can( 'manage_options' ) ) {
-            wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor' ) );
-        }
-
-        \Wealcoder\AnimationAddons\Compat\Key_Bridge::delete_option( $this->cache_key );       
-        \Wealcoder\AnimationAddons\Compat\Key_Bridge::delete_option( $this->cache_tax_key );       
-        $id        = isset( $_POST['post_type_id'] ) ? sanitize_text_field( wp_unslash( $_POST['post_type_id'] ) ) : null;
-        $post_meta = isset( $_POST['post_meta'] ) ? sanitize_text_field( wp_unslash( $_POST['post_meta'] ) ) : null;
-        $title     = isset( $_POST['post_type_title'] ) ? sanitize_text_field( wp_unslash( $_POST['post_type_title'] ) ) : null;
-        $post_meta = json_decode($post_meta ?? '{}', true);
-
-       if(is_null($id)) {
-        
-        $my_post = array(
-            'post_title'    => $title,
-            'post_content'  => '',
-            'post_status'   => 'hidden',
-            'post_type'   =>$this->post_type,
-        );
-            
-        // Insert the post into the database
-        $createdPost  = wp_insert_post( $my_post );
-        $data         = $this->latest_data($this->post_type);
-        $data['post'] = $createdPost;
-        wp_send_json_success( $data );
-       }else if(is_numeric($id)) {
-        $my_post = array(
-            'ID'           => $id,
-            'post_title'   =>  wp_kses_post( $title )         
-        );  
-        update_post_meta($id, $this->meta_key, $post_meta); 
-        wp_update_post( $my_post );
-        wp_send_json_success( $this->latest_data($this->post_type) );
-       }    
-        
-    }
-
-    public function delete_post_type() {
-        check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
-
-        if ( ! current_user_can( 'manage_options' ) ) {
-            wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor' ) );
-        }
-        \Wealcoder\AnimationAddons\Compat\Key_Bridge::delete_option( $this->cache_key );
-        $id = isset( $_POST['post_type_id'] ) ? sanitize_text_field( wp_unslash( $_POST['post_type_id'] ) ) : null;
-       
-        if(is_numeric($id)){
-            wp_delete_post($id);
-            delete_post_meta($id, $this->meta_key);
-        }
-               
-        wp_send_json_success( $this->latest_data($this->post_type) );
-    }
-    
-    
-
-    public function post_type_list() {   
-
-        $nonce = isset($_REQUEST['wcf_nonce']) ? sanitize_text_field( wp_unslash( $_REQUEST['wcf_nonce'] ) ) : null;
-        if ( ! wp_verify_nonce( $nonce, Nonce::action_for( $nonce, Nonce::ADMIN ) ) ) {
-            wp_send_json_error( esc_html__( 'Invalid nonce', 'animation-addons-for-elementor' ) );
-        } 
-
-        if ( ! current_user_can( 'manage_options' ) ) {
-            wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor' ) );
-        }
-        \Wealcoder\AnimationAddons\Compat\Key_Bridge::delete_option( $this->cache_key );
-        \Wealcoder\AnimationAddons\Compat\Key_Bridge::delete_option( $this->cache_tax_key );
-        wp_send_json_success( $this->latest_data($this->post_type) );
-    }
-
-    public function post_type_single_item() {
-        check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
-
-        if ( ! current_user_can( 'manage_options' ) ) {
-            wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor' ) );
-        }
-
-        $id = isset( $_POST['post_type_id'] ) ? sanitize_text_field( wp_unslash( $_POST['post_type_id'] ) ) : null;
-        $taxonomies = get_taxonomies();
-        if(is_numeric($id)){
-            $title = get_the_title( $id );
-            $meta = get_post_meta($id, $this->meta_key, true);
-            wp_send_json_success( ['title' => $title, 'taxonomies' => $taxonomies,'meta' => $meta ] );
-        }
-        
-    }
-
-    public function post_type_exist() {
-
-        check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
-
-        if ( ! current_user_can( 'manage_options' ) ) {
-            wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor' ) );
-        }
-
-        $post_type = isset( $_POST['post_type'] ) ? sanitize_text_field( wp_unslash( $_POST['post_type'] ) ) : null;
-        $exists = \post_type_exists( $post_type );       
-        wp_send_json( ['hasExist' => $exists ] );
-        
-    }
-
-    public function add_or_update_taxonomy() {
-        check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
-
-        if ( ! current_user_can( 'manage_options' ) ) {
-            wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor' ) );
-        }
-
-        $id            = isset( $_POST['taxonomy_id'] ) ? sanitize_text_field( wp_unslash( $_POST['taxonomy_id'] ) ) : null;
-        $taxonomy_meta = isset( $_POST['taxonomy_meta'] ) ? sanitize_text_field( wp_unslash( $_POST['taxonomy_meta'] ) ) : null;
-        $title         = isset( $_POST['taxonomy_title'] ) ? sanitize_text_field( wp_unslash( $_POST['taxonomy_title'] ) ) : null;
-        $taxonomy_meta = json_decode($taxonomy_meta, true);
-     
-       if(is_null($id)) { 
-        $my_taxonomy = array(
-            'post_title'    => $title,
-            'post_content'  => '',
-            'post_status'   => 'hidden',
-            'post_type'   =>$this->tax_type,
-            );
-            
-        // Insert the post into the database
-        $createdTaxonomy = wp_insert_post( $my_taxonomy );
-        $data            = $this->latest_data($this->tax_type);
-        $data['post']    = $createdTaxonomy;
-        wp_send_json_success( $data );
-        
-       } else if(is_numeric($id)) {
-        $my_taxonomy = array(
-            'ID'           => $id,
-            'post_title'   =>  wp_kses_post( $title ),           
-        );  
-        update_post_meta($id, $this->tax_meta_key, $taxonomy_meta);   
-        wp_update_post( $my_taxonomy );
-        
-        wp_send_json_success( $this->latest_data($this->tax_type) );
-       }           
-   
-        
-    }
-
-    public function delete_taxonomy() {
-        check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
-
-        if ( ! current_user_can( 'manage_options' ) ) {
-            wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor' ) );
-        }
-
-        $id = isset( $_POST['taxonomy_id'] ) ? sanitize_text_field( wp_unslash( $_POST['taxonomy_id'] ) ) : null;
-        if(is_numeric($id)){
-            wp_delete_post($id);          
-            delete_post_meta($id, $this->tax_meta_key);
-        }
-     
-        wp_send_json_success( $this->latest_data($this->tax_type) );
-    }
-    
-
-    public function taxonomy_list() {
-     
-        $nonce = isset($_REQUEST['wcf_nonce']) ? sanitize_text_field( wp_unslash($_REQUEST['wcf_nonce']) ) : null;
-        if ( ! wp_verify_nonce( $nonce, Nonce::action_for( $nonce, Nonce::ADMIN ) ) ) {
-            wp_send_json_error( esc_html__( 'Invalid nonce', 'animation-addons-for-elementor' ) );
-        } 
-
-        if ( ! current_user_can( 'manage_options' ) ) {
-            wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor' ) );
-        }
-        \Wealcoder\AnimationAddons\Compat\Key_Bridge::delete_option( $this->cache_key );
-        wp_send_json_success( $this->latest_data($this->tax_type) );
-    }
-
-    public function taxonomy_single_item() {
-        check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
-
-        if ( ! current_user_can( 'manage_options' ) ) {
-            wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor' ) );
-        }
-
-        $id = isset( $_POST['taxonomy_id'] ) ? sanitize_text_field( wp_unslash( $_POST['taxonomy_id'] ) ) : null;
-        $post_types = $this->get_post_type();
-        if(is_numeric($id)){
-            $title = get_the_title( $id );
-            $meta = get_post_meta($id, $this->tax_meta_key, true);
-            wp_send_json_success( ['title' => $title, 'post_types' => $post_types,'meta' => $meta, 'caps' => $this->get_all_flat_caps() ] );
-        }
-        
-        wp_send_json( ['title' => $id, 'post_types' => $post_types,'meta' => '', 'caps' => $this->get_all_flat_caps() ] );
-        wp_die();
-    }
-
     public function get_post_type() {
         $post_types = get_post_types( array( 'public' => true,  'show_ui' => true ) , 'names' , 'and'  );
         // Filter out unwanted post types
@@ -781,53 +508,6 @@ class CustomCpt_Lite {
         });
        return $post_types;
     }
-
-    public function taxonomy_exist() {
-        check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
-
-        if ( ! current_user_can( 'manage_options' ) ) {
-            wp_send_json_error( esc_html__( 'You are not allowed to perform this action.', 'animation-addons-for-elementor' ) );
-        }
-
-        $post_type = isset( $_POST['taxonomy_key'] ) ? sanitize_text_field( wp_unslash( $_POST['taxonomy_key'] ) ) : null;
-        $exists = \taxonomy_exists( $post_type );       
-        wp_send_json( ['hasExist' => $exists ] );
-        
-    }
-
-    /**
-     * Enqueue admin scripts
-     *
-     * Loads necessary styles and scripts for the admin panel.
-     */
-    public function admin_scripts( $hook ) {
-        $screen = get_current_screen();
-  	if ( ! $screen || strpos($screen->id, '_page_aaeaddon-cpt-builder') === false) {
-			return;
-		}
-        //if ( $hook === 'animation-addon_page_aaeaddon-cpt-builder' ) {
-            wp_enqueue_style(
-                'wcf-addon-pro-cpt-builder',
-                AAEADDON_URL . 'assets/build/modules/cpt-builder/main.css',
-                array( \Wealcoder\AnimationAddons\Aaeaddon_Fonts::ensure() ),
-                AAEADDON_VERSION
-            );
-
-            wp_enqueue_script(
-                'wcf-addon-pro-cpt-builder',
-                AAEADDON_URL . 'assets/build/modules/cpt-builder/main.js',
-                [ 'react', 'react-dom', 'wp-element', 'wp-i18n' ],
-                AAEADDON_VERSION,
-                true
-            );
-
-            wp_localize_script( 'wcf-addon-pro-cpt-builder', 'WCF_ADDONS_ADMIN', [
-                'ajaxurl' => admin_url( 'admin-ajax.php' ),
-                'nonce'   => Nonce::create( Nonce::ADMIN ),
-            ] );
-        //}
-    }
 }
 
-// Initialize the class.
 CustomCpt_Lite::instance();
