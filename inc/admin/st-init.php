@@ -108,6 +108,13 @@ class OneClickImport
 		add_action('set_object_terms', array($this, 'add_imported_terms'), 10, 6);
 		add_filter('wxr_importer.pre_process.post', [$this, 'skip_failed_attachment_import']);
 		add_action('wxr_importer.process_failed.post', [$this, 'handle_failed_attachment_import'], 10, 5);
+		add_action('admin_init', [$this, 'register_import_report_notice'], 12);
+		// The importer's own limit is 0 = unbounded, which does not refuse a
+		// 900 MB demo video -- it downloads it for as long as the host allows
+		// and then dies mid-chunk. A bounded default refuses it up front with
+		// a reason the report can show; the site owner can raise it through
+		// the same (core-named) filter.
+		add_filter('import_attachment_size_limit', [$this, 'default_attachment_size_limit'], 5);
 		add_action('wp_import_insert_post', [$this, 'save_wp_navigation_import_mapping'], 10, 4);
 		add_action('wp_import_insert_post', [$this, 'save_wp_page_import_track'], 10, 4);
 		add_action('aaeaddon/after_import', [$this, 'fix_imported_wp_navigation']);
@@ -212,11 +219,31 @@ class OneClickImport
 		]);
 	}
 
+	/**
+	 * Default for core's `import_attachment_size_limit` when nothing set one.
+	 *
+	 * @param int $limit Bytes; 0 means unbounded.
+	 * @return int
+	 */
+	public function default_attachment_size_limit( $limit ) {
+		return (int) $limit > 0 ? (int) $limit : 100 * MB_IN_BYTES;
+	}
+
 	public function import_demo_data_ajax_callback()
 	{
 		// Try to update PHP memory limit (so that it does not run out of it).
 		// phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged
 		ini_set('memory_limit', Helpers::apply_filters('aaeaddon/st/import_memory_limit', '1024M'));
+
+		// An attachment is streamed to disk inside THIS request, so the
+		// importer's 60-second HTTP timeout only means something if PHP is
+		// allowed to run that long. Shared hosts default max_execution_time
+		// to 30 s, which killed a large video download mid-chunk and surfaced
+		// as "import failed" with nothing in the log. Same call core's own
+		// importer makes; a host that forbids it simply ignores it.
+		if ( function_exists( 'set_time_limit' ) ) {
+			@set_time_limit( 0 ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- disabled_functions on some hosts.
+		}
 
 		// Verify if the AJAX call is valid (checks nonce and current_user_can).
 		Helpers::verify_ajax_call();
@@ -374,6 +401,9 @@ class OneClickImport
 
 		// Delete importer data transient for current import.
 		delete_transient('aaeaddon_st_importer_data');
+		// What this import could not download becomes the admin notice's
+		// report -- read it BEFORE the row goes, or the list is gone with it.
+		$lost = Helpers::record_import_report();
 		// Was misspelled twice over ('aad' for 'aae', 'mporter' for 'importer'),
 		// so this had never deleted anything and the real row -- 7 KB of failed
 		// attachment URLs -- outlived every import. Helpers owns the name now.
@@ -392,7 +422,13 @@ class OneClickImport
 		\Wealcoder\AnimationAddons\Compat\Key_Bridge::delete_option( 'aaeaddon_cpts_cache' );
 		\Wealcoder\AnimationAddons\Compat\Key_Bridge::delete_option( 'aaeaddon_taxs_cache' );
 
-		$response['msg'] = esc_html__('Congrats, your demo has been imported.', 'animation-addons-for-elementor');
+		$response['msg'] = $lost > 0
+			? sprintf(
+				/* translators: %d: number of media files that could not be downloaded */
+				esc_html( _n( 'Content imported; %d media file could not be downloaded (see the notice on your dashboard).', 'Content imported; %d media files could not be downloaded (see the notice on your dashboard).', $lost, 'animation-addons-for-elementor' ) ),
+				$lost
+			)
+			: esc_html__('Congrats, your demo has been imported.', 'animation-addons-for-elementor');
 		$response['progress'] = 80;
 		check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
 		if (isset($_POST['template_data'])) {
@@ -627,7 +663,75 @@ class OneClickImport
 			return;
 		}
 
-		Helpers::set_failed_attachment_import($data['attachment_url']);
+		$reason = is_wp_error( $post_id ) ? $post_id->get_error_message() : '';
+
+		Helpers::set_failed_attachment_import( $data['attachment_url'], $reason );
+	}
+
+	/**
+	 * Tell the administrator what the last import could not download.
+	 *
+	 * The import ends in "Congrats" whatever happened to its media: a demo
+	 * host that answered 404 for every file, a 30-second execution limit that
+	 * killed a video download, a font type WordPress refused -- each of them
+	 * left a demo with holes in it and a line in a log file nobody reads.
+	 * One dismissible notice per import (its id carries the import time), so
+	 * dismissing it never hides the NEXT import's report.
+	 *
+	 * @return void
+	 */
+	public function register_import_report_notice() {
+		if ( ! class_exists( '\Wealcoder\AnimationAddons\Admin\Notices\Notices' ) || ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		$report = Helpers::get_import_report();
+		if ( null === $report ) {
+			return;
+		}
+
+		$failed  = $report['failed_media'];
+		$blocked = false;
+		$items   = '';
+		foreach ( $failed as $url => $why ) {
+			if ( false !== stripos( (string) $why, 'blocked requests through HTTP' ) ) {
+				$blocked = true;
+			}
+			$items .= sprintf(
+				'<li><code>%1$s</code>%2$s</li>',
+				esc_html( $url ),
+				'' !== (string) $why ? ' &mdash; ' . esc_html( $why ) : ''
+			);
+		}
+
+		$intro = sprintf(
+			/* translators: %d: number of files */
+			esc_html( _n(
+				'Animation Addons: %d file of the imported template could not be downloaded from the demo server. The pages still point at the demo server\'s copy, so they show it for now and will stop showing it if that server moves.',
+				'Animation Addons: %d files of the imported template could not be downloaded from the demo server. The pages still point at the demo server\'s copies, so they show them for now and will stop showing them if that server moves.',
+				count( $failed ),
+				'animation-addons-for-elementor'
+			) ),
+			count( $failed )
+		);
+
+		$hint = $blocked
+			? esc_html__( 'This site blocks outgoing HTTP requests (WP_HTTP_BLOCK_EXTERNAL). Add the demo host to WP_ACCESSIBLE_HOSTS in wp-config.php and import again.', 'animation-addons-for-elementor' )
+			: esc_html__( 'Check that the demo host is reachable from this server, then import the template again: files already in your media library are kept, the missing ones are retried.', 'animation-addons-for-elementor' );
+
+		\Wealcoder\AnimationAddons\Admin\Notices\Notices::instance()->add( array(
+			'notice_id'   => 'aaeaddon_import_report_' . (int) $report['time'],
+			'type'        => 'warning',
+			'dismissible' => true,
+			'capability'  => 'manage_options',
+			'message'     => sprintf(
+				'<p><strong>%1$s</strong></p><p>%2$s</p><details><summary>%3$s</summary><ul style="margin-left:1.5em;list-style:disc">%4$s</ul></details>',
+				$intro,
+				$hint,
+				esc_html__( 'Show the files', 'animation-addons-for-elementor' ),
+				$items
+			),
+		) );
 	}
 
 	/**

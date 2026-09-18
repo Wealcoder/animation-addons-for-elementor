@@ -718,11 +718,42 @@ class Helpers {
 	const FAILED_ATTACHMENT_TRANSIENT = 'aaeaddon_st_importer_data_failed_attachment_imports';
 
 	/**
+	 * Option holding what the LAST import could not download, for the admin
+	 * notice. Written by record_import_report() at the end of a content
+	 * import, deleted when that import lost nothing. Not autoloaded: it is
+	 * read on admin screens only.
+	 *
+	 * @var string
+	 */
+	const LAST_IMPORT_REPORT_OPTION = 'aaeaddon_last_import_report';
+
+	/**
 	 * Failed attachment URLs mapped to how many times each has been tried.
 	 *
 	 * @return array URL => attempt count.
 	 */
 	private static function get_failed_attachment_attempts() {
+
+		$attempts = [];
+
+		foreach ( self::get_failed_attachment_entries() as $url => $entry ) {
+			$attempts[ $url ] = (int) $entry['n'];
+		}
+
+		return $attempts;
+	}
+
+	/**
+	 * Failed attachment URLs with the attempt count AND the last reason.
+	 *
+	 * The row stores `[ 'n' => int, 'why' => string ]` per URL. Two older
+	 * shapes are still read, because an import may be in flight across a
+	 * plugin update: a bare int (attempts only) and the flat list before
+	 * that (given up on).
+	 *
+	 * @return array URL => [ 'n' => int, 'why' => string ].
+	 */
+	private static function get_failed_attachment_entries() {
 
 		$stored = get_transient( self::FAILED_ATTACHMENT_TRANSIENT );
 
@@ -730,20 +761,80 @@ class Helpers {
 			return [];
 		}
 
-		$attempts = [];
+		$entries = [];
 
 		foreach ( $stored as $key => $value ) {
 			if ( is_int( $key ) ) {
-				// The flat list this used to store, from an import that was
-				// already in flight when the plugin updated: given up on.
-				$attempts[ (string) $value ] = self::FAILED_ATTACHMENT_ATTEMPTS;
+				$entries[ (string) $value ] = [ 'n' => self::FAILED_ATTACHMENT_ATTEMPTS, 'why' => '' ];
 				continue;
 			}
-
-			$attempts[ $key ] = (int) $value;
+			if ( is_array( $value ) ) {
+				$entries[ $key ] = [ 'n' => (int) ( $value['n'] ?? 0 ), 'why' => (string) ( $value['why'] ?? '' ) ];
+				continue;
+			}
+			$entries[ $key ] = [ 'n' => (int) $value, 'why' => '' ];
 		}
 
-		return $attempts;
+		return $entries;
+	}
+
+	/**
+	 * Freeze this import's download failures into the last-import report.
+	 *
+	 * Called by the content step's final response, BEFORE it deletes the
+	 * failures transient. Until now that delete was the only thing that
+	 * happened to the list: the import reported "Congrats, your demo has
+	 * been imported" while every image, video, Lottie file or font the demo
+	 * host refused was simply absent -- and, because a page keeps the demo
+	 * URL when the attachment never landed, the pages went on rendering the
+	 * demo server's copy until that server moved and they all broke at
+	 * once. An admin notice now names the files (see
+	 * OneClickImport::register_import_report_notice()).
+	 *
+	 * @return int How many files were given up on.
+	 */
+	public static function record_import_report() {
+
+		$failed = [];
+
+		foreach ( self::get_failed_attachment_entries() as $url => $entry ) {
+			if ( $entry['n'] >= self::FAILED_ATTACHMENT_ATTEMPTS ) {
+				$failed[ $url ] = $entry['why'];
+			}
+		}
+
+		if ( empty( $failed ) ) {
+			delete_option( self::LAST_IMPORT_REPORT_OPTION );
+			return 0;
+		}
+
+		// A URL is a fact worth keeping whole, a reason is a sentence: cap
+		// the row so a demo of 400 broken images cannot write a 100 KB option.
+		$failed = array_slice( $failed, 0, 200, true );
+
+		update_option(
+			self::LAST_IMPORT_REPORT_OPTION,
+			[
+				'time'         => time(),
+				'failed_media' => $failed,
+			],
+			false
+		);
+
+		return count( $failed );
+	}
+
+	/**
+	 * The last import's report, or null when it lost nothing.
+	 *
+	 * @return array|null [ 'time' => int, 'failed_media' => [ url => reason ] ].
+	 */
+	public static function get_import_report() {
+		$report = get_option( self::LAST_IMPORT_REPORT_OPTION );
+		if ( ! is_array( $report ) || empty( $report['failed_media'] ) || ! is_array( $report['failed_media'] ) ) {
+			return null;
+		}
+		return $report;
 	}
 
 	/**
@@ -775,10 +866,11 @@ class Helpers {
 	 * @since 3.2.0
 	 *
 	 * @param string $attachment_url The attachment URL that was not imported.
+	 * @param string $reason         Why, in the words of the error that refused it.
 	 *
 	 * @return void
 	 */
-	public static function set_failed_attachment_import( $attachment_url ) {
+	public static function set_failed_attachment_import( $attachment_url, $reason = '' ) {
 
 		$attachment_url = (string) $attachment_url;
 
@@ -786,12 +878,11 @@ class Helpers {
 			return;
 		}
 
-		$attempts = self::get_failed_attachment_attempts();
+		$entries = self::get_failed_attachment_entries();
+		$n       = isset( $entries[ $attachment_url ] ) ? $entries[ $attachment_url ]['n'] + 1 : 1;
 
-		$attempts[ $attachment_url ] = isset( $attempts[ $attachment_url ] )
-			? $attempts[ $attachment_url ] + 1
-			: 1;
+		$entries[ $attachment_url ] = [ 'n' => $n, 'why' => substr( (string) $reason, 0, 200 ) ];
 
-		set_transient( self::FAILED_ATTACHMENT_TRANSIENT, $attempts, HOUR_IN_SECONDS );
+		set_transient( self::FAILED_ATTACHMENT_TRANSIENT, $entries, HOUR_IN_SECONDS );
 	}
 }

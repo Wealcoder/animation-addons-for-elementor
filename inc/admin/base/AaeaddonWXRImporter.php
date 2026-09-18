@@ -2098,6 +2098,26 @@ class AaeaddonWXRImporter extends \WP_Importer
 			return new WP_Error('import_file_error', __('Zero size file downloaded', 'animation-addons-for-elementor'));
 		}
 
+		// A 200 with an HTML body is not the file: a bot-protection challenge,
+		// a soft-404 page, a login wall. Nothing below looks inside the file
+		// (wp_check_filetype() reads the extension), so left alone that page
+		// lands in the media library under an image's name and "imports"
+		// as a broken picture. Only text/html is refused -- CDNs serve real
+		// files under application/octet-stream all the time.
+		$content_type = strtolower((string) wp_remote_retrieve_header($response, 'content-type'));
+		$extension    = strtolower((string) pathinfo(wp_parse_url($url, PHP_URL_PATH) ?: '', PATHINFO_EXTENSION));
+		if (0 === strpos($content_type, 'text/html') && ! in_array($extension, array('html', 'htm', ''), true)) {
+			wp_delete_file($upload['file']);
+			return new WP_Error(
+				'import_file_error',
+				sprintf(
+					/* Translators: %s is the requested URL. */
+					__('Remote server returned a web page instead of the file for %s (bot protection or a moved file?)', 'animation-addons-for-elementor'),
+					$url
+				)
+			);
+		}
+
 		$max_size = (int) $this->max_attachment_size();
 		if (! empty($max_size) && $filesize > $max_size) {
 			wp_delete_file($upload['file']);
