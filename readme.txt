@@ -696,26 +696,32 @@ newer installed, from the plugin directory:
 
   npm install          # installs webpack, gulp, sass and the rest from package.json
   npm run build        # empties /assets/atomic, then webpack builds /assets/build
-                       # and /assets/atomic/js, and gulp compiles the SCSS and
-                       # writes every .min file
-  npm run build-win    # gulp only: /assets/src -> /assets/css and /assets/js
-  npm run start        # the same, watching for changes while developing
+                       # and /assets/atomic/js, and gulp compiles the atomic
+                       # widgets' SCSS into /assets/atomic/css and writes the
+                       # .min files there
+  npm run build-win    # gulp: /assets/src -> /assets/css and /assets/js, plus
+                       # their .min files (works on every OS despite the name;
+                       # "build-g" is the same task for a POSIX shell)
+  npm run start        # webpack and gulp in watch mode while developing
   npm run release      # both builds, then the distributable zip in /dist
 
-Where each compiled file comes from:
+Where each compiled file comes from (see webpack.config.js and gulpfile.js):
 
 * /src -- React and JavaScript for the dashboard, page importer and editor
-  bundles, compiled by webpack into /assets/build (see webpack.config.js)
+  bundles, compiled by webpack into /assets/build
 * /inc/AtomicWidgets/Widgets/<Widget>/assets/js and .../assets/scss -- the
   atomic widgets' front-end scripts and styles, bundled by webpack into
-  /assets/atomic/js and /assets/atomic/css; each .min file there is the
-  gulp minification of the file of the same name beside it
+  /assets/atomic/js and compiled by gulp into /assets/atomic/css; each .min
+  file there is the gulp minification of the file of the same name beside it
 * /inc/AtomicWidgets/assets/js/atomic-editor.js and .../js/atomic-editor/ --
   the atomic widgets' editor script, bundled by webpack into
   /assets/atomic/js/atomic-editor.js (and its .min.js by gulp)
-* /assets/src -- SCSS, compiled by gulp into /assets/css (see gulpfile.js)
-* /assets/js and /assets/js/widgets -- front-end scripts; each .min.js is the
-  build of the .js of the same name beside it
+* /assets/src/scss, /assets/src/code-snippet, /assets/src/notices -- SCSS,
+  compiled by gulp into /assets/css; each .min.css is the minification of
+  the .css of the same name beside it
+* /assets/src/js -- front-end and admin scripts, copied by gulp into
+  /assets/js (unchanged, so the .js there is readable); each .min.js is the
+  minification of the .js of the same name beside it
 
 Every npm dependency is listed in package.json. The same sources are also at
 https://github.com/Wealcoder/animation-addons-for-elementor
