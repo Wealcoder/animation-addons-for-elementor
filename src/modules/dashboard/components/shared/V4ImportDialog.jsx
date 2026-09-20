@@ -37,7 +37,9 @@ import { __, sprintf } from "@wordpress/i18n";
  *     pointing at the demo host and keep rendering from there. Ticking this
  *     copies them into the site's own library during the import
  *     (inc/admin/atomic-image-localize.php). Off by default: the import is
- *     then exactly what it was, and faster.
+ *     then exactly what it was, and faster. Lottie JSON is copied whatever
+ *     the box says — lottie-web fetches it over XHR, and a demo host without
+ *     Access-Control-Allow-Origin cannot serve it to another site at all.
  *
  * @param {boolean}  open              Dialog visibility.
  * @param {Function} setOpen           Visibility setter.
@@ -156,7 +158,7 @@ const V4ImportDialog = ({
               </span>
               <span className="text-xs text-text-secondary">
                 {__(
-                  "The template's images are linked from the demo server and display from there. Tick this to download them into your own library, so you can edit them and the site does not depend on another host. The import takes longer.",
+                  "The template's images are linked from the demo server and display from there. Tick this to download them into your own library, so you can edit them and the site does not depend on another host. The import takes longer. Lottie animation files are always copied: a browser will not load one from another site.",
                   "animation-addons-for-elementor"
                 )}
               </span>

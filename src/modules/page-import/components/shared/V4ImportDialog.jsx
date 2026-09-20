@@ -159,7 +159,8 @@ const V4ImportDialog = ({
                 The page's images are linked from the demo server and display
                 from there. Tick this to download them into your own library,
                 so you can edit them and the page does not depend on another
-                host. The import takes longer.
+                host. The import takes longer. Lottie animation files are
+                always copied: a browser will not load one from another site.
               </span>
             </span>
           </label>

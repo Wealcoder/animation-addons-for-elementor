@@ -39,6 +39,19 @@
  *    memory a single dead url would make the step spin forever, since the
  *    re-scan on every request would find it "pending" again.
  *
+ * LOTTIE JSON IS COPIED ALWAYS, checkbox or not (2026-09-20). An `<img>` can
+ * hot-link any host; a Lottie cannot. lottie-web fetches the JSON with XHR, so
+ * the host must answer with `Access-Control-Allow-Origin`, and a demo host
+ * generally does not — measured on v4sites.animation-addons.com: every Lottie
+ * on an imported page was "blocked by CORS policy" while every image beside it
+ * rendered. The customer cannot change someone else's server, and the same
+ * file under THEIR uploads is same-origin and always loads. So a remote
+ * `source_url` on an `e-aae-a-lottie` element is downloaded, checked to be a
+ * real Lottie document, written to the media library and the element pointed
+ * at the local copy. `.json` is not an allowed upload type on a stock site;
+ * the mime is allowed only around our own write of a body we have already
+ * validated, never site-wide.
+ *
  * @package Wealcoder\AnimationAddons
  */
 
@@ -58,6 +71,17 @@ class Atomic_Image_Localize {
 	/** Seconds allowed for ONE download. wp_safe_remote_get's default is 5, too short for a 2 MB hero on a slow link. */
 	const DOWNLOAD_TIMEOUT = 40;
 
+	/**
+	 * Atomic element types whose `source_url` is a Lottie JSON. The Lottie
+	 * Player child carries no source of its own — it plays its parent's.
+	 */
+	const LOTTIE_TYPES = [ 'e-aae-a-lottie' ];
+
+	const LOTTIE_PROP = 'source_url';
+
+	/** Largest Lottie JSON accepted, bytes. A real one is tens of KB; this is not an image pipeline. */
+	const LOTTIE_MAX_BYTES = 8388608;
+
 	public static function init(): void {
 		add_action( 'aaeaddon/content_import/fresh_start', [ __CLASS__, 'reset' ] ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 	}
@@ -67,9 +91,20 @@ class Atomic_Image_Localize {
 	}
 
 	/**
+	 * Whether this import also copies IMAGES (the dialog's checkbox). Lottie
+	 * files are copied regardless. Called by the importer before the first
+	 * batch; the answer rides the state so every later request agrees.
+	 */
+	public static function enable_images( bool $on ): void {
+		$state           = self::state();
+		$state['images'] = $on;
+		self::save( $state );
+	}
+
+	/**
 	 * Do as much as fits in the budget and report where things stand.
 	 *
-	 * @return array{done:bool,total:int,processed:int,downloaded:int,reused:int,failed:int,posts:int}
+	 * @return array{done:bool,total:int,processed:int,downloaded:int,reused:int,failed:int,posts:int,images:bool,lottie:int}
 	 */
 	public static function run_batch( ?float $budget = null ): array {
 		$budget = null === $budget ? (float) apply_filters( 'aae/import/localize_images/budget', self::DEFAULT_BUDGET ) : $budget; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
@@ -80,7 +115,7 @@ class Atomic_Image_Localize {
 			// First request of this import: count what there is, so the client
 			// can say "12 of 99" instead of a bare spinner. Distinct urls, since
 			// that is how many downloads there will be.
-			$state['total'] = count( self::pending_urls( $posts ) );
+			$state['total'] = count( self::pending_urls( $posts, ! empty( $state['images'] ) ) );
 		}
 
 		$deadline = microtime( true ) + $budget;
@@ -121,7 +156,7 @@ class Atomic_Image_Localize {
 	public static function localize_post( int $post_id, float $deadline, array &$state ): bool {
 		$raw = get_post_meta( $post_id, '_elementor_data', true );
 
-		if ( ! is_string( $raw ) || '' === $raw || false === strpos( $raw, '"image-src"' ) ) {
+		if ( ! is_string( $raw ) || '' === $raw || ! self::may_hold_work( $raw ) ) {
 			return true;
 		}
 
@@ -153,7 +188,7 @@ class Atomic_Image_Localize {
 			return $node;
 		}
 
-		if ( self::is_url_only_image( $node ) ) {
+		if ( ! empty( $state['images'] ) && self::is_url_only_image( $node ) ) {
 			$url = (string) $node['value']['url']['value'];
 
 			if ( isset( $state['failed'][ $url ] ) ) {
@@ -174,6 +209,30 @@ class Atomic_Image_Localize {
 			}
 
 			return $node;
+		}
+
+		if ( self::is_remote_lottie( $node ) ) {
+			$url = (string) $node['settings'][ self::LOTTIE_PROP ]['value'];
+
+			if ( ! isset( $state['failed'][ $url ] ) ) {
+				if ( microtime( true ) >= $deadline ) {
+					$stopped = true;
+					return $node;
+				}
+
+				$id = self::resolve( $url, $state, 'lottie' );
+
+				if ( $id > 0 ) {
+					$local = wp_get_attachment_url( $id );
+
+					if ( is_string( $local ) && '' !== $local ) {
+						$node['settings'][ self::LOTTIE_PROP ]['value'] = $local;
+						$changed++;
+					}
+				}
+			}
+			// Fall through: a Lottie is a CONTAINER and its children may hold
+			// images (or, in principle, another Lottie).
 		}
 
 		foreach ( $node as $key => $value ) {
@@ -197,11 +256,66 @@ class Atomic_Image_Localize {
 	}
 
 	/**
+	 * A Lottie element whose source is an absolute URL on ANOTHER host. One
+	 * already under this site's own origin is same-origin and needs nothing;
+	 * a relative or empty one is left alone too.
+	 */
+	public static function is_remote_lottie( $node ): bool {
+		if ( ! is_array( $node ) || ! isset( $node['elType'] ) || ! in_array( $node['elType'], self::LOTTIE_TYPES, true ) ) {
+			return false;
+		}
+
+		$url = $node['settings'][ self::LOTTIE_PROP ]['value'] ?? null;
+
+		if ( ! is_string( $url ) || '' === $url ) {
+			return false;
+		}
+
+		return self::is_foreign_url( $url );
+	}
+
+	public static function is_foreign_url( string $url ): bool {
+		$host = wp_parse_url( $url, PHP_URL_HOST );
+
+		if ( ! is_string( $host ) || '' === $host ) {
+			return false;
+		}
+
+		$scheme = wp_parse_url( $url, PHP_URL_SCHEME );
+
+		if ( ! in_array( strtolower( (string) $scheme ), [ 'http', 'https' ], true ) ) {
+			return false;
+		}
+
+		$own = wp_parse_url( home_url(), PHP_URL_HOST );
+
+		return ! is_string( $own ) || strtolower( $host ) !== strtolower( $own );
+	}
+
+	/**
+	 * Cheap pre-test on the raw JSON string before decoding a large document.
+	 * The Lottie type appears as `"elType":"e-aae-a-lottie"` in saved data.
+	 */
+	private static function may_hold_work( string $raw ): bool {
+		if ( false !== strpos( $raw, '"image-src"' ) ) {
+			return true;
+		}
+
+		foreach ( self::LOTTIE_TYPES as $type ) {
+			if ( false !== strpos( $raw, '"' . $type . '"' ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Attachment id for a url: this import's cache, then the hash meta
 	 * Elementor writes on every image it has ever imported, then a download.
 	 * Returns 0 on failure and records the url so it is not tried again.
 	 */
-	private static function resolve( string $url, array &$state ): int {
+	private static function resolve( string $url, array &$state, string $kind = 'image' ): int {
 		if ( isset( $state['cache'][ $url ] ) ) {
 			return (int) $state['cache'][ $url ];
 		}
@@ -212,14 +326,20 @@ class Atomic_Image_Localize {
 			$state['cache'][ $url ] = $existing;
 			$state['reused']++;
 			$state['processed']++;
+			if ( 'lottie' === $kind ) {
+				$state['lottie']++;
+			}
 			return $existing;
 		}
 
-		$id = self::download( $url );
+		$id = 'lottie' === $kind ? self::download_lottie( $url ) : self::download( $url );
 
 		if ( $id > 0 ) {
 			$state['cache'][ $url ] = $id;
 			$state['downloaded']++;
+			if ( 'lottie' === $kind ) {
+				$state['lottie']++;
+			}
 		} else {
 			$state['failed'][ $url ] = true;
 		}
@@ -262,49 +382,153 @@ class Atomic_Image_Localize {
 	}
 
 	/**
+	 * Fetch a remote Lottie JSON, prove it is one, and store it as an
+	 * attachment. Returns the attachment id, 0 on any failure.
+	 *
+	 * Not Import_Images: that refuses `.json` outright on a stock site, and it
+	 * would trust the bytes. The body is decoded and must carry the two keys
+	 * every Lottie document has (`v` — the bodymovin version — and `layers`)
+	 * before a byte is written; what is written is the validated document
+	 * re-encoded, so a file that smuggled something past the parser (a BOM, a
+	 * trailing payload) does not reach the disk.
+	 */
+	private static function download_lottie( string $url ): int {
+		$response = wp_safe_remote_get(
+			$url,
+			[
+				'timeout'             => self::DOWNLOAD_TIMEOUT,
+				'limit_response_size' => self::LOTTIE_MAX_BYTES,
+			]
+		);
+
+		if ( is_wp_error( $response ) || 200 !== (int) wp_remote_retrieve_response_code( $response ) ) {
+			return 0;
+		}
+
+		$body = wp_remote_retrieve_body( $response );
+
+		if ( ! is_string( $body ) || '' === $body ) {
+			return 0;
+		}
+
+		$doc = json_decode( $body, true );
+
+		if ( ! is_array( $doc ) || ! isset( $doc['v'], $doc['layers'] ) || ! is_array( $doc['layers'] ) ) {
+			return 0;
+		}
+
+		$name = sanitize_file_name( wp_basename( (string) wp_parse_url( $url, PHP_URL_PATH ) ) );
+		$name = preg_replace( '/\.[^.]*$/', '', (string) $name );
+		$name = ( '' === $name ? 'lottie' : $name ) . '.json';
+
+		$allow_json = static function ( $mimes ) {
+			$mimes['json'] = 'application/json';
+			return $mimes;
+		};
+
+		add_filter( 'upload_mimes', $allow_json, 100 );
+		$upload = wp_upload_bits( $name, null, wp_json_encode( $doc ) );
+		remove_filter( 'upload_mimes', $allow_json, 100 );
+
+		if ( ! is_array( $upload ) || ! empty( $upload['error'] ) || empty( $upload['file'] ) ) {
+			return 0;
+		}
+
+		$attachment_id = wp_insert_attachment(
+			[
+				'post_mime_type' => 'application/json',
+				'post_title'     => preg_replace( '/\.json$/', '', $name ),
+				'post_content'   => '',
+				'post_status'    => 'inherit',
+				'guid'           => $upload['url'],
+			],
+			$upload['file']
+		);
+
+		if ( ! $attachment_id || is_wp_error( $attachment_id ) ) {
+			wp_delete_file( $upload['file'] );
+			return 0;
+		}
+
+		// Same meta Elementor writes on every image it imports, so the dedupe
+		// in find_by_hash() covers both kinds with one lookup.
+		update_post_meta( $attachment_id, '_elementor_source_image_hash', sha1( $url ) );
+		update_post_meta( $attachment_id, '_aaeaddon_source_url', esc_url_raw( $url ) );
+
+		return (int) $attachment_id;
+	}
+
+	/**
 	 * Distinct url-only image urls across the given posts. Used once, for the
 	 * total; the batch itself re-scans lazily.
 	 */
-	public static function pending_urls( array $posts ): array {
+	public static function pending_urls( array $posts, bool $images = true ): array {
 		$urls = [];
 
 		foreach ( $posts as $post_id ) {
 			$raw = get_post_meta( (int) $post_id, '_elementor_data', true );
 
-			if ( ! is_string( $raw ) || false === strpos( $raw, '"image-src"' ) ) {
+			if ( ! is_string( $raw ) || ! self::may_hold_work( $raw ) ) {
 				continue;
 			}
 
 			$tree = json_decode( $raw, true );
 
 			if ( is_array( $tree ) ) {
-				self::collect_urls( $tree, $urls );
+				self::collect_urls( $tree, $urls, $images );
 			}
 		}
 
 		return array_keys( $urls );
 	}
 
-	private static function collect_urls( array $node, array &$urls ): void {
-		if ( self::is_url_only_image( $node ) ) {
+	private static function collect_urls( array $node, array &$urls, bool $images ): void {
+		if ( $images && self::is_url_only_image( $node ) ) {
 			$urls[ (string) $node['value']['url']['value'] ] = true;
 			return;
 		}
 
+		if ( self::is_remote_lottie( $node ) ) {
+			$urls[ (string) $node['settings'][ self::LOTTIE_PROP ]['value'] ] = true;
+		}
+
 		foreach ( $node as $value ) {
 			if ( is_array( $value ) ) {
-				self::collect_urls( $value, $urls );
+				self::collect_urls( $value, $urls, $images );
 			}
 		}
 	}
 
 	public static function describe( array $summary ): string {
+		if ( empty( $summary['images'] ) ) {
+			// Only Lottie files were in scope. Say so; "0 images downloaded"
+			// would read as the checkbox having failed.
+			$text = sprintf(
+				/* translators: 1: Lottie files copied, 2: pages updated */
+				esc_html__( 'Lottie animations copied to the media library: %1$d files, %2$d pages updated', 'animation-addons-for-elementor' ),
+				$summary['lottie'],
+				$summary['posts']
+			);
+
+			if ( $summary['failed'] ) {
+				/* translators: %d: number of Lottie files that could not be downloaded */
+				$text .= sprintf( esc_html__( ', %d could not be downloaded and stay linked', 'animation-addons-for-elementor' ), $summary['failed'] );
+			}
+
+			return $text;
+		}
+
 		$text = sprintf(
 			/* translators: 1: downloaded count, 2: posts updated */
 			esc_html__( 'Images copied to the media library: %1$d downloaded, %2$d pages updated', 'animation-addons-for-elementor' ),
 			$summary['downloaded'],
 			$summary['posts']
 		);
+
+		if ( $summary['lottie'] ) {
+			/* translators: %d: number of Lottie animation files among the downloads */
+			$text .= sprintf( esc_html__( ' (%d of them Lottie animations)', 'animation-addons-for-elementor' ), $summary['lottie'] );
+		}
 
 		if ( $summary['reused'] ) {
 			/* translators: %d: number of images already in the library */
@@ -320,6 +544,15 @@ class Atomic_Image_Localize {
 	}
 
 	public static function progress_message( array $summary ): string {
+		if ( empty( $summary['images'] ) ) {
+			return sprintf(
+				/* translators: 1: files done, 2: files total */
+				esc_html__( 'Copying Lottie animations to the media library (%1$d of %2$d)', 'animation-addons-for-elementor' ),
+				$summary['processed'],
+				$summary['total']
+			);
+		}
+
 		return sprintf(
 			/* translators: 1: images done, 2: images total */
 			esc_html__( 'Copying images to the media library (%1$d of %2$d)', 'animation-addons-for-elementor' ),
@@ -343,6 +576,8 @@ class Atomic_Image_Localize {
 				'cache'         => [],
 				'posts_changed' => [],
 				'posts'         => 0,
+				'images'        => true,
+				'lottie'        => 0,
 			],
 			$state
 		);
@@ -361,6 +596,8 @@ class Atomic_Image_Localize {
 			'reused'     => (int) $state['reused'],
 			'failed'     => count( $state['failed'] ),
 			'posts'      => (int) $state['posts'],
+			'images'     => ! empty( $state['images'] ),
+			'lottie'     => (int) $state['lottie'],
 		];
 	}
 }

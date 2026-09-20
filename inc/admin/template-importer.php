@@ -356,21 +356,26 @@ class Aaeaddon_Template_Importer {
 					Helpers::set_import_state( $msg);
 				}
 				$this->update_blog_and_homepage_options($template_data);
-				// V4 only, and only when the user ticked it in the import dialog:
-				// copy url-shaped atomic images into the media library. Its own
-				// repeating step, because it is one download per image against
-				// a remote host and does not fit in one request. See
-				// Atomic_Image_Localize.
-				$wants_images = ! empty( $template_data['aae_localize_images'] )
-					&& isset( $template_data['builder_version'] ) && 'v4' === (string) $template_data['builder_version']
+				// V4 only: copy remote media into the media library. Its own
+				// repeating step, because it is one download per file against a
+				// remote host and does not fit in one request. IMAGES only when
+				// the user ticked it in the import dialog; LOTTIE JSON always —
+				// a hot-linked Lottie is blocked by the browser's CORS check on
+				// any host that does not opt in, and the demo host does not.
+				// See Atomic_Image_Localize.
+				$is_v4 = isset( $template_data['builder_version'] ) && 'v4' === (string) $template_data['builder_version']
 					&& class_exists( '\Wealcoder\AnimationAddons\Admin\Base\Atomic_Image_Localize' );
-				if ( $wants_images ) {
+				if ( $is_v4 ) {
+					$wants_images = ! empty( $template_data['aae_localize_images'] );
+					\Wealcoder\AnimationAddons\Admin\Base\Atomic_Image_Localize::enable_images( $wants_images );
 					// Keep this step's summary (design system, V3 switch-off): the
-					// image step appends its own to it when it finishes.
+					// media step appends its own to it when it finishes.
 					$template_data['aae_import_summary'] = $msg;
 					$template_data['next_step']          = 'localize-images';
 					$progress                            = '95';
-					$msg                                 = esc_html__( 'Copying images to the media library', 'animation-addons-for-elementor' );
+					$msg                                 = $wants_images
+						? esc_html__( 'Copying images to the media library', 'animation-addons-for-elementor' )
+						: esc_html__( 'Copying Lottie animations to the media library', 'animation-addons-for-elementor' );
 					Helpers::set_import_state( $msg );
 				}
 				do_action('aaeaddon/starter-template/import/step/metasettings'); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Established plugin hook (slash-namespaced); kept for backward compatibility.
