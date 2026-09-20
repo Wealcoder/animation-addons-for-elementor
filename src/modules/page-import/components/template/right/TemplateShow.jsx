@@ -6,7 +6,12 @@ import { useActivate, useTNavigation } from "C/hooks/app.hooks";
 import { cn } from "C/lib/utils";
 import { Dot, Heart } from "lucide-react";
 import { useState } from "react";
-import { RiDownloadLine, RiEyeLine, RiVipCrown2Fill } from "react-icons/ri";
+import {
+  RiDownloadLine,
+  RiEyeLine,
+  RiSparkling2Fill,
+  RiVipCrown2Fill,
+} from "react-icons/ri";
 import {
   TooltipProvider,
   Tooltip,
@@ -18,6 +23,7 @@ import {
   ATOMIC_IMPORT_AVAILABLE,
   PAGE_MODE_KEEP,
   fetchAtomicImportStatus,
+  isAnimatedTemplate,
   isV4Template,
   LOCALIZE_IMAGES_PARAM,
 } from "C/lib/atomicImport";
@@ -147,15 +153,28 @@ const TemplateShow = ({ allTemplate }) => {
                   ) : (
                     ""
                   )}
-                  {/* Only V4 is badged; V3 is what every page has been until now. */}
-                  {isV4Template(template) && (
-                    <div className="absolute top-2.5 left-2.5">
-                      <Badge
-                        data-aae-v4-badge
-                        className="border-0 h-[26px] px-2.5 text-sm font-medium bg-[#5453FD] text-white rounded-full"
-                      >
-                        V4
-                      </Badge>
+                  {/* Only V4 is badged; V3 is what every page has been until now.
+                      "Animated" beside it is the server's is_animated flag. */}
+                  {(isV4Template(template) || isAnimatedTemplate(template)) && (
+                    <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
+                      {isV4Template(template) && (
+                        <Badge
+                          data-aae-v4-badge
+                          className="border-0 h-[26px] px-2.5 text-sm font-medium bg-[#5453FD] text-white rounded-full"
+                        >
+                          V4
+                        </Badge>
+                      )}
+                      {isAnimatedTemplate(template) && (
+                        <Badge
+                          data-aae-animated-badge
+                          title="Built with Animation Addons effects"
+                          className="border-0 h-[26px] ps-2 pe-2.5 text-sm font-medium bg-[#0FB981] text-white rounded-full gap-1"
+                        >
+                          <RiSparkling2Fill size={13} aria-hidden="true" />
+                          Animated
+                        </Badge>
+                      )}
                     </div>
                   )}
                   <div className="w-full h-full hidden group-hover:flex justify-center items-center gap-2">

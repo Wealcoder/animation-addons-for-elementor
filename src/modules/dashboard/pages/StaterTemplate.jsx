@@ -23,6 +23,8 @@ const StaterTemplate = () => {
   const [hasReachedBottom, setHasReachedBottom] = useState(false);
   const [metaData, setMetaData] = useState({
     searchKey: "",
+    // No builder filter on first load: the template server lists every
+    // template, V4 ones FIRST, then V3 in its sort order.
     filterData: {},
     pageNum: 1,
     tempSelectedCategory: [],

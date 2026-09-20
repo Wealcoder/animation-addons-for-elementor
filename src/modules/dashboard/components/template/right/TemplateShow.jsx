@@ -16,9 +16,11 @@ import V4ImportDialog from "@/components/shared/V4ImportDialog";
 import {
   ATOMIC_IMPORT_AVAILABLE,
   fetchAtomicImportStatus,
+  isAnimatedTemplate,
   isV4Template,
   LOCALIZE_IMAGES_PARAM,
 } from "@/lib/atomicImport";
+import { RiSparkling2Fill } from "react-icons/ri";
 import { __ } from "@wordpress/i18n";
 
 const TemplateShow = ({ allTemplate, metaData, setMetaData }) => {
@@ -144,15 +146,29 @@ const TemplateShow = ({ allTemplate, metaData, setMetaData }) => {
                     </Badge>
                   </div>
                   {/* Only V4 is badged. V3 is what every template has been
-                      until now, and a "V3" mark on 960 cards would say nothing. */}
-                  {isV4Template(template) && (
-                    <div className="absolute top-2.5 left-2.5">
-                      <Badge
-                        data-aae-v4-badge
-                        className="px-2.5 rounded-[4px] bg-[#5453FD] h-6 uppercase text-white border-none text-sm font-bold"
-                      >
-                        V4
-                      </Badge>
+                      until now, and a "V3" mark on 960 cards would say nothing.
+                      "Animated" sits beside it: the server's is_animated flag,
+                      i.e. the demo was built with AAE effects. */}
+                  {(isV4Template(template) || isAnimatedTemplate(template)) && (
+                    <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
+                      {isV4Template(template) && (
+                        <Badge
+                          data-aae-v4-badge
+                          className="px-2.5 rounded-[4px] bg-[#5453FD] h-6 uppercase text-white border-none text-sm font-bold"
+                        >
+                          V4
+                        </Badge>
+                      )}
+                      {isAnimatedTemplate(template) && (
+                        <Badge
+                          data-aae-animated-badge
+                          title={__("Built with Animation Addons effects", "animation-addons-for-elementor")}
+                          className="px-2 rounded-[4px] bg-[#0FB981] h-6 uppercase text-white border-none text-sm font-bold gap-1"
+                        >
+                          <RiSparkling2Fill size={13} aria-hidden="true" />
+                          {__("Animated", "animation-addons-for-elementor")}
+                        </Badge>
+                      )}
                     </div>
                   )}
 

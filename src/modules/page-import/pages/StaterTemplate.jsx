@@ -22,6 +22,7 @@ const StaterTemplate = () => {
   const [loading, setLoading] = useState(true);
   const [types, setTypes] = useState([]);
   const [license, setLicense] = useState("");
+  // "" = every page; the template server lists V4 pages first.
   const [builder, setBuilder] = useState("");
   const [selectedCategory, setSelectedCategory] = useState([]);
   const [openSidebar, setOpenSidebar] = useState(false);

@@ -26,6 +26,14 @@ export const ATOMIC_IMPORT_AVAILABLE = !!(
 export const isV4Template = (template) => template?.builder_version === "v4";
 
 /**
+ * `is_animated` is the template server's "this demo carries AAE animations"
+ * flag (an ACF true/false on both post types). It arrives as a real boolean,
+ * and a template saved before the field existed arrives `false`, so only a
+ * strict `true` earns the badge — never a truthy string.
+ */
+export const isAnimatedTemplate = (template) => template?.is_animated === true;
+
+/**
  * URL param that carries the "copy images into my media library" choice from
  * the V4 dialog through Required Features and Demo Importing, where it becomes
  * `aae_localize_images` on the importer request. Off by default: the import is
