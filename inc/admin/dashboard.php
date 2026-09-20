@@ -638,14 +638,21 @@ class Aaeaddon_Admin_Init
 
 		// Check if we are on the correct admin page
 		if ($screen && strpos($screen->id, '_page_aaeaddon_settings') !== false) {
-			echo '<div id="wcf-admin-toast"></div>';
+			echo '<div id="wcf-admin-toast" class="notranslate" translate="no"></div>';
 		}
 	}
 
 	public function plugin_dashboard_entry_page()
 	{
+		// translate="no" + .notranslate: Chrome's page translation rewrites text
+		// nodes in place (it wraps them in <font>), and React then throws
+		// "Failed to execute 'removeChild' on 'Node'" on its next commit and
+		// unmounts the whole tree -- a blank dashboard. Seen on a WPML site whose
+		// admin <html lang> is not English while this UI is: Chrome offers to
+		// translate, and once it has, the first tab switch blanks the page. The
+		// attribute is what Google documents for opting a subtree out.
 ?>
-		<div class="wrap wcf-admin-wrapper" id="wcf-admin-ds-cr-js"></div>
+		<div class="wrap wcf-admin-wrapper notranslate" id="wcf-admin-ds-cr-js" translate="no"></div>
 <?php
 	}
 

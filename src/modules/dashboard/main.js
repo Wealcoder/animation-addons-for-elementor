@@ -2,6 +2,7 @@ import { Toaster } from "./components/ui/sonner";
 import { AppContextProvider } from "./context/app.context";
 import "./index.css";
 import MainLayout from "./layouts/MainLayout";
+import AppErrorBoundary from "./components/shared/AppErrorBoundary";
 
 document.addEventListener("DOMContentLoaded", function () {
    // Your code to run after the DOM is fully loaded 
@@ -9,9 +10,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
    
 wp.element.render(
-  <AppContextProvider>
-    <MainLayout />
-  </AppContextProvider>,
+  <AppErrorBoundary>
+    <AppContextProvider>
+      <MainLayout />
+    </AppContextProvider>
+  </AppErrorBoundary>,
   document.getElementById("wcf-admin-ds-cr-js")
 );
 

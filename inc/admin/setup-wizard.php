@@ -216,7 +216,8 @@ class Aaeaddon_Setup_Wizard_Init
 	public function render_wizard()
 	{
 ?>
-		<div class="wrap wcf-admin-wrapper" id="wcf-animation-addon-wizard">
+		<?php // translate="no": see plugin_dashboard_entry_page() in dashboard.php -- browser page translation blanks a React tree. ?>
+		<div class="wrap wcf-admin-wrapper notranslate" id="wcf-animation-addon-wizard" translate="no">
 		</div>
 <?php
 	}

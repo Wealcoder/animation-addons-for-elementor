@@ -9,10 +9,9 @@ if ( ! function_exists( 'aaeaddon_get_saved_template_list' ) ) :
 	 * Every Elementor library template, as id => title, for a widget's
 	 * template picker.
 	 *
-	 * Renamed from its `wcf_addons_` spelling in 4.2.0. The old name is
-	 * declared by the paid add-on (inc/Compat/legacy-functions.php
-	 * there, since Pro 4.3) and by nothing here — the released add-on calls it
-	 * on seven lines, so that add-on must be updated together with this one.
+	 * Renamed from its `wcf_addons_` spelling in 4.2.0. The old name is a
+	 * temporary shim right below (the released add-on calls it on seven lines);
+	 * see that shim's docblock for when it goes.
 	 *
 	 * @since 4.2.0
 	 *
@@ -63,58 +62,26 @@ endif;
 
 if ( ! function_exists( 'wcf_addons_get_saved_template_list' ) ) :
 	/**
-	 * Every Elementor library template, as id => title, for a widget's
-	 * template picker.
+	 * Pre-4.2 name of aaeaddon_get_saved_template_list() -- COMPATIBILITY SHIM.
 	 *
-	 * Renamed from its `wcf_addons_` spelling in 4.2.0. The old name is
-	 * declared by the paid add-on (inc/Compat/legacy-functions.php
-	 * there, since Pro 4.3) and by nothing here — the released add-on calls it
-	 * on seven lines, so that add-on must be updated together with this one.
+	 * The RELEASED paid add-on (Pro <= 4.2.x) calls this name on seven lines
+	 * with no function_exists() guard, and free 4.2.1 reached WordPress.org on
+	 * 2026-09-17 without it -- so every Pro site that auto-updated free before
+	 * updating Pro hit a fatal. Kept here for that pairing (decision
+	 * 2026-09-20). Pro 4.3+ carries its own guarded copy in
+	 * inc/Compat/legacy-functions.php; this one loads first (plugins_loaded 10)
+	 * and wins, the add-on's stands down.
 	 *
-	 * @since 4.2.0
+	 * REMOVE five releases after 4.2.2, once the Pro base has moved. Nothing in
+	 * free may call it -- new code uses the aaeaddon_ name.
+	 *
+	 * @since 4.2.2
 	 *
 	 * @param array|null $args Optional `get_posts()` overrides.
 	 * @return array<int,string>
 	 */
 	function wcf_addons_get_saved_template_list( $args = null ) {
-
-		static $cache = null;
-
-		if ( $cache !== null ) {
-			return $cache;
-		}
-
-		$post_list = array();
-
-		if ( ! current_user_can( 'edit_posts' ) ) {
-			return $post_list;
-		}
-
-		$defaults = array(
-			'post_type'      => 'elementor_library',
-			'post_status'    => 'publish',
-			'posts_per_page' => 50, // ⚠️ avoid -1 for performance
-			'orderby'        => 'title',
-			'order'          => 'ASC',
-			'no_found_rows'  => true, // 🚀 performance boost
-		);
-
-		$parsed_args = wp_parse_args( $args, $defaults );
-
-		$parsed_args['post_type'] = 'elementor_library';
-
-		$posts = get_posts( $parsed_args );
-
-		if ( ! empty( $posts ) ) {
-			foreach ( $posts as $post ) {
-				// ⚠️ No escaping here → escape on output
-				$post_list[ $post->ID ] = $post->post_title;
-			}
-		}
-
-		$cache = $post_list;
-
-		return $post_list;
+		return aaeaddon_get_saved_template_list( $args );
 	}
 endif;
 
@@ -332,10 +299,8 @@ if ( ! function_exists( 'aaeaddon_get_settings' ) ) {
 	 * Return saved settings.
 	 *
 	 * Renamed in 4.2.0 (the `aaeaddon_` prefix replaced the pre-4.2 family).
-	 * The old spelling is declared by the paid add-on (inc/Compat/legacy-functions.php
-	 * there, since Pro 4.3) and by nothing here. The RELEASED add-on calls it
-	 * unguarded on its boot path, so that add-on must be updated before — or
-	 * together with — this plugin; see that file's header for the trade.
+	 * The old spelling is a temporary shim right below -- the RELEASED add-on
+	 * calls it unguarded on its boot path; see that shim's docblock.
 	 *
 	 * @since 4.2.0
 	 *
@@ -349,25 +314,27 @@ if ( ! function_exists( 'aaeaddon_get_settings' ) ) {
 	}
 }
 if ( ! function_exists( 'wcf_addons_get_settings' ) ) {
-
 	/**
-	 * Return saved settings.
+	 * Pre-4.2 name of aaeaddon_get_settings() -- COMPATIBILITY SHIM.
 	 *
-	 * Renamed in 4.2.0 (the `aaeaddon_` prefix replaced the pre-4.2 family).
-	 * The old spelling is declared by the paid add-on (inc/Compat/legacy-functions.php
-	 * there, since Pro 4.3) and by nothing here. The RELEASED add-on calls it
-	 * unguarded on its boot path, so that add-on must be updated before — or
-	 * together with — this plugin; see that file's header for the trade.
+	 * The RELEASED paid add-on (Pro <= 4.2.x) calls this name unguarded on 16
+	 * lines, the first at include time (inc/live-event-handler.php:8), so a
+	 * free without it takes every such site down on every request. Free 4.2.1
+	 * shipped to WordPress.org on 2026-09-17 without it; kept here from 4.2.2
+	 * (decision 2026-09-20). Pro 4.3+ carries its own guarded copy in
+	 * inc/Compat/legacy-functions.php; this one loads first and wins.
 	 *
-	 * @since 4.2.0
+	 * REMOVE five releases after 4.2.2, once the Pro base has moved. Nothing in
+	 * free may call it -- new code uses the aaeaddon_ name.
+	 *
+	 * @since 4.2.2
 	 *
 	 * @param string      $option_name Option to read.
 	 * @param string|null $element     Single key to return, or null for every truthy key.
 	 * @return mixed
 	 */
 	function wcf_addons_get_settings( $option_name, $element = null ) {
-		$elements = get_option( $option_name );
-		return ( isset( $element ) ? ( isset( $elements[ $element ] ) ? $elements[ $element ] : 0 ) : array_keys( array_filter( $elements ) ) );
+		return aaeaddon_get_settings( $option_name, $element );
 	}
 }
 

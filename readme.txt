@@ -5,7 +5,7 @@ Tags: animation, elementor, elementor addons, elementor templates, elementor wid
 Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 4.2.1
+Stable tag: 4.2.2
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -734,6 +734,14 @@ upstream, so their projects are the source:
 * Select2 4.1.0 (admin select control) -- https://github.com/select2/select2
 
 == Changelog ==
+
+= 🌀 Animation Addons for Elementor v4.2.2 – 20th September 2026 =
+
+  - **Fixed:** A site running Animation Addons Pro 4.2 or older produced a fatal error on every page once this plugin updated to 4.2.1 — the add-on calls two helper functions by their previous names. Both names are back, as compatibility wrappers, and stay for the next five releases; update the Pro add-on when its update is offered.
+  - **Fixed:** On a multilingual (WPML) site the dashboard could go blank when switching to the Legacy (V3) list. The browser's page translation was rewriting the dashboard's text while it updated; the dashboard now opts out of page translation, and if anything else ever interrupts it, it shows a message with a Reload button instead of an empty page.
+  - **Fixed:** The form tables are no longer re-created on a site where they already exist — a database reset that kept the plugin's tables logged `Table 'wp_aae_forms' already exists` on the next page load. Each table is now checked first; an existing one is only brought up to date.
+  - **Fixed:** A starter-template import now reports which files it could not download instead of finishing as if nothing had gone wrong, and no longer loses an import's progress in three cases where it silently did.
+  - **Changed:** The build now empties its output folder first, so a compiled file whose source has been removed can never ship again; two unused preset stylesheets were removed on the same rule. The Source Code section of this readme names the source of every compiled file and the exact build commands.
 
 = 🌀 Animation Addons for Elementor v4.2.1 – 17th September 2026 =
 

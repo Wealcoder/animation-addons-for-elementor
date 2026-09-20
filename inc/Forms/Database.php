@@ -79,7 +79,8 @@ final class Database {
 		$forms           = self::forms_table();
 		$schemas         = self::schemas_table();
 
-		dbDelta(
+		self::ensure_table(
+			$forms,
 			"CREATE TABLE {$forms} (
 			id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 			form_key VARCHAR(64) NOT NULL,
@@ -94,7 +95,8 @@ final class Database {
 		) {$charset_collate};"
 		);
 
-		dbDelta(
+		self::ensure_table(
+			$schemas,
 			"CREATE TABLE {$schemas} (
 			id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 			form_id BIGINT UNSIGNED NOT NULL,
@@ -117,7 +119,8 @@ final class Database {
 		$jobs        = self::action_jobs_table();
 		$logs        = self::action_logs_table();
 
-		dbDelta(
+		self::ensure_table(
+			$submissions,
 			"CREATE TABLE {$submissions} (
 			id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 			form_id BIGINT UNSIGNED NOT NULL,
@@ -138,7 +141,8 @@ final class Database {
 		) {$charset_collate};"
 		);
 
-		dbDelta(
+		self::ensure_table(
+			$values,
 			"CREATE TABLE {$values} (
 			id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 			submission_id BIGINT UNSIGNED NOT NULL,
@@ -153,7 +157,8 @@ final class Database {
 		) {$charset_collate};"
 		);
 
-		dbDelta(
+		self::ensure_table(
+			$jobs,
 			"CREATE TABLE {$jobs} (
 			id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 			submission_id BIGINT UNSIGNED NOT NULL,
@@ -170,7 +175,8 @@ final class Database {
 		) {$charset_collate};"
 		);
 
-		dbDelta(
+		self::ensure_table(
+			$logs,
 			"CREATE TABLE {$logs} (
 			id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 			job_id BIGINT UNSIGNED NOT NULL DEFAULT 0,
@@ -191,7 +197,8 @@ final class Database {
 
 		$attachments = self::attachments_table();
 
-		dbDelta(
+		self::ensure_table(
+			$attachments,
 			"CREATE TABLE {$attachments} (
 			id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 			form_key VARCHAR(64) NOT NULL,
@@ -212,7 +219,57 @@ final class Database {
 		) {$charset_collate};"
 		);
 
+		// Record the version only when every table is really there: a creation
+		// that failed (privileges, a half-finished reset) is retried on the next
+		// request instead of being remembered as done.
+		foreach ( self::tables() as $table ) {
+			if ( ! self::table_exists( $table ) ) {
+				return;
+			}
+		}
+
 		update_option( self::OPTION_KEY, self::DB_VERSION );
+	}
+
+	/** Every table this class owns, prefixed. */
+	public static function tables(): array {
+		return array(
+			self::forms_table(),
+			self::schemas_table(),
+			self::submissions_table(),
+			self::submission_values_table(),
+			self::action_jobs_table(),
+			self::action_logs_table(),
+			self::attachments_table(),
+		);
+	}
+
+	/** Does this table exist right now? One SHOW TABLES LIKE, no cache. */
+	public static function table_exists( string $table ): bool {
+		global $wpdb;
+		return $table === $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $table ) ) );
+	}
+
+	/**
+	 * Create the table, or bring an existing one up to the definition.
+	 *
+	 * dbDelta() decides "exists" from a DESCRIBE, and when that comes back empty
+	 * for a table SHOW TABLES does list -- seen after a WP Reset that kept the
+	 * custom tables and wiped the version option -- it issues the CREATE and the
+	 * page logs "Table 'wp_aae_forms' already exists". So the existence check is
+	 * made here, first, with a different query: an existing table gets dbDelta's
+	 * ALTER pass (column upgrades still land) with errors suppressed, because the
+	 * only error a CREATE can raise against a table that is known to exist is
+	 * that one; a missing table gets the CREATE with errors visible, since a
+	 * failure there is real and the version option is then left unwritten.
+	 */
+	private static function ensure_table( string $table, string $sql ): void {
+		global $wpdb;
+
+		$exists   = self::table_exists( $table );
+		$suppress = $wpdb->suppress_errors( $exists );
+		dbDelta( $sql );
+		$wpdb->suppress_errors( $suppress );
 	}
 
 	/**

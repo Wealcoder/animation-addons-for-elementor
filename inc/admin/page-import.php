@@ -129,7 +129,8 @@ final class Aaeaddon_Admin_Page_Importer
 
     function page_html()
     {
-        echo '<div id="aaeaddon-page-importer"></div>';
+        // translate="no": see plugin_dashboard_entry_page() in dashboard.php.
+        echo '<div id="aaeaddon-page-importer" class="notranslate" translate="no"></div>';
     }
 
     /** Load JS only on the screens we care about */
