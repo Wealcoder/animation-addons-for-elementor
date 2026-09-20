@@ -106,9 +106,9 @@
     "watch-g": "NODE_ENV=development gulp watch",
     "build-win": "gulp build --production",
     "watch-win": "gulp watch --development",
-    "build": "wp-scripts build && gulp minify:atomic-js && gulp compile:atomic-scss && gulp copy:atomic-images && gulp minify:atomic-css",
+    "build": "gulp clean:atomic && wp-scripts build && gulp minify:atomic-js && gulp compile:atomic-scss && gulp copy:atomic-images && gulp minify:atomic-css",
     "production": "gulp zip",
-    "release": "npm run build-win && npm run production",
+    "release": "npm run build && npm run build-win && npm run production",
     "start": "concurrently -n webpack,gulp -c blue,green \"wp-scripts start\" \"gulp buildCss && gulp watch\"",
     "i18n": "wp i18n make-pot ."
   },
@@ -116,7 +116,7 @@
   "license": "GPL-2.0-or-later",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Wealcoder/wcf-addons.git"
+    "url": "git+https://github.com/Wealcoder/animation-addons-for-elementor.git"
   },
   "keywords": [
     "elementor",

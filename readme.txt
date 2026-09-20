@@ -690,11 +690,19 @@ your site. Both go only where you configure them.
 == Source Code ==
 
 Every compiled file ships with its human-readable source inside the plugin, and
-the build tooling ships too, so the build can be reproduced from the plugin as
-distributed:
+the build tooling ships too (package.json, webpack.config.js, gulpfile.js), so
+the build can be reproduced from the plugin as distributed. With Node.js 18 or
+newer installed, from the plugin directory:
 
-  npm install
-  npm run build
+  npm install          # installs webpack, gulp, sass and the rest from package.json
+  npm run build        # empties /assets/atomic, then webpack builds /assets/build
+                       # and /assets/atomic/js, and gulp compiles the SCSS and
+                       # writes every .min file
+  npm run build-win    # gulp only: /assets/src -> /assets/css and /assets/js
+  npm run start        # the same, watching for changes while developing
+  npm run release      # both builds, then the distributable zip in /dist
+
+Where each compiled file comes from:
 
 * /src -- React and JavaScript for the dashboard, page importer and editor
   bundles, compiled by webpack into /assets/build (see webpack.config.js)

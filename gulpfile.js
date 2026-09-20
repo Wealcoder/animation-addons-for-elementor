@@ -91,6 +91,23 @@ gulp.task('minify:css', function () {
 // already been declared" on the frontend. (The old `compile:atomic-js` task did
 // exactly that and was removed 2026-07-20.)
 
+// assets/atomic/ is a BUILD OUTPUT (gitignored) that nothing ever emptied:
+// webpack writes its `../atomic/js/*` entries outside its own output.path, so
+// @wordpress/scripts' CleanWebpackPlugin never touches them, and the gulp
+// tasks below only ever add. So a widget that moved to Pro or was renamed
+// left its old bundle on the build machine's disk, and `gulp zip` packed the
+// disk -- the 4.2.1 review found btn-pro.js, button-pro.js and
+// toggle-switcher-main.js in the package with no source anywhere in it.
+// Emptying the directory first makes the package exactly the current
+// sources' outputs, on every machine.
+gulp.task('clean:atomic', (done) => {
+    const fs = require('fs');
+    for (const dir of ['assets/atomic/js', 'assets/atomic/css', 'assets/atomic/images']) {
+        fs.rmSync(dir, {recursive: true, force: true});
+    }
+    done();
+});
+
 gulp.task('minify:atomic-js', () => {
     return gulp.src([
         'assets/atomic/js/**/*.js',
