@@ -702,6 +702,9 @@ distributed:
   atomic widgets' front-end scripts and styles, bundled by webpack into
   /assets/atomic/js and /assets/atomic/css; each .min file there is the
   gulp minification of the file of the same name beside it
+* /inc/AtomicWidgets/assets/js/atomic-editor.js and .../js/atomic-editor/ --
+  the atomic widgets' editor script, bundled by webpack into
+  /assets/atomic/js/atomic-editor.js (and its .min.js by gulp)
 * /assets/src -- SCSS, compiled by gulp into /assets/css (see gulpfile.js)
 * /assets/js and /assets/js/widgets -- front-end scripts; each .min.js is the
   build of the .js of the same name beside it
