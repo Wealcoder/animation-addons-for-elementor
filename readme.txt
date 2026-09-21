@@ -5,7 +5,7 @@ Tags: animation, elementor, elementor addons, elementor templates, elementor wid
 Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 4.2.2
+Stable tag: 4.2.3
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -734,6 +734,12 @@ upstream, so their projects are the source:
 * Select2 4.1.0 (admin select control) -- https://github.com/select2/select2
 
 == Changelog ==
+
+= 🌀 Animation Addons for Elementor v4.2.3 – unreleased =
+
+  - **Added:** The Loop Filter's Field and Date widgets can filter by a custom field another plugin owns (Animation Addons Pro's Custom Fields): the authoriser asks through a new `aaeaddon/loop_grid/resolve_meta_source` filter, and a source nothing answers for declares nothing.
+  - **Added:** A preset can require an Animation Addons field group (`aae_groups` in its requires block), shown as "Field group" in the Install dialog; the Pro add-on reports whether the group is present and installs it.
+  - **Added:** Two extension cards for the Pro add-on's admin modules — **Custom Fields** and **AI & Connections** — on both the Elementor V3 and V4 (Atomic) extension lists, so each can be switched off from the dashboard like Custom Fonts or Code Snippet. Both arrive switched on; the Pro add-on reads the two toggles as an OR.
 
 = 🌀 Animation Addons for Elementor v4.2.2 – 20th September 2026 =
 

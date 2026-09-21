@@ -142,6 +142,10 @@ final class Atomic
 		'custom-cpt',
 		'custom-icon',
 		'code-snippet',
+		// Pro-owned: the OR gate is Pro's (Fields\Bootstrap / Platform\Bootstrap
+		// ::enabled()); free only carries the two cards.
+		'custom-fields',
+		'ai-connections',
 	];
 
 	/**

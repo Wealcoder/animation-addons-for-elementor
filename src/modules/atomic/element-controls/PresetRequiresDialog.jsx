@@ -64,6 +64,7 @@ const KIND_LABEL = {
   post_types: "Post type",
   taxonomies: "Taxonomy",
   acf_groups: "Field group",
+  aae_groups: "Field group",
 };
 
 /**

@@ -511,4 +511,47 @@ return [
 				'demo_url'     => 'https://animation-addons.com/docs/general-extensions/code-snippet/',
 				'doc_url'      => 'https://animation-addons.com/docs/general-extensions/code-snippet/',
 			],
+
+			/*
+			 * The two PRO admin modules (Custom Fields, AI & Connections). Same
+			 * shape as the four above — a card on BOTH dashboards, loaded on an
+			 * OR of the two toggles — but the gate lives in the Pro plugin
+			 * (Fields\Bootstrap::enabled(), Platform\Bootstrap::enabled()), the
+			 * only place the modules exist. `default` is TRUE here, unlike the
+			 * four above: these have no v3 history to copy and shipped switched
+			 * on, so migrate_newly_offered_extensions() keeps them on across the
+			 * update that introduces the cards — otherwise every site loses its
+			 * Custom Fields menu the day it updates.
+			 */
+			'custom-fields' => [
+				'label'        => 'Custom Fields',
+				'usage_prop'   => false,
+				'description'  => 'Build field groups for any post type, taxonomy, user or options page — dynamic tags, Loop Filter sources and selling entries through WooCommerce included.',
+				'icon'         => 'wcf-icon-Dynamic-Tags',
+				'is_pro'       => true,
+				'is_extension' => true,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => ['custom fields', 'field group', 'meta box', 'acf', 'repeater', 'options page', 'sell', 'woocommerce'],
+				'category'     => 'utility',
+				'order'        => 25,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'ai-connections' => [
+				'label'        => 'AI & Connections',
+				'usage_prop'   => false,
+				'description'  => 'Let claude.ai, ChatGPT and Claude Desktop work on this site over MCP with OAuth sign-in, and use your own AI key inside the builders.',
+				'icon'         => 'wcf-icon-Animation-Builder',
+				'is_pro'       => true,
+				'is_extension' => true,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => ['ai', 'mcp', 'claude', 'chatgpt', 'oauth', 'connections', 'assistant', 'api key'],
+				'category'     => 'utility',
+				'order'        => 26,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
 		];

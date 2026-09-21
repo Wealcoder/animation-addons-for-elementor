@@ -40,7 +40,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class Requires {
 
 	/** The only keys a requires block may carry. */
-	public const KINDS = [ 'plugins', 'post_types', 'taxonomies', 'acf_groups' ];
+	public const KINDS = [ 'plugins', 'post_types', 'taxonomies', 'acf_groups', 'aae_groups' ];
 
 	/** admin-ajax action. Free owns the door; Pro owns what is behind it. */
 	public const ACTION = 'aae_preset_requires_install';
@@ -151,6 +151,7 @@ final class Requires {
 		'post_types' => 5,
 		'taxonomies' => 10,
 		'acf_groups' => 10,
+		'aae_groups' => 10,
 	];
 
 	/**
@@ -297,6 +298,28 @@ final class Requires {
 					// ACF adds a field type.
 					'group'  => $item,
 				];
+
+			case 'aae_groups':
+				// An AAE custom-field group (Pro's Custom Fields builder). The
+				// model is an ACF-JSON superset keyed by the same `group_…`
+				// key, so the shape rule is the ACF one; Pro's importer owns
+				// the body (`aaeaddon/preset/requires/install`) and its status
+				// (`aaeaddon/preset/requires/status`). Free has no reader for
+				// it, which is why the kind carries no free-side check at all.
+				$key = (string) ( $item['key'] ?? '' );
+				if ( '' === $key || ! preg_match( '/^group_[A-Za-z0-9_]{1,60}$/', $key ) ) {
+					return null;
+				}
+				if ( empty( $item['fields'] ) || ! is_array( $item['fields'] ) ) {
+					return null;
+				}
+
+				return [
+					'kind'  => 'aae_groups',
+					'slug'  => $key,
+					'name'  => self::label( $item, $key ),
+					'group' => $item,
+				];
 		}
 
 		return null;
@@ -378,6 +401,20 @@ final class Requires {
 					return 'missing';
 				}
 				return acf_get_field_group( $item['slug'] ) ? 'ok' : 'missing';
+
+			case 'aae_groups':
+				/**
+				 * Free cannot answer for a Pro-owned record. With nothing
+				 * hooked the group is `missing`, and `installable()` says
+				 * whether a button could do anything about it.
+				 *
+				 * @since 4.2.3
+				 *
+				 * @param string $status 'ok' | 'missing'.
+				 * @param array  $item   The normalised item (kind, slug, name, group).
+				 */
+				$status = apply_filters( 'aaeaddon/preset/requires/status', 'missing', $item );
+				return 'ok' === $status ? 'ok' : 'missing';
 		}
 
 		return 'missing';

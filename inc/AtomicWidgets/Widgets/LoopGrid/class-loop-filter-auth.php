@@ -709,6 +709,34 @@ final class Loop_Filter_Auth {
 					$decl['choice_labels'][ $value ] = $label;
 				}
 			}
+		} elseif ( 'custom' !== $source ) {
+			/**
+			 * A meta source another plugin OWNS (Pro's `aae` custom fields),
+			 * resolved into the same partial declaration the ACF branch builds:
+			 * key / mode / value_type / min / max / choices / choice_labels /
+			 * multi_stored / toggle_* / open_choice. Null = nothing to declare
+			 * — an unknown source must never fall into the `custom` branch,
+			 * which would read the widget's `meta_key` for a source that has
+			 * no such field.
+			 *
+			 * @since 4.2.3
+			 *
+			 * @param array|null $ext      The partial declaration.
+			 * @param string     $source   The widget's `source` setting.
+			 * @param array      $settings The widget's settings.
+			 */
+			$ext = apply_filters( 'aaeaddon/loop_grid/resolve_meta_source', null, $source, $s );
+			if ( ! is_array( $ext ) || empty( $ext['key'] ) ) {
+				return null;
+			}
+			$decl = array_merge( $decl, $ext );
+			// Wording only, exactly as for ACF: a value the field does not
+			// know is dropped, the whitelist stays the field's.
+			foreach ( self::choice_lines( $s['choices'] ?? [] ) as $value => $label ) {
+				if ( '' !== $label && in_array( $value, (array) $decl['choices'], true ) ) {
+					$decl['choice_labels'][ $value ] = $label;
+				}
+			}
 		} else {
 			$decl['key'] = sanitize_text_field( (string) ( $s['meta_key'] ?? '' ) );
 			[ $decl['min'], $decl['max'] ] = self::authored_bounds( $s );
@@ -766,7 +794,15 @@ final class Loop_Filter_Auth {
 			$decl['key']        = $acf['key'];
 			$decl['value_type'] = $acf['value_type'];
 		} elseif ( ! in_array( $source, [ 'publish', 'modified' ], true ) ) {
-			return null;
+			// The same filter declare_meta() fires; a date needs a date-shaped
+			// stored type back, anything else declares nothing.
+			$ext = apply_filters( 'aaeaddon/loop_grid/resolve_meta_source', null, $source, $s );
+			if ( ! is_array( $ext ) || empty( $ext['key'] ) || ! in_array( (string) ( $ext['value_type'] ?? '' ), [ 'ymd', 'datetime', 'date' ], true ) ) {
+				return null;
+			}
+			$decl['source']     = 'meta';
+			$decl['key']        = (string) $ext['key'];
+			$decl['value_type'] = (string) $ext['value_type'];
 		}
 
 		if ( 'meta' === $decl['source'] && '' === $decl['key'] ) {
