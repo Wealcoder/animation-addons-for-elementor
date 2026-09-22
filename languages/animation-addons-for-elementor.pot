@@ -2,14 +2,14 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Animation Addons 4.2.2\n"
+"Project-Id-Version: Animation Addons 4.2.3\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/animation-addons-for-elementor\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-20T06:54:25+00:00\n"
+"POT-Creation-Date: 2026-09-22T08:21:22+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: animation-addons-for-elementor\n"
@@ -35,48 +35,49 @@ msgstr ""
 msgid "Wealcoder"
 msgstr ""
 
-#: animation-addons-for-elementor.php:499
+#: animation-addons-for-elementor.php:509
 msgid "Activate Elementor"
 msgstr ""
 
-#: animation-addons-for-elementor.php:502
+#: animation-addons-for-elementor.php:512
 msgid "Find Elementor"
 msgstr ""
 
-#: animation-addons-for-elementor.php:506
+#: animation-addons-for-elementor.php:516
 msgid "requires <strong>Elementor</strong> to be activated."
 msgstr ""
 
-#: animation-addons-for-elementor.php:507
+#: animation-addons-for-elementor.php:517
 msgid "requires the <strong>Elementor</strong> plugin to be installed and activated."
 msgstr ""
 
 #. translators: 1: Plugin name 2: Elementor 3: Required Elementor version
 #. translators: 1: Plugin name 2: PHP 3: Required PHP version
-#: animation-addons-for-elementor.php:597
-#: animation-addons-for-elementor.php:621
+#: animation-addons-for-elementor.php:607
+#: animation-addons-for-elementor.php:631
 #, php-format
 msgid "\"%1$s\" requires \"%2$s\" version %3$s or greater."
 msgstr ""
 
-#: animation-addons-for-elementor.php:598
-#: animation-addons-for-elementor.php:622
+#: animation-addons-for-elementor.php:608
+#: animation-addons-for-elementor.php:632
 msgid "Animation Addons for Elementor"
 msgstr ""
 
-#: animation-addons-for-elementor.php:599
+#: animation-addons-for-elementor.php:609
 msgid "Elementor"
 msgstr ""
 
-#: animation-addons-for-elementor.php:623
+#: animation-addons-for-elementor.php:633
 msgid "PHP"
 msgstr ""
 
-#: class-plugin.php:206
+#: class-plugin.php:247
 msgid "Okay"
 msgstr ""
 
-#: class-plugin.php:207
+#: class-plugin.php:248
+#: class-plugin.php:459
 #: src/modules/atomic/element-controls/FormActionsControl.jsx:1330
 #: src/modules/atomic/element-controls/FormConditionsControl.jsx:429
 #: src/modules/dashboard/components/animation-settings/FeaturePanel.jsx:420
@@ -86,7 +87,7 @@ msgstr ""
 #: src/modules/dashboard/components/performance/PerformanceWizard.jsx:157
 #: src/modules/dashboard/components/shared/BackToV3Dialog.jsx:150
 #: src/modules/dashboard/components/shared/DisableAllV3Dialog.jsx:162
-#: src/modules/dashboard/components/shared/V4ImportDialog.jsx:188
+#: src/modules/dashboard/components/shared/V4ImportDialog.jsx:190
 #: src/modules/dashboard/components/widgets/settings/LoopGridSettings.jsx:316
 #: src/modules/dashboard/components/widgets/settings/MailchimpSettings.jsx:125
 #: src/modules/dashboard/components/widgets/settings/WeatherSettings.jsx:324
@@ -96,7 +97,7 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#: class-plugin.php:208
+#: class-plugin.php:249
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-submit.php:154
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-submit.php:425
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:366
@@ -105,43 +106,135 @@ msgstr ""
 msgid "Submit"
 msgstr ""
 
-#: class-plugin.php:209
+#: class-plugin.php:250
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:320
 msgid "Success"
 msgstr ""
 
-#: class-plugin.php:210
+#: class-plugin.php:251
 msgid "Warning"
 msgstr ""
 
-#: class-plugin.php:1149
-msgid "AAE"
+#: class-plugin.php:440
+msgid "Needs Elementor V4 (atomic elements) to insert"
 msgstr ""
 
-#: class-plugin.php:1154
-msgid "AAE Header & Footer"
+#: class-plugin.php:441
+msgid "V4"
 msgstr ""
 
-#: class-plugin.php:1159
-msgid "AAE Archive"
+#: class-plugin.php:442
+#: src/modules/dashboard/components/template/right/TemplateShow.jsx:169
+msgid "Animated"
 msgstr ""
 
-#: class-plugin.php:1164
-msgid "AAE Search"
+#: class-plugin.php:443
+#: class-plugin.php:1627
+msgid "Insert"
 msgstr ""
 
-#: class-plugin.php:1169
-msgid "AAE Single"
+#: class-plugin.php:444
+#, php-format
+msgid "Switched on %s. Saving and reloading the editor to finish the insert…"
 msgstr ""
 
-#: class-plugin.php:1391
-#: class-plugin.php:1510
+#: class-plugin.php:445
+#, php-format
+msgid "This block uses widgets that are switched off on this site (%s). An administrator has to switch them on in Animation Addons → Widgets before it can be inserted."
+msgstr ""
+
+#: class-plugin.php:446
+#, php-format
+msgid "%d image(s) could not be copied and stay linked to the template server."
+msgstr ""
+
+#: class-plugin.php:447
+msgid "The block could not be inserted."
+msgstr ""
+
+#: class-plugin.php:448
+msgid "No templates found."
+msgstr ""
+
+#: class-plugin.php:449
+msgid "No Elementor V4 blocks in this list yet — switch the version filter to V3 or All."
+msgstr ""
+
+#: class-plugin.php:451
+#, php-format
+msgid "Elementor V3 sections and pages are hidden because every V3 widget is switched off. Switch the widgets you need on in %s to see them."
+msgstr ""
+
+#: class-plugin.php:452
+#, php-format
+msgid "Elementor V4 blocks and pages are hidden because every V4 widget is switched off. Switch the widgets you need on in %s to see them."
+msgstr ""
+
+#: class-plugin.php:453
+msgid "Animation Addons → Widgets"
+msgstr ""
+
+#: class-plugin.php:455
+msgid "This template uses widgets that are switched off"
+msgstr ""
+
+#: class-plugin.php:456
+msgid "Switch them on to insert it. The editor saves and reloads once to register them."
+msgstr ""
+
+#: class-plugin.php:457
+msgid "An administrator has to switch them on in Animation Addons → Widgets before it can be inserted."
+msgstr ""
+
+#: class-plugin.php:458
+msgid "Switch on & insert"
+msgstr ""
+
+#: class-plugin.php:460
+#: class-plugin.php:1491
+#: class-plugin.php:1619
 #: widgets/post-rating-form.php:882
 #: src/modules/dashboard/components/performance/PerformanceWizard.jsx:566
 msgid "Close"
 msgstr ""
 
-#: class-plugin.php:1408
+#: class-plugin.php:461
+msgid "Widget"
+msgstr ""
+
+#: class-plugin.php:462
+msgid "Extension"
+msgstr ""
+
+#: class-plugin.php:463
+msgid "Not available on this site — needs Animation Addons Pro"
+msgstr ""
+
+#: class-plugin.php:464
+msgid "The parts marked as unavailable will be left out of the insert."
+msgstr ""
+
+#: class-plugin.php:1239
+msgid "AAE"
+msgstr ""
+
+#: class-plugin.php:1244
+msgid "AAE Header & Footer"
+msgstr ""
+
+#: class-plugin.php:1249
+msgid "AAE Archive"
+msgstr ""
+
+#: class-plugin.php:1254
+msgid "AAE Search"
+msgstr ""
+
+#: class-plugin.php:1259
+msgid "AAE Single"
+msgstr ""
+
+#: class-plugin.php:1508
 #: inc/AtomicWidgets/Widgets/PostPagination/Parts/class-aae-a-post-pagination-preview-category.php:41
 #: inc/AtomicWidgets/Widgets/PostPagination/Parts/class-aae-a-post-pagination-preview-category.php:103
 #: inc/theme-builder/theme-builder-admin.php:870
@@ -152,45 +245,57 @@ msgstr ""
 msgid "Category"
 msgstr ""
 
-#: class-plugin.php:1431
+#: class-plugin.php:1531
+msgid "All versions"
+msgstr ""
+
+#: class-plugin.php:1532
+#: src/modules/dashboard/pages/Extensions.jsx:136
+#: src/modules/dashboard/pages/Widgets.jsx:153
+msgid "Elementor V3"
+msgstr ""
+
+#: class-plugin.php:1533
+#: src/modules/dashboard/pages/Extensions.jsx:128
+#: src/modules/dashboard/pages/Widgets.jsx:145
+msgid "Elementor V4 (Atomic)"
+msgstr ""
+
+#: class-plugin.php:1540
 msgid "Search Templates:"
 msgstr ""
 
-#: class-plugin.php:1457
+#: class-plugin.php:1566
 msgid "Go Premium"
 msgstr ""
 
-#: class-plugin.php:1462
+#: class-plugin.php:1571
 msgid "Activate License"
 msgstr ""
 
-#: class-plugin.php:1467
+#: class-plugin.php:1576
 #: inc/CodeSnippet/listTables/CodeSnippetListTable.php:337
 msgid "Activate"
 msgstr ""
 
-#: class-plugin.php:1491
-#: class-plugin.php:1544
+#: class-plugin.php:1600
+#: class-plugin.php:1653
 #: inc/AnimationSettings/class-animation-settings.php:883
 #: src/modules/dashboard/layouts/MainLayout.jsx:121
 msgid "Loading"
 msgstr ""
 
-#: class-plugin.php:1503
+#: class-plugin.php:1612
 msgid "Back to Library"
 msgstr ""
 
-#: class-plugin.php:1518
-msgid "Insert"
-msgstr ""
-
-#: class-plugin.php:1567
+#: class-plugin.php:1676
 #: widgets/notification.php:373
 #: widgets/post-comment.php:1069
 msgid "Block"
 msgstr ""
 
-#: class-plugin.php:1570
+#: class-plugin.php:1679
 #: inc/Aaeaddon_Post_Handler_Legacy_Trait.php:697
 #: inc/Aaeaddon_Post_Handler_Trait.php:670
 #: inc/AtomicWidgets/Widgets/PostContent/class-aae-a-post-content.php:368
@@ -200,7 +305,7 @@ msgstr ""
 msgid "Page"
 msgstr ""
 
-#: class-plugin.php:1661
+#: class-plugin.php:1770
 #: widgets/advance-pricing-table/advance-pricing-table.php:53
 msgid "Advanced Pricing Table"
 msgstr ""
@@ -3885,26 +3990,46 @@ msgstr ""
 msgid "Enable Grid"
 msgstr ""
 
-#. translators: 1: downloaded count, 2: posts updated
-#: inc/admin/atomic-image-localize.php:304
+#. translators: 1: Lottie files copied, 2: pages updated
+#: inc/admin/atomic-image-localize.php:617
 #, php-format
-msgid "Images copied to the media library: %1$d downloaded, %2$d pages updated"
+msgid "Lottie animations copied to the media library: %1$d files, %2$d pages updated"
 msgstr ""
 
-#. translators: %d: number of images already in the library
-#: inc/admin/atomic-image-localize.php:311
-#, php-format
-msgid ", %d already there"
-msgstr ""
-
+#. translators: %d: number of Lottie files that could not be downloaded
 #. translators: %d: number of images that could not be downloaded
-#: inc/admin/atomic-image-localize.php:316
+#: inc/admin/atomic-image-localize.php:624
+#: inc/admin/atomic-image-localize.php:649
 #, php-format
 msgid ", %d could not be downloaded and stay linked"
 msgstr ""
 
+#. translators: 1: downloaded count, 2: posts updated
+#: inc/admin/atomic-image-localize.php:632
+#, php-format
+msgid "Images copied to the media library: %1$d downloaded, %2$d pages updated"
+msgstr ""
+
+#. translators: %d: number of Lottie animation files among the downloads
+#: inc/admin/atomic-image-localize.php:639
+#, php-format
+msgid " (%d of them Lottie animations)"
+msgstr ""
+
+#. translators: %d: number of images already in the library
+#: inc/admin/atomic-image-localize.php:644
+#, php-format
+msgid ", %d already there"
+msgstr ""
+
+#. translators: 1: files done, 2: files total
+#: inc/admin/atomic-image-localize.php:659
+#, php-format
+msgid "Copying Lottie animations to the media library (%1$d of %2$d)"
+msgstr ""
+
 #. translators: 1: images done, 2: images total
-#: inc/admin/atomic-image-localize.php:325
+#: inc/admin/atomic-image-localize.php:667
 #, php-format
 msgid "Copying images to the media library (%1$d of %2$d)"
 msgstr ""
@@ -4335,8 +4460,8 @@ msgstr ""
 #: inc/AtomicWidgets/Atomic_Admin.php:430
 #: inc/AtomicWidgets/Atomic_Admin.php:489
 #: inc/AtomicWidgets/Atomic_Admin.php:566
-#: inc/AtomicWidgets/Atomic_Admin.php:1096
-#: inc/AtomicWidgets/Atomic_Admin.php:1187
+#: inc/AtomicWidgets/Atomic_Admin.php:1121
+#: inc/AtomicWidgets/Atomic_Admin.php:1212
 msgid "Permission denied."
 msgstr ""
 
@@ -4473,43 +4598,47 @@ msgstr ""
 msgid "Setup"
 msgstr ""
 
-#: inc/admin/st-init.php:307
+#: inc/admin/st-init.php:379
 msgid "Downloaded files"
 msgstr ""
 
-#: inc/admin/st-init.php:313
+#: inc/admin/st-init.php:385
 msgid "No import files specified!"
 msgstr ""
 
 #. translators: %d: number of media files that could not be downloaded
-#: inc/admin/st-init.php:428
+#: inc/admin/st-init.php:500
 #, php-format
 msgid "Content imported; %d media file could not be downloaded (see the notice on your dashboard)."
 msgid_plural "Content imported; %d media files could not be downloaded (see the notice on your dashboard)."
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/admin/st-init.php:431
+#: inc/admin/st-init.php:503
 msgid "Congrats, your demo has been imported."
 msgstr ""
 
+#: inc/admin/st-init.php:517
+msgid "No page was imported: the content file held nothing this site could import."
+msgstr ""
+
 #. translators: %d: number of files
-#: inc/admin/st-init.php:709
+#: inc/admin/st-init.php:802
 #, php-format
 msgid "Animation Addons: %d file of the imported template could not be downloaded from the demo server. The pages still point at the demo server's copy, so they show it for now and will stop showing it if that server moves."
 msgid_plural "Animation Addons: %d files of the imported template could not be downloaded from the demo server. The pages still point at the demo server's copies, so they show them for now and will stop showing them if that server moves."
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/admin/st-init.php:719
+#: inc/admin/st-init.php:812
 msgid "This site blocks outgoing HTTP requests (WP_HTTP_BLOCK_EXTERNAL). Add the demo host to WP_ACCESSIBLE_HOSTS in wp-config.php and import again."
 msgstr ""
 
-#: inc/admin/st-init.php:720
+#: inc/admin/st-init.php:813
 msgid "Check that the demo host is reachable from this server, then import the template again: files already in your media library are kept, the missing ones are retried."
 msgstr ""
 
-#: inc/admin/st-init.php:731
+#: inc/admin/st-init.php:824
 msgid "Show the files"
 msgstr ""
 
@@ -4584,65 +4713,69 @@ msgstr ""
 msgid "Page design imported (%1$s): %2$d classes, %3$d variables, %4$d posts updated"
 msgstr ""
 
-#: inc/admin/template-importer.php:373
+#: inc/admin/template-importer.php:377
 msgid "Copying images to the media library"
 msgstr ""
 
-#: inc/admin/template-importer.php:399
+#: inc/admin/template-importer.php:378
+msgid "Copying Lottie animations to the media library"
+msgstr ""
+
+#: inc/admin/template-importer.php:404
 msgid "Downloading Template"
 msgstr ""
 
-#: inc/admin/template-importer.php:413
+#: inc/admin/template-importer.php:418
 msgid "Template Demo Import fail"
 msgstr ""
 
-#: inc/admin/template-importer.php:430
+#: inc/admin/template-importer.php:435
 msgid "Checking Setup requirement"
 msgstr ""
 
-#: inc/admin/template-importer.php:556
+#: inc/admin/template-importer.php:561
 msgid "Kit Settings Update"
 msgstr ""
 
-#: inc/admin/template-importer.php:563
+#: inc/admin/template-importer.php:568
 msgid "Template Required"
 msgstr ""
 
-#: inc/admin/template-importer.php:587
+#: inc/admin/template-importer.php:592
 msgid "Failed to validate file from remote URL."
 msgstr ""
 
-#: inc/admin/template-importer.php:594
+#: inc/admin/template-importer.php:599
 msgid "Invalid file arguments. Please check the URL."
 msgstr ""
 
-#: inc/admin/template-importer.php:601
+#: inc/admin/template-importer.php:606
 msgid "The downloadable file is empty."
 msgstr ""
 
-#: inc/admin/template-importer.php:613
+#: inc/admin/template-importer.php:618
 msgid "Remote URL is required."
 msgstr ""
 
-#: inc/admin/template-importer.php:620
+#: inc/admin/template-importer.php:625
 msgid "Failed to fetch XML from remote URL."
 msgstr ""
 
-#: inc/admin/template-importer.php:626
-#: inc/admin/template-importer.php:627
+#: inc/admin/template-importer.php:631
+#: inc/admin/template-importer.php:632
 msgid "The remote XML file is empty."
 msgstr ""
 
-#: inc/admin/template-importer.php:644
-#: inc/admin/template-importer.php:645
+#: inc/admin/template-importer.php:649
+#: inc/admin/template-importer.php:650
 msgid "Failed to save the XML file."
 msgstr ""
 
-#: inc/admin/template-importer.php:647
+#: inc/admin/template-importer.php:652
 msgid "File downloaded and saved successfully"
 msgstr ""
 
-#: inc/admin/template-importer.php:648
+#: inc/admin/template-importer.php:653
 msgid "File downloaded and saved successfully at "
 msgstr ""
 
@@ -5194,7 +5327,7 @@ msgstr ""
 #: inc/AnimationSettings/class-animation-settings.php:2213
 #: inc/AtomicWidgets/Atomic_Admin.php:336
 #: inc/AtomicWidgets/Atomic_Admin.php:500
-#: inc/AtomicWidgets/Atomic_Admin.php:1118
+#: inc/AtomicWidgets/Atomic_Admin.php:1143
 msgid "Invalid data."
 msgstr ""
 
@@ -5336,31 +5469,31 @@ msgstr ""
 msgid "No menu slug provided."
 msgstr ""
 
-#: inc/AtomicWidgets/Atomic_Admin.php:1102
+#: inc/AtomicWidgets/Atomic_Admin.php:1127
 msgid "Invalid state."
 msgstr ""
 
-#: inc/AtomicWidgets/Atomic_Admin.php:1193
+#: inc/AtomicWidgets/Atomic_Admin.php:1218
 msgid "Invalid decision."
 msgstr ""
 
-#: inc/AtomicWidgets/Atomic_Admin.php:1209
+#: inc/AtomicWidgets/Atomic_Admin.php:1234
 msgid "There is nothing left to undo."
 msgstr ""
 
-#: inc/AtomicWidgets/class-atomic.php:2743
+#: inc/AtomicWidgets/class-atomic.php:2747
 msgid "AAE General"
 msgstr ""
 
-#: inc/AtomicWidgets/class-atomic.php:2748
+#: inc/AtomicWidgets/class-atomic.php:2752
 msgid "AAE Form"
 msgstr ""
 
-#: inc/AtomicWidgets/class-atomic.php:2753
+#: inc/AtomicWidgets/class-atomic.php:2757
 msgid "AAE Post"
 msgstr ""
 
-#: inc/AtomicWidgets/class-atomic.php:2764
+#: inc/AtomicWidgets/class-atomic.php:2768
 msgid "AAE WooCommerce"
 msgstr ""
 
@@ -11830,6 +11963,7 @@ msgid "Invalid request."
 msgstr ""
 
 #: inc/layout-import-api.php:26
+#: inc/layout-import-api.php:72
 msgid "Post not found"
 msgstr ""
 
@@ -11837,12 +11971,13 @@ msgstr ""
 msgid "Template id missing"
 msgstr ""
 
-#: inc/library-source.php:16
-msgid "AAE Layout Manager"
+#: inc/layout-import-api.php:157
+#: inc/library-source.php:106
+msgid "Template does not have any content"
 msgstr ""
 
-#: inc/library-source.php:82
-msgid "Template does not have any content"
+#: inc/library-source.php:16
+msgid "AAE Layout Manager"
 msgstr ""
 
 #: inc/post-rating-handler.php:34
@@ -19378,59 +19513,59 @@ msgstr ""
 msgid "Some pages on this site still use Elementor V3 widgets."
 msgstr ""
 
-#: src/modules/dashboard/components/shared/V4ImportDialog.jsx:79
+#: src/modules/dashboard/components/shared/V4ImportDialog.jsx:81
 msgid "This site already uses Elementor V4"
 msgstr ""
 
-#: src/modules/dashboard/components/shared/V4ImportDialog.jsx:83
+#: src/modules/dashboard/components/shared/V4ImportDialog.jsx:85
 msgid "Import an Elementor V4 template"
 msgstr ""
 
 #. translators: %s: the starter template's title.
-#: src/modules/dashboard/components/shared/V4ImportDialog.jsx:93
+#: src/modules/dashboard/components/shared/V4ImportDialog.jsx:95
 #, js-format
 msgid "The design system of “%s” will be added beside what is already here."
 msgstr ""
 
-#: src/modules/dashboard/components/shared/V4ImportDialog.jsx:99
+#: src/modules/dashboard/components/shared/V4ImportDialog.jsx:101
 msgid "This template's design system will be added beside what is already here."
 msgstr ""
 
 #. translators: %s: the starter template's title.
-#: src/modules/dashboard/components/shared/V4ImportDialog.jsx:106
+#: src/modules/dashboard/components/shared/V4ImportDialog.jsx:108
 #, js-format
 msgid "“%s” is built with Elementor V4 (atomic). Its pages, global classes and variables will be imported."
 msgstr ""
 
-#: src/modules/dashboard/components/shared/V4ImportDialog.jsx:112
+#: src/modules/dashboard/components/shared/V4ImportDialog.jsx:114
 msgid "This template is built with Elementor V4 (atomic). Its pages, global classes and variables will be imported."
 msgstr ""
 
-#: src/modules/dashboard/components/shared/V4ImportDialog.jsx:124
+#: src/modules/dashboard/components/shared/V4ImportDialog.jsx:126
 msgid "Its global classes and variables are imported as new entries. Your existing classes, variables and pages are not changed."
 msgstr ""
 
-#: src/modules/dashboard/components/shared/V4ImportDialog.jsx:130
+#: src/modules/dashboard/components/shared/V4ImportDialog.jsx:132
 msgid "If a class name is already taken here, the imported copy is renamed with a “DUP_” prefix so both keep their styling."
 msgstr ""
 
-#: src/modules/dashboard/components/shared/V4ImportDialog.jsx:152
+#: src/modules/dashboard/components/shared/V4ImportDialog.jsx:154
 msgid "Copy the images into my Media Library"
 msgstr ""
 
-#: src/modules/dashboard/components/shared/V4ImportDialog.jsx:158
-msgid "The template's images are linked from the demo server and display from there. Tick this to download them into your own library, so you can edit them and the site does not depend on another host. The import takes longer."
+#: src/modules/dashboard/components/shared/V4ImportDialog.jsx:160
+msgid "The template's images are linked from the demo server and display from there. Tick this to download them into your own library, so you can edit them and the site does not depend on another host. The import takes longer. Lottie animation files are always copied: a browser will not load one from another site."
 msgstr ""
 
-#: src/modules/dashboard/components/shared/V4ImportDialog.jsx:171
+#: src/modules/dashboard/components/shared/V4ImportDialog.jsx:173
 msgid "Nothing is replaced. Unused imported classes can be deleted later from Elementor's Class Manager."
 msgstr ""
 
-#: src/modules/dashboard/components/shared/V4ImportDialog.jsx:175
+#: src/modules/dashboard/components/shared/V4ImportDialog.jsx:177
 msgid "Elementor V3 widgets, extensions and site features are switched off once the template has landed, except widgets your existing pages use."
 msgstr ""
 
-#: src/modules/dashboard/components/shared/V4ImportDialog.jsx:197
+#: src/modules/dashboard/components/shared/V4ImportDialog.jsx:199
 msgid "Continue import"
 msgstr ""
 
@@ -19462,7 +19597,11 @@ msgstr[1] ""
 msgid "Built-in elements of this widget. They turn on and off with it and have no switch of their own."
 msgstr ""
 
-#: src/modules/dashboard/components/template/right/TemplateShow.jsx:239
+#: src/modules/dashboard/components/template/right/TemplateShow.jsx:165
+msgid "Built with Animation Addons effects"
+msgstr ""
+
+#: src/modules/dashboard/components/template/right/TemplateShow.jsx:255
 msgid "Needs Elementor V4 (Atomic) switched on"
 msgstr ""
 
@@ -19912,16 +20051,6 @@ msgstr ""
 
 #: src/modules/dashboard/pages/Extensions.jsx:81
 msgid "Could not scan extension usage."
-msgstr ""
-
-#: src/modules/dashboard/pages/Extensions.jsx:128
-#: src/modules/dashboard/pages/Widgets.jsx:145
-msgid "Elementor V4 (Atomic)"
-msgstr ""
-
-#: src/modules/dashboard/pages/Extensions.jsx:136
-#: src/modules/dashboard/pages/Widgets.jsx:153
-msgid "Elementor V3"
 msgstr ""
 
 #: src/modules/dashboard/pages/FreePro.jsx:15
