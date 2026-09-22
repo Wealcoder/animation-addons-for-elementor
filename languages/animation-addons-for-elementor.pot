@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-22T08:21:22+00:00\n"
+"POT-Creation-Date: 2026-09-22T09:01:24+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: animation-addons-for-elementor\n"
@@ -83,6 +83,7 @@ msgstr ""
 #: src/modules/dashboard/components/animation-settings/FeaturePanel.jsx:420
 #: src/modules/dashboard/components/animation-settings/FeaturePanel.jsx:507
 #: src/modules/dashboard/components/extentions/settings/CustomFontSettings.jsx:102
+#: src/modules/dashboard/components/extentions/settings/ModuleSettings.jsx:225
 #: src/modules/dashboard/components/integrations/ShowIntegrationsLibrary.jsx:398
 #: src/modules/dashboard/components/performance/PerformanceWizard.jsx:157
 #: src/modules/dashboard/components/shared/BackToV3Dialog.jsx:150
@@ -16802,6 +16803,7 @@ msgstr ""
 #: widgets/post-meta-info.php:2650
 #: widgets/post-meta-info.php:2663
 #: src/modules/dashboard/components/extentions/settings/CustomFontSettings.jsx:109
+#: src/modules/dashboard/components/extentions/settings/ModuleSettings.jsx:235
 #: src/modules/dashboard/components/widgets/settings/MailchimpSettings.jsx:132
 #: src/modules/dashboard/components/widgets/settings/WeatherSettings.jsx:331
 #: src/modules/dashboard/components/widgets/settings/YoutubeVideoSettings.jsx:321
@@ -18637,6 +18639,7 @@ msgid "Animation Addons Pro renders this. Settings here are saved, but nothing s
 msgstr ""
 
 #: src/modules/dashboard/components/dashboard/AddonProWidget.jsx:50
+#: src/modules/dashboard/components/extentions/settings/ModuleSettings.jsx:87
 #: src/modules/dashboard/components/extentions/settings/ScrollSmootherSettings.jsx:167
 #: src/modules/dashboard/components/extentions/ShowAtomicExtensions.jsx:102
 #: src/modules/dashboard/components/extentions/ShowExtensions.jsx:129
@@ -18892,6 +18895,14 @@ msgstr ""
 
 #: src/modules/dashboard/components/extentions/settings/CustomFontSettings.jsx:89
 msgid "The font will be loaded in the head section"
+msgstr ""
+
+#: src/modules/dashboard/components/extentions/settings/ModuleSettings.jsx:83
+msgid "Could not save."
+msgstr ""
+
+#: src/modules/dashboard/components/extentions/settings/ModuleSettings.jsx:206
+msgid "Pages that use these will show nothing from them until you switch them back on. Nothing is deleted."
 msgstr ""
 
 #: src/modules/dashboard/components/extentions/settings/ScrollSmootherSettings.jsx:187

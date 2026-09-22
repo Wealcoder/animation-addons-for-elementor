@@ -527,7 +527,7 @@ return [
 			'custom-fields' => [
 				'label'        => 'Custom Fields',
 				'usage_prop'   => false,
-				'description'  => 'Build field groups for any post type, taxonomy, user or options page — dynamic tags, Loop Filter sources and selling entries through WooCommerce included.',
+				'description'  => 'Build field groups for any post type, taxonomy, user or options page — dynamic tags, Loop Filter sources and selling entries through WooCommerce included. Off hides the builder and the edit-screen boxes; fields already on your pages keep working (the gear chooses more).',
 				'icon'         => 'wcf-icon-Dynamic-Tags',
 				'is_pro'       => true,
 				'is_extension' => true,
