@@ -131,6 +131,16 @@ aaeaddon_define( 'AAEADDON_WIDGETS_PATH', AAEADDON_PATH . 'widgets/', 'WCF_ADDON
  */
 aaeaddon_define( 'AAEADDON_TEMPLATE_STARTER_BASE_URL', 'https://www.themecrowdy.com/', 'WCF_TEMPLATE_STARTER_BASE_URL' );
 
+/**
+ * Block library host — the editor's Template Library (blocks / pages).
+ *
+ * Same override pattern as the template server above: wp-config.php on a
+ * staging site points it at a local copy of the block library (no trailing
+ * slash). Read by `Aaeaddon_Plugin::block_library_host()` for both the V3
+ * `api/v2/list` requests and the editor JS (`WCF_TEMPLATE_LIBRARY.block_host`).
+ */
+aaeaddon_define( 'AAEADDON_BLOCK_LIBRARY_URL', 'https://block.animation-addons.com', 'WCF_BLOCK_LIBRARY_URL' );
+
 aaeaddon_define( 'AAEADDON_FEATURE_REQUEST_ENDPOINT', 'https://animation-addons.com/wp-json/aae/v1/request-new-feature', 'WCF_FEATURE_REQUEST_ENDPOINT' );
 
 /**

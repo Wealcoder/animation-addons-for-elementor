@@ -229,6 +229,28 @@ window.__aaeAtomicBridge = {
 	getFeatures: () => FEATURES,
 };
 
+// The model sanitisers the preset picker runs before createElements(), plus
+// the two post-create canvas fixes, for code that lives OUTSIDE this bundle:
+// the Template Library modal (assets/src/js/wcf-template-library.js) is a
+// jQuery script gulp copies as-is, so it cannot import from here. It inserts
+// a V4 block through the same steps a preset apply takes and reads them off
+// this seam, falling back to a plain insert when the bundle is absent.
+import {
+	migrateLegacyWidgetShape,
+	normalizeElementShape,
+	sanitizeBorderWidthType,
+	stampContainerClassesIntoPreview,
+	syncAaeInteractionsToPreview,
+} from './element-controls/preset-apply';
+
+window.AAEPresetApply = {
+	migrateLegacyWidgetShape,
+	normalizeElementShape,
+	sanitizeBorderWidthType,
+	stampContainerClassesIntoPreview,
+	syncAaeInteractionsToPreview,
+};
+
 // Best approach for V4 Atomic Elements
 import { getElements } from '@elementor/editor-elements';
 

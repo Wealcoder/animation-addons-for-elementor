@@ -61,6 +61,18 @@ class OneClickImport
 	private $before_import_executed = false;
 
 	/**
+	 * IDs of the pages THIS import wrote, across every chunk.
+	 *
+	 * final_response() reads it to tell a page import that created a page
+	 * from one that created nothing -- the WXR engine skips a post it has
+	 * seen before without a log line at any level, and the response used to
+	 * say "Congrats" either way.
+	 *
+	 * @var int[]
+	 */
+	private $imported_pages = array();
+
+	/**
 	 * Make plugin page options available to other methods.
 	 *
 	 * @var array
@@ -107,6 +119,7 @@ class OneClickImport
 		// setup_st_importer() themselves; it is idempotent.
 		add_action('set_object_terms', array($this, 'add_imported_terms'), 10, 6);
 		add_filter('wxr_importer.pre_process.post', [$this, 'skip_failed_attachment_import']);
+		add_filter('wxr_importer.pre_process.post', [$this, 'fresh_copy_for_page_import']);
 		add_action('wxr_importer.process_failed.post', [$this, 'handle_failed_attachment_import'], 10, 5);
 		add_action('admin_init', [$this, 'register_import_report_notice'], 12);
 		// The importer's own limit is 0 = unbounded, which does not refuse a
@@ -143,11 +156,70 @@ class OneClickImport
 		}
 
 		if ($postdata['post_type'] == 'page') {
-			$batch_id = 'wxr_' . gmdate('Ymd_His'); 
+			$batch_id = 'wxr_' . gmdate('Ymd_His');
 			update_option('aaeaddon_last_import_batch', $batch_id);
-			add_post_meta($post_id, 'aae_import_batch', $batch_id, true);			
+			add_post_meta($post_id, 'aae_import_batch', $batch_id, true);
 			add_post_meta($post_id, 'aae_imported', 1, true);
+			$this->imported_pages[] = (int) $post_id;
 		}
+	}
+
+	/**
+	 * Is the running import a starter PAGE import (Pages -> Import Page)?
+	 *
+	 * The client sends `import_type=page` on every request of that flow --
+	 * the step machine and the content chunks alike -- and `full-demo` from
+	 * the template grid. Read after Helpers::verify_ajax_call() has run.
+	 *
+	 * @return bool
+	 */
+	private function is_page_import()
+	{
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- the calling handler verified the nonce.
+		return isset($_POST['import_type']) && 'page' === sanitize_text_field(wp_unslash($_POST['import_type']));
+	}
+
+	/**
+	 * Make a starter PAGE import create the page even when the same page was
+	 * imported before.
+	 *
+	 * The WXR engine prefills a map of every GUID already on the site and
+	 * skips a post whose GUID it finds there -- the right behaviour for a
+	 * whole-site migration, where an item is the same page it was last time.
+	 * "Import Page" is not a migration: the visitor picked a design and wants
+	 * it on their site, and a second import of the same design is a request
+	 * for a second copy. Measured: with #3365 ("Services", from an earlier
+	 * import) on the site, re-importing its starter page wrote nothing, the
+	 * engine logged nothing at any level, and the screen said "Congrats" with
+	 * a "Go to page" button pointing at the PREVIOUS import's batch.
+	 *
+	 * So for a page import the page's GUID is made unique to this import
+	 * before the engine looks it up. Only the page: attachments keep their
+	 * GUID so an image already in the media library is reused, not fetched
+	 * again. WordPress de-duplicates the slug (services, services-2) as it
+	 * does for any page created twice.
+	 *
+	 * @param array $data Post data from the WXR item.
+	 *
+	 * @return array
+	 */
+	public function fresh_copy_for_page_import($data)
+	{
+		if (
+			empty($data) ||
+			empty($data['post_type']) ||
+			'page' !== $data['post_type'] ||
+			empty($data['guid']) ||
+			! $this->is_page_import()
+		) {
+			return $data;
+		}
+
+		// A fragment, so the original URL is still readable in the stored
+		// GUID and nothing downstream that parses it as a URL is disturbed.
+		$data['guid'] .= '#aae-page-import-' . gmdate('YmdHis');
+
+		return $data;
 	}
 
 	function get_latest_imported_pages() {
@@ -430,14 +502,33 @@ class OneClickImport
 			)
 			: esc_html__('Congrats, your demo has been imported.', 'animation-addons-for-elementor');
 		$response['progress'] = 80;
+		$next_step            = 'check-theme';
+
+		// A page import that wrote no page is a failure, whatever the engine
+		// said -- and the engine says nothing: a skipped item logs at no
+		// level. Reporting "Congrats" here sent the user to a "Go to page"
+		// button built from the PREVIOUS import's batch, i.e. a different
+		// page than the one they picked. The engine's own error lines, if it
+		// produced any, are the only diagnosis there is, so they go into the
+		// message rather than being discarded.
+		if ( $this->is_page_import() && empty( $this->imported_pages ) ) {
+			$why = implode( ' ', array_map( 'wp_strip_all_tags', (array) $this->frontend_error_messages ) );
+			$response['msg'] = trim(
+				esc_html__( 'No page was imported: the content file held nothing this site could import.', 'animation-addons-for-elementor' )
+				. ( '' !== $why ? ' ' . esc_html( $why ) : '' )
+			);
+			$response['progress'] = 0;
+			$next_step            = 'fail';
+		}
+
 		check_ajax_referer( Nonce::action( Nonce::ADMIN, 'nonce' ), 'nonce' );
 		if (isset($_POST['template_data'])) {
 			if (isset($template_data['local_path'])) {
 				unset($template_data['local_path']);
 			}
-			$json_data                  = sanitize_text_field(wp_unslash($_POST['template_data']));  // Remove slashes if added by WP		
+			$json_data                  = sanitize_text_field(wp_unslash($_POST['template_data']));  // Remove slashes if added by WP
 			$template_data              = json_decode($json_data, true);
-			$template_data['next_step'] = 'check-theme';
+			$template_data['next_step'] = $next_step;
 			$response['template']       = wp_unslash($template_data);
 		}
 
@@ -468,6 +559,7 @@ class OneClickImport
 			$this->import_files            = empty($data['import_files']) ? array() : $data['import_files'];
 			$this->before_import_executed  = empty($data['before_import_executed']) ? false : $data['before_import_executed'];
 			$this->imported_terms          = empty($data['imported_terms']) ? [] : $data['imported_terms'];
+			$this->imported_pages          = empty($data['imported_pages']) ? [] : array_map('intval', (array) $data['imported_pages']);
 
 			$this->importer->set_importer_data($data);
 
@@ -492,6 +584,7 @@ class OneClickImport
 			'import_files'            => $this->import_files,
 			'before_import_executed'  => $this->before_import_executed,
 			'imported_terms'          => $this->imported_terms,
+			'imported_pages'          => $this->imported_pages,
 		);
 	}
 

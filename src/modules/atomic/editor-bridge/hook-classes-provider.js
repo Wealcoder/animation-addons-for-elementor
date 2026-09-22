@@ -147,7 +147,22 @@ export function registerHookClassesProvider() {
 		return false;
 	}
 
-	if ( stylesRepository.getProviderByKey?.( PROVIDER_KEY ) ) {
+	// NOT `stylesRepository.getProviderByKey()`: that runs EVERY provider's
+	// `getKey()`, and Elementor's document-styles provider derives its key from
+	// the active document — `getKey()` throws `active_document_must_exist`
+	// until one is loaded, which is exactly when this bundle boots. Measured on
+	// 4.2.4: the throw landed in the caller's catch, the provider was never
+	// registered, and the "missing classes" alert (with its class-stripping ✕)
+	// was back on every editor load. Ask each provider on its own instead.
+	const providers = typeof stylesRepository.getProviders === 'function' ? stylesRepository.getProviders() : [];
+	const registered = providers.some( ( provider ) => {
+		try {
+			return provider.getKey() === PROVIDER_KEY;
+		} catch ( e ) {
+			return false;
+		}
+	} );
+	if ( registered ) {
 		return false;
 	}
 

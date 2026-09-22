@@ -600,7 +600,7 @@ function stripRootPadding(model) {
  * then rescan so the runtime binds the new nodes. Retried because the
  * preview nodes mount asynchronously (bind needs the node present).
  */
-function syncAaeInteractionsToPreview(createdElements) {
+export function syncAaeInteractionsToPreview(createdElements) {
   const syncTree = (container) => {
     if (!container || !container.model) {
       return;
@@ -647,7 +647,7 @@ function syncAaeInteractionsToPreview(createdElements) {
  *
  * Retries a few times because the preview nodes mount asynchronously.
  */
-function stampContainerClassesIntoPreview(createdElements) {
+export function stampContainerClassesIntoPreview(createdElements) {
   const CONTAINER_ELTYPES = ['e-flexbox', 'e-div-block', 'e-grid', 'container'];
 
   // Every AAE widget (e-aae-a-*) extends the same Atomic_Element_Base /

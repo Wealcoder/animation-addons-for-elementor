@@ -384,10 +384,11 @@ return [
 			 * by assets/js/wcf-template-library.js).
 			 *
 			 * There is a `template-library` entry in the V3 registry (config.php)
-			 * too, but NOTHING reads that key — it is a display-only card, so the
-			 * feature has never actually been switchable. This entry is the one
-			 * that works: class-plugin.php::include_files() gates the require of
-			 * inc/class-template-library.php on it, which in turn is what
+			 * too, and since 2026-09-21 class-plugin.php::include_files() reads
+			 * BOTH keys as an OR (before that the v3 card was display-only, so a
+			 * v3 site with it ON still had no library in the editor). Either
+			 * toggle gates the require of
+			 * inc/class-template-library.php, which in turn is what
 			 * defines Library_Source and therefore satisfies the two
 			 * class_exists('\Wealcoder\AnimationAddons\Library_Source') checks that register the
 			 * editor script and the modal's Underscore templates.

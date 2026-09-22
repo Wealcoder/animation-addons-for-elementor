@@ -643,6 +643,31 @@ final class Atomic_Admin
 			return [ 'widgets' => [], 'extensions' => [] ];
 		}
 
+		return self::enable_used_atomic_in_rows( $rows );
+	}
+
+	/**
+	 * The scan-and-enable half of enable_used_atomic(), over raw `_elementor_data`
+	 * JSON strings the caller already holds.
+	 *
+	 * Split out so a Template Library BLOCK insert — one element tree that is
+	 * not in the database yet — can ask the same question the import asks of
+	 * every imported post, with the same slug rules (elType as well as
+	 * widgetType, internal children resolved to their parent, extensions
+	 * through `usage_prop`). With `$write` false nothing is switched on and the
+	 * answer is what WOULD be: the insert path uses that for a user who may
+	 * insert blocks but may not change the site's widget set.
+	 *
+	 * @param string[] $rows  Raw JSON element trees.
+	 * @param bool     $write Save the merged options, or only report.
+	 * @return array{widgets: string[], extensions: string[]} Newly switched on (or needed).
+	 */
+	public static function enable_used_atomic_in_rows( array $rows, bool $write = true ): array
+	{
+		if ( empty( $rows ) ) {
+			return [ 'widgets' => [], 'extensions' => [] ];
+		}
+
 		$registry      = Atomic::instance()->get_widgets_registry();
 		$parents       = Atomic::instance()->widget_parent_map();
 		$always_active = Atomic::instance()->always_active_lookup();
@@ -683,11 +708,11 @@ final class Atomic_Admin
 			}
 		}
 
-		if ( ! empty( $new_widgets ) ) {
+		if ( $write && ! empty( $new_widgets ) ) {
 			self::write_widget_option( $saved_widgets + $new_widgets );
 		}
 
-		if ( ! empty( $new_exts ) ) {
+		if ( $write && ! empty( $new_exts ) ) {
 			self::write_extension_option( $saved_exts + $new_exts );
 		}
 

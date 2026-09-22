@@ -52,6 +52,16 @@
  * the mime is allowed only around our own write of a body we have already
  * validated, never site-wide.
  *
+ * A BLOCK insert from the Template Library uses the same walker on a tree
+ * held in memory — localize_elements() — with a state built for that one call
+ * and never written to the option. Two things differ there: `svg-src` (the
+ * `e-svg` icon) is copied as well, and an attachment id that arrives BESIDE
+ * the url is foreign (a Save-as-Template export carries the source site's id
+ * next to the url for a library image) and is replaced or dropped, never kept
+ * — an id that exists on this site by coincidence would render the wrong image,
+ * and one that does not makes Image_Transformer throw and the widget render
+ * nothing at all.
+ *
  * @package Wealcoder\AnimationAddons
  */
 
@@ -150,6 +160,62 @@ class Atomic_Image_Localize {
 		return self::summary( $state, $done );
 	}
 
+	/** Prop types sharing Elementor's image-source shape: an attachment `id` and/or a `url`. */
+	const SRC_TYPES = [ 'image-src', 'svg-src' ];
+
+	/**
+	 * Localise one element tree held in memory — a block being inserted from
+	 * the Template Library — and hand it back with counters.
+	 *
+	 * The importer's option is neither read nor written: the state is built
+	 * here from scratch and discarded, so a block insert can never disturb an
+	 * import that is mid-flight on the same site, and vice versa. The hash
+	 * dedupe still applies (find_by_hash() reads the attachment meta), so
+	 * inserting the same block twice downloads nothing the second time.
+	 *
+	 * @param array      $elements    Elements array (the block's `content`).
+	 * @param bool       $images      Copy images/SVGs as well as Lotties.
+	 * @param float|null $budget      Seconds of work allowed; what is left over
+	 *                                stays url-shaped and is counted as failed
+	 *                                for the caller's message.
+	 * @param bool       $foreign_ids Treat an `id` beside a `url` as another
+	 *                                site's (a block export) — replace or drop.
+	 * @return array{elements:array,images:int,lottie:int,reused:int,failed:int,stopped:bool}
+	 */
+	public static function localize_elements( array $elements, bool $images = true, ?float $budget = null, bool $foreign_ids = true ): array {
+		$state                = self::fresh_state();
+		$state['images']      = $images;
+		$state['foreign_ids'] = $foreign_ids;
+
+		$budget   = null === $budget ? (float) apply_filters( 'aae/template_library/localize_budget', 20.0 ) : $budget; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+		$deadline = microtime( true ) + $budget;
+		$stopped  = false;
+		$changed  = 0;
+
+		$tree = self::walk( $elements, $deadline, $state, $stopped, $changed );
+
+		if ( $stopped ) {
+			// Anything after the cut is neither downloaded nor recorded; count
+			// what is still pending so the message can say it stays linked.
+			$pending = [];
+			self::collect_urls( $tree, $pending, $images, $foreign_ids );
+			foreach ( array_keys( $pending ) as $url ) {
+				if ( ! isset( $state['cache'][ $url ] ) ) {
+					$state['failed'][ $url ] = true;
+				}
+			}
+		}
+
+		return [
+			'elements' => $tree,
+			'images'   => (int) $state['downloaded'] + (int) $state['reused'] - (int) $state['lottie'],
+			'lottie'   => (int) $state['lottie'],
+			'reused'   => (int) $state['reused'],
+			'failed'   => count( $state['failed'] ),
+			'stopped'  => $stopped,
+		];
+	}
+
 	/**
 	 * Rewrite one post. Returns false when the deadline cut it short.
 	 */
@@ -188,16 +254,16 @@ class Atomic_Image_Localize {
 			return $node;
 		}
 
-		if ( ! empty( $state['images'] ) && self::is_url_only_image( $node ) ) {
+		if ( ! empty( $state['images'] ) && self::is_localizable_src( $node, ! empty( $state['foreign_ids'] ) ) ) {
 			$url = (string) $node['value']['url']['value'];
 
 			if ( isset( $state['failed'][ $url ] ) ) {
-				return $node;
+				return self::drop_foreign_id( $node, $state );
 			}
 
 			if ( microtime( true ) >= $deadline ) {
 				$stopped = true;
-				return $node;
+				return self::drop_foreign_id( $node, $state );
 			}
 
 			$id = self::resolve( $url, $state );
@@ -206,6 +272,8 @@ class Atomic_Image_Localize {
 				$node['value']['id']  = [ '$$type' => 'image-attachment-id', 'value' => $id ];
 				$node['value']['url'] = null;
 				$changed++;
+			} else {
+				$node = self::drop_foreign_id( $node, $state );
 			}
 
 			return $node;
@@ -253,6 +321,47 @@ class Atomic_Image_Localize {
 			&& isset( $node['value']['url']['value'] )
 			&& is_string( $node['value']['url']['value'] )
 			&& '' !== $node['value']['url']['value'];
+	}
+
+	/**
+	 * An image-src / svg-src whose url can be fetched. Without `$foreign_ids`
+	 * this is the page-import rule — url-only, image-src only — so nothing an
+	 * import already does changes shape. With it (a block from another site)
+	 * an id beside the url does not disqualify the node: that id is the source
+	 * site's and is about to be replaced.
+	 */
+	public static function is_localizable_src( $node, bool $foreign_ids = false ): bool {
+		if ( ! is_array( $node ) || ! isset( $node['$$type'], $node['value'] ) || ! is_array( $node['value'] ) ) {
+			return false;
+		}
+
+		$types = $foreign_ids ? self::SRC_TYPES : [ 'image-src' ];
+
+		if ( ! in_array( $node['$$type'], $types, true ) ) {
+			return false;
+		}
+
+		if ( ! $foreign_ids && ! empty( $node['value']['id'] ) ) {
+			return false;
+		}
+
+		return isset( $node['value']['url']['value'] )
+			&& is_string( $node['value']['url']['value'] )
+			&& '' !== $node['value']['url']['value'];
+	}
+
+	/**
+	 * A foreign id that could not be replaced is REMOVED, leaving the url:
+	 * the XOR rule holds, and the widget renders the hot-link — the state the
+	 * block was authored in — instead of throwing on an id this site has no
+	 * attachment for. The page-import rule never reaches here with an id.
+	 */
+	private static function drop_foreign_id( array $node, array $state ): array {
+		if ( ! empty( $state['foreign_ids'] ) && ! empty( $node['value']['id'] ) ) {
+			$node['value']['id'] = null;
+		}
+
+		return $node;
 	}
 
 	/**
@@ -482,8 +591,8 @@ class Atomic_Image_Localize {
 		return array_keys( $urls );
 	}
 
-	private static function collect_urls( array $node, array &$urls, bool $images ): void {
-		if ( $images && self::is_url_only_image( $node ) ) {
+	private static function collect_urls( array $node, array &$urls, bool $images, bool $foreign_ids = false ): void {
+		if ( $images && self::is_localizable_src( $node, $foreign_ids ) ) {
 			$urls[ (string) $node['value']['url']['value'] ] = true;
 			return;
 		}
@@ -494,7 +603,7 @@ class Atomic_Image_Localize {
 
 		foreach ( $node as $value ) {
 			if ( is_array( $value ) ) {
-				self::collect_urls( $value, $urls, $images );
+				self::collect_urls( $value, $urls, $images, $foreign_ids );
 			}
 		}
 	}
@@ -565,22 +674,25 @@ class Atomic_Image_Localize {
 		$state = get_option( self::STATE_OPTION, [] );
 		$state = is_array( $state ) ? $state : [];
 
-		return array_merge(
-			[
-				'cursor'        => 0,
-				'total'         => null,
-				'processed'     => 0,
-				'downloaded'    => 0,
-				'reused'        => 0,
-				'failed'        => [],
-				'cache'         => [],
-				'posts_changed' => [],
-				'posts'         => 0,
-				'images'        => true,
-				'lottie'        => 0,
-			],
-			$state
-		);
+		return array_merge( self::fresh_state(), $state );
+	}
+
+	/** The importer's state shape with nothing in it. */
+	private static function fresh_state(): array {
+		return [
+			'cursor'        => 0,
+			'total'         => null,
+			'processed'     => 0,
+			'downloaded'    => 0,
+			'reused'        => 0,
+			'failed'        => [],
+			'cache'         => [],
+			'posts_changed' => [],
+			'posts'         => 0,
+			'images'        => true,
+			'lottie'        => 0,
+			'foreign_ids'   => false,
+		];
 	}
 
 	private static function save( array $state ): void {

@@ -1202,7 +1202,7 @@ class Post_Social_Share extends Widget_Base {
 			<ul class="default-details-social-media">
 			<?php foreach ( $socials as $share ) { ?>
                 <li class="wcf-social-share-style-2">
-                    <a data-type="<?php echo esc_attr($share['list_vendor']); ?>" href="<?php echo esc_url( $this->get_generated_link( $share['list_vendor'] ) ); ?>"
+                    <a data-type="<?php echo esc_attr($share['list_vendor']); ?>" href="<?php echo esc_url( $this->get_generated_link( $share['list_vendor'] ) ); ?>">
                     <span class="wcf-social-icn <?php echo esc_attr( $settings['social_icon_style'] ); ?>"><?php \Elementor\Icons_Manager::render_icon( $share['icon'], [
 							'aria-hidden' => 'true',
 							'class'       => 'share-ico'
@@ -1243,7 +1243,7 @@ class Post_Social_Share extends Widget_Base {
         <ul class="default-details-social-media">
 			<?php foreach ( $socials as $share ) { ?>
                 <li>
-                    <a data-type="<?php echo esc_attr($share['list_vendor']); ?>" href="<?php echo esc_url( $this->get_generated_link( $share['list_vendor'] ) ); ?>"
+                    <a data-type="<?php echo esc_attr($share['list_vendor']); ?>" href="<?php echo esc_url( $this->get_generated_link( $share['list_vendor'] ) ); ?>">
                     <span class="wcf-social-icn <?php echo esc_attr( $settings['social_icon_style'] ); ?>"><?php \Elementor\Icons_Manager::render_icon( $share['icon'], [
 							'aria-hidden' => 'true',
 							'class'       => 'share-ico'

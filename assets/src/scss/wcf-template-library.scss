@@ -161,6 +161,198 @@
   &:hover .title {
     opacity: 0;
   }
+
+  // V4 / Animated badges — same look as the dashboard's starter-template cards.
+  .aae-tl-badges {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    z-index: 2;
+    pointer-events: none;
+  }
+  .aae-tl-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    height: 22px;
+    padding: 0 8px;
+    border-radius: 4px;
+    font-family: Roboto, sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: #fff;
+    &--v4 {
+      background: #6366f1;
+    }
+    &--animated {
+      background: #0fb981;
+    }
+  }
+
+  // A V4 block on an editor that cannot render atomic elements.
+  .library--action.insert[disabled] {
+    opacity: 0.55;
+    cursor: not-allowed;
+    background-color: #c9ccd1;
+    color: #333;
+  }
+  &:hover .library--action.insert[disabled] {
+    opacity: 0.55;
+  }
+}
+
+#wcf-template-library-builder {
+  min-width: 170px;
+}
+
+.wcf-library-templates .aae-tl-empty {
+  column-span: all;
+  margin: 40px 0;
+  text-align: center;
+  color: #6d7882;
+  font-size: 14px;
+}
+
+// Under the toolbar: why an era is not listed, and where to switch its widgets on.
+.aae-tl-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 10px 14px;
+  border: 1px solid #d5d8dc;
+  border-inline-start: 3px solid #524cff;
+  border-radius: 4px;
+  background: #f7f7fb;
+  font-family: Roboto, Arial, sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #3f444b;
+  i {
+    margin-top: 2px;
+    color: #524cff;
+  }
+  a {
+    color: #524cff;
+    font-weight: 500;
+    text-decoration: underline;
+  }
+}
+
+// The dependency dialog: what a block/page uses that is switched off here.
+#aae-tl-deps-dialog {
+  > .dialog-widget-content {
+    width: 480px;
+    max-width: calc(100vw - 40px);
+    border-radius: 8px;
+  }
+  .dialog-message {
+    padding: 0;
+    text-align: start;
+  }
+}
+
+.aae-tl-deps {
+  padding: 28px 28px 24px;
+  font-family: Roboto, Arial, sans-serif;
+  color: #0c0d0e;
+
+  &__title {
+    margin: 0 0 8px;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  &__body,
+  &__note {
+    margin: 0 0 14px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #515962;
+  }
+  &__note {
+    margin: 12px 0 0;
+  }
+  &__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-height: 260px;
+    overflow: auto;
+    border: 1px solid #e6e8ea;
+    border-radius: 6px;
+  }
+  &__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 9px 12px;
+    font-size: 13px;
+    line-height: 1.4;
+    border-top: 1px solid #e6e8ea;
+    &:first-child {
+      border-top: 0;
+    }
+    &.is-unavailable {
+      color: #9da5ae;
+    }
+  }
+  &__label {
+    font-weight: 500;
+  }
+  &__kind {
+    flex: 0 0 auto;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #6d7882;
+    .is-unavailable & {
+      text-transform: none;
+      letter-spacing: 0;
+      color: #b0141a;
+      flex: 1 1 auto;
+      text-align: end;
+    }
+  }
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  &__btn {
+    appearance: none;
+    border: 0;
+    border-radius: 4px;
+    padding: 0 16px;
+    height: 36px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 36px;
+    cursor: pointer;
+    &--cancel {
+      background: #f1f3f5;
+      color: #0c0d0e;
+      &:hover {
+        background: #e6e8ea;
+      }
+    }
+    &--enable {
+      background: #524cff;
+      color: #fff;
+      &:hover {
+        background: #3f39f0;
+      }
+    }
+  }
 }
 
 .wcf-template-library--loading {

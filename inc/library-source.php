@@ -69,6 +69,30 @@ class Library_Source extends Source_Base {
 		return wp_remote_retrieve_body( $response );
 	}
 
+	/**
+	 * Fresh element ids for a tree that is about to be inserted, WITHOUT the
+	 * controls walk get_data() does after it.
+	 *
+	 * Source_Base::replace_elements_ids() is a pure array walk; every new id
+	 * goes through `elementor/document/element/replace_id`, which Elementor's
+	 * Styles_Ids_Modifier answers by regenerating each atomic element's LOCAL
+	 * style ids (`e-<newId>-…`) and rewriting its `classes` references. Global
+	 * `g-…` ids pass through untouched — those are the design system's and are
+	 * resolved by process_global_styles on the client side.
+	 *
+	 * That is the whole of what a V4 (atomic) block needs from PHP before
+	 * `document/elements/import`: no process_export_import_content(), no
+	 * get_elements_raw_data() — both instantiate every element and silently
+	 * DROP any type that is not registered on this site, which for a block
+	 * means every AAE widget the user has switched off.
+	 *
+	 * @param array $content Elements array.
+	 * @return array
+	 */
+	public function replace_ids( array $content ): array {
+		return $this->replace_elements_ids( $content );
+	}
+
 	public function get_data( array $args, $context = 'display' ) {	
 	
 		if(isset($args['json_data'])){
