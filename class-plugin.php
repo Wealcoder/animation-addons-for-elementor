@@ -2050,6 +2050,8 @@ class Plugin
 
 		// WPML Support 
 		add_filter('wpml_elementor_widgets_to_translate', [WPML\WPML_Manager::class, 'add_widgets_to_translate']);
+		// A translation WPML just wrote must not render from Elementor's cache of the previous one.
+		add_action('wpml_pb_finished_adding_string_translations', [WPML\WPML_Manager::class, 'invalidate_render_cache'], 20, 1);
 	}
 }
 

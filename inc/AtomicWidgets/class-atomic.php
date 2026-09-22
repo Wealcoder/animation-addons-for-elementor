@@ -3099,6 +3099,46 @@ final class Atomic
 	 * @param string $kind        'script' or 'style'.
 	 * @return array{path: string, version: int|string}
 	 */
+	/**
+	 * Serve the `-rtl.css` twin of a registered stylesheet on an RTL locale.
+	 *
+	 * The build writes one beside every atomic stylesheet (Pro's through
+	 * wp-scripts, free's through gulp-rtlcss), and WordPress swaps it in by
+	 * itself once the handle carries `rtl => replace` — WP_Styles::do_item()
+	 * turns `<name>{suffix}.css` into `<name>-rtl{suffix}.css`, so the
+	 * `suffix` has to be declared when the minified file is the one that was
+	 * registered. Nothing declared either until 2026-09-22, so an Arabic or
+	 * Hebrew site was served the LTR sheet and every physical `left` /
+	 * `margin-right` in it pointed the wrong way (the menu's dropdown offsets,
+	 * the pagination arrows, the form's field rows).
+	 *
+	 * A twin that is not on disk is left alone: the LTR sheet then stays, which
+	 * is the behaviour every site had before.
+	 *
+	 * @param string $handle Registered style handle.
+	 * @param string $path   Plugin-relative path of the file actually registered.
+	 * @param string $base   Plugin path the file lives under (Pro widgets pass their own).
+	 */
+	public static function add_style_rtl(string $handle, string $path, string $base = '')
+	{
+		if ('' === $handle || '' === $path || ! wp_style_is($handle, 'registered')) {
+			return;
+		}
+
+		$suffix = (bool) preg_match('/\.min\.css$/', $path) ? '.min' : '';
+		$twin   = preg_replace('/' . preg_quote($suffix, '/') . '\.css$/', '-rtl' . $suffix . '.css', $path);
+
+		if (! $twin || ! file_exists(('' !== $base ? $base : AAEADDON_PATH) . $twin)) {
+			return;
+		}
+
+		if ('' !== $suffix) {
+			wp_style_add_data($handle, 'suffix', $suffix);
+		}
+
+		wp_style_add_data($handle, 'rtl', 'replace');
+	}
+
 	private function resolve_asset_meta(array $widget_data, string $kind): array
 	{
 		static $cache = [];
@@ -3473,6 +3513,7 @@ JS;
 						[],
 						$style_ver
 					);
+					self::add_style_rtl( $widget_data['style_handle'], $style_path );
 				}
 
 				wp_enqueue_style( $widget_data['style_handle'] );
@@ -3496,6 +3537,7 @@ JS;
 					[],
 					$version
 				);
+				self::add_style_rtl($widget_data['style_handle'], $path, self::widget_base_path($widget_data));
 			}
 		}
 	}
@@ -3579,6 +3621,7 @@ JS;
 		$file_path = AAEADDON_PATH . $path;
 		$version   = file_exists( $file_path ) ? filemtime( $file_path ) : AAEADDON_VERSION;
 		wp_register_style( $handle, self::asset_url( $path ), [], $version );
+		self::add_style_rtl( $handle, $path );
 	}
 
 	/**

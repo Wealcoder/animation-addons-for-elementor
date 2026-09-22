@@ -190,7 +190,56 @@ class Atomic_Widgets {
 		$out  = array();
 		$seen = array();
 		self::walk( $controls, $schema, $out, $seen );
+		self::canvas_edited( $schema, $out, $seen );
 		return $out;
+	}
+
+	/**
+	 * Text a builder edits ON THE CANVAS, with no panel control at all.
+	 *
+	 * A Nav item's label, a Loop Filter's heading label, a button's caption:
+	 * their prop is the rich-text envelope (`html-v3` / `html-v2`), which
+	 * exists for exactly one reason — Elementor's inline canvas editing — so
+	 * a panel walk never sees it and the whole Nav was invisible to WPML
+	 * (measured 2026-09-22). Every such prop is offered as AREA (it may carry
+	 * inline markup; AREA is never wpautop'd, VISUAL is), unless it is
+	 * already listed from a control or identifier-shaped.
+	 *
+	 * @param array<string,object>                        $schema
+	 * @param array<int,array<string,string>>            $out
+	 * @param array<string,bool>                          $seen
+	 */
+	private static function canvas_edited( array $schema, array &$out, array &$seen ): void {
+		foreach ( $schema as $bind => $prop ) {
+			$bind = (string) $bind;
+			if ( '' === $bind || isset( $seen[ $bind ] ) || self::is_identifier( $bind ) ) {
+				continue;
+			}
+			$tkey = self::text_key( $prop );
+			if ( ! in_array( $tkey, array( 'html-v3', 'html-v2' ), true ) ) {
+				continue;
+			}
+			// A DERIVED twin is not a second string. The Advanced Heading keeps
+			// `content_html` — the interpreted form of `content`, recomputed from
+			// it on every render — so offering it would list the same heading
+			// twice and the translation typed into it would be overwritten at
+			// render time. A prop named `<base>_html` beside a `<base>` that is
+			// itself offered is that shape.
+			$base = preg_replace( '/_html$/', '', $bind );
+			if ( $base !== $bind && isset( $schema[ $base ] ) && null !== self::text_key( $schema[ $base ] ) ) {
+				continue;
+			}
+			$seen[ $bind ] = true;
+			$label = ucfirst( str_replace( '_', ' ', $bind ) );
+			foreach ( self::TEXT_PROPS[ $tkey ] as $path ) {
+				$out[] = array(
+					'field'       => $bind . '>' . $path,
+					'field_id'    => $bind,
+					'type'        => $label,
+					'editor_type' => 'AREA',
+				);
+			}
+		}
 	}
 
 	private static function walk( array $items, array $schema, array &$out, array &$seen ): void {

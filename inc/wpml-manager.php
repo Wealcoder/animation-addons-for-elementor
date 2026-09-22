@@ -31,6 +31,34 @@ class WPML_Manager
 	// 	}
 	// }
 
+	/**
+	 * Drop Elementor's render caches on a post WPML has just written.
+	 *
+	 * WPML's translation editor writes the translated `_elementor_data` with a
+	 * plain update_post_meta() (WPML_Page_Builders_Update::save_data) — no
+	 * Elementor document save runs, so `_elementor_element_cache` (the
+	 * rendered-HTML cache Elementor replays on the front end) keeps the
+	 * PREVIOUS translation and `_elementor_css` its previous stylesheet. The
+	 * site owner changes a translation, reloads, and sees the old text: the
+	 * "translation added but doesn't show at frontend" report on WPML's forum,
+	 * measured here on WPML 4.6.8 (2026-09-22). Hooked on the action WPML fires
+	 * once a translation is saved; the ids are the translated post's and its
+	 * original's.
+	 *
+	 * @param int|string $translated_post_id
+	 */
+	public static function invalidate_render_cache($translated_post_id)
+	{
+		$translated_post_id = absint($translated_post_id);
+
+		if ($translated_post_id <= 0) {
+			return;
+		}
+
+		delete_post_meta($translated_post_id, '_elementor_element_cache');
+		delete_post_meta($translated_post_id, '_elementor_css');
+	}
+
 	public static function load_integration_files()
 	{
 		// Load repeatable module class

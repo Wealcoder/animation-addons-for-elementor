@@ -674,12 +674,17 @@ class CustomIcons_Icon_Admin
 
 	public function metabox_callback()
 	{
-		echo '<div id="wcf--custom-icons-meta-box">Loading</div>';
+		// translate="no": browser page translation wraps every text node in <font>,
+		// and React's next commit then removes a node that has moved -- it throws and
+		// unmounts the whole root, i.e. a blank screen. Reported on a WPML site, whose
+		// admin <html lang> is not English, so Chrome offers to translate this page.
+		// See plugin_dashboard_entry_page() in inc/admin/dashboard.php.
+				echo '<div id="wcf--custom-icons-meta-box" class="notranslate" translate="no">Loading</div>';
 	}
 
 	public function metabox_side_settings_callback()
 	{
-		echo '<div id="wcf--custom-icons-meta-box-side-setting">Loading</div>';
+		echo '<div id="wcf--custom-icons-meta-box-side-setting" class="notranslate" translate="no">Loading</div>';
 	}
 
 	public function register_sub_menu_post()

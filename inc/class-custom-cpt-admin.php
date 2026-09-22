@@ -158,7 +158,12 @@ class CustomCpt_Cpt_Admin {
      */
     public function cpt_callback() {
         echo '<div class="wrap">';
-        echo '<div id="aaeaddon-cpt-builder"></div>';
+        // translate="no": browser page translation wraps every text node in <font>,
+        // and React's next commit then removes a node that has moved -- it throws and
+        // unmounts the whole root, i.e. a blank screen. Reported on a WPML site, whose
+        // admin <html lang> is not English, so Chrome offers to translate this page.
+        // See plugin_dashboard_entry_page() in inc/admin/dashboard.php.
+                echo '<div id="aaeaddon-cpt-builder" class="notranslate" translate="no"></div>';
         echo '</div>';
     }
 

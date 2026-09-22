@@ -14,6 +14,7 @@ const minifyCSS = require('gulp-clean-css');
 const autoprefixer = require('gulp-autoprefixer');
 const sourcemaps = require('gulp-sourcemaps');
 const mode = require('gulp-mode')();
+const rtlcss = require('gulp-rtlcss');
 
 
 // Tasks
@@ -132,6 +133,23 @@ gulp.task('compile:atomic-scss', () => {
         .pipe(gulp.dest('assets/atomic/css'));
 });
 
+// The RTL twin of every atomic stylesheet. WordPress serves <name>-rtl.css by
+// itself on an RTL locale once the handle carries `rtl => replace`
+// (Atomic::add_style_rtl), so an Arabic or Hebrew site gets the flipped sheet
+// with no PHP branch and no second enqueue. Pro's widget SCSS gets the same
+// twin from wp-scripts; free builds its own with gulp, hence this task. Runs
+// BEFORE minify:atomic-css, which then minifies the twins along with the rest.
+gulp.task('rtl:atomic-css', () => {
+    return gulp.src([
+        'assets/atomic/css/**/*.css',
+        '!assets/atomic/css/**/*.min.css',
+        '!assets/atomic/css/**/*-rtl.css',
+    ])
+        .pipe(rtlcss())
+        .pipe(rename({suffix: '-rtl'}))
+        .pipe(gulp.dest('assets/atomic/css'));
+});
+
 gulp.task('minify:atomic-css', function () {
     return gulp.src([
         'assets/atomic/css/**/*.css',
@@ -164,7 +182,7 @@ gulp.task('copy:atomic-images', () => {
 
 // Combined tasks.
 gulp.task('buildJs', gulp.series('compile:js', 'minify:js', 'minify:atomic-js'));
-gulp.task('buildCss', gulp.series('compile:scss', 'minify:css', 'compile:atomic-scss', 'copy:atomic-images', 'minify:atomic-css'));
+gulp.task('buildCss', gulp.series('compile:scss', 'minify:css', 'compile:atomic-scss', 'copy:atomic-images', 'rtl:atomic-css', 'minify:atomic-css'));
 
 gulp.task('build', gulp.series('buildCss', 'buildJs'));
 
@@ -172,7 +190,7 @@ gulp.task('watch', () => new Promise((resolve, reject) => {
     try {
         gulp.watch('assets/src/js/**/*.js', {ignoreInitial: true}, gulp.series('buildJs'));
         gulp.watch('assets/src/scss/**/*.scss', {ignoreInitial: true}, gulp.series('buildCss'));
-        gulp.watch('inc/AtomicWidgets/Widgets/**/*.scss', {ignoreInitial: true}, gulp.series('compile:atomic-scss', 'minify:atomic-css'));
+        gulp.watch('inc/AtomicWidgets/Widgets/**/*.scss', {ignoreInitial: true}, gulp.series('compile:atomic-scss', 'rtl:atomic-css', 'minify:atomic-css'));
         gulp.watch('inc/AtomicWidgets/Widgets/**/assets/images/**/*', {ignoreInitial: true}, gulp.series('copy:atomic-images'));
         resolve();
     } catch (e) {

@@ -662,6 +662,36 @@ class Aaeaddon_Theme_Builder
 		return false;
 	}
 
+	/**
+	 * The ids a "specific pages" condition may name for the post being viewed.
+	 *
+	 * The condition stores the id picked in the Builder — on a WPML site the
+	 * default-language post — while a translated page carries its own id, so
+	 * a header assigned to "About" never applied to "À propos". The viewed
+	 * post's translations (the original among them, `wpml_object_id` with
+	 * `$return_original = true` for every active language) are matched too.
+	 * Without WPML the filter is unhooked and the list is the one id.
+	 *
+	 * @return int[]
+	 */
+	private static function current_post_ids_for_conditions() {
+		$id  = (int) get_the_ID();
+		$ids = array($id);
+
+		if ($id > 0 && has_filter('wpml_object_id')) {
+			$type  = get_post_type($id) ?: 'page';
+			$langs = (array) apply_filters('wpml_active_languages', null, array('skip_missing' => 0));
+			foreach (array_keys($langs) as $code) {
+				$m = apply_filters('wpml_object_id', $id, $type, false, $code);
+				if ($m) {
+					$ids[] = (int) $m;
+				}
+			}
+		}
+
+		return array_values(array_unique($ids));
+	}
+
 	function get_ids_from_slugs_any_type($slugs = []) {
 
 		$clean_slugs = array_filter(array_map('sanitize_title', (array) $slugs));
@@ -787,9 +817,9 @@ class Aaeaddon_Theme_Builder
 
 		// check for specific page and post
 		if (! is_home() && ! is_archive() && array_key_exists('specifics', $templates)) {
+			$current_ids = self::current_post_ids_for_conditions();
 			foreach ($templates['specifics'] as $specific) {
-				$key = array_search(get_the_ID(), $specific['posts']);
-				if (false !== $key) {
+				if (is_array($specific['posts']) && array_intersect($current_ids, array_map('intval', $specific['posts']))) {
 					return $specific['id'];
 				}
 			}

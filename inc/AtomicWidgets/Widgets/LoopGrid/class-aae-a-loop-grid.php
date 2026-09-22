@@ -813,11 +813,32 @@ class Aaeaddon_A_Loop_Grid extends Atomic_Element_Base {
 			// (object) so an empty map encodes as {} — JS reads it as an object.
 			'filters'   => (object) ( isset( $ctx['filters'] ) && is_array( $ctx['filters'] ) ? $ctx['filters'] : [] ),
 			'nonce'     => Nonce::create( Nonce::LOOP_GRID_FRONT ),
-			'ajaxUrl'   => admin_url( 'admin-ajax.php' ),
+			'ajaxUrl'   => self::ajax_url(),
 			// The endpoint's action name, so Pro's runtime never has to spell it
 			// (4.2 renamed it; Pro falls back to the old name when this is absent).
 			'action'    => 'aaeaddon_loop_grid_page',
 		];
+	}
+
+	/**
+	 * The endpoint both runtimes post to, carrying the page's LANGUAGE on a
+	 * WPML site.
+	 *
+	 * WPML decides an admin-ajax request's language from `$_REQUEST['lang']`
+	 * and otherwise from its front-end cookie (WPML\Language\Detection\Ajax).
+	 * The cookie is written by a PHP page view — so behind a page cache, or
+	 * for a visitor who arrived from another language, it says the wrong
+	 * thing or nothing, and page 2 of a translated grid came back in the
+	 * default language (the "load more shows the wrong language" report on
+	 * WPML's forum). The current language rides the URL instead, which every
+	 * request from this page carries whatever the cookie says. Without WPML
+	 * the filter answers null and the URL is the plain endpoint.
+	 */
+	public static function ajax_url(): string {
+		$url  = admin_url( 'admin-ajax.php' );
+		$lang = apply_filters( 'wpml_current_language', null );
+
+		return is_string( $lang ) && '' !== $lang ? add_query_arg( 'lang', $lang, $url ) : $url;
 	}
 
 	/* ------------------------------------------------------------------ */
