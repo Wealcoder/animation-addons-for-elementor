@@ -1328,6 +1328,15 @@ class WPML_Manager
 			$widgets[$widget_name] = $entry;
 		}
 
+		// The atomic (V4) line is derived from each element's own panel and
+		// schema rather than listed here - see inc/wpml-atomic.php.
+		include_once AAEADDON_PATH . 'inc/wpml-atomic.php';
+		foreach ( Atomic_Widgets::map() as $name => $entry ) {
+			if ( ! isset( $widgets[ $name ] ) ) {
+				$widgets[ $name ] = $entry;
+			}
+		}
+
 		return $widgets;
 	}
 }
