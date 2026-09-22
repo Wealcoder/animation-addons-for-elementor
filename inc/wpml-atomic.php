@@ -23,7 +23,15 @@
  * Two entries per type, because an atomic LEAF saves as `{elType:'widget',
  * widgetType:'e-…'}` while an atomic CONTAINER saves as `{elType:'e-…'}`:
  * WPML's Elementor integration matches an entry's `conditions` against the
- * element's own keys, so a container needs the `elType` spelling.
+ * element's own keys, so a container needs the `elType` spelling. (WPML
+ * 4.6.x walks only elType widget/container and never reaches a container's
+ * own text; 4.9+ reads e-flexbox and friends, and that is the version the
+ * twin is for.)
+ *
+ * Every field is a `>` PATH into the saved `{$$type, value}` envelope — see
+ * TEXT_PROPS. Proven against the real WPML 4.6.8 + String Translation
+ * (E:\Local Testing\verify-wpml-live.php): register → translate → the bn
+ * page renders the translation.
  *
  * Loaded from WPML_Manager::add_widgets_to_translate() — WPML present, the
  * filter firing — and nowhere else.
@@ -37,17 +45,47 @@ defined( 'ABSPATH' ) || die();
 
 class Atomic_Widgets {
 
-	/** Control types a person types prose into → WPML editor type. */
+	/**
+	 * Control types a person types prose into → WPML editor type.
+	 *
+	 * Never VISUAL for an inline text: WPML runs `wpautop()` over a one-line
+	 * VISUAL translation when it writes it back (StringFormat::useWpAutoP),
+	 * which wraps a heading's text in `<p>` — measured on WPML 4.6.8. WPML's
+	 * own e-heading entry is LINE for that reason; the rich ones are AREA (a
+	 * textarea in the translation editor, no wpautop).
+	 */
 	const CONTROL_EDITORS = array(
 		'text'            => 'LINE',
 		'textarea'        => 'AREA',
-		'html'            => 'VISUAL',
-		'inline-editing'  => 'VISUAL', // Elementor's canvas editor (a heading's text, a label)
-		'aae-inline-text' => 'VISUAL', // ours, the Advanced Heading's rich text
+		'html'            => 'AREA',
+		'inline-editing'  => 'LINE', // Elementor's canvas editor (a heading's text, a label)
+		'aae-inline-text' => 'AREA', // ours, the Advanced Heading's rich text
 	);
 
-	/** Prop-type keys that carry text. */
-	const TEXT_PROPS = array( 'string', 'html', 'html-v2', 'html-v3' );
+	/**
+	 * Prop-type keys that carry text, and WHERE the text sits inside the saved
+	 * envelope — the `>` path WPML's Elementor integration walks
+	 * (`Obj::pathOr( …, explode( '>', $field ), $element['settings'] )`). The
+	 * envelope itself is an array, so a bare prop name never resolves to a
+	 * string and WPML would skip the field in silence; the path is what makes
+	 * it read. Shapes read out of Elementor 4.2.4's prop types:
+	 *
+	 *   string / html   {$$type:'string', value:'…'}                       → value
+	 *   html-v2         {$$type:'html-v2', value:{content:'…'}}            → value>content
+	 *   html-v3         {$$type:'html-v3', value:{content:{value:'…'}}}    → value>content>value
+	 *   escaped-html    Elementor 4.3 replaces html-v3 with a flat string   → value
+	 *
+	 * WPML's own config for e-heading declares the 4.2 and 4.3 paths side by
+	 * side with one `field_id`, so a string keeps its name across the
+	 * Elementor update; an html-v3 prop here does the same.
+	 */
+	const TEXT_PROPS = array(
+		'string'       => array( 'value' ),
+		'html'         => array( 'value' ),
+		'escaped-html' => array( 'value' ),
+		'html-v2'      => array( 'value>content' ),
+		'html-v3'      => array( 'value>content>value', 'value' ),
+	);
 
 	/**
 	 * Line lists: `value|Label` (form select / radio options), `value:Label`
@@ -173,7 +211,8 @@ class Atomic_Widgets {
 				continue;
 			}
 			$prop = $schema[ $bind ];
-			if ( ! self::is_text_prop( $prop ) || self::is_identifier( $bind ) ) {
+			$tkey = self::text_key( $prop );
+			if ( null === $tkey || self::is_identifier( $bind ) ) {
 				continue;
 			}
 			$seen[ $bind ] = true;
@@ -184,40 +223,49 @@ class Atomic_Widgets {
 				$editor = 'AREA';
 				$label .= ' ' . __( '(one entry per line — translate the label after the separator, keep the value before it)', 'animation-addons-for-elementor' );
 			}
-			$out[] = array(
-				'field'       => $bind,
-				'type'        => $label,
-				'editor_type' => $editor,
-			);
+			// One entry per envelope shape; `field_id` (the prop name) keeps the
+			// string's NAME the same whichever shape the saved page carries.
+			foreach ( self::TEXT_PROPS[ $tkey ] as $path ) {
+				$out[] = array(
+					'field'       => $bind . '>' . $path,
+					'field_id'    => $bind,
+					'type'        => $label,
+					'editor_type' => $editor,
+				);
+			}
 		}
 	}
 
 	/**
-	 * A string-family prop with no enum. A prop that accepts a dynamic tag is
-	 * a UNION (string | dynamic) — the string member is the one that matters.
+	 * The TEXT_PROPS key of a string-family prop with no enum, or null. A prop
+	 * that accepts a dynamic tag is a UNION (string | dynamic) — the string
+	 * member is the one that matters; when the saved value IS a dynamic tag
+	 * the path resolves to an array and WPML skips it, which is right.
 	 */
-	private static function is_text_prop( $prop ): bool {
+	public static function text_key( $prop ): ?string {
 		if ( ! is_object( $prop ) || ! method_exists( $prop, 'get_key' ) ) {
-			return false;
+			return null;
 		}
-		if ( 'union' === (string) $prop::get_key() && method_exists( $prop, 'get_prop_types' ) ) {
+		$key = (string) $prop::get_key();
+		if ( 'union' === $key && method_exists( $prop, 'get_prop_types' ) ) {
 			foreach ( (array) $prop->get_prop_types() as $member ) {
-				if ( self::is_text_prop( $member ) ) {
-					return true;
+				$k = self::text_key( $member );
+				if ( null !== $k ) {
+					return $k;
 				}
 			}
-			return false;
+			return null;
 		}
-		if ( ! in_array( (string) $prop::get_key(), self::TEXT_PROPS, true ) ) {
-			return false;
+		if ( ! isset( self::TEXT_PROPS[ $key ] ) ) {
+			return null;
 		}
 		if ( method_exists( $prop, 'get_settings' ) ) {
 			$settings = (array) $prop->get_settings();
 			if ( ! empty( $settings['enum'] ) ) {
-				return false;
+				return null;
 			}
 		}
-		return true;
+		return $key;
 	}
 
 	/** Identifier-shaped prop names are never prose. */
