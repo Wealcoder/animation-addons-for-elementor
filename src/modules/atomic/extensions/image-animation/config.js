@@ -1,7 +1,7 @@
 /* eslint-env browser */
 
 import { CUSTOM_PROPERTY_OPTIONS } from '../regular-animation/config';
-import { PRESETS, presetRowPatch } from '../regular-animation/presets';
+import { PRESETS, presetRowPatch, presetLabel } from '../regular-animation/presets';
 import { CINEMATIC_PRESET_DEFAULTS, cinematicPresetRowPatch } from './cinematic-presets';
 
 /**
@@ -27,7 +27,7 @@ import { CINEMATIC_PRESET_DEFAULTS, cinematicPresetRowPatch } from './cinematic-
 // (same as regular animation) plus a 'custom' free-form entry.
 const PRESET_EFFECT_OPTIONS = Object.keys(PRESETS)
 	.filter((k) => k !== 'custom')
-	.map((k) => ({ value: k, label: k.replace(/([A-Z])/g, ' $1').replace(/^./, (c) => c.toUpperCase()).trim() }));
+	.map((k) => ({ value: k, label: presetLabel(k) }));
 
 // The 8 cinematic presets merged in from ImageAdvancedAnimation. "pro - "
 // prefix distinguishes them in the unified dropdown from the free built-ins.
@@ -193,6 +193,7 @@ const WRAPPER_OPTIONS = [
 
 const rowIsReveal = (r) => rowEffect(r) === 'reveal';
 const rowIsScale = (r) => rowEffect(r) === 'scale';
+const rowIsStretch = (r) => rowEffect(r) === 'stretch';
 // "Props" effects = anything NOT a built-in and NOT a cinematic preset
 // (custom + every premium preset). These expose the method + custom-props
 // repeaters; selecting a preset auto-fills those props. Cinematic presets
@@ -277,6 +278,13 @@ const ROW_FIELDS = [
 	{ bind: 'scale_start', label: 'Start Scale', control: 'number', defaultValue: 0.5, when: rowIsScale },
 	{ bind: 'scale_end', label: 'End Scale', control: 'number', defaultValue: 1, when: rowIsScale },
 
+	// Stretch-only — the frame the image opens from. Stretch had no fields at
+	// all and tweened width to 100% from whatever the CSS said, which on an
+	// atomic e-image is already 100%: the effect was a measured no-op. These
+	// give it the start state it was missing.
+	{ bind: 'stretch_start_width', label: 'Start Width (%)', control: 'slider', min: 10, max: 100, step: 1, defaultValue: 60, when: rowIsStretch },
+	{ bind: 'stretch_start_radius', label: 'Start Radius (px)', control: 'slider', min: 0, max: 200, step: 1, defaultValue: 40, when: rowIsStretch },
+
 	// Cinematic-preset-only fields (merged in from ImageAdvancedAnimation).
 	{ bind: 'direction', label: 'Direction', control: 'select', options: DIRECTION_OPTIONS, defaultValue: 'bottomToTop', when: usesDirection },
 	{ bind: 'move_direction', label: 'Move Direction', control: 'select', options: MOVE_DIRECTION_OPTIONS, defaultValue: 'none', when: isOneOf('scaleAnimation') },
@@ -297,7 +305,7 @@ const ROW_FIELDS = [
 	{ bind: 'rotation_y', label: 'Rotate Y (deg)', control: 'slider', min: -90, max: 90, step: 1, defaultValue: 0, when: isOneOf('orbitTilt') },
 	{ bind: 'rotation_z', label: 'Rotate Z (deg)', control: 'slider', min: -45, max: 45, step: 1, defaultValue: 0, when: isOneOf('orbitTilt') },
 	{ bind: 'blur', label: 'Blur (px)', control: 'slider', min: 0, max: 30, step: 1, defaultValue: 0, when: usesBlur },
-	{ bind: 'brightness', label: 'Brightness', control: 'slider', min: 0.5, max: 2, step: 0.05, defaultValue: 1, when: usesBrightness },
+	{ bind: 'brightness', label: 'Brightness', control: 'slider', min: 0.5, max: 2, step: 0.01, defaultValue: 1, when: usesBrightness },
 	{ bind: 'saturation', label: 'Saturation', control: 'slider', min: 0, max: 2.5, step: 0.05, defaultValue: 1, when: usesSaturation },
 	{ bind: 'radius', label: 'Radius (px)', control: 'slider', min: 0, max: 80, step: 1, defaultValue: 0, when: isOneOf('cinematicMask') },
 	{ bind: 'shade_opacity', label: 'Shade Opacity', control: 'slider', min: 0, max: 1, step: 0.01, defaultValue: 0, when: usesShadeOpacity },
@@ -306,7 +314,7 @@ const ROW_FIELDS = [
 
 	{ bind: 'slice_count', label: 'Slice Count', control: 'slider', min: 3, max: 28, step: 1, defaultValue: 12, when: isOneOf('sliceShutter') },
 	{ bind: 'slice_skew', label: 'Slice Skew (deg)', control: 'slider', min: 0, max: 24, step: 1, defaultValue: 0, when: isOneOf('sliceShutter') },
-	{ bind: 'depth', label: '3D Depth', control: 'slider', min: 0, max: 520, step: 5, defaultValue: 0, when: usesDepth },
+	{ bind: 'depth', label: '3D Depth', control: 'slider', min: 0, max: 520, step: 1, defaultValue: 0, when: usesDepth },
 	{ bind: 'stagger', label: 'Stagger (s)', control: 'slider', min: 0, max: 1.8, step: 0.01, defaultValue: 0, when: usesStagger },
 
 	{ bind: 'tile_columns', label: 'Tile Columns', control: 'slider', min: 2, max: 10, step: 1, defaultValue: 6, when: isOneOf('mosaicDepth') },
@@ -339,8 +347,14 @@ const ROW_FIELDS = [
 	},
 
 	// Shared timing
+	// Duration's step is 0.01, not 0.1, and 3D Depth's is 1, not 5, because the
+	// cinematic presets ship durations of 1.25 / 1.15 / 1.22 / 1.18 and a depth
+	// of 42. On the coarser grid the panel rendered those as 1.3 / 1.2 / 1.2 /
+	// 1.2 and 40, so the model held one number and the slider showed another —
+	// and the first nudge of the slider overwrote the preset's timing with the
+	// rounded one. Same reason for Brightness (preset 1.28 on a 0.05 grid).
 	{ bind: 'delay', label: 'Delay', control: 'slider', min: 0, max: 10, step: 0.05, defaultValue: 0, when: rowIsAnimated },
-	{ bind: 'duration', label: 'Duration', control: 'slider', min: 0, max: 10, step: 0.1, defaultValue: 1.5, when: rowIsAnimated },
+	{ bind: 'duration', label: 'Duration', control: 'slider', min: 0, max: 10, step: 0.01, defaultValue: 1.5, when: rowIsAnimated },
 	{ bind: 'ease', label: 'Ease', control: 'select', options: EASE_OPTIONS, defaultValue: 'power2.out', when: rowIsAnimated },
 
 	{ bind: 'markers', label: 'Markers', control: 'switch', defaultValue: false, when: (r) => rowIsAnimated(r) && rowIsScroll(r) },
@@ -352,6 +366,8 @@ const ROW_DEFAULTS = {
 	start_from: 'right',
 	scale_start: 0.5,
 	scale_end: 1,
+	stretch_start_width: 60,
+	stretch_start_radius: 40,
 	method: 'from',
 	delay: 0,
 	duration: 1.5,

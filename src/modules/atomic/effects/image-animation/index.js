@@ -80,6 +80,9 @@ function normalizeRow(row) {
 		// scale
 		scaleStart: Number(row.scaleStart ?? 0.5),
 		scaleEnd: Number(row.scaleEnd ?? 1),
+		// stretch — the frame it opens from; see buildStretchTween.
+		stretchStartWidth: Number(row.stretchStartWidth ?? 60),
+		stretchStartRadius: Number(row.stretchStartRadius ?? 40),
 		// custom / preset props
 		customProps: normalizeProps(row.customProps),
 		customPropsTo: normalizeProps(row.customPropsTo),
@@ -149,18 +152,37 @@ function buildScaleTween(el, config, paused, scrub) {
 	);
 }
 
+/**
+ * Stretch — the image widens from a narrower, rounded frame to full bleed.
+ *
+ * This was a `gsap.to(image, { width: '100%', borderRadius: '0px' })` with no
+ * start state of its own, which meant it animated an atomic e-image from
+ * width:100%/radius:0 to width:100%/radius:0 — measured as zero style changes
+ * over 2.4s in both the editor and the frontend. It only ever did anything on
+ * a site whose own CSS happened to leave the image narrow or rounded.
+ *
+ * Now it is a fromTo with the start frame exposed as two panel fields, so the
+ * effect is visible on a default image and tunable like every other one.
+ */
 function buildStretchTween(el, config, paused, scrub) {
 	const gsap = getGsap();
 	if (!gsap) return null;
 	const image = findMedia(el);
 	gsap.killTweensOf(image);
-	return gsap.to(image, {
-		width: '100%',
-		borderRadius: '0px',
-		duration: config.duration,
-		ease: scrub ? 'none' : config.ease,
-		paused: !!paused,
-	});
+	return gsap.fromTo(
+		image,
+		{
+			width: `${config.stretchStartWidth}%`,
+			borderRadius: `${config.stretchStartRadius}px`,
+		},
+		{
+			width: '100%',
+			borderRadius: '0px',
+			duration: config.duration,
+			ease: scrub ? 'none' : config.ease,
+			paused: !!paused,
+		}
+	);
 }
 
 /** custom GSAP from/to props (mirrors regular.js). */
@@ -182,9 +204,11 @@ function buildCustomTween(el, config, paused, scrub) {
 	const from = toTarget(config.customProps);
 	const to = toTarget(config.customPropsTo);
 
+	// No `delay` here — buildRowTween applies it to every effect's animation
+	// once it is built (see applyRowDelay). Passing it here too would make the
+	// custom / premium-preset path wait twice as long as the panel says.
 	const timing = {
 		duration: config.duration,
-		delay: config.delay,
 		ease: scrub ? 'none' : config.ease,
 		paused: !!paused,
 	};
@@ -754,6 +778,38 @@ const CINEMATIC_PRESET_BUILDERS = {
  *  fills custom_props from the preset table, so they're identical at
  *  runtime. */
 function buildRowTween(el, config, paused, scrub) {
+	return applyRowDelay(buildRowTweenForEffect(el, config, paused, scrub), config, scrub);
+}
+
+/**
+ * Delay — applied here, once, for every effect.
+ *
+ * It used to be passed only inside buildCustomTween's `timing`, so the panel
+ * offered a Delay slider on reveal / scale / stretch and all 8 cinematic
+ * presets and none of them honoured it: measured settle time was identical at
+ * Delay 0 and Delay 2 (reveal 1019ms vs 1049ms, mosaicDepth 1902ms vs
+ * 1902ms). Only custom + the premium presets — the two paths that reach
+ * buildCustomTween — ever waited.
+ *
+ * Both Tween and Timeline inherit Animation#delay(), so one call covers the
+ * bespoke tweens, the reveal timeline and the cinematic timelines alike.
+ *
+ * Two deliberate exemptions:
+ *   - scrub rows (play_with_scroll): ScrollTrigger owns the playhead, and a
+ *     delay there just eats the first slice of the scroll range instead of
+ *     waiting for anything.
+ *   - method `set`: an instant state by definition, and it is built fresh on
+ *     every trigger rather than played.
+ */
+function applyRowDelay(anim, config, scrub) {
+	if (!anim || scrub || config.method === 'set') return anim;
+	const delay = Number(config.delay) || 0;
+	if (delay <= 0 || typeof anim.delay !== 'function') return anim;
+	anim.delay(delay);
+	return anim;
+}
+
+function buildRowTweenForEffect(el, config, paused, scrub) {
 	switch (config.effect) {
 		case 'reveal':  return buildRevealTween(el, config, paused);
 		case 'scale':   return buildScaleTween(el, config, paused, scrub);
@@ -775,13 +831,13 @@ function buildRowTween(el, config, paused, scrub) {
 /**
  * Does this row have a start state worth parking the image in before its
  * trigger fires? `reveal` and `scale` are always from-based, and the cinematic
- * presets all open from a hidden / offset frame. `stretch` runs through
- * gsap.to and has no start state to hold, and the custom path only does when
- * the user picked a from-style method.
+ * presets all open from a hidden / offset frame. `stretch` is a fromTo too
+ * now that it has a start frame of its own, and the custom path only does
+ * when the user picked a from-style method.
  */
 function hasStartState(config) {
 	if (config.effect === 'reveal' || config.effect === 'scale') return true;
-	if (config.effect === 'stretch') return false;
+	if (config.effect === 'stretch') return true;
 	if (CINEMATIC_PRESET_BUILDERS[config.effect]) return true;
 	return config.method === 'from' || config.method === 'fromTo';
 }

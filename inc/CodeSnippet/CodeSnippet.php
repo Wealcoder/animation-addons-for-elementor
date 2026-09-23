@@ -402,10 +402,14 @@ class CodeSnippet {
 					update_post_meta( $snippet_id, $key, '' );
 					continue;
 				}
-				update_post_meta( $snippet_id, $key, $meta_value );
+
+				// update_metadata() unslashes whatever it is handed, so the value has
+				// to go in slashed. Unslashed, every backslash in a snippet is eaten on
+				// save -- \' in a JS string, \d in a regex, \201C in CSS content.
+				update_post_meta( $snippet_id, $key, wp_slash( $meta_value ) );
 
 			} else {
-				update_post_meta( $snippet_id, $key, $meta_value );
+				update_post_meta( $snippet_id, $key, wp_slash( $meta_value ) );
 			}
 		}
 

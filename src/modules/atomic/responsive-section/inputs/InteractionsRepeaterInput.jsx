@@ -84,6 +84,38 @@ function takenExclusivesExcluding(rows, selfIndex) {
 	return taken;
 }
 
+/**
+ * The row "Add Interaction" should create.
+ *
+ * A new row used to be `{ ...rowDefaults }` verbatim, and rowDefaults.trigger
+ * is always `on_scroll` — so adding a second interaction to an element that
+ * already had a scroll row produced two rows in the same exclusive group. The
+ * Trigger dropdown then (correctly) offered no other scroll trigger, so the
+ * clash could not be edited away from the new row, while PHP's
+ * rows_to_runtime() silently dropped everything after the first of each group
+ * at render. The panel showed two interactions and the page ran one.
+ *
+ * Seeding into a group that is still free means every added row is one that
+ * will actually run. Exported because the header "+" in ResponsiveRow is a
+ * second entry point for this same action — the two used to hold separate
+ * copies of the seed, which is exactly how they would drift apart again.
+ */
+export function seedInteractionRow(rows, rowDefaults = {}, rowFields = []) {
+	const row = { ...rowDefaults };
+	const taken = takenExclusivesExcluding(Array.isArray(rows) ? rows : [], -1);
+	if (!taken.has(row.trigger)) return row;
+
+	const triggerField = (rowFields || []).find((f) => f.bind === 'trigger');
+	const free = (triggerField?.options || [])
+		.map((o) => o.value)
+		.find((t) => !taken.has(t));
+	// Both groups taken leaves only click / hover, which are unlimited and
+	// always present in the options; if even that lookup fails, keep the
+	// default rather than seed a row with no trigger at all.
+	if (free) row.trigger = free;
+	return row;
+}
+
 /* ---------- per-row field cells ---------- */
 
 function FieldSelect({ field, value, onChange, disabledOptions, rowData }) {
@@ -169,14 +201,33 @@ function FieldNumber({ field, value, onChange }) {
 
 function FieldSlider({ field, value, onChange }) {
 	const { min = 0, max = 10, step = 0.1 } = field;
-	const num = typeof value === 'number' ? value : (Number(value) || min);
+	// An unset field must show the value that will actually be used, which is
+	// the field's own defaultValue — not `min`. Falling back to `min` put the
+	// Brightness thumb at 0.5 where the runtime uses 1, Stretch's Start Width
+	// at 10% where it uses 60%, and so on: the panel disagreed with the
+	// animation for every field whose default isn't its minimum. `|| min` also
+	// swallowed a stored "0", since Number('0') is falsy.
+	const parsed = Number(value);
+	const fallback = typeof field.defaultValue === 'number' ? field.defaultValue : min;
+	const num = (value === null || value === undefined || value === '' || !Number.isFinite(parsed))
+		? fallback
+		: parsed;
+	// A stored value outside the configured range — a default from an older
+	// build, a preset authored against a wider slider — used to pin the thumb
+	// at the end of the track while the number box beside it read the real
+	// figure, so the two controls disagreed and the slider quietly lied (seen
+	// with a saved Delay of 20 on a 0-10 track). Widen the track to reach the
+	// value instead: nothing is clamped, nothing is silently rewritten, and
+	// dragging from there lands back inside the intended range.
+	const lo = Math.min(min, num);
+	const hi = Math.max(max, num);
 	return (
 		<Stack direction="row" alignItems="center" spacing={1}>
 			<Slider
 				size="small"
 				value={num}
-				min={min}
-				max={max}
+				min={lo}
+				max={hi}
 				step={step}
 				onChange={(_, v) => onChange(v)}
 				sx={{ flex: 1 }}
@@ -185,7 +236,11 @@ function FieldSlider({ field, value, onChange }) {
 				size="tiny"
 				type="number"
 				value={value ?? ''}
-				inputProps={{ min, max, step }}
+				// Stays emptiable so the box can be cleared and retyped; the
+				// placeholder carries the effective value meanwhile, so an
+				// untouched field reads the same here as on the track.
+				placeholder={String(num)}
+				inputProps={{ min: lo, max: hi, step }}
 				onChange={(e) => {
 					const raw = e.target.value;
 					if (raw === '') return onChange(null);
@@ -477,7 +532,7 @@ export function InteractionsRepeaterInput({
 		return `r${uidCounter.current++}`;
 	};
 
-	const addRow = () => onChange([...rows, { ...rowDefaults }]);
+	const addRow = () => onChange([...rows, seedInteractionRow(rows, rowDefaults, rowFields)]);
 	const removeAt = (i) => onChange(rows.filter((_, idx) => idx !== i));
 
 	return (
