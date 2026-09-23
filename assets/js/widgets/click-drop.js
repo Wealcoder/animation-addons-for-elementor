@@ -38,5 +38,3 @@
 
   });
 })(jQuery);
-
-//# sourceMappingURL=click-drop.js.map

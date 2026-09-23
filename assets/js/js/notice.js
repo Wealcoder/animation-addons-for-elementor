@@ -38,4 +38,3 @@ jQuery(document).ready(function ($) {
         }
     });
 });
-//# sourceMappingURL=notice.js.map

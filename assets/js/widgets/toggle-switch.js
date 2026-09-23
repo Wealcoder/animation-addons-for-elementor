@@ -17,5 +17,3 @@ window.addEventListener("elementor/frontend/init", () => {
         ($scope) => toggleSwitcher($scope[0] || $scope)
     );
 });
-
-//# sourceMappingURL=toggle-switch.js.map

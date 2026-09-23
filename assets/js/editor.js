@@ -138,5 +138,3 @@
     return css;
   });
 })(jQuery, window, document, WCF_Addons_Editor);
-
-//# sourceMappingURL=editor.js.map

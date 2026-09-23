@@ -103,4 +103,3 @@
         elementorFrontend.hooks.addAction('frontend/element_ready/wcf--image-compare.default', ImageCompare);
     });
 })(jQuery);
-//# sourceMappingURL=image-compare.js.map

@@ -121,5 +121,3 @@
 
     });
 })(jQuery);
-
-//# sourceMappingURL=slider.js.map

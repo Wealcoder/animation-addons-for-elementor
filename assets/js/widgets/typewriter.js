@@ -55,4 +55,3 @@
         elementorFrontend.hooks.addAction('frontend/element_ready/wcf--typewriter.default', WcfTypewriter);
     });
 })(jQuery);
-//# sourceMappingURL=typewriter.js.map

@@ -444,5 +444,3 @@
 
 })(jQuery);
 
-
-//# sourceMappingURL=template-query.js.map
