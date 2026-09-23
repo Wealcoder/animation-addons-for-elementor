@@ -36,6 +36,52 @@ export const PRESETS = {
 	floatIn: { start: { opacity: 0, y: 40, rotation: -2 }, end: { opacity: 1, y: 0, rotation: 0 } },
 };
 
+/**
+ * Display names for the presets above.
+ *
+ * Panels used to derive these from the key with
+ * `key.replace(/([A-Z])/g, ' $1')`, which splits at every capital and so cuts
+ * a digit off from the letter beside it: `flipUp3D` came out as "Flip Up3 D",
+ * `unfold3D` as "Unfold3 D", and `saasDashboard` as "Saas Dashboard" because
+ * nothing can recover the capitals of an acronym from a camelCase key. Naming
+ * them here keeps the next preset from re-breaking the same regex — the
+ * wording matches regular-animation's own dropdown, minus its numbering, since
+ * image-animation interleaves these with the "pro - N." cinematic entries.
+ */
+export const PRESET_LABELS = {
+	fadeUp: 'Classic Fade Up',
+	blurReveal: 'Blur Reveal (Apple Style)',
+	skewUp: 'Skew Up (Awwwards)',
+	clipReveal: 'Clip-Path Unmask',
+	scaleIn: 'Scale In Pop',
+	zoomOut: 'Zoom Out',
+	flipUp3D: '3D Flip Up',
+	swingDrop: 'Swing Drop',
+	elasticPop: 'Elastic Pop',
+	flipY: '3D Card Flip (Y)',
+	spinIn: 'Spin & Scale',
+	slideRight: 'Slide Right',
+	cinematicFocus: 'Cinematic Focus',
+	maskRevealUp: 'Mask Reveal Up (Luxury)',
+	perspectiveFall: 'Perspective Fall (3D)',
+	unfold3D: '3D Unfold (SaaS)',
+	magneticSlide: 'Magnetic Slide',
+	luxDrift: 'Luxury Drift (Colorize)',
+	saasDashboard: 'SaaS Dashboard Build',
+	ecomUnbox: 'E-com Product Unbox',
+	neonPulse: 'Neon Glow Pulse',
+	floatIn: 'Gentle Float In (Editorial)',
+};
+
+/** A preset's display name. Falls back to a spaced-out key for anything added
+ *  to PRESETS without a label — readable, just not hand-tuned. */
+export function presetLabel(effect) {
+	if (PRESET_LABELS[effect]) return PRESET_LABELS[effect];
+	return String(effect)
+		.replace(/([a-z])([A-Z])/g, '$1 $2')
+		.replace(/^./, (c) => c.toUpperCase());
+}
+
 /** Effect id → { custom_props, custom_props_to, method } row patch, or null
  *  when the effect is 'custom' / unknown (no auto-fill). */
 export function presetRowPatch(effect) {

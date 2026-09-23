@@ -48,14 +48,34 @@ final class Schema {
 	const SOURCE_URL = 'url';
 
 	/**
-	 * Only the three container types can host a background video.
+	 * Only container types can host a background video.
 	 *
 	 * Deliberately NOT Bootstrap::target_element_types() — that list is every
 	 * animatable atomic widget (headings, images, buttons…), and a background
 	 * layer behind a heading is meaningless. Mirrors the narrow list
 	 * FlexboxChildHover keeps for the same reason.
+	 *
+	 * The test is Atomic_Element_Base, not a fixed count: Elementor core's
+	 * three layout elements, its whole Tabs family, and the two AAE panel
+	 * children all hold children and all paint a background, so all of them
+	 * can sit a video behind that background.
 	 */
-	const TARGET_TYPES = [ 'e-flexbox', 'e-div-block', 'e-grid' ];
+	const TARGET_TYPES = [
+		'e-flexbox',
+		'e-div-block',
+		'e-grid',
+
+		// Elementor core Tabs family.
+		'e-tabs',
+		'e-tabs-menu',
+		'e-tab',
+		'e-tabs-content-area',
+		'e-tab-content',
+
+		// AAE composite panel children.
+		'e-aae-a-accordion-item',
+		'e-aae-a-toggle-pane',
+	];
 
 	public function register(): void {
 		add_filter( 'elementor/atomic-widgets/props-schema', [ $this, 'add_props' ] );

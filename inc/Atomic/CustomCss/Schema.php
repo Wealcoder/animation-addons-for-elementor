@@ -55,6 +55,20 @@ final class Schema
 		return $schema;
 	}
 
+	/**
+	 * NOT what decides where the panel section appears — Controls and Render
+	 * both test Bootstrap::target_element_types(). This list exists only so
+	 * Schema_Trim can union the two and starve neither reader, which is why a
+	 * type here that is missing from the shared list keeps its props in the
+	 * editor but shows no section.
+	 *
+	 * The four Tabs entries used to read `e-tabs-controls`, `e-tabs-content`
+	 * and `e-tabs-content-wrapper`. No Elementor build has ever registered
+	 * those names — the real family is `e-tabs-menu`, `e-tab`,
+	 * `e-tabs-content-area` and `e-tab-content` (see
+	 * elementor/modules/atomic-widgets/elements/atomic-tabs/) — so the three
+	 * stale strings matched nothing and are corrected here.
+	 */
 	public static function target_element_types(): array
 	{
 		// all atomic widget support
@@ -67,12 +81,16 @@ final class Schema
 			'e-flexbox',
 			'e-div-block',
 			'e-grid',
+			'e-divider',
 			'e-tabs',
-			'e-tabs-controls',
-			'e-tabs-content',
-			'e-tabs-content-wrapper',		
+			'e-tabs-menu',
+			'e-tab',
+			'e-tabs-content-area',
+			'e-tab-content',
 			'e-aae-a-nav',
 			'e-aae-a-offcanvas',
+			'e-aae-a-accordion-item',
+			'e-aae-a-toggle-pane',
 		];
 	}
 }

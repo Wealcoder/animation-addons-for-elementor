@@ -11,7 +11,7 @@ import { ColorInput } from "./inputs/Color";
 import { PlayButtonInput } from "./inputs/PlayButtonInput";
 import { SaveButtonInput } from "./inputs/SaveButtonInput";
 import { RepeaterInput } from "./inputs/RepeaterInput";
-import { InteractionsRepeaterInput } from "./inputs/InteractionsRepeaterInput";
+import { InteractionsRepeaterInput, seedInteractionRow } from "./inputs/InteractionsRepeaterInput";
 import { BorderInput } from "./inputs/BorderInput";
 import { TextShadowInput } from "./inputs/TextShadowInput";
 import { TextareaInput } from "./inputs/TextareaInput";
@@ -504,10 +504,13 @@ function InteractionsRow({
   };
 
   // Add a fresh interaction. Same seed as the repeater's own bottom button —
-  // this header "+" is just a second entry point for the same action.
+  // this header "+" is just a second entry point for the same action, so it
+  // calls the shared seeder rather than spreading rowDefaults itself. It did
+  // spread them, which is why the exclusive-trigger seeding fixed in the
+  // repeater did not apply here.
   const handleAddRow = () => {
     const current = Array.isArray(value) ? value : [];
-    handleValueChange([...current, { ...(rowDefaults || {}) }]);
+    handleValueChange([...current, seedInteractionRow(current, rowDefaults, rowFields)]);
   };
 
   return (

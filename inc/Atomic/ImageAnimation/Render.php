@@ -25,8 +25,16 @@ if ( ! defined( 'ABSPATH' ) ) {
  * sliceShutter, mosaicDepth, liquidClip, orbitTilt, zoomTunnel,
  * scrollParallax) — FIELD_MAP below is an independent copy of that
  * extension's field map; ImageAdvancedAnimation itself is untouched.
+ *
+ * NOT final, and its internals are `protected`, because Pro's
+ * `AtomicV4\Extensions\ImageAnimation\Render` extends this one instead of
+ * copying it. The copy drifted once already — it was forked before FIELD_MAP
+ * existed, so every cinematic-preset field silently vanished from the
+ * published page while the editor still showed it. Anything a Pro build needs
+ * to do differently belongs in an override there, never in a second copy of
+ * this file.
  */
-final class Render {
+class Render {
 	use \Wealcoder\AnimationAddons\Atomic\Traits\Responsive_Config;
 
 	/**
@@ -35,7 +43,7 @@ final class Render {
 	 * Every preset only uses a subset of these — unused keys are simply
 	 * absent from a row, the frontend reader falls back to its own default.
 	 */
-	private const FIELD_MAP = [
+	protected const FIELD_MAP = [
 		'direction'          => [ 'direction', 'str', 'bottomToTop' ],
 		'move_direction'     => [ 'moveDirection', 'str', 'none' ],
 		'orbit_direction'    => [ 'orbitDirection', 'str', 'left' ],
@@ -119,7 +127,7 @@ final class Render {
 	 * Exclusive-trigger dedupe applied per breakpoint (page_load + scroll +
 	 * play_with_scroll share one slot; click + hover unlimited).
 	 */
-	private function build_config( array $settings ): array {
+	protected function build_config( array $settings ): array {
 		$map = $this->envelope_to_map( $settings[ Schema::IMG_INTERACTIONS ] ?? null );
 
 		$desktop_rows = $this->rows_to_runtime( $map['desktop'] ?? [] );
@@ -158,7 +166,7 @@ final class Render {
 	}
 
 	/** Per-bp rows → runtime configs, with exclusive-trigger dedupe. */
-	private function rows_to_runtime( $rows ): array {
+	protected function rows_to_runtime( $rows ): array {
 		if ( ! is_array( $rows ) ) {
 			return [];
 		}
@@ -199,7 +207,7 @@ final class Render {
 	}
 
 	/** One editor row → one runtime image interaction config (camelCase). */
-	private function row_to_config( array $row, string $effect, string $trigger ): array {
+	protected function row_to_config( array $row, string $effect, string $trigger ): array {
 		$str = function ( $key, $default = '' ) use ( $row ) {
 			$v = $row[ $key ] ?? null;
 			return ( is_scalar( $v ) && '' !== $v ) ? $v : $default;
@@ -224,6 +232,10 @@ final class Render {
 			'startFrom'       => $str( 'start_from', 'right' ),
 			'scaleStart'      => $num( 'scale_start', 0.5 ),
 			'scaleEnd'        => $num( 'scale_end', 1 ),
+			// stretch's start frame — defaults match the JS reader, so a row
+			// saved before these fields existed still animates.
+			'stretchStartWidth'  => $num( 'stretch_start_width', 60 ),
+			'stretchStartRadius' => $num( 'stretch_start_radius', 40 ),
 			'method'          => $str( 'method', 'from' ),
 			'customProps'     => $this->custom_rows_to_pairs( $row['custom_props'] ?? [] ),
 			'customPropsTo'   => $this->custom_rows_to_pairs( $row['custom_props_to'] ?? [] ),
@@ -260,7 +272,7 @@ final class Render {
 	}
 
 	/** Repeater rows → [{k,v}] pairs (custom effect props). */
-	private function custom_rows_to_pairs( $rows ): array {
+	protected function custom_rows_to_pairs( $rows ): array {
 		if ( ! is_array( $rows ) ) {
 			return [];
 		}
@@ -282,7 +294,7 @@ final class Render {
 		return $pairs;
 	}
 
-	private function unwrap_primitive( $value, $fallback ) {
+	protected function unwrap_primitive( $value, $fallback ) {
 		if ( ! is_array( $value ) ) {
 			return $value;
 		}

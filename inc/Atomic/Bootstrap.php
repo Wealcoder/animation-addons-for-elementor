@@ -68,10 +68,20 @@ final class Bootstrap {
 
 		// Image animation — reveal/scale/stretch for e-image / e-svg.
 		// Frontend reads window.AAE_INTERACTIONS_IMG[<id>].
+		//
+		// Schema + Controls only, like its eleven siblings above and below.
+		// It alone also registered its Render here until 2026-09 — the one
+		// slug whose free Render file survived the migration, so the one line
+		// nobody noticed. Pro registered its own on the same hook and
+		// `InteractionsMap::register()` is last-wins, so whichever ran last
+		// decided the output; Pro's copy had been forked before FIELD_MAP
+		// existed, which is how every cinematic-preset field disappeared from
+		// published pages while the editor still showed it. The Render class
+		// stays in this plugin (Pro's now extends it) — only the duplicate
+		// registration is gone.
 		if ( $extensions->is_extension_active( 'image-animation' ) ) {
 			( new \Wealcoder\AnimationAddons\Atomic\ImageAnimation\Schema() )->register();
 			( new \Wealcoder\AnimationAddons\Atomic\ImageAnimation\Controls() )->register();
-			( new \Wealcoder\AnimationAddons\Atomic\ImageAnimation\Render() )->register();
 		}
 
 		// Image hover — cursor-following floating image overlay on any
@@ -266,7 +276,7 @@ final class Bootstrap {
 	 * for no gain: animating the part is what animating the parent already
 	 * does, and the panel noise is proportional to the part count.
 	 *
-	 * TWO sets of internal children are exempt from that rule.
+	 * THREE sets of internal children are exempt from that rule.
 	 *
 	 * `e-aae-a-icon-list-item` is the first. It predates the rule and saved
 	 * pages already carry `aae_*` props on it — removing it would strip them
@@ -281,6 +291,14 @@ final class Bootstrap {
 	 * does not hold here. They are the parts a user actually selects in the
 	 * structure panel, and every shared extension has to be reachable there.
 	 * The Loop Grid Slider reuses the same part types, so one entry covers both.
+	 *
+	 * The PANEL children — `e-aae-a-accordion-item` and `e-aae-a-toggle-pane`,
+	 * plus Elementor core's own `e-tab` / `e-tab-content` — are the third, on
+	 * the same argument as the slider parts. Each is a separate panel that is
+	 * shown and hidden independently of its siblings, so "animate the parent"
+	 * cannot express what a user wants here: staggering the items, parallaxing
+	 * one open panel, pinning a single pane. They are also the rows a user
+	 * clicks in the structure panel, which is where the sections have to be.
 	 *
 	 * Pro-owned types (`e-aae-a-offcanvas`, `e-aae-a-btn-pro`, `e-aae-a-lottie`, …)
 	 * belong here too — atomic element types can only be REGISTERED from the
@@ -305,6 +323,19 @@ final class Bootstrap {
 			'e-flexbox',
 			'e-div-block',
 			'e-grid',
+			'e-divider',
+
+			// Elementor core Tabs — the whole family, not just the root.
+			// `e-tabs` is the wrapper, `e-tabs-menu` / `e-tabs-content-area`
+			// the two regions, `e-tab` a trigger and `e-tab-content` a panel.
+			// All five are Atomic_Element_Base (containers), and all five are
+			// separately selectable in the structure panel. See the docblock's
+			// third exemption for why the two children are not left out.
+			'e-tabs',
+			'e-tabs-menu',
+			'e-tab',
+			'e-tabs-content-area',
+			'e-tab-content',
 
 			// Content / dynamic.
 			'e-aae-a-post-title',
@@ -334,6 +365,13 @@ final class Bootstrap {
 			'e-aae-a-image-compare',
 			'e-aae-a-image-hotspot',
 			'e-aae-a-form',
+
+			// Panel children of the two composites above — an accordion item
+			// and a toggle pane open and close on their own, so animating the
+			// accordion / switcher root does not reach them. Third exemption
+			// in the docblock.
+			'e-aae-a-accordion-item',
+			'e-aae-a-toggle-pane',
 
 			// Media.
 			'e-aae-a-video',

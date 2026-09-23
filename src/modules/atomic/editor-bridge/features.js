@@ -1365,7 +1365,10 @@ function buildSliderConfig(settings) {
 const SHARED_TARGET_TYPES = [
 	// Elementor core atomic elements.
 	'e-heading', 'e-paragraph', 'e-button', 'e-image', 'e-svg',
-	'e-flexbox', 'e-div-block', 'e-grid',
+	'e-flexbox', 'e-div-block', 'e-grid', 'e-divider',
+
+	// Elementor core Tabs — the whole family, matching the PHP list.
+	'e-tabs', 'e-tabs-menu', 'e-tab', 'e-tabs-content-area', 'e-tab-content',
 
 	// Content / dynamic.
 	'e-aae-a-post-title', 'e-aae-a-post-image', 'e-aae-a-post-content',
@@ -1380,6 +1383,10 @@ const SHARED_TARGET_TYPES = [
 	'e-aae-a-accordion', 'e-aae-a-toggle-switcher', 'e-aae-a-slider',
 	'e-aae-a-stack-cards', 'e-aae-a-timeline', 'e-aae-a-flip-box',
 	'e-aae-a-image-compare', 'e-aae-a-image-hotspot', 'e-aae-a-form',
+
+	// Panel children of the two composites above — each opens and closes on
+	// its own, so animating the root cannot reach them. See the PHP docblock.
+	'e-aae-a-accordion-item', 'e-aae-a-toggle-pane',
 
 	// Media.
 	'e-aae-a-video', 'e-aae-a-video-mask',
@@ -1469,7 +1476,12 @@ export const FEATURES = [
 	},
 	{
 		name: 'sticky',
-		widgetTypes: ['e-flexbox', 'e-div-block', 'e-grid'],
+		// Containers only, mirroring Sticky\Schema::targeted_elements().
+		widgetTypes: [
+			'e-flexbox', 'e-div-block', 'e-grid',
+			'e-tabs', 'e-tabs-menu', 'e-tab', 'e-tabs-content-area', 'e-tab-content',
+			'e-aae-a-accordion-item', 'e-aae-a-toggle-pane',
+		],
 		enableSetting: 'aae_sticky_enable',
 		autoReplaySetting: null,
 		mapName: 'AAE_INTERACTIONS_STICKY',
@@ -1487,7 +1499,13 @@ export const FEATURES = [
 	},
 	{
 		name: 'horizontal',
-		widgetTypes: ['e-flexbox', 'e-grid'],
+		// Containers only, mirroring HorizontalScrollAnim\Schema::targeted_elements().
+		// `e-div-block` stays out; see that method's docblock.
+		widgetTypes: [
+			'e-flexbox', 'e-grid',
+			'e-tabs', 'e-tabs-menu', 'e-tab', 'e-tabs-content-area', 'e-tab-content',
+			'e-aae-a-accordion-item', 'e-aae-a-toggle-pane',
+		],
 		enableSetting: 'aae_horizontal_enable',
 		autoReplaySetting: null,
 		mapName: 'AAE_INTERACTIONS_HORIZONTAL',

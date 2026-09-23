@@ -261,7 +261,32 @@ final class Schema {
 		return $schema;
 	}
 
+	/**
+	 * Container types only — pinning a heading pins nothing a user can see.
+	 *
+	 * "Container" here means Atomic_Element_Base (an element that holds
+	 * children), not Bootstrap::target_element_types(), which is every
+	 * animatable atomic widget. Everything below satisfies that test:
+	 * Elementor core's three layout elements and its whole Tabs family, plus
+	 * the two AAE panel children, which are `e-con`-based and are exactly the
+	 * rows a user wants to pin one of while the rest scroll past.
+	 */
 	public static function targeted_elements(): array {
-		return [ 'e-flexbox', 'e-div-block', 'e-grid' ];
+		return [
+			'e-flexbox',
+			'e-div-block',
+			'e-grid',
+
+			// Elementor core Tabs family.
+			'e-tabs',
+			'e-tabs-menu',
+			'e-tab',
+			'e-tabs-content-area',
+			'e-tab-content',
+
+			// AAE composite panel children.
+			'e-aae-a-accordion-item',
+			'e-aae-a-toggle-pane',
+		];
 	}
 }

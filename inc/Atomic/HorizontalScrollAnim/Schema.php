@@ -78,7 +78,38 @@ final class Schema
 
 		return $schema;
 	}
+	/**
+	 * Container types only — the effect lays a container's CHILDREN out as a
+	 * horizontal track, so an element with no children has nothing to scroll.
+	 *
+	 * `e-div-block` is the one container deliberately left out, and it is the
+	 * reason this list is not simply Sticky's: the track needs the children
+	 * laid out in a row, which a block container does not do.
+	 *
+	 * The types added below are containers whose DEFAULT display is block
+	 * (`e-tab`, `e-tabs-content-area`, `e-tab-content`, and the two AAE panel
+	 * children) as well as ones that default to flex (`e-tabs`,
+	 * `e-tabs-menu`). They are all listed because display is a style prop the
+	 * user owns: a tab panel set to `display: flex` is as valid a horizontal
+	 * track as an `e-flexbox` is. The section appearing there is the point —
+	 * on a still-block container the effect does nothing until the user
+	 * changes display, exactly as it would on an `e-flexbox` set to block.
+	 */
 	public static function targeted_elements(): array {
-		return [ 'e-flexbox', 'e-grid' ];
+		return [
+			'e-flexbox',
+			'e-grid',
+
+			// Elementor core Tabs family.
+			'e-tabs',
+			'e-tabs-menu',
+			'e-tab',
+			'e-tabs-content-area',
+			'e-tab-content',
+
+			// AAE composite panel children.
+			'e-aae-a-accordion-item',
+			'e-aae-a-toggle-pane',
+		];
 	}
 }
