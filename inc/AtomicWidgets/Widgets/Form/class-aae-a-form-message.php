@@ -44,6 +44,7 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Background_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
+use Wealcoder\AnimationAddons\AtomicWidgets\Atomic_Text;
 
 abstract class Aaeaddon_A_Form_Message extends Atomic_Element_Base {
 
@@ -83,7 +84,7 @@ abstract class Aaeaddon_A_Form_Message extends Atomic_Element_Base {
 	}
 
 	protected function define_default_children(): array {
-		return [
+		return Atomic_Text::children( [
 			Atomic_Paragraph::generate()
 				->settings(
 					[
@@ -96,7 +97,7 @@ abstract class Aaeaddon_A_Form_Message extends Atomic_Element_Base {
 					]
 				)
 				->build(),
-		];
+		] );
 	}
 
 	protected function define_atomic_controls(): array {

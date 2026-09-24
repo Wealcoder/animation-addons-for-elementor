@@ -26,6 +26,7 @@ use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
+use Wealcoder\AnimationAddons\AtomicWidgets\Atomic_Text;
 
 class Aaeaddon_A_Counter extends Atomic_Element_Base {
 
@@ -142,7 +143,7 @@ class Aaeaddon_A_Counter extends Atomic_Element_Base {
 	}
 
 	protected function define_default_children() {
-		return [
+		return Atomic_Text::children( [
 			Atomic_Paragraph::generate()
 				->editor_settings( [ 'title' => 'Prefix' ] )
 				->settings( [
@@ -183,7 +184,7 @@ class Aaeaddon_A_Counter extends Atomic_Element_Base {
 					'tag'       => String_Prop_Type::generate( 'span' ),
 				] )
 				->build(),
-		];
+		] );
 	}
 
 	protected function define_allowed_child_types() {

@@ -36,6 +36,7 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Url_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Image_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Image_Src_Prop_Type;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
+use Wealcoder\AnimationAddons\AtomicWidgets\Atomic_Text;
 
 /**
  * AAE Image Compare — a draggable before/after slider whose before image,
@@ -211,7 +212,7 @@ class Aaeaddon_A_Image_Compare extends Atomic_Element_Base {
 	 * and is never in `handled`.
 	 */
 	protected function define_default_children() {
-		return [
+		return Atomic_Text::children( [
 			Atomic_Image::generate()
 				->editor_settings( [ 'title' => 'Before Image' ] )
 				->settings( [
@@ -289,7 +290,7 @@ class Aaeaddon_A_Image_Compare extends Atomic_Element_Base {
 					'tag'       => String_Prop_Type::generate( 'span' ),
 				] )
 				->build(),
-		];
+		] );
 	}
 
 	protected function define_allowed_child_types() {

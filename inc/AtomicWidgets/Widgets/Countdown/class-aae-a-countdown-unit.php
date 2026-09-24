@@ -29,6 +29,7 @@ use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
+use Wealcoder\AnimationAddons\AtomicWidgets\Atomic_Text;
 
 /**
  * Shared sub-element used by Aaeaddon_A_Countdown for each of the four time
@@ -212,7 +213,7 @@ class Aaeaddon_A_Countdown_Unit extends Atomic_Element_Base {
 		$digit_class = static::get_element_type() . '-digit';
 		$label_class = static::get_element_type() . '-label';
 
-		return [
+		return Atomic_Text::children( [
 			Atomic_Paragraph::generate()
 				->is_locked( true )
 				->editor_settings( [ 'title' => 'Digit' ] )
@@ -238,11 +239,11 @@ class Aaeaddon_A_Countdown_Unit extends Atomic_Element_Base {
 					'tag'       => String_Prop_Type::generate( 'span' ),
 				] )
 				->build(),
-		];
+		] );
 	}
 
 	protected function define_default_children() {
-		return self::build_default_inner_children( 'Label' );
+		return Atomic_Text::children( self::build_default_inner_children( 'Label' ) );
 	}
 
 	protected function define_allowed_child_types() {

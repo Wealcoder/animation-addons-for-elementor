@@ -19,6 +19,7 @@ use Elementor\Modules\AtomicWidgets\Elements\Atomic_Svg\Atomic_Svg;
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
 use Elementor\Modules\AtomicWidgets\PropTypes\Svg_Src_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Url_Prop_Type;
+use Wealcoder\AnimationAddons\AtomicWidgets\Atomic_Text;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -198,11 +199,11 @@ class Aaeaddon_A_Icon_List_Item extends Atomic_Element_Base {
 			] )
 			->build();
 
-		return [ $svg, $paragraph ];
+		return Atomic_Text::children( [ $svg, $paragraph ] );
 	}
 
 	protected function define_default_children() {
-		return self::build_default_inner_children();
+		return Atomic_Text::children( self::build_default_inner_children() );
 	}
 
 	protected function define_allowed_child_types() {

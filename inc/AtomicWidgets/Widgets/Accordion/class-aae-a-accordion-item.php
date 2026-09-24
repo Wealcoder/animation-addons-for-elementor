@@ -30,6 +30,7 @@ use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Heading\Atomic_Heading;
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Svg\Atomic_Svg;
 use Elementor\Modules\AtomicWidgets\Elements\Div_Block\Div_Block;
+use Wealcoder\AnimationAddons\AtomicWidgets\Atomic_Text;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -226,7 +227,7 @@ class Aaeaddon_A_Accordion_Item extends Atomic_Element_Base {
 			->children( [ $content_text ] )
 			->build();
 
-		return [ $header_div, $content_div ];
+		return Atomic_Text::children( [ $header_div, $content_div ] );
 	}
 
 	protected function define_allowed_child_types() {

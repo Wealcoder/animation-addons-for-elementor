@@ -74,6 +74,7 @@ use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form\Aaeaddon_A_Form_Checkbo
 use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form\Aaeaddon_A_Form_Submit;
 use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form\Aaeaddon_A_Form_Success_Message;
 use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form\Aaeaddon_A_Form_Error_Message;
+use Wealcoder\AnimationAddons\AtomicWidgets\Atomic_Text;
 
 class Aaeaddon_A_Form extends Atomic_Element_Base {
 
@@ -340,7 +341,7 @@ class Aaeaddon_A_Form extends Atomic_Element_Base {
 	protected function define_default_children(): array {
 		$prefix = 'aae-form-';
 
-		return [
+		return Atomic_Text::children( [
 			$this->build_label( __( 'First name', 'animation-addons-for-elementor' ), $prefix . 'first-name' ),
 			$this->build_input( __( 'First name', 'animation-addons-for-elementor' ), 'text', $prefix . 'first-name' ),
 
@@ -374,7 +375,7 @@ class Aaeaddon_A_Form extends Atomic_Element_Base {
 			Aaeaddon_A_Form_Error_Message::generate()
 				->editor_settings( [ 'title' => __( 'Error message', 'animation-addons-for-elementor' ) ] )
 				->build(),
-		];
+		] );
 	}
 
 	/**
@@ -406,7 +407,7 @@ class Aaeaddon_A_Form extends Atomic_Element_Base {
 
 	/** One <label> widget pointing at an input's _cssid (renders for=). */
 	private function build_label( string $text, string $input_id ): array {
-		return Aaeaddon_A_Form_Label::generate()
+		return Atomic_Text::one( Aaeaddon_A_Form_Label::generate()
 			->settings(
 				[
 					'text'     => Html_V3_Prop_Type::generate(
@@ -419,7 +420,7 @@ class Aaeaddon_A_Form extends Atomic_Element_Base {
 				]
 			)
 			->editor_settings( [ 'title' => __( 'Label', 'animation-addons-for-elementor' ) ] )
-			->build();
+			->build() );
 	}
 
 	/** One <input> (or <textarea> when $type is 'textarea') widget with the given _cssid. */

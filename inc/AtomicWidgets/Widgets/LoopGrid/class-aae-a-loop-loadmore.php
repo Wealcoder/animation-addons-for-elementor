@@ -22,6 +22,7 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
+use Wealcoder\AnimationAddons\AtomicWidgets\Atomic_Text;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -101,7 +102,7 @@ class Aaeaddon_A_Loop_LoadMore extends Atomic_Element_Base {
 	}
 
 	protected function define_default_children() {
-		return [
+		return Atomic_Text::children( [
 			[
 				'elType'          => 'widget',
 				'widgetType'      => 'e-paragraph',
@@ -118,7 +119,7 @@ class Aaeaddon_A_Loop_LoadMore extends Atomic_Element_Base {
 				'editor_settings' => [ 'title' => 'Load More Label' ],
 				'elements'        => [],
 			],
-		];
+		] );
 	}
 
 	protected function get_templates(): array {

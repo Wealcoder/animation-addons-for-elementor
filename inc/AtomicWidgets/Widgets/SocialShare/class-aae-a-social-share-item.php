@@ -41,6 +41,7 @@ require_once __DIR__ . '/Parts/class-aae-a-social-share-item-title.php';
 
 use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SocialShare\Aaeaddon_A_Social_Share_Item_Icon;
 use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\SocialShare\Aaeaddon_A_Social_Share_Item_Title;
+use Wealcoder\AnimationAddons\AtomicWidgets\Atomic_Text;
 
 /**
  * AAE Social Share Item — a single OPEN link container (icon + label) meant
@@ -337,11 +338,11 @@ class Aaeaddon_A_Social_Share_Item extends Atomic_Element_Base {
 			] )
 			->build();
 
-		return [ $icon, $title ];
+		return Atomic_Text::children( [ $icon, $title ] );
 	}
 
 	protected function define_default_children() {
-		return self::build_default_inner_children();
+		return Atomic_Text::children( self::build_default_inner_children() );
 	}
 
 	protected function define_allowed_child_types() {

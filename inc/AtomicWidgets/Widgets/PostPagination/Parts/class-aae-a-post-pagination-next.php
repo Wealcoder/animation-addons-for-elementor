@@ -26,6 +26,7 @@ require_once __DIR__ . '/../../LoopGrid/class-aae-a-loop-arrow.php';
 require_once __DIR__ . '/class-aae-a-post-pagination-preview.php';
 
 use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\LoopGrid\Aaeaddon_A_Loop_Arrow;
+use Wealcoder\AnimationAddons\AtomicWidgets\Atomic_Text;
 
 if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base' ) ) {
 	return;
@@ -109,7 +110,7 @@ class Aaeaddon_A_Post_Pagination_Next extends Atomic_Element_Base {
 				->build();
 		}
 
-		return $children;
+		return Atomic_Text::children( $children );
 	}
 
 	/**

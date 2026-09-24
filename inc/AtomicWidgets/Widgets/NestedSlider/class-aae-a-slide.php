@@ -18,6 +18,7 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
+use Wealcoder\AnimationAddons\AtomicWidgets\Atomic_Text;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -96,7 +97,7 @@ class Aaeaddon_A_Slide extends Atomic_Element_Base {
 	 * than having to build the slide from nothing.
 	 */
 	protected function define_default_children() {
-		return [
+		return Atomic_Text::children( [
 			Atomic_Heading::generate()
 				->editor_settings( [ 'title' => 'Slide Title' ] )
 				->settings( [
@@ -118,7 +119,7 @@ class Aaeaddon_A_Slide extends Atomic_Element_Base {
 					] ),
 				] )
 				->build(),
-		];
+		] );
 	}
 
 	/**

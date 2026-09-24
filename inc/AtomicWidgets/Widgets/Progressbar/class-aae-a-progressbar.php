@@ -33,6 +33,7 @@ require_once __DIR__ . '/Parts/class-aae-a-progressbar-label.php';
 
 use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Progressbar\Aaeaddon_A_Progressbar_Track;
 use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Progressbar\Aaeaddon_A_Progressbar_Label;
+use Wealcoder\AnimationAddons\AtomicWidgets\Atomic_Text;
 
 /**
  * AAE Basic Progress Bar — an open atomic container styled like a progress
@@ -200,7 +201,7 @@ class Aaeaddon_A_Progressbar extends Atomic_Element_Base
 	 */
 	protected function define_default_children()
 	{
-		return [
+		return Atomic_Text::children( [
 			Aaeaddon_A_Progressbar_Track::generate()
 				->editor_settings(['title' => 'Track'])
 				->children(
@@ -222,7 +223,7 @@ class Aaeaddon_A_Progressbar extends Atomic_Element_Base
 					'tag' => String_Prop_Type::generate('span'),
 				])
 				->build(),
-		];
+		] );
 	}
 
 	protected function define_allowed_child_types()

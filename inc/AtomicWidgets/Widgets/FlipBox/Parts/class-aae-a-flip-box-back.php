@@ -25,6 +25,7 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Dimensions_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
+use Wealcoder\AnimationAddons\AtomicWidgets\Atomic_Text;
 
 require_once __DIR__ . '/class-aae-a-flip-box-title.php';
 require_once __DIR__ . '/class-aae-a-flip-box-text.php';
@@ -120,7 +121,7 @@ class Aaeaddon_A_Flip_Box_Back extends Atomic_Element_Base {
 		string $title = 'Back Title',
 		string $text = 'This is back side content.'
 	): array {
-		return [
+		return Atomic_Text::children( [
 			Aaeaddon_A_Flip_Box_Title::generate()
 				->editor_settings( [ 'title' => 'Title' ] )
 				->settings( [
@@ -140,11 +141,11 @@ class Aaeaddon_A_Flip_Box_Back extends Atomic_Element_Base {
 					] ),
 				] )
 				->build(),
-		];
+		] );
 	}
 
 	protected function define_default_children(): array {
-		return self::build_default_inner_children();
+		return Atomic_Text::children( self::build_default_inner_children() );
 	}
 
 	protected function define_allowed_child_types(): array {

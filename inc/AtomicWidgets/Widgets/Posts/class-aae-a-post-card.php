@@ -12,6 +12,7 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
+use Wealcoder\AnimationAddons\AtomicWidgets\Atomic_Text;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -70,7 +71,7 @@ class Aaeaddon_A_Post_Card extends Atomic_Element_Base {
 	}
 
 	protected function define_default_children(): array {
-		return [
+		return Atomic_Text::children( [
 			// Thumbnail placeholder — user can swap in e-image from the panel.
 			Atomic_Svg::generate()
 				->editor_settings( [ 'title' => 'Post Thumbnail' ] )
@@ -108,7 +109,7 @@ class Aaeaddon_A_Post_Card extends Atomic_Element_Base {
 					'tag' => String_Prop_Type::generate( 'p' ),
 				] )
 				->build(),
-		];
+		] );
 	}
 
 	protected function get_templates(): array {

@@ -101,6 +101,7 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 // the name resolved at compile time, not the class actually loaded, so a
 // plain `use` for the alias is enough.
 use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\ImageHotspot\Aaeaddon_A_Hotspot_Point;
+use Wealcoder\AnimationAddons\AtomicWidgets\Atomic_Text;
 
 class Aaeaddon_A_Hotspot_Content extends Atomic_Element_Base {
 
@@ -289,7 +290,7 @@ class Aaeaddon_A_Hotspot_Content extends Atomic_Element_Base {
 	// Content's children are unrestricted, and re-adding the generate() call
 	// below restores the old default.
 	protected function define_default_children() {
-		return [
+		return Atomic_Text::children( [
 			Atomic_Paragraph::generate()
 				->editor_settings( [ 'title' => 'Tooltip Content' ] )
 				->settings( [
@@ -299,7 +300,7 @@ class Aaeaddon_A_Hotspot_Content extends Atomic_Element_Base {
 					] ),
 				] )
 				->build(),
-		];
+		] );
 	}
 
 	protected function get_templates(): array {

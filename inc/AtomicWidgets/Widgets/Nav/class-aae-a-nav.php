@@ -17,6 +17,7 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
+use Wealcoder\AnimationAddons\AtomicWidgets\Atomic_Text;
 
 require_once __DIR__ . '/class-aae-a-nav-item.php';
 require_once __DIR__ . '/class-aae-a-nav-sub-item.php';
@@ -322,12 +323,12 @@ class Aaeaddon_A_Nav extends Atomic_Element_Base {
 			return $builder->build();
 		};
 
-		return [
+		return Atomic_Text::children( [
 			$make_item( 'Menu Item 1' ),
 			$make_item( 'Menu Item 2' ),
 			$make_item( 'Menu Item 3' ),
 			$make_item( 'Menu Item 4' ),
-		];
+		] );
 	}
 
 	protected function define_allowed_child_types() {

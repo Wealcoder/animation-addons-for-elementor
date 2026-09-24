@@ -30,6 +30,7 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\AtomicWidgets\Styles\Style_States;
+use Wealcoder\AnimationAddons\AtomicWidgets\Atomic_Text;
 
 if (! defined('ABSPATH')) {
 	exit;
@@ -302,7 +303,7 @@ class Aaeaddon_A_Btn extends Atomic_Element_Base
 		$icon_class = static::get_element_type() . '-icon';
 
 		// Icon first, then label — matches the reference design's flex order.
-		return [
+		return Atomic_Text::children( [
 			Atomic_Svg::generate()
 				->settings([
 					'classes' => Classes_Prop_Type::generate([$icon_class]),
@@ -321,7 +322,7 @@ class Aaeaddon_A_Btn extends Atomic_Element_Base
 					'tag' => String_Prop_Type::generate('span'),
 				])
 				->build(),
-		];
+		] );
 	}
 
 	protected function define_allowed_child_types()

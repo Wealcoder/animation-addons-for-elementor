@@ -14,6 +14,7 @@ use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
+use Wealcoder\AnimationAddons\AtomicWidgets\Atomic_Text;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -83,7 +84,7 @@ class Aaeaddon_A_Video_Mask_Btn extends Atomic_Element_Base {
 
 	// Icon first so it sits to the left of the label in the default flex order.
 	protected function define_default_children(): array {
-		return [
+		return Atomic_Text::children( [
 			Atomic_Svg::generate()->build(),
 			Atomic_Paragraph::generate()
 				->settings( [
@@ -94,7 +95,7 @@ class Aaeaddon_A_Video_Mask_Btn extends Atomic_Element_Base {
 					'tag' => String_Prop_Type::generate( 'span' ),
 				] )
 				->build(),
-		];
+		] );
 	}
 
 	protected function define_allowed_child_types(): array {

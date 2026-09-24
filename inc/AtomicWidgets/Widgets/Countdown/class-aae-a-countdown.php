@@ -33,6 +33,7 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 require_once __DIR__ . '/class-aae-a-countdown-unit.php';
 
 use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Countdown\Aaeaddon_A_Countdown_Unit;
+use Wealcoder\AnimationAddons\AtomicWidgets\Atomic_Text;
 
 /**
  * AAE Countdown — composite atomic widget.
@@ -260,7 +261,7 @@ class Aaeaddon_A_Countdown extends Atomic_Element_Base {
 			}
 		}
 
-		return $children;
+		return Atomic_Text::children( $children );
 	}
 
 	/**

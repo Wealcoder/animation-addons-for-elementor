@@ -19,6 +19,7 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
+use Wealcoder\AnimationAddons\AtomicWidgets\Atomic_Text;
 
 require_once __DIR__ . '/Parts/class-aae-a-toggle-pane-title.php';
 require_once __DIR__ . '/Parts/class-aae-a-toggle-pane-desc.php';
@@ -115,7 +116,7 @@ class Aaeaddon_A_Toggle_Pane extends Atomic_Element_Base {
 		string $title = 'Pane Title',
 		string $desc = 'Add your content here.'
 	): array {
-		return [
+		return Atomic_Text::children( [
 			Aaeaddon_A_Toggle_Pane_Title::generate()
 				->editor_settings( [ 'title' => 'Title' ] )
 				->settings( [
@@ -135,11 +136,11 @@ class Aaeaddon_A_Toggle_Pane extends Atomic_Element_Base {
 					] ),
 				] )
 				->build(),
-		];
+		] );
 	}
 
 	protected function define_default_children(): array {
-		return self::build_default_inner_children();
+		return Atomic_Text::children( self::build_default_inner_children() );
 	}
 
 	protected function get_templates(): array {

@@ -65,6 +65,7 @@ require_once __DIR__ . '/class-aae-a-form-range-value.php';
 
 use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form\Aaeaddon_A_Form_Range;
 use Wealcoder\AnimationAddons\AtomicWidgets\Widgets\Form\Aaeaddon_A_Form_Range_Value;
+use Wealcoder\AnimationAddons\AtomicWidgets\Atomic_Text;
 
 class Aaeaddon_A_Form_Range_Group extends Atomic_Element_Base {
 
@@ -163,7 +164,7 @@ class Aaeaddon_A_Form_Range_Group extends Atomic_Element_Base {
 	 * change the tag (or swap the whole child for a Paragraph) from its panel.
 	 */
 	protected function define_default_children(): array {
-		return [
+		return Atomic_Text::children( [
 			Atomic_Heading::generate()
 				->editor_settings( [ 'title' => __( 'Label', 'animation-addons-for-elementor' ) ] )
 				->settings(
@@ -186,7 +187,7 @@ class Aaeaddon_A_Form_Range_Group extends Atomic_Element_Base {
 			Aaeaddon_A_Form_Range::generate()
 				->editor_settings( [ 'title' => __( 'Slider', 'animation-addons-for-elementor' ) ] )
 				->build(),
-		];
+		] );
 	}
 
 	/**

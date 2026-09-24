@@ -23,6 +23,7 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
+use Wealcoder\AnimationAddons\AtomicWidgets\Atomic_Text;
 
 require_once __DIR__ . '/Parts/class-aae-a-timeline-number.php';
 require_once __DIR__ . '/Parts/class-aae-a-timeline-year.php';
@@ -131,7 +132,7 @@ class Aaeaddon_A_Timeline_Item extends Atomic_Element_Base {
 		string $title = 'Event Title',
 		string $desc = 'Describe what happened during this milestone.'
 	): array {
-		return [
+		return Atomic_Text::children( [
 			Aaeaddon_A_Timeline_Number::generate()
 				->is_locked( true )
 				->editor_settings( [ 'title' => 'Number' ] )
@@ -179,11 +180,11 @@ class Aaeaddon_A_Timeline_Item extends Atomic_Element_Base {
 					'tag'     => String_Prop_Type::generate( 'p' ),
 				] )
 				->build(),
-		];
+		] );
 	}
 
 	protected function define_default_children() {
-		return self::build_default_inner_children();
+		return Atomic_Text::children( self::build_default_inner_children() );
 	}
 
 	protected function define_allowed_child_types() {

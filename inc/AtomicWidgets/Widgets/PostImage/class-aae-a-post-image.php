@@ -23,6 +23,7 @@ use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\AtomicWidgets\PropDependencies\Manager as Dependency_Manager;
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
+use Wealcoder\AnimationAddons\AtomicWidgets\Atomic_Text;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -257,7 +258,7 @@ class Aaeaddon_A_Post_Image extends Atomic_Widget_Base {
 	}
 
 	protected function define_default_children() {
-		return [
+		return Atomic_Text::children( [
 			Atomic_Paragraph::generate()
 				->editor_settings( [ 'title' => 'Caption' ] )
 				->settings( [
@@ -269,7 +270,7 @@ class Aaeaddon_A_Post_Image extends Atomic_Widget_Base {
 					'tag'       => String_Prop_Type::generate( 'span' ),
 				] )
 				->build(),
-		];
+		] );
 	}
 
 	/**
@@ -339,28 +340,14 @@ class Aaeaddon_A_Post_Image extends Atomic_Widget_Base {
 				if ( ! $show_caption ) {
 					continue;
 				}
+				// The envelope the child's own prop takes -- Elementor 4.3
+				// retyped these to `escaped-html` and refuses `html-v3`, so a
+				// hardcoded shape renders an EMPTY caption with nothing in the
+				// log. Atomic_Text asks the schema.
 				if ( 'e-paragraph' === $child->get_type() ) {
-					$child->set_settings( 'paragraph', [
-						'$$type' => 'html-v3',
-						'value' => [
-							'content' => [
-								'$$type' => 'string',
-								'value' => $caption_text,
-							],
-							'children' => [],
-						],
-					] );
+					$child->set_settings( 'paragraph', Atomic_Text::paragraph( $caption_text ) );
 				} else {
-					$child->set_settings( 'title', [
-						'$$type' => 'html-v3',
-						'value' => [
-							'content' => [
-								'$$type' => 'string',
-								'value' => $caption_text,
-							],
-							'children' => [],
-						],
-					] );
+					$child->set_settings( 'title', Atomic_Text::heading( $caption_text ) );
 				}
 			}
 

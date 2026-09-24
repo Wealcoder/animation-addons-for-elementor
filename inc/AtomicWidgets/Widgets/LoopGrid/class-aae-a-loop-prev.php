@@ -17,6 +17,7 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
+use Wealcoder\AnimationAddons\AtomicWidgets\Atomic_Text;
 
 require_once __DIR__ . '/class-aae-a-loop-arrow.php';
 
@@ -99,7 +100,7 @@ class Aaeaddon_A_Loop_Prev extends Atomic_Element_Base {
 			'elements'        => [],
 		];
 
-		return $children;
+		return Atomic_Text::children( $children );
 	}
 
 	private static function child_type_registered( string $type ): bool {

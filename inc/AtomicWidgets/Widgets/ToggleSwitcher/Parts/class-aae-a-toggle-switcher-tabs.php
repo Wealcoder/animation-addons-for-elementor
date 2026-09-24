@@ -26,6 +26,7 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
+use Wealcoder\AnimationAddons\AtomicWidgets\Atomic_Text;
 
 require_once __DIR__ . '/class-aae-a-toggle-switcher-tab.php';
 
@@ -128,7 +129,7 @@ class Aaeaddon_A_Toggle_Switcher_Tabs extends Atomic_Element_Base {
 	 * SELECTED variant.
 	 */
 	public static function build_default_inner_children(): array {
-		return [
+		return Atomic_Text::children( [
 			Aaeaddon_A_Toggle_Switcher_Tab::generate()
 				->editor_settings( [ 'title' => 'Tab — Monthly' ] )
 				->settings( [
@@ -149,11 +150,11 @@ class Aaeaddon_A_Toggle_Switcher_Tabs extends Atomic_Element_Base {
 					] ),
 				] )
 				->build(),
-		];
+		] );
 	}
 
 	protected function define_default_children() {
-		return self::build_default_inner_children();
+		return Atomic_Text::children( self::build_default_inner_children() );
 	}
 
 	protected function define_allowed_child_types() {

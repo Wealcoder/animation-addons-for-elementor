@@ -62,6 +62,7 @@ use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\AtomicWidgets\Styles\Style_States;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
+use Wealcoder\AnimationAddons\AtomicWidgets\Atomic_Text;
 
 class Aaeaddon_A_Form_Submit extends Atomic_Element_Base {
 
@@ -431,7 +432,7 @@ class Aaeaddon_A_Form_Submit extends Atomic_Element_Base {
 			->editor_settings( [ 'title' => __( 'Label', 'animation-addons-for-elementor' ) ] )
 			->build();
 
-		return [ $label, $icon ];
+		return Atomic_Text::children( [ $label, $icon ] );
 	}
 
 	protected function define_allowed_child_types() {
