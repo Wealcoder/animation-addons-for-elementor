@@ -73,7 +73,6 @@ module.exports = {
     // when a widget on the page actually uses that effect.
     "modules/atomic/effects/nested-slider": "./src/modules/atomic/effects/nested-slider/index.js",
     "modules/atomic/effects/custom-css": "./src/modules/atomic/effects/custom-css/index.js",
-    "modules/atomic/effects/image-animation": "./src/modules/atomic/effects/image-animation/index.js",
     "modules/atomic/effects/background-video": "./src/modules/atomic/effects/background-video/index.js",
     "modules/atomic/effects/image-overlay": "./src/modules/atomic/effects/image-overlay/index.js",
   },

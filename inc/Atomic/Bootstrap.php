@@ -69,16 +69,9 @@ final class Bootstrap {
 		// Image animation — reveal/scale/stretch for e-image / e-svg.
 		// Frontend reads window.AAE_INTERACTIONS_IMG[<id>].
 		//
-		// Schema + Controls only, like its eleven siblings above and below.
-		// It alone also registered its Render here until 2026-09 — the one
-		// slug whose free Render file survived the migration, so the one line
-		// nobody noticed. Pro registered its own on the same hook and
-		// `InteractionsMap::register()` is last-wins, so whichever ran last
-		// decided the output; Pro's copy had been forked before FIELD_MAP
-		// existed, which is how every cinematic-preset field disappeared from
-		// published pages while the editor still showed it. The Render class
-		// stays in this plugin (Pro's now extends it) — only the duplicate
-		// registration is gone.
+		// Schema + Controls only, like its eleven siblings: the settings are
+		// editable here, Pro's Extensions\ImageAnimation\Render emits the
+		// config and runs the animation. No Pro, no animation.
 		if ( $extensions->is_extension_active( 'image-animation' ) ) {
 			( new \Wealcoder\AnimationAddons\Atomic\ImageAnimation\Schema() )->register();
 			( new \Wealcoder\AnimationAddons\Atomic\ImageAnimation\Controls() )->register();
