@@ -66,11 +66,15 @@
   const atomicAvailable = () => !!CFG.atomic_available;
 
   /**
-   * Which eras this site is offered. An era whose widgets are ALL switched
-   * off is not listed — no cards, no Version option (PHP decides:
-   * template_library_eras()). With both off there is nothing to hide
-   * against, so both are offered and the dependency dialog on Insert says
-   * what a block needs.
+   * Which eras this site actually USES — an era is "on" when at least one of
+   * its widgets is switched on (PHP decides: template_library_eras()).
+   *
+   * It decides the DEFAULT the Version filter opens on and the one-line hint
+   * under the toolbar, and NOTHING else. It never hides: every version is
+   * always listed and always in the filter. Hiding an era was tried and is
+   * wrong — a catalogue that silently omits half its blocks reads as "the
+   * sections are gone", and there is nothing to protect against anyway,
+   * because Insert already offers to switch on whatever a template needs.
    */
   const eras = () => {
     const e = CFG.eras && typeof CFG.eras === "object" ? CFG.eras : {};
@@ -78,21 +82,26 @@
     const v4 = !!e.v4;
     return v3 || v4 ? { v3, v4 } : { v3: true, v4: true };
   };
-  const eraOffered = (builder) => !!eras()[builder];
-
   /**
-   * Which version the list opens on. V4 is the catalogue being built now, so
-   * it is the default wherever a V4 block can actually be inserted; on a
-   * non-atomic editor every V4 card would carry a disabled Insert, so that
-   * editor opens on V3. The user can switch to either, or to All — among the
-   * eras this site is offered.
+   * Which version the list OPENS on — never what it offers; all three are
+   * always in the control.
+   *
+   * What this editor can insert wins first: without Elementor's atomic
+   * setting every V4 card carries a disabled Insert, and opening on a list
+   * where nothing can be inserted is the worst first screen the library has.
+   * Then the era this site uses, so a V4-only site lands on V4 and a V3 site
+   * on V3. With both (or neither) in use, V4 — it is the catalogue being
+   * built now.
    */
   const defaultBuilder = () => {
+    if (!atomicAvailable()) {
+      return "v3";
+    }
     const offered = eras();
     if (offered.v3 !== offered.v4) {
       return offered.v4 ? "v4" : "v3";
     }
-    return atomicAvailable() ? "v4" : "v3";
+    return "v4";
   };
 
   const state = {
@@ -104,6 +113,9 @@
     builder: defaultBuilder(),
     search: "",
     exhausted: false,
+    total: null,        // how many the server says match this filter …
+    totalPages: null,   // … and in how many pages. Both come back on every
+                        // response and were thrown away until 2026-09-24.
     section: null,      // the "add section" area whose button opened the modal
     content: null,      // the lightbox's widgetContent element
     listHtml: "",       // the list markup, kept while a preview is open
@@ -182,10 +194,6 @@
 
     list.reverse();
 
-    // An era this site is not offered never lists, whatever the filter says.
-    const offered = eras();
-    list = list.filter((item) => (isV4(item) ? offered.v4 : offered.v3));
-
     if (state.builder === "v4") {
       return list.filter(isV4);
     }
@@ -216,19 +224,33 @@
     return url;
   };
 
+  /**
+   * One page of the list, plus what the server says the whole list is.
+   *
+   * `total` / `totalpages` ride every response and used to be discarded, so
+   * the modal could never say how many blocks there are — 1,464 of them
+   * arrive 100 at a time and a pause while a page is in flight reads as the
+   * end of the catalogue. They also end the scroll one request earlier: the
+   * old code only learned it was done by asking for a page that came back
+   * empty, which every filter and every empty tab paid for.
+   */
   const fetchTemplates = async (page) => {
-    let result = [];
+    let items = [];
+    let total = null;
+    let pages = null;
     try {
       const response = await fetch(buildQuery(page));
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
       const data = await response.json();
-      result = data.templates || [];
+      items = data.templates || [];
+      total = Number.isFinite(Number(data.total)) ? Number(data.total) : null;
+      pages = Number.isFinite(Number(data.totalpages)) ? Number(data.totalpages) : null;
     } catch (error) {
       console.error("Fetch Error:", error);
     }
-    return validate(result);
+    return { items: validate(items), total, pages };
   };
 
   /* --------------------------------------------------------------- markup */
@@ -303,6 +325,50 @@
 
   const listContainer = () => (state.content ? state.content.find(".wcf-library-templates").get(0) : null);
 
+  /**
+   * The load-more footer, which shipped rendering a literal ".", now says how
+   * far down the list you are. It is the one place a visitor asks "is that
+   * all of them", and the honest answer was already in every response.
+   *
+   * Note the count is the SERVER's, so it is the count for this filter — not
+   * the number of cards drawn, which the era ordering re-sorts per page.
+   */
+  /**
+   * Bold the search term in every card on screen, including the ones a later
+   * page appends -- it used to run once over the first hundred and everything
+   * after that arrived unmarked. Idempotent: it reads textContent each time,
+   * never its own innerHTML.
+   */
+  const highlightSearch = () => {
+    const container = listContainer();
+    if (!container || !state.search) {
+      return;
+    }
+    const re = new RegExp(state.search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
+    container.querySelectorAll(".wcf-library-template .title").forEach((title) => {
+      const plain = title.textContent;
+      title.innerHTML = re.test(plain) ? plain.replace(re, "<b>$&</b>") : plain;
+    });
+  };
+
+  const updateFooter = () => {
+    const footer = state.content ? state.content.find(".aaeaadon-loadmore-footer").get(0) : null;
+    if (!footer) {
+      return;
+    }
+    const container = listContainer();
+    const shown = container ? container.querySelectorAll(".wcf-library-template").length : 0;
+    if (!shown || state.total === null) {
+      footer.textContent = "";
+      return;
+    }
+    const num = (n) => Number(n).toLocaleString();
+    footer.textContent =
+      shown >= state.total
+        ? sprintf(text("all_shown", "All %s shown"), num(state.total))
+        : sprintf(text("showing", "Showing %s of %s — keep scrolling for more"), num(shown), num(state.total));
+  };
+
   const appendTemplates = (items) => {
     const container = listContainer();
     if (!container) {
@@ -315,8 +381,16 @@
     if (empty) {
       empty.remove();
     }
+    highlightSearch();
+    updateFooter();
     if (!container.querySelector(".wcf-library-template")) {
-      const what = state.builder === "v4" ? text("empty_v4", "No Elementor V4 blocks in this list yet — switch the version filter to V3 or All.") : text("empty", "No templates found.");
+      // On an empty V4 list the version filter is the way out, so name it —
+      // and name the right thing: the Pages tab holds no blocks.
+      const what = state.builder === "v4"
+        ? (state.type === "page"
+          ? text("empty_v4_pages", "No Elementor V4 pages in this list yet — switch the version filter to V3 or All.")
+          : text("empty_v4", "No Elementor V4 blocks in this list yet — switch the version filter to V3 or All."))
+        : text("empty", "No templates found.");
       container.insertAdjacentHTML("beforeend", `<p class="aae-tl-empty" data-aae-tl-empty>${escapeAttr(what)}</p>`);
     }
   };
@@ -371,15 +445,21 @@
           busy = true;
           try {
             const next = state.page + 1;
-            const chunk = await fetchTemplates(next);
+            const res = await fetchTemplates(next);
             if (seq !== state.seq) {
               return; // the list was re-rendered meanwhile; this page belongs to the old one
             }
             state.page = next;
-            if (!chunk.length) {
+            if (res.total !== null) {
+              state.total = res.total;
+              state.totalPages = res.pages;
+            }
+            // Either signal ends it: the server's own page count, or a page
+            // that came back empty (a block server too old to send one).
+            if (!res.items.length || (state.totalPages !== null && next >= state.totalPages)) {
               state.exhausted = true;
             }
-            appendTemplates(chunk);
+            appendTemplates(res.items);
           } finally {
             busy = false;
           }
@@ -393,42 +473,41 @@
   const syncSelects = () => {
     $("#wcf-template-library-filter-subtype").val(state.category);
     $("#wcf-template-library-color-subtype").val(state.color);
-    // The Version filter offers only the eras this site is offered; with
-    // one era there is nothing to choose, so the control goes away.
-    const offered = eras();
+    // All three versions, always. The era this site does not use decides
+    // which one the filter OPENS on (defaultBuilder), never what it offers —
+    // removing an option is how someone ends up unable to reach the V3
+    // catalogue at all, with nothing on screen saying the control exists.
     const $builder = $("#wcf-template-library-builder");
-    if (!offered.v3) {
-      $builder.find('option[value="v3"]').remove();
-    }
-    if (!offered.v4) {
-      $builder.find('option[value="v4"]').remove();
-    }
-    if (offered.v3 !== offered.v4) {
-      $builder.find('option[value="all"]').remove();
-      $builder.closest("#elementor-template-library-builder-toolbar-remote").attr("hidden", "hidden");
-      state.builder = offered.v4 ? "v4" : "v3";
-    }
+    $builder.closest("#elementor-template-library-builder-toolbar-remote").removeAttr("hidden");
     $builder.val(state.builder);
   };
 
   /**
-   * One line under the toolbar when an era is hidden, saying WHY and where
-   * to switch widgets on — a list that silently lacks V3 reads as "the
-   * sections are gone", not as a rule. Nothing when both eras are offered.
+   * One quiet line under the toolbar when the list can show cards from an era
+   * whose every widget is switched off. Those cards insert perfectly well —
+   * the dependency dialog offers to switch on what each one needs — so this
+   * says there is an extra step, not that anything is broken.
+   *
+   * Nothing when both eras are in use, and nothing while the filter is
+   * standing on the era that IS in use: no card from the off era is on
+   * screen then, so the line would be about nothing the reader can see.
    */
   const eraNotice = () => {
     const offered = eras();
     if (offered.v3 === offered.v4 || !state.content) {
       return;
     }
-    const hidden = offered.v3 ? "v4" : "v3";
+    const off = offered.v3 ? "v4" : "v3";
+    if (state.builder !== "all" && state.builder !== off) {
+      return;
+    }
     const link = `<a href="${escapeAttr(CFG.widgets_link || CFG.dashboard_link || "#")}" target="_blank" rel="noopener">${escapeAttr(text("widgets_screen", "Animation Addons → Widgets"))}</a>`;
-    const fallback = hidden === "v3"
-      ? "Elementor V3 sections and pages are hidden because every V3 widget is switched off. Switch the widgets you need on in %s to see them."
-      : "Elementor V4 blocks and pages are hidden because every V4 widget is switched off. Switch the widgets you need on in %s to see them.";
-    const message = escapeAttr(text(`era_hidden_${hidden}`, fallback)).replace("%s", link);
+    const fallback = off === "v3"
+      ? "Every Elementor V3 widget is switched off on this site. V3 sections still insert — the editor offers to switch on the widgets each one needs. You can also switch them on first in %s."
+      : "Every Elementor V4 widget is switched off on this site. V4 blocks still insert — the editor offers to switch on the widgets each one needs. You can also switch them on first in %s.";
+    const message = escapeAttr(text(`era_off_${off}`, fallback)).replace("%s", link);
     state.content.find("#elementor-template-library-toolbar").after(
-      `<div class="aae-tl-notice" data-aae-tl-era-notice="${hidden}"><i class="eicon-info-circle" aria-hidden="true"></i><span>${message}</span></div>`
+      `<div class="aae-tl-notice" data-aae-tl-era-notice="${off}"><i class="eicon-info-circle" aria-hidden="true"></i><span>${message}</span></div>`
     );
   };
 
@@ -454,16 +533,19 @@
     // the Pages tab (measured: 12 sections listed under "Pages", and a section
     // inserted from it). Only the most recent render may paint.
     const seq = ++state.seq;
-    const items = await fetchTemplates(1);
+    const res = await fetchTemplates(1);
     if (seq !== state.seq) {
       return;
     }
     state.page = 1;
-    // An empty first page is the whole list. Without this the load-more
-    // footer under an empty tab intersected at once and asked for page 2
-    // of nothing (measured: every empty tab cost a second request).
-    state.exhausted = items.length === 0;
-    appendTemplates(items);
+    state.total = res.total;
+    state.totalPages = res.pages;
+    // An empty first page is the whole list, and so is a single-page one.
+    // Without this the load-more footer under an empty tab intersected at
+    // once and asked for page 2 of nothing (measured: every empty tab cost
+    // a second request; so did the last page of every full list).
+    state.exhausted = res.items.length === 0 || (res.pages !== null && res.pages <= 1);
+    appendTemplates(res.items);
     watchLoadMore();
 
     const $last = $(".wcf-library-template").last().find("img");
@@ -1144,19 +1226,17 @@
         return;
       }
       stopObserver();
-      const chunk = await fetchTemplates(1);
+      const res = await fetchTemplates(1);
       container.innerHTML = "";
-      appendTemplates(chunk);
-      if (state.search) {
-        const re = new RegExp(state.search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
-        container.querySelectorAll(".wcf-library-template .title").forEach((title) => {
-          if (re.test(title.textContent)) {
-            title.innerHTML = title.textContent.replace(re, "<b>$&</b>");
-          }
-        });
-      } else {
-        watchLoadMore();
-      }
+      state.page = 1;
+      state.total = res.total;
+      state.totalPages = res.pages;
+      state.exhausted = res.items.length === 0 || (res.pages !== null && res.pages <= 1);
+      appendTemplates(res.items);
+      // Always re-arm. A search used to stop the observer and never start it
+      // again, so a term matching 400 blocks showed the first hundred and
+      // nothing on earth would load the rest.
+      watchLoadMore();
     }, 300);
   });
 
@@ -1234,3 +1314,5 @@
   // For the suite and for debugging: the state and the two paths.
   window.aaeaddonTemplateLibrary = { state, insertV4, insertV3, renderList, resolveDependencies, eras, PENDING_KEY };
 })(jQuery, window, document);
+
+//# sourceMappingURL=wcf-template-library.js.map
