@@ -1,6 +1,6 @@
 {
   "name": "animation-addons",
-  "version": "4.0.0",
+  "version": "4.2.3",
   "description": "Elementor WCF Addons",
   "main": "echo \"Nothing much here.\" && exit 1",
   "dependencies": {
