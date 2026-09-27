@@ -26,15 +26,17 @@ if ( ! defined( 'ABSPATH' ) ) {
  * scrollParallax) — FIELD_MAP below is an independent copy of that
  * extension's field map; ImageAdvancedAnimation itself is untouched.
  *
- * NOT final, and its internals are `protected`, because Pro's
- * `AtomicV4\Extensions\ImageAnimation\Render` extends this one instead of
- * copying it. The copy drifted once already — it was forked before FIELD_MAP
- * existed, so every cinematic-preset field silently vanished from the
- * published page while the editor still showed it. Anything a Pro build needs
- * to do differently belongs in an override there, never in a second copy of
- * this file.
+ * This class is the ONLY implementation. Pro's
+ * `AtomicV4\Extensions\ImageAnimation\Render` — the one its Extensions
+ * Bootstrap actually instantiates — is a thin wrapper that constructs this
+ * one and forwards `register()` to it. It used to be a verbatim copy, forked
+ * before FIELD_MAP existed, and since Pro registers last and
+ * `InteractionsMap::register()` is last-wins, that stale copy decided the
+ * output: every cinematic-preset field vanished from the published page while
+ * the editor still showed it. Anything a Pro build needs to do differently
+ * belongs in that wrapper, never in a second copy of this file.
  */
-class Render {
+final class Render {
 	use \Wealcoder\AnimationAddons\Atomic\Traits\Responsive_Config;
 
 	/**
@@ -43,7 +45,7 @@ class Render {
 	 * Every preset only uses a subset of these — unused keys are simply
 	 * absent from a row, the frontend reader falls back to its own default.
 	 */
-	protected const FIELD_MAP = [
+	private const FIELD_MAP = [
 		'direction'          => [ 'direction', 'str', 'bottomToTop' ],
 		'move_direction'     => [ 'moveDirection', 'str', 'none' ],
 		'orbit_direction'    => [ 'orbitDirection', 'str', 'left' ],
@@ -127,7 +129,7 @@ class Render {
 	 * Exclusive-trigger dedupe applied per breakpoint (page_load + scroll +
 	 * play_with_scroll share one slot; click + hover unlimited).
 	 */
-	protected function build_config( array $settings ): array {
+	private function build_config( array $settings ): array {
 		$map = $this->envelope_to_map( $settings[ Schema::IMG_INTERACTIONS ] ?? null );
 
 		$desktop_rows = $this->rows_to_runtime( $map['desktop'] ?? [] );
@@ -166,7 +168,7 @@ class Render {
 	}
 
 	/** Per-bp rows → runtime configs, with exclusive-trigger dedupe. */
-	protected function rows_to_runtime( $rows ): array {
+	private function rows_to_runtime( $rows ): array {
 		if ( ! is_array( $rows ) ) {
 			return [];
 		}
@@ -207,7 +209,7 @@ class Render {
 	}
 
 	/** One editor row → one runtime image interaction config (camelCase). */
-	protected function row_to_config( array $row, string $effect, string $trigger ): array {
+	private function row_to_config( array $row, string $effect, string $trigger ): array {
 		$str = function ( $key, $default = '' ) use ( $row ) {
 			$v = $row[ $key ] ?? null;
 			return ( is_scalar( $v ) && '' !== $v ) ? $v : $default;
@@ -272,7 +274,7 @@ class Render {
 	}
 
 	/** Repeater rows → [{k,v}] pairs (custom effect props). */
-	protected function custom_rows_to_pairs( $rows ): array {
+	private function custom_rows_to_pairs( $rows ): array {
 		if ( ! is_array( $rows ) ) {
 			return [];
 		}
@@ -294,7 +296,7 @@ class Render {
 		return $pairs;
 	}
 
-	protected function unwrap_primitive( $value, $fallback ) {
+	private function unwrap_primitive( $value, $fallback ) {
 		if ( ! is_array( $value ) ) {
 			return $value;
 		}

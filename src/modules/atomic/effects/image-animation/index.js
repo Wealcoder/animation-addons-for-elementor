@@ -103,6 +103,56 @@ function findMedia(el) {
 	return el.querySelector('img, svg') || el;
 }
 
+/* ---------- eases ---------- */
+
+/**
+ * SlowMo lives in EasePack, which neither plugin ships, so `slowmo` from the
+ * panel parsed to nothing and GSAP silently fell back to its default ease.
+ * Same curve as EasePack's SlowMo.config(0.7, 0.7): ease in, a long linear
+ * middle, ease out.
+ */
+function slowMo(p) {
+	const linearRatio = 0.7;
+	const power = 0.7;
+	const p1 = (1 - linearRatio) / 2;
+	const p3 = p1 + linearRatio;
+	const r = p + (0.5 - p) * power;
+	if (p < p1) {
+		const q = 1 - p / p1;
+		return r - q * q * q * q * r;
+	}
+	if (p > p3) {
+		const q = (p - p3) / p1;
+		return r + (p - r) * q * q * q * q;
+	}
+	return r;
+}
+
+function resolveEase(name) {
+	const gsap = getGsap();
+	const parsed = gsap && gsap.parseEase ? gsap.parseEase(name) : null;
+	if (parsed) return parsed;
+	if (typeof name === 'string' && name.toLowerCase().startsWith('slowmo')) return slowMo;
+	return name;
+}
+
+/**
+ * For properties that saturate at their end value — a clip-path inset can't
+ * open past 0%. Back and Elastic overshoot past 1 and then settle, and on a
+ * saturating property that overshoot is simply lost: elastic already reads
+ * 1.25 at 10% of the duration, so the reveal looked like a hard snap and the
+ * two eases looked the same as a plain ease-out. Folding the overshoot back
+ * (1.08 → 0.92) turns it into the edge springing back, which you can see.
+ */
+function foldedEase(name) {
+	const base = resolveEase(name);
+	if (typeof base !== 'function') return base;
+	return (t) => {
+		const v = base(t);
+		return v > 1 ? 2 - v : v;
+	};
+}
+
 /* ---------- per-effect tween builders ----------
  * Each returns a GSAP tween/timeline (paused when `paused` true) that the
  * trigger dispatcher plays. They DON'T create their own ScrollTrigger — the
@@ -127,8 +177,8 @@ function buildRevealTween(el, config, paused) {
 
 	const tl = gsap.timeline({ paused: !!paused });
 	tl.set(wrap, { autoAlpha: 1 });
-	tl.from(wrap, { clipPath: clip, duration: config.duration, ease: config.ease }, 0);
-	tl.from(image, { scale: 1.0, duration: config.duration, ease: config.ease }, 0);
+	tl.from(wrap, { clipPath: clip, duration: config.duration, ease: foldedEase(config.ease) }, 0);
+	tl.from(image, { scale: 1.0, duration: config.duration, ease: resolveEase(config.ease) }, 0);
 	return tl;
 }
 
@@ -146,7 +196,9 @@ function buildScaleTween(el, config, paused, scrub) {
 		{
 			scale: config.scaleEnd,
 			duration: config.duration,
-			ease: scrub ? 'none' : config.ease,
+			// Scrub honours the ease too: it shapes how progress maps onto
+			// scroll distance, same as Regular Animation's scrub rows.
+			ease: resolveEase(config.ease),
 			paused: !!paused,
 		}
 	);
@@ -163,23 +215,37 @@ function buildScaleTween(el, config, paused, scrub) {
  *
  * Now it is a fromTo with the start frame exposed as two panel fields, so the
  * effect is visible on a default image and tunable like every other one.
+ *
+ * The frame is a centred clip-path window, not `width`. Animating width also
+ * shrank the image's height (it keeps its aspect ratio), and for Play With
+ * Scroll that broke the scroll range: the image is its own ScrollTrigger, so
+ * ScrollTrigger measured the collapsed start state — at Start Width 0 the
+ * image was 0px tall and start and end both landed on 1864px, and the whole
+ * animation jumped in one frame. Everything below also moved up and down while
+ * scrubbing. A clip-path leaves the box alone, so the trigger measures the
+ * real image and nothing around it moves.
  */
 function buildStretchTween(el, config, paused, scrub) {
 	const gsap = getGsap();
 	if (!gsap) return null;
 	const image = findMedia(el);
 	gsap.killTweensOf(image);
+	gsap.set(image, { clearProps: 'width,borderRadius' });
+
+	const width = Math.min(100, Math.max(0, Number(config.stretchStartWidth) || 0));
+	const side = (100 - width) / 2;
+	const radius = Math.max(0, Number(config.stretchStartRadius) || 0);
+
 	return gsap.fromTo(
 		image,
+		{ clipPath: `inset(0% ${side}% 0% ${side}% round ${radius}px)` },
 		{
-			width: `${config.stretchStartWidth}%`,
-			borderRadius: `${config.stretchStartRadius}px`,
-		},
-		{
-			width: '100%',
-			borderRadius: '0px',
+			clipPath: 'inset(0% 0% 0% 0% round 0px)',
 			duration: config.duration,
-			ease: scrub ? 'none' : config.ease,
+			// An inset can't open past 0%, so overshooting eases are folded
+			// back rather than lost (see foldedEase). Scrub honours the ease
+			// as well — it shapes how the stretch spreads over the scroll range.
+			ease: foldedEase(config.ease),
 			paused: !!paused,
 		}
 	);
@@ -209,7 +275,7 @@ function buildCustomTween(el, config, paused, scrub) {
 	// custom / premium-preset path wait twice as long as the panel says.
 	const timing = {
 		duration: config.duration,
-		ease: scrub ? 'none' : config.ease,
+		ease: resolveEase(config.ease),
 		paused: !!paused,
 	};
 

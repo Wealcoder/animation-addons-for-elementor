@@ -543,6 +543,10 @@ export function imgRowToRuntime(row) {
 		startFrom: str('start_from', 'right'),
 		scaleStart: num('scale_start', 0.5),
 		scaleEnd: num('scale_end', 1),
+		// Without these the editor previewed every stretch at the runtime's
+		// 60% / 40px default while the published page used the saved frame.
+		stretchStartWidth: num('stretch_start_width', 60),
+		stretchStartRadius: num('stretch_start_radius', 40),
 		method: str('method', 'from'),
 		customProps: imgCustomPairs(row.custom_props),
 		customPropsTo: imgCustomPairs(row.custom_props_to),
