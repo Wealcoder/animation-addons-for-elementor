@@ -439,22 +439,27 @@ class Plugin
 						'v4'              => esc_html__( 'V4', 'animation-addons-for-elementor' ),
 						'animated'        => esc_html__( 'Animated', 'animation-addons-for-elementor' ),
 						'insert'          => esc_html__( 'Insert', 'animation-addons-for-elementor' ),
+						/* translators: %s: comma-separated list of widget names. */
 						'switched_on'     => esc_html__( 'Switched on %s. Saving and reloading the editor to finish the insert…', 'animation-addons-for-elementor' ),
+						/* translators: %s: comma-separated list of widget names. */
 						'missing_widgets' => esc_html__( 'This block uses widgets that are switched off on this site (%s). An administrator has to switch them on in Animation Addons → Widgets before it can be inserted.', 'animation-addons-for-elementor' ),
+						/* translators: %d: number of images. */
 						'linked'          => esc_html__( '%d image(s) could not be copied and stay linked to the template server.', 'animation-addons-for-elementor' ),
 						'failed'          => esc_html__( 'The block could not be inserted.', 'animation-addons-for-elementor' ),
 						'empty'           => esc_html__( 'No templates found.', 'animation-addons-for-elementor' ),
 						'empty_v4'        => esc_html__( 'No Elementor V4 blocks in this list yet — switch the version filter to V3 or All.', 'animation-addons-for-elementor' ),
 						'empty_v4_pages'  => esc_html__( 'No Elementor V4 pages in this list yet — switch the version filter to V3 or All.', 'animation-addons-for-elementor' ),
-						// The load-more footer. Positional placeholders are not an
-						// option: the bundle's own sprintf() fills %s in order.
+						// The load-more footer. The bundle's sprintf() understands
+						// %1$s / %2$s, so a translation may reorder them.
 						/* translators: 1: how many are on screen, 2: how many match the filter. */
-						'showing'         => esc_html__( 'Showing %s of %s — keep scrolling for more', 'animation-addons-for-elementor' ),
+						'showing'         => esc_html__( 'Showing %1$s of %2$s — keep scrolling for more', 'animation-addons-for-elementor' ),
 						/* translators: %s: how many templates match the filter. */
 						'all_shown'       => esc_html__( 'All %s shown', 'animation-addons-for-elementor' ),
 						// The hint under the toolbar when the list can show cards from
 						// an era whose every widget is switched off. They still insert.
+						/* translators: %s: link to the Widgets screen. */
 						'era_off_v3'      => esc_html__( 'Every Elementor V3 widget is switched off on this site. V3 sections still insert — the editor offers to switch on the widgets each one needs. You can also switch them on first in %s.', 'animation-addons-for-elementor' ),
+						/* translators: %s: link to the Widgets screen. */
 						'era_off_v4'      => esc_html__( 'Every Elementor V4 widget is switched off on this site. V4 blocks still insert — the editor offers to switch on the widgets each one needs. You can also switch them on first in %s.', 'animation-addons-for-elementor' ),
 						'widgets_screen'  => esc_html__( 'Animation Addons → Widgets', 'animation-addons-for-elementor' ),
 						// The dependency dialog: what the block/page needs that is off.

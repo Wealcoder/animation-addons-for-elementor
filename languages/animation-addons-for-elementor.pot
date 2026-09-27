@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-27T09:19:00+00:00\n"
+"POT-Creation-Date: 2026-09-27T10:10:08+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: animation-addons-for-elementor\n"
@@ -77,7 +77,7 @@ msgid "Okay"
 msgstr ""
 
 #: class-plugin.php:246
-#: class-plugin.php:465
+#: class-plugin.php:470
 #: src/modules/atomic/element-controls/FormActionsControl.jsx:1330
 #: src/modules/atomic/element-controls/FormConditionsControl.jsx:429
 #: src/modules/dashboard/components/animation-settings/FeaturePanel.jsx:420
@@ -130,128 +130,133 @@ msgid "Animated"
 msgstr ""
 
 #: class-plugin.php:441
-#: class-plugin.php:1633
+#: class-plugin.php:1638
 msgid "Insert"
 msgstr ""
 
-#: class-plugin.php:442
+#. translators: %s: comma-separated list of widget names.
+#: class-plugin.php:443
 #, php-format
 msgid "Switched on %s. Saving and reloading the editor to finish the insert…"
 msgstr ""
 
-#: class-plugin.php:443
+#. translators: %s: comma-separated list of widget names.
+#: class-plugin.php:445
 #, php-format
 msgid "This block uses widgets that are switched off on this site (%s). An administrator has to switch them on in Animation Addons → Widgets before it can be inserted."
 msgstr ""
 
-#: class-plugin.php:444
+#. translators: %d: number of images.
+#: class-plugin.php:447
 #, php-format
 msgid "%d image(s) could not be copied and stay linked to the template server."
 msgstr ""
 
-#: class-plugin.php:445
+#: class-plugin.php:448
 msgid "The block could not be inserted."
 msgstr ""
 
-#: class-plugin.php:446
+#: class-plugin.php:449
 msgid "No templates found."
 msgstr ""
 
-#: class-plugin.php:447
+#: class-plugin.php:450
 msgid "No Elementor V4 blocks in this list yet — switch the version filter to V3 or All."
 msgstr ""
 
-#: class-plugin.php:448
+#: class-plugin.php:451
 msgid "No Elementor V4 pages in this list yet — switch the version filter to V3 or All."
 msgstr ""
 
 #. translators: 1: how many are on screen, 2: how many match the filter.
-#: class-plugin.php:452
+#: class-plugin.php:455
 #, php-format
-msgid "Showing %s of %s — keep scrolling for more"
+msgid "Showing %1$s of %2$s — keep scrolling for more"
 msgstr ""
 
 #. translators: %s: how many templates match the filter.
-#: class-plugin.php:454
+#: class-plugin.php:457
 #, php-format
 msgid "All %s shown"
 msgstr ""
 
-#: class-plugin.php:457
+#. translators: %s: link to the Widgets screen.
+#: class-plugin.php:461
 #, php-format
 msgid "Every Elementor V3 widget is switched off on this site. V3 sections still insert — the editor offers to switch on the widgets each one needs. You can also switch them on first in %s."
 msgstr ""
 
-#: class-plugin.php:458
+#. translators: %s: link to the Widgets screen.
+#: class-plugin.php:463
 #, php-format
 msgid "Every Elementor V4 widget is switched off on this site. V4 blocks still insert — the editor offers to switch on the widgets each one needs. You can also switch them on first in %s."
 msgstr ""
 
-#: class-plugin.php:459
+#: class-plugin.php:464
 msgid "Animation Addons → Widgets"
 msgstr ""
 
-#: class-plugin.php:461
+#: class-plugin.php:466
 msgid "This template uses widgets that are switched off"
 msgstr ""
 
-#: class-plugin.php:462
+#: class-plugin.php:467
 msgid "Switch them on to insert it. The editor saves and reloads once to register them."
 msgstr ""
 
-#: class-plugin.php:463
+#: class-plugin.php:468
 msgid "An administrator has to switch them on in Animation Addons → Widgets before it can be inserted."
 msgstr ""
 
-#: class-plugin.php:464
+#: class-plugin.php:469
 msgid "Switch on & insert"
 msgstr ""
 
-#: class-plugin.php:466
-#: class-plugin.php:1497
-#: class-plugin.php:1625
+#: class-plugin.php:471
+#: class-plugin.php:1502
+#: class-plugin.php:1630
 #: widgets/post-rating-form.php:882
 #: src/modules/dashboard/components/performance/PerformanceWizard.jsx:566
 msgid "Close"
 msgstr ""
 
-#: class-plugin.php:467
+#: class-plugin.php:472
 msgid "Widget"
 msgstr ""
 
-#: class-plugin.php:468
+#: class-plugin.php:473
 msgid "Extension"
 msgstr ""
 
-#: class-plugin.php:469
+#: class-plugin.php:474
 msgid "Not available on this site — needs Animation Addons Pro"
 msgstr ""
 
-#: class-plugin.php:470
+#: class-plugin.php:475
 msgid "The parts marked as unavailable will be left out of the insert."
 msgstr ""
 
-#: class-plugin.php:1245
+#: class-plugin.php:1250
 msgid "AAE"
 msgstr ""
 
-#: class-plugin.php:1250
+#: class-plugin.php:1255
 msgid "AAE Header & Footer"
 msgstr ""
 
-#: class-plugin.php:1255
+#: class-plugin.php:1260
 msgid "AAE Archive"
 msgstr ""
 
-#: class-plugin.php:1260
+#: class-plugin.php:1265
 msgid "AAE Search"
 msgstr ""
 
-#: class-plugin.php:1265
+#: class-plugin.php:1270
 msgid "AAE Single"
 msgstr ""
 
-#: class-plugin.php:1514
+#: class-plugin.php:1519
 #: inc/AtomicWidgets/Widgets/PostPagination/Parts/class-aae-a-post-pagination-preview-category.php:41
 #: inc/AtomicWidgets/Widgets/PostPagination/Parts/class-aae-a-post-pagination-preview-category.php:103
 #: inc/theme-builder/theme-builder-admin.php:870
@@ -262,57 +267,57 @@ msgstr ""
 msgid "Category"
 msgstr ""
 
-#: class-plugin.php:1537
+#: class-plugin.php:1542
 msgid "All versions"
 msgstr ""
 
-#: class-plugin.php:1538
+#: class-plugin.php:1543
 #: src/modules/dashboard/pages/Extensions.jsx:136
 #: src/modules/dashboard/pages/Widgets.jsx:153
 msgid "Elementor V3"
 msgstr ""
 
-#: class-plugin.php:1539
+#: class-plugin.php:1544
 #: src/modules/dashboard/pages/Extensions.jsx:128
 #: src/modules/dashboard/pages/Widgets.jsx:145
 msgid "Elementor V4 (Atomic)"
 msgstr ""
 
-#: class-plugin.php:1546
+#: class-plugin.php:1551
 msgid "Search Templates:"
 msgstr ""
 
-#: class-plugin.php:1572
+#: class-plugin.php:1577
 msgid "Go Premium"
 msgstr ""
 
-#: class-plugin.php:1577
+#: class-plugin.php:1582
 msgid "Activate License"
 msgstr ""
 
-#: class-plugin.php:1582
+#: class-plugin.php:1587
 #: inc/CodeSnippet/listTables/CodeSnippetListTable.php:337
 msgid "Activate"
 msgstr ""
 
-#: class-plugin.php:1606
-#: class-plugin.php:1659
+#: class-plugin.php:1611
+#: class-plugin.php:1664
 #: inc/AnimationSettings/class-animation-settings.php:883
 #: src/modules/dashboard/layouts/MainLayout.jsx:121
 msgid "Loading"
 msgstr ""
 
-#: class-plugin.php:1618
+#: class-plugin.php:1623
 msgid "Back to Library"
 msgstr ""
 
-#: class-plugin.php:1682
+#: class-plugin.php:1687
 #: widgets/notification.php:373
 #: widgets/post-comment.php:1069
 msgid "Block"
 msgstr ""
 
-#: class-plugin.php:1685
+#: class-plugin.php:1690
 #: inc/Aaeaddon_Post_Handler_Legacy_Trait.php:697
 #: inc/Aaeaddon_Post_Handler_Trait.php:670
 #: inc/AtomicWidgets/Widgets/PostContent/class-aae-a-post-content.php:368
@@ -322,7 +327,7 @@ msgstr ""
 msgid "Page"
 msgstr ""
 
-#: class-plugin.php:1776
+#: class-plugin.php:1781
 #: widgets/advance-pricing-table/advance-pricing-table.php:53
 msgid "Advanced Pricing Table"
 msgstr ""
@@ -4008,45 +4013,45 @@ msgid "Enable Grid"
 msgstr ""
 
 #. translators: 1: Lottie files copied, 2: pages updated
-#: inc/admin/atomic-image-localize.php:617
+#: inc/admin/atomic-image-localize.php:616
 #, php-format
 msgid "Lottie animations copied to the media library: %1$d files, %2$d pages updated"
 msgstr ""
 
 #. translators: %d: number of Lottie files that could not be downloaded
 #. translators: %d: number of images that could not be downloaded
-#: inc/admin/atomic-image-localize.php:624
-#: inc/admin/atomic-image-localize.php:649
+#: inc/admin/atomic-image-localize.php:623
+#: inc/admin/atomic-image-localize.php:648
 #, php-format
 msgid ", %d could not be downloaded and stay linked"
 msgstr ""
 
 #. translators: 1: downloaded count, 2: posts updated
-#: inc/admin/atomic-image-localize.php:632
+#: inc/admin/atomic-image-localize.php:631
 #, php-format
 msgid "Images copied to the media library: %1$d downloaded, %2$d pages updated"
 msgstr ""
 
 #. translators: %d: number of Lottie animation files among the downloads
-#: inc/admin/atomic-image-localize.php:639
+#: inc/admin/atomic-image-localize.php:638
 #, php-format
 msgid " (%d of them Lottie animations)"
 msgstr ""
 
 #. translators: %d: number of images already in the library
-#: inc/admin/atomic-image-localize.php:644
+#: inc/admin/atomic-image-localize.php:643
 #, php-format
 msgid ", %d already there"
 msgstr ""
 
 #. translators: 1: files done, 2: files total
-#: inc/admin/atomic-image-localize.php:659
+#: inc/admin/atomic-image-localize.php:658
 #, php-format
 msgid "Copying Lottie animations to the media library (%1$d of %2$d)"
 msgstr ""
 
 #. translators: 1: images done, 2: images total
-#: inc/admin/atomic-image-localize.php:667
+#: inc/admin/atomic-image-localize.php:666
 #, php-format
 msgid "Copying images to the media library (%1$d of %2$d)"
 msgstr ""

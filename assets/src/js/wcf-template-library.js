@@ -366,7 +366,7 @@
     footer.textContent =
       shown >= state.total
         ? sprintf(text("all_shown", "All %s shown"), num(state.total))
-        : sprintf(text("showing", "Showing %s of %s — keep scrolling for more"), num(shown), num(state.total));
+        : sprintf(text("showing", "Showing %1$s of %2$s — keep scrolling for more"), num(shown), num(state.total));
   };
 
   const appendTemplates = (items) => {
@@ -835,9 +835,14 @@
     }
   };
 
+  // %s / %d fill in order; %1$s / %2$d fill by position, so a translation
+  // may reorder its placeholders.
   const sprintf = (str, ...args) => {
     let i = 0;
-    return String(str).replace(/%[sd]/g, () => (i < args.length ? args[i++] : ""));
+    return String(str).replace(/%(?:(\d+)\$)?[sd]/g, (m, pos) => {
+      const idx = pos ? Number(pos) - 1 : i++;
+      return idx < args.length ? args[idx] : "";
+    });
   };
 
   /* ------------------------------------------------ what a block needs */
