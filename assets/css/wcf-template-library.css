@@ -368,3 +368,18 @@
   opacity: 0;
   visibility: hidden;
 }
+
+body .elementor-global-styles-dialog {
+  --gsd-color-text-primary: var(--e-a-color-txt-accent, #0c0d0e);
+  --gsd-color-text-secondary: var(--e-a-color-txt-hover, #3f444b);
+  --gsd-color-text-tertiary: var(--e-a-color-txt-muted, #69727d);
+  --gsd-color-divider: var(--e-a-border-color, rgba(0, 0, 0, 0.12));
+  --gsd-color-secondary-main: var(--e-a-color-txt, #515962);
+}
+body .elementor-global-styles-dialog .elementor-global-styles-dialog__button-insert {
+  color: #0c0d0e;
+}
+body .elementor-global-styles-dialog .elementor-global-styles-dialog__button-cancel:hover {
+  background: var(--e-a-bg-hover, rgba(0, 0, 0, 0.04));
+}
+/*# sourceMappingURL=wcf-template-library.css.map */
