@@ -20,8 +20,8 @@ The new Elementor V4 toolkit is built for the Atomic Editor workflow. It works w
 Elementor Free is required. Elementor Pro is not required for the Animation Addons V4 Atomic Widgets.
 
 
-[Elementor V4 Templates](https://animation-addons.com/v4/)
-[Elementor V4 Toolkit](https://animation-addons.com/v4/) 
+[Elementor V4 Templates](https://animation-addons.com/)
+[Elementor V4 Toolkit](https://animation-addons.com/) 
 
 ###Built for Elementor V4 and the Atomic Editor
 

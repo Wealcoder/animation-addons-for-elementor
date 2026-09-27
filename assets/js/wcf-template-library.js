@@ -1319,5 +1319,3 @@
   // For the suite and for debugging: the state and the two paths.
   window.aaeaddonTemplateLibrary = { state, insertV4, insertV3, renderList, resolveDependencies, eras, PENDING_KEY };
 })(jQuery, window, document);
-
-//# sourceMappingURL=wcf-template-library.js.map
