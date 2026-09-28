@@ -1,4 +1,10 @@
 <?php
+namespace Wealcoder\AnimationAddons\Admin\Base;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Copies url-shaped atomic images into the media library after a V4 import.
  *
@@ -64,13 +70,6 @@
  *
  * @package Wealcoder\AnimationAddons
  */
-
-namespace Wealcoder\AnimationAddons\Admin\Base;
-
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
-
 class Atomic_Image_Localize {
 
 	const STATE_OPTION = 'aaeaddon_import_image_localize';

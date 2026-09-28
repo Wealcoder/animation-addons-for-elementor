@@ -658,8 +658,17 @@ final class Aaeaddon_Plugin {
  *
  * @since 4.2.0
  */
-// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassnameFound -- the pre-4.2 name being aliased.
-class_alias( 'Aaeaddon_Plugin', 'WCF_ADDONS_Plugin' );
+//
+// Guarded, because the name can already exist: Pro declares an empty stub of
+// it at `plugins_loaded` PHP_INT_MAX when this plugin is inactive, and the
+// request that ACTIVATES this plugin includes this file after that. An
+// unguarded alias then warned "Cannot declare class WCF_ADDONS_Plugin", and
+// WordPress reported it as "268 characters of unexpected output during
+// activation". The stub only lives for that one request.
+if ( ! class_exists( 'WCF_ADDONS_Plugin', false ) ) {
+	// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassnameFound -- the pre-4.2 name being aliased.
+	class_alias( 'Aaeaddon_Plugin', 'WCF_ADDONS_Plugin' );
+}
 
 // ✅ Register hooks here (outside class)
 register_activation_hook( AAEADDON_FILE, ['Aaeaddon_Plugin', 'plugin_activation_hook'] );

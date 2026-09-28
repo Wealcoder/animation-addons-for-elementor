@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-22T09:20:19+00:00\n"
+"POT-Creation-Date: 2026-09-27T10:10:08+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: animation-addons-for-elementor\n"
@@ -72,12 +72,12 @@ msgstr ""
 msgid "PHP"
 msgstr ""
 
-#: class-plugin.php:247
+#: class-plugin.php:245
 msgid "Okay"
 msgstr ""
 
-#: class-plugin.php:248
-#: class-plugin.php:459
+#: class-plugin.php:246
+#: class-plugin.php:470
 #: src/modules/atomic/element-controls/FormActionsControl.jsx:1330
 #: src/modules/atomic/element-controls/FormConditionsControl.jsx:429
 #: src/modules/dashboard/components/animation-settings/FeaturePanel.jsx:420
@@ -98,144 +98,165 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#: class-plugin.php:249
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-submit.php:154
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-submit.php:425
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:366
+#: class-plugin.php:247
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-submit.php:155
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-submit.php:426
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:367
 #: widgets/post-rating-form.php:225
 #: src/modules/dashboard/components/dashboard/RequestFeatureForm.jsx:142
 msgid "Submit"
 msgstr ""
 
-#: class-plugin.php:250
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:320
+#: class-plugin.php:248
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:321
 msgid "Success"
 msgstr ""
 
-#: class-plugin.php:251
+#: class-plugin.php:249
 msgid "Warning"
 msgstr ""
 
-#: class-plugin.php:440
+#: class-plugin.php:438
 msgid "Needs Elementor V4 (atomic elements) to insert"
 msgstr ""
 
-#: class-plugin.php:441
+#: class-plugin.php:439
 msgid "V4"
 msgstr ""
 
-#: class-plugin.php:442
+#: class-plugin.php:440
 #: src/modules/dashboard/components/template/right/TemplateShow.jsx:169
 msgid "Animated"
 msgstr ""
 
-#: class-plugin.php:443
-#: class-plugin.php:1627
+#: class-plugin.php:441
+#: class-plugin.php:1638
 msgid "Insert"
 msgstr ""
 
-#: class-plugin.php:444
+#. translators: %s: comma-separated list of widget names.
+#: class-plugin.php:443
 #, php-format
 msgid "Switched on %s. Saving and reloading the editor to finish the insert…"
 msgstr ""
 
+#. translators: %s: comma-separated list of widget names.
 #: class-plugin.php:445
 #, php-format
 msgid "This block uses widgets that are switched off on this site (%s). An administrator has to switch them on in Animation Addons → Widgets before it can be inserted."
 msgstr ""
 
-#: class-plugin.php:446
+#. translators: %d: number of images.
+#: class-plugin.php:447
 #, php-format
 msgid "%d image(s) could not be copied and stay linked to the template server."
 msgstr ""
 
-#: class-plugin.php:447
+#: class-plugin.php:448
 msgid "The block could not be inserted."
 msgstr ""
 
-#: class-plugin.php:448
+#: class-plugin.php:449
 msgid "No templates found."
 msgstr ""
 
-#: class-plugin.php:449
+#: class-plugin.php:450
 msgid "No Elementor V4 blocks in this list yet — switch the version filter to V3 or All."
 msgstr ""
 
 #: class-plugin.php:451
-#, php-format
-msgid "Elementor V3 sections and pages are hidden because every V3 widget is switched off. Switch the widgets you need on in %s to see them."
+msgid "No Elementor V4 pages in this list yet — switch the version filter to V3 or All."
 msgstr ""
 
-#: class-plugin.php:452
+#. translators: 1: how many are on screen, 2: how many match the filter.
+#: class-plugin.php:455
 #, php-format
-msgid "Elementor V4 blocks and pages are hidden because every V4 widget is switched off. Switch the widgets you need on in %s to see them."
+msgid "Showing %1$s of %2$s — keep scrolling for more"
 msgstr ""
 
-#: class-plugin.php:453
+#. translators: %s: how many templates match the filter.
+#: class-plugin.php:457
+#, php-format
+msgid "All %s shown"
+msgstr ""
+
+#. translators: %s: link to the Widgets screen.
+#: class-plugin.php:461
+#, php-format
+msgid "Every Elementor V3 widget is switched off on this site. V3 sections still insert — the editor offers to switch on the widgets each one needs. You can also switch them on first in %s."
+msgstr ""
+
+#. translators: %s: link to the Widgets screen.
+#: class-plugin.php:463
+#, php-format
+msgid "Every Elementor V4 widget is switched off on this site. V4 blocks still insert — the editor offers to switch on the widgets each one needs. You can also switch them on first in %s."
+msgstr ""
+
+#: class-plugin.php:464
 msgid "Animation Addons → Widgets"
 msgstr ""
 
-#: class-plugin.php:455
+#: class-plugin.php:466
 msgid "This template uses widgets that are switched off"
 msgstr ""
 
-#: class-plugin.php:456
+#: class-plugin.php:467
 msgid "Switch them on to insert it. The editor saves and reloads once to register them."
 msgstr ""
 
-#: class-plugin.php:457
+#: class-plugin.php:468
 msgid "An administrator has to switch them on in Animation Addons → Widgets before it can be inserted."
 msgstr ""
 
-#: class-plugin.php:458
+#: class-plugin.php:469
 msgid "Switch on & insert"
 msgstr ""
 
-#: class-plugin.php:460
-#: class-plugin.php:1491
-#: class-plugin.php:1619
+#: class-plugin.php:471
+#: class-plugin.php:1502
+#: class-plugin.php:1630
 #: widgets/post-rating-form.php:882
 #: src/modules/dashboard/components/performance/PerformanceWizard.jsx:566
 msgid "Close"
 msgstr ""
 
-#: class-plugin.php:461
+#: class-plugin.php:472
 msgid "Widget"
 msgstr ""
 
-#: class-plugin.php:462
+#: class-plugin.php:473
 msgid "Extension"
 msgstr ""
 
-#: class-plugin.php:463
+#: class-plugin.php:474
 msgid "Not available on this site — needs Animation Addons Pro"
 msgstr ""
 
-#: class-plugin.php:464
+#: class-plugin.php:475
 msgid "The parts marked as unavailable will be left out of the insert."
 msgstr ""
 
-#: class-plugin.php:1239
+#: class-plugin.php:1250
 msgid "AAE"
 msgstr ""
 
-#: class-plugin.php:1244
+#: class-plugin.php:1255
 msgid "AAE Header & Footer"
 msgstr ""
 
-#: class-plugin.php:1249
+#: class-plugin.php:1260
 msgid "AAE Archive"
 msgstr ""
 
-#: class-plugin.php:1254
+#: class-plugin.php:1265
 msgid "AAE Search"
 msgstr ""
 
-#: class-plugin.php:1259
+#: class-plugin.php:1270
 msgid "AAE Single"
 msgstr ""
 
-#: class-plugin.php:1508
+#: class-plugin.php:1519
 #: inc/AtomicWidgets/Widgets/PostPagination/Parts/class-aae-a-post-pagination-preview-category.php:41
 #: inc/AtomicWidgets/Widgets/PostPagination/Parts/class-aae-a-post-pagination-preview-category.php:103
 #: inc/theme-builder/theme-builder-admin.php:870
@@ -246,57 +267,57 @@ msgstr ""
 msgid "Category"
 msgstr ""
 
-#: class-plugin.php:1531
+#: class-plugin.php:1542
 msgid "All versions"
 msgstr ""
 
-#: class-plugin.php:1532
+#: class-plugin.php:1543
 #: src/modules/dashboard/pages/Extensions.jsx:136
 #: src/modules/dashboard/pages/Widgets.jsx:153
 msgid "Elementor V3"
 msgstr ""
 
-#: class-plugin.php:1533
+#: class-plugin.php:1544
 #: src/modules/dashboard/pages/Extensions.jsx:128
 #: src/modules/dashboard/pages/Widgets.jsx:145
 msgid "Elementor V4 (Atomic)"
 msgstr ""
 
-#: class-plugin.php:1540
+#: class-plugin.php:1551
 msgid "Search Templates:"
 msgstr ""
 
-#: class-plugin.php:1566
+#: class-plugin.php:1577
 msgid "Go Premium"
 msgstr ""
 
-#: class-plugin.php:1571
+#: class-plugin.php:1582
 msgid "Activate License"
 msgstr ""
 
-#: class-plugin.php:1576
+#: class-plugin.php:1587
 #: inc/CodeSnippet/listTables/CodeSnippetListTable.php:337
 msgid "Activate"
 msgstr ""
 
-#: class-plugin.php:1600
-#: class-plugin.php:1653
+#: class-plugin.php:1611
+#: class-plugin.php:1664
 #: inc/AnimationSettings/class-animation-settings.php:883
 #: src/modules/dashboard/layouts/MainLayout.jsx:121
 msgid "Loading"
 msgstr ""
 
-#: class-plugin.php:1612
+#: class-plugin.php:1623
 msgid "Back to Library"
 msgstr ""
 
-#: class-plugin.php:1676
+#: class-plugin.php:1687
 #: widgets/notification.php:373
 #: widgets/post-comment.php:1069
 msgid "Block"
 msgstr ""
 
-#: class-plugin.php:1679
+#: class-plugin.php:1690
 #: inc/Aaeaddon_Post_Handler_Legacy_Trait.php:697
 #: inc/Aaeaddon_Post_Handler_Trait.php:670
 #: inc/AtomicWidgets/Widgets/PostContent/class-aae-a-post-content.php:368
@@ -306,7 +327,7 @@ msgstr ""
 msgid "Page"
 msgstr ""
 
-#: class-plugin.php:1770
+#: class-plugin.php:1781
 #: widgets/advance-pricing-table/advance-pricing-table.php:53
 msgid "Advanced Pricing Table"
 msgstr ""
@@ -444,7 +465,7 @@ msgid "Ellipse"
 msgstr ""
 
 #: inc/Aaeaddon_Button_Trait.php:51
-#: inc/AtomicWidgets/Widgets/Btn/class-aae-a-btn.php:203
+#: inc/AtomicWidgets/Widgets/Btn/class-aae-a-btn.php:204
 #: widgets/contact-form-7.php:647
 #: widgets/post-meta-info.php:660
 msgid "Hover Style"
@@ -452,7 +473,7 @@ msgstr ""
 
 #: inc/Aaeaddon_Button_Trait.php:55
 #: inc/AtomicWidgets/Widgets/AdvancePortfolio/class-aae-a-advance-portfolio.php:233
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:278
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:279
 #: inc/AtomicWidgets/Widgets/ImageHotspot/class-aae-a-image-hotspot.php:153
 #: inc/AtomicWidgets/Widgets/ImageHotspot/class-aae-a-image-hotspot.php:164
 #: inc/AtomicWidgets/Widgets/ImageHotspot/Parts/class-aae-a-hotspot-marker.php:125
@@ -466,8 +487,8 @@ msgstr ""
 #: inc/class-blacklist.php:1116
 #: inc/class-starter-animations.php:754
 #: inc/class-starter-animations.php:972
-#: inc/theme-builder/theme-builder.php:1479
-#: inc/theme-builder/theme-builder.php:1559
+#: inc/theme-builder/theme-builder.php:1509
+#: inc/theme-builder/theme-builder.php:1589
 #: widgets/advance-pricing-table/advance-pricing-table.php:461
 #: widgets/brand-slider.php:422
 #: widgets/contact-form-7.php:651
@@ -640,11 +661,11 @@ msgid "Off"
 msgstr ""
 
 #: inc/Aaeaddon_Button_Trait.php:99
-#: inc/AtomicWidgets/Widgets/Btn/class-aae-a-btn.php:195
+#: inc/AtomicWidgets/Widgets/Btn/class-aae-a-btn.php:196
 #: inc/AtomicWidgets/Widgets/ImageHotspot/class-aae-a-hotspot-point.php:165
 #: inc/AtomicWidgets/Widgets/PostTitle/class-aae-a-post-title.php:135
 #: inc/AtomicWidgets/Widgets/SiteLogo/class-aae-a-site-logo.php:155
-#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:187
+#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:188
 #: widgets/advance-accordion.php:210
 #: widgets/animated-heading.php:141
 #: widgets/animated-text.php:218
@@ -685,16 +706,16 @@ msgstr ""
 
 #: inc/Aaeaddon_Button_Trait.php:114
 #: inc/AnimationSettings/class-animation-settings.php:1097
-#: inc/AtomicWidgets/Widgets/Accordion/class-aae-a-accordion-item.php:458
-#: inc/AtomicWidgets/Widgets/Btn/class-aae-a-btn.php:292
+#: inc/AtomicWidgets/Widgets/Accordion/class-aae-a-accordion-item.php:459
+#: inc/AtomicWidgets/Widgets/Btn/class-aae-a-btn.php:293
 #: inc/AtomicWidgets/Widgets/CurvedText/class-aae-a-curved-text.php:284
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-next.php:134
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-prev.php:122
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-submit.php:318
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-submit.php:416
-#: inc/AtomicWidgets/Widgets/IconList/class-aae-a-icon-list-item.php:134
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-submit.php:319
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-submit.php:417
+#: inc/AtomicWidgets/Widgets/IconList/class-aae-a-icon-list-item.php:135
 #: inc/AtomicWidgets/Widgets/ImageHotspot/Parts/class-aae-a-hotspot-close.php:90
-#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:262
+#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:263
 #: inc/AtomicWidgets/Widgets/SearchForm/class-aae-a-search-submit.php:73
 #: inc/AtomicWidgets/Widgets/SearchForm/class-aae-a-search-toggle-close.php:80
 #: inc/AtomicWidgets/Widgets/SearchForm/class-aae-a-search-toggle-open.php:77
@@ -848,7 +869,7 @@ msgstr ""
 #: inc/Aaeaddon_Nested_Slider_Trait.php:830
 #: inc/Aaeaddon_Slider_Trait.php:801
 #: inc/AtomicWidgets/Widgets/CurvedText/class-aae-a-curved-text.php:152
-#: inc/AtomicWidgets/Widgets/ImageCompare/class-aae-a-image-compare.php:135
+#: inc/AtomicWidgets/Widgets/ImageCompare/class-aae-a-image-compare.php:136
 #: inc/class-starter-animations.php:290
 #: inc/class-starter-animations.php:573
 #: widgets/countdown.php:231
@@ -1063,7 +1084,7 @@ msgstr ""
 #: inc/Aaeaddon_Nested_Slider_Trait.php:472
 #: inc/Aaeaddon_Slider_Trait.php:443
 #: inc/AnimationSettings/class-animation-settings.php:1235
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:319
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:320
 #: widgets/advance-accordion.php:834
 #: widgets/animated-title.php:157
 #: widgets/animated-title.php:266
@@ -2262,7 +2283,7 @@ msgstr ""
 #: inc/Aaeaddon_Slider_Trait.php:602
 #: inc/Aaeaddon_Slider_Trait.php:998
 #: inc/Aaeaddon_Slider_Trait.php:1026
-#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:236
+#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:237
 #: inc/AtomicWidgets/Widgets/SearchForm/class-aae-a-search-form.php:151
 #: inc/class-blacklist.php:276
 #: inc/class-blacklist.php:668
@@ -2370,7 +2391,7 @@ msgstr ""
 #: inc/Aaeaddon_Slider_Trait.php:606
 #: inc/Aaeaddon_Slider_Trait.php:1006
 #: inc/Aaeaddon_Slider_Trait.php:1030
-#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:235
+#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:236
 #: inc/AtomicWidgets/Widgets/SearchForm/class-aae-a-search-form.php:152
 #: inc/class-blacklist.php:277
 #: inc/class-blacklist.php:669
@@ -3817,7 +3838,7 @@ msgstr ""
 
 #: inc/Aaeaddon_Post_Query_Trait.php:341
 #: inc/AtomicWidgets/Widgets/AdvancePortfolio/class-aae-a-advance-portfolio.php:251
-#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown.php:153
+#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown.php:154
 #: inc/AtomicWidgets/Widgets/FlipBox/Parts/class-aae-a-flip-box-title.php:92
 #: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:461
 #: inc/AtomicWidgets/Widgets/PostPagination/class-aae-a-post-pagination.php:280
@@ -3992,45 +4013,45 @@ msgid "Enable Grid"
 msgstr ""
 
 #. translators: 1: Lottie files copied, 2: pages updated
-#: inc/admin/atomic-image-localize.php:617
+#: inc/admin/atomic-image-localize.php:616
 #, php-format
 msgid "Lottie animations copied to the media library: %1$d files, %2$d pages updated"
 msgstr ""
 
 #. translators: %d: number of Lottie files that could not be downloaded
 #. translators: %d: number of images that could not be downloaded
-#: inc/admin/atomic-image-localize.php:624
-#: inc/admin/atomic-image-localize.php:649
+#: inc/admin/atomic-image-localize.php:623
+#: inc/admin/atomic-image-localize.php:648
 #, php-format
 msgid ", %d could not be downloaded and stay linked"
 msgstr ""
 
 #. translators: 1: downloaded count, 2: posts updated
-#: inc/admin/atomic-image-localize.php:632
+#: inc/admin/atomic-image-localize.php:631
 #, php-format
 msgid "Images copied to the media library: %1$d downloaded, %2$d pages updated"
 msgstr ""
 
 #. translators: %d: number of Lottie animation files among the downloads
-#: inc/admin/atomic-image-localize.php:639
+#: inc/admin/atomic-image-localize.php:638
 #, php-format
 msgid " (%d of them Lottie animations)"
 msgstr ""
 
 #. translators: %d: number of images already in the library
-#: inc/admin/atomic-image-localize.php:644
+#: inc/admin/atomic-image-localize.php:643
 #, php-format
 msgid ", %d already there"
 msgstr ""
 
 #. translators: 1: files done, 2: files total
-#: inc/admin/atomic-image-localize.php:659
+#: inc/admin/atomic-image-localize.php:658
 #, php-format
 msgid "Copying Lottie animations to the media library (%1$d of %2$d)"
 msgstr ""
 
 #. translators: 1: images done, 2: images total
-#: inc/admin/atomic-image-localize.php:667
+#: inc/admin/atomic-image-localize.php:666
 #, php-format
 msgid "Copying images to the media library (%1$d of %2$d)"
 msgstr ""
@@ -4307,14 +4328,14 @@ msgstr ""
 #: inc/admin/dashboard.php:373
 #: inc/admin/row-actions.php:75
 #: inc/AtomicWidgets/Widgets/AdvancedHeading/class-aae-a-advanced-heading.php:200
-#: inc/AtomicWidgets/Widgets/Btn/class-aae-a-btn.php:207
-#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown-unit.php:96
-#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown.php:159
-#: inc/AtomicWidgets/Widgets/Counter/class-aae-a-counter.php:101
+#: inc/AtomicWidgets/Widgets/Btn/class-aae-a-btn.php:208
+#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown-unit.php:97
+#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown.php:160
+#: inc/AtomicWidgets/Widgets/Counter/class-aae-a-counter.php:102
 #: inc/AtomicWidgets/Widgets/CurvedText/class-aae-a-curved-text.php:161
 #: inc/AtomicWidgets/Widgets/FlipBox/class-aae-a-flip-box.php:133
-#: inc/AtomicWidgets/Widgets/FlipBox/Parts/class-aae-a-flip-box-back.php:85
-#: inc/AtomicWidgets/Widgets/FlipBox/Parts/class-aae-a-flip-box-front.php:91
+#: inc/AtomicWidgets/Widgets/FlipBox/Parts/class-aae-a-flip-box-back.php:86
+#: inc/AtomicWidgets/Widgets/FlipBox/Parts/class-aae-a-flip-box-front.php:92
 #: inc/AtomicWidgets/Widgets/FlipBox/Parts/class-aae-a-flip-box-text.php:84
 #: inc/AtomicWidgets/Widgets/FlipBox/Parts/class-aae-a-flip-box-title.php:95
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-calculation.php:168
@@ -4324,25 +4345,25 @@ msgstr ""
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-file.php:141
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-input.php:332
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-label.php:117
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-message.php:106
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-message.php:107
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-next.php:140
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-password.php:199
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-prev.php:128
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-radio.php:129
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-range-group.php:131
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-range-group.php:132
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-range-value.php:134
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-range.php:157
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-rating.php:146
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-select.php:139
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-step.php:258
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-submit.php:169
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-submit.php:170
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-textarea.php:122
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:295
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:296
 #: inc/AtomicWidgets/Widgets/GoogleMaps/class-aae-a-google-maps.php:230
-#: inc/AtomicWidgets/Widgets/IconList/class-aae-a-icon-list-item.php:86
+#: inc/AtomicWidgets/Widgets/IconList/class-aae-a-icon-list-item.php:87
 #: inc/AtomicWidgets/Widgets/IconList/class-aae-a-icon-list.php:94
-#: inc/AtomicWidgets/Widgets/ImageCompare/class-aae-a-image-compare.php:148
-#: inc/AtomicWidgets/Widgets/ImageHotspot/class-aae-a-hotspot-content.php:151
+#: inc/AtomicWidgets/Widgets/ImageCompare/class-aae-a-image-compare.php:149
+#: inc/AtomicWidgets/Widgets/ImageHotspot/class-aae-a-hotspot-content.php:152
 #: inc/AtomicWidgets/Widgets/ImageHotspot/class-aae-a-hotspot-point.php:176
 #: inc/AtomicWidgets/Widgets/ImageHotspot/class-aae-a-image-hotspot.php:194
 #: inc/AtomicWidgets/Widgets/ImageHotspot/Parts/class-aae-a-hotspot-close.php:95
@@ -4351,8 +4372,8 @@ msgstr ""
 #: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-item.php:99
 #: inc/AtomicWidgets/Widgets/LoopGridSlider/class-aae-a-loop-slide-track.php:82
 #: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav-item.php:85
-#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:276
-#: inc/AtomicWidgets/Widgets/NestedSlider/class-aae-a-slide.php:81
+#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:277
+#: inc/AtomicWidgets/Widgets/NestedSlider/class-aae-a-slide.php:82
 #: inc/AtomicWidgets/Widgets/NestedSlider/class-aae-a-slider-counter.php:66
 #: inc/AtomicWidgets/Widgets/NestedSlider/class-aae-a-slider-current.php:71
 #: inc/AtomicWidgets/Widgets/NestedSlider/class-aae-a-slider-divider.php:66
@@ -4366,24 +4387,24 @@ msgstr ""
 #: inc/AtomicWidgets/Widgets/NestedSlider/class-aae-a-slider-progress.php:72
 #: inc/AtomicWidgets/Widgets/NestedSlider/class-aae-a-slider-total.php:72
 #: inc/AtomicWidgets/Widgets/NestedSlider/class-aae-a-slider-track.php:70
-#: inc/AtomicWidgets/Widgets/Posts/class-aae-a-post-card.php:63
+#: inc/AtomicWidgets/Widgets/Posts/class-aae-a-post-card.php:64
 #: inc/AtomicWidgets/Widgets/Posts/class-aae-a-posts.php:157
-#: inc/AtomicWidgets/Widgets/Progressbar/class-aae-a-progressbar.php:154
+#: inc/AtomicWidgets/Widgets/Progressbar/class-aae-a-progressbar.php:155
 #: inc/AtomicWidgets/Widgets/Progressbar/Parts/class-aae-a-progressbar-dot.php:79
 #: inc/AtomicWidgets/Widgets/Progressbar/Parts/class-aae-a-progressbar-fill.php:76
 #: inc/AtomicWidgets/Widgets/Progressbar/Parts/class-aae-a-progressbar-label.php:86
 #: inc/AtomicWidgets/Widgets/Progressbar/Parts/class-aae-a-progressbar-track.php:83
 #: inc/AtomicWidgets/Widgets/SearchForm/class-aae-a-search-form.php:138
 #: inc/AtomicWidgets/Widgets/SiteLogo/class-aae-a-site-logo.php:178
-#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:226
+#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:227
 #: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share.php:121
-#: inc/AtomicWidgets/Widgets/Timeline/class-aae-a-timeline-item.php:91
+#: inc/AtomicWidgets/Widgets/Timeline/class-aae-a-timeline-item.php:92
 #: inc/AtomicWidgets/Widgets/Timeline/class-aae-a-timeline.php:133
 #: inc/AtomicWidgets/Widgets/Timeline/Parts/class-aae-a-timeline-desc.php:85
 #: inc/AtomicWidgets/Widgets/Timeline/Parts/class-aae-a-timeline-number.php:86
 #: inc/AtomicWidgets/Widgets/Timeline/Parts/class-aae-a-timeline-title.php:85
 #: inc/AtomicWidgets/Widgets/Timeline/Parts/class-aae-a-timeline-year.php:85
-#: inc/AtomicWidgets/Widgets/ToggleSwitcher/class-aae-a-toggle-pane.php:84
+#: inc/AtomicWidgets/Widgets/ToggleSwitcher/class-aae-a-toggle-pane.php:85
 #: inc/AtomicWidgets/Widgets/ToggleSwitcher/class-aae-a-toggle-switcher.php:133
 #: inc/AtomicWidgets/Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-pane-desc.php:86
 #: inc/AtomicWidgets/Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-pane-title.php:86
@@ -4391,7 +4412,7 @@ msgstr ""
 #: inc/AtomicWidgets/Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-switcher-label.php:101
 #: inc/AtomicWidgets/Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-switcher-tab.php:160
 #: inc/AtomicWidgets/Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-switcher-tablist.php:87
-#: inc/AtomicWidgets/Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-switcher-tabs.php:80
+#: inc/AtomicWidgets/Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-switcher-tabs.php:81
 #: inc/AtomicWidgets/Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-switcher-track.php:100
 #: inc/AtomicWidgets/Widgets/Video/class-aae-a-video.php:449
 #: inc/AtomicWidgets/Widgets/Video/Parts/class-aae-a-video-playbtn.php:100
@@ -4649,16 +4670,16 @@ msgid "You are not allowed to do this action."
 msgstr ""
 
 #: inc/admin/template-importer.php:66
-#: inc/class-custom-cpt-admin.php:170
-#: inc/class-custom-cpt-admin.php:210
-#: inc/class-custom-cpt-admin.php:233
-#: inc/class-custom-cpt-admin.php:244
-#: inc/class-custom-cpt-admin.php:262
-#: inc/class-custom-cpt-admin.php:275
-#: inc/class-custom-cpt-admin.php:315
-#: inc/class-custom-cpt-admin.php:336
-#: inc/class-custom-cpt-admin.php:346
-#: inc/class-custom-cpt-admin.php:365
+#: inc/class-custom-cpt-admin.php:175
+#: inc/class-custom-cpt-admin.php:215
+#: inc/class-custom-cpt-admin.php:238
+#: inc/class-custom-cpt-admin.php:249
+#: inc/class-custom-cpt-admin.php:267
+#: inc/class-custom-cpt-admin.php:280
+#: inc/class-custom-cpt-admin.php:320
+#: inc/class-custom-cpt-admin.php:341
+#: inc/class-custom-cpt-admin.php:351
+#: inc/class-custom-cpt-admin.php:370
 msgid "You are not allowed to perform this action."
 msgstr ""
 
@@ -4902,7 +4923,7 @@ msgstr ""
 #: inc/AnimationSettings/class-animation-settings.php:1033
 #: inc/AnimationSettings/class-animation-settings.php:1076
 #: inc/AtomicWidgets/Widgets/AdvancePortfolio/class-aae-a-advance-portfolio.php:203
-#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown.php:139
+#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown.php:140
 #: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:293
 #: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:297
 #: inc/AtomicWidgets/Widgets/Posts/class-aae-a-posts.php:98
@@ -5031,7 +5052,7 @@ msgstr ""
 
 #: inc/AnimationSettings/class-animation-settings.php:1049
 #: inc/AtomicWidgets/Widgets/AdvancePortfolio/class-aae-a-advance-portfolio.php:231
-#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:230
+#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:231
 #: widgets/image-accordion.php:216
 #: widgets/nav-menu/nav-menu.php:300
 #: widgets/services-tab.php:287
@@ -5221,7 +5242,7 @@ msgid "Bottom Right"
 msgstr ""
 
 #: inc/AnimationSettings/class-animation-settings.php:1274
-#: inc/theme-builder/theme-builder.php:1480
+#: inc/theme-builder/theme-builder.php:1510
 msgid "Entire Website"
 msgstr ""
 
@@ -5247,14 +5268,14 @@ msgstr ""
 #: inc/AnimationSettings/class-animation-settings.php:1286
 #: inc/AnimationSettings/class-animation-settings.php:1508
 #: inc/AtomicWidgets/Widgets/AdvancePortfolio/class-aae-a-advance-portfolio.php:235
-#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:197
+#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:198
 msgid "Tablet"
 msgstr ""
 
 #: inc/AnimationSettings/class-animation-settings.php:1287
 #: inc/AnimationSettings/class-animation-settings.php:1507
 #: inc/AtomicWidgets/Widgets/AdvancePortfolio/class-aae-a-advance-portfolio.php:234
-#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:196
+#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:197
 #: inc/class-blacklist.php:595
 msgid "Mobile"
 msgstr ""
@@ -5379,14 +5400,14 @@ msgstr ""
 #: inc/Atomic/Presets/Controls.php:77
 #: inc/AtomicWidgets/Widgets/Accordion/class-aae-a-accordion.php:95
 #: inc/AtomicWidgets/Widgets/AdvancePortfolio/class-aae-a-advance-portfolio.php:192
-#: inc/AtomicWidgets/Widgets/Btn/class-aae-a-btn.php:181
+#: inc/AtomicWidgets/Widgets/Btn/class-aae-a-btn.php:182
 #: inc/AtomicWidgets/Widgets/FlipBox/class-aae-a-flip-box.php:123
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:190
-#: inc/AtomicWidgets/Widgets/ImageCompare/class-aae-a-image-compare.php:122
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:191
+#: inc/AtomicWidgets/Widgets/ImageCompare/class-aae-a-image-compare.php:123
 #: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-item.php:89
-#: inc/AtomicWidgets/Widgets/NestedSlider/class-aae-a-slide.php:70
+#: inc/AtomicWidgets/Widgets/NestedSlider/class-aae-a-slide.php:71
 #: inc/AtomicWidgets/Widgets/NestedSlider/class-aae-a-slider.php:100
-#: inc/AtomicWidgets/Widgets/Progressbar/class-aae-a-progressbar.php:133
+#: inc/AtomicWidgets/Widgets/Progressbar/class-aae-a-progressbar.php:134
 #: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share.php:97
 #: inc/AtomicWidgets/Widgets/Timeline/class-aae-a-timeline.php:109
 #: inc/AtomicWidgets/Widgets/ToggleSwitcher/class-aae-a-toggle-switcher.php:124
@@ -5396,14 +5417,14 @@ msgstr ""
 #: inc/Atomic/Presets/Controls.php:81
 #: inc/AtomicWidgets/Widgets/Accordion/class-aae-a-accordion.php:98
 #: inc/AtomicWidgets/Widgets/AdvancePortfolio/class-aae-a-advance-portfolio.php:197
-#: inc/AtomicWidgets/Widgets/Btn/class-aae-a-btn.php:185
+#: inc/AtomicWidgets/Widgets/Btn/class-aae-a-btn.php:186
 #: inc/AtomicWidgets/Widgets/FlipBox/class-aae-a-flip-box.php:127
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:195
-#: inc/AtomicWidgets/Widgets/ImageCompare/class-aae-a-image-compare.php:126
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:196
+#: inc/AtomicWidgets/Widgets/ImageCompare/class-aae-a-image-compare.php:127
 #: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-item.php:93
-#: inc/AtomicWidgets/Widgets/NestedSlider/class-aae-a-slide.php:75
+#: inc/AtomicWidgets/Widgets/NestedSlider/class-aae-a-slide.php:76
 #: inc/AtomicWidgets/Widgets/NestedSlider/class-aae-a-slider.php:105
-#: inc/AtomicWidgets/Widgets/Progressbar/class-aae-a-progressbar.php:137
+#: inc/AtomicWidgets/Widgets/Progressbar/class-aae-a-progressbar.php:138
 #: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share.php:101
 #: inc/AtomicWidgets/Widgets/Timeline/class-aae-a-timeline.php:113
 #: inc/AtomicWidgets/Widgets/ToggleSwitcher/class-aae-a-toggle-switcher.php:128
@@ -5546,38 +5567,38 @@ msgstr ""
 msgid "AAE Slider"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Accordion/class-aae-a-accordion-item.php:55
+#: inc/AtomicWidgets/Widgets/Accordion/class-aae-a-accordion-item.php:56
 msgid "Accordion Item"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Accordion/class-aae-a-accordion-item.php:87
+#: inc/AtomicWidgets/Widgets/Accordion/class-aae-a-accordion-item.php:88
 msgid "Item Settings"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Accordion/class-aae-a-accordion-item.php:103
+#: inc/AtomicWidgets/Widgets/Accordion/class-aae-a-accordion-item.php:104
 msgid "Active by Default"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Accordion/class-aae-a-accordion-item.php:438
+#: inc/AtomicWidgets/Widgets/Accordion/class-aae-a-accordion-item.php:439
 msgid "Item Box"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Accordion/class-aae-a-accordion-item.php:444
+#: inc/AtomicWidgets/Widgets/Accordion/class-aae-a-accordion-item.php:445
 msgid "Header Layout"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Accordion/class-aae-a-accordion-item.php:448
+#: inc/AtomicWidgets/Widgets/Accordion/class-aae-a-accordion-item.php:449
 msgid "Header Icon"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Accordion/class-aae-a-accordion-item.php:452
-#: inc/theme-builder/theme-builder.php:1292
+#: inc/AtomicWidgets/Widgets/Accordion/class-aae-a-accordion-item.php:453
+#: inc/theme-builder/theme-builder.php:1322
 #: widgets/advance-pricing-table/advance-pricing-table.php:226
 #: widgets/advance-pricing-table/advance-pricing-table.php:276
 msgid "Header"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Accordion/class-aae-a-accordion-item.php:464
+#: inc/AtomicWidgets/Widgets/Accordion/class-aae-a-accordion-item.php:465
 #: inc/AtomicWidgets/Widgets/AdvancedHeading/class-aae-a-advanced-heading.php:195
 #: inc/AtomicWidgets/Widgets/AdvancePortfolio/class-aae-a-portfolio-content.php:51
 #: inc/AtomicWidgets/Widgets/CurvedText/class-aae-a-curved-text.php:140
@@ -5599,9 +5620,9 @@ msgstr ""
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-rating.php:122
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-select.php:107
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-step.php:208
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-submit.php:142
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-submit.php:143
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-textarea.php:99
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:202
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:203
 #: inc/AtomicWidgets/Widgets/ImageHotspot/Parts/class-aae-a-hotspot-close.php:87
 #: inc/AtomicWidgets/Widgets/ImageHotspot/Parts/class-aae-a-hotspot-marker.php:119
 #: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:284
@@ -5689,7 +5710,7 @@ msgstr ""
 #: inc/AtomicWidgets/Widgets/Accordion/class-aae-a-accordion.php:112
 #: inc/AtomicWidgets/Widgets/IconList/class-aae-a-icon-list.php:86
 #: inc/AtomicWidgets/Widgets/IconList/class-aae-a-icon-list.php:90
-#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:272
+#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:273
 #: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share.php:112
 #: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share.php:116
 #: inc/AtomicWidgets/Widgets/Timeline/class-aae-a-timeline.php:124
@@ -5814,14 +5835,14 @@ msgid "Type your heading here"
 msgstr ""
 
 #: inc/AtomicWidgets/Widgets/AdvancedHeading/class-aae-a-advanced-heading.php:204
-#: inc/AtomicWidgets/Widgets/Btn/class-aae-a-btn.php:211
-#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown-unit.php:100
-#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown.php:163
-#: inc/AtomicWidgets/Widgets/Counter/class-aae-a-counter.php:105
+#: inc/AtomicWidgets/Widgets/Btn/class-aae-a-btn.php:212
+#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown-unit.php:101
+#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown.php:164
+#: inc/AtomicWidgets/Widgets/Counter/class-aae-a-counter.php:106
 #: inc/AtomicWidgets/Widgets/CurvedText/class-aae-a-curved-text.php:164
 #: inc/AtomicWidgets/Widgets/FlipBox/class-aae-a-flip-box.php:136
-#: inc/AtomicWidgets/Widgets/FlipBox/Parts/class-aae-a-flip-box-back.php:88
-#: inc/AtomicWidgets/Widgets/FlipBox/Parts/class-aae-a-flip-box-front.php:94
+#: inc/AtomicWidgets/Widgets/FlipBox/Parts/class-aae-a-flip-box-back.php:89
+#: inc/AtomicWidgets/Widgets/FlipBox/Parts/class-aae-a-flip-box-front.php:95
 #: inc/AtomicWidgets/Widgets/FlipBox/Parts/class-aae-a-flip-box-text.php:88
 #: inc/AtomicWidgets/Widgets/FlipBox/Parts/class-aae-a-flip-box-title.php:109
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-calculation.php:172
@@ -5831,33 +5852,33 @@ msgstr ""
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-file.php:145
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-input.php:336
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-label.php:121
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-message.php:110
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-message.php:111
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-next.php:144
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-password.php:203
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-prev.php:132
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-radio.php:133
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-range-group.php:135
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-range-group.php:136
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-range-value.php:138
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-range.php:161
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-rating.php:150
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-select.php:143
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-step.php:262
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-submit.php:173
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-submit.php:174
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-textarea.php:126
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:299
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:300
 #: inc/AtomicWidgets/Widgets/GoogleMaps/class-aae-a-google-maps.php:233
-#: inc/AtomicWidgets/Widgets/IconList/class-aae-a-icon-list-item.php:90
+#: inc/AtomicWidgets/Widgets/IconList/class-aae-a-icon-list-item.php:91
 #: inc/AtomicWidgets/Widgets/IconList/class-aae-a-icon-list.php:98
-#: inc/AtomicWidgets/Widgets/ImageCompare/class-aae-a-image-compare.php:152
-#: inc/AtomicWidgets/Widgets/ImageHotspot/class-aae-a-hotspot-content.php:154
+#: inc/AtomicWidgets/Widgets/ImageCompare/class-aae-a-image-compare.php:153
+#: inc/AtomicWidgets/Widgets/ImageHotspot/class-aae-a-hotspot-content.php:155
 #: inc/AtomicWidgets/Widgets/ImageHotspot/class-aae-a-hotspot-point.php:179
 #: inc/AtomicWidgets/Widgets/ImageHotspot/class-aae-a-image-hotspot.php:197
 #: inc/AtomicWidgets/Widgets/ImageHotspot/Parts/class-aae-a-hotspot-close.php:98
 #: inc/AtomicWidgets/Widgets/ImageHotspot/Parts/class-aae-a-hotspot-lightbox.php:107
 #: inc/AtomicWidgets/Widgets/ImageHotspot/Parts/class-aae-a-hotspot-marker.php:140
 #: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav-item.php:107
-#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:280
-#: inc/AtomicWidgets/Widgets/NestedSlider/class-aae-a-slide.php:85
+#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:281
+#: inc/AtomicWidgets/Widgets/NestedSlider/class-aae-a-slide.php:86
 #: inc/AtomicWidgets/Widgets/NestedSlider/class-aae-a-slider-counter.php:70
 #: inc/AtomicWidgets/Widgets/NestedSlider/class-aae-a-slider-current.php:75
 #: inc/AtomicWidgets/Widgets/NestedSlider/class-aae-a-slider-divider.php:70
@@ -5872,15 +5893,15 @@ msgstr ""
 #: inc/AtomicWidgets/Widgets/NestedSlider/class-aae-a-slider-total.php:76
 #: inc/AtomicWidgets/Widgets/NestedSlider/class-aae-a-slider.php:129
 #: inc/AtomicWidgets/Widgets/Posts/class-aae-a-posts.php:161
-#: inc/AtomicWidgets/Widgets/Progressbar/class-aae-a-progressbar.php:158
+#: inc/AtomicWidgets/Widgets/Progressbar/class-aae-a-progressbar.php:159
 #: inc/AtomicWidgets/Widgets/Progressbar/Parts/class-aae-a-progressbar-dot.php:83
 #: inc/AtomicWidgets/Widgets/Progressbar/Parts/class-aae-a-progressbar-fill.php:80
 #: inc/AtomicWidgets/Widgets/Progressbar/Parts/class-aae-a-progressbar-label.php:90
 #: inc/AtomicWidgets/Widgets/Progressbar/Parts/class-aae-a-progressbar-track.php:87
 #: inc/AtomicWidgets/Widgets/SiteLogo/class-aae-a-site-logo.php:181
-#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:233
+#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:234
 #: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share.php:125
-#: inc/AtomicWidgets/Widgets/Timeline/class-aae-a-timeline-item.php:95
+#: inc/AtomicWidgets/Widgets/Timeline/class-aae-a-timeline-item.php:96
 #: inc/AtomicWidgets/Widgets/Timeline/class-aae-a-timeline.php:137
 #: inc/AtomicWidgets/Widgets/Timeline/Parts/class-aae-a-timeline-desc.php:89
 #: inc/AtomicWidgets/Widgets/Timeline/Parts/class-aae-a-timeline-number.php:90
@@ -5893,7 +5914,7 @@ msgstr ""
 #: inc/AtomicWidgets/Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-switcher-label.php:105
 #: inc/AtomicWidgets/Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-switcher-tab.php:164
 #: inc/AtomicWidgets/Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-switcher-tablist.php:91
-#: inc/AtomicWidgets/Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-switcher-tabs.php:84
+#: inc/AtomicWidgets/Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-switcher-tabs.php:85
 #: inc/AtomicWidgets/Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-switcher-track.php:104
 #: inc/AtomicWidgets/Widgets/Video/class-aae-a-video.php:452
 #: inc/AtomicWidgets/Widgets/Video/Parts/class-aae-a-video-playbtn.php:104
@@ -5988,10 +6009,10 @@ msgstr ""
 msgid "Posts List"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Btn/class-aae-a-btn.php:82
-#: inc/AtomicWidgets/Widgets/Btn/class-aae-a-btn.php:190
+#: inc/AtomicWidgets/Widgets/Btn/class-aae-a-btn.php:83
+#: inc/AtomicWidgets/Widgets/Btn/class-aae-a-btn.php:191
 #: inc/AtomicWidgets/Widgets/SearchForm/class-aae-a-search-submit.php:68
-#: inc/AtomicWidgets/Widgets/VideoMask/class-aae-a-video-mask-btn.php:62
+#: inc/AtomicWidgets/Widgets/VideoMask/class-aae-a-video-mask-btn.php:63
 #: widgets/advance-accordion.php:800
 #: widgets/advance-pricing-table/advance-pricing-table.php:153
 #: widgets/advance-pricing-table/advance-pricing-table.php:165
@@ -6036,10 +6057,10 @@ msgstr ""
 msgid "Button"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Btn/class-aae-a-btn.php:194
+#: inc/AtomicWidgets/Widgets/Btn/class-aae-a-btn.php:195
 #: inc/AtomicWidgets/Widgets/ImageHotspot/class-aae-a-hotspot-point.php:169
 #: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-item.php:103
-#: inc/AtomicWidgets/Widgets/PostImage/class-aae-a-post-image.php:171
+#: inc/AtomicWidgets/Widgets/PostImage/class-aae-a-post-image.php:172
 #: inc/AtomicWidgets/Widgets/PostTitle/class-aae-a-post-title.php:136
 #: inc/AtomicWidgets/Widgets/Video/class-aae-a-video.php:346
 #: inc/AtomicWidgets/Widgets/Video/class-aae-a-video.php:357
@@ -6048,28 +6069,28 @@ msgstr ""
 msgid "Type or paste your URL"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Btn/class-aae-a-btn.php:198
+#: inc/AtomicWidgets/Widgets/Btn/class-aae-a-btn.php:199
 #: inc/AtomicWidgets/Widgets/ImageHotspot/class-aae-a-hotspot-point.php:171
 #: inc/AtomicWidgets/Widgets/SiteLogo/class-aae-a-site-logo.php:173
-#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:222
+#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:223
 msgid "Add Nofollow"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown-unit.php:64
+#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown-unit.php:65
 msgid "Countdown Unit"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown-unit.php:161
+#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown-unit.php:162
 #: widgets/countdown.php:607
 msgid "Digit"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown-unit.php:171
+#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown-unit.php:172
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-label.php:91
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-range-group.php:168
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-submit.php:350
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-submit.php:431
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:421
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-range-group.php:169
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-submit.php:351
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-submit.php:432
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:422
 #: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:430
 #: inc/AtomicWidgets/Widgets/Progressbar/Parts/class-aae-a-progressbar-label.php:83
 #: inc/AtomicWidgets/Widgets/SearchForm/class-aae-a-search-filter-category.php:70
@@ -6093,34 +6114,34 @@ msgstr ""
 msgid "Label"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown.php:77
+#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown.php:78
 #: widgets/countdown.php:50
 msgid "Countdown"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown.php:118
+#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown.php:119
 #: widgets/countdown.php:306
 msgid "Countdown is finished!"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown.php:119
+#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown.php:120
 #: widgets/countdown.php:320
 #: widgets/filterable-slider.php:663
 msgid "Default description"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown.php:132
+#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown.php:133
 #: widgets/countdown.php:149
 msgid "Timer"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown.php:136
+#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown.php:137
 #: widgets/countdown.php:156
 msgid "Due Date"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown.php:141
-#: inc/AtomicWidgets/Widgets/ImageCompare/class-aae-a-image-compare.php:137
+#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown.php:142
+#: inc/AtomicWidgets/Widgets/ImageCompare/class-aae-a-image-compare.php:138
 #: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:299
 #: widgets/image-accordion.php:183
 #: widgets/image-box-slider.php:373
@@ -6128,8 +6149,8 @@ msgstr ""
 msgid "Horizontal"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown.php:142
-#: inc/AtomicWidgets/Widgets/ImageCompare/class-aae-a-image-compare.php:138
+#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown.php:143
+#: inc/AtomicWidgets/Widgets/ImageCompare/class-aae-a-image-compare.php:139
 #: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:300
 #: widgets/image-accordion.php:184
 #: widgets/image-box-slider.php:374
@@ -6137,16 +6158,16 @@ msgstr ""
 msgid "Vertical"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown.php:145
+#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown.php:146
 #: widgets/countdown.php:134
 msgid "Show Separator"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown.php:149
+#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown.php:150
 msgid "Expire Message"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown.php:155
+#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown.php:156
 #: inc/AtomicWidgets/Widgets/Timeline/Parts/class-aae-a-timeline-desc.php:82
 #: inc/AtomicWidgets/Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-pane-desc.php:83
 #: widgets/category-showcase.php:168
@@ -6175,7 +6196,7 @@ msgstr ""
 msgid "Description"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown.php:186
+#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown.php:187
 #: widgets/countdown.php:431
 #: widgets/countdown.php:440
 #: widgets/counter.php:197
@@ -6192,41 +6213,41 @@ msgstr ""
 msgid "Separator"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown.php:214
+#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown.php:215
 #: widgets/countdown.php:179
 #: widgets/countdown.php:181
 msgid "Days"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown.php:215
+#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown.php:216
 #: widgets/countdown.php:192
 #: widgets/countdown.php:194
 msgid "Hours"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown.php:216
+#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown.php:217
 #: widgets/countdown.php:205
 #: widgets/countdown.php:207
 msgid "Minutes"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown.php:217
+#: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown.php:218
 #: widgets/countdown.php:218
 #: widgets/countdown.php:220
 msgid "Seconds"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Counter/class-aae-a-counter.php:52
-#: inc/AtomicWidgets/Widgets/Counter/class-aae-a-counter.php:91
+#: inc/AtomicWidgets/Widgets/Counter/class-aae-a-counter.php:53
+#: inc/AtomicWidgets/Widgets/Counter/class-aae-a-counter.php:92
 #: widgets/counter.php:45
 msgid "Counter"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Counter/class-aae-a-counter.php:95
+#: inc/AtomicWidgets/Widgets/Counter/class-aae-a-counter.php:96
 msgid "Start Number"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Counter/class-aae-a-counter.php:97
+#: inc/AtomicWidgets/Widgets/Counter/class-aae-a-counter.php:98
 #: inc/class-starter-animations.php:149
 #: inc/class-starter-animations.php:806
 msgid "Duration (ms)"
@@ -6269,11 +6290,11 @@ msgstr ""
 msgid "Flip Box"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/FlipBox/Parts/class-aae-a-flip-box-back.php:56
+#: inc/AtomicWidgets/Widgets/FlipBox/Parts/class-aae-a-flip-box-back.php:57
 msgid "Flip Box Back"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/FlipBox/Parts/class-aae-a-flip-box-front.php:59
+#: inc/AtomicWidgets/Widgets/FlipBox/Parts/class-aae-a-flip-box-front.php:60
 msgid "Flip Box Front"
 msgstr ""
 
@@ -6439,7 +6460,7 @@ msgstr ""
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-rating.php:136
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-select.php:129
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-textarea.php:112
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:375
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:376
 msgid "Error message"
 msgstr ""
 
@@ -6540,7 +6561,7 @@ msgstr ""
 
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-input.php:70
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-input.php:126
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:350
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:351
 #: widgets/author-box.php:391
 #: widgets/mailchimp/mailchimp.php:553
 #: widgets/mailchimp/mailchimp.php:554
@@ -6563,7 +6584,7 @@ msgid "Tel"
 msgstr ""
 
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-input.php:82
-#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:205
+#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:206
 #: widgets/team.php:535
 msgid "URL"
 msgstr ""
@@ -6582,14 +6603,14 @@ msgid "Full name"
 msgstr ""
 
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-input.php:118
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:344
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:345
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:346
 msgid "First name"
 msgstr ""
 
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-input.php:122
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:347
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:348
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:349
 msgid "Last name"
 msgstr ""
 
@@ -6718,8 +6739,8 @@ msgstr ""
 
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-next.php:112
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-step.php:189
-#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-next.php:46
-#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-next.php:83
+#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-next.php:47
+#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-next.php:84
 #: widgets/loop-builder/class-ajax-handler.php:251
 #: widgets/loop-builder/class-ajax-handler.php:264
 #: widgets/loop-grid.php:372
@@ -6801,7 +6822,7 @@ msgstr ""
 
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-prev.php:102
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-step.php:185
-#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-prev.php:48
+#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-prev.php:49
 #: widgets/loop-builder/class-ajax-handler.php:250
 #: widgets/loop-builder/class-ajax-handler.php:263
 #: widgets/loop-grid.php:330
@@ -6830,21 +6851,21 @@ msgstr ""
 msgid "Shown when the group is required but nothing is chosen — set it on any one radio of the group. Leave blank to use the form-wide message."
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-range-group.php:89
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-range-group.php:90
 msgid "Range Group (AAE)"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-range-group.php:173
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-range-group.php:174
 msgid "Total area to be cleaned:"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-range-group.php:183
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-range-group.php:184
 #: inc/class-blacklist.php:1138
 #: src/modules/atomic/element-controls/FormConditionsControl.jsx:400
 msgid "Value"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-range-group.php:187
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-range-group.php:188
 msgid "Slider"
 msgstr ""
 
@@ -6985,32 +7006,32 @@ msgstr ""
 msgid "None (instant)"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-submit.php:86
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-submit.php:87
 msgid "Submit Button"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-submit.php:135
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-submit.php:136
 msgid "Sending..."
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-submit.php:149
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-submit.php:150
 msgid "Button type"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-submit.php:158
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-submit.php:159
 msgid "Reset / Clear"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-submit.php:163
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-submit.php:164
 msgid "Loading text"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-submit.php:286
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-submit.php:287
 msgid "Content row"
 msgstr ""
 
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-success-message.php:35
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:372
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:373
 msgid "Success message"
 msgstr ""
 
@@ -7026,7 +7047,7 @@ msgstr ""
 msgid "Rows"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:96
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:97
 #: widgets/mailchimp/mailchimp.php:245
 #: widgets/post-rating-form.php:184
 #: src/modules/dashboard/pages/Submissions.jsx:485
@@ -7036,114 +7057,114 @@ msgstr ""
 msgid "Form"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:209
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:210
 msgid "Submission Behavior"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:215
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:216
 msgid "Store + Admin Email"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:219
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:220
 msgid "Store Only"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:223
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:224
 msgid "Email Only"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:228
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:229
 msgid "Reset After Success (seconds)"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:231
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:232
 msgid "After a successful submit, clear the message and reset the form — a multi-step form returns to its first step. Set 0 to keep the success message until the page reloads."
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:234
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:235
 msgid "Hide Form After Success"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:236
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:237
 msgid "Hide the fields after a successful submit so only the success message stays on screen."
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:239
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:240
 msgid "Hide After (seconds)"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:242
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:243
 msgid "How long the fields stay visible before hiding. 0 hides them immediately. If “Reset After Success” is also set, use a shorter time here — the reset brings the form back."
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:249
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:250
 #: src/modules/atomic/element-controls/FormActionsControl.jsx:875
 msgid "Actions After Submit"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:255
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:256
 #: src/modules/atomic/element-controls/FormActionsControl.jsx:822
 msgid "Manage Actions"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:262
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:263
 msgid "Bot Shield"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:266
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:267
 msgid "Honeypot"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:268
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:269
 msgid "Minimum Submit Time (seconds)"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:273
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:274
 msgid "CAPTCHA Provider (set up keys in Form Submissions → Integrations)"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:282
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:283
 #: src/modules/dashboard/pages/Submissions.jsx:1238
 msgid "reCAPTCHA v3"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:313
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:314
 msgid "States"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:321
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:322
 #: src/modules/dashboard/pages/Migration.jsx:65
 msgid "Error"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:351
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:352
 msgid "your@mail.com"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:353
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:354
 #: widgets/contact-form-7.php:889
 #: widgets/mailchimp/mailchimp.php:209
 msgid "Message"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:354
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:355
 msgid "Your message"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:356
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:391
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:357
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:392
 msgid "Checkbox"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:403
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:404
 msgid "Checkbox row"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:436
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:437
 msgid "Text area"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:448
+#: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:449
 #: inc/AtomicWidgets/Widgets/SearchForm/class-aae-a-search-input.php:72
 #: widgets/contact-form-7.php:254
 #: widgets/mailchimp/mailchimp.php:718
@@ -7210,7 +7231,7 @@ msgstr ""
 msgid "Two-letter country code, e.g. BD, GB. Changes which place names and borders Google shows for disputed areas."
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/IconList/class-aae-a-icon-list-item.php:61
+#: inc/AtomicWidgets/Widgets/IconList/class-aae-a-icon-list-item.php:62
 msgid "Icon List Item"
 msgstr ""
 
@@ -7218,24 +7239,24 @@ msgstr ""
 msgid "Icon List"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/ImageCompare/class-aae-a-image-compare.php:75
-#: inc/AtomicWidgets/Widgets/ImageCompare/class-aae-a-image-compare.php:131
+#: inc/AtomicWidgets/Widgets/ImageCompare/class-aae-a-image-compare.php:76
+#: inc/AtomicWidgets/Widgets/ImageCompare/class-aae-a-image-compare.php:132
 msgid "Image Compare"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/ImageCompare/class-aae-a-image-compare.php:141
+#: inc/AtomicWidgets/Widgets/ImageCompare/class-aae-a-image-compare.php:142
 msgid "Initial Position (%)"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/ImageCompare/class-aae-a-image-compare.php:144
+#: inc/AtomicWidgets/Widgets/ImageCompare/class-aae-a-image-compare.php:145
 msgid "Enable Click to Move"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/ImageHotspot/class-aae-a-hotspot-content.php:125
+#: inc/AtomicWidgets/Widgets/ImageHotspot/class-aae-a-hotspot-content.php:126
 msgid "Hotspot Content"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/ImageHotspot/class-aae-a-hotspot-content.php:297
+#: inc/AtomicWidgets/Widgets/ImageHotspot/class-aae-a-hotspot-content.php:298
 #: widgets/image-hotspot.php:246
 msgid "Tooltip content"
 msgstr ""
@@ -7275,7 +7296,7 @@ msgid "Lightbox"
 msgstr ""
 
 #: inc/AtomicWidgets/Widgets/ImageHotspot/class-aae-a-hotspot-point.php:168
-#: inc/AtomicWidgets/Widgets/PostImage/class-aae-a-post-image.php:170
+#: inc/AtomicWidgets/Widgets/PostImage/class-aae-a-post-image.php:171
 msgid "Link URL"
 msgstr ""
 
@@ -7507,8 +7528,8 @@ msgstr ""
 msgid "Loop Layout"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-loadmore.php:51
-#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-loadmore.php:112
+#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-loadmore.php:52
+#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-loadmore.php:113
 #: widgets/grid-hover-posts.php:2034
 #: widgets/grid-hover-posts.php:2098
 #: widgets/grid-hover-posts.php:2099
@@ -7526,7 +7547,7 @@ msgid "Load More"
 msgstr ""
 
 #: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-nav-wrap.php:49
-#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:55
+#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:56
 msgid "Nav"
 msgstr ""
 
@@ -7551,7 +7572,7 @@ msgstr ""
 msgid "Page Reload"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-prev.php:92
+#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-prev.php:93
 #: src/modules/dashboard/pages/Submissions.jsx:130
 msgid "Prev"
 msgstr ""
@@ -7820,43 +7841,43 @@ msgid "Dropdown Item"
 msgstr ""
 
 #. translators: 1: breakpoint name, 2: width in pixels.
-#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:189
-#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:205
+#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:190
+#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:206
 #, php-format
 msgid "%1$s (%2$dpx)"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:218
+#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:219
 #: widgets/nav-menu/nav-menu.php:832
 msgid "Mobile Menu"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:222
+#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:223
 msgid "Enable Mobile Menu"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:228
+#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:229
 msgid "Open Mobile Menu (Editor)"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:233
+#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:234
 msgid "Drawer Position"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:239
+#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:240
 msgid "Close on Link Click"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:241
+#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:242
 msgid "Lock Body Scroll"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:243
+#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:244
 #: widgets/nav-menu/nav-menu.php:241
 msgid "Hamburger Icon"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:245
+#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:246
 #: inc/AtomicWidgets/Widgets/SearchForm/class-aae-a-search-toggle-close.php:55
 #: inc/AtomicWidgets/Widgets/SearchForm/class-aae-a-search-toggle-close.php:83
 #: widgets/image-gallery.php:285
@@ -7866,30 +7887,30 @@ msgstr ""
 msgid "Close Icon"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:247
-#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:256
+#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:248
+#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:257
 #: widgets/search-form.php:182
 msgid "Dropdown Icon"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:249
+#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:250
 msgid "Back Icon"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:260
+#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:261
 msgid "Show Icon on Dropdown Items"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:266
+#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:267
 #: widgets/clickdrop.php:208
 msgid "Menu Items"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:270
+#: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:271
 msgid "Auto-sync from WordPress"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/NestedSlider/class-aae-a-slide.php:43
+#: inc/AtomicWidgets/Widgets/NestedSlider/class-aae-a-slide.php:44
 #: inc/class-starter-animations.php:755
 #: inc/class-starter-animations.php:975
 #: widgets/advanced-testimonial.php:421
@@ -8040,15 +8061,15 @@ msgstr ""
 msgid "The post excerpt will be displayed here — a short summary of the post, limited by words, characters or lines."
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/PostImage/class-aae-a-post-image.php:44
+#: inc/AtomicWidgets/Widgets/PostImage/class-aae-a-post-image.php:45
 msgid "Post Image"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/PostImage/class-aae-a-post-image.php:136
+#: inc/AtomicWidgets/Widgets/PostImage/class-aae-a-post-image.php:137
 msgid "Image Settings"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/PostImage/class-aae-a-post-image.php:139
+#: inc/AtomicWidgets/Widgets/PostImage/class-aae-a-post-image.php:140
 #: widgets/category-showcase.php:574
 #: widgets/filterable-slider.php:970
 #: widgets/image-box-slider.php:952
@@ -8062,17 +8083,17 @@ msgstr ""
 msgid "Object Fit"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/PostImage/class-aae-a-post-image.php:147
+#: inc/AtomicWidgets/Widgets/PostImage/class-aae-a-post-image.php:148
 msgid "Aspect Ratio"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/PostImage/class-aae-a-post-image.php:156
+#: inc/AtomicWidgets/Widgets/PostImage/class-aae-a-post-image.php:157
 #: widgets/author-box.php:480
 #: widgets/testimonial2.php:345
 msgid "Image Size"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/PostImage/class-aae-a-post-image.php:158
+#: inc/AtomicWidgets/Widgets/PostImage/class-aae-a-post-image.php:159
 #: inc/AtomicWidgets/Widgets/PostPagination/Parts/class-aae-a-post-pagination-preview-image.php:47
 #: inc/AtomicWidgets/Widgets/Video/class-aae-a-video.php:412
 #: inc/AtomicWidgets/Widgets/Video/class-aae-a-video.php:421
@@ -8089,56 +8110,56 @@ msgstr ""
 msgid "Thumbnail"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/PostImage/class-aae-a-post-image.php:159
+#: inc/AtomicWidgets/Widgets/PostImage/class-aae-a-post-image.php:160
 msgid "Medium"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/PostImage/class-aae-a-post-image.php:160
+#: inc/AtomicWidgets/Widgets/PostImage/class-aae-a-post-image.php:161
 msgid "Medium Large"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/PostImage/class-aae-a-post-image.php:161
+#: inc/AtomicWidgets/Widgets/PostImage/class-aae-a-post-image.php:162
 msgid "Large"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/PostImage/class-aae-a-post-image.php:162
+#: inc/AtomicWidgets/Widgets/PostImage/class-aae-a-post-image.php:163
 #: src/modules/dashboard/config/data/freeProComparisonList.js:97
 #: src/modules/dashboard/config/data/freeProComparisonList.js:229
 #: src/modules/dashboard/config/data/freeProComparisonList.js:265
 msgid "Full"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/PostImage/class-aae-a-post-image.php:167
+#: inc/AtomicWidgets/Widgets/PostImage/class-aae-a-post-image.php:168
 msgid "Link Settings"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/PostImage/class-aae-a-post-image.php:175
+#: inc/AtomicWidgets/Widgets/PostImage/class-aae-a-post-image.php:176
 msgid "Caption Settings"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/PostImage/class-aae-a-post-image.php:178
+#: inc/AtomicWidgets/Widgets/PostImage/class-aae-a-post-image.php:179
 #: widgets/image-compare.php:161
 msgid "Show Caption"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/PostImage/class-aae-a-post-image.php:181
+#: inc/AtomicWidgets/Widgets/PostImage/class-aae-a-post-image.php:182
 msgid "Caption Source"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/PostImage/class-aae-a-post-image.php:183
+#: inc/AtomicWidgets/Widgets/PostImage/class-aae-a-post-image.php:184
 #: widgets/site-logo.php:158
 msgid "Attachment Caption"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/PostImage/class-aae-a-post-image.php:184
+#: inc/AtomicWidgets/Widgets/PostImage/class-aae-a-post-image.php:185
 msgid "Custom Caption"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/PostImage/class-aae-a-post-image.php:188
+#: inc/AtomicWidgets/Widgets/PostImage/class-aae-a-post-image.php:189
 msgid "Custom Caption Text"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/PostImage/class-aae-a-post-image.php:189
+#: inc/AtomicWidgets/Widgets/PostImage/class-aae-a-post-image.php:190
 msgid "Enter custom caption..."
 msgstr ""
 
@@ -8264,16 +8285,16 @@ msgstr ""
 msgid "None (All Posts)"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/PostPagination/Parts/class-aae-a-post-pagination-next.php:51
-#: inc/AtomicWidgets/Widgets/PostPagination/Parts/class-aae-a-post-pagination-next.php:70
-#: inc/AtomicWidgets/Widgets/PostPagination/Parts/class-aae-a-post-pagination-next.php:87
+#: inc/AtomicWidgets/Widgets/PostPagination/Parts/class-aae-a-post-pagination-next.php:52
+#: inc/AtomicWidgets/Widgets/PostPagination/Parts/class-aae-a-post-pagination-next.php:71
+#: inc/AtomicWidgets/Widgets/PostPagination/Parts/class-aae-a-post-pagination-next.php:88
 #: widgets/post-paginate.php:152
 msgid "Next Post"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/PostPagination/Parts/class-aae-a-post-pagination-prev.php:61
-#: inc/AtomicWidgets/Widgets/PostPagination/Parts/class-aae-a-post-pagination-prev.php:80
-#: inc/AtomicWidgets/Widgets/PostPagination/Parts/class-aae-a-post-pagination-prev.php:105
+#: inc/AtomicWidgets/Widgets/PostPagination/Parts/class-aae-a-post-pagination-prev.php:62
+#: inc/AtomicWidgets/Widgets/PostPagination/Parts/class-aae-a-post-pagination-prev.php:81
+#: inc/AtomicWidgets/Widgets/PostPagination/Parts/class-aae-a-post-pagination-prev.php:106
 #: widgets/post-paginate.php:107
 msgid "Previous Post"
 msgstr ""
@@ -8319,7 +8340,7 @@ msgstr ""
 msgid "Post Title"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Posts/class-aae-a-post-card.php:37
+#: inc/AtomicWidgets/Widgets/Posts/class-aae-a-post-card.php:38
 msgid "Post Card"
 msgstr ""
 
@@ -8403,21 +8424,21 @@ msgstr ""
 msgid "Sample Post Title"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Progressbar/class-aae-a-progressbar.php:81
-#: inc/AtomicWidgets/Widgets/Progressbar/class-aae-a-progressbar.php:142
+#: inc/AtomicWidgets/Widgets/Progressbar/class-aae-a-progressbar.php:82
+#: inc/AtomicWidgets/Widgets/Progressbar/class-aae-a-progressbar.php:143
 #: widgets/progressbar.php:43
 #: widgets/progressbar.php:136
 #: widgets/progressbar.php:182
 msgid "Progress Bar"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Progressbar/class-aae-a-progressbar.php:146
+#: inc/AtomicWidgets/Widgets/Progressbar/class-aae-a-progressbar.php:147
 #: widgets/progressbar.php:144
 #: widgets/progressbar.php:280
 msgid "Percentage"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Progressbar/class-aae-a-progressbar.php:150
+#: inc/AtomicWidgets/Widgets/Progressbar/class-aae-a-progressbar.php:151
 #: widgets/progressbar.php:166
 msgid "Display Percentage"
 msgstr ""
@@ -8612,78 +8633,78 @@ msgid "Custom URL"
 msgstr ""
 
 #: inc/AtomicWidgets/Widgets/SiteLogo/class-aae-a-site-logo.php:166
-#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:215
+#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:216
 msgid "Open In"
 msgstr ""
 
 #: inc/AtomicWidgets/Widgets/SiteLogo/class-aae-a-site-logo.php:168
-#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:217
+#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:218
 msgid "Same Window"
 msgstr ""
 
 #: inc/AtomicWidgets/Widgets/SiteLogo/class-aae-a-site-logo.php:169
-#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:218
+#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:219
 msgid "New Window"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:112
+#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:113
 msgid "AAE Social Share Item"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:191
+#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:192
 msgid "Social Network"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:193
+#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:194
 msgid "Custom / None"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:194
+#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:195
 #: widgets/post-social-share.php:189
 msgid "Facebook"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:195
+#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:196
 msgid "Twitter / X"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:196
+#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:197
 msgid "LinkedIn"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:197
+#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:198
 msgid "Pinterest"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:198
+#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:199
 msgid "Reddit"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:199
+#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:200
 msgid "Tumblr"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:200
+#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:201
 msgid "Blogger"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:201
+#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:202
 msgid "Instagram"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:207
+#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:208
 msgid "Leave empty to auto-share the current page. Or write your own link for a network not listed above — ${u} becomes the page URL, ${t} becomes its title."
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:210
+#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:211
 msgid "Shared Link"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:212
+#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:213
 msgid "Optional. Leave empty to auto-share the current page on this network — fill in only to override it with a specific link."
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:230
+#: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:231
 msgid "Pulse on Hover"
 msgstr ""
 
@@ -8693,7 +8714,7 @@ msgstr ""
 msgid "Social Share"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Timeline/class-aae-a-timeline-item.php:65
+#: inc/AtomicWidgets/Widgets/Timeline/class-aae-a-timeline-item.php:66
 msgid "Timeline Item"
 msgstr ""
 
@@ -8757,7 +8778,7 @@ msgstr ""
 msgid "Year"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/ToggleSwitcher/class-aae-a-toggle-pane.php:58
+#: inc/AtomicWidgets/Widgets/ToggleSwitcher/class-aae-a-toggle-pane.php:59
 msgid "Toggle Pane"
 msgstr ""
 
@@ -8790,7 +8811,7 @@ msgstr ""
 msgid "Toggle Switcher — Tablist"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-switcher-tabs.php:54
+#: inc/AtomicWidgets/Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-switcher-tabs.php:55
 msgid "Toggle Switcher Tabs"
 msgstr ""
 
@@ -8939,11 +8960,11 @@ msgstr ""
 msgid "Video Player"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/VideoMask/class-aae-a-video-mask-btn.php:39
+#: inc/AtomicWidgets/Widgets/VideoMask/class-aae-a-video-mask-btn.php:40
 msgid "Video Mask Button"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/VideoMask/class-aae-a-video-mask-btn.php:65
+#: inc/AtomicWidgets/Widgets/VideoMask/class-aae-a-video-mask-btn.php:66
 msgid "Close Title"
 msgstr ""
 
@@ -9555,8 +9576,8 @@ msgstr ""
 msgid "CPT Builder"
 msgstr ""
 
-#: inc/class-custom-cpt-admin.php:229
-#: inc/class-custom-cpt-admin.php:332
+#: inc/class-custom-cpt-admin.php:234
+#: inc/class-custom-cpt-admin.php:337
 msgid "Invalid nonce"
 msgstr ""
 
@@ -9587,7 +9608,7 @@ msgid "Updated"
 msgstr ""
 
 #: inc/class-custom-fonts-admin.php:185
-#: inc/class-custom-fonts-admin.php:210
+#: inc/class-custom-fonts-admin.php:215
 #: src/modules/dashboard/components/dashboard/QuickAccess.jsx:33
 msgid "Custom Fonts"
 msgstr ""
@@ -9615,7 +9636,7 @@ msgstr ""
 #: inc/class-custom-fonts.php:551
 #: inc/class-custom-icon.php:156
 #: inc/CodeSnippet/CodeSnippet.php:119
-#: inc/theme-builder/theme-builder.php:1692
+#: inc/theme-builder/theme-builder.php:1722
 msgid "Add New"
 msgstr ""
 
@@ -9792,7 +9813,7 @@ msgstr ""
 msgid "Directory does not exist."
 msgstr ""
 
-#: inc/class-custom-icon-admin.php:688
+#: inc/class-custom-icon-admin.php:693
 #: src/modules/dashboard/components/dashboard/QuickAccess.jsx:46
 msgid "Custom Icons"
 msgstr ""
@@ -10100,7 +10121,7 @@ msgid "Code Snippet Attributes"
 msgstr ""
 
 #: inc/CodeSnippet/CodeSnippet.php:116
-#: inc/theme-builder/theme-builder.php:1689
+#: inc/theme-builder/theme-builder.php:1719
 msgid "Parent Item:"
 msgstr ""
 
@@ -10139,32 +10160,32 @@ msgid "Search Snippet"
 msgstr ""
 
 #: inc/CodeSnippet/CodeSnippet.php:126
-#: inc/theme-builder/theme-builder.php:1699
+#: inc/theme-builder/theme-builder.php:1729
 msgid "Not found"
 msgstr ""
 
 #: inc/CodeSnippet/CodeSnippet.php:127
-#: inc/theme-builder/theme-builder.php:1700
+#: inc/theme-builder/theme-builder.php:1730
 msgid "Not found in Trash"
 msgstr ""
 
 #: inc/CodeSnippet/CodeSnippet.php:128
-#: inc/theme-builder/theme-builder.php:1701
+#: inc/theme-builder/theme-builder.php:1731
 msgid "Featured Image"
 msgstr ""
 
 #: inc/CodeSnippet/CodeSnippet.php:129
-#: inc/theme-builder/theme-builder.php:1702
+#: inc/theme-builder/theme-builder.php:1732
 msgid "Set featured image"
 msgstr ""
 
 #: inc/CodeSnippet/CodeSnippet.php:130
-#: inc/theme-builder/theme-builder.php:1703
+#: inc/theme-builder/theme-builder.php:1733
 msgid "Remove featured image"
 msgstr ""
 
 #: inc/CodeSnippet/CodeSnippet.php:131
-#: inc/theme-builder/theme-builder.php:1704
+#: inc/theme-builder/theme-builder.php:1734
 msgid "Use as featured image"
 msgstr ""
 
@@ -10231,24 +10252,24 @@ msgstr ""
 msgid "Permission denied"
 msgstr ""
 
-#: inc/CodeSnippet/CodeSnippet.php:425
+#: inc/CodeSnippet/CodeSnippet.php:429
 msgid "Code Snippet Updated Successfully!"
 msgstr ""
 
-#: inc/CodeSnippet/CodeSnippet.php:430
+#: inc/CodeSnippet/CodeSnippet.php:434
 msgid "Code Snippet Added Successfully!"
 msgstr ""
 
-#: inc/CodeSnippet/CodeSnippet.php:451
+#: inc/CodeSnippet/CodeSnippet.php:455
 #: inc/CodeSnippet/CodeSnippetAjax.php:86
 msgid "You do not have permission to perform this action."
 msgstr ""
 
-#: inc/CodeSnippet/CodeSnippet.php:456
+#: inc/CodeSnippet/CodeSnippet.php:460
 msgid "Nonce Varification Failed!"
 msgstr ""
 
-#: inc/CodeSnippet/CodeSnippet.php:521
+#: inc/CodeSnippet/CodeSnippet.php:525
 msgid "Some thing is wrong!"
 msgstr ""
 
@@ -10359,7 +10380,7 @@ msgid "Head Section"
 msgstr ""
 
 #: inc/CodeSnippet/Helpers.php:95
-#: inc/theme-builder/theme-builder.php:1296
+#: inc/theme-builder/theme-builder.php:1326
 msgid "Footer"
 msgstr ""
 
@@ -12193,55 +12214,55 @@ msgstr ""
 
 #: inc/theme-builder/theme-builder-admin.php:904
 #: inc/theme-builder/theme-builder-admin.php:905
-#: inc/theme-builder/theme-builder.php:1713
+#: inc/theme-builder/theme-builder.php:1743
 #: src/modules/dashboard/components/dashboard/QuickAccess.jsx:21
 msgid "Theme Builder"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1300
+#: inc/theme-builder/theme-builder.php:1330
 msgid "Archive/404/Search"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1304
+#: inc/theme-builder/theme-builder.php:1334
 msgid "Single"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1463
-#: inc/theme-builder/theme-builder.php:1548
+#: inc/theme-builder/theme-builder.php:1493
+#: inc/theme-builder/theme-builder.php:1578
 msgid "404 Page"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1464
-#: inc/theme-builder/theme-builder.php:1549
+#: inc/theme-builder/theme-builder.php:1494
+#: inc/theme-builder/theme-builder.php:1579
 msgid "Search Page"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1465
-#: inc/theme-builder/theme-builder.php:1550
+#: inc/theme-builder/theme-builder.php:1495
+#: inc/theme-builder/theme-builder.php:1580
 msgid "Blog / Posts Page"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1466
+#: inc/theme-builder/theme-builder.php:1496
 msgid "Front Page"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1467
-#: inc/theme-builder/theme-builder.php:1551
+#: inc/theme-builder/theme-builder.php:1497
+#: inc/theme-builder/theme-builder.php:1581
 msgid "Date Archive"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1468
-#: inc/theme-builder/theme-builder.php:1552
+#: inc/theme-builder/theme-builder.php:1498
+#: inc/theme-builder/theme-builder.php:1582
 msgid "Author Archive"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1472
+#: inc/theme-builder/theme-builder.php:1502
 msgid "WooCommerce Shop Page"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1477
-#: inc/theme-builder/theme-builder.php:1557
-#: inc/theme-builder/theme-builder.php:1616
+#: inc/theme-builder/theme-builder.php:1507
+#: inc/theme-builder/theme-builder.php:1587
+#: inc/theme-builder/theme-builder.php:1646
 #: src/modules/dashboard/config/data/freeProComparisonList.js:81
 #: src/modules/dashboard/config/data/freeProComparisonList.js:105
 #: src/modules/dashboard/config/data/freeProComparisonList.js:273
@@ -12254,560 +12275,560 @@ msgstr ""
 msgid "Basic"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1481
+#: inc/theme-builder/theme-builder.php:1511
 msgid "All Singulars"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1482
-#: inc/theme-builder/theme-builder.php:1560
+#: inc/theme-builder/theme-builder.php:1512
+#: inc/theme-builder/theme-builder.php:1590
 msgid "All Archives"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1487
-#: inc/theme-builder/theme-builder.php:1565
+#: inc/theme-builder/theme-builder.php:1517
+#: inc/theme-builder/theme-builder.php:1595
 msgid "Special Pages"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1512
-#: inc/theme-builder/theme-builder.php:1580
+#: inc/theme-builder/theme-builder.php:1542
+#: inc/theme-builder/theme-builder.php:1610
 msgid "Specific Target"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1514
+#: inc/theme-builder/theme-builder.php:1544
 msgid "Specific Pages / Posts."
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1582
+#: inc/theme-builder/theme-builder.php:1612
 msgid "Specific Category"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1618
+#: inc/theme-builder/theme-builder.php:1648
 msgid "All Singular"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1683
+#: inc/theme-builder/theme-builder.php:1713
 msgctxt "Post Type General Name"
 msgid "AAE Builder"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1684
+#: inc/theme-builder/theme-builder.php:1714
 msgctxt "Post Type Singular Name"
 msgid "AAE Builder"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1685
-#: inc/theme-builder/theme-builder.php:1686
+#: inc/theme-builder/theme-builder.php:1715
+#: inc/theme-builder/theme-builder.php:1716
 msgid "AAE Builder"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1687
+#: inc/theme-builder/theme-builder.php:1717
 msgid "Template Archives"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1688
+#: inc/theme-builder/theme-builder.php:1718
 msgid "Template Attributes"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1690
+#: inc/theme-builder/theme-builder.php:1720
 msgid "Templates"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1691
+#: inc/theme-builder/theme-builder.php:1721
 msgid "Add New Template"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1693
+#: inc/theme-builder/theme-builder.php:1723
 msgid "New Template"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1694
+#: inc/theme-builder/theme-builder.php:1724
 #: widgets/loop-builder/controls/class-template-query.php:79
 msgid "Edit Template"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1695
+#: inc/theme-builder/theme-builder.php:1725
 msgid "Update Template"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1696
+#: inc/theme-builder/theme-builder.php:1726
 msgid "View Template"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1697
+#: inc/theme-builder/theme-builder.php:1727
 msgid "View Templates"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1698
+#: inc/theme-builder/theme-builder.php:1728
 msgid "Search Templates"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1705
+#: inc/theme-builder/theme-builder.php:1735
 msgid "Insert into Template"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1706
+#: inc/theme-builder/theme-builder.php:1736
 msgid "Uploaded to this Template"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1707
+#: inc/theme-builder/theme-builder.php:1737
 msgid "Templates list"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1708
+#: inc/theme-builder/theme-builder.php:1738
 msgid "Templates list navigation"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1709
+#: inc/theme-builder/theme-builder.php:1739
 msgid "Filter from list"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1714
+#: inc/theme-builder/theme-builder.php:1744
 msgid "AAE Theme Builder"
 msgstr ""
 
-#: inc/wpml-atomic.php:185
+#: inc/wpml-atomic.php:273
 msgid "(one entry per line — translate the label after the separator, keep the value before it)"
 msgstr ""
 
-#: inc/wpml-manager.php:56
+#: inc/wpml-manager.php:84
 msgid "Animated Title: Content: Title"
 msgstr ""
 
-#: inc/wpml-manager.php:62
+#: inc/wpml-manager.php:90
 msgid "Animated Title: Link"
 msgstr ""
 
-#: inc/wpml-manager.php:76
+#: inc/wpml-manager.php:104
 msgid "Button: Text"
 msgstr ""
 
-#: inc/wpml-manager.php:89
+#: inc/wpml-manager.php:117
 msgid "Advanced Button: Text"
 msgstr ""
 
-#: inc/wpml-manager.php:109
+#: inc/wpml-manager.php:137
 msgid "Image Box: Title"
 msgstr ""
 
-#: inc/wpml-manager.php:114
+#: inc/wpml-manager.php:142
 msgid "Image Box: Sub Title"
 msgstr ""
 
-#: inc/wpml-manager.php:119
+#: inc/wpml-manager.php:147
 msgid "Image Box: Description"
 msgstr ""
 
-#: inc/wpml-manager.php:124
+#: inc/wpml-manager.php:152
 msgid "Image Box: Text"
 msgstr ""
 
-#: inc/wpml-manager.php:137
+#: inc/wpml-manager.php:165
 #: inc/wpml/image-box-slider.php:45
 msgid "Image Box Slider: Button Text"
 msgstr ""
 
-#: inc/wpml-manager.php:152
+#: inc/wpml-manager.php:180
 msgid "Icon Box: Title"
 msgstr ""
 
-#: inc/wpml-manager.php:157
+#: inc/wpml-manager.php:185
 msgid "Icon Box: Description"
 msgstr ""
 
-#: inc/wpml-manager.php:163
+#: inc/wpml-manager.php:191
 msgid "Icon Box: Button Text"
 msgstr ""
 
-#: inc/wpml-manager.php:231
+#: inc/wpml-manager.php:259
 msgid "Modern Testimonial: Section Title"
 msgstr ""
 
-#: inc/wpml-manager.php:240
+#: inc/wpml-manager.php:268
 #: inc/wpml/testimonial-three.php:36
 msgid "Modern Testimonial: Name"
 msgstr ""
 
-#: inc/wpml-manager.php:245
+#: inc/wpml-manager.php:273
 #: inc/wpml/testimonial-three.php:39
 msgid "Modern Testimonial: Designation"
 msgstr ""
 
-#: inc/wpml-manager.php:250
+#: inc/wpml-manager.php:278
 #: inc/wpml/testimonial-three.php:42
 msgid "Modern Testimonial: Content"
 msgstr ""
 
-#: inc/wpml-manager.php:277
-#: inc/wpml-manager.php:301
+#: inc/wpml-manager.php:305
+#: inc/wpml-manager.php:329
 msgid "Team: Name"
 msgstr ""
 
-#: inc/wpml-manager.php:282
+#: inc/wpml-manager.php:310
 msgid "Team: Designation"
 msgstr ""
 
-#: inc/wpml-manager.php:287
+#: inc/wpml-manager.php:315
 msgid "Team: Description"
 msgstr ""
 
-#: inc/wpml-manager.php:306
+#: inc/wpml-manager.php:334
 msgid "Team: Position"
 msgstr ""
 
-#: inc/wpml-manager.php:327
+#: inc/wpml-manager.php:355
 msgid "Counter: Title"
 msgstr ""
 
-#: inc/wpml-manager.php:332
+#: inc/wpml-manager.php:360
 msgid "Counter: Suffix"
 msgstr ""
 
-#: inc/wpml-manager.php:337
+#: inc/wpml-manager.php:365
 msgid "Counter: Prefix"
 msgstr ""
 
-#: inc/wpml-manager.php:363
+#: inc/wpml-manager.php:391
 msgid "Typewriter: Non-Animated Text"
 msgstr ""
 
-#: inc/wpml-manager.php:371
+#: inc/wpml-manager.php:399
 msgid "Typewriter: Text"
 msgstr ""
 
-#: inc/wpml-manager.php:387
+#: inc/wpml-manager.php:415
 msgid "Animation Heading: Animated Heading"
 msgstr ""
 
-#: inc/wpml-manager.php:400
+#: inc/wpml-manager.php:428
 msgid "Animated Text: Animated Text"
 msgstr ""
 
-#: inc/wpml-manager.php:413
+#: inc/wpml-manager.php:441
 msgid "Text Hover Image: Before Hover Text"
 msgstr ""
 
-#: inc/wpml-manager.php:418
+#: inc/wpml-manager.php:446
 msgid "Text Hover Image: Hover Text"
 msgstr ""
 
-#: inc/wpml-manager.php:423
+#: inc/wpml-manager.php:451
 msgid "Text Hover Image: After Hover Text"
 msgstr ""
 
-#: inc/wpml-manager.php:456
+#: inc/wpml-manager.php:484
 msgid "Services Tab: Text"
 msgstr ""
 
-#: inc/wpml-manager.php:490
+#: inc/wpml-manager.php:518
 msgid "Countdown: Label Days"
 msgstr ""
 
-#: inc/wpml-manager.php:495
+#: inc/wpml-manager.php:523
 msgid "Countdown: Label Hours"
 msgstr ""
 
-#: inc/wpml-manager.php:500
+#: inc/wpml-manager.php:528
 msgid "Countdown: Label Minutes"
 msgstr ""
 
-#: inc/wpml-manager.php:505
+#: inc/wpml-manager.php:533
 msgid "Countdown: Label Seconds"
 msgstr ""
 
-#: inc/wpml-manager.php:511
+#: inc/wpml-manager.php:539
 msgid "Countdown: Title"
 msgstr ""
 
-#: inc/wpml-manager.php:516
+#: inc/wpml-manager.php:544
 msgid "Countdown: Description"
 msgstr ""
 
-#: inc/wpml-manager.php:529
+#: inc/wpml-manager.php:557
 msgid "Post: Read More Text"
 msgstr ""
 
-#: inc/wpml-manager.php:534
+#: inc/wpml-manager.php:562
 msgid "Content: Load More Text"
 msgstr ""
 
-#: inc/wpml-manager.php:588
+#: inc/wpml-manager.php:616
 msgid "Post Meta: Title"
 msgstr ""
 
-#: inc/wpml-manager.php:593
+#: inc/wpml-manager.php:621
 msgid "Post Meta: Separator"
 msgstr ""
 
-#: inc/wpml-manager.php:617
+#: inc/wpml-manager.php:645
 msgid "Post Paginate: Previous Text"
 msgstr ""
 
-#: inc/wpml-manager.php:622
+#: inc/wpml-manager.php:650
 msgid "Post Paginate: Next Text"
 msgstr ""
 
-#: inc/wpml-manager.php:636
+#: inc/wpml-manager.php:664
 msgid "Content: Share Text"
 msgstr ""
 
-#: inc/wpml-manager.php:645
+#: inc/wpml-manager.php:673
 msgid "Post Social Share: Title"
 msgstr ""
 
-#: inc/wpml-manager.php:667
+#: inc/wpml-manager.php:695
 msgid "Post Rating Form: Submit Button Text"
 msgstr ""
 
-#: inc/wpml-manager.php:672
+#: inc/wpml-manager.php:700
 msgid "Post Rating Form: Title"
 msgstr ""
 
-#: inc/wpml-manager.php:677
+#: inc/wpml-manager.php:705
 msgid "Post Rating Form: Text"
 msgstr ""
 
-#: inc/wpml-manager.php:682
+#: inc/wpml-manager.php:710
 msgid "Post Rating Form: Name Placeholder Text"
 msgstr ""
 
-#: inc/wpml-manager.php:687
+#: inc/wpml-manager.php:715
 msgid "Post Rating Form: Email Placeholder Text"
 msgstr ""
 
-#: inc/wpml-manager.php:692
+#: inc/wpml-manager.php:720
 msgid "Post Rating Form: Review Placeholder Text"
 msgstr ""
 
-#: inc/wpml-manager.php:697
+#: inc/wpml-manager.php:725
 msgid "Post Rating Form: Button Text"
 msgstr ""
 
-#: inc/wpml-manager.php:715
+#: inc/wpml-manager.php:743
 msgid "Post Timeline: Separator Between"
 msgstr ""
 
-#: inc/wpml-manager.php:720
+#: inc/wpml-manager.php:748
 msgid "Post Timeline: Author By"
 msgstr ""
 
-#: inc/wpml-manager.php:725
+#: inc/wpml-manager.php:753
 msgid "Post Timeline: Read More Button Text"
 msgstr ""
 
-#: inc/wpml-manager.php:730
+#: inc/wpml-manager.php:758
 msgid "Post Timeline: Load More Button Text"
 msgstr ""
 
-#: inc/wpml-manager.php:744
+#: inc/wpml-manager.php:772
 msgid "Archive Title: Title"
 msgstr ""
 
-#: inc/wpml-manager.php:749
+#: inc/wpml-manager.php:777
 msgid "Archive Title: Content"
 msgstr ""
 
-#: inc/wpml-manager.php:764
+#: inc/wpml-manager.php:792
 msgid "Search Form: Placeholder"
 msgstr ""
 
-#: inc/wpml-manager.php:769
+#: inc/wpml-manager.php:797
 msgid "Search Form: Button Text"
 msgstr ""
 
-#: inc/wpml-manager.php:782
+#: inc/wpml-manager.php:810
 msgid "Search Query: Text"
 msgstr ""
 
-#: inc/wpml-manager.php:795
+#: inc/wpml-manager.php:823
 msgid "Search No Result: No Results Message"
 msgstr ""
 
-#: inc/wpml-manager.php:800
+#: inc/wpml-manager.php:828
 msgid "Search No Result: Description"
 msgstr ""
 
-#: inc/wpml-manager.php:813
+#: inc/wpml-manager.php:841
 msgid "Author Box: Author Name"
 msgstr ""
 
-#: inc/wpml-manager.php:818
+#: inc/wpml-manager.php:846
 msgid "Author Box: Author Biography"
 msgstr ""
 
-#: inc/wpml-manager.php:823
+#: inc/wpml-manager.php:851
 msgid "Author Box: Archive Button Text"
 msgstr ""
 
-#: inc/wpml-manager.php:828
+#: inc/wpml-manager.php:856
 msgid "Author Box: Contact Title"
 msgstr ""
 
-#: inc/wpml-manager.php:833
+#: inc/wpml-manager.php:861
 msgid "Author Box: Email Label"
 msgstr ""
 
-#: inc/wpml-manager.php:838
+#: inc/wpml-manager.php:866
 msgid "Author Box: Phone Label"
 msgstr ""
 
-#: inc/wpml-manager.php:843
+#: inc/wpml-manager.php:871
 msgid "Author Box: Social Title"
 msgstr ""
 
-#: inc/wpml-manager.php:855
+#: inc/wpml-manager.php:883
 msgid "Breadcrumbs: Separator Text"
 msgstr ""
 
-#: inc/wpml-manager.php:888
+#: inc/wpml-manager.php:916
 msgid "Current Date: Date Separator"
 msgstr ""
 
-#: inc/wpml-manager.php:913
+#: inc/wpml-manager.php:941
 #: inc/wpml/one-page-nav.php:33
 msgid "One Page Nav: Text"
 msgstr ""
 
-#: inc/wpml-manager.php:966
+#: inc/wpml-manager.php:994
 #: inc/wpml/image-hotspot.php:34
 msgid "Image Hotspot: Title"
 msgstr ""
 
-#: inc/wpml-manager.php:971
+#: inc/wpml-manager.php:999
 #: inc/wpml/image-hotspot.php:37
 msgid "Image Hotspot: Content"
 msgstr ""
 
-#: inc/wpml-manager.php:985
+#: inc/wpml-manager.php:1013
 msgid "Image Compare: Before Caption"
 msgstr ""
 
-#: inc/wpml-manager.php:990
+#: inc/wpml-manager.php:1018
 msgid "Image Compare: After Caption"
 msgstr ""
 
-#: inc/wpml-manager.php:1004
+#: inc/wpml-manager.php:1032
 #: inc/wpml/brand-slider.php:33
 msgid "Brand Slider: Text"
 msgstr ""
 
-#: inc/wpml-manager.php:1020
+#: inc/wpml-manager.php:1048
 #: widgets/category-slider.php:648
 msgid "Article Text"
 msgstr ""
 
-#: inc/wpml-manager.php:1044
+#: inc/wpml-manager.php:1072
 msgid "Nested Slider: Carousel Name"
 msgstr ""
 
-#: inc/wpml-manager.php:1060
+#: inc/wpml-manager.php:1088
 msgid "Filterable Slider: Filter All Text"
 msgstr ""
 
-#: inc/wpml-manager.php:1079
+#: inc/wpml-manager.php:1107
 msgid "Event Slider: Button Text"
 msgstr ""
 
-#: inc/wpml-manager.php:1107
+#: inc/wpml-manager.php:1135
 msgid "Mailchimp: Confirmation Message"
 msgstr ""
 
-#: inc/wpml-manager.php:1112
+#: inc/wpml-manager.php:1140
 msgid "Mailchimp: Success Message"
 msgstr ""
 
-#: inc/wpml-manager.php:1117
+#: inc/wpml-manager.php:1145
 msgid "Mailchimp: First Name"
 msgstr ""
 
-#: inc/wpml-manager.php:1122
+#: inc/wpml-manager.php:1150
 msgid "Mailchimp: First Name Placeholder"
 msgstr ""
 
-#: inc/wpml-manager.php:1127
+#: inc/wpml-manager.php:1155
 msgid "Mailchimp: Last Name Label"
 msgstr ""
 
-#: inc/wpml-manager.php:1132
+#: inc/wpml-manager.php:1160
 msgid "Mailchimp: Last Name Placeholder"
 msgstr ""
 
-#: inc/wpml-manager.php:1137
+#: inc/wpml-manager.php:1165
 msgid "Mailchimp: Phone Name Label"
 msgstr ""
 
-#: inc/wpml-manager.php:1142
+#: inc/wpml-manager.php:1170
 msgid "Mailchimp: Phone Name Placeholder"
 msgstr ""
 
-#: inc/wpml-manager.php:1147
+#: inc/wpml-manager.php:1175
 msgid "Mailchimp: Email Label"
 msgstr ""
 
-#: inc/wpml-manager.php:1152
+#: inc/wpml-manager.php:1180
 msgid "Mailchimp: Email Placeholder"
 msgstr ""
 
-#: inc/wpml-manager.php:1157
+#: inc/wpml-manager.php:1185
 msgid "Mailchimp: Button Text"
 msgstr ""
 
-#: inc/wpml-manager.php:1183
+#: inc/wpml-manager.php:1211
 msgid "Toggle Switcher: Title"
 msgstr ""
 
-#: inc/wpml-manager.php:1188
+#: inc/wpml-manager.php:1216
 msgid "Toggle Switcher: Content"
 msgstr ""
 
-#: inc/wpml-manager.php:1202
+#: inc/wpml-manager.php:1230
 msgid "Click Drop: Login label"
 msgstr ""
 
-#: inc/wpml-manager.php:1207
+#: inc/wpml-manager.php:1235
 msgid "Click Drop: Logged label"
 msgstr ""
 
-#: inc/wpml-manager.php:1215
+#: inc/wpml-manager.php:1243
 msgid "Click Drop: Menu title"
 msgstr ""
 
-#: inc/wpml-manager.php:1239
+#: inc/wpml-manager.php:1267
 msgid "Advanced Pricing Table: Title"
 msgstr ""
 
-#: inc/wpml-manager.php:1244
+#: inc/wpml-manager.php:1272
 msgid "Advanced Pricing Table: Sub Title"
 msgstr ""
 
-#: inc/wpml-manager.php:1250
+#: inc/wpml-manager.php:1278
 msgid "Advanced Pricing Table: Currency Symbol"
 msgstr ""
 
-#: inc/wpml-manager.php:1256
+#: inc/wpml-manager.php:1284
 msgid "Advanced Pricing Table: Price"
 msgstr ""
 
-#: inc/wpml-manager.php:1262
+#: inc/wpml-manager.php:1290
 msgid "Advanced Pricing Table: Original Price"
 msgstr ""
 
-#: inc/wpml-manager.php:1268
+#: inc/wpml-manager.php:1296
 msgid "Advanced Pricing Table: Period"
 msgstr ""
 
-#: inc/wpml-manager.php:1275
+#: inc/wpml-manager.php:1303
 msgid "Advanced Pricing Table: Features Title"
 msgstr ""
 
-#: inc/wpml-manager.php:1282
+#: inc/wpml-manager.php:1310
 msgid "Advanced Pricing Table: Button Text"
 msgstr ""
 
-#: inc/wpml-manager.php:1289
+#: inc/wpml-manager.php:1317
 msgid "Advanced Pricing Table: Button Link"
 msgstr ""
 
-#: inc/wpml-manager.php:1296
+#: inc/wpml-manager.php:1324
 msgid "Advanced Pricing Table: Ribbon Title"
 msgstr ""
 

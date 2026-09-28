@@ -370,3 +370,27 @@
   opacity: 0;
   visibility: hidden;
 }
+
+// Elementor's "Choose how to apply styles" dialog (opened on insert of a
+// block that carries classes / variables). Elementor hardcodes its colours
+// for the LIGHT UI, while the lightbox card takes the theme's background —
+// so in the editor's dark mode the words were dark grey on a dark card.
+// Re-point its own --gsd-* tokens at Elementor's theme tokens, which flip
+// with the UI theme; in light mode they resolve to the same colours as before.
+// `body` lifts it one step above Elementor's own rule, whatever the load order.
+body .elementor-global-styles-dialog {
+  --gsd-color-text-primary: var(--e-a-color-txt-accent, #0c0d0e);
+  --gsd-color-text-secondary: var(--e-a-color-txt-hover, #3f444b);
+  --gsd-color-text-tertiary: var(--e-a-color-txt-muted, #69727d);
+  --gsd-color-divider: var(--e-a-border-color, rgba(0, 0, 0, 0.12));
+  --gsd-color-secondary-main: var(--e-a-color-txt, #515962);
+
+  // The Insert button is a light pink in both themes; its label must stay dark.
+  .elementor-global-styles-dialog__button-insert {
+    color: #0c0d0e;
+  }
+
+  .elementor-global-styles-dialog__button-cancel:hover {
+    background: var(--e-a-bg-hover, rgba(0, 0, 0, 0.04));
+  }
+}

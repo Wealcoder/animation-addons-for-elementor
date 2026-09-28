@@ -73,19 +73,17 @@ class Plugin
 	}
 
 	/**
-	 * Which eras the editor's Template Library offers on this site.
+	 * Which eras this site actually USES — an era is on when at least one of
+	 * its widgets is switched on. Decided on the saved widget options alone:
+	 * an extension does not make a section renderable, so it does not count.
 	 *
-	 * An era whose WIDGETS are all switched off is not offered: with every
-	 * V3 widget off this is a V4 site and a V3 section would only be a
-	 * template whose every AAE part has to be switched on first (and the
-	 * reverse for V4). Same shape as the dashboard hiding the era a site
-	 * does not use, decided on the saved widget options alone — extensions
-	 * do not make a section renderable, so they do not count here.
-	 *
-	 * Both off is a site with nothing on at all (a fresh install before the
-	 * wizard); hiding both would leave an empty library, so the client
-	 * treats that as "offer both" and the dependency dialog on Insert
-	 * explains what a block needs.
+	 * The editor's Template Library uses this for the DEFAULT its Version
+	 * filter opens on and for one hint line, and for nothing else — every
+	 * version is always listed and always in the filter. It briefly hid the
+	 * unused era instead, which left a V4 site with no way to reach the V3
+	 * catalogue and no control on screen saying one existed; the dependency
+	 * dialog on Insert already offers to switch on whatever a template needs,
+	 * so there was never anything to protect against.
 	 *
 	 * @return array{v3:bool,v4:bool}
 	 */
@@ -431,9 +429,9 @@ class Plugin
 					// The block library host (AAEADDON_BLOCK_LIBRARY_URL; a staging
 					// site overrides it in wp-config.php to a local copy).
 					'block_host'       => self::block_library_host(),
-					// Which eras the library OFFERS on this site — an era whose
-					// widgets are all switched off is not listed at all (no
-					// cards, no entry in the Version filter). See template_library_eras().
+					// Which eras this site USES. Decides which version the filter
+					// opens on and one hint line — never what is listed or
+					// offered. See template_library_eras().
 					'eras'             => self::template_library_eras(),
 					'widgets_link'     => admin_url( 'admin.php?page=aaeaddon_settings&tab=widgets' ),
 					'i18n'           => array(
@@ -441,15 +439,28 @@ class Plugin
 						'v4'              => esc_html__( 'V4', 'animation-addons-for-elementor' ),
 						'animated'        => esc_html__( 'Animated', 'animation-addons-for-elementor' ),
 						'insert'          => esc_html__( 'Insert', 'animation-addons-for-elementor' ),
+						/* translators: %s: comma-separated list of widget names. */
 						'switched_on'     => esc_html__( 'Switched on %s. Saving and reloading the editor to finish the insert…', 'animation-addons-for-elementor' ),
+						/* translators: %s: comma-separated list of widget names. */
 						'missing_widgets' => esc_html__( 'This block uses widgets that are switched off on this site (%s). An administrator has to switch them on in Animation Addons → Widgets before it can be inserted.', 'animation-addons-for-elementor' ),
+						/* translators: %d: number of images. */
 						'linked'          => esc_html__( '%d image(s) could not be copied and stay linked to the template server.', 'animation-addons-for-elementor' ),
 						'failed'          => esc_html__( 'The block could not be inserted.', 'animation-addons-for-elementor' ),
 						'empty'           => esc_html__( 'No templates found.', 'animation-addons-for-elementor' ),
 						'empty_v4'        => esc_html__( 'No Elementor V4 blocks in this list yet — switch the version filter to V3 or All.', 'animation-addons-for-elementor' ),
-						// The notice under the toolbar when an era is hidden.
-						'era_hidden_v3'   => esc_html__( 'Elementor V3 sections and pages are hidden because every V3 widget is switched off. Switch the widgets you need on in %s to see them.', 'animation-addons-for-elementor' ),
-						'era_hidden_v4'   => esc_html__( 'Elementor V4 blocks and pages are hidden because every V4 widget is switched off. Switch the widgets you need on in %s to see them.', 'animation-addons-for-elementor' ),
+						'empty_v4_pages'  => esc_html__( 'No Elementor V4 pages in this list yet — switch the version filter to V3 or All.', 'animation-addons-for-elementor' ),
+						// The load-more footer. The bundle's sprintf() understands
+						// %1$s / %2$s, so a translation may reorder them.
+						/* translators: 1: how many are on screen, 2: how many match the filter. */
+						'showing'         => esc_html__( 'Showing %1$s of %2$s — keep scrolling for more', 'animation-addons-for-elementor' ),
+						/* translators: %s: how many templates match the filter. */
+						'all_shown'       => esc_html__( 'All %s shown', 'animation-addons-for-elementor' ),
+						// The hint under the toolbar when the list can show cards from
+						// an era whose every widget is switched off. They still insert.
+						/* translators: %s: link to the Widgets screen. */
+						'era_off_v3'      => esc_html__( 'Every Elementor V3 widget is switched off on this site. V3 sections still insert — the editor offers to switch on the widgets each one needs. You can also switch them on first in %s.', 'animation-addons-for-elementor' ),
+						/* translators: %s: link to the Widgets screen. */
+						'era_off_v4'      => esc_html__( 'Every Elementor V4 widget is switched off on this site. V4 blocks still insert — the editor offers to switch on the widgets each one needs. You can also switch them on first in %s.', 'animation-addons-for-elementor' ),
 						'widgets_screen'  => esc_html__( 'Animation Addons → Widgets', 'animation-addons-for-elementor' ),
 						// The dependency dialog: what the block/page needs that is off.
 						'deps_title'      => esc_html__( 'This template uses widgets that are switched off', 'animation-addons-for-elementor' ),
