@@ -266,6 +266,9 @@ class Aaeaddon_Template_Importer {
 
 					if ( is_string( $installed ) && '' !== $installed ) {
 						$msg = $installed;
+					} elseif ( in_array( $theme_slug, [ get_template(), get_stylesheet() ], true ) ) {
+						// Already the active theme (or its child): nothing to recommend.
+						$msg = esc_html__( 'Theme ready', 'animation-addons-for-elementor' );
 					} else {
 						$msg = sprintf(
 							/* translators: %s: slug of the theme this starter template was designed for. */
