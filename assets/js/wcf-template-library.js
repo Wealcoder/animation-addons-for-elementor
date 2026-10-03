@@ -1256,7 +1256,9 @@
     state.listHtml = $content.html();
     $content.html(
       wp.template("wcf-templates-single")({
-        template_link: $card.data("url"),
+        // The API ships template_demo_url HTML-escaped ("&amp;post="), and
+        // {{ }} escapes again — decode, or the iframe asks for "amp;post".
+        template_link: decode($card.data("url") || ""),
         template_id: $card.data("id"),
         jurl: $card.attr("data-jurl") || "",
         builder: $card.attr("data-builder") || "v3",

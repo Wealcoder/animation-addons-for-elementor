@@ -5,7 +5,7 @@ Tags: elementor, elementor v4, atomic widgets, elementor addons, elementor templ
 Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 4.2.3
+Stable tag: 4.2.5
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -439,6 +439,12 @@ Vendored libraries:
 * Select2 4.1.0: https://github.com/select2/select2
 
 == Changelog ==
+
+= 4.2.5 =
+* Fixed: Section template previews in the Template Library opened without the template, because the preview link reached the demo site as "amp;post" instead of "post".
+
+= 4.2.4 =
+* Fixed: Starter Template import now says "Theme ready" when the template's theme is already your active theme, instead of asking you to install it.
 
 = 4.2.3 =
 * Added Section Template v4 Filter.
