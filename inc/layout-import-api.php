@@ -164,6 +164,7 @@ class Layout_Import_Api {
 
 		$source  = new Library_Source();
 		$content = $source->replace_ids( array_values( $content ) );
+		$content = $this->drop_unknown_dynamic_tags( $content );
 
 		$localized = [ 'images' => 0, 'lottie' => 0, 'reused' => 0, 'failed' => 0, 'stopped' => false ];
 
@@ -203,6 +204,47 @@ class Layout_Import_Api {
 			'missing'            => $missing,
 			'localized'          => $localized,
 		];
+	}
+
+	/**
+	 * Remove atomic dynamic values whose tag is not registered on this site.
+	 *
+	 * A block made on another site can carry a dynamic tag this site does not
+	 * have (e.g. a button link bound to `aae-internal-url` with the source
+	 * site's post id). The insert works, but Elementor refuses to SAVE it:
+	 * Dynamic_Prop_Type::validate_value() fails on an unknown tag —
+	 * "Settings validation failed. link: invalid_value". Dropping the key
+	 * falls back to the prop's default (a link without a destination is
+	 * valid), so the document saves.
+	 *
+	 * @param array $node Elements list, element, settings or any nested value.
+	 * @return array
+	 */
+	private function drop_unknown_dynamic_tags( array $node ): array {
+		$module = '\Elementor\Modules\AtomicWidgets\DynamicTags\Dynamic_Tags_Module';
+		if ( ! class_exists( $module ) ) {
+			return $node;
+		}
+
+		$registry = $module::instance()->registry;
+
+		foreach ( $node as $key => $value ) {
+			if ( ! is_array( $value ) ) {
+				continue;
+			}
+
+			if ( 'dynamic' === ( $value['$$type'] ?? null ) ) {
+				$name = $value['value']['name'] ?? '';
+				if ( ! is_string( $name ) || '' === $name || ! $registry->get_tag( $name ) ) {
+					unset( $node[ $key ] );
+				}
+				continue;
+			}
+
+			$node[ $key ] = $this->drop_unknown_dynamic_tags( $value );
+		}
+
+		return $node;
 	}
 
 	/**
