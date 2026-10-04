@@ -79,5 +79,3 @@
         elementorFrontend.hooks.addAction('frontend/element_ready/aaeaddon-post-reactions.default', AAEPost_Reactions);
     });
 })();
-
-//# sourceMappingURL=post-reactions.js.map

@@ -675,5 +675,3 @@
     };
   }
 })(jQuery, window, document);
-
-//# sourceMappingURL=wcf-template-library.js.map

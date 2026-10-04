@@ -97,5 +97,3 @@
     });
 
 })(jQuery);
-
-//# sourceMappingURL=progressbar.js.map

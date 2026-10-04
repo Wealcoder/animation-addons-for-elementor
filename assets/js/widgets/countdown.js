@@ -101,5 +101,3 @@
     );
   });
 })(jQuery);
-
-//# sourceMappingURL=countdown.js.map

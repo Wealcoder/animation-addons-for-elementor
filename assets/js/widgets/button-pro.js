@@ -33,5 +33,3 @@
         elementorFrontend.hooks.addAction('frontend/element_ready/aae--advanced-button.default', AdvancedButton);
     });
 })(jQuery);
-
-//# sourceMappingURL=button-pro.js.map
