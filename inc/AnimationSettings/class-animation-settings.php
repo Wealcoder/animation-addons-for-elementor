@@ -1454,9 +1454,39 @@ JS;
 			return false;
 		}
 
+		// MotionKit Connector owns the page smoother when both are installed.
+		// Its global-settings ScrollSmoother takes priority, so AAE stands its
+		// own smooth-scroll down for this request when the connector is loaded
+		// and its smoother is running here — otherwise two ScrollSmoother
+		// instances fight over one #smooth-wrapper (jitter / double-wrap). Only
+		// smooth_scroll defers; every other AAE feature is unaffected.
+		if ( 'smooth_scroll' === $feature && self::motionkit_smoother_owns_request() ) {
+			return false;
+		}
+
 		$config = self::feature( $feature );
 
 		return self::display_matches( (array) ( $config[ self::CONDITIONS_KEY ] ?? [] ) );
+	}
+
+	/**
+	 * True when MotionKit Connector is present AND its ScrollSmoother is set to
+	 * run on the current request. When so, AAE yields the page smoother to it.
+	 *
+	 * Guarded so it stays false on any site without the connector: the constant
+	 * and the class must both exist, and should_run() decides per-request.
+	 */
+	private static function motionkit_smoother_owns_request(): bool {
+		if ( ! defined( 'MOTIONKIT_CONNECTOR_LOADED' ) ) {
+			return false;
+		}
+
+		if ( ! class_exists( '\MotionKitConnector\Frontend\ScrollSmoother' )
+			|| ! method_exists( '\MotionKitConnector\Frontend\ScrollSmoother', 'should_run' ) ) {
+			return false;
+		}
+
+		return (bool) \MotionKitConnector\Frontend\ScrollSmoother::should_run();
 	}
 
 	/** Should the v3 Elementor Site Settings tabs still be registered? */
