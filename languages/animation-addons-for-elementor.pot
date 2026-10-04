@@ -2,14 +2,14 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Animation Addons 4.2.3\n"
+"Project-Id-Version: Animation Addons 4.2.5\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/animation-addons-for-elementor\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-27T10:10:08+00:00\n"
+"POT-Creation-Date: 2026-09-28T11:57:11+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: animation-addons-for-elementor\n"
@@ -4717,87 +4717,91 @@ msgstr ""
 msgid "Varifying Content Import"
 msgstr ""
 
+#: inc/admin/template-importer.php:271
+msgid "Theme ready"
+msgstr ""
+
 #. translators: %s: slug of the theme this starter template was designed for.
-#: inc/admin/template-importer.php:272
+#: inc/admin/template-importer.php:275
 #, php-format
 msgid "This template was designed for the \"%s\" theme. Your active theme has not been changed -- install and activate it yourself from Appearance > Themes."
 msgstr ""
 
 #. translators: 1: import mode, 2: classes, 3: variables, 4: posts
-#: inc/admin/template-importer.php:320
+#: inc/admin/template-importer.php:323
 #, php-format
 msgid "Design system imported (%1$s): %2$d classes, %3$d variables, %4$d posts updated"
 msgstr ""
 
 #. translators: 1: import mode, 2: classes, 3: variables, 4: posts
-#: inc/admin/template-importer.php:353
+#: inc/admin/template-importer.php:356
 #, php-format
 msgid "Page design imported (%1$s): %2$d classes, %3$d variables, %4$d posts updated"
 msgstr ""
 
-#: inc/admin/template-importer.php:377
+#: inc/admin/template-importer.php:380
 msgid "Copying images to the media library"
 msgstr ""
 
-#: inc/admin/template-importer.php:378
+#: inc/admin/template-importer.php:381
 msgid "Copying Lottie animations to the media library"
 msgstr ""
 
-#: inc/admin/template-importer.php:404
+#: inc/admin/template-importer.php:407
 msgid "Downloading Template"
 msgstr ""
 
-#: inc/admin/template-importer.php:418
+#: inc/admin/template-importer.php:421
 msgid "Template Demo Import fail"
 msgstr ""
 
-#: inc/admin/template-importer.php:435
+#: inc/admin/template-importer.php:438
 msgid "Checking Setup requirement"
 msgstr ""
 
-#: inc/admin/template-importer.php:561
+#: inc/admin/template-importer.php:564
 msgid "Kit Settings Update"
 msgstr ""
 
-#: inc/admin/template-importer.php:568
+#: inc/admin/template-importer.php:571
 msgid "Template Required"
 msgstr ""
 
-#: inc/admin/template-importer.php:592
+#: inc/admin/template-importer.php:595
 msgid "Failed to validate file from remote URL."
 msgstr ""
 
-#: inc/admin/template-importer.php:599
+#: inc/admin/template-importer.php:602
 msgid "Invalid file arguments. Please check the URL."
 msgstr ""
 
-#: inc/admin/template-importer.php:606
+#: inc/admin/template-importer.php:609
 msgid "The downloadable file is empty."
 msgstr ""
 
-#: inc/admin/template-importer.php:618
+#: inc/admin/template-importer.php:621
 msgid "Remote URL is required."
 msgstr ""
 
-#: inc/admin/template-importer.php:625
+#: inc/admin/template-importer.php:628
 msgid "Failed to fetch XML from remote URL."
 msgstr ""
 
-#: inc/admin/template-importer.php:631
-#: inc/admin/template-importer.php:632
+#: inc/admin/template-importer.php:634
+#: inc/admin/template-importer.php:635
 msgid "The remote XML file is empty."
 msgstr ""
 
-#: inc/admin/template-importer.php:649
-#: inc/admin/template-importer.php:650
+#: inc/admin/template-importer.php:652
+#: inc/admin/template-importer.php:653
 msgid "Failed to save the XML file."
 msgstr ""
 
-#: inc/admin/template-importer.php:652
+#: inc/admin/template-importer.php:655
 msgid "File downloaded and saved successfully"
 msgstr ""
 
-#: inc/admin/template-importer.php:653
+#: inc/admin/template-importer.php:656
 msgid "File downloaded and saved successfully at "
 msgstr ""
 

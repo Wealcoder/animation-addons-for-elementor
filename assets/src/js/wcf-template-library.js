@@ -956,6 +956,19 @@
    * @return {Promise<boolean>} true when the caller may go on and insert;
    *                            false when the editor is reloading.
    */
+  /**
+   * Remember an insert across the reload. A catalogue block is re-fetched by
+   * its jurl; a Live Paste export has none, so the export itself is parked.
+   */
+  const parkPending = (entry, tpl) => {
+    try {
+      const pending = !entry.jurl && tpl ? Object.assign({}, entry, { tpl }) : entry;
+      window.sessionStorage.setItem(PENDING_KEY, JSON.stringify(pending));
+    } catch (_) {
+      /* private mode / quota: the user re-clicks Insert (or pastes again) after the reload */
+    }
+  };
+
   const resolveDependencies = async ({ id, jurl, at, builder, tpl }) => {
     if (!tpl || !tpl.content) {
       return true;
@@ -974,14 +987,7 @@
       return true; // nothing changed — already on, nothing to reload for
     }
 
-    try {
-      window.sessionStorage.setItem(
-        PENDING_KEY,
-        JSON.stringify({ id, jurl, at, builder, documentId: elementor.config.document.id })
-      );
-    } catch (_) {
-      /* private mode: the user re-clicks Insert after the reload */
-    }
+    parkPending({ id, jurl, at, builder, documentId: elementor.config.document.id }, tpl);
     const names = [].concat(
       (deps.widgets || []).filter((w) => enabled.includes(w.slug)).map((w) => w.label || w.slug),
       (deps.extensions || []).filter((x) => enabled.includes(x.slug)).map((x) => x.label || x.slug)
@@ -1007,7 +1013,7 @@
       display: true,
       template_id: id,
     };
-    if (jurl) {
+    if (jurl || tpl) {
       const file = tpl || (await fetchJson(jurl));
       if (!file || !file.content) {
         throw new Error(text("failed", "The block could not be inserted."));
@@ -1024,7 +1030,8 @@
    *                            about to reload to finish the insert.
    */
   const insertV4 = async ({ id, jurl, at, resumed, tpl: prefetched }) => {
-    if (!jurl) {
+    // Live Paste hands the export over directly (no jurl).
+    if (!jurl && !prefetched) {
       throw new Error(text("failed", "The block could not be inserted."));
     }
 
@@ -1042,14 +1049,7 @@
     if (prep.enabled && prep.enabled.length && !resumed) {
       // A widget switched on in this request is not in elementor.config.elements
       // yet; the model constructor would throw. Park the insert, save, reload.
-      try {
-        window.sessionStorage.setItem(
-          PENDING_KEY,
-          JSON.stringify({ id, jurl, at, documentId: elementor.config.document.id })
-        );
-      } catch (_) {
-        /* private mode: the user re-clicks Insert after the reload */
-      }
+      parkPending({ id, jurl, at, documentId: elementor.config.document.id }, tpl);
       notify(sprintf(text("switched_on", "Switched on %s. Saving and reloading the editor to finish the insert…"), prep.enabled.join(", ")), true);
       try {
         const saved = await $e.run("document/save/auto", { force: true });
@@ -1137,7 +1137,7 @@
     } catch (_) {
       return;
     }
-    if (!pending || !pending.jurl || !window.elementor || !elementor.config || !elementor.config.document) {
+    if (!pending || (!pending.jurl && !pending.tpl) || !window.elementor || !elementor.config || !elementor.config.document) {
       return;
     }
     if (String(pending.documentId) !== String(elementor.config.document.id)) {
@@ -1146,9 +1146,9 @@
     state.inserting = true;
     try {
       if (pending.builder === "v3") {
-        await insertV3({ id: pending.id, jurl: pending.jurl, at: pending.at });
+        await insertV3({ id: pending.id, jurl: pending.jurl, at: pending.at, tpl: pending.tpl });
       } else {
-        await insertV4({ id: pending.id, jurl: pending.jurl, at: pending.at, resumed: true });
+        await insertV4({ id: pending.id, jurl: pending.jurl, at: pending.at, resumed: true, tpl: pending.tpl });
       }
     } catch (error) {
       if (!error || error.message !== "cancelled") {
@@ -1259,7 +1259,9 @@
     state.listHtml = $content.html();
     $content.html(
       wp.template("wcf-templates-single")({
-        template_link: $card.data("url"),
+        // The API ships template_demo_url HTML-escaped ("&amp;post="), and
+        // {{ }} escapes again — decode, or the iframe asks for "amp;post".
+        template_link: decode($card.data("url") || ""),
         template_id: $card.data("id"),
         jurl: $card.attr("data-jurl") || "",
         builder: $card.attr("data-builder") || "v3",
@@ -1320,5 +1322,7 @@
   });
 
   // For the suite and for debugging: the state and the two paths.
+  // Also a contract: Animation Addons Pro's Live Paste inserts V4 sections
+  // through insertV4 / resolveDependencies with `tpl` (and no jurl).
   window.aaeaddonTemplateLibrary = { state, insertV4, insertV3, renderList, resolveDependencies, eras, PENDING_KEY };
 })(jQuery, window, document);
