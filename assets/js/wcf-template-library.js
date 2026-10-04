@@ -811,6 +811,9 @@
       if (typeof helpers.sanitizeBorderWidthType === "function") {
         helpers.sanitizeBorderWidthType(root);
       }
+      if (typeof helpers.sanitizeHtmlTextType === "function") {
+        helpers.sanitizeHtmlTextType(root);
+      }
     });
     return roots;
   };

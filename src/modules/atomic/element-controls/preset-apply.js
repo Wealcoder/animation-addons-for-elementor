@@ -502,6 +502,93 @@ export function sanitizeBorderWidthType(node) {
   walk(node);
 }
 
+/**
+ * Same build-drift problem as border-width, but for the TEXT props of native
+ * atomic widgets (e-heading `title`, e-paragraph `paragraph`, …). Some cores
+ * register them as `html-v3` ({ content: string-prop, children: [] }), others
+ * — Elementor 4.3.x — as plain `escaped-html` (a string). A preset authored on
+ * the other build carries the wrong one, the editor's validation rejects it,
+ * and the widget renders EMPTY: an accordion of bare bordered boxes with no
+ * titles or answers.
+ *
+ * Unlike border-width there is no single install-wide key to rewrite to, so
+ * each prop is converted to whatever the element's own atomic_props_schema
+ * (elementor.widgetsCache) declares. Props whose schema accepts the incoming
+ * type (including via a union) are left untouched.
+ */
+const HTML_TEXT_TYPES = ['html-v3', 'escaped-html'];
+
+function getSchemaPropKeys(propType) {
+  if (!propType) {
+    return [];
+  }
+  if (propType.kind === 'union' && propType.prop_types) {
+    return Object.keys(propType.prop_types);
+  }
+
+  return propType.key ? [propType.key] : [];
+}
+
+function convertHtmlTextProp(prop, targetKey) {
+  if (targetKey === 'escaped-html') {
+    const content = prop.value && prop.value.content;
+    const text = content && typeof content.value === 'string' ? content.value : '';
+
+    return { $$type: 'escaped-html', value: text };
+  }
+
+  return {
+    $$type: 'html-v3',
+    value: {
+      content: { $$type: 'string', value: typeof prop.value === 'string' ? prop.value : '' },
+      children: [],
+    },
+  };
+}
+
+export function sanitizeHtmlTextType(node) {
+  const widgetsCache = (window.elementor && window.elementor.widgetsCache) || {};
+
+  const walk = (current) => {
+    if (Array.isArray(current)) {
+      current.forEach(walk);
+      return;
+    }
+    if (!current || typeof current !== 'object') {
+      return;
+    }
+
+    const type = current.widgetType || current.elType;
+    const config = type ? widgetsCache[type] : null;
+    const schema = config && config.atomic_props_schema;
+
+    if (schema && current.settings && typeof current.settings === 'object') {
+      Object.keys(current.settings).forEach((key) => {
+        const prop = current.settings[key];
+        if (!prop || HTML_TEXT_TYPES.indexOf(prop.$$type) === -1) {
+          return;
+        }
+
+        const accepted = getSchemaPropKeys(schema[key]);
+        if (accepted.length === 0 || accepted.indexOf(prop.$$type) !== -1) {
+          return;
+        }
+
+        const targetKey = HTML_TEXT_TYPES.find((t) => accepted.indexOf(t) !== -1);
+        if (targetKey) {
+          current.settings[key] = convertHtmlTextProp(prop, targetKey);
+        }
+      });
+    }
+
+    if (Array.isArray(current.elements)) {
+      current.elements.forEach(walk);
+    }
+  };
+
+  walk(node);
+}
+
 /** Fresh, collision-resistant local style id (mirrors Elementor's shape). */
 function randomStyleId() {
   const rand = () => Math.random().toString(36).slice(2, 9);
@@ -869,6 +956,7 @@ export function applyPresetModel(presetModel, elementId, targetType, meta = {}) 
     regenerateModelStyleIds(model);
     sanitizeImageSrc(model);
     sanitizeBorderWidthType(model);
+    sanitizeHtmlTextType(model);
     if (i === 0 && canCarrySnapshot && snapshotToCarry) {
       model.settings.aae_preset_snapshot = { $$type: 'string', value: snapshotToCarry };
     }
@@ -972,6 +1060,7 @@ export function resetElementToOriginal(elementId, meta = {}) {
   regenerateModelStyleIds(model);
   sanitizeImageSrc(model);
   sanitizeBorderWidthType(model);
+  sanitizeHtmlTextType(model);
 
   const result = createElements({
     title: meta.title || 'Reset to Default',

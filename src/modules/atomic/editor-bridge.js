@@ -239,6 +239,7 @@ import {
 	migrateLegacyWidgetShape,
 	normalizeElementShape,
 	sanitizeBorderWidthType,
+	sanitizeHtmlTextType,
 	stampContainerClassesIntoPreview,
 	syncAaeInteractionsToPreview,
 } from './element-controls/preset-apply';
@@ -247,6 +248,7 @@ window.AAEPresetApply = {
 	migrateLegacyWidgetShape,
 	normalizeElementShape,
 	sanitizeBorderWidthType,
+	sanitizeHtmlTextType,
 	stampContainerClassesIntoPreview,
 	syncAaeInteractionsToPreview,
 };
