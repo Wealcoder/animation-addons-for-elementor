@@ -969,7 +969,7 @@
     }
   };
 
-  const resolveDependencies = async ({ id, jurl, at, builder, tpl }) => {
+  const resolveDependencies = async ({ id, jurl, at, builder, tpl, media }) => {
     if (!tpl || !tpl.content) {
       return true;
     }
@@ -987,7 +987,7 @@
       return true; // nothing changed — already on, nothing to reload for
     }
 
-    parkPending({ id, jurl, at, builder, documentId: elementor.config.document.id }, tpl);
+    parkPending({ id, jurl, at, builder, media, documentId: elementor.config.document.id }, tpl);
     const names = [].concat(
       (deps.widgets || []).filter((w) => enabled.includes(w.slug)).map((w) => w.label || w.slug),
       (deps.extensions || []).filter((x) => enabled.includes(x.slug)).map((x) => x.label || x.slug)
@@ -1029,7 +1029,9 @@
    * @return {Promise<boolean>} true when inserted; false when the editor is
    *                            about to reload to finish the insert.
    */
-  const insertV4 = async ({ id, jurl, at, resumed, tpl: prefetched }) => {
+  // `media`: 'vector' keeps photos on the demo server (Live Paste's "Keep
+  // demo image links"); omitted, everything is copied, as the library does.
+  const insertV4 = async ({ id, jurl, at, resumed, tpl: prefetched, media }) => {
     // Live Paste hands the export over directly (no jurl).
     if (!jurl && !prefetched) {
       throw new Error(text("failed", "The block could not be inserted."));
@@ -1040,7 +1042,7 @@
       throw new Error(text("failed", "The block could not be inserted."));
     }
 
-    const prep = await editorAjax("aaeaddon_prepare_v4_block", { content: asList(tpl.content) });
+    const prep = await editorAjax("aaeaddon_prepare_v4_block", { content: asList(tpl.content), media: media || "all" });
 
     if (prep.missing && prep.missing.length) {
       throw new Error(sprintf(text("missing_widgets", "This block uses widgets that are switched off on this site (%s)."), prep.missing.join(", ")));
@@ -1049,7 +1051,7 @@
     if (prep.enabled && prep.enabled.length && !resumed) {
       // A widget switched on in this request is not in elementor.config.elements
       // yet; the model constructor would throw. Park the insert, save, reload.
-      parkPending({ id, jurl, at, documentId: elementor.config.document.id }, tpl);
+      parkPending({ id, jurl, at, media, documentId: elementor.config.document.id }, tpl);
       notify(sprintf(text("switched_on", "Switched on %s. Saving and reloading the editor to finish the insert…"), prep.enabled.join(", ")), true);
       try {
         const saved = await $e.run("document/save/auto", { force: true });
@@ -1148,7 +1150,7 @@
       if (pending.builder === "v3") {
         await insertV3({ id: pending.id, jurl: pending.jurl, at: pending.at, tpl: pending.tpl });
       } else {
-        await insertV4({ id: pending.id, jurl: pending.jurl, at: pending.at, resumed: true, tpl: pending.tpl });
+        await insertV4({ id: pending.id, jurl: pending.jurl, at: pending.at, resumed: true, tpl: pending.tpl, media: pending.media });
       }
     } catch (error) {
       if (!error || error.message !== "cancelled") {
