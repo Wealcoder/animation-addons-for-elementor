@@ -258,7 +258,7 @@
 .aae-tl-deps {
   padding: 28px 28px 24px;
   font-family: Roboto, Arial, sans-serif;
-  color: #0c0d0e;
+  color: var(--e-a-color-txt-accent, #0c0d0e);
 }
 .aae-tl-deps__title {
   margin: 0 0 8px;
@@ -270,7 +270,7 @@
   margin: 0 0 14px;
   font-size: 13px;
   line-height: 1.5;
-  color: #515962;
+  color: var(--e-a-color-txt, #515962);
 }
 .aae-tl-deps__note {
   margin: 12px 0 0;
@@ -281,7 +281,7 @@
   padding: 0;
   max-height: 260px;
   overflow: auto;
-  border: 1px solid #e6e8ea;
+  border: 1px solid var(--e-a-border-color, #e6e8ea);
   border-radius: 6px;
 }
 .aae-tl-deps__item {
@@ -292,13 +292,13 @@
   padding: 9px 12px;
   font-size: 13px;
   line-height: 1.4;
-  border-top: 1px solid #e6e8ea;
+  border-top: 1px solid var(--e-a-border-color, #e6e8ea);
 }
 .aae-tl-deps__item:first-child {
   border-top: 0;
 }
 .aae-tl-deps__item.is-unavailable {
-  color: #9da5ae;
+  color: var(--e-a-color-txt-muted, #9da5ae);
 }
 .aae-tl-deps__label {
   font-weight: 500;
@@ -308,12 +308,12 @@
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: #6d7882;
+  color: var(--e-a-color-txt-muted, #6d7882);
 }
 .is-unavailable .aae-tl-deps__kind {
   text-transform: none;
   letter-spacing: 0;
-  color: #b0141a;
+  color: var(--e-a-color-danger, #b0141a);
   flex: 1 1 auto;
   text-align: end;
 }
@@ -338,11 +338,11 @@
   cursor: pointer;
 }
 .aae-tl-deps__btn--cancel {
-  background: #f1f3f5;
-  color: #0c0d0e;
+  background: var(--e-a-bg-hover, #f1f3f5);
+  color: var(--e-a-color-txt-accent, #0c0d0e);
 }
 .aae-tl-deps__btn--cancel:hover {
-  background: #e6e8ea;
+  background: var(--e-a-bg-active, #e6e8ea);
 }
 .aae-tl-deps__btn--enable {
   background: #524cff;
