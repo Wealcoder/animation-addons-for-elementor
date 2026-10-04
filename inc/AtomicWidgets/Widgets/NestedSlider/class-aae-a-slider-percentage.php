@@ -75,7 +75,9 @@ class AAE_A_Slider_Percentage extends Atomic_Widget_Base {
 			'font-size'   => Size_Prop_Type::generate( [ 'size' => 14, 'unit' => 'px' ] ),
 			'font-weight' => String_Prop_Type::generate( '600' ),
 			'line-height' => String_Prop_Type::generate( '1' ),
-			'color'       => String_Prop_Type::generate( '#ffffff' ),
+			// Was #ffffff - invisible on the editor's white canvas, which is
+			// what made the whole indicators row look half-missing.
+			'color'       => String_Prop_Type::generate( '#8a8a92' ),
 		];
 
 		return [

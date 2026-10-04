@@ -79,6 +79,11 @@ class AAE_A_Social_Share extends Atomic_Element_Base {
 
 	protected static function define_props_schema(): array {
 		return [
+			// Snapshot of this element's own full model (JSON), captured by the
+			// JS preset-apply engine the first time a preset is applied — see
+			// preset-apply.js's SNAPSHOT_REVERT_TYPES / "Reset to Default".
+			'aae_preset_snapshot' => String_Prop_Type::make()->default( '' ),
+
 			'classes'    => Classes_Prop_Type::make()->default( [] ),
 			'attributes' => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
 		];
@@ -158,7 +163,11 @@ class AAE_A_Social_Share extends Atomic_Element_Base {
 			$children[] = AAE_A_Social_Share_Item::generate()
 				->editor_settings( [ 'title' => $label ] )
 				->settings( [
-					'btn_url' => String_Prop_Type::generate( AAE_A_Social_Share_Item::get_default_share_url( $vendor ) ),
+					// btn_url deliberately left unset — it's the Custom/None
+					// field and is hidden the moment share_vendor is set;
+					// AAE_A_Social_Share_Item::resolve_share_href() auto-fills
+					// the real share link for a known vendor at render time.
+					'share_vendor' => String_Prop_Type::generate( $vendor ),
 				] )
 				->children( AAE_A_Social_Share_Item::build_default_inner_children( $vendor, $label ) )
 				->build();
@@ -193,25 +202,5 @@ class AAE_A_Social_Share extends Atomic_Element_Base {
 
 	public function get_style_depends(): array {
 		return ['aae-a-social-share-css'];
-	}
-
-	/**
-	 * Inline CSS that Atomic::fix_frontend_atomic_css_order() injects right
-	 * after this widget's own stylesheet, once that stylesheet is guaranteed
-	 * to load after Elementor's base-desktop.css.
-	 *
-	 * Lives HERE rather than on AAE_A_Social_Share_Item: only THIS class has a
-	 * registered `style_handle` in class-atomic.php's widget registry, which
-	 * is what fix_frontend_atomic_css_order() keys off — an override defined
-	 * on the item class would never be called. Sized from
-	 * AAE_A_Social_Share_Item::ICON_SIZE_PX so there is one source of truth;
-	 * see AAE_A_Btn::get_frontend_css_override() for the original of this
-	 * pattern and why the value can't just live in a compiled .scss file.
-	 */
-	public static function get_frontend_css_override(): string {
-		return sprintf(
-			'.elementor .e-aae-a-social-share-item-icon{width:%1$dpx;height:%1$dpx}',
-			AAE_A_Social_Share_Item::ICON_SIZE_PX
-		);
 	}
 }

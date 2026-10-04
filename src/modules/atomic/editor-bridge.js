@@ -22,6 +22,10 @@ import scrollTo from './extensions/scroll-to/config';
 import backgroundVideoSection from './extensions/background-video/config';
 import customCssSection from './extensions/custom-css/config';
 import nestedSliderSection from './extensions/nested-slider/config';
+import menuSections from './extensions/menu-sections/config';
+import navSections from './extensions/nav-sections/config';
+import { registerHookClassesProvider } from './editor-bridge/hook-classes-provider';
+import imageOverlaySection from './extensions/image-overlay/config';
 
 /* ---------------------------------------------------------------------------
  * Editor-only crash guard for Elementor v4's colour-picker (MUI Popover).
@@ -94,6 +98,36 @@ registerResponsiveSection( scrollTo );
 registerResponsiveSection( backgroundVideoSection );
 registerResponsiveSection( customCssSection );
 registerResponsiveSection( nestedSliderSection );
+registerResponsiveSection( imageOverlaySection );
+// WP Menu widget sections (not extensions) — one per CSS-variable-driven
+// panel section, each attaching by anchor key to e-aae-a-menu only, the same
+// way the Nested Slider panel does.
+menuSections.forEach( registerResponsiveSection );
+
+// Nav element sections — one per injected icon (hamburger, close, back and
+// the two dropdown arrows), attaching by anchor key to e-aae-a-nav only.
+// Same mechanism as the Menu sections above: the framework binds by anchor
+// key, so an Atomic_Element_Base hosts them exactly like a widget does.
+navSections.forEach( registerResponsiveSection );
+
+// Tell Elementor that our functional hook classes exist, so the panel stops
+// reporting them as "missing" — that alert's dismiss button DELETES the
+// classes our JS runs on. Read-only, so they never reach the class picker.
+//
+// Wrapped because this is the one registration that reads an Elementor package
+// through a bare global: webpack compiles the import to
+// `elementorV2.editorStylesRepository`, so on a build where that package is
+// absent the property access throws at the FIRST use — before the module's own
+// guard can return false. Assets.php already refuses to enqueue this bundle
+// unless the handle is registered, so this should be unreachable; it is here so
+// that if it ever is reached, one optional nicety cannot take the whole editor
+// bridge (panel sections, preset picker, responsive rows) down with it.
+try {
+	registerHookClassesProvider();
+} catch ( e ) {
+	// eslint-disable-next-line no-console
+	console.warn( '[AAE] hook-classes provider unavailable; the panel may report our functional classes as missing.', e );
+}
 
 // Native Elementor element-controls (e.g. the slider's "Slides" list). These
 // register into Elementor's shared controlsRegistry, separate from the
@@ -253,6 +287,42 @@ window.elementor.on('document:loaded', () => {
 		// removal-sweep note above). A timer breaks the loop: the work lands in a
 		// later task, and repaint storms coalesce into ONE resync.
 		let resyncTimer = null;
+		let isSyncing = false;
+
+		// Interaction ids carried by the nodes the observer ACTUALLY saw land, so a
+		// resync can rebuild just those instead of the whole document.
+		//
+		// Collected SYNCHRONOUSLY in the observer as ids, never as node references:
+		// a node added and then replaced again inside the 200ms debounce window is
+		// detached by the time the timer fires, and its id is the half that stays
+		// valid and re-resolvable against the live DOM.
+		const pendingIds = new Set();
+
+		// Past this many changed elements, one full pass is cheaper than resolving
+		// and scanning each subtree separately - and a change that large is a
+		// document swap, not a settings edit.
+		const SCOPED_RESYNC_LIMIT = 200;
+
+		const isIgnoredAnimationNode = (n) => {
+			if (!n || n.nodeType !== 1) return true;
+			const tag = n.tagName?.toLowerCase();
+			if (tag === 'style' || tag === 'script') return true;
+			if (n.classList && (
+				n.classList.contains('aae-char') ||
+				n.classList.contains('aae-word') ||
+				n.classList.contains('aae-line') ||
+				n.classList.contains('aae-split-text') ||
+				n.classList.contains('aae-slide-clone') ||
+				n.classList.contains('aae-slide-editor-preview')
+			)) {
+				return true;
+			}
+			if (n.hasAttribute?.('data-aae-clone') || n.hasAttribute?.('data-aae-ui')) {
+				return true;
+			}
+			return false;
+		};
+
 		const scheduleResync = () => {
 			if (resyncTimer) {
 				clearTimeout(resyncTimer);
@@ -261,12 +331,12 @@ window.elementor.on('document:loaded', () => {
 			resyncTimer = setTimeout(() => {
 				resyncTimer = null;
 				syncAllElements();
-			}, 150);
+			}, 200);
 		};
 
 		let sweeping = false;
 		const observer = new win.MutationObserver((mutations) => {
-			if (sweeping) return;
+			if (sweeping || isSyncing) return;
 			sweeping = true;
 			try {
 				const seen = new Set();
@@ -274,24 +344,30 @@ window.elementor.on('document:loaded', () => {
 
 				mutations.forEach((mutation) => {
 					// An ADDED node carrying an interaction id is a re-render landing.
-					// Only a flag is set here; the work happens in the timer above.
-					if (!sawAdded) {
+					// Only its ids are recorded here; the work happens in the timer above.
+					if (!isSyncing) {
 						mutation.addedNodes.forEach((node) => {
-							if (sawAdded || node.nodeType !== 1) return;
-							if (
-								node.hasAttribute('data-interaction-id') ||
-								node.querySelector('[data-interaction-id]')
-							) {
-								sawAdded = true;
+							if (node.nodeType !== 1 || isIgnoredAnimationNode(node)) return;
+							let matched = false;
+							if (node.hasAttribute('data-interaction-id')) {
+								pendingIds.add(node.getAttribute('data-interaction-id'));
+								matched = true;
 							}
+							if (node.querySelectorAll) {
+								node.querySelectorAll('[data-interaction-id]').forEach((inner) => {
+									pendingIds.add(inner.getAttribute('data-interaction-id'));
+									matched = true;
+								});
+							}
+							if (matched) sawAdded = true;
 						});
 					}
 
 					mutation.removedNodes.forEach((node) => {
-						if (node.nodeType !== 1) return; // ELEMENT_NODE only
+						if (node.nodeType !== 1 || isIgnoredAnimationNode(node)) return; // ELEMENT_NODE only
 						if (node.isConnected) return;    // re-parented, not deleted
-						const targets = Array.from(node.querySelectorAll('[data-interaction-id]'));
-						if (node.hasAttribute('data-interaction-id')) {
+						const targets = Array.from(node.querySelectorAll ? node.querySelectorAll('[data-interaction-id]') : []);
+						if (node.hasAttribute && node.hasAttribute('data-interaction-id')) {
 							targets.push(node);
 						}
 						targets.forEach(el => {
@@ -304,7 +380,7 @@ window.elementor.on('document:loaded', () => {
 					});
 				});
 
-				if (sawAdded) {
+				if (sawAdded && !isSyncing) {
 					scheduleResync();
 				}
 			} finally {
@@ -331,44 +407,84 @@ window.elementor.on('document:loaded', () => {
 		// Declared as a FUNCTION, not a const arrow: scheduleResync() above closes
 		// over it and is defined earlier in the file, so it relies on hoisting.
 		function syncAllElements() {
-			const elements = getElements();
-
-			elements.forEach((element) => {
-				const elType = element.model.get('elType');
-				const widgetType = element.model.get('widgetType');
-
-				// Get ALL settings from the element
-				const allSettings = element.settings.toJSON();
-				if(element.id == 'document'){
-					return;
-				}
-
-				// Create a mock container that settings-bridge / featuresFor can read.
-				// featuresFor() accesses container.model.get('widgetType'), so the
-				// getter MUST live under `.model`, not at the top level.
-				const mockContainer = {
-					id: element.id,
-					model: {
-						get: (prop) => prop === 'elType' ? elType : (prop === 'widgetType' ? widgetType : undefined),
-					},
-					settings: {
-						attributes: allSettings
-					}
-				};
-
-				// Bulk sync without requiring the target DOM element to exist yet
-				applySettingsToDoms(mockContainer);
-			});
-
-			// Rebuilding the maps is only half of it — scan() is what binds the
-			// freshly-rendered DOM nodes to them. A re-render produces new elements
-			// with no bound flag, so this re-injects the Custom CSS <style> and
-			// re-arms every other effect on them.
+			isSyncing = true;
 			try {
-				win.aaeAtomicAnimations?.scan(win.document);
-			} catch (_) {
-				// A resync racing a preview teardown is not worth breaking the editor
-				// over; the next one will pick it up.
+				// SCOPE - see pendingIds above. A settings change re-renders the
+				// changed element's own subtree and the observer recorded exactly
+				// which interaction ids landed, so only those need their maps
+				// rebuilt and their new DOM nodes re-bound.
+				//
+				// DELIBERATELY NOT scoped to the SELECTED container. A container
+				// re-render replaces its whole subtree, so the selection is not the
+				// set of elements that changed - scoping to it is precisely the bug
+				// this page-wide pass was written to fix (Custom CSS and every other
+				// effect silently stopped applying until the editor was reloaded).
+				//
+				// An empty set means "not called by the observer" - the editor-load
+				// call at the bottom of this module - and still runs the full pass.
+				const scoped = (pendingIds.size > 0 && pendingIds.size <= SCOPED_RESYNC_LIMIT)
+					? new Set(pendingIds)
+					: null;
+				pendingIds.clear();
+
+				const elements = getElements();
+
+				elements.forEach((element) => {
+					if (scoped && !scoped.has(element.id)) return;
+					const elType = element.model.get('elType');
+					const widgetType = element.model.get('widgetType');
+
+					// Get ALL settings from the element
+					const allSettings = element.settings.toJSON();
+					if(element.id == 'document'){
+						return;
+					}
+
+					// Create a mock container that settings-bridge / featuresFor can read.
+					// featuresFor() accesses container.model.get('widgetType'), so the
+					// getter MUST live under `.model`, not at the top level.
+					const mockContainer = {
+						id: element.id,
+						model: {
+							get: (prop) => prop === 'elType' ? elType : (prop === 'widgetType' ? widgetType : undefined),
+						},
+						settings: {
+							attributes: allSettings
+						}
+					};
+
+					// Bulk sync without requiring the target DOM element to exist yet
+					applySettingsToDoms(mockContainer);
+				});
+
+				// Rebuilding the maps is only half of it — scan() is what binds the
+				// freshly-rendered DOM nodes to them. A re-render produces new elements
+				// with no bound flag, so this re-injects the Custom CSS <style> and
+				// re-arms every other effect on them.
+				try {
+					if (scoped) {
+						// scan() takes a root and checks that root itself as well as its
+						// descendants, so the re-rendered node is covered by its own id.
+						scoped.forEach((id) => {
+							const sel = (win.CSS && typeof win.CSS.escape === 'function')
+								? '[data-interaction-id="' + win.CSS.escape(id) + '"]'
+								: '[data-interaction-id="' + id + '"]';
+							const node = win.document.querySelector(sel);
+							if (node) win.aaeAtomicAnimations?.scan(node);
+						});
+					} else {
+						win.aaeAtomicAnimations?.scan(win.document);
+					}
+				} catch (_) {
+					// A resync racing a preview teardown is not worth breaking the editor
+					// over; the next one will pick it up.
+				}
+			} finally {
+				Promise.resolve().then(() => {
+					setTimeout(() => {
+						isSyncing = false;
+					}, 60);
+				});
 			}
 		}
 

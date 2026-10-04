@@ -33,6 +33,11 @@
 import * as React from "react";
 import { useElement } from "@elementor/editor-editing-panel";
 import {
+  __privateUseListenTo as useListenTo,
+  commandEndEvent,
+  v1ReadyEvent,
+} from "@elementor/editor-v1-adapters";
+import {
   Box,
   Button,
   Chip,
@@ -47,13 +52,30 @@ import {
 } from "@elementor/ui";
 import {
   applyPresetModel,
+  hasOriginalSnapshot,
   invalidatePresetsForType,
   loadPresetsForType,
+  presetCacheKey,
+  resetElementToOriginal,
 } from "./preset-apply";
+import {
+  PresetRequiresDialog,
+  requirementNames,
+} from "./PresetRequiresDialog";
+import {
+  BRAND,
+  BRAND_DARK,
+  INK,
+  INK_MUTED,
+  SHEET,
+  SHEET_BORDER,
+  THUMB_BG,
+  WARN_INK,
+} from "./preset-theme";
 
+// NOTE: the site ROOT, not pro-upsell.js's /pricing/. Pre-existing and left
+// as-is deliberately — retargeting a live upsell link is a product decision.
 const UPGRADE_URL = "https://animation-addons.com/";
-const BRAND = "#ff7a00";
-const BRAND_DARK = "#e35f00";
 
 /**
  * The trigger button's loading (disabled) skin.
@@ -67,19 +89,13 @@ const BRAND_DARK = "#e35f00";
 const BRAND_TINT_BG = "rgba(255, 122, 0, 0.16)";
 const BRAND_TINT_INK = "rgba(255, 138, 26, 0.85)";
 
-/**
- * The dialog paints on its OWN light surface rather than the editor theme's
- * `background.paper` / `text.*` tokens. Those tokens follow the editor's
- * Dark/Light preference, so on a dark editor the panel came out near-black
- * while the reference design is a white sheet — the popup is a full-bleed
- * gallery of light-background thumbnails, and it has to read the same either
- * way. Every colour the dialog uses is therefore fixed here.
+/*
+ * The dialog's fixed sheet palette now lives in ./preset-theme, because the
+ * requirements dialog it opens paints on the same sheet and a second copy of
+ * these values is how the two would end up disagreeing about what white is.
+ * Read that file for WHY they are fixed rather than taken from the editor
+ * theme's tokens.
  */
-const SHEET = "#ffffff";
-const SHEET_BORDER = "#e6e8eb";
-const INK = "#17181a";
-const INK_MUTED = "#6b7280";
-const THUMB_BG = "#f1f2f4";
 
 /**
  * The card grid. `auto-fill` rather than a fixed column count so the same
@@ -118,6 +134,11 @@ function groupByCategory(presets) {
  */
 function PresetCard({ preset, placeholderSrc, locked, onSelect }) {
   const src = preset.thumbnail_url || placeholderSrc;
+
+  // Empty for every preset that needs nothing, which is every preset that
+  // existed before Loop Filters — so the grid is unchanged on the widgets this
+  // feature does not touch, and the line only appears where it says something.
+  const needs = requirementNames(preset.requires_status);
 
   return (
     <Box
@@ -222,18 +243,70 @@ function PresetCard({ preset, placeholderSrc, locked, onSelect }) {
         >
           {preset.name}
         </Typography>
+        {/*
+          * Named on the CARD rather than left to the dialog, because the
+          * choice being made here is which design to use — and "this one
+          * expects a Property post type" is part of that choice, not an
+          * interruption after it. Truncated to one line: the dialog is where
+          * the full list belongs.
+          */}
+        {needs ? (
+          <Typography
+            sx={{
+              display: "block",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+              mt: 0.25,
+              fontSize: "11px",
+              lineHeight: 1.4,
+              color: WARN_INK,
+            }}
+          >
+            {`Needs ${needs}`}
+          </Typography>
+        ) : null}
       </Box>
     </Box>
   );
 }
 /* eslint-enable react/prop-types */
 
+/**
+ * Live read of whether the selected element carries an `aae_preset_snapshot`
+ * — i.e. whether "Reset to Default" has anything to restore. Same
+ * useListenTo pattern BtnHoverStyleControl.jsx uses for its own live marker:
+ * a plain render-time read would already be correct here too (applying or
+ * resetting a preset always replaces the element with a new id, so this
+ * component fully re-mounts whenever the answer could change), but this
+ * keeps it consistent with the rest of this file's undo/redo handling.
+ */
+function useHasOriginalSnapshot(elementId) {
+  return useListenTo(
+    [
+      v1ReadyEvent(),
+      commandEndEvent("document/elements/create"),
+      commandEndEvent("document/elements/delete"),
+      commandEndEvent("document/elements/settings"),
+      commandEndEvent("document/elements/set-settings"),
+    ],
+    () => hasOriginalSnapshot(elementId),
+    [elementId]
+  );
+}
+
 export function PresetPickerControl({ label }) {
   const { element } = useElement();
   const elementId = element.id;
   const type = element.type || element.model?.get?.("elType");
 
+  const hasSnapshot = useHasOriginalSnapshot(elementId);
+
   const [open, setOpen] = React.useState(false);
+  // The preset whose requirements are being shown. Held here rather than
+  // inside the requirements dialog so the picker stays open behind it — going
+  // back to the grid must not cost the builder the list they were browsing.
+  const [pending, setPending] = React.useState(null);
   const [presets, setPresets] = React.useState(null); // null = loading
   // The list could not be read in full — a request failure, or a 200 whose
   // `remote_failed` flag says the remote half was unreachable. Kept separate
@@ -289,12 +362,33 @@ export function PresetPickerControl({ label }) {
       return;
     }
 
+    // A detour, never a gate — see PresetRequiresDialog's header. It only
+    // opens when this site is genuinely missing something, so a preset that
+    // needs nothing (every preset that predates Loop Filters) is untouched.
+    if (preset.requires_status && preset.requires_status.missing > 0) {
+      setPending(preset);
+      return;
+    }
+
     applyPreset(preset);
     setOpen(false);
   };
 
+  const handleRequiresApply = (preset) => {
+    applyPreset(preset);
+    setPending(null);
+    setOpen(false);
+  };
+
+  const handleReset = () => {
+    resetElementToOriginal(elementId, {
+      title: "Reset to Default",
+      subtitle: "Reverted to original",
+    });
+  };
+
   // Nothing resolved for this type from either remote or local, once loaded —
-  // hide the trigger entirely, matching the control's original empty
+  // hide the "Apply a preset…" trigger, matching the control's original empty
   // behaviour. This is also the correct end-state once every bundled local
   // .json is eventually removed and a type has no remote presets configured
   // yet either.
@@ -304,7 +398,11 @@ export function PresetPickerControl({ label }) {
   // disappears" bug — one blip removed the control and, since the failure was
   // also cached, nothing re-fetched it for the rest of the session. Now the
   // trigger stays put and the dialog offers a retry.
-  if (presets !== null && !presets.length && !failed) {
+  const showApplyButton = !(presets !== null && !presets.length && !failed);
+
+  // Nothing at all to offer — no presets to apply AND nothing to reset back
+  // to — hide the whole control, same as the original behaviour.
+  if (!showApplyButton && !hasSnapshot) {
     return null;
   }
 
@@ -397,6 +495,36 @@ export function PresetPickerControl({ label }) {
       >
         {loading ? "Loading presets…" : "Apply a preset…"}
       </Button>
+
+      {hasSnapshot ? (
+        <Button
+          size="small"
+          variant="outlined"
+          onClick={handleReset}
+          sx={{
+            alignSelf: "flex-end",
+            minWidth: 0,
+            height: 32,
+            minHeight: 32,
+            px: 1.25,
+            py: 0,
+            borderRadius: 1,
+            textTransform: "none",
+            fontSize: "11px",
+            fontWeight: 600,
+            lineHeight: 1.5,
+            color: "text.secondary",
+            borderColor: "action.disabled",
+            "&:hover": {
+              color: BRAND_DARK,
+              borderColor: BRAND_DARK,
+              background: "transparent",
+            },
+          }}
+        >
+          {"↺ Reset to Default"}
+        </Button>
+      ) : null}
 
       <Dialog
         open={open}
@@ -607,6 +735,20 @@ export function PresetPickerControl({ label }) {
           )}
         </DialogContent>
       </Dialog>
+
+      {/*
+        * `presetCacheKey`, not `type`: the server resolves a preset by the key
+        * the list was fetched under, and an aliased type (a slide item, whose
+        * presets are authored against the loop item) would otherwise name a
+        * type the endpoint can find no preset in — a 404 on a card that is
+        * plainly on screen.
+        */}
+      <PresetRequiresDialog
+        preset={pending}
+        elementType={presetCacheKey(type)}
+        onApply={handleRequiresApply}
+        onClose={() => setPending(null)}
+      />
     </Stack>
   );
 }

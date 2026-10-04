@@ -106,9 +106,62 @@ class Animation_Settings {
 		// …and let it come BACK on if v3 turns up later. Runs after bootstrap.
 		add_action( 'admin_init', [ __CLASS__, 'maybe_reactivate_legacy' ], 11 );
 
+		// A site that finished maybe_bootstrap() before the `icon` field
+		// existed needs this one field's v3 value copied in on its own —
+		// import_from_kit() only runs again from scratch on a fresh install.
+		add_action( 'admin_init', [ __CLASS__, 'maybe_backfill_scroll_to_top_icon' ], 11 );
+
 		// Showing the legacy UI is not enough: imported v3 content renders
 		// nothing until those widgets are actually registered.
 		add_action( 'admin_init', [ __CLASS__, 'maybe_enable_used_v3_widgets' ], 12 );
+
+		// Let a new page CHANGE the answer. See the method's docblock — without
+		// this, everything downstream of has_v3_usage() is up to an hour late.
+		add_action( 'save_post', [ __CLASS__, 'maybe_invalidate_v3_usage' ], 10, 2 );
+	}
+
+	/**
+	 * Drop the cached "does this site use v3?" answer when it may have changed.
+	 *
+	 * `has_v3_usage()` caches for an hour, and NOTHING used to clear it. That was
+	 * survivable while it only fed background ratchets on admin_init, but it now
+	 * also decides whether the dashboard shows the V3 tab at all — so importing a
+	 * page built from `wcf--*` widgets left the dashboard insisting this was a
+	 * V4-only site for up to an hour, with the imported pages rendering nothing
+	 * and no way to reach the screen that fixes it. That reads as "the feature
+	 * does not work", and the hour is exactly the window in which someone tests.
+	 *
+	 * Only the NEGATIVE answer is busted, which is what keeps this cheap on a
+	 * hook as hot as `save_post`:
+	 *
+	 * - cached '0' → a save could make it '1', so re-ask on the next call.
+	 * - cached '1' → v3 is already known, and the ratchet never turns itself off
+	 *   (Rule 5), so re-asking inside the hour can only cost a query.
+	 * - nothing cached → nothing to delete.
+	 *
+	 * This is deliberately NOT the `updated_post_meta` / `added_post_meta` pair
+	 * the Loop Grid count cache was killed for: those fire many times per save,
+	 * whereas `save_post` fires once and the guards above make all but the first
+	 * one a single `get_transient()` read.
+	 *
+	 * @param int      $post_id Saved post.
+	 * @param \WP_Post $post    Saved post object.
+	 */
+	public static function maybe_invalidate_v3_usage( $post_id, $post = null ): void {
+		if ( wp_is_post_revision( $post_id ) || wp_is_post_autosave( $post_id ) ) {
+			return;
+		}
+
+		// An auto-draft holds no content yet; the real save follows.
+		if ( $post instanceof \WP_Post && 'auto-draft' === $post->post_status ) {
+			return;
+		}
+
+		if ( '0' !== get_transient( 'aae_v3_usage' ) ) {
+			return;
+		}
+
+		delete_transient( 'aae_v3_usage' );
 	}
 
 	/**
@@ -197,6 +250,58 @@ class Animation_Settings {
 	}
 
 	/**
+	 * Copy an existing v3 icon choice into the `icon` field, once, for a site
+	 * that already finished maybe_bootstrap() before this field existed.
+	 *
+	 * Every OTHER scroll_to_top field went through import_from_kit() the
+	 * moment the feature was first claimed; `icon` did not, because it was
+	 * only ever a `kit_defaults` fallback back then. Bridge::apply_feature()
+	 * now owns `icon` unconditionally once the feature is claimed — without
+	 * this, the first render after upgrading would silently overwrite that
+	 * site's real Kit icon with the schema default, because get()'s own
+	 * sanitize-on-read always backfills a missing field with something.
+	 *
+	 * Self-limiting with no separate marker: it only acts while the RAW
+	 * stored option has no `icon` key at all, and it always writes one
+	 * (copied, or the default when the Kit has nothing) — so the very act of
+	 * running once removes the condition that lets it run again.
+	 */
+	public static function maybe_backfill_scroll_to_top_icon(): void {
+		$raw = get_option( self::OPTION_NAME, false );
+
+		if ( ! is_array( $raw ) || isset( $raw['scroll_to_top']['icon'] ) ) {
+			return;
+		}
+
+		// Same gate import_from_kit() itself uses: only a feature the user
+		// actually switched on is worth carrying a value across for.
+		if ( empty( $raw['scroll_to_top']['enable'] ) ) {
+			return;
+		}
+
+		$fallback = [ 'value' => 'fas fa-arrow-up', 'library' => 'fa-solid' ];
+		$kit_icon = null;
+
+		if ( class_exists( '\Elementor\Plugin' ) && \Elementor\Plugin::$instance->kits_manager ) {
+			$kit = \Elementor\Plugin::$instance->kits_manager->get_active_kit();
+
+			if ( $kit && $kit->get_id() ) {
+				$saved = get_post_meta( $kit->get_id(), '_elementor_page_settings', true );
+				$kit_icon = is_array( $saved ) && isset( $saved['scroll_to_icon'] ) ? $saved['scroll_to_icon'] : null;
+			}
+		}
+
+		$raw['scroll_to_top']['icon'] = ( is_array( $kit_icon ) && isset( $kit_icon['value'] ) )
+			? [
+				'value'   => (string) $kit_icon['value'],
+				'library' => isset( $kit_icon['library'] ) ? (string) $kit_icon['library'] : 'fa-solid',
+			]
+			: $fallback;
+
+		update_option( self::OPTION_NAME, $raw );
+	}
+
+	/**
 	 * Register the v3 widgets an imported site actually USES.
 	 *
 	 * The gap this closes, found by importing a real starter template:
@@ -230,42 +335,79 @@ class Animation_Settings {
 			return;
 		}
 
-		global $wpdb;
-
-		$rows = $wpdb->get_col(
-			"SELECT meta_value FROM {$wpdb->postmeta}
-			  WHERE meta_key = '_elementor_data'
-			    AND meta_value LIKE '%\"widgetType\":\"wcf--%'"
-		);
-
-		$used = [];
-
-		foreach ( (array) $rows as $row ) {
-			if ( preg_match_all( '/"widgetType":"(wcf--[a-z0-9-]+)"/', (string) $row, $matches ) ) {
-				foreach ( $matches[1] as $name ) {
-					$used[ $name ] = true;
-				}
-			}
-		}
-
-		if ( empty( $used ) ) {
-			return;
-		}
-
-		$map   = self::widget_name_to_slug_map();
-		$slugs = [];
-
-		foreach ( array_keys( $used ) as $name ) {
-			if ( isset( $map[ $name ] ) ) {
-				$slugs[ $map[ $name ] ] = true;
-			}
-		}
+		$slugs = self::used_v3_widget_slugs();
 
 		if ( empty( $slugs ) ) {
 			return;
 		}
 
 		update_option( 'wcf_save_widgets', $slugs );
+	}
+
+	/**
+	 * Dashboard slugs of every v3 widget this site's CONTENT references, in
+	 * the shape `wcf_save_widgets` stores (`slug => true`).
+	 *
+	 * Two callers, pulling in opposite directions, share it on purpose:
+	 * maybe_enable_used_v3_widgets() switches exactly these ON after an import
+	 * that brought v3 pages; Atomic_V3_Switch_Off keeps exactly these ON while
+	 * switching everything else OFF after a V4 demo import. Both are answering
+	 * "which widgets would blank a live page if unregistered", and two scans
+	 * that could drift would answer it differently.
+	 *
+	 * Costs a full `_elementor_data` scan; callers gate on has_v3_usage() first.
+	 *
+	 * @return array<string,true>
+	 */
+	public static function used_v3_widget_slugs(): array {
+		global $wpdb;
+
+		// The pattern is built from widget_name_to_slug_map(), i.e. from the
+		// get_name() values read out of this plugin's own widget files -- no
+		// request data reaches it. It is still BOUND rather than pasted into the
+		// query, so the SQL here is entirely literal.
+		$rows = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT meta_value FROM {$wpdb->postmeta}
+				  WHERE meta_key = '_elementor_data'
+				    AND meta_value REGEXP %s",
+				self::v3_widget_name_regexp()
+			)
+		);
+
+		$map  = self::widget_name_to_slug_map();
+		$used = [];
+
+		/*
+		 * Extract EVERY widget name, then keep the ones the map knows.
+		 *
+		 * Broad on purpose: a third party's widget name simply is not a key in
+		 * the map, so it is dropped a line later. Narrowing the pattern instead
+		 * is what produced the `wcf--` bug — it silently excluded 26 of our own
+		 * widgets, and an excluded widget here is not "not enabled", it is a
+		 * page that renders nothing after an import.
+		 */
+		foreach ( (array) $rows as $row ) {
+			if ( preg_match_all( '/"widgetType":"([a-zA-Z0-9_-]+)"/', (string) $row, $matches ) ) {
+				foreach ( $matches[1] as $name ) {
+					if ( isset( $map[ $name ] ) ) {
+						$used[ $name ] = true;
+					}
+				}
+			}
+		}
+
+		if ( empty( $used ) ) {
+			return [];
+		}
+
+		$slugs = [];
+
+		foreach ( array_keys( $used ) as $name ) {
+			$slugs[ $map[ $name ] ] = true;
+		}
+
+		return $slugs;
 	}
 
 	/**
@@ -282,8 +424,15 @@ class Animation_Settings {
 	 * slug, find `widgets/<slug>.php` or `widgets/<slug>/<slug>.php` in either
 	 * plugin and pull the string `get_name()` returns. Cheap enough for a
 	 * one-time, option-absent path, and it cannot drift from the source.
+	 *
+	 * PUBLIC because Pro's `Usage\Widget_Usage` needs the same answer to turn
+	 * the widget names it finds in `_elementor_data` back into dashboard slugs.
+	 * A second copy over there would be a second thing to keep in step with the
+	 * widget files, and the whole reason this reads `get_name()` is that no
+	 * hand-maintained list survives contact with a new widget. Pro must guard
+	 * the call with `class_exists()` — an older free plugin will not have it.
 	 */
-	private static function widget_name_to_slug_map(): array {
+	public static function widget_name_to_slug_map(): array {
 		if ( ! function_exists( 'wcf_get_config' ) ) {
 			return [];
 		}
@@ -307,7 +456,31 @@ class Animation_Settings {
 
 						$source = (string) file_get_contents( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 
-						if ( preg_match( '/function\s+get_name\s*\(\s*\)[^{]*\{[^}]*return\s+[\'"](wcf--[a-z0-9-]+)[\'"]/s', $source, $m ) ) {
+						/*
+						 * Whatever the widget returns IS its name — do not
+						 * filter by prefix.
+						 *
+						 * This used to require `wcf--`, and only 75 of the 101
+						 * configured widgets that have a file use it. Measured
+						 * on the dev site: 19 return `aae--*` (`aae--weather`,
+						 * `aae--advanced-button`, …) and 7 use neither prefix
+						 * at all (`wcf-gsap-drawsvg`, `grid-hover-posts`,
+						 * `category-showcase`, `aaeaddon-post-reactions`, …).
+						 * All 26 were silently absent from the map, which made
+						 * them invisible to both the import guard below and the
+						 * usage scan.
+						 *
+						 * No widget name and no dashboard slug changed to fix
+						 * this — both are baked into saved pages and saved
+						 * options respectively. Only this read widened.
+						 *
+						 * A prefix test buys nothing: the file being read is the
+						 * one this configured slug points at, so the name it
+						 * returns cannot belong to anything else. A junk capture
+						 * would simply never appear in `_elementor_data` and so
+						 * never match.
+						 */
+						if ( preg_match( '/function\s+get_name\s*\(\s*\)[^{]*\{[^}]*return\s+[\'"]([a-zA-Z0-9_-]+)[\'"]/s', $source, $m ) ) {
 							$map[ $m[1] ] = $slug;
 						}
 
@@ -318,6 +491,59 @@ class Animation_Settings {
 		}
 
 		return $map;
+	}
+
+	/**
+	 * A prepared `WHERE` fragment matching any row that holds an AAE v3 widget.
+	 *
+	 * There is no prefix that covers them all — `grid-hover-posts` and
+	 * `category-showcase` have none at all — so the test is built from the
+	 * MAP's own names rather than from a pattern. That also means the two
+	 * callers below cannot drift apart from each other or from the map, which
+	 * is exactly how the `wcf--` assumption survived: it was written out three
+	 * times and widening one would have left the others blind.
+	 *
+	 * Falls back to the historic `wcf--` test when the map is unavailable
+	 * (`wcf_get_config()` missing this early). That is no worse than the
+	 * behaviour this replaced, and failing to the OLD answer is the only safe
+	 * direction — an empty alternation would match every row or none, and both
+	 * are silently wrong.
+	 *
+	 * COST: a ~2 KB alternation over ~100 names, and a full scan — like the
+	 * `LIKE '%…%'` it replaces, which cannot use an index either. Measured on
+	 * this dev site at roughly 40 ms against 26 ms for the old one-prefix LIKE,
+	 * on a small row set. `has_v3_usage()` caches for an hour and only busts a
+	 * NEGATIVE, so that is paid about once an hour, and `maybe_enable_used_v3_widgets()`
+	 * runs only while the option has never been written.
+	 *
+	 * If it ever needs to be cheaper, note that BOTH callers tolerate a false
+	 * positive: the ratchet only ever turns V3 back ON, and the import guard
+	 * intersects with the map in PHP anyway. A broader, cheaper prefix test
+	 * would therefore be safe — but it must still be DERIVED from the map, or
+	 * it re-creates exactly the `wcf--` assumption this replaced.
+	 *
+	 * Returned as a PATTERN, not as SQL: the callers bind it with %s, so no
+	 * part of the query text is ever assembled from a value.
+	 *
+	 * @return string REGEXP pattern to test `meta_value` against.
+	 */
+	private static function v3_widget_name_regexp(): string {
+		// A real Elementor widget name is `[a-zA-Z0-9_-]`. Anything else could
+		// not have come from get_name(), and must not reach a regex.
+		$names = array_filter(
+			array_keys( self::widget_name_to_slug_map() ),
+			static function ( $name ) {
+				return (bool) preg_match( '/^[a-zA-Z0-9_-]+$/', (string) $name );
+			}
+		);
+
+		// The same substring the old LIKE tested for, written as a pattern so
+		// there is still exactly one query shape to reason about.
+		if ( empty( $names ) ) {
+			return '"widgetType":"wcf--';
+		}
+
+		return '"widgetType":"(' . implode( '|', $names ) . ')"';
 	}
 
 	/**
@@ -340,11 +566,16 @@ class Animation_Settings {
 
 		global $wpdb;
 
+		// Same fixed pattern as above, built from this plugin's own widget names
+		// and bound as a value.
 		$found = (bool) $wpdb->get_var(
-			"SELECT 1 FROM {$wpdb->postmeta}
-			 WHERE meta_key = '_elementor_data'
-			   AND meta_value LIKE '%\"widgetType\":\"wcf--%'
-			 LIMIT 1"
+			$wpdb->prepare(
+				"SELECT 1 FROM {$wpdb->postmeta}
+				 WHERE meta_key = '_elementor_data'
+				   AND meta_value REGEXP %s
+				 LIMIT 1",
+				self::v3_widget_name_regexp()
+			)
 		);
 
 		// The Kit counts as usage too — someone configured v3 chrome by hand.
@@ -503,6 +734,15 @@ class Animation_Settings {
 							$settings[ $feature ][ $key ] = [
 								'size' => 0 + $value['size'],
 								'unit' => $value['unit'] ?? ( $field['unit'] ?? 'px' ),
+							];
+						}
+						break;
+
+					case 'icon':
+						if ( is_array( $value ) && isset( $value['value'] ) && is_string( $value['value'] ) ) {
+							$settings[ $feature ][ $key ] = [
+								'value'   => $value['value'],
+								'library' => isset( $value['library'] ) ? (string) $value['library'] : 'fa-solid',
 							];
 						}
 						break;
@@ -808,14 +1048,15 @@ class Animation_Settings {
 				'label'  => __( 'Scroll to Top', 'animation-addons-for-elementor' ),
 
 				/*
-				 * Kit keys the v3 renderer READS but the v4 panel does not
-				 * offer. Written only when this feature is claimed and the Kit
-				 * has nothing there.
+				 * Kit key the v3 renderer READS. Written only when this feature
+				 * is claimed and the Kit has nothing there at all — i.e. a site
+				 * that has never saved this panel's `icon` field, v3 tab
+				 * included.
 				 *
 				 * Needed because global-elements.php reads the Kit through
 				 * `$kit->get_settings()` — RAW, so Elementor's own control
 				 * defaults are never merged in. A v4 user enables scroll-to-top
-				 * without ever opening the v3 tab, so `scroll_to_icon` is
+				 * without ever saving an icon choice, so `scroll_to_icon` is
 				 * guaranteed absent and the button renders with no icon at all
 				 * (plus an undefined-key warning on every page load). The value
 				 * mirrors the v3 control's declared default.
@@ -828,12 +1069,38 @@ class Animation_Settings {
 					'enable'           => [ 'type' => 'bool',  'kit' => 'wcf_enable_scroll_to_top', 'default' => false, 'label' => __( 'Scroll to Top', 'animation-addons-for-elementor' ) ],
 					'layout'           => [ 'type' => 'enum',  'kit' => 'wcf_scroll_to_top_layout', 'default' => '', 'options' => 'scroll_to_top_layouts', 'label' => __( 'Layout', 'animation-addons-for-elementor' ) ],
 					'position'         => [ 'type' => 'enum',  'kit' => 'wcf_scroll_to_top_position', 'default' => 'bottom-right', 'options' => 'corner_positions', 'label' => __( 'Position', 'animation-addons-for-elementor' ) ],
+					// Percent, not px: `bottom`/`left`/`right` on a `position: fixed`
+					// element resolve against the VIEWPORT, so a percentage keeps the
+					// same visual gap-from-edge proportion on a phone as on a desktop,
+					// where a fixed px offset either hugs the corner too tightly on a
+					// small screen or floats oddly far from it on a large one. Side is
+					// ONE field in the UI — only the key matching the current Position
+					// is shown — but two separate Kit keys underneath, because that is
+					// what the v3 renderer already reads (scroll_to_top_global_css()
+					// picks whichever one matches `wcf_scroll_to_top_position`).
+					'position_bottom'  => [ 'type' => 'size',  'kit' => 'wcf_scroll_to_top_position_bottom', 'default' => 2, 'unit' => '%', 'min' => 0, 'max' => 100, 'step' => 0.5, 'label' => __( 'Distance from Bottom', 'animation-addons-for-elementor' ) ],
+					'position_left'    => [ 'type' => 'size',  'kit' => 'wcf_scroll_to_top_position_left', 'default' => 2, 'unit' => '%', 'min' => 0, 'max' => 100, 'step' => 0.5, 'label' => __( 'Distance from Side', 'animation-addons-for-elementor' ), 'dep' => [ 'field' => 'position', 'value' => 'bottom-left' ] ],
+					'position_right'   => [ 'type' => 'size',  'kit' => 'wcf_scroll_to_top_position_right', 'default' => 2, 'unit' => '%', 'min' => 0, 'max' => 100, 'step' => 0.5, 'label' => __( 'Distance from Side', 'animation-addons-for-elementor' ), 'dep' => [ 'field' => 'position', 'value' => 'bottom-right' ] ],
+					// A curated shortlist, not a full icon-library browser — this
+					// is a React dashboard, not the Elementor editor, so there is
+					// nowhere to host Elementor's own FA search UI. sanitize_icon()
+					// validates by SHAPE rather than against this list, so a v3
+					// site whose Kit already holds a different Font Awesome icon
+					// (chosen through Elementor's unrestricted picker) keeps it —
+					// it just cannot be RE-picked here unless it's one of these.
+					'icon'             => [ 'type' => 'icon',  'kit' => 'scroll_to_icon', 'default' => [ 'value' => 'fas fa-arrow-up', 'library' => 'fa-solid' ], 'options' => 'scroll_to_top_icons', 'label' => __( 'Icon', 'animation-addons-for-elementor' ) ],
 					'icon_size'        => [ 'type' => 'size',  'kit' => 'wcf_scroll_to_top_icon_size', 'default' => 16, 'unit' => 'px', 'min' => 0, 'max' => 100, 'label' => __( 'Icon Size', 'animation-addons-for-elementor' ) ],
+					// Circle layout forces a square box and a fully round corner (see
+					// scroll_to_top_global_css() — the `.scroll-to-circle` rule
+					// mirrors width into height and Elementor's own v3 tab hid these
+					// two controls under the same condition). Height/Border Radius are
+					// meaningless there; Progress Color is meaningless everywhere else,
+					// since only the circle layout has a progress ring to colour.
 					'width'            => [ 'type' => 'size',  'kit' => 'wcf_scroll_to_top_width', 'default' => 45, 'unit' => 'px', 'min' => 0, 'max' => 300, 'label' => __( 'Width', 'animation-addons-for-elementor' ) ],
-					'height'           => [ 'type' => 'size',  'kit' => 'wcf_scroll_to_top_height', 'default' => 45, 'unit' => 'px', 'min' => 0, 'max' => 300, 'label' => __( 'Height', 'animation-addons-for-elementor' ) ],
-					'border_radius'    => [ 'type' => 'size',  'kit' => 'wcf_scroll_to_top_border_radius', 'default' => 50, 'unit' => '%', 'min' => 0, 'max' => 100, 'label' => __( 'Border Radius', 'animation-addons-for-elementor' ) ],
+					'height'           => [ 'type' => 'size',  'kit' => 'wcf_scroll_to_top_height', 'default' => 45, 'unit' => 'px', 'min' => 0, 'max' => 300, 'label' => __( 'Height', 'animation-addons-for-elementor' ), 'dep' => [ 'field' => 'layout', 'value' => '' ] ],
+					'border_radius'    => [ 'type' => 'size',  'kit' => 'wcf_scroll_to_top_border_radius', 'default' => 50, 'unit' => '%', 'min' => 0, 'max' => 100, 'label' => __( 'Border Radius', 'animation-addons-for-elementor' ), 'dep' => [ 'field' => 'layout', 'value' => '' ] ],
 					'z_index'          => [ 'type' => 'size',  'kit' => 'wcf_scroll_to_top_z_index', 'default' => 99, 'unit' => 'px', 'min' => 0, 'max' => 99999, 'label' => __( 'Z Index', 'animation-addons-for-elementor' ) ],
-					'progress_color'   => [ 'type' => 'color', 'kit' => 'wcf_scroll_to_top_progress_color', 'default' => '#000000', 'label' => __( 'Progress Color', 'animation-addons-for-elementor' ) ],
+					'progress_color'   => [ 'type' => 'color', 'kit' => 'wcf_scroll_to_top_progress_color', 'default' => '#000000', 'label' => __( 'Progress Color', 'animation-addons-for-elementor' ), 'dep' => [ 'field' => 'layout', 'value' => 'circle' ] ],
 					'icon_color'       => [ 'type' => 'color', 'kit' => 'wcf_scroll_to_top_icon_color', 'default' => '#ffffff', 'label' => __( 'Icon Color', 'animation-addons-for-elementor' ) ],
 					'bg_color'         => [ 'type' => 'color', 'kit' => 'wcf_scroll_to_top_bg_color', 'default' => '#000000', 'label' => __( 'Background Color', 'animation-addons-for-elementor' ) ],
 					'icon_hover_color' => [ 'type' => 'color', 'kit' => 'wcf_scroll_to_top_icon_hover_color', 'default' => '#ffffff', 'label' => __( 'Icon Color (Hover)', 'animation-addons-for-elementor' ) ],
@@ -880,7 +1147,7 @@ class Animation_Settings {
 				// `kit` is a server-side mapping detail; the UI has no use for it.
 				unset( $field['kit'] );
 
-				if ( 'enum' === $field['type'] ) {
+				if ( in_array( $field['type'], [ 'enum', 'icon' ], true ) ) {
 					$field['options'] = self::options( (string) ( $field['options'] ?? '' ) );
 				}
 
@@ -943,6 +1210,22 @@ class Animation_Settings {
 				return [
 					''       => __( 'Default', 'animation-addons-for-elementor' ),
 					'circle' => __( 'Progress Circle', 'animation-addons-for-elementor' ),
+				];
+
+			// A shortlist of Font Awesome Solid classes, not the whole library —
+			// see the `icon` field's own comment for why. Every value must match
+			// sanitize_icon()'s shape check (`fa[a-z]? fa-...`).
+			case 'scroll_to_top_icons':
+				return [
+					'fas fa-arrow-up'          => __( 'Arrow Up', 'animation-addons-for-elementor' ),
+					'fas fa-angle-up'          => __( 'Angle Up', 'animation-addons-for-elementor' ),
+					'fas fa-angle-double-up'   => __( 'Angle Double Up', 'animation-addons-for-elementor' ),
+					'fas fa-chevron-up'        => __( 'Chevron Up', 'animation-addons-for-elementor' ),
+					'fas fa-chevron-circle-up' => __( 'Chevron Circle Up', 'animation-addons-for-elementor' ),
+					'fas fa-caret-up'          => __( 'Caret Up', 'animation-addons-for-elementor' ),
+					'fas fa-arrow-circle-up'   => __( 'Arrow Circle Up', 'animation-addons-for-elementor' ),
+					'fas fa-long-arrow-alt-up' => __( 'Long Arrow Up', 'animation-addons-for-elementor' ),
+					'fas fa-level-up-alt'      => __( 'Level Up', 'animation-addons-for-elementor' ),
 				];
 
 			case 'corner_positions':
@@ -1497,6 +1780,24 @@ JS;
 	}
 
 	/**
+	 * Switch the v3 Site Settings tabs on or off from PHP.
+	 *
+	 * Deliberately does NOT set `legacy_v3_user_set`: that flag is the user's
+	 * own hand on the switch, and it is what stops maybe_reactivate_legacy()'s
+	 * ratchet. A programmatic "off" after a V4 demo import must stay
+	 * ratchet-able — if the site still holds v3 content the ratchet is RIGHT
+	 * to bring the tabs back, and only a person may overrule that.
+	 */
+	public static function set_legacy_v3( bool $on ): void {
+		$settings              = self::get();
+		$settings['legacy_v3'] = $on;
+		$clean                 = self::sanitize( $settings );
+
+		update_option( self::OPTION_NAME, $clean );
+		self::$cache = $clean;
+	}
+
+	/**
 	 * Flatten a colour field to a CSS colour.
 	 *
 	 * A `global` reference is resolved against the active Kit's system colours;
@@ -1586,6 +1887,30 @@ JS;
 			'mode'   => $mode,
 			'custom' => $custom ?: $fallback['custom'],
 			'global' => isset( $raw['global'] ) ? sanitize_text_field( (string) $raw['global'] ) : '',
+		];
+	}
+
+	/**
+	 * An Elementor icon-control value: { value, library }. Validated by SHAPE
+	 * (Font Awesome's own "prefix class + glyph class" convention), not against
+	 * the field's curated `options` list — the panel only OFFERS a shortlist,
+	 * but a site whose Kit already holds a different icon (set through
+	 * Elementor's own unrestricted icon browser) must not lose it just because
+	 * some OTHER field on this panel gets saved. onSave() always posts the
+	 * whole feature object, so a whitelist check here would silently revert an
+	 * icon nobody touched.
+	 */
+	private static function sanitize_icon( $raw, array $fallback ): array {
+		$value   = is_array( $raw ) && isset( $raw['value'] ) ? sanitize_text_field( (string) $raw['value'] ) : '';
+		$library = is_array( $raw ) && isset( $raw['library'] ) ? sanitize_key( (string) $raw['library'] ) : '';
+
+		if ( ! preg_match( '/^fa[a-z]?\s+fa-[a-z0-9-]+$/', $value ) ) {
+			return $fallback;
+		}
+
+		return [
+			'value'   => $value,
+			'library' => '' !== $library ? $library : 'fa-solid',
 		];
 	}
 
@@ -1751,6 +2076,10 @@ JS;
 						$clean[ $feature ][ $key ] = self::sanitize_size( $value, $field, $fallback );
 						break;
 
+					case 'icon':
+						$clean[ $feature ][ $key ] = self::sanitize_icon( $value, $fallback );
+						break;
+
 					case 'number':
 						// A bare scalar, for the v3 controls that are NUMBER
 						// rather than SLIDER — the renderer drops these straight
@@ -1874,6 +2203,7 @@ JS;
 	public function ajax_save(): void {
 		$this->guard();
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- guard() above runs check_ajax_referer() and current_user_can(); the value is a JSON string, decoded below and run through self::sanitize() before anything is stored.
 		$raw = isset( $_POST['settings'] ) ? wp_unslash( $_POST['settings'] ) : '';
 
 		// The payload arrives as a JSON string (nested arrays don't survive

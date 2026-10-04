@@ -141,6 +141,21 @@ const config = {
 		},
 		{
 			tab: 'general',
+			bind: 'overflow',
+			label: 'Slider Overflow',
+			control: 'select',
+			options: [
+				{ value: 'visible', label: 'Visible' },
+				{ value: 'hidden', label: 'Hidden' }
+			],
+			responsive: true,
+			defaultValue: 'visible',
+			help: 'Set to Visible so Prev/Next arrows, pagination, or 3D cards outside the container boundaries are not clipped.',
+			play_group: 'aae_ns_',
+			live_change: true,
+		},
+		{
+			tab: 'general',
 			bind: 'autoplay',
 			label: 'Autoplay',
 			control: 'switch',

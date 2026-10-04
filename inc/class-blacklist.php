@@ -24,20 +24,13 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class WCFAddon_BlackList_Notice {
 
-	const TD = 'animation-addons-for-elementor';
-
-	public static function __( $text ) {
-		// phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText
-		return __( $text, 'animation-addons-for-elementor' );
-	}
-
 	private static function pro_notice( $element, $id ) {
 		$element->add_control( $id, [
-			'label'           => self::__( 'Pro Note'),
+			'label'           => __( 'Pro Note', 'animation-addons-for-elementor' ),
 			'type'            => Controls_Manager::RAW_HTML,
 			'raw'             => sprintf(
 				/* translators: %1$s: opening <a> tag, %2$s: closing </a> tag */
-				self::__( 'These settings are available in the Pro version. %1$sUpgrade to Animation Addons Pro%2$s to unlock all extensions and advanced features.'),
+				__( 'These settings are available in the Pro version. %1$sUpgrade to Animation Addons Pro%2$s to unlock all extensions and advanced features.', 'animation-addons-for-elementor' ),
 				'<a href="' . esc_url( 'https://animation-addons.com/pricing/' ) . '" target="_blank" rel="noopener noreferrer">',
 				'</a>'
 			),
@@ -92,28 +85,28 @@ class WCFAddon_BlackList_Notice {
 	public static function register_text_animation_controls( $element ) {
 		$element->start_controls_section(
 			'_section_wcf_text_animation',
-			[ 'label' => self::pro_label( self::__( 'Text Animation') ) ]
+			[ 'label' => self::pro_label( __( 'Text Animation', 'animation-addons-for-elementor' ) ) ]
 		);
 
 		self::pro_notice( $element, 'pro_notice_text_animation' );
 
 		$animation = [
-			'none'        => self::__( 'none'),
-			'char'        => self::__( 'Character'),
-			'word'        => self::__( 'Word'),
-			'text_move'   => self::__( 'Text Move'),
-			'text_reveal' => self::__( 'Text Reveal'),
-			'text_scale'  => self::__( 'Text Scale'),
+			'none'        => __( 'none', 'animation-addons-for-elementor' ),
+			'char'        => __( 'Character', 'animation-addons-for-elementor' ),
+			'word'        => __( 'Word', 'animation-addons-for-elementor' ),
+			'text_move'   => __( 'Text Move', 'animation-addons-for-elementor' ),
+			'text_reveal' => __( 'Text Reveal', 'animation-addons-for-elementor' ),
+			'text_scale'  => __( 'Text Scale', 'animation-addons-for-elementor' ),
 		];
 		if ( in_array( $element->get_name(), [ 'heading', 'wcf--title' ], true ) ) {
-			$animation['text_invert'] = self::__( 'Text Invert');
-			$animation['text_spin']   = self::__( '3D Spin');
+			$animation['text_invert'] = __( 'Text Invert', 'animation-addons-for-elementor' );
+			$animation['text_spin']   = __( '3D Spin', 'animation-addons-for-elementor' );
 		}
 
 		$animated_list = [ 'char', 'word', 'text_reveal', 'text_move', 'text_spin', 'text_scale' ];
 
 		$element->add_responsive_control( 'wcf_text_animation', [
-			'label'       => self::__( 'Animation'),
+			'label'       => __( 'Animation', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::SELECT,
 			'default'     => 'none',
 			'separator'   => 'before',
@@ -122,23 +115,23 @@ class WCFAddon_BlackList_Notice {
 		] );
 
 		$element->add_responsive_control( 'aae_text_trigger', [
-			'label'       => self::__( 'Trigger'),
+			'label'       => __( 'Trigger', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::SELECT,
 			'default'     => 'on_scroll',
 			'render_type' => 'none',
 			'options'     => [
-				'on_scroll'        => self::__( 'On Scroll'),
-				'on_page_load'     => self::__( 'On Page Load'),
-				'play_with_scroll' => self::__( 'Play With Scroll'),
-				'mouseover'        => self::__( 'On Hover'),
-				'click'            => self::__( 'On Click'),
+				'on_scroll'        => __( 'On Scroll', 'animation-addons-for-elementor' ),
+				'on_page_load'     => __( 'On Page Load', 'animation-addons-for-elementor' ),
+				'play_with_scroll' => __( 'Play With Scroll', 'animation-addons-for-elementor' ),
+				'mouseover'        => __( 'On Hover', 'animation-addons-for-elementor' ),
+				'click'            => __( 'On Click', 'animation-addons-for-elementor' ),
 			],
 			'condition'   => [ 'wcf_text_animation' => $animated_list ],
 		] );
 
 		$element->add_responsive_control( 'aae_trigger_text_selector', [
-			'label'       => self::__( 'Trigger Selector'),
-			'description' => self::__( 'Selector for trigger element. Example: .my-class, #my-id'),
+			'label'       => __( 'Trigger Selector', 'animation-addons-for-elementor' ),
+			'description' => __( 'Selector for trigger element. Example: .my-class, #my-id', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::TEXT,
 			'placeholder' => '.my-class',
 			'render_type' => 'none',
@@ -149,12 +142,12 @@ class WCFAddon_BlackList_Notice {
 		] );
 
 		$element->add_responsive_control( 'aae_anim_txt_wrapper', [
-			'label'       => self::__( 'Text Wrapper'),
+			'label'       => __( 'Text Wrapper', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::SELECT,
 			'default'     => '',
 			'options'     => [
-				''       => self::__( 'Default'),
-				'custom' => self::__( 'Custom'),
+				''       => __( 'Default', 'animation-addons-for-elementor' ),
+				'custom' => __( 'Custom', 'animation-addons-for-elementor' ),
 			],
 			'condition'   => [
 				'aae_text_trigger'   => [ 'on_scroll', 'play_with_scroll' ],
@@ -164,7 +157,7 @@ class WCFAddon_BlackList_Notice {
 		] );
 
 		$element->add_responsive_control( 'text_delay', [
-			'label'       => self::__( 'Delay'),
+			'label'       => __( 'Delay', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::NUMBER,
 			'min'         => 0,
 			'max'         => 10,
@@ -175,7 +168,7 @@ class WCFAddon_BlackList_Notice {
 		] );
 
 		$element->add_responsive_control( 'text_duration', [
-			'label'       => self::__( 'Duration'),
+			'label'       => __( 'Duration', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::NUMBER,
 			'min'         => 0,
 			'max'         => 10,
@@ -186,7 +179,7 @@ class WCFAddon_BlackList_Notice {
 		] );
 
 		$element->add_responsive_control( 'text_stagger', [
-			'label'       => self::__( 'Stagger'),
+			'label'       => __( 'Stagger', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::NUMBER,
 			'min'         => 0,
 			'max'         => 10,
@@ -197,7 +190,7 @@ class WCFAddon_BlackList_Notice {
 		] );
 
 		$element->add_responsive_control( 'text_translate_x', [
-			'label'       => self::__( 'Transform-X'),
+			'label'       => __( 'Transform-X', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::NUMBER,
 			'default'     => 20,
 			'condition'   => [ 'wcf_text_animation' => [ 'char', 'word' ] ],
@@ -205,7 +198,7 @@ class WCFAddon_BlackList_Notice {
 		] );
 
 		$element->add_responsive_control( 'text_translate_y', [
-			'label'       => self::__( 'Transform-Y'),
+			'label'       => __( 'Transform-Y', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::NUMBER,
 			'default'     => 0,
 			'condition'   => [ 'wcf_text_animation' => [ 'char', 'word' ] ],
@@ -213,7 +206,7 @@ class WCFAddon_BlackList_Notice {
 		] );
 
 		$element->add_responsive_control( 'text_rotation_di', [
-			'label'       => self::__( 'Rotation Direction'),
+			'label'       => __( 'Rotation Direction', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::SELECT,
 			'default'     => 'x',
 			'separator'   => 'before',
@@ -223,7 +216,7 @@ class WCFAddon_BlackList_Notice {
 		] );
 
 		$element->add_responsive_control( 'text_rotation', [
-			'label'       => self::__( 'Rotation Value'),
+			'label'       => __( 'Rotation Value', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::NUMBER,
 			'default'     => -80,
 			'condition'   => [ 'wcf_text_animation' => 'text_move' ],
@@ -231,7 +224,7 @@ class WCFAddon_BlackList_Notice {
 		] );
 
 		$element->add_responsive_control( 'text_transform_origin', [
-			'label'       => self::__( 'transformOrigin'),
+			'label'       => __( 'transformOrigin', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::TEXT,
 			'default'     => 'top center -50',
 			'placeholder' => 'top center',
@@ -240,8 +233,8 @@ class WCFAddon_BlackList_Notice {
 		] );
 
 		$element->add_control( 'wcf_text_animation_editor', [
-			'label'        => self::__( 'Enable On Editor'),
-			'description'  => self::__( 'For better performance in editor mode, keep the setting turned off.'),
+			'label'        => __( 'Enable On Editor', 'animation-addons-for-elementor' ),
+			'description'  => __( 'For better performance in editor mode, keep the setting turned off.', 'animation-addons-for-elementor' ),
 			'type'         => Controls_Manager::SWITCHER,
 			'return_value' => 'yes',
 			'condition'    => [ 'wcf_text_animation!' => 'none' ],
@@ -257,41 +250,41 @@ class WCFAddon_BlackList_Notice {
 
 		$element->start_controls_section(
 			'_section_wcf_image_animation',
-			[ 'label' => self::pro_label( self::__( 'Image Animation') ) ]
+			[ 'label' => self::pro_label( __( 'Image Animation', 'animation-addons-for-elementor' ) ) ]
 		);
 
 		self::pro_notice( $element, 'pro_notice_image_animation' );
 
 		$element->add_responsive_control( 'wcf-image-animation', [
-			'label'       => self::__( 'Animation'),
+			'label'       => __( 'Animation', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::SELECT,
 			'default'     => 'none',
 			'separator'   => 'before',
 			'options'     => [
-				'none'    => self::__( 'none'),
-				'reveal'  => self::__( 'Reveal'),
-				'scale'   => self::__( 'Scale'),
-				'stretch' => self::__( 'Stretch'),
+				'none'    => __( 'none', 'animation-addons-for-elementor' ),
+				'reveal'  => __( 'Reveal', 'animation-addons-for-elementor' ),
+				'scale'   => __( 'Scale', 'animation-addons-for-elementor' ),
+				'stretch' => __( 'Stretch', 'animation-addons-for-elementor' ),
 			],
 			'render_type' => 'none',
 		] );
 
 		$element->add_responsive_control( 'aae_a_start_from', [
-			'label'       => self::__( 'Animation To'),
+			'label'       => __( 'Animation To', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::SELECT,
 			'default'     => 'right',
 			'render_type' => 'none',
 			'options'     => [
-				'left'   => self::__( 'Left'),
-				'right'  => self::__( 'Right'),
-				'top'    => self::__( 'Top'),
-				'bottom' => self::__( 'Bottom'),
+				'left'   => __( 'Left', 'animation-addons-for-elementor' ),
+				'right'  => __( 'Right', 'animation-addons-for-elementor' ),
+				'top'    => __( 'Top', 'animation-addons-for-elementor' ),
+				'bottom' => __( 'Bottom', 'animation-addons-for-elementor' ),
 			],
 			'condition'   => [ 'wcf-image-animation' => 'reveal' ],
 		] );
 
 		$element->add_responsive_control( 'wcf-scale-start', [
-			'label'       => self::__( 'Start Scale'),
+			'label'       => __( 'Start Scale', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::NUMBER,
 			'default'     => 0.5,
 			'condition'   => [ 'wcf-image-animation' => 'scale' ],
@@ -299,7 +292,7 @@ class WCFAddon_BlackList_Notice {
 		] );
 
 		$element->add_responsive_control( 'wcf-scale-end', [
-			'label'       => self::__( 'End Scale'),
+			'label'       => __( 'End Scale', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::NUMBER,
 			'default'     => 1,
 			'condition'   => [ 'wcf-image-animation' => 'scale' ],
@@ -307,7 +300,7 @@ class WCFAddon_BlackList_Notice {
 		] );
 
 		$element->add_responsive_control( 'image-ease', [
-			'label'       => self::__( 'Data ease'),
+			'label'       => __( 'Data ease', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::SELECT,
 			'default'     => 'power2.out',
 			'options'     => [
@@ -325,7 +318,7 @@ class WCFAddon_BlackList_Notice {
 		] );
 
 		$element->add_control( 'wcf_img_animation_editor', [
-			'label'        => self::__( 'Enable On Editor'),
+			'label'        => __( 'Enable On Editor', 'animation-addons-for-elementor' ),
 			'type'         => Controls_Manager::SWITCHER,
 			'return_value' => 'yes',
 			'condition'    => [ 'wcf-image-animation!' => 'none' ],
@@ -343,29 +336,29 @@ class WCFAddon_BlackList_Notice {
 		// --- Cursor hover effect ---
 		$element->start_controls_section(
 			'_section_wcf_cursor_hover_area',
-			[ 'label' => self::pro_label( self::__( 'Cursor hover effect') ), 'tab' => $tab ]
+			[ 'label' => self::pro_label( __( 'Cursor hover effect', 'animation-addons-for-elementor' ) ), 'tab' => $tab ]
 		);
 
 		self::pro_notice( $element, 'pro_notice_cursor_hover' );
 
 		$element->add_control( 'wcf_enable_cursor_hover_effect', [
-			'label'        => self::__( 'Enable'),
+			'label'        => __( 'Enable', 'animation-addons-for-elementor' ),
 			'type'         => Controls_Manager::SWITCHER,
 			'return_value' => 'yes',
 		] );
 
 		$element->add_control( 'wcf_enable_cursor_hover_effect_editor', [
-			'label'        => self::__( 'Enable On Editor'),
+			'label'        => __( 'Enable On Editor', 'animation-addons-for-elementor' ),
 			'type'         => Controls_Manager::SWITCHER,
 			'return_value' => 'yes',
 			'condition'    => [ 'wcf_enable_cursor_hover_effect!' => '' ],
 		] );
 
 		$element->add_control( 'wcf_enable_cursor_hover_effect_text', [
-			'label'     => self::__( 'Text'),
+			'label'     => __( 'Text', 'animation-addons-for-elementor' ),
 			'type'      => Controls_Manager::TEXT,
 			'separator' => 'after',
-			'default'   => self::__( 'View'),
+			'default'   => __( 'View', 'animation-addons-for-elementor' ),
 		] );
 
 		$element->add_group_control( Group_Control_Typography::get_type(), [
@@ -374,7 +367,7 @@ class WCFAddon_BlackList_Notice {
 		] );
 
 		$element->add_control( 'wcf_cursor_hover_cursor_color', [
-			'label'     => self::__( 'Text Color'),
+			'label'     => __( 'Text Color', 'animation-addons-for-elementor' ),
 			'type'      => Controls_Manager::COLOR,
 			'selectors' => [ '.wcf-hover-cursor-effect.active-{{ID}}' => 'color: {{VALUE}}' ],
 		] );
@@ -386,7 +379,7 @@ class WCFAddon_BlackList_Notice {
 		] );
 
 		$element->add_responsive_control( 'wcf_cursor_hover_cursor_width', [
-			'label'      => self::__( 'Width'),
+			'label'      => __( 'Width', 'animation-addons-for-elementor' ),
 			'type'       => Controls_Manager::SLIDER,
 			'size_units' => [ 'px', '%', 'em', 'rem' ],
 			'range'      => [ 'px' => [ 'min' => 0, 'max' => 1000 ], '%' => [ 'min' => 0, 'max' => 100 ] ],
@@ -394,7 +387,7 @@ class WCFAddon_BlackList_Notice {
 		] );
 
 		$element->add_responsive_control( 'wcf_cursor_hover_cursor_height', [
-			'label'      => self::__( 'Height'),
+			'label'      => __( 'Height', 'animation-addons-for-elementor' ),
 			'type'       => Controls_Manager::SLIDER,
 			'size_units' => [ 'px', '%', 'em', 'rem' ],
 			'separator'  => 'after',
@@ -408,7 +401,7 @@ class WCFAddon_BlackList_Notice {
 		] );
 
 		$element->add_control( 'wcf_cursor_hover_cursor_border_radius', [
-			'label'      => self::__( 'Border Radius'),
+			'label'      => __( 'Border Radius', 'animation-addons-for-elementor' ),
 			'type'       => Controls_Manager::DIMENSIONS,
 			'size_units' => [ 'px', '%', 'em', 'rem', 'custom' ],
 			'selectors'  => [ '.wcf-hover-cursor-effect.active-{{ID}}' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};' ],
@@ -420,26 +413,26 @@ class WCFAddon_BlackList_Notice {
 		if ( 'container' === $element->get_name() ) {
 			$element->start_controls_section(
 				'_section_wcf_hover_image_area',
-				[ 'label' => self::pro_label( self::__( 'Image Reveal on Hover') ), 'tab' => Controls_Manager::TAB_ADVANCED ]
+				[ 'label' => self::pro_label( __( 'Image Reveal on Hover', 'animation-addons-for-elementor' ) ), 'tab' => Controls_Manager::TAB_ADVANCED ]
 			);
 
 			self::pro_notice( $element, 'pro_notice_hover_image' );
 
 			$element->add_control( 'wcf_enable_hover_image', [
-				'label'        => self::__( 'Enable'),
+				'label'        => __( 'Enable', 'animation-addons-for-elementor' ),
 				'type'         => Controls_Manager::SWITCHER,
 				'return_value' => 'yes',
 			] );
 
 			$element->add_control( 'wcf_enable_hover_image_editor', [
-				'label'        => self::__( 'Enable On Editor'),
+				'label'        => __( 'Enable On Editor', 'animation-addons-for-elementor' ),
 				'type'         => Controls_Manager::SWITCHER,
 				'return_value' => 'yes',
 				'condition'    => [ 'wcf_enable_hover_image!' => '' ],
 			] );
 
 			$element->add_control( 'wcf_hover_image', [
-				'label'     => self::__( 'Choose Image'),
+				'label'     => __( 'Choose Image', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::MEDIA,
 				'default'   => [ 'url' => Utils::get_placeholder_image_src() ],
 				'selectors' => [ '{{WRAPPER}} .wcf-image-hover' => 'background-image: url( {{URL}} );' ],
@@ -447,7 +440,7 @@ class WCFAddon_BlackList_Notice {
 			] );
 
 			$element->add_responsive_control( 'wcf_hover_image_width', [
-				'label'      => self::__( 'Width'),
+				'label'      => __( 'Width', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ 'px', '%', 'em', 'rem' ],
 				'range'      => [ 'px' => [ 'min' => 0, 'max' => 1000 ], '%' => [ 'min' => 0, 'max' => 100 ] ],
@@ -456,7 +449,7 @@ class WCFAddon_BlackList_Notice {
 			] );
 
 			$element->add_responsive_control( 'wcf_hover_image_height', [
-				'label'      => self::__( 'Height'),
+				'label'      => __( 'Height', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ 'px', '%', 'em', 'rem' ],
 				'separator'  => 'after',
@@ -466,7 +459,7 @@ class WCFAddon_BlackList_Notice {
 			] );
 
 			$element->add_responsive_control( 'wcf_hover_image_position_top', [
-				'label'      => self::__( 'Position Top'),
+				'label'      => __( 'Position Top', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ 'px', '%' ],
 				'range'      => [ 'px' => [ 'min' => -1000, 'max' => 1000 ], '%' => [ 'min' => -100, 'max' => 100 ] ],
@@ -475,7 +468,7 @@ class WCFAddon_BlackList_Notice {
 			] );
 
 			$element->add_responsive_control( 'wcf_hover_image_position_left', [
-				'label'      => self::__( 'Position Left'),
+				'label'      => __( 'Position Left', 'animation-addons-for-elementor' ),
 				'type'       => Controls_Manager::SLIDER,
 				'size_units' => [ 'px', '%' ],
 				'range'      => [ 'px' => [ 'min' => -1000, 'max' => 1000 ], '%' => [ 'min' => -100, 'max' => 100 ] ],
@@ -484,7 +477,7 @@ class WCFAddon_BlackList_Notice {
 			] );
 
 			$element->add_control( 'wcf_hover_image_zindex', [
-				'label'     => self::__( 'Z-index'),
+				'label'     => __( 'Z-index', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::NUMBER,
 				'min'       => -9999,
 				'max'       => 9999,
@@ -497,30 +490,30 @@ class WCFAddon_BlackList_Notice {
 			// --- Popup (containers only) ---
 			$element->start_controls_section(
 				'_section_wcf_popup_area',
-				[ 'label' => self::pro_label( self::__( 'Popup') ), 'tab' => Controls_Manager::TAB_ADVANCED ]
+				[ 'label' => self::pro_label( __( 'Popup', 'animation-addons-for-elementor' ) ), 'tab' => Controls_Manager::TAB_ADVANCED ]
 			);
 
 			self::pro_notice( $element, 'pro_notice_popup' );
 
 			$element->add_control( 'wcf_enable_popup', [
-				'label'        => self::__( 'Enable Popup'),
+				'label'        => __( 'Enable Popup', 'animation-addons-for-elementor' ),
 				'type'         => Controls_Manager::SWITCHER,
 				'return_value' => 'yes',
 			] );
 
 			$element->add_control( 'wcf_enable_popup_editor', [
-				'label'        => self::__( 'Enable On Editor'),
+				'label'        => __( 'Enable On Editor', 'animation-addons-for-elementor' ),
 				'type'         => Controls_Manager::SWITCHER,
 				'return_value' => 'yes',
 				'condition'    => [ 'wcf_enable_popup!' => '' ],
 			] );
 
 			$element->add_control( 'popup_content_type', [
-				'label'     => self::__( 'Content Type'),
+				'label'     => __( 'Content Type', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::SELECT,
 				'options'   => [
-					'content'  => self::__( 'Content'),
-					'template' => self::__( 'Saved Templates'),
+					'content'  => __( 'Content', 'animation-addons-for-elementor' ),
+					'template' => __( 'Saved Templates', 'animation-addons-for-elementor' ),
 				],
 				'default'   => 'content',
 				'condition' => [ 'wcf_enable_popup!' => '' ],
@@ -528,7 +521,7 @@ class WCFAddon_BlackList_Notice {
 
 			$templates = function_exists( 'wcf_addons_get_saved_template_list' ) ? wcf_addons_get_saved_template_list() : [];
 			$element->add_control( 'popup_elementor_templates', [
-				'label'       => self::__( 'Save Template'),
+				'label'       => __( 'Save Template', 'animation-addons-for-elementor' ),
 				'type'        => Controls_Manager::SELECT2,
 				'label_block' => false,
 				'multiple'    => false,
@@ -540,8 +533,8 @@ class WCFAddon_BlackList_Notice {
 			] );
 
 			$element->add_control( 'popup_content', [
-				'label'     => self::__( 'Content'),
-				'default'   => self::__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'),
+				'label'     => __( 'Content', 'animation-addons-for-elementor' ),
+				'default'   => __( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::WYSIWYG,
 				'condition' => [
 					'popup_content_type' => 'content',
@@ -550,25 +543,25 @@ class WCFAddon_BlackList_Notice {
 			] );
 
 			$element->add_control( 'popup_condition', [
-				'label'     => self::__( 'Open Condition'),
+				'label'     => __( 'Open Condition', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::SELECT,
 				'options'   => [
-					'click'      => self::__( 'Click'),
-					'pageloaded' => self::__( 'Page Loaded'),
+					'click'      => __( 'Click', 'animation-addons-for-elementor' ),
+					'pageloaded' => __( 'Page Loaded', 'animation-addons-for-elementor' ),
 				],
 				'default'   => 'click',
 				'condition' => [ 'wcf_enable_popup!' => '' ],
 			] );
 
 			$element->add_control( 'wcf_enable_login_user', [
-				'label'        => self::__( 'Enable On Login User'),
+				'label'        => __( 'Enable On Login User', 'animation-addons-for-elementor' ),
 				'type'         => Controls_Manager::SWITCHER,
 				'return_value' => 'yes',
 				'condition'    => [ 'popup_condition' => 'pageloaded' ],
 			] );
 
 			$element->add_control( 'wcf_load_after_xtime', [
-				'label'     => self::__( 'Show After X time(milisecond)'),
+				'label'     => __( 'Show After X time(milisecond)', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::NUMBER,
 				'min'       => -1,
 				'max'       => 80000,
@@ -578,7 +571,7 @@ class WCFAddon_BlackList_Notice {
 			] );
 
 			$element->add_control( 'wcf_show_up_to_xtime', [
-				'label'     => self::__( 'Show UpTo X time'),
+				'label'     => __( 'Show UpTo X time', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::NUMBER,
 				'min'       => 1,
 				'max'       => 50,
@@ -587,7 +580,7 @@ class WCFAddon_BlackList_Notice {
 			] );
 
 			$element->add_control( 'wcf_load_after_x_pageviews', [
-				'label'     => self::__( 'Show After X Page Views'),
+				'label'     => __( 'Show After X Page Views', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::NUMBER,
 				'min'       => 0,
 				'max'       => 50,
@@ -596,30 +589,30 @@ class WCFAddon_BlackList_Notice {
 			] );
 
 			$element->add_control( 'wcf_show_x_devices', [
-				'label'       => self::__( 'Show in X Devices'),
+				'label'       => __( 'Show in X Devices', 'animation-addons-for-elementor' ),
 				'type'        => Controls_Manager::SELECT2,
 				'label_block' => true,
 				'multiple'    => true,
 				'options'     => [
-					'mobile'  => self::__( 'Mobile'),
-					'teblet'  => self::__( 'Teblet'),
-					'desktop' => self::__( 'Desktop'),
+					'mobile'  => __( 'Mobile', 'animation-addons-for-elementor' ),
+					'teblet'  => __( 'Teblet', 'animation-addons-for-elementor' ),
+					'desktop' => __( 'Desktop', 'animation-addons-for-elementor' ),
 				],
 				'default'     => [],
 				'condition'   => [ 'popup_condition' => 'pageloaded' ],
 			] );
 
 			$element->add_control( 'popup_trigger_cursor', [
-				'label'     => self::__( 'Cursor'),
+				'label'     => __( 'Cursor', 'animation-addons-for-elementor' ),
 				'type'      => Controls_Manager::SELECT,
 				'default'   => 'default',
 				'options'   => [
-					'default'  => self::__( 'Default'),
-					'none'     => self::__( 'None'),
-					'pointer'  => self::__( 'Pointer'),
-					'grabbing' => self::__( 'Grabbing'),
-					'move'     => self::__( 'Move'),
-					'text'     => self::__( 'Text'),
+					'default'  => __( 'Default', 'animation-addons-for-elementor' ),
+					'none'     => __( 'None', 'animation-addons-for-elementor' ),
+					'pointer'  => __( 'Pointer', 'animation-addons-for-elementor' ),
+					'grabbing' => __( 'Grabbing', 'animation-addons-for-elementor' ),
+					'move'     => __( 'Move', 'animation-addons-for-elementor' ),
+					'text'     => __( 'Text', 'animation-addons-for-elementor' ),
 				],
 				'selectors' => [ '{{WRAPPER}}' => 'cursor: {{VALUE}};' ],
 				'condition' => [ 'wcf_enable_popup!' => '' ],
@@ -637,16 +630,16 @@ class WCFAddon_BlackList_Notice {
 		// --- Tooltip ---
 		$element->start_controls_section(
 			'_section_wcf_advanced_tooltip',
-			[ 'label' => self::pro_label( self::__( 'Tooltip') ), 'tab' => Controls_Manager::TAB_ADVANCED ]
+			[ 'label' => self::pro_label( __( 'Tooltip', 'animation-addons-for-elementor' ) ), 'tab' => Controls_Manager::TAB_ADVANCED ]
 		);
 
 		self::pro_notice( $element, 'pro_notice_tooltip' );
 
 		$element->add_control( 'wcf_advanced_tooltip_enable', [
-			'label'        => self::__( 'Enable Tooltip?'),
+			'label'        => __( 'Enable Tooltip?', 'animation-addons-for-elementor' ),
 			'type'         => Controls_Manager::SWITCHER,
-			'label_on'     => self::__( 'On'),
-			'label_off'    => self::__( 'Off'),
+			'label_on'     => __( 'On', 'animation-addons-for-elementor' ),
+			'label_off'    => __( 'Off', 'animation-addons-for-elementor' ),
 			'return_value' => 'enable',
 			'default'      => '',
 		] );
@@ -654,41 +647,41 @@ class WCFAddon_BlackList_Notice {
 		$element->start_controls_tabs( 'wcf_tooltip_tabs' );
 
 		$element->start_controls_tab( 'wcf_tooltip_settings', [
-			'label'     => self::__( 'Settings'),
+			'label'     => __( 'Settings', 'animation-addons-for-elementor' ),
 			'condition' => [ 'wcf_advanced_tooltip_enable!' => '' ],
 		] );
 
 		$element->add_control( 'wcf_advanced_tooltip_content', [
-			'label'     => self::__( 'Content'),
+			'label'     => __( 'Content', 'animation-addons-for-elementor' ),
 			'type'      => Controls_Manager::TEXTAREA,
 			'rows'      => 5,
-			'default'   => self::__( 'I am a tooltip'),
+			'default'   => __( 'I am a tooltip', 'animation-addons-for-elementor' ),
 			'dynamic'   => [ 'active' => true ],
 			'condition' => [ 'wcf_advanced_tooltip_enable!' => '' ],
 		] );
 
 		$element->add_responsive_control( 'wcf_advanced_tooltip_position', [
-			'label'     => self::__( 'Position'),
+			'label'     => __( 'Position', 'animation-addons-for-elementor' ),
 			'type'      => Controls_Manager::SELECT,
 			'default'   => 'top',
 			'options'   => [
-				'top'    => self::__( 'Top'),
-				'bottom' => self::__( 'Bottom'),
-				'left'   => self::__( 'Left'),
-				'right'  => self::__( 'Right'),
+				'top'    => __( 'Top', 'animation-addons-for-elementor' ),
+				'bottom' => __( 'Bottom', 'animation-addons-for-elementor' ),
+				'left'   => __( 'Left', 'animation-addons-for-elementor' ),
+				'right'  => __( 'Right', 'animation-addons-for-elementor' ),
 			],
 			'condition' => [ 'wcf_advanced_tooltip_enable!' => '' ],
 		] );
 
 		$element->add_control( 'wcf_advanced_tooltip_animation', [
-			'label'     => self::__( 'Animation'),
+			'label'     => __( 'Animation', 'animation-addons-for-elementor' ),
 			'type'      => Controls_Manager::ANIMATION,
 			'default'   => 'fadeIn',
 			'condition' => [ 'wcf_advanced_tooltip_enable!' => '' ],
 		] );
 
 		$element->add_control( 'wcf_advanced_tooltip_duration', [
-			'label'     => self::__( 'Animation Duration (ms)'),
+			'label'     => __( 'Animation Duration (ms)', 'animation-addons-for-elementor' ),
 			'type'      => Controls_Manager::NUMBER,
 			'min'       => 100,
 			'max'       => 5000,
@@ -698,32 +691,32 @@ class WCFAddon_BlackList_Notice {
 		] );
 
 		$element->add_control( 'wcf_advanced_tooltip_arrow', [
-			'label'        => self::__( 'Arrow'),
+			'label'        => __( 'Arrow', 'animation-addons-for-elementor' ),
 			'type'         => Controls_Manager::SWITCHER,
-			'label_on'     => self::__( 'Show'),
-			'label_off'    => self::__( 'Hide'),
+			'label_on'     => __( 'Show', 'animation-addons-for-elementor' ),
+			'label_off'    => __( 'Hide', 'animation-addons-for-elementor' ),
 			'return_value' => 'true',
 			'default'      => 'true',
 			'condition'    => [ 'wcf_advanced_tooltip_enable!' => '' ],
 		] );
 
 		$element->add_control( 'wcf_advanced_tooltip_trigger', [
-			'label'     => self::__( 'Trigger'),
+			'label'     => __( 'Trigger', 'animation-addons-for-elementor' ),
 			'type'      => Controls_Manager::SELECT,
 			'default'   => 'hover',
-			'options'   => [ 'click' => self::__( 'Click'), 'hover' => self::__( 'Hover') ],
+			'options'   => [ 'click' => __( 'Click', 'animation-addons-for-elementor' ), 'hover' => __( 'Hover', 'animation-addons-for-elementor' ) ],
 			'condition' => [ 'wcf_advanced_tooltip_enable!' => '' ],
 		] );
 
 		$element->end_controls_tab();
 
 		$element->start_controls_tab( 'wcf_advanced_tooltip_styles', [
-			'label'     => self::__( 'Styles'),
+			'label'     => __( 'Styles', 'animation-addons-for-elementor' ),
 			'condition' => [ 'wcf_advanced_tooltip_enable!' => '' ],
 		] );
 
 		$element->add_responsive_control( 'wcf_advanced_tooltip_width', [
-			'label'     => self::__( 'Width'),
+			'label'     => __( 'Width', 'animation-addons-for-elementor' ),
 			'type'      => Controls_Manager::SLIDER,
 			'default'   => [ 'size' => 120 ],
 			'range'     => [ 'px' => [ 'min' => 1, 'max' => 800 ] ],
@@ -738,7 +731,7 @@ class WCFAddon_BlackList_Notice {
 		] );
 
 		$element->add_control( 'wcf_advanced_tooltip_background_color', [
-			'label'     => self::__( 'Background Color'),
+			'label'     => __( 'Background Color', 'animation-addons-for-elementor' ),
 			'type'      => Controls_Manager::COLOR,
 			'default'   => '#000000',
 			'selectors' => [ '{{WRAPPER}} .wcf-advanced-tooltip' => 'background: {{VALUE}};' ],
@@ -746,7 +739,7 @@ class WCFAddon_BlackList_Notice {
 		] );
 
 		$element->add_control( 'wcf_advanced_tooltip_color', [
-			'label'     => self::__( 'Text Color'),
+			'label'     => __( 'Text Color', 'animation-addons-for-elementor' ),
 			'type'      => Controls_Manager::COLOR,
 			'default'   => '#ffffff',
 			'selectors' => [ '{{WRAPPER}} .wcf-advanced-tooltip' => 'color: {{VALUE}};' ],
@@ -754,7 +747,7 @@ class WCFAddon_BlackList_Notice {
 		] );
 
 		$element->add_responsive_control( 'wcf_advanced_tooltip_border_radius', [
-			'label'      => self::__( 'Border Radius'),
+			'label'      => __( 'Border Radius', 'animation-addons-for-elementor' ),
 			'type'       => Controls_Manager::DIMENSIONS,
 			'size_units' => [ 'px', '%' ],
 			'selectors'  => [ '{{WRAPPER}} .wcf-advanced-tooltip' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};' ],
@@ -762,7 +755,7 @@ class WCFAddon_BlackList_Notice {
 		] );
 
 		$element->add_responsive_control( 'wcf_advanced_tooltip_padding', [
-			'label'      => self::__( 'Padding'),
+			'label'      => __( 'Padding', 'animation-addons-for-elementor' ),
 			'type'       => Controls_Manager::DIMENSIONS,
 			'size_units' => [ 'px', 'em', '%' ],
 			'selectors'  => [ '{{WRAPPER}} .wcf-advanced-tooltip' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};' ],
@@ -782,26 +775,26 @@ class WCFAddon_BlackList_Notice {
 		// --- Tilt ---
 		$element->start_controls_section(
 			'notice_section_wcf_tilt_area',
-			[ 'label' => self::pro_label( self::__( 'Tilt') ), 'tab' => Controls_Manager::TAB_ADVANCED ]
+			[ 'label' => self::pro_label( __( 'Tilt', 'animation-addons-for-elementor' ) ), 'tab' => Controls_Manager::TAB_ADVANCED ]
 		);
 
 		self::pro_notice( $element, 'pro_notice_tilt' );
 
 		$element->add_control( 'wcf_enable_tilt', [
-			'label'        => self::__( 'Enable'),
+			'label'        => __( 'Enable', 'animation-addons-for-elementor' ),
 			'type'         => Controls_Manager::SWITCHER,
 			'return_value' => 'yes',
 		] );
 
 		$element->add_control( 'wcf_enable_tilt_editor', [
-			'label'        => self::__( 'Enable On Editor'),
+			'label'        => __( 'Enable On Editor', 'animation-addons-for-elementor' ),
 			'type'         => Controls_Manager::SWITCHER,
 			'return_value' => 'yes',
 			'condition'    => [ 'wcf_enable_tilt!' => '' ],
 		] );
 
 		$element->add_control( 'wcf_max_tilt', [
-			'label'     => self::__( 'maxTilt'),
+			'label'     => __( 'maxTilt', 'animation-addons-for-elementor' ),
 			'type'      => Controls_Manager::NUMBER,
 			'min'       => 5,
 			'max'       => 50,
@@ -810,14 +803,14 @@ class WCFAddon_BlackList_Notice {
 		] );
 
 		$element->add_control( 'wcf_tilt_perspective', [
-			'label'     => self::__( 'Perspective'),
+			'label'     => __( 'Perspective', 'animation-addons-for-elementor' ),
 			'type'      => Controls_Manager::NUMBER,
 			'default'   => 1000,
 			'condition' => [ 'wcf_enable_tilt!' => '' ],
 		] );
 
 		$element->add_control( 'wcf_tilt_scale', [
-			'label'     => self::__( 'Scale'),
+			'label'     => __( 'Scale', 'animation-addons-for-elementor' ),
 			'type'      => Controls_Manager::NUMBER,
 			'min'       => 1,
 			'max'       => 10,
@@ -826,7 +819,7 @@ class WCFAddon_BlackList_Notice {
 		] );
 
 		$element->add_control( 'wcf_tilt_speed', [
-			'label'     => self::__( 'Speed'),
+			'label'     => __( 'Speed', 'animation-addons-for-elementor' ),
 			'type'      => Controls_Manager::NUMBER,
 			'default'   => 3000,
 			'condition' => [ 'wcf_enable_tilt!' => '' ],
@@ -837,38 +830,38 @@ class WCFAddon_BlackList_Notice {
 		// --- Mouse Move Effect ---
 		$element->start_controls_section(
 			'_section_wcf_mouse_move_area',
-			[ 'label' => self::pro_label( self::__( 'Mouse Move Effect') ), 'tab' => Controls_Manager::TAB_ADVANCED ]
+			[ 'label' => self::pro_label( __( 'Mouse Move Effect', 'animation-addons-for-elementor' ) ), 'tab' => Controls_Manager::TAB_ADVANCED ]
 		);
 
 		self::pro_notice( $element, 'pro_notice_mouse_move' );
 
 		$element->add_control( 'wcf_enable_mouse_move_effect', [
-			'label'        => self::__( 'Enable'),
+			'label'        => __( 'Enable', 'animation-addons-for-elementor' ),
 			'type'         => Controls_Manager::SWITCHER,
 			'return_value' => 'yes',
 		] );
 
 		$element->add_control( 'wcf_enable_mouse_movee_editor', [
-			'label'        => self::__( 'Enable On Editor'),
+			'label'        => __( 'Enable On Editor', 'animation-addons-for-elementor' ),
 			'type'         => Controls_Manager::SWITCHER,
 			'return_value' => 'yes',
 			'condition'    => [ 'wcf_enable_mouse_move_effect!' => '' ],
 		] );
 
 		$element->add_control( 'wcf_mouse_move_area_trigger', [
-			'label'       => self::__( 'Movement Wrapper'),
+			'label'       => __( 'Movement Wrapper', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::SELECT,
 			'default'     => '',
 			'options'     => [
-				''       => self::__( 'Default'),
-				'custom' => self::__( 'Custom'),
+				''       => __( 'Default', 'animation-addons-for-elementor' ),
+				'custom' => __( 'Custom', 'animation-addons-for-elementor' ),
 			],
 			'condition'   => [ 'wcf_enable_mouse_move_effect!' => '' ],
 			'render_type' => 'none',
 		] );
 
 		$element->add_control( 'wcf_custom_mouse_move_area', [
-			'label'       => self::__( 'Custom Area'),
+			'label'       => __( 'Custom Area', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::TEXT,
 			'placeholder' => '.movement_area',
 			'render_type' => 'none',
@@ -879,7 +872,7 @@ class WCFAddon_BlackList_Notice {
 		] );
 
 		$element->add_control( 'wcf_mouse_move_x', [
-			'label'       => self::__( 'Move X'),
+			'label'       => __( 'Move X', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::NUMBER,
 			'default'     => 70,
 			'condition'   => [ 'wcf_enable_mouse_move_effect!' => '' ],
@@ -887,7 +880,7 @@ class WCFAddon_BlackList_Notice {
 		] );
 
 		$element->add_control( 'wcf_mouse_move_y', [
-			'label'       => self::__( 'Move Y'),
+			'label'       => __( 'Move Y', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::NUMBER,
 			'default'     => 70,
 			'condition'   => [ 'wcf_enable_mouse_move_effect!' => '' ],
@@ -895,7 +888,7 @@ class WCFAddon_BlackList_Notice {
 		] );
 
 		$element->add_control( 'wcf_mouse_move_duration', [
-			'label'       => self::__( 'Duration'),
+			'label'       => __( 'Duration', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::NUMBER,
 			'default'     => 0.5,
 			'render_type' => 'none',
@@ -903,7 +896,7 @@ class WCFAddon_BlackList_Notice {
 		] );
 
 		$element->add_control( 'wcf_mouse_move_custom', [
-			'label'       => self::__( 'Customs'),
+			'label'       => __( 'Customs', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::TEXTAREA,
 			'rows'        => 5,
 			'placeholder' => 'property:value, property2:value2',
@@ -916,43 +909,43 @@ class WCFAddon_BlackList_Notice {
 		// --- Horizontal Scroll ---
 		$element->start_controls_section(
 			'_section_wcf_horizontal_scroll_area',
-			[ 'label' => self::pro_label( self::__( 'Horizontal Scroll') ), 'tab' => Controls_Manager::TAB_ADVANCED ]
+			[ 'label' => self::pro_label( __( 'Horizontal Scroll', 'animation-addons-for-elementor' ) ), 'tab' => Controls_Manager::TAB_ADVANCED ]
 		);
 
 		self::pro_notice( $element, 'pro_notice_horizontal_scroll' );
 
 		$element->add_control( 'important_note', [
-			'label'           => self::__( 'Important Note'),
+			'label'           => __( 'Important Note', 'animation-addons-for-elementor' ),
 			'type'            => Controls_Manager::RAW_HTML,
-			'raw'             => self::__( 'Please use full width Container to work properly.'),
+			'raw'             => __( 'Please use full width Container to work properly.', 'animation-addons-for-elementor' ),
 			'content_classes' => 'elementor-panel-alert elementor-panel-alert-warning',
 		] );
 
 		$element->add_responsive_control( 'wcf_enable_horizontal_scroll', [
-			'label'       => self::__( 'Enable'),
+			'label'       => __( 'Enable', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::SELECT,
 			'default'     => 'no',
 			'separator'   => 'before',
 			'options'     => [
-				'no'  => self::__( 'No'),
-				'yes' => self::__( 'Yes'),
+				'no'  => __( 'No', 'animation-addons-for-elementor' ),
+				'yes' => __( 'Yes', 'animation-addons-for-elementor' ),
 			],
 			'render_type' => 'none',
 		] );
 
 		$element->add_responsive_control( 'horizontal_scroll_width', [
-			'label'       => self::__( 'Width'),
+			'label'       => __( 'Width', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::SLIDER,
 			'size_units'  => [ 'px', '%', 'em', 'rem', 'custom' ],
 			'range'       => [ 'px' => [ 'min' => 100, 'max' => 50000 ], '%' => [ 'min' => 10, 'max' => 1000 ] ],
 			'default'     => [ 'unit' => '%', 'size' => 900 ],
-			'description' => self::__( 'Set the total width of the horizontal scroll area in percentage (%).'),
+			'description' => __( 'Set the total width of the horizontal scroll area in percentage (%).', 'animation-addons-for-elementor' ),
 			'render_type' => 'none',
 			'condition'   => [ 'wcf_enable_horizontal_scroll' => 'yes' ],
 		] );
 
 		$element->add_responsive_control( 'horizontal_scroll_end', [
-			'label'       => self::__( 'End'),
+			'label'       => __( 'End', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::SLIDER,
 			'size_units'  => [ 'px' ],
 			'range'       => [ 'px' => [ 'min' => 100, 'max' => 10000 ] ],
@@ -965,7 +958,7 @@ class WCFAddon_BlackList_Notice {
 		// --- Animation ---
 		$element->start_controls_section(
 			'_section_wcf_animation_area',
-			[ 'label' => self::pro_label( self::__( 'Animation') ), 'tab' => Controls_Manager::TAB_ADVANCED ]
+			[ 'label' => self::pro_label( __( 'Animation', 'animation-addons-for-elementor' ) ), 'tab' => Controls_Manager::TAB_ADVANCED ]
 		);
 
 		self::pro_notice( $element, 'pro_notice_animation' );
@@ -973,48 +966,48 @@ class WCFAddon_BlackList_Notice {
 		$anim_types = [ 'custom', 'fade', 'move' ];
 
 		$element->add_responsive_control( 'wcf-animation', [
-			'label'       => self::__( 'Animation'),
+			'label'       => __( 'Animation', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::SELECT,
 			'default'     => 'none',
 			'separator'   => 'before',
 			'options'     => [
-				'none'   => self::__( 'None'),
-				'fade'   => self::__( 'Fade animation'),
-				'move'   => self::__( '3D Move'),
-				'custom' => self::__( 'Custom'),
+				'none'   => __( 'None', 'animation-addons-for-elementor' ),
+				'fade'   => __( 'Fade animation', 'animation-addons-for-elementor' ),
+				'move'   => __( '3D Move', 'animation-addons-for-elementor' ),
+				'custom' => __( 'Custom', 'animation-addons-for-elementor' ),
 			],
 			'render_type' => 'template',
 		] );
 
 		$element->add_responsive_control( 'aae_method', [
-			'label'       => self::__( 'Method'),
+			'label'       => __( 'Method', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::SELECT,
 			'default'     => 'from',
 			'render_type' => 'none',
 			'options'     => [
-				'from' => self::__( 'From'),
-				'to'   => self::__( 'To'),
+				'from' => __( 'From', 'animation-addons-for-elementor' ),
+				'to'   => __( 'To', 'animation-addons-for-elementor' ),
 			],
 			'condition'   => [ 'wcf-animation' => $anim_types ],
 		] );
 
 		$element->add_responsive_control( 'aae_trigger', [
-			'label'       => self::__( 'Trigger'),
+			'label'       => __( 'Trigger', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::SELECT,
 			'default'     => 'on_scroll',
 			'render_type' => 'none',
 			'options'     => [
-				'on_scroll'        => self::__( 'On Scroll'),
-				'on_page_load'     => self::__( 'On Page Load'),
-				'play_with_scroll' => self::__( 'Play With Scroll'),
-				'mouseover'        => self::__( 'On Hover'),
-				'click'            => self::__( 'On Click'),
+				'on_scroll'        => __( 'On Scroll', 'animation-addons-for-elementor' ),
+				'on_page_load'     => __( 'On Page Load', 'animation-addons-for-elementor' ),
+				'play_with_scroll' => __( 'Play With Scroll', 'animation-addons-for-elementor' ),
+				'mouseover'        => __( 'On Hover', 'animation-addons-for-elementor' ),
+				'click'            => __( 'On Click', 'animation-addons-for-elementor' ),
 			],
 			'condition'   => [ 'wcf-animation' => $anim_types ],
 		] );
 
 		$element->add_responsive_control( 'delay', [
-			'label'       => self::__( 'Delay'),
+			'label'       => __( 'Delay', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::NUMBER,
 			'min'         => 0,
 			'max'         => 10,
@@ -1025,23 +1018,23 @@ class WCFAddon_BlackList_Notice {
 		] );
 
 		$element->add_responsive_control( 'fade-from', [
-			'label'       => self::__( 'Fade from'),
+			'label'       => __( 'Fade from', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::SELECT,
 			'default'     => 'bottom',
 			'render_type' => 'none',
 			'options'     => [
-				'top'    => self::__( 'Top'),
-				'bottom' => self::__( 'Bottom'),
-				'left'   => self::__( 'Left'),
-				'right'  => self::__( 'Right'),
-				'in'     => self::__( 'In'),
-				'scale'  => self::__( 'Zoom'),
+				'top'    => __( 'Top', 'animation-addons-for-elementor' ),
+				'bottom' => __( 'Bottom', 'animation-addons-for-elementor' ),
+				'left'   => __( 'Left', 'animation-addons-for-elementor' ),
+				'right'  => __( 'Right', 'animation-addons-for-elementor' ),
+				'in'     => __( 'In', 'animation-addons-for-elementor' ),
+				'scale'  => __( 'Zoom', 'animation-addons-for-elementor' ),
 			],
 			'condition'   => [ 'wcf-animation' => 'fade' ],
 		] );
 
 		$element->add_responsive_control( 'data-duration', [
-			'label'       => self::__( 'Duration'),
+			'label'       => __( 'Duration', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::NUMBER,
 			'default'     => 1.5,
 			'render_type' => 'none',
@@ -1049,7 +1042,7 @@ class WCFAddon_BlackList_Notice {
 		] );
 
 		$element->add_responsive_control( 'ease', [
-			'label'       => self::__( 'Ease'),
+			'label'       => __( 'Ease', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::SELECT,
 			'default'     => 'power2.out',
 			'render_type' => 'none',
@@ -1062,13 +1055,13 @@ class WCFAddon_BlackList_Notice {
 				'stepped'    => 'Stepped',
 				'sine'       => 'Sine',
 				'expo'       => 'Expo',
-				'none'       => self::__( 'None'),
+				'none'       => __( 'None', 'animation-addons-for-elementor' ),
 			],
 			'condition'   => [ 'wcf-animation!' => 'none' ],
 		] );
 
 		$element->add_responsive_control( 'fade-offset', [
-			'label'       => self::__( 'Fade offset'),
+			'label'       => __( 'Fade offset', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::NUMBER,
 			'default'     => 50,
 			'render_type' => 'none',
@@ -1079,7 +1072,7 @@ class WCFAddon_BlackList_Notice {
 		] );
 
 		$element->add_responsive_control( 'wcf-a-scale', [
-			'label'       => self::__( 'Start Scale'),
+			'label'       => __( 'Start Scale', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::NUMBER,
 			'default'     => 0.7,
 			'condition'   => [
@@ -1090,7 +1083,7 @@ class WCFAddon_BlackList_Notice {
 		] );
 
 		$element->add_responsive_control( 'wcf_a_rotation_di', [
-			'label'       => self::__( 'Rotation Direction'),
+			'label'       => __( 'Rotation Direction', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::SELECT,
 			'default'     => 'x',
 			'separator'   => 'before',
@@ -1100,7 +1093,7 @@ class WCFAddon_BlackList_Notice {
 		] );
 
 		$element->add_responsive_control( 'wcf_a_rotation', [
-			'label'       => self::__( 'Rotation Value'),
+			'label'       => __( 'Rotation Value', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::NUMBER,
 			'default'     => -80,
 			'condition'   => [ 'wcf-animation' => 'move' ],
@@ -1108,7 +1101,7 @@ class WCFAddon_BlackList_Notice {
 		] );
 
 		$element->add_responsive_control( 'wcf_a_transform_origin', [
-			'label'       => self::__( 'TransformOrigin'),
+			'label'       => __( 'TransformOrigin', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::TEXT,
 			'default'     => 'top center -50',
 			'placeholder' => 'top center',
@@ -1118,40 +1111,40 @@ class WCFAddon_BlackList_Notice {
 
 		$repeater = new Repeater();
 		$repeater->add_control( 'property', [
-			'label'       => self::__( 'Property'),
+			'label'       => __( 'Property', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::SELECT2,
 			'multiple'    => false,
 			'options'     => [
-				'none'            => self::__( 'None'),
-				'opacity'         => self::__( 'Opacity'),
-				'x'               => self::__( 'X'),
-				'y'               => self::__( 'Y'),
-				'width'           => self::__( 'Width'),
-				'height'          => self::__( 'Height'),
-				'scale'           => self::__( 'Scale'),
-				'repeat'          => self::__( 'Repeat'),
-				'rotate'          => self::__( 'Rotate'),
-				'rotateX'         => self::__( 'RotateX'),
-				'rotateY'         => self::__( 'RotateY'),
-				'transformOrigin' => self::__( 'TransformOrigin'),
-				'color'           => self::__( 'Color'),
-				'background'      => self::__( 'Background'),
-				'border'          => self::__( 'Border'),
-				'boxShadow'       => self::__( 'BoxShadow'),
-				'delay'           => self::__( 'Delay'),
-				'duration'        => self::__( 'Duration'),
+				'none'            => __( 'None', 'animation-addons-for-elementor' ),
+				'opacity'         => __( 'Opacity', 'animation-addons-for-elementor' ),
+				'x'               => __( 'X', 'animation-addons-for-elementor' ),
+				'y'               => __( 'Y', 'animation-addons-for-elementor' ),
+				'width'           => __( 'Width', 'animation-addons-for-elementor' ),
+				'height'          => __( 'Height', 'animation-addons-for-elementor' ),
+				'scale'           => __( 'Scale', 'animation-addons-for-elementor' ),
+				'repeat'          => __( 'Repeat', 'animation-addons-for-elementor' ),
+				'rotate'          => __( 'Rotate', 'animation-addons-for-elementor' ),
+				'rotateX'         => __( 'RotateX', 'animation-addons-for-elementor' ),
+				'rotateY'         => __( 'RotateY', 'animation-addons-for-elementor' ),
+				'transformOrigin' => __( 'TransformOrigin', 'animation-addons-for-elementor' ),
+				'color'           => __( 'Color', 'animation-addons-for-elementor' ),
+				'background'      => __( 'Background', 'animation-addons-for-elementor' ),
+				'border'          => __( 'Border', 'animation-addons-for-elementor' ),
+				'boxShadow'       => __( 'BoxShadow', 'animation-addons-for-elementor' ),
+				'delay'           => __( 'Delay', 'animation-addons-for-elementor' ),
+				'duration'        => __( 'Duration', 'animation-addons-for-elementor' ),
 			],
 			'render_type' => 'ui',
 		] );
 		$repeater->add_responsive_control( 'value', [
-			'label'       => self::__( 'Value'),
+			'label'       => __( 'Value', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::TEXT,
 			'default'     => '',
 			'render_type' => 'ui',
 		] );
 
 		$element->add_control( 'aae_ani_custom_props', [
-			'label'       => self::__( 'Custom Properties'),
+			'label'       => __( 'Custom Properties', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::REPEATER,
 			'fields'      => $repeater->get_controls(),
 			'condition'   => [ 'wcf-animation' => 'custom' ],
@@ -1162,7 +1155,7 @@ class WCFAddon_BlackList_Notice {
 		] );
 
 		$element->add_control( 'wcf_enable_animation_editor', [
-			'label'        => self::__( 'Enable On Editor'),
+			'label'        => __( 'Enable On Editor', 'animation-addons-for-elementor' ),
 			'type'         => Controls_Manager::SWITCHER,
 			'return_value' => 'yes',
 			'condition'    => [ 'wcf-animation!' => 'none' ],
@@ -1173,37 +1166,37 @@ class WCFAddon_BlackList_Notice {
 		// --- Sticky / Pin Element ---
 		$element->start_controls_section(
 			'_section_pin-area',
-			[ 'label' => self::pro_label( self::__( 'Sticky/Pin Element') ), 'tab' => Controls_Manager::TAB_ADVANCED ]
+			[ 'label' => self::pro_label( __( 'Sticky/Pin Element', 'animation-addons-for-elementor' ) ), 'tab' => Controls_Manager::TAB_ADVANCED ]
 		);
 
 		self::pro_notice( $element, 'pro_notice_pin' );
 
 		$element->add_responsive_control( 'wcf_enable_pin_area', [
-			'label'       => self::__( 'Enable'),
+			'label'       => __( 'Enable', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::SELECT,
 			'default'     => 'no',
 			'separator'   => 'before',
 			'options'     => [
-				'no'  => self::__( 'No'),
-				'yes' => self::__( 'Yes'),
+				'no'  => __( 'No', 'animation-addons-for-elementor' ),
+				'yes' => __( 'Yes', 'animation-addons-for-elementor' ),
 			],
 			'render_type' => 'ui',
 		] );
 
 		$element->add_responsive_control( 'wcf_pin_area_trigger', [
-			'label'       => self::__( 'Pin Trigger'),
+			'label'       => __( 'Pin Trigger', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::SELECT,
 			'default'     => '',
 			'options'     => [
-				''       => self::__( 'Default'),
-				'custom' => self::__( 'Custom'),
+				''       => __( 'Default', 'animation-addons-for-elementor' ),
+				'custom' => __( 'Custom', 'animation-addons-for-elementor' ),
 			],
 			'condition'   => [ 'wcf_enable_pin_area' => 'yes' ],
 			'render_type' => 'none',
 		] );
 
 		$element->add_responsive_control( 'wcf_custom_pin_area', [
-			'label'       => self::__( 'Custom Pin Area'),
+			'label'       => __( 'Custom Pin Area', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::TEXT,
 			'placeholder' => '.pin_area',
 			'render_type' => 'none',
@@ -1214,14 +1207,14 @@ class WCFAddon_BlackList_Notice {
 		] );
 
 		$element->add_responsive_control( 'wcf_pin_end_trigger_type', [
-			'label'       => self::__( 'End Trigger'),
+			'label'       => __( 'End Trigger', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::SELECT,
 			'default'     => 'default',
 			'separator'   => 'before',
 			'condition'   => [ 'wcf_enable_pin_area' => 'yes' ],
 			'options'     => [
-				'default' => self::__( 'Default'),
-				'custom'  => self::__( 'Custom'),
+				'default' => __( 'Default', 'animation-addons-for-elementor' ),
+				'custom'  => __( 'Custom', 'animation-addons-for-elementor' ),
 			],
 			'render_type' => 'ui',
 		] );
@@ -1240,38 +1233,38 @@ class WCFAddon_BlackList_Notice {
 		] );
 
 		$element->add_responsive_control( 'wcf_pin_status', [
-			'label'       => self::__( 'Pin'),
+			'label'       => __( 'Pin', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::SELECT,
 			'default'     => 'true',
 			'options'     => [
-				'true'   => self::__( 'True'),
-				'false'  => self::__( 'False'),
-				'custom' => self::__( 'Custom'),
+				'true'   => __( 'True', 'animation-addons-for-elementor' ),
+				'false'  => __( 'False', 'animation-addons-for-elementor' ),
+				'custom' => __( 'Custom', 'animation-addons-for-elementor' ),
 			],
 			'render_type' => 'none',
 			'condition'   => [ 'wcf_enable_pin_area' => 'yes' ],
 		] );
 
 		$element->add_responsive_control( 'wcf_pin_spacing', [
-			'label'       => self::__( 'PinSpacing'),
+			'label'       => __( 'PinSpacing', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::SELECT,
 			'default'     => 'false',
 			'options'     => [
-				'true'   => self::__( 'True'),
-				'false'  => self::__( 'False'),
-				'custom' => self::__( 'Custom'),
+				'true'   => __( 'True', 'animation-addons-for-elementor' ),
+				'false'  => __( 'False', 'animation-addons-for-elementor' ),
+				'custom' => __( 'Custom', 'animation-addons-for-elementor' ),
 			],
 			'render_type' => 'none',
 			'condition'   => [ 'wcf_enable_pin_area' => 'yes' ],
 		] );
 
 		$element->add_control( 'wcf_pin_markers', [
-			'label'       => self::__( 'Pin Markers'),
+			'label'       => __( 'Pin Markers', 'animation-addons-for-elementor' ),
 			'type'        => Controls_Manager::SELECT,
 			'default'     => 'false',
 			'options'     => [
-				'true'  => self::__( 'True'),
-				'false' => self::__( 'False'),
+				'true'  => __( 'True', 'animation-addons-for-elementor' ),
+				'false' => __( 'False', 'animation-addons-for-elementor' ),
 			],
 			'render_type' => 'none',
 			'condition'   => [ 'wcf_enable_pin_area' => 'yes' ],

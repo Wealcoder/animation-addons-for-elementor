@@ -1,0 +1,25 @@
+{#
+  AAE Form Range Group — a thin shell. The widget's HTML is its child tree
+  (heading + value + slider), not a hardcoded blob, so every part is a real
+  element the builder selects and styles.
+
+  `data-aae-range-group` is the scope range-group.js binds to. It is an
+  ATTRIBUTE, not a class, deliberately: in edit-mode the canvas strips base
+  and custom classes off atomic elements, and a hook class in the `classes`
+  prop is one panel ✕ away from being unapplied — a rendered data-attr is
+  neither.
+#}
+{% set classes = ['aae-a-form-range-group', 'e-con', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') | trim %}
+
+<div class="{{ classes }} {{ editor_classes | default('') }}"
+    data-id="{{ id }}"
+    data-element_type="{{ type }}"
+    data-e-type="{{ type }}"
+    data-interaction-id="{{ interaction_id | default(id) }}"
+    data-aae-range-group="true"
+    {% if settings._cssid is defined and settings._cssid is not empty %}id="{{ settings._cssid | e('html_attr') }}"{% endif %}
+    {% if settings.attributes is defined and settings.attributes is not empty %}{{ settings.attributes | raw }}{% endif %}
+    {{ editor_attributes | default('') | raw }}>
+
+    {{ children_placeholder | raw }}
+</div>

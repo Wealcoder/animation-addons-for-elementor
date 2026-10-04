@@ -72,6 +72,11 @@ class AAE_A_Accordion extends Atomic_Element_Base {
 
 	protected static function define_props_schema(): array {
 		return [
+			// Snapshot of this element's own full model (JSON), captured by the
+			// JS preset-apply engine the first time a preset is applied — see
+			// preset-apply.js's SNAPSHOT_REVERT_TYPES / "Reset to Default".
+			'aae_preset_snapshot' => String_Prop_Type::make()->default( '' ),
+
 			'classes' => Classes_Prop_Type::make()->default( [] ),
 			'attributes' => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
 			'default_state' => String_Prop_Type::make()->enum( [ 'first', 'none' ] )->default( 'first' ),
@@ -148,7 +153,7 @@ class AAE_A_Accordion extends Atomic_Element_Base {
 		$wrapper_styles = [
 			'display' => String_Prop_Type::generate( 'flex' ),
 			'flex-direction' => String_Prop_Type::generate( 'column' ),
-			'width' => String_Prop_Type::generate( '100%' ),
+			'width' => Size_Prop_Type::generate( array( 'size' => 100, 'unit' => '%' ) ),
 			'gap' => Size_Prop_Type::generate( [
 				'size' => 10,
 				'unit' => 'px',

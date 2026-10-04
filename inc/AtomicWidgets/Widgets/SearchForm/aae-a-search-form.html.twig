@@ -29,17 +29,84 @@
         [data-id="{{ id }}"] input[type="search"]::-webkit-input-placeholder { color: inherit; opacity: 0.6; }
         [data-id="{{ id }}"] input[type="search"]::-moz-placeholder { color: inherit; opacity: 0.6; }
     </style>
-    {# Editor-only: in dropdown / fullscreen keep the canvas clean — only the search
-       icon shows; flip "Show Panel In Editor" on to reveal the panel for editing.
-       Scoped to .elementor-editor-active so it takes effect ONLY inside the editor
-       (never on the frontend, where the JS owns panel visibility). Targets both the
-       class and data-e-type because edit-mode can strip custom classes. #}
-    {% if settings.mode|default('inline') != 'inline' and not settings.editor_show_panel %}
+    {# Editor-only preview of the toggling panel.
+
+       Both states ship as CSS keyed on the wrapper's data-editor-show-panel
+       attribute, so flipping the preview is a one-attribute write (see
+       bindEditorPreviewToggle) rather than inline styles — and a data attribute,
+       unlike a custom class, is never stripped in edit mode.
+
+       These rules deliberately stop at visibility and the icon pair. Making the
+       fullscreen panel an actual fixed overlay in the canvas — which is what
+       would truly match the frontend — cannot work while AAE Pro's
+       aae-smoother-fixed.js is loaded: it portals ANY element inside
+       #smooth-content whose computed position is fixed out to <body> (in the
+       editor too, where no smoother is even running), and its rebuilt ancestor
+       clones copy className only, no data-id and no data-*. So the panel went
+       fixed, was portaled, these selectors stopped matching it, and it landed
+       back in flow at the foot of the canvas. Visibility rules never make
+       anything fixed, so they never trip that path.
+
+       Every rule is scoped to .elementor-editor-active, so the frontend never
+       sees one of them and the JS still owns open/close there. Class and
+       data-e-type are both targeted because edit-mode can strip custom classes. #}
+    {% if settings.mode|default('inline') != 'inline' %}
         <style>
-            .elementor-editor-active [data-id="{{ id }}"] .aae-a-search-panel,
-            .elementor-editor-active [data-id="{{ id }}"] [data-e-type="e-aae-a-search-panel"] { display: none; }
+            .elementor-editor-active [data-id="{{ id }}"][data-editor-show-panel="false"] .aae-a-search-panel,
+            .elementor-editor-active [data-id="{{ id }}"][data-editor-show-panel="false"] [data-e-type="e-aae-a-search-panel"] { display: none; }
+
+            {# The toggle template reveals BOTH glyphs in the editor so either can
+               be picked, which reads as a doubled icon. Show the one that matches
+               the previewed state instead: (0,5,0) here beats the toggle's own
+               (0,4,0) rule whatever the source order. #}
+            .elementor-editor-active [data-id="{{ id }}"][data-editor-show-panel="false"] .aae-a-search-toggle .aae-a-search-toggle__close { display: none; }
+            .elementor-editor-active [data-id="{{ id }}"][data-editor-show-panel="true"] .aae-a-search-toggle .aae-a-search-toggle__open { display: none; }
+            .elementor-editor-active [data-id="{{ id }}"][data-editor-show-panel="true"] .aae-a-search-toggle .aae-a-search-toggle__close { display: inline-flex; }
+
+            {% if settings.mode|default('inline') == 'fullscreen' %}
+            {# Fullscreen previews at viewport SIZE. In the preview iframe vh/vw
+               are the canvas viewport, so this is the size the panel really gets
+               once published — instead of the parent column's width (measured
+               386px against the 1025px it renders at on the frontend).
+
+               Size only: `position: fixed` here would be portaled straight out of
+               the form by Pro's aae-smoother-fixed.js and these selectors would
+               stop matching, dropping the panel back into flow at the foot of the
+               canvas. Staying in flow is the trade — the canvas grows by one
+               viewport while the preview is open. #}
+            .elementor-editor-active [data-id="{{ id }}"][data-editor-show-panel="true"] .aae-a-search-panel,
+            .elementor-editor-active [data-id="{{ id }}"][data-editor-show-panel="true"] [data-e-type="e-aae-a-search-panel"] {
+                width: 100vw;
+                height: 100vh;
+                max-width: 100vw;
+            }
+            {% endif %}
+
         </style>
     {% endif %}
+    {# Editor parity for the filter switches.
+
+       The frontend JS hides the Date / Category filters when their switch is off.
+       The editor deliberately kept them visible so they stayed selectable, so
+       flipping "Enable Search Filter" off left both filters sitting in the canvas
+       and the switch looked broken. (This file's JS does not boot in the editor
+       at all, so nothing hid them there either way.)
+
+       These mirror the JS rules as editor-only CSS, keyed on the same data-*
+       attributes the wrapper already carries, so the canvas shows what will
+       actually publish. Attribute + class puts them at (0,3,0), above an element's
+       own base style at (0,2,0). Both stay reachable in the Structure panel while
+       hidden, exactly like the panel itself. #}
+    <style>
+        .elementor-editor-active [data-id="{{ id }}"][data-show-filter="false"] .aae-a-search-filter-date,
+        .elementor-editor-active [data-id="{{ id }}"][data-show-filter="false"] .aae-a-search-filter-category,
+        .elementor-editor-active [data-id="{{ id }}"][data-show-filter="false"] [data-e-type="e-aae-a-search-filter-date"],
+        .elementor-editor-active [data-id="{{ id }}"][data-show-filter="false"] [data-e-type="e-aae-a-search-filter-category"],
+        .elementor-editor-active [data-id="{{ id }}"][data-show-date="false"] .aae-a-search-filter-date,
+        .elementor-editor-active [data-id="{{ id }}"][data-show-date="false"] [data-e-type="e-aae-a-search-filter-date"],
+        .elementor-editor-active [data-id="{{ id }}"][data-show-cat="false"] .aae-a-search-filter-category,
+        .elementor-editor-active [data-id="{{ id }}"][data-show-cat="false"] [data-e-type="e-aae-a-search-filter-category"] { display: none; }
+    </style>
     {# Inline mode has an always-visible panel, so the search-icon toggle is
        redundant — hide it everywhere (editor + frontend). Targets class and
        data-e-type since edit-mode can strip custom classes. #}

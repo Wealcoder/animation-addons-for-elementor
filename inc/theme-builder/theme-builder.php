@@ -259,15 +259,10 @@ class WCF_Theme_Builder
 					continue;
 				}
 
-				$src = $style->src;
-
-				if (! empty($style->ver)) {
-					$src = add_query_arg('ver', $style->ver, $src);
-				}
-
 				$this->deferred_template_styles[] = array(
 					'handle' => $handle,
-					'src'    => $src,
+					'src'    => $style->src,
+					'ver'    => ! empty($style->ver) ? $style->ver : null,
 					'media'  => is_string($style->args) && '' !== $style->args ? $style->args : 'all',
 				);
 
@@ -288,12 +283,16 @@ class WCF_Theme_Builder
 	public function print_builder_template_styles()
 	{
 		foreach ($this->deferred_template_styles as $style) {
-			printf(
-				"<link rel='stylesheet' id='aae-tb-%s-css' href='%s' media='%s' />\n",
-				esc_attr($style['handle']),
-				esc_url($style['src']),
-				esc_attr($style['media'])
+			$handle = 'aae-tb-' . $style['handle'];
+
+			wp_enqueue_style(
+				$handle,
+				$style['src'],
+				array(),
+				$style['ver'],
+				$style['media']
 			);
+			wp_print_styles($handle);
 		}
 
 		$this->deferred_template_styles = array();
@@ -381,7 +380,7 @@ class WCF_Theme_Builder
 		// registering them anyway ships the whole header+footer asset set to a
 		// page that renders neither. Measured on /aae-blank/ (canvas): ~20 dead
 		// files — aae-a-menu-js/css, aae-a-nav-js/css, and every
-		// local-<header id>-* / local-<footer id>-* / aae_utility_styles-* file
+		// local-<header id>-* / local-<footer id>-* file
 		// for both templates.
 		if ($this->renders_theme_parts()) {
 			foreach (array('header', 'footer') as $template_type) {
@@ -465,10 +464,20 @@ class WCF_Theme_Builder
 
 		// Avoid running wp_head hooks again
 		remove_all_actions('wp_head');
+		// locate_template() includes a file belonging to the active theme, so
+		// what runs between the two calls is code this plugin does not own.
+		// finally + the level check guarantee the buffer closes even if that
+		// template throws, and that we only ever close our own.
+		$ob_level = ob_get_level();
 		ob_start();
-		// It cause a `require_once` so, in the get_header it self it will not be required again.
-		locate_template($templates, true);
-		ob_get_clean();
+		try {
+			// It cause a `require_once` so, in the get_header it self it will not be required again.
+			locate_template($templates, true);
+		} finally {
+			while (ob_get_level() > $ob_level) {
+				ob_end_clean();
+			}
+		}
 	}
 
 	/**
@@ -513,10 +522,20 @@ class WCF_Theme_Builder
 
 		// Avoid running wp_head hooks again
 		remove_all_actions('wp_footer');
+		// locate_template() includes a file belonging to the active theme, so
+		// what runs between the two calls is code this plugin does not own.
+		// finally + the level check guarantee the buffer closes even if that
+		// template throws, and that we only ever close our own.
+		$ob_level = ob_get_level();
 		ob_start();
-		// It cause a `require_once` so, in the get_header it self it will not be required again.
-		locate_template($templates, true);
-		ob_get_clean();
+		try {
+			// It cause a `require_once` so, in the get_header it self it will not be required again.
+			locate_template($templates, true);
+		} finally {
+			while (ob_get_level() > $ob_level) {
+				ob_end_clean();
+			}
+		}
 	}
 
 	// Set Builder content header footer
@@ -525,9 +544,8 @@ class WCF_Theme_Builder
 
 		$archive_template_id = $this->get_template_id('header');
 		if ($archive_template_id != '0') {
-			// PHPCS - should not be escaped.
 			
-			echo self::render_build_content($archive_template_id); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo aaeaddon_kses_builder_html( self::render_build_content( $archive_template_id ) );
 		}
 	}
 
@@ -535,8 +553,7 @@ class WCF_Theme_Builder
 	{
 		$archive_template_id = $this->get_template_id('footer');
 		if ($archive_template_id != '0') {
-			// PHPCS - should not be escaped.
-			echo self::render_build_content($archive_template_id); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo aaeaddon_kses_builder_html( self::render_build_content( $archive_template_id ) );
 		}
 	}
 
@@ -1223,8 +1240,7 @@ class WCF_Theme_Builder
 	{
 		$archive_template_id = $this->get_template_id('archive');
 		if ($archive_template_id != '0') {
-			// PHPCS - should not be escaped.
-			echo self::render_build_content($archive_template_id); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo aaeaddon_kses_builder_html( self::render_build_content( $archive_template_id ) );
 		}
 	}
 
@@ -1233,8 +1249,7 @@ class WCF_Theme_Builder
 	{
 		$archive_template_id = $this->get_template_id('single');
 		if ($archive_template_id != '0') {
-			// PHPCS - should not be escaped.
-			echo self::render_build_content($archive_template_id); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo aaeaddon_kses_builder_html( self::render_build_content( $archive_template_id ) );
 		}
 	}
 
@@ -1348,8 +1363,7 @@ class WCF_Theme_Builder
 		}
 
 		if ($column_name === 'type') {
-			// PHPCS - should not be escaped.
-			echo isset(self::get_template_type()[$tmpType]) ? '<div class="column-tmptype">' . self::get_template_type()[$tmpType]['label'] . '</div>' : '-'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo isset( self::get_template_type()[ $tmpType ] ) ? '<div class="column-tmptype">' . esc_html( self::get_template_type()[ $tmpType ]['label'] ) . '</div>' : '-';
 		}
 
 		if ($column_name === 'status') {
@@ -2221,11 +2235,18 @@ class WCF_Theme_Builder
 
 		if (isset($_POST)) {
 
+			if (! (current_user_can('manage_options') || current_user_can('edit_others_posts') || current_user_can('edit_posts'))) {
+				$errormessage = array(
+					'message' => esc_html__('You are unauthorized to perform this action!', 'animation-addons-for-elementor'),
+				);
+				wp_send_json_error($errormessage);
+			}
+
 			$nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
 
 			if (! wp_verify_nonce($nonce, 'wcf_tmp_nonce')) {
 				$errormessage = array(
-					'message' => esc_html__('Nonce Varification Faild !', 'animation-addons-for-elementor'),
+					'message' => esc_html__('Nonce Verification Failed!', 'animation-addons-for-elementor'),
 				);
 				wp_send_json_error($errormessage);
 			}

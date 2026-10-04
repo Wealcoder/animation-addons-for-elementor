@@ -6,6 +6,7 @@ import { getContainer } from '@elementor/editor-elements';
 import { resolveAtBreakpoint } from './helpers';
 import { getSelectedContainer } from "../editor-bridge/helpers";
 import { applySettingsToDom } from '../editor-bridge/settings-bridge';
+import { schedulePreviewSync } from './schedule-preview-sync';
 
 /**
  * Stand-alone responsive cell read/write for primitive (scalar) values
@@ -51,10 +52,10 @@ export function useCellValue({ propValue, bind, activeBp, elementId, defaultValu
 			? (defaultValue ?? null)
 			: cascaded;
 	}
-	const container = getContainer(elementId);
-	if (!container) throw new Error('container not found');
 
 	const setValue = (next) => {
+		const container = getContainer(elementId);
+		if (!container) return;
 		const nextMap = { ...map, [activeBp]: (next === undefined ? null : next) };
 		const nextEnvelope = { $$type: RESPONSIVE_KEY, value: nextMap };	
 		// updateElementSettings({
@@ -93,7 +94,14 @@ export function useCellValue({ propValue, bind, activeBp, elementId, defaultValu
 		//
 		// playGroup scopes which feature is rebuilt; '' would rebuild every feature
 		// on the element, so an unrelated animation would rebind on each keystroke.
-		applySettingsToDom(container, playGroup);
+		//
+		// Coalesced to one push per frame (see schedule-preview-sync.js). The
+		// command above already ran synchronously, so the container is re-read
+		// inside the frame rather than held across it.
+		schedulePreviewSync(elementId + ':' + playGroup, () => {
+			const live = getContainer(elementId);
+			if (live) applySettingsToDom(live, playGroup);
+		});
 	};
 
 	const resetValue = () => setValue(null);

@@ -13,12 +13,13 @@
  */
 
 import { controlsRegistry } from '@elementor/editor-editing-panel';
-import { htmlV3PropTypeUtil, stringArrayPropTypeUtil, stringPropTypeUtil } from '@elementor/editor-props';
+import { colorPropTypeUtil, htmlV3PropTypeUtil, stringArrayPropTypeUtil, stringPropTypeUtil } from '@elementor/editor-props';
 
 import { SlidesControl } from './SlidesControl';
 import { AccordionItemsControl } from './AccordionItemsControl';
 import { TimelineItemsControl } from './TimelineItemsControl';
 import { SocialShareItemsControl } from './SocialShareItemsControl';
+import { IconListItemsControl } from './IconListItemsControl';
 import { PresetPickerControl } from './PresetPickerControl';
 import { FormActionsControl } from './FormActionsControl';
 import { FormConditionsControl } from './FormConditionsControl';
@@ -30,6 +31,11 @@ import { MediaUrlControl } from './MediaUrlControl';
 import { InlineTextControl } from './InlineTextControl';
 import { StackCardsControl } from './StackCardsControl';
 import { StackPreviewControl } from './StackPreviewControl';
+import { BtnHoverStyleControl } from './BtnHoverStyleControl';
+import { ProNoticeControl } from './ProNoticeControl';
+import { NoticeControl } from './NoticeControl';
+import { AaeColorControl } from './ColorControl';
+import { AcfFieldControl } from './AcfFieldControl';
 
 const ELEMENT_CONTROLS = [
 	{ type: 'aae-slides', component: SlidesControl, layout: 'full' },
@@ -37,6 +43,7 @@ const ELEMENT_CONTROLS = [
 	{ type: 'aae-items', component: AccordionItemsControl, layout: 'full' },
 	{ type: 'aae-timeline-items', component: TimelineItemsControl, layout: 'full' },
 	{ type: 'aae-social-share-items', component: SocialShareItemsControl, layout: 'full' },
+	{ type: 'aae-icon-list-items', component: IconListItemsControl, layout: 'full' },
 	{ type: 'aae-nav-items', component: NavItemsControl, layout: 'full' },
 	{ type: 'aae-nav-sub-items', component: NavSubItemsControl, layout: 'full' },
 	{ type: 'aae-mobile-nav-lifecycle', component: MobileNavLifecycleControl, layout: 'full' },
@@ -46,6 +53,11 @@ const ELEMENT_CONTROLS = [
 	{ type: 'aae-draw-play', component: DrawPlayControl, layout: 'full' },
 	{ type: 'aae-stack-cards', component: StackCardsControl, layout: 'full' },
 	{ type: 'aae-stack-preview', component: StackPreviewControl, layout: 'full' },
+	// Pinned to the top of a locked Pro form field's panel by
+	// inc/Forms/Pro_Gate.php — see that class on why the element stays editable.
+	{ type: 'aae-pro-notice', component: ProNoticeControl, layout: 'full' },
+	// Generic instruction card — inc/AtomicWidgets/Controls/class-aae-notice-control.php.
+	{ type: 'aae-notice', component: NoticeControl, layout: 'full' },
 	// Prop-bound (unlike the element-controls above): the panel wraps it in a
 	// SettingsField for its bind key; useBoundProp(stringArrayPropTypeUtil)
 	// reads/writes the String_Array prop.
@@ -57,6 +69,18 @@ const ELEMENT_CONTROLS = [
 	// would bind the same value but renders no toolbar — its buttons live on
 	// the canvas, which is closed to third-party types. See InlineTextControl.
 	{ type: 'aae-inline-text', component: InlineTextControl, layout: 'full', propTypeUtil: htmlV3PropTypeUtil },
+	// Also prop-bound, to a plain String: the Btn widget's "Hover Style"
+	// picker, which additionally hides its own row unless a sibling boolean
+	// prop is set — see BtnHoverStyleControl.jsx.
+	{ type: 'aae-btn-hover-style', component: BtnHoverStyleControl, layout: 'full', propTypeUtil: stringPropTypeUtil },
+	// Prop-bound to a Color_Prop_Type: Elementor's own picker on the Content
+	// tab, for a part whose colours are not its root box (a slider's rail /
+	// fill / thumb). inc/AtomicWidgets/Controls/class-aae-color-control.php.
+	{ type: 'aae-color', component: AaeColorControl, layout: 'two-columns', propTypeUtil: colorPropTypeUtil },
+	// Prop-bound to a plain String (an ACF field KEY): a dropdown of the
+	// site's ACF fields, narrowed to the post type of the Loop Grid the
+	// filter targets. inc/AtomicWidgets/Controls/class-aae-acf-field-control.php.
+	{ type: 'aae-acf-field', component: AcfFieldControl, layout: 'full', propTypeUtil: stringPropTypeUtil },
 ];
 
 let registered = false;

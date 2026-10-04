@@ -1,6 +1,9 @@
 .aae-a-flip-box {
   display: block !important;
 }
+.aae-a-flip-box:focus {
+  outline: revert;
+}
 .aae-a-flip-box .flip-box-front,
 .aae-a-flip-box .flip-box-back {
   position: absolute !important;
@@ -26,10 +29,10 @@
 .aae-a-flip-box.flip-box-animate-left .flip-box-back {
   transform: perspective(1000px) rotateY(-180deg);
 }
-.aae-a-flip-box.flip-box-animate-left:hover .flip-box-front {
+.aae-a-flip-box.flip-box-animate-left:hover .flip-box-front, .aae-a-flip-box.flip-box-animate-left:focus-within .flip-box-front {
   transform: perspective(1000px) rotateY(180deg);
 }
-.aae-a-flip-box.flip-box-animate-left:hover .flip-box-back {
+.aae-a-flip-box.flip-box-animate-left:hover .flip-box-back, .aae-a-flip-box.flip-box-animate-left:focus-within .flip-box-back {
   transform: perspective(1000px) rotateY(0deg);
 }
 .aae-a-flip-box.flip-box-animate-right .flip-box-front {
@@ -38,10 +41,10 @@
 .aae-a-flip-box.flip-box-animate-right .flip-box-back {
   transform: perspective(1000px) rotateY(180deg);
 }
-.aae-a-flip-box.flip-box-animate-right:hover .flip-box-front {
+.aae-a-flip-box.flip-box-animate-right:hover .flip-box-front, .aae-a-flip-box.flip-box-animate-right:focus-within .flip-box-front {
   transform: perspective(1000px) rotateY(-180deg);
 }
-.aae-a-flip-box.flip-box-animate-right:hover .flip-box-back {
+.aae-a-flip-box.flip-box-animate-right:hover .flip-box-back, .aae-a-flip-box.flip-box-animate-right:focus-within .flip-box-back {
   transform: perspective(1000px) rotateY(0deg);
 }
 .aae-a-flip-box.flip-box-animate-up .flip-box-front {
@@ -50,10 +53,10 @@
 .aae-a-flip-box.flip-box-animate-up .flip-box-back {
   transform: perspective(1000px) rotateX(180deg);
 }
-.aae-a-flip-box.flip-box-animate-up:hover .flip-box-front {
+.aae-a-flip-box.flip-box-animate-up:hover .flip-box-front, .aae-a-flip-box.flip-box-animate-up:focus-within .flip-box-front {
   transform: perspective(1000px) rotateX(-180deg);
 }
-.aae-a-flip-box.flip-box-animate-up:hover .flip-box-back {
+.aae-a-flip-box.flip-box-animate-up:hover .flip-box-back, .aae-a-flip-box.flip-box-animate-up:focus-within .flip-box-back {
   transform: perspective(1000px) rotateX(0deg);
 }
 .aae-a-flip-box.flip-box-animate-down .flip-box-front {
@@ -62,10 +65,10 @@
 .aae-a-flip-box.flip-box-animate-down .flip-box-back {
   transform: perspective(1000px) rotateX(-180deg);
 }
-.aae-a-flip-box.flip-box-animate-down:hover .flip-box-front {
+.aae-a-flip-box.flip-box-animate-down:hover .flip-box-front, .aae-a-flip-box.flip-box-animate-down:focus-within .flip-box-front {
   transform: perspective(1000px) rotateX(180deg);
 }
-.aae-a-flip-box.flip-box-animate-down:hover .flip-box-back {
+.aae-a-flip-box.flip-box-animate-down:hover .flip-box-back, .aae-a-flip-box.flip-box-animate-down:focus-within .flip-box-back {
   transform: perspective(1000px) rotateX(0deg);
 }
 .aae-a-flip-box.flip-box-animate-zoom-in .flip-box-back {
@@ -73,7 +76,7 @@
   transform: scale(0.75);
   transition: opacity 0.5s, transform 0.5s;
 }
-.aae-a-flip-box.flip-box-animate-zoom-in:hover .flip-box-back {
+.aae-a-flip-box.flip-box-animate-zoom-in:hover .flip-box-back, .aae-a-flip-box.flip-box-animate-zoom-in:focus-within .flip-box-back {
   opacity: 1;
   transform: scale(1);
 }
@@ -81,7 +84,7 @@
   z-index: 3;
   transition: opacity 0.5s, transform 0.5s, visibility 0.5s;
 }
-.aae-a-flip-box.flip-box-animate-zoom-out:hover .flip-box-front {
+.aae-a-flip-box.flip-box-animate-zoom-out:hover .flip-box-front, .aae-a-flip-box.flip-box-animate-zoom-out:focus-within .flip-box-front {
   opacity: 0;
   visibility: hidden;
   transform: scale(0.75);
@@ -90,7 +93,7 @@
   opacity: 0;
   transition: opacity 0.5s;
 }
-.aae-a-flip-box.flip-box-animate-fade-in:hover .flip-box-back {
+.aae-a-flip-box.flip-box-animate-fade-in:hover .flip-box-back, .aae-a-flip-box.flip-box-animate-fade-in:focus-within .flip-box-back {
   opacity: 1;
 }
 .aae-a-flip-box.flip-box--back-hidden .flip-box-back {
@@ -98,4 +101,9 @@
 }
 .aae-a-flip-box.flip-box--back-hidden .flip-box-front {
   backface-visibility: visible !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .aae-a-flip-box.flip-box-animate-zoom-in .flip-box-back, .aae-a-flip-box.flip-box-animate-zoom-out .flip-box-front, .aae-a-flip-box.flip-box-animate-fade-in .flip-box-back {
+    transition: none;
+  }
 }/*# sourceMappingURL=flip-box.css.map */

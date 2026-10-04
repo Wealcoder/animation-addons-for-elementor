@@ -30,6 +30,12 @@ final class Bootstrap {
 		// Version-gated table creation (cheap option read per request).
 		add_action( 'init', [ Database::class, 'migrate' ], 5 );
 
+		// Licence gate for the Pro fields and multi-step. Registered FIRST and
+		// unconditionally: it must be listening before any form renders, and it
+		// deliberately does not gate registration — see Pro_Gate's docblock on
+		// why unregistering a Pro element type would delete customer content.
+		( new Pro_Gate() )->register();
+
 		// Milestone 4 — identity: reconcile form_keys inside the data being
 		// saved (create/duplicate/paste/import all funnel through here)...
 		add_filter( 'elementor/document/save/data', [ Identity::class, 'filter_save_data' ], 10, 2 );

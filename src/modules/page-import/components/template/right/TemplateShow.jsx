@@ -7,6 +7,20 @@ import { cn } from "C/lib/utils";
 import { Dot, Heart } from "lucide-react";
 import { useState } from "react";
 import { RiDownloadLine, RiEyeLine, RiVipCrown2Fill } from "react-icons/ri";
+import {
+  TooltipProvider,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "C/components/ui/tooltip";
+import V4ImportDialog from "C/components/shared/V4ImportDialog";
+import {
+  ATOMIC_IMPORT_AVAILABLE,
+  PAGE_MODE_KEEP,
+  fetchAtomicImportStatus,
+  isV4Template,
+  LOCALIZE_IMAGES_PARAM,
+} from "C/lib/atomicImport";
 
 const TemplateShow = ({ allTemplate }) => {
   const [open, setOpen] = useState(false);
@@ -16,7 +30,15 @@ const TemplateShow = ({ allTemplate }) => {
   const { setTabKey } = useTNavigation();
   const { activated } = useActivate();
 
-  const changeRoute = (value, slug, id, is_pro) => {
+  // The V4 dialog holds the navigation it interrupted until the user answers,
+  // and the mode they pick there rides the URL as `v4mode` -- through
+  // Required Features and Demo Importing -- into the importer's
+  // `aae_page_mode`.
+  const [v4Pending, setV4Pending] = useState(null);
+  const [v4Mode, setV4Mode] = useState(PAGE_MODE_KEEP);
+  const [v4Images, setV4Images] = useState(false);
+
+  const navigate = (value, slug, id, mode = "", images = false) => {
     const url = new URL(window.location.href);
     const pageQuery = url.searchParams.get("page");
 
@@ -27,18 +49,44 @@ const TemplateShow = ({ allTemplate }) => {
     url.searchParams.set("tab", value);
     url.searchParams.set("template", slug);
     url.searchParams.set("templateid", id);
+    if (mode) url.searchParams.set("v4mode", mode);
+    if (images) url.searchParams.set(LOCALIZE_IMAGES_PARAM, "1");
 
-    if (is_pro) {
-      if (activated?.product_status?.item_id === 13) {
-        window.history.replaceState({}, "", url);
-        setTabKey(value);
-      } else {
-        setOpen(value);
-      }
-    } else {
-      window.history.replaceState({}, "", url);
-      setTabKey(value);
+    window.history.replaceState({}, "", url);
+    setTabKey(value);
+  };
+
+  const changeRoute = async (value, template) => {
+    const { slug, id, is_pro } = template || {};
+
+    // The licence gate comes first, exactly as before.
+    if (is_pro && activated?.product_status?.item_id !== 13) {
+      setOpen(value);
+      return;
     }
+
+    // A V4 page landing on a site that already holds V4 content: ask how its
+    // design should meet what is there. Asked fresh, never from the payload
+    // -- see lib/atomicImport.js. A failed request proceeds with the
+    // server's default (keep the page's own design).
+    // Every V4 import stops at the dialog: it carries the image choice. The
+    // mode picker inside it is only offered when the site already holds V4
+    // content -- with nothing to match, "match my site" would be a no-op.
+    if (isV4Template(template)) {
+      const status = await fetchAtomicImportStatus();
+      setV4Mode(PAGE_MODE_KEEP);
+      setV4Images(false);
+      setV4Pending({
+        value,
+        slug,
+        id,
+        title: template?.title,
+        inUse: !!status?.in_use,
+      });
+      return;
+    }
+
+    navigate(value, slug, id);
   };
 
   const saveWishlist = async (data) => {
@@ -99,6 +147,17 @@ const TemplateShow = ({ allTemplate }) => {
                   ) : (
                     ""
                   )}
+                  {/* Only V4 is badged; V3 is what every page has been until now. */}
+                  {isV4Template(template) && (
+                    <div className="absolute top-2.5 left-2.5">
+                      <Badge
+                        data-aae-v4-badge
+                        className="border-0 h-[26px] px-2.5 text-sm font-medium bg-[#5453FD] text-white rounded-full"
+                      >
+                        V4
+                      </Badge>
+                    </div>
+                  )}
                   <div className="w-full h-full hidden group-hover:flex justify-center items-center gap-2">
                     <a
                       href={template?.demo_link}
@@ -110,20 +169,49 @@ const TemplateShow = ({ allTemplate }) => {
                     >
                       <RiEyeLine size={20} className="mr-2" /> Preview
                     </a>
-                    <Button
-                      variant="general"
-                      className="py-2 ps-3 pe-4"
-                      onClick={() =>
-                        changeRoute(
-                          "required-features",
-                          template?.slug,
-                          template?.id,
-                          template?.is_pro
-                        )
-                      }
-                    >
-                      <RiDownloadLine size={20} className="mr-2" /> Import
-                    </Button>
+                    {/* A V4 page on a site whose Elementor cannot render
+                        atomic elements would import and show nothing, so the
+                        button is withheld and the tooltip says why. */}
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span
+                            className="flex"
+                            tabIndex={
+                              isV4Template(template) && !ATOMIC_IMPORT_AVAILABLE
+                                ? 0
+                                : -1
+                            }
+                          >
+                            <Button
+                              variant="general"
+                              data-aae-import-button
+                              disabled={
+                                isV4Template(template) &&
+                                !ATOMIC_IMPORT_AVAILABLE
+                              }
+                              className={cn(
+                                "py-2 ps-3 pe-4",
+                                isV4Template(template) &&
+                                  !ATOMIC_IMPORT_AVAILABLE &&
+                                  "opacity-50 pointer-events-none"
+                              )}
+                              onClick={() =>
+                                changeRoute("required-features", template)
+                              }
+                            >
+                              <RiDownloadLine size={20} className="mr-2" />{" "}
+                              Import
+                            </Button>
+                          </span>
+                        </TooltipTrigger>
+                        {isV4Template(template) && !ATOMIC_IMPORT_AVAILABLE && (
+                          <TooltipContent>
+                            <p>Needs Elementor V4 (Atomic) switched on</p>
+                          </TooltipContent>
+                        )}
+                      </Tooltip>
+                    </TooltipProvider>
                   </div>
                 </div>
               </div>
@@ -169,6 +257,28 @@ const TemplateShow = ({ allTemplate }) => {
         </div>
       )}
       <ProConfirmDialog open={open} setOpen={setOpen} />
+      <V4ImportDialog
+        open={!!v4Pending}
+        setOpen={(isOpen) => {
+          if (!isOpen) setV4Pending(null);
+        }}
+        title={v4Pending?.title}
+        inUse={!!v4Pending?.inUse}
+        mode={v4Mode}
+        setMode={setV4Mode}
+        localizeImages={v4Images}
+        setLocalizeImages={setV4Images}
+        onConfirm={(mode) => {
+          if (v4Pending)
+            navigate(
+              v4Pending.value,
+              v4Pending.slug,
+              v4Pending.id,
+              v4Pending.inUse ? mode : "",
+              v4Images
+            );
+        }}
+      />
     </>
   );
 };

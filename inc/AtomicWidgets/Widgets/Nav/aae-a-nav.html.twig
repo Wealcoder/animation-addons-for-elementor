@@ -20,6 +20,12 @@
     data-mobile-position="{{ settings.mobile_position | default('right') | e('html_attr') }}"
     data-mobile-close-on-link="{{ settings.mobile_close_on_link is defined and not settings.mobile_close_on_link ? 'false' : 'true' }}"
     data-mobile-lock-scroll="{{ settings.mobile_lock_scroll is defined and not settings.mobile_lock_scroll ? 'false' : 'true' }}"
+    {# Editor-only drawer preview switch. Rendered as the INITIAL value only:
+       an atomic Switch commits through a set-settings transaction that updates
+       the model WITHOUT re-rendering this Twig, so nav.js reads the LIVE value
+       off the editor model and falls back to this attribute. Same constraint
+       offcanvas.js documents for its own `editor_open`. #}
+    data-mobile-editor-open="{{ settings.mobile_editor_open is defined and settings.mobile_editor_open ? 'true' : 'false' }}"
     {% if settings.dropdown_icon is defined and settings.dropdown_icon.url is defined and settings.dropdown_icon.url is not empty %}
         data-dropdown-icon="{{ settings.dropdown_icon.url | e('html_attr') }}"
     {% endif %}

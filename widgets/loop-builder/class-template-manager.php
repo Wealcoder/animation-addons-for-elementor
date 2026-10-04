@@ -288,8 +288,16 @@ class Template_Manager {
 		$original_post = $post;
 
 		if ( $post_id ) {
+			// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- deliberate post switch; $original_post is restored on every exit path below.
 			$post = get_post( $post_id );
+
+			// Restore before bailing. Returning here used to leave the global
+			// $post as null for the rest of the request, which is the failure
+			// documented under "switch_to_post() nulls the global post" -- every
+			// later reader warns on a null it did not cause.
 			if ( ! $post ) {
+				// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- restoring the value saved above.
+				$post = $original_post;
 				return '';
 			}
 			setup_postdata( $post );
@@ -299,6 +307,7 @@ class Template_Manager {
 		$content = \Elementor\Plugin::$instance->frontend->get_builder_content_for_display( $template_id, true );
 
 		// Restore the global post.
+		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- restoring the value saved above.
 		$post = $original_post;
 		wp_reset_postdata();
 

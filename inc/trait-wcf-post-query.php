@@ -832,7 +832,14 @@ trait WCF_Post_Query_Trait {
 						],
 					];
 				}
-				// Create a new WP_Query instance
+				// Create a new WP_Query instance.
+				//
+				// The global is replaced on purpose: core's pagination helpers
+				// (paginate_links(), the_posts_pagination()) read $wp_query, so
+				// the widget's own query has to BE the global for its pager to
+				// render. This runs while rendering an archive template, where
+				// the query it replaces has already been consumed.
+				// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- see above.
 				$GLOBALS['wp_query'] = new \WP_Query( [
 					'post_type' => $this->get_settings( 'post_type' ),
 					'tax_query' => $tax_query,

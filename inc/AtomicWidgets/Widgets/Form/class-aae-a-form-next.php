@@ -44,8 +44,16 @@ use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\AtomicWidgets\Styles\Style_States;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
+use WCF_ADDONS\Forms\Pro_Gated;
 
 class AAE_A_Form_Next extends Atomic_Widget_Base {
+
+	/**
+	 * Locks this widget's PANEL CARD (not the element) without a Pro licence:
+	 * not draggable, lock badge, click opens the upgrade card. Instances already
+	 * on the canvas stay fully editable — see the trait.
+	 */
+	use Pro_Gated;
 
 	use Has_Template;
 
@@ -68,11 +76,14 @@ class AAE_A_Form_Next extends Atomic_Widget_Base {
 	}
 
 	/**
-	 * Seeded automatically as a Step's default child — not a general-purpose
-	 * widget to drag from the panel. AAE_A_Form_Next extends Atomic_Widget_Base
-	 * (→ classic Widget_Base), NOT Atomic_Element_Base — the hook is the
-	 * classic show_in_panel()/hide_on_search() pair (Widget_Base::
-	 * get_initial_config()), not Atomic_Element_Base's should_show_in_panel().
+	 * Seeded automatically as a Step's default child, AND listed in the AAE Form
+	 * panel category so a builder can rebuild a nav row they deleted or lay one
+	 * out by hand.
+	 *
+	 * AAE_A_Form_Next extends Atomic_Widget_Base (→ classic Widget_Base), NOT
+	 * Atomic_Element_Base — the hook is the classic show_in_panel()/
+	 * get_categories()/hide_on_search() trio (Widget_Base::get_initial_config()),
+	 * not Atomic_Element_Base's should_show_in_panel()/define_panel_categories().
 	 * Confirmed live: should_show_in_panel() alone was silently never called
 	 * (widgetsCache still showed show_in_panel:true) — see
 	 * class-aae-a-slider-nav-prev.php for the OTHER, Atomic_Element_Base-based
@@ -80,11 +91,15 @@ class AAE_A_Form_Next extends Atomic_Widget_Base {
 	 * class first.
 	 */
 	public function show_in_panel() {
-		return false;
+		return true;
+	}
+
+	public function get_categories(): array {
+		return [ 'aae-atomic-form' ];
 	}
 
 	public function hide_on_search() {
-		return true;
+		return false;
 	}
 
 	protected static function define_props_schema(): array {

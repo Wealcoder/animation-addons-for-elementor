@@ -40,6 +40,7 @@ use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Dimensions_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
+use WCF_ADDONS\AtomicWidgets\Atomic;
 use WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid;
 use WCF_ADDONS\AtomicWidgets\Widgets\PostImage\AAE_A_Post_Image;
 use WCF_ADDONS\AtomicWidgets\Widgets\PostTitle\AAE_A_Post_Title;
@@ -132,6 +133,33 @@ class AAE_A_Loop_Grid_Slider extends AAE_A_Loop_Grid {
 	}
 
 	/**
+	 * Free sites author at most FREE_SLIDE_LIMIT slides.
+	 *
+	 * A Loop Grid Slider's slides ARE its query results — one `aae-a-loop-slide-item`
+	 * per post — so "how many slides" and `posts_per_page` are the same number,
+	 * and capping the control is what caps the slides.
+	 *
+	 * PANEL ONLY, and that is the whole design. Lowering the control's max stops
+	 * someone AUTHORING a fourth slide without a licence; it does not touch
+	 * sanitize_per_page(), the query, or the render. So a slider built with ten
+	 * slides on a licensed site keeps showing ten after the licence lapses — the
+	 * customer loses the ability to add more, never the page they already
+	 * published. Enforcing it at render instead would make a live site silently
+	 * drop seven slides on the day a card expires, which is the failure mode this
+	 * codebase repeatedly refuses to ship.
+	 *
+	 * The stored value is likewise left alone: the number stays whatever it was,
+	 * so re-licensing restores the full slider with no migration and nothing to
+	 * repair. A control whose max is below its current value renders that value
+	 * and simply will not accept a larger one.
+	 *
+	 * The plain Loop Grid is NOT gated — only the slider.
+	 */
+	protected function per_page_max(): int {
+		return Atomic::pro_licensed() ? parent::per_page_max() : Atomic::FREE_SLIDE_LIMIT;
+	}
+
+	/**
 	 * Slider wrapper base styles. The nested-slider runtime handles the track
 	 * transform / overflow; here we just make the wrapper a positioned,
 	 * full-width, overflow-hidden block so absolutely-positioned nav arrows
@@ -140,9 +168,8 @@ class AAE_A_Loop_Grid_Slider extends AAE_A_Loop_Grid {
 	protected function define_base_styles(): array {
 		$wrapper_styles = [
 			'display'  => String_Prop_Type::generate( 'block' ),
-			'overflow' => String_Prop_Type::generate( 'hidden' ),
 			'position' => String_Prop_Type::generate( 'relative' ),
-			'width'    => String_Prop_Type::generate( '100%' ),
+			'width'    => Size_Prop_Type::generate( array( 'size' => 100, 'unit' => '%' ) ),
 			// Default the slider wrapper to zero padding. It carries `e-con`, whose
 			// default 10px padding offsets the slide-width reference box away from
 			// the runtime's positioning box (see AAE_A_Loop_Slide_Track), clipping

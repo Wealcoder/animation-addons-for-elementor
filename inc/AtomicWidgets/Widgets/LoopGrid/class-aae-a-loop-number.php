@@ -161,7 +161,7 @@ class AAE_A_Loop_Number extends Atomic_Element_Base {
 
 		$is_gap = '...' === $item;
 		$page   = is_int( $item ) ? $item : null;
-		$url    = $page ? AAE_A_Loop_Numbers::page_url( $page ) : '';
+		$url    = $page ? AAE_A_Loop_Numbers::page_url( $page, is_array( $context ) ? $context : [] ) : '';
 
 		return array_merge( $this->build_base_template_context(), [
 			'page_number' => $page,

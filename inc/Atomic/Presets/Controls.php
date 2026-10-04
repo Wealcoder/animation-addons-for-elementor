@@ -31,8 +31,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 final class Controls {
 
-	const TD = 'animation-addons-for-elementor';
-
 	// Native (non-AAE) element types allowed to show the Presets section.
 	//
 	// Empty — so this class currently injects nothing at all. Re-enabling a
@@ -76,11 +74,11 @@ final class Controls {
 
 	private function build_presets_section(): Section {
 		return Section::make()
-			->set_label( __( 'Presets', self::TD ) )
+			->set_label( __( 'Presets', 'animation-addons-for-elementor' ) )
 			->set_id( 'aae_presets' )
 			->set_items( [
 				AAE_A_Preset_Picker_Control::make()
-					->set_label( __( 'Apply Preset', self::TD ) )
+					->set_label( __( 'Apply Preset', 'animation-addons-for-elementor' ) )
 					->set_meta( [ 'layout' => 'custom' ] ),
 			] );
 	}

@@ -1,0 +1,36 @@
+.e-aae-a-curved-text-rotator {
+  animation-name: aae-ct-spin;
+  animation-duration: var(--aae-ct-rot-duration, 8s);
+  animation-direction: var(--aae-ct-rot-direction, normal);
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.aae-a-curved-text-rotator--text {
+  overflow: visible;
+  fill: currentColor;
+}
+.aae-a-curved-text-rotator--text text {
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+@keyframes aae-ct-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .e-aae-a-curved-text-rotator {
+    animation: none;
+  }
+}
+.elementor .e-aae-a-curved-text-icon.e-svg-base {
+  width: 1em;
+  height: 1em;
+}
+
+.elementor .e-aae-a-curved-text-center.e-div-block-base {
+  padding: 0;
+}/*# sourceMappingURL=curved-text.css.map */

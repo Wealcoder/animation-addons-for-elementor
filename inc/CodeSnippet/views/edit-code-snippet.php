@@ -131,10 +131,11 @@ if ( 'php' === $snippet_details['code_type'] ) {
 						<select class="visibility-page-list" name="visibility_page_list[]" id="visibility-page-list" multiple="multiple">
 							<?php
 							if ( ! empty( $snippet_details['visibility_page_list'] ) && is_array( $snippet_details['visibility_page_list'] ) ) {
-								foreach ( $snippet_details['visibility_page_list'] as $page ) :
+								// $page is a WordPress global; this view runs in global scope.
+								foreach ( $snippet_details['visibility_page_list'] as $wcf_page_id ) :
 									?>
-									<option value="<?php echo esc_attr( $page ); ?>" selected="selected">
-										<?php echo esc_html( get_the_title( $page ) ); ?>
+									<option value="<?php echo esc_attr( $wcf_page_id ); ?>" selected="selected">
+										<?php echo esc_html( get_the_title( $wcf_page_id ) ); ?>
 									</option>
 									<?php
 								endforeach;
@@ -221,7 +222,7 @@ if ( 'php' === $snippet_details['code_type'] ) {
 				<div id="wp-code-editor-container" class="code-editor-wrapper">
 					<!-- CodeMirror will be initialized here -->
 				</div>
-				<input type="hidden" id="code-content-hidden" name="code_content" value="<?php echo $snippet_details['code_content'] ? esc_textarea( $snippet_details['code_content'] ) : ''; ?>">
+				<input type="hidden" id="code-content-hidden" name="code_content" value="<?php echo esc_textarea( $snippet_details['code_content'] ?? '' ); ?>">
 				<div class="aae-csp-editor__footer">
 					<div id="editor-stats" class="editor-stats"></div>
 					<button class="aae-csp-editor__insertBtn" type="button" id="insert-example-btn">

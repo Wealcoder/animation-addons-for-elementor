@@ -28,9 +28,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- queries interpolate only the internal aae_action_jobs table name; every value goes through $wpdb->prepare().
-
 final class Queue {
+
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery -- Custom database tables cannot use core post query APIs ($wpdb is required) and dynamic queue jobs are not object-cached.
 
 	const STATUS_PENDING    = 'pending';
 	const STATUS_PROCESSING = 'processing';
@@ -82,9 +82,10 @@ final class Queue {
 
 		$jobs = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT * FROM {$table}
+				"SELECT * FROM %i
 			 WHERE status IN ('pending','retrying') AND (next_run_at IS NULL OR next_run_at <= %s)
 			 ORDER BY id ASC LIMIT %d",
+				$table,
 				$now,
 				self::BATCH_SIZE
 			)
@@ -241,4 +242,6 @@ final class Queue {
 	private static function schedule_run( int $timestamp ): void {
 		wp_schedule_single_event( $timestamp, self::CRON_HOOK );
 	}
+
+	// phpcs:enable WordPress.DB.DirectDatabaseQuery
 }

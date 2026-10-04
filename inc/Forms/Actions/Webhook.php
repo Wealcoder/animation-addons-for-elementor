@@ -51,7 +51,7 @@ class Webhook extends Action_Base {
 
 		$body = self::build_body( $context );
 
-		$response = wp_remote_post(
+		$response = wp_safe_remote_post(
 			$url,
 			[
 				'timeout'   => self::TIMEOUT,

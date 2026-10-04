@@ -24,6 +24,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 final class Submissions {
 
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery -- Custom database tables cannot use core post query APIs ($wpdb is required).
+
 	/**
 	 * Persist one validated submission. Returns the submission id, or 0 on
 	 * failure (the endpoint then answers 500 — success is never faked).
@@ -128,4 +130,6 @@ final class Submissions {
 
 		return $utm ? (string) wp_json_encode( $utm ) : '';
 	}
+
+	// phpcs:enable WordPress.DB.DirectDatabaseQuery
 }

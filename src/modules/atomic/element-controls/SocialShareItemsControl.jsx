@@ -254,7 +254,7 @@ export function SocialShareItemsControl( { label } ) {
 									⠿
 								</Box>
 								<Typography variant="body2" sx={ { flex: 1, fontWeight: isExpanded ? 600 : 400 } }>
-									{ row.title }
+									<RowTitle elementId={ row.id } fallback={ row.title } />
 								</Typography>
 								<Tooltip title="Duplicate">
 									<IconButton
@@ -295,6 +295,21 @@ export function SocialShareItemsControl( { label } ) {
 			</Stack>
 		</Stack>
 	);
+}
+
+/**
+ * Row label, read live off the element's own editor_settings rather than off
+ * `useSocialShareItems`'s cached projection. The projection only recomputes on
+ * a fixed set of document/elements/* commands and a window event that
+ * Elementor only dispatches when some OTHER view (e.g. the Navigator row for
+ * this element) happens to be listening for the model change — so typing in
+ * the rename field below updated the field itself (which already reads this
+ * same live hook) but left the row title stuck until something else forced a
+ * re-render. Subscribing here directly sidesteps that dependency entirely.
+ */
+function RowTitle( { elementId, fallback } ) {
+	const editorSettings = useElementEditorSettings( elementId );
+	return editorSettings?.title || fallback;
 }
 
 function ItemNameField( { elementId } ) {

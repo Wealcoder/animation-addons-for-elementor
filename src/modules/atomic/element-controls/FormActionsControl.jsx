@@ -59,8 +59,6 @@ import {
 
 const { useState } = React;
 
-const TD = "animation-addons-for-elementor";
-
 /* Animation Addons brand accent (matches the dashboard app). */
 const BRAND = "#F6502C";
 const BRAND_HOVER = "#E04524";
@@ -524,7 +522,7 @@ const TagField = ({ label, value, onChange, placeholder, multiline, fieldTags })
             >
               <IconButton
                 size="small"
-                title={__("Insert smart tag", TD)}
+                title={__("Insert smart tag", "animation-addons-for-elementor")}
                 onClick={(e) => setAnchor(e.currentTarget)}
                 sx={{ color: "text.secondary", "&:hover": { color: BRAND } }}
               >
@@ -535,18 +533,18 @@ const TagField = ({ label, value, onChange, placeholder, multiline, fieldTags })
         }}
       />
       <Menu anchorEl={anchor} open={!!anchor} onClose={() => setAnchor(null)}>
-        {fieldTags.length > 0 && <MenuHeader>{__("Form fields", TD)}</MenuHeader>}
+        {fieldTags.length > 0 && <MenuHeader>{__("Form fields", "animation-addons-for-elementor")}</MenuHeader>}
         {fieldTags.map(({ key, label: fieldLabel }) =>
           item(`{{field.${key}}}`, fieldLabel)
         )}
-        <MenuHeader>{__("General", TD)}</MenuHeader>
+        <MenuHeader>{__("General", "animation-addons-for-elementor")}</MenuHeader>
         {GENERAL_TAGS.map((tag) => item(tag, ""))}
         <Divider sx={{ my: 0.5 }} />
         <Typography
           variant="caption"
           sx={{ px: 2, pb: 0.5, display: "block", color: "text.secondary", maxWidth: 280 }}
         >
-          {__("A field's tag comes from its Name attribute — or its ID (select the field → Settings → ID).", TD)}
+          {__("A field's tag comes from its Name attribute — or its ID (select the field → Settings → ID).", "animation-addons-for-elementor")}
         </Typography>
       </Menu>
     </>
@@ -771,7 +769,7 @@ export function FormActionsControl({ label }) {
     if (writeConfig(element.id, config)) {
       setOpen(false);
     } else {
-      setNotice({ severity: "error", text: __("Could not save — element not found.", TD) });
+      setNotice({ severity: "error", text: __("Could not save — element not found.", "animation-addons-for-elementor") });
     }
   };
 
@@ -821,7 +819,7 @@ export function FormActionsControl({ label }) {
         }
         sx={{ justifyContent: "center", gap: 0.5 }}
       >
-        {label || __("Manage Actions", TD)}
+        {label || __("Manage Actions", "animation-addons-for-elementor")}
         <Box
           component="span"
           sx={{
@@ -838,7 +836,7 @@ export function FormActionsControl({ label }) {
             background: BRAND_GRADIENT,
           }}
         >
-          {__("Pro", TD)}
+          {__("Pro", "animation-addons-for-elementor")}
         </Box>
       </Button>
 
@@ -874,7 +872,7 @@ export function FormActionsControl({ label }) {
             </Stack>
             <Stack>
               <Typography variant="subtitle1" sx={{ fontWeight: 600, lineHeight: 1.25 }}>
-                {__("Actions After Submit", TD)}
+                {__("Actions After Submit", "animation-addons-for-elementor")}
               </Typography>
               <Typography
                 variant="caption"
@@ -885,7 +883,7 @@ export function FormActionsControl({ label }) {
                   fontSize: 10,
                 }}
               >
-                {__("AAE Form Builder", TD)}
+                {__("AAE Form Builder", "animation-addons-for-elementor")}
               </Typography>
             </Stack>
           </Stack>
@@ -904,12 +902,12 @@ export function FormActionsControl({ label }) {
           }}
         >
           {[
-            { key: "admin_email", label: __("Email", TD) },
-            { key: "auto_reply", label: __("Auto Reply", TD) },
-            { key: "integrations", label: __("Integrations", TD) },
-            { key: "webhook", label: __("Webhook", TD) },
-            { key: "redirect", label: __("Redirect", TD) },
-            { key: "create_user", label: __("Create User", TD) },
+            { key: "admin_email", label: __("Email", "animation-addons-for-elementor") },
+            { key: "auto_reply", label: __("Auto Reply", "animation-addons-for-elementor") },
+            { key: "integrations", label: __("Integrations", "animation-addons-for-elementor") },
+            { key: "webhook", label: __("Webhook", "animation-addons-for-elementor") },
+            { key: "redirect", label: __("Redirect", "animation-addons-for-elementor") },
+            { key: "create_user", label: __("Create User", "animation-addons-for-elementor") },
           ].map(({ key, label: tabLabel }) => {
             // The "integrations" tab has no config block of its own — its dot
             // lights when ANY email-marketing provider block is enabled.
@@ -954,42 +952,42 @@ export function FormActionsControl({ label }) {
             {tab === "admin_email" && (
             <SectionCard
               icon={<MailIcon />}
-              title={__("Admin Email", TD)}
-              hint={__("Notify the site owner about each submission", TD)}
+              title={__("Admin Email", "animation-addons-for-elementor")}
+              hint={__("Notify the site owner about each submission", "animation-addons-for-elementor")}
               enabled={config.admin_email.enabled}
               onToggle={(v) => patch("admin_email", "enabled", v)}
             >
               <Field
-                label={__("To", TD)}
+                label={__("To", "animation-addons-for-elementor")}
                 value={config.admin_email.to}
-                placeholder={__("Site admin email (default)", TD)}
+                placeholder={__("Site admin email (default)", "animation-addons-for-elementor")}
                 onChange={(v) => patch("admin_email", "to", v)}
               />
               <Field
-                label={__("Cc", TD)}
+                label={__("Cc", "animation-addons-for-elementor")}
                 value={config.admin_email.cc}
                 onChange={(v) => patch("admin_email", "cc", v)}
               />
               <Field
-                label={__("Bcc", TD)}
+                label={__("Bcc", "animation-addons-for-elementor")}
                 value={config.admin_email.bcc}
                 onChange={(v) => patch("admin_email", "bcc", v)}
               />
               <Field
-                label={__("Reply-To", TD)}
+                label={__("Reply-To", "animation-addons-for-elementor")}
                 value={config.admin_email.reply_to}
-                placeholder={__("Visitor's email field (default)", TD)}
+                placeholder={__("Visitor's email field (default)", "animation-addons-for-elementor")}
                 onChange={(v) => patch("admin_email", "reply_to", v)}
               />
               <TagField
-                label={__("Subject", TD)}
+                label={__("Subject", "animation-addons-for-elementor")}
                 value={config.admin_email.subject}
                 placeholder={"New form submission — {{site.title}}"}
                 fieldTags={fieldTags}
                 onChange={(v) => patch("admin_email", "subject", v)}
               />
               <TagField
-                label={__("Body", TD)}
+                label={__("Body", "animation-addons-for-elementor")}
                 value={config.admin_email.body}
                 placeholder={"{{all_fields}}"}
                 multiline
@@ -998,7 +996,7 @@ export function FormActionsControl({ label }) {
               />
               <Stack direction="row" alignItems="center" justifyContent="space-between">
                 <Typography variant="caption">
-                  {__("Attach uploaded files (up to 20 MB total)", TD)}
+                  {__("Attach uploaded files (up to 20 MB total)", "animation-addons-for-elementor")}
                 </Typography>
                 <Switch
                   size="small"
@@ -1007,7 +1005,7 @@ export function FormActionsControl({ label }) {
                 />
               </Stack>
               <Button size="small" variant="text" disabled={busy === "email"} onClick={testEmail}>
-                {busy === "email" ? __("Sending…", TD) : __("Send Test Email", TD)}
+                {busy === "email" ? __("Sending…", "animation-addons-for-elementor") : __("Send Test Email", "animation-addons-for-elementor")}
               </Button>
             </SectionCard>
             )}
@@ -1016,32 +1014,32 @@ export function FormActionsControl({ label }) {
             {tab === "auto_reply" && (
             <SectionCard
               icon={<ReplyIcon />}
-              title={__("Auto Reply", TD)}
-              hint={__("Send the visitor an instant acknowledgment email", TD)}
+              title={__("Auto Reply", "animation-addons-for-elementor")}
+              hint={__("Send the visitor an instant acknowledgment email", "animation-addons-for-elementor")}
               enabled={config.auto_reply.enabled}
               onToggle={(v) => patch("auto_reply", "enabled", v)}
             >
               <Typography variant="caption" sx={{ color: "text.secondary" }}>
-                {__("Sent to the first email field of the submission. Skipped when the form has no email field.", TD)}
+                {__("Sent to the first email field of the submission. Skipped when the form has no email field.", "animation-addons-for-elementor")}
               </Typography>
               <TagField
-                label={__("Subject", TD)}
+                label={__("Subject", "animation-addons-for-elementor")}
                 value={config.auto_reply.subject}
-                placeholder={__("Thanks — we received your message", TD)}
+                placeholder={__("Thanks — we received your message", "animation-addons-for-elementor")}
                 fieldTags={fieldTags}
                 onChange={(v) => patch("auto_reply", "subject", v)}
               />
               <TagField
-                label={__("Body", TD)}
+                label={__("Body", "animation-addons-for-elementor")}
                 value={config.auto_reply.body}
-                placeholder={__("Hi, thanks for reaching out to {{site.title}}…", TD)}
+                placeholder={__("Hi, thanks for reaching out to {{site.title}}…", "animation-addons-for-elementor")}
                 multiline
                 fieldTags={fieldTags}
                 onChange={(v) => patch("auto_reply", "body", v)}
               />
               <Stack direction="row" alignItems="center" justifyContent="space-between">
                 <Typography variant="caption">
-                  {__("Include a copy of the submitted values", TD)}
+                  {__("Include a copy of the submitted values", "animation-addons-for-elementor")}
                 </Typography>
                 <Switch
                   size="small"
@@ -1056,24 +1054,24 @@ export function FormActionsControl({ label }) {
             {tab === "integrations" && (
             <SectionCard
               icon={<PlugIcon />}
-              title={__("Integration Enable", TD)}
-              hint={__("Add each submitter as a contact in your list", TD)}
+              title={__("Integration Enable", "animation-addons-for-elementor")}
+              hint={__("Add each submitter as a contact in your list", "animation-addons-for-elementor")}
               enabled={!!providerCfg.enabled}
               onToggle={(v) => patchProvider("enabled", v)}
             >
               {/* Provider picker — one tab for all providers (Brevo, …). */}
               <FormControl fullWidth size="small">
-                <InputLabel id="aae-int-provider">{__("Service", TD)}</InputLabel>
+                <InputLabel id="aae-int-provider">{__("Service", "animation-addons-for-elementor")}</InputLabel>
                 <Select
                   labelId="aae-int-provider"
-                  label={__("Service", TD)}
+                  label={__("Service", "animation-addons-for-elementor")}
                   value={provider}
                   onChange={(e) => switchProvider(e.target.value)}
                 >
                   {integrations.map((item) => (
                     <MenuItem key={item.id} value={item.id}>
                       {item.label}
-                      {!item.pro && ` — ${__("Pro", TD)}`}
+                      {!item.pro && ` — ${__("Pro", "animation-addons-for-elementor")}`}
                     </MenuItem>
                   ))}
                 </Select>
@@ -1083,7 +1081,7 @@ export function FormActionsControl({ label }) {
                 <Stack direction="row" alignItems="center" gap={1}>
                   <CircularProgress size={16} />
                   <Typography variant="caption" sx={{ color: "text.secondary" }}>
-                    {__("Checking connection…", TD)}
+                    {__("Checking connection…", "animation-addons-for-elementor")}
                   </Typography>
                 </Stack>
               )}
@@ -1091,15 +1089,15 @@ export function FormActionsControl({ label }) {
               {!intLoading && providerInfo && !providerInfo.pro && (
                 <Alert severity="info">
                   {/* translators: %s: provider name */}
-                  {sprintf(__("%s needs the Pro add-on to sync contacts.", TD), providerInfo.label)}
+                  {sprintf(__("%s needs the Pro add-on to sync contacts.", "animation-addons-for-elementor"), providerInfo.label)}
                 </Alert>
               )}
 
               {!intLoading && providerInfo && providerInfo.pro && !providerInfo.connected && (
                 <Alert severity="warning">
-                  {__("Not connected. Add the API key in ", TD)}
-                  <strong>{__("Form Submissions → Integrations", TD)}</strong>
-                  {__(", then reopen this dialog.", TD)}
+                  {__("Not connected. Add the API key in ", "animation-addons-for-elementor")}
+                  <strong>{__("Form Submissions → Integrations", "animation-addons-for-elementor")}</strong>
+                  {__(", then reopen this dialog.", "animation-addons-for-elementor")}
                 </Alert>
               )}
 
@@ -1109,21 +1107,21 @@ export function FormActionsControl({ label }) {
                     <Box sx={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: "success.main" }} />
                     <Typography variant="caption">
                       {/* translators: %s: provider name */}
-                      {sprintf(__("Connected to %s", TD), providerInfo.label)}
+                      {sprintf(__("Connected to %s", "animation-addons-for-elementor"), providerInfo.label)}
                     </Typography>
                   </Stack>
 
                   <FormControl fullWidth size="small">
-                    <InputLabel id="aae-int-list">{__("Contact list", TD)}</InputLabel>
+                    <InputLabel id="aae-int-list">{__("Contact list", "animation-addons-for-elementor")}</InputLabel>
                     <Select
                       labelId="aae-int-list"
-                      label={__("Contact list", TD)}
+                      label={__("Contact list", "animation-addons-for-elementor")}
                       value={providerCfg.list_id || ""}
                       disabled={listsLoading}
                       onChange={(e) => patchProvider("list_id", e.target.value)}
                     >
                       <MenuItem value="">
-                        <em>{listsLoading ? __("Loading…", TD) : __("Select a list…", TD)}</em>
+                        <em>{listsLoading ? __("Loading…", "animation-addons-for-elementor") : __("Select a list…", "animation-addons-for-elementor")}</em>
                       </MenuItem>
                       {lists.map((list) => (
                         <MenuItem key={list.id} value={list.id}>
@@ -1135,7 +1133,7 @@ export function FormActionsControl({ label }) {
 
                   <Divider textAlign="left" sx={{ "&::before, &::after": { borderColor: "divider" } }}>
                     <Typography variant="caption" sx={{ color: "text.secondary" }}>
-                      {__("Field mapping", TD)}
+                      {__("Field mapping", "animation-addons-for-elementor")}
                     </Typography>
                   </Divider>
 
@@ -1151,7 +1149,7 @@ export function FormActionsControl({ label }) {
                         onChange={(e) => patchProviderMap(attr.key, e.target.value)}
                       >
                         <MenuItem value="">
-                          <em>{__("— None —", TD)}</em>
+                          <em>{__("— None —", "animation-addons-for-elementor")}</em>
                         </MenuItem>
                         {fieldTags.map(({ key, label: fieldLabel }) => (
                           <MenuItem key={key} value={key}>
@@ -1163,7 +1161,7 @@ export function FormActionsControl({ label }) {
                   ))}
 
                   <Typography variant="caption" sx={{ color: "text.secondary" }}>
-                    {__("Email is required. If left unmapped, the form's first email field is used.", TD)}
+                    {__("Email is required. If left unmapped, the form's first email field is used.", "animation-addons-for-elementor")}
                   </Typography>
                 </>
               )}
@@ -1174,13 +1172,13 @@ export function FormActionsControl({ label }) {
             {tab === "webhook" && (
             <SectionCard
               icon={<LinkIcon />}
-              title={__("Webhook", TD)}
-              hint={__("POST every submission as JSON to a URL (n8n / Zapier / Make)", TD)}
+              title={__("Webhook", "animation-addons-for-elementor")}
+              hint={__("POST every submission as JSON to a URL (n8n / Zapier / Make)", "animation-addons-for-elementor")}
               enabled={config.webhook.enabled}
               onToggle={(v) => patch("webhook", "enabled", v)}
             >
               <Field
-                label={__("Webhook URL", TD)}
+                label={__("Webhook URL", "animation-addons-for-elementor")}
                 value={config.webhook.url}
                 placeholder={"https://…"}
                 onChange={(v) => patch("webhook", "url", v)}
@@ -1191,7 +1189,7 @@ export function FormActionsControl({ label }) {
                 disabled={busy === "webhook" || !config.webhook.url}
                 onClick={testWebhook}
               >
-                {busy === "webhook" ? __("Sending…", TD) : __("Send Test Webhook", TD)}
+                {busy === "webhook" ? __("Sending…", "animation-addons-for-elementor") : __("Send Test Webhook", "animation-addons-for-elementor")}
               </Button>
             </SectionCard>
             )}
@@ -1200,19 +1198,19 @@ export function FormActionsControl({ label }) {
             {tab === "redirect" && (
             <SectionCard
               icon={<RedirectIcon />}
-              title={__("Redirect", TD)}
-              hint={__("Send the visitor to a page after a successful submit", TD)}
+              title={__("Redirect", "animation-addons-for-elementor")}
+              hint={__("Send the visitor to a page after a successful submit", "animation-addons-for-elementor")}
               enabled={config.redirect.enabled}
               onToggle={(v) => patch("redirect", "enabled", v)}
             >
               <Field
-                label={__("Redirect URL", TD)}
+                label={__("Redirect URL", "animation-addons-for-elementor")}
                 value={config.redirect.url}
                 placeholder={"https://…/thank-you"}
                 onChange={(v) => patch("redirect", "url", v)}
               />
               <Typography variant="caption" sx={{ color: "text.secondary" }}>
-                {__("Runs immediately after the submission is saved — it never waits for email/webhook delivery.", TD)}
+                {__("Runs immediately after the submission is saved — it never waits for email/webhook delivery.", "animation-addons-for-elementor")}
               </Typography>
             </SectionCard>
             )}
@@ -1243,67 +1241,67 @@ export function FormActionsControl({ label }) {
               return (
                 <SectionCard
                   icon={<UserIcon />}
-                  title={__("Create WordPress User", TD)}
-                  hint={__("Turn a signup submission into a real user account", TD)}
+                  title={__("Create WordPress User", "animation-addons-for-elementor")}
+                  hint={__("Turn a signup submission into a real user account", "animation-addons-for-elementor")}
                   enabled={config.create_user.enabled}
                   onToggle={(v) => patch("create_user", "enabled", v)}
                 >
                   <Stack spacing={0.75}>
                     <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: 600 }}>
                       {ready
-                        ? __("This form can create users:", TD)
-                        : __("Add the missing fields to enable this:", TD)}
+                        ? __("This form can create users:", "animation-addons-for-elementor")
+                        : __("Add the missing fields to enable this:", "animation-addons-for-elementor")}
                     </Typography>
 
                     <Requirement
                       ok={!!emailAlias}
-                      label={__("Email field", TD)}
+                      label={__("Email field", "animation-addons-for-elementor")}
                       detail={emailAlias
-                        ? sprintf(__("using “%s”", TD), emailAlias)
-                        : __("name a field email, user_email or mail", TD)}
+                        ? sprintf(__("using “%s”", "animation-addons-for-elementor"), emailAlias)
+                        : __("name a field email, user_email or mail", "animation-addons-for-elementor")}
                     />
                     <Requirement
                       ok={hasPassword}
-                      label={__("Password field", TD)}
+                      label={__("Password field", "animation-addons-for-elementor")}
                       detail={hasPassword
-                        ? __("found", TD)
-                        : __("add the Password (AAE) widget", TD)}
+                        ? __("found", "animation-addons-for-elementor")
+                        : __("add the Password (AAE) widget", "animation-addons-for-elementor")}
                     />
                     <Requirement
                       ok
-                      label={__("Username", TD)}
+                      label={__("Username", "animation-addons-for-elementor")}
                       detail={usernameAlias
-                        ? sprintf(__("from “%s”", TD), usernameAlias)
-                        : __("auto-generated from the email (add user_name to choose it)", TD)}
+                        ? sprintf(__("from “%s”", "animation-addons-for-elementor"), usernameAlias)
+                        : __("auto-generated from the email (add user_name to choose it)", "animation-addons-for-elementor")}
                     />
                     <Requirement
                       ok
-                      label={__("Name", TD)}
+                      label={__("Name", "animation-addons-for-elementor")}
                       detail={
                         firstAlias || lastAlias
-                          ? sprintf(__("from “%s”", TD), [firstAlias, lastAlias].filter(Boolean).join(" + "))
+                          ? sprintf(__("from “%s”", "animation-addons-for-elementor"), [firstAlias, lastAlias].filter(Boolean).join(" + "))
                           : fullAlias
-                            ? sprintf(__("split from “%s”", TD), fullAlias)
-                            : __("optional — add fname / lname (or name)", TD)
+                            ? sprintf(__("split from “%s”", "animation-addons-for-elementor"), fullAlias)
+                            : __("optional — add fname / lname (or name)", "animation-addons-for-elementor")
                       }
                     />
                   </Stack>
 
                   <FormControl fullWidth size="small">
-                    <InputLabel>{__("Role", TD)}</InputLabel>
+                    <InputLabel>{__("Role", "animation-addons-for-elementor")}</InputLabel>
                     <Select
-                      label={__("Role", TD)}
+                      label={__("Role", "animation-addons-for-elementor")}
                       value={config.create_user.role || "subscriber"}
                       onChange={(e) => patch("create_user", "role", e.target.value)}
                     >
-                      <MenuItem value="subscriber">{__("Subscriber", TD)}</MenuItem>
-                      <MenuItem value="customer">{__("Customer", TD)}</MenuItem>
+                      <MenuItem value="subscriber">{__("Subscriber", "animation-addons-for-elementor")}</MenuItem>
+                      <MenuItem value="customer">{__("Customer", "animation-addons-for-elementor")}</MenuItem>
                     </Select>
                   </FormControl>
 
                   <Stack direction="row" alignItems="center" justifyContent="space-between">
                     <Typography variant="caption" sx={{ color: "text.secondary" }}>
-                      {__("Email the admin and the new user", TD)}
+                      {__("Email the admin and the new user", "animation-addons-for-elementor")}
                     </Typography>
                     <Switch
                       size="small"
@@ -1313,7 +1311,7 @@ export function FormActionsControl({ label }) {
                   </Stack>
 
                   <Typography variant="caption" sx={{ color: "text.secondary" }}>
-                    {__("The password is used to create the account and is never stored, emailed or sent to webhooks. An email that already has an account is skipped — an existing user is never modified.", TD)}
+                    {__("The password is used to create the account and is never stored, emailed or sent to webhooks. An email that already has an account is skipped — an existing user is never modified.", "animation-addons-for-elementor")}
                   </Typography>
                 </SectionCard>
               );
@@ -1321,7 +1319,7 @@ export function FormActionsControl({ label }) {
 
             {(tab === "admin_email" || tab === "auto_reply") && (
               <Typography variant="caption" sx={{ color: "text.secondary", textAlign: "center" }}>
-                {__("Use the { } button on Subject and Body fields to insert this form's smart tags.", TD)}
+                {__("Use the { } button on Subject and Body fields to insert this form's smart tags.", "animation-addons-for-elementor")}
               </Typography>
             )}
           </Stack>
@@ -1329,7 +1327,7 @@ export function FormActionsControl({ label }) {
 
         <DialogActions>
           <Button size="small" color="secondary" onClick={() => setOpen(false)}>
-            {__("Cancel", TD)}
+            {__("Cancel", "animation-addons-for-elementor")}
           </Button>
           <Button
             size="small"
@@ -1341,7 +1339,7 @@ export function FormActionsControl({ label }) {
               "&:hover": { backgroundColor: BRAND_HOVER },
             }}
           >
-            {__("Save Actions", TD)}
+            {__("Save Actions", "animation-addons-for-elementor")}
           </Button>
         </DialogActions>
       </Dialog>

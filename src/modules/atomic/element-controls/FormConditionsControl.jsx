@@ -48,20 +48,18 @@ import { collectFieldTags } from "./FormActionsControl";
 
 const { useState } = React;
 
-const TD = "animation-addons-for-elementor";
-
 const BRAND = "#F6502C";
 const BRAND_HOVER = "#E04524";
 const BRAND_GRADIENT = "linear-gradient(135deg, #FFA184 0%, #F2754F 100%)";
 
 const OPERATORS = [
-  { value: "equals", label: __("Is", TD) },
-  { value: "not_equals", label: __("Is not", TD) },
-  { value: "not_empty", label: __("Is not empty", TD) },
-  { value: "empty", label: __("Is empty", TD) },
-  { value: "contains", label: __("Contains", TD) },
-  { value: "greater_than", label: __("Greater than", TD) },
-  { value: "less_than", label: __("Less than", TD) },
+  { value: "equals", label: __("Is", "animation-addons-for-elementor") },
+  { value: "not_equals", label: __("Is not", "animation-addons-for-elementor") },
+  { value: "not_empty", label: __("Is not empty", "animation-addons-for-elementor") },
+  { value: "empty", label: __("Is empty", "animation-addons-for-elementor") },
+  { value: "contains", label: __("Contains", "animation-addons-for-elementor") },
+  { value: "greater_than", label: __("Greater than", "animation-addons-for-elementor") },
+  { value: "less_than", label: __("Less than", "animation-addons-for-elementor") },
 ];
 
 const NO_VALUE_OPERATORS = ["empty", "not_empty"];
@@ -243,7 +241,7 @@ export function FormConditionsControl({ label }) {
             sx={{ display: "inline-flex", alignItems: "center", fontSize: 14 }}
           />
           <Typography variant="caption" sx={{ fontSize: 12, color: "text.primary" }}>
-            {label || __("Conditional Display", TD)}
+            {label || __("Conditional Display", "animation-addons-for-elementor")}
           </Typography>
         </Stack>
         <Stack direction="row" alignItems="center" gap={0.75}>
@@ -253,7 +251,7 @@ export function FormConditionsControl({ label }) {
           <IconButton
             size="small"
             onClick={openDialog}
-            title={__("Show or hide this element based on the visitor's answers", TD)}
+            title={__("Show or hide this element based on the visitor's answers", "animation-addons-for-elementor")}
             sx={{
               width: 28,
               height: 28,
@@ -309,7 +307,7 @@ export function FormConditionsControl({ label }) {
             </Stack>
             <Stack>
               <Typography variant="subtitle1" sx={{ fontWeight: 600, lineHeight: 1.25 }}>
-                {__("Conditional Display", TD)}
+                {__("Conditional Display", "animation-addons-for-elementor")}
               </Typography>
               <Typography
                 variant="caption"
@@ -320,7 +318,7 @@ export function FormConditionsControl({ label }) {
                   fontSize: 10,
                 }}
               >
-                {__("AAE Form Builder", TD)}
+                {__("AAE Form Builder", "animation-addons-for-elementor")}
               </Typography>
             </Stack>
           </Stack>
@@ -330,33 +328,33 @@ export function FormConditionsControl({ label }) {
           <Stack gap={1.5}>
             {noForm && (
               <Alert severity="warning">
-                {__("This field is not inside an AAE Form — conditions have nothing to react to.", TD)}
+                {__("This field is not inside an AAE Form — conditions have nothing to react to.", "animation-addons-for-elementor")}
               </Alert>
             )}
 
             <Stack direction="row" gap={1}>
               <FormControl fullWidth size="small">
-                <InputLabel id="aae-cond-action">{__("Action", TD)}</InputLabel>
+                <InputLabel id="aae-cond-action">{__("Action", "animation-addons-for-elementor")}</InputLabel>
                 <Select
                   labelId="aae-cond-action"
-                  label={__("Action", TD)}
+                  label={__("Action", "animation-addons-for-elementor")}
                   value={action}
                   onChange={(e) => setAction(e.target.value)}
                 >
-                  <MenuItem value="show">{__("Show this field when…", TD)}</MenuItem>
-                  <MenuItem value="hide">{__("Hide this field when…", TD)}</MenuItem>
+                  <MenuItem value="show">{__("Show this field when…", "animation-addons-for-elementor")}</MenuItem>
+                  <MenuItem value="hide">{__("Hide this field when…", "animation-addons-for-elementor")}</MenuItem>
                 </Select>
               </FormControl>
               <FormControl fullWidth size="small">
-                <InputLabel id="aae-cond-logic">{__("Match", TD)}</InputLabel>
+                <InputLabel id="aae-cond-logic">{__("Match", "animation-addons-for-elementor")}</InputLabel>
                 <Select
                   labelId="aae-cond-logic"
-                  label={__("Match", TD)}
+                  label={__("Match", "animation-addons-for-elementor")}
                   value={logic}
                   onChange={(e) => setLogic(e.target.value)}
                 >
-                  <MenuItem value="all">{__("All rules match", TD)}</MenuItem>
-                  <MenuItem value="any">{__("Any rule matches", TD)}</MenuItem>
+                  <MenuItem value="all">{__("All rules match", "animation-addons-for-elementor")}</MenuItem>
+                  <MenuItem value="any">{__("Any rule matches", "animation-addons-for-elementor")}</MenuItem>
                 </Select>
               </FormControl>
             </Stack>
@@ -365,10 +363,10 @@ export function FormConditionsControl({ label }) {
               // eslint-disable-next-line react/no-array-index-key
               <Stack key={index} direction="row" gap={1} alignItems="center">
                 <FormControl size="small" sx={{ flex: 1.4, minWidth: 0 }}>
-                  <InputLabel id={`aae-cond-field-${index}`}>{__("Field", TD)}</InputLabel>
+                  <InputLabel id={`aae-cond-field-${index}`}>{__("Field", "animation-addons-for-elementor")}</InputLabel>
                   <Select
                     labelId={`aae-cond-field-${index}`}
-                    label={__("Field", TD)}
+                    label={__("Field", "animation-addons-for-elementor")}
                     value={rule.field}
                     onChange={(e) => patchRule(index, "field", e.target.value)}
                   >
@@ -381,10 +379,10 @@ export function FormConditionsControl({ label }) {
                 </FormControl>
 
                 <FormControl size="small" sx={{ flex: 1, minWidth: 0 }}>
-                  <InputLabel id={`aae-cond-op-${index}`}>{__("Operator", TD)}</InputLabel>
+                  <InputLabel id={`aae-cond-op-${index}`}>{__("Operator", "animation-addons-for-elementor")}</InputLabel>
                   <Select
                     labelId={`aae-cond-op-${index}`}
-                    label={__("Operator", TD)}
+                    label={__("Operator", "animation-addons-for-elementor")}
                     value={rule.operator}
                     onChange={(e) => patchRule(index, "operator", e.target.value)}
                   >
@@ -399,7 +397,7 @@ export function FormConditionsControl({ label }) {
                 <TextField
                   size="small"
                   sx={{ flex: 1, minWidth: 0 }}
-                  label={__("Value", TD)}
+                  label={__("Value", "animation-addons-for-elementor")}
                   value={rule.value}
                   disabled={NO_VALUE_OPERATORS.includes(rule.operator)}
                   onChange={(e) => patchRule(index, "value", e.target.value)}
@@ -407,7 +405,7 @@ export function FormConditionsControl({ label }) {
 
                 <IconButton
                   size="small"
-                  title={__("Remove rule", TD)}
+                  title={__("Remove rule", "animation-addons-for-elementor")}
                   onClick={() => removeRule(index)}
                   sx={{ color: "text.secondary", "&:hover": { color: BRAND } }}
                 >
@@ -417,18 +415,18 @@ export function FormConditionsControl({ label }) {
             ))}
 
             <Button size="small" variant="text" onClick={addRule} sx={{ alignSelf: "flex-start" }}>
-              {__("+ Add Rule", TD)}
+              {__("+ Add Rule", "animation-addons-for-elementor")}
             </Button>
 
             <Typography variant="caption" sx={{ color: "text.secondary" }}>
-              {__("Hidden fields never block submit and their values are not sent. The same rules are re-checked on the server. Remove all rules to turn conditions off.", TD)}
+              {__("Hidden fields never block submit and their values are not sent. The same rules are re-checked on the server. Remove all rules to turn conditions off.", "animation-addons-for-elementor")}
             </Typography>
           </Stack>
         </DialogContent>
 
         <DialogActions>
           <Button size="small" color="secondary" onClick={() => setOpen(false)}>
-            {__("Cancel", TD)}
+            {__("Cancel", "animation-addons-for-elementor")}
           </Button>
           <Button
             size="small"
@@ -440,7 +438,7 @@ export function FormConditionsControl({ label }) {
               "&:hover": { backgroundColor: BRAND_HOVER },
             }}
           >
-            {__("Save Conditions", TD)}
+            {__("Save Conditions", "animation-addons-for-elementor")}
           </Button>
         </DialogActions>
       </Dialog>

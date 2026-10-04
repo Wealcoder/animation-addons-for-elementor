@@ -4,6 +4,10 @@
   box-sizing: border-box;
 }
 
+.elementor .aae-a-form-submit > .e-aae-a-form-submit-row {
+  padding: 0;
+}
+
 .aae-a-form-next,
 .aae-a-form-prev {
   cursor: pointer;

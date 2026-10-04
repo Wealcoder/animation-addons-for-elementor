@@ -1,6 +1,28 @@
 
 == Changelog ==
 
+= 🌀 Animation Addons for Elementor v4.1.0 – 8th September 2026
+
+  - **Changed:** This plugin no longer installs, activates, deactivates or switches any plugin or theme on your site. Elementor is declared through the "Requires Plugins" header, and WordPress handles the dependency. The only installer left is the one-click Elementor install, which runs from WordPress.org, only on a click, behind a nonce and the "install_plugins" capability.
+  - **Removed:** Activation and deactivation tracking, the deactivation feedback modal, and the setup wizard's email sign-up. The plugin sends nothing to data.animation-addons.com from anywhere, and collects nothing on activation or deactivation.
+  - **Removed:** The remote changelog fetch and the remote starter-template menu fetch. The dashboard now reads its own bundled menu instead of contacting a remote site on every load.
+  - **Removed:** Two unused libraries, typed.js and chroma.js, that visitors were downloading and nothing ever called. Select2 upgraded from the 4.1.0 release candidate to 4.1.0 final.
+  - **Added:** A complete "External Services" section in this readme. Every service the plugin can contact is listed with what it is for, when the request happens, exactly what is sent, its endpoints, and that service's terms and privacy policy.
+  - **Changed:** PHP code snippets are no longer evaluated by the free plugin. CSS, JavaScript and HTML snippets are unchanged.
+  - **Changed:** The admin menu moved from position 8 to 81, below Settings, where plugin menus belong.
+  - **Removed:** The promotional WordPress Dashboard widget that reordered the Dashboard to put itself on top, and a seasonal notice stylesheet that loaded on every admin screen for a notice that never rendered.
+  - **Fixed:** Every translatable string now passes a literal text domain, so all 9,326 of them are extractable by translators. Previously 481 call sites passed a wrapper or a class constant and were invisible to the parser, including the entire ISO country list.
+  - **Fixed:** Security pass across the whole plugin. Every AJAX action and REST route now checks both a nonce and a capability; an uploaded icon pack can no longer leave an executable file in a public folder; the two public share and reaction counters validate their values against a fixed list; and every output buffer is closed in the function that opened it.
+  - **Fixed:** Admin styles no longer load on every admin screen, only on the plugin's own screens.
+  - **Fixed:** readme.txt and the plugin header now state the same minimum WordPress version.
+
+= 🌀 Animation Addons for Elementor v4.0.0 – August 2026
+
+  - **Added:** Support for Elementor's V4 atomic elements: an atomic widget set, atomic animation extensions, and a dashboard for switching each widget and extension on or off.
+  - **Added:** Starter template and page import that carries an Elementor V4 design system (global classes and global variables), with an option to copy linked template images into your own Media Library.
+  - **Added:** Form Builder, Code Snippets, Custom Fonts, Custom Icons and Post Type Builder screens under a single Animation Addons menu.
+  - **Improved:** Performance options for how the animation runtime is delivered, including lazy loading and a reduced-motion mode.
+
 = 🌀 Animation Addons for Elementor v2.7.1 – 21th July 2026 
 
   - **Fixed:** Wordpress Security Fixation.

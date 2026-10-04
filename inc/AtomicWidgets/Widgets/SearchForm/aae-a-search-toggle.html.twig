@@ -1,6 +1,7 @@
-{% set classes = ['aae-a-search-toggle', 'e-atomic-element', base_styles.base|default('')] | merge(settings.classes | default([])) | join(' ') %}
+{% set classes = ['aae-a-search-toggle', 'e-con', 'e-atomic-element', base_styles.base|default('')] | merge(settings.classes | default([])) | join(' ') %}
 <div class="{{ classes }} {{ editor_classes | default('') }}"
     data-id="{{ id }}"
+    data-element_type="{{ type }}"
     data-e-type="{{ type }}"
     data-interaction-id="{{ interaction_id }}"
     role="button"
@@ -13,24 +14,18 @@
         {{ settings.attributes | raw }}
     {% endif %}
     {{ editor_attributes | default('') | raw }}>
-    {% set open_icon_url = settings.open_icon.url | default('') %}
-    {% set close_icon_url = settings.close_icon.url | default('') %}
-    <span class="aae-a-search-toggle__open" style="display:inline-flex;line-height:0;">
-        {% if open_icon_url is not empty %}
-            <img src="{{ open_icon_url | e('html_attr') }}" alt="" aria-hidden="true" style="width:1em;height:1em;">
-        {% else %}
-            <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-        {% endif %}
-    </span>
-    <span class="aae-a-search-toggle__close" style="display:none;line-height:0;">
-        {% if close_icon_url is not empty %}
-            <img src="{{ close_icon_url | e('html_attr') }}" alt="" aria-hidden="true" style="width:1em;height:1em;">
-        {% else %}
-            <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-        {% endif %}
-    </span>
+    {# Resting state for the icon pair. On the frontend only the open glyph shows
+       until the JS opens the panel (it then writes inline display, which beats both
+       rules). In the EDITOR the close glyph is revealed instead, so it can be picked
+       in the Structure panel and styled without a way to "open" anything.
+
+       Specificity is deliberate: the icons' own atomic base styles compile as
+       `.elementor .e-<id>-base` = (0,2,0), so a plain `.aae-a-search-toggle__close`
+       would TIE and lose on document order. Chaining data-id + the toggle class
+       makes these (0,3,0) and (0,4,0) — no !important needed. #}
+    <style>
+        [data-id="{{ id }}"].aae-a-search-toggle .aae-a-search-toggle__close { display: none; }
+        .elementor-editor-active [data-id="{{ id }}"].aae-a-search-toggle .aae-a-search-toggle__close { display: inline-flex; }
+    </style>
+    {{ children_placeholder | raw }}
 </div>

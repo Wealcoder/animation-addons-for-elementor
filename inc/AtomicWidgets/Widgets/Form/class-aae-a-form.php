@@ -129,6 +129,11 @@ class AAE_A_Form extends Atomic_Element_Base {
 	 */
 	protected static function define_props_schema(): array {
 		return [
+			// Snapshot of this element's own full model (JSON), captured by the
+			// JS preset-apply engine the first time a preset is applied — see
+			// preset-apply.js's SNAPSHOT_REVERT_TYPES / "Reset to Default".
+			'aae_preset_snapshot' => String_Prop_Type::make()->default( '' ),
+
 			'classes'          => Classes_Prop_Type::make()->default( [] ),
 			'attributes'       => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
 
@@ -350,21 +355,14 @@ class AAE_A_Form extends Atomic_Element_Base {
 
 			$this->build_checkbox_row( __( 'Checkbox', 'animation-addons-for-elementor' ), $prefix . 'checkbox' ),
 
-			// Text set explicitly (like native e-form does) — relying on the
-			// schema default alone left the button empty in the canvas. Not
-			// locked: locking would also block moving it (e.g. into a flexbox
-			// row inside the form).
+			// No `text` setting: the Submit button is a container now and seeds
+			// its own Flexbox › Heading + SVG children, so the label lives on
+			// the Heading child. Passing `text` here would be silently dropped
+			// by Props_Parser (the prop no longer exists) and leave the button
+			// looking empty for the same reason it used to.
+			// Not locked: locking would also block moving it (e.g. into a
+			// flexbox row inside the form).
 			AAE_A_Form_Submit::generate()
-				->settings(
-					[
-						'text' => Html_V3_Prop_Type::generate(
-							[
-								'content'  => String_Prop_Type::generate( __( 'Submit', 'animation-addons-for-elementor' ) ),
-								'children' => [],
-							]
-						),
-					]
-				)
 				->editor_settings( [ 'title' => __( 'Submit', 'animation-addons-for-elementor' ) ] )
 				->build(),
 

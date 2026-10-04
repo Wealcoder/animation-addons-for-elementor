@@ -62,6 +62,14 @@ function getEditorDeviceMode() {
  * flips the preview while the toolbar still says `desktop` — the device
  * switcher is the supported way to preview a breakpoint, and the editor chrome
  * does not reflow into a device anyway.
+ *
+ * SCOPE NARROWED: this still decides whether the editor shows the mobile CHROME
+ * (hamburger instead of the desktop Nav), because that is the responsive preview
+ * a builder is asking for when they pick Mobile in the device switcher. It no
+ * longer decides whether the DRAWER is open — only the `mobile_editor_open`
+ * switch does that (isEditorMobilePreviewOpen below). That split is what stops a
+ * stale answer here from re-opening a drawer the user just closed: the worst it
+ * can now do is flicker the hamburger.
  */
 function isEditorMobileMode( breakpoint ) {
 	const mode = String( getEditorDeviceMode() ).toLowerCase();
@@ -69,6 +77,67 @@ function isEditorMobileMode( breakpoint ) {
 	if ( mode.includes( 'desktop' ) ) return false;
 
 	return window.innerWidth <= breakpoint;
+}
+
+/* Read one boolean prop off the LIVE editor model for an element id.
+ *
+ * An atomic Switch commits through an internal set-settings transaction that
+ * updates the model WITHOUT re-rendering the Twig, so a rendered `data-`
+ * attribute is only ever the value the page came up with — it goes stale the
+ * instant the builder flips the switch, and only a reload would agree with the
+ * panel. offcanvas.js documents the same constraint for its own `editor_open`
+ * and solves it the same way.
+ *
+ * Returns undefined (not false) when the model cannot be reached, so the caller
+ * can fall back to the rendered attribute instead of reading "absent" as "off".
+ */
+function readEditorBoolSetting( id, key ) {
+	try {
+		const editorWindow = window.parent && window.parent !== window ? window.parent : window;
+		const container = editorWindow.elementor?.getContainer?.( id );
+		let value;
+
+		if ( container?.settings?.get ) {
+			value = container.settings.get( key );
+		}
+
+		if ( undefined === value && container?.model?.get ) {
+			const settings = container.model.get( 'settings' );
+			value = settings?.get ? settings.get( key ) : settings?.[ key ];
+		}
+
+		if ( undefined === value ) return undefined;
+
+		/* Atomic booleans arrive raw or wrapped as { $$type, value }. */
+		return ( value && 'object' === typeof value ) ? !! value.value : !! value;
+	} catch ( error ) {
+		return undefined;
+	}
+}
+
+/* Editor: should the mobile drawer preview be open?
+ *
+ * Driven ONLY by the Nav's `mobile_editor_open` switch — deliberately NOT by the
+ * device switcher or the breakpoint. The breakpoint is a FRONTEND concern: there
+ * nav.js matches it against the real viewport, which is exact. In the editor the
+ * same question has no exact answer (see isEditorMobileMode above for the canvas
+ * width that is not a viewport), and answering it stale is what made the preview
+ * reopen itself while the user was still clicking the close button.
+ *
+ * Precedence mirrors mobileCfg(): the Nav owns this setting, the live model wins
+ * over the rendered attribute, and an unreachable model falls back to whatever
+ * the page rendered with.
+ */
+function isEditorMobilePreviewOpen( nav ) {
+	const navId = nav?.getAttribute?.( 'data-id' );
+
+	if ( navId ) {
+		const live = readEditorBoolSetting( navId, 'mobile_editor_open' );
+
+		if ( undefined !== live ) return live;
+	}
+
+	return 'true' === nav?.dataset?.mobileEditorOpen;
 }
 
 /* Find the Nav a companion drives. `source_nav_id` can be empty (saved before
@@ -561,6 +630,9 @@ function initEditorMobilePreview( companion ) {
 	let editorClone = null;
 	let editorDrillStack = [];
 	let observedSource = null;
+	/* Last value of the `mobile_editor_open` switch this preview reconciled, so a
+	 * flip of it can reset the X button's runtime dismiss flag. See render(). */
+	let lastPreviewOpen = null;
 	const sourceObserver = new MutationObserver( () => render() );
 	const observeSource = source => {
 		if ( source === observedSource ) return;
@@ -579,9 +651,37 @@ function initEditorMobilePreview( companion ) {
 			 * keeps its exact meaning. */
 			const sourceId = companion.dataset.sourceNavId;
 			const source = sourceId ? document.querySelector( `.aae-a-nav[data-id="${ sourceId }"]` ) : null;
-			const breakpoint = mobileBreakpoint( companion, source );
 			const enabled = mobileCfg( companion, source, 'mobileEnabled', 'enabled', 'false' ) === 'true';
-			const mobile = isEditorMobileMode( breakpoint ) && enabled;
+			const breakpoint = mobileBreakpoint( companion, source );
+			const previewOpen = isEditorMobilePreviewOpen( source );
+
+			/* TWO separate questions, and conflating them was the bug.
+			 *
+			 * `mobile` is the mobile CHROME preview: hamburger visible, desktop Nav
+			 * hidden, clone built inside the closed drawer. That still follows the
+			 * device switcher, because a builder previewing Mobile expects to see the
+			 * hamburger they styled — showing the wrapped desktop Nav there instead is
+			 * simply wrong, and hiding the companion outright leaves the toggle
+			 * unselectable (the companion is 0x0 + visibility:hidden without
+			 * `.is-mobile`).
+			 *
+			 * `previewOpen` is the DRAWER, and only the switch opens it. A device-mode
+			 * probe that answers stale can now at worst flicker the hamburger; it can
+			 * no longer re-open a drawer the user just closed.
+			 *
+			 * previewOpen also forces the chrome on, so flipping the switch while the
+			 * canvas is on Desktop still shows the drawer instead of nothing. */
+			const mobile = enabled && ( previewOpen || isEditorMobileMode( breakpoint ) );
+
+			/* Re-opening from the switch must actually re-open. The editor's X parks a
+			 * runtime-only "closed" flag on the companion, and flipping the Nav's own
+			 * switch re-renders the NAV, not the companion — so the flag would survive
+			 * and swallow the next open. Clearing it on each transition of the switch
+			 * keeps the X a one-shot dismiss within a single open session. */
+			if ( previewOpen !== lastPreviewOpen ) {
+				lastPreviewOpen = previewOpen;
+				companion.dataset.editorPreviewClosed = 'false';
+			}
 			const drawer = companion.querySelector( '.aae-mobile-nav-drawer' );
 			const menuArea = companion.querySelector( '.aae-mobile-nav-menu-area' ) || drawer;
 			if ( ! drawer ) return;
@@ -590,7 +690,7 @@ function initEditorMobilePreview( companion ) {
 			 * lingers): bail BEFORE mutating so we don't drive an observer/render
 			 * loop against a missing source. healthCheck tears it down shortly. */
 			observeSource( source );
-			if ( sourceId && ! source && enabled && isEditorMobileMode( breakpoint ) ) {
+			if ( sourceId && ! source && mobile ) {
 				return;
 			}
 
@@ -599,7 +699,7 @@ function initEditorMobilePreview( companion ) {
 			companion.classList.toggle( 'is-mobile', mobile );
 			companion.classList.toggle(
 				'is-open',
-				mobile && companion.dataset.editorPreviewClosed !== 'true'
+				mobile && previewOpen && companion.dataset.editorPreviewClosed !== 'true'
 			);
 			/* Match the frontend: below the breakpoint the desktop Nav belongs in
 			 * the drawer, not the header. The frontend MOVES it there; in the
@@ -680,15 +780,22 @@ function initEditorMobilePreview( companion ) {
 		const sourceId = companion.dataset.sourceNavId;
 		const currentSource = sourceId ? document.querySelector( `.aae-a-nav[data-id="${ sourceId }"]` ) : null;
 		const breakpoint = mobileBreakpoint( companion, currentSource );
-		const mobile = isEditorMobileMode( breakpoint ) &&
-			mobileCfg( companion, currentSource, 'mobileEnabled', 'enabled', 'false' ) === 'true';
+		const previewOpen = isEditorMobilePreviewOpen( currentSource );
+		const mobile = mobileCfg( companion, currentSource, 'mobileEnabled', 'enabled', 'false' ) === 'true' &&
+			( previewOpen || isEditorMobileMode( breakpoint ) );
 		const menuArea = companion.querySelector( '.aae-mobile-nav-menu-area' ) ||
 			companion.querySelector( '.aae-mobile-nav-drawer' );
 		const replacedSource = currentSource !== observedSource;
 		const staleMode = companion.classList.contains( 'is-mobile' ) !== mobile;
 		const missingPreview = mobile && menuArea &&
 			! menuArea.querySelector( ':scope > .aae-mobile-editor-clone' );
-		if ( staleMode || missingPreview || replacedSource ) render();
+		/* The switch is the ONLY signal for the drawer, and an atomic Switch has no
+		 * reliable commandEnd — so this interval is what notices it moved. Comparing
+		 * against the value render() last reconciled (not against `is-open`, which
+		 * the X legitimately clears while the switch stays on) is what makes toggling
+		 * the switch off and on reopen the drawer. */
+		const switchFlipped = previewOpen !== lastPreviewOpen;
+		if ( staleMode || missingPreview || replacedSource || switchFlipped ) render();
 	}, 250 );
 	sig.addEventListener( 'abort', () => {
 		window.clearInterval( healthCheck );
@@ -699,9 +806,10 @@ function initEditorMobilePreview( companion ) {
 	}, { once: true } );
 	const previewObserver = new MutationObserver( () => {
 		const observerSource = navForCompanion( companion );
-		const breakpoint = mobileBreakpoint( companion, observerSource );
-		if ( ! isEditorMobileMode( breakpoint ) ||
-			mobileCfg( companion, observerSource, 'mobileEnabled', 'enabled', 'false' ) !== 'true' ) return;
+		const observerBreakpoint = mobileBreakpoint( companion, observerSource );
+		if ( mobileCfg( companion, observerSource, 'mobileEnabled', 'enabled', 'false' ) !== 'true' ) return;
+		if ( ! isEditorMobilePreviewOpen( observerSource ) &&
+			! isEditorMobileMode( observerBreakpoint ) ) return;
 		const currentMenuArea = companion.querySelector( '.aae-mobile-nav-menu-area' ) ||
 			companion.querySelector( '.aae-mobile-nav-drawer' );
 		if ( currentMenuArea && ! currentMenuArea.querySelector( ':scope > .aae-mobile-editor-clone' ) ) {
@@ -1102,6 +1210,34 @@ register( {
 	},
 } );
 
+/**
+ * Nearest ancestor that makes `position: fixed` resolve against IT instead of
+ * the viewport. transform / perspective / filter (and a will-change promising
+ * any of them) all do this. GSAP ScrollSmoother is the common case: it puts a
+ * transform on #smooth-content and translates it as you scroll, so a fixed
+ * drawer inside it is not viewport-fixed at all — it sits at the top of the
+ * DOCUMENT and scrolls away. Measured on a ScrollSmoother page: opened at
+ * scrollY 4000 the drawer landed at y=-4000, entirely above the viewport.
+ *
+ * Returns the offending element, or null when `position: fixed` behaves
+ * normally — which is every ordinary page, and why the relocation below is
+ * conditional rather than unconditional.
+ */
+function fixedContainingBlockAncestor( el ) {
+	for ( let p = el?.parentElement; p && p !== document.body; p = p.parentElement ) {
+		const cs = getComputedStyle( p );
+		if (
+			cs.transform !== 'none' ||
+			cs.perspective !== 'none' ||
+			cs.filter !== 'none' ||
+			/transform|perspective|filter/.test( cs.willChange || '' )
+		) {
+			return p;
+		}
+	}
+	return null;
+}
+
 /* Mobile companion: moves the existing Nav DOM at the configured breakpoint,
  * then restores the exact node to its original position on desktop. */
 register( {
@@ -1159,6 +1295,58 @@ register( {
 		companion.classList.toggle( 'position-left', mobileCfg( companion, nav, 'mobilePosition', 'position', 'right' ) === 'left' );
 		const lockScroll = mobileCfg( companion, nav, 'mobileLockScroll', 'lockScroll', 'true' ) === 'true';
 		const closeOnLink = mobileCfg( companion, nav, 'mobileCloseOnLink', 'closeOnLink', 'true' ) === 'true';
+
+		/* Overlay + drawer are `position: fixed` chrome, so on a page with a
+		 * transformed ancestor (ScrollSmoother) they are not viewport-fixed and
+		 * open off-screen — see fixedContainingBlockAncestor(). Moving just
+		 * those two to a body-level host puts them back in the viewport's
+		 * coordinate space. The hamburger TOGGLE deliberately stays put: it is
+		 * in-flow header content and moving it would break the header layout.
+		 *
+		 * The host must carry BOTH the Elementor document scope and the
+		 * companion's own classes:
+		 *   - `.elementor` because atomic styles compile as
+		 *     `.elementor .e-<id>-<hash>` — without that ancestor the user's
+		 *     Style-tab values silently stop applying (measured: a 300px drawer
+		 *     rendered 1029px wide, falling back to `--width: 100%`).
+		 *   - `.aae-a-mobile-nav.is-mobile` etc. because every rule in nav.scss
+		 *     is a DESCENDANT of the companion. Carrying the class list means
+		 *     not one selector has to change.
+		 * A computed-style diff over 23 properties before/after the move showed
+		 * height as the only difference — the bug being fixed. */
+		let detachedHost = null;
+		const overlayAnchor = document.createComment( `aae-mobile-overlay-${ id }` );
+		const drawerAnchor = document.createComment( `aae-mobile-drawer-${ id }` );
+
+		const syncDetachedHost = () => {
+			if ( ! detachedHost ) return;
+			const scope = companion.closest( '.elementor' );
+			detachedHost.className = ( scope ? scope.className + ' ' : '' ) + companion.className;
+		};
+
+		const detachChrome = () => {
+			if ( detachedHost || ! fixedContainingBlockAncestor( companion ) ) return;
+			detachedHost = document.createElement( 'div' );
+			detachedHost.setAttribute( 'data-aae-mobile-nav-detached', id || '' );
+			syncDetachedHost();
+			document.body.appendChild( detachedHost );
+			/* Anchors restore the authored order on the way back, exactly like
+			 * the nav's own mount anchor above. */
+			overlay.parentNode?.insertBefore( overlayAnchor, overlay );
+			drawer.parentNode?.insertBefore( drawerAnchor, drawer );
+			detachedHost.appendChild( overlay );
+			detachedHost.appendChild( drawer );
+		};
+
+		const reattachChrome = () => {
+			if ( ! detachedHost ) return;
+			overlayAnchor.parentNode?.insertBefore( overlay, overlayAnchor );
+			drawerAnchor.parentNode?.insertBefore( drawer, drawerAnchor );
+			overlayAnchor.remove();
+			drawerAnchor.remove();
+			detachedHost.remove();
+			detachedHost = null;
+		};
 	drawer.id = `aae-mobile-nav-drawer-${ id }`;
 	toggle.setAttribute( 'role', 'button' );
 	toggle.setAttribute( 'tabindex', '0' );
@@ -1279,6 +1467,7 @@ register( {
 
 		const closeDrawer = ( restoreFocus = true ) => {
 			companion.classList.remove( 'is-open' );
+			syncDetachedHost();
 			toggle.setAttribute( 'aria-expanded', 'false' );
 			drawer.setAttribute( 'aria-hidden', 'true' );
 			resetDrill();
@@ -1289,10 +1478,18 @@ register( {
 		const openDrawer = () => {
 			lastFocus = document.activeElement;
 			companion.classList.add( 'is-open' );
+			syncDetachedHost();
 			toggle.setAttribute( 'aria-expanded', 'true' );
 			drawer.setAttribute( 'aria-hidden', 'false' );
 			if ( lockScroll ) document.body.classList.add( 'aae-mobile-nav-scroll-lock' );
-			window.requestAnimationFrame( () => close.focus?.() );
+			/* preventScroll: this runs one frame after `is-open`, while the
+			 * drawer is still mid-slide and physically off-screen, so a plain
+			 * focus() makes the browser scroll the nearest scrollable ancestor
+			 * to reveal it. Under GSAP ScrollSmoother that ancestor is
+			 * #smooth-wrapper, and the whole page stays shifted sideways after
+			 * the transition finishes (measured: scrollLeft 261 on a 1024
+			 * viewport). Focus still lands on the close button. */
+			window.requestAnimationFrame( () => close.focus?.( { preventScroll: true } ) );
 		};
 
 		const enterMobile = () => {
@@ -1301,6 +1498,7 @@ register( {
 			mount.appendChild( nav );
 			nav.classList.add( 'aae-nav-mobile-mounted' );
 			companion.classList.add( 'is-mobile' );
+			detachChrome();
 			addArrows();
 			drillPanelRecords = flattenDrillPanels( nav );
 			resetDrill();
@@ -1317,6 +1515,7 @@ register( {
 			anchor.parentNode?.insertBefore( nav, anchor );
 			anchor.remove();
 			companion.classList.remove( 'is-mobile' );
+			reattachChrome();
 			mounted = false;
 		};
 

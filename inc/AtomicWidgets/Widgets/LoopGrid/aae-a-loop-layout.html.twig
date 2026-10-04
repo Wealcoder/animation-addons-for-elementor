@@ -4,6 +4,18 @@
     data-element_type="{{ type }}"
     data-e-type="{{ type }}"
     data-interaction-id="{{ interaction_id }}"
+    {# The grid's identity for anything that wants to re-ask the server for it
+       (the Pro filter runtime). Absent in the editor canvas, where PHP never
+       ran and there is no grid to address.
+
+       Deliberately NOT `data-aae-config`, which the Pagination child already
+       uses for a DIFFERENT shape (it carries method/current/total too). Two
+       elements answering one attribute name with two contracts is a trap for
+       anything selecting on the name alone. #}
+    {% if grid_config is defined and grid_config is not empty %}
+        data-aae-loop-grid="1"
+        data-aae-grid-config="{{ grid_config | e('html_attr') }}"
+    {% endif %}
     {% if settings._cssid is defined and settings._cssid is not empty %}
         id="{{ settings._cssid | e('html_attr') }}"
     {% endif %}

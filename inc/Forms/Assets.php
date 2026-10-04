@@ -96,6 +96,12 @@ final class Assets {
 				// (data-aae-form-recaptcha on the <form>), so a page with no
 				// such form never touches Google's script at all.
 				'recaptchaSiteKey' => Captcha::site_key(),
+
+				// No valid Pro licence: the runtime flattens a multi-step form
+				// into one page instead of binding stepping. See Pro_Gate — the
+				// step base style is display:none until the runtime reveals it,
+				// so "just don't bind" would render a blank form.
+				'proLocked'        => Pro_Gate::is_locked(),
 				'i18n'             => [
 					// Network/state copy — exact wording from the spec's UX table.
 					'slow'          => __( 'Your connection seems slow. Please wait a moment.', 'animation-addons-for-elementor' ),

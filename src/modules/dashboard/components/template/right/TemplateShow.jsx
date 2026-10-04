@@ -12,6 +12,14 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import V4ImportDialog from "@/components/shared/V4ImportDialog";
+import {
+  ATOMIC_IMPORT_AVAILABLE,
+  fetchAtomicImportStatus,
+  isV4Template,
+  LOCALIZE_IMAGES_PARAM,
+} from "@/lib/atomicImport";
+import { __ } from "@wordpress/i18n";
 
 const TemplateShow = ({ allTemplate, metaData, setMetaData }) => {
   const [open, setOpen] = useState(false);
@@ -19,7 +27,13 @@ const TemplateShow = ({ allTemplate, metaData, setMetaData }) => {
   const { setTabKey } = useTNavigation();
   const { activated } = useActivate();
 
-  const changeRoute = (value, slug, id, is_pro) => {
+  // The V4 dialog holds the navigation it interrupted until the user answers.
+  const [v4Pending, setV4Pending] = useState(null);
+  // "Copy images into my media library" -- the dialog's one choice on a
+  // template import. Rides the URL as v4images, off unless ticked.
+  const [v4Images, setV4Images] = useState(false);
+
+  const navigate = (value, slug, id, images = false) => {
     const url = new URL(window.location.href);
     const pageQuery = url.searchParams.get("page");
 
@@ -30,18 +44,44 @@ const TemplateShow = ({ allTemplate, metaData, setMetaData }) => {
     url.searchParams.set("tab", value);
     url.searchParams.set("template", slug);
     url.searchParams.set("templateid", id);
+    if (images) url.searchParams.set(LOCALIZE_IMAGES_PARAM, "1");
 
-    if (is_pro) {
-      if (activated?.product_status?.item_id === 13) {
-        window.history.replaceState({}, "", url);
-        setTabKey(value);
-      } else {
-        setOpen(value);
-      }
-    } else {
-      window.history.replaceState({}, "", url);
-      setTabKey(value);
+    window.history.replaceState({}, "", url);
+    setTabKey(value);
+  };
+
+  const changeRoute = async (value, template) => {
+    const { slug, id, is_pro } = template || {};
+
+    // The licence gate comes first, exactly as before: a Pro template on an
+    // unlicensed site opens the upgrade dialog and goes nowhere.
+    if (is_pro && activated?.product_status?.item_id !== 13) {
+      setOpen(value);
+      return;
     }
+
+    // A V4 template landing on a site that already holds V4 content is the
+    // one case worth a word before the import starts. Asked fresh, never from
+    // the payload -- see lib/atomicImport.js. A failed request proceeds
+    // silently: the importer picks the same mode server-side from the same
+    // signal, so the dialog is information, not a gate.
+    // Every V4 import stops at the dialog now: it carries the image choice,
+    // which applies to a first import as much as a second. The "already
+    // uses V4" explanation inside it is still gated on the fresh signal.
+    if (isV4Template(template)) {
+      const status = await fetchAtomicImportStatus();
+      setV4Images(false);
+      setV4Pending({
+        value,
+        slug,
+        id,
+        title: template?.title,
+        inUse: !!status?.in_use,
+      });
+      return;
+    }
+
+    navigate(value, slug, id);
   };
 
   const saveWishlist = async (data) => {
@@ -103,6 +143,18 @@ const TemplateShow = ({ allTemplate, metaData, setMetaData }) => {
                       {template?.is_pro ? "Pro" : "Free"}
                     </Badge>
                   </div>
+                  {/* Only V4 is badged. V3 is what every template has been
+                      until now, and a "V3" mark on 960 cards would say nothing. */}
+                  {isV4Template(template) && (
+                    <div className="absolute top-2.5 left-2.5">
+                      <Badge
+                        data-aae-v4-badge
+                        className="px-2.5 rounded-[4px] bg-[#5453FD] h-6 uppercase text-white border-none text-sm font-bold"
+                      >
+                        V4
+                      </Badge>
+                    </div>
+                  )}
 
                   <div className="w-full h-full hidden group-hover:flex flex-col justify-center items-center gap-[15px]">
                     <a
@@ -132,16 +184,32 @@ const TemplateShow = ({ allTemplate, metaData, setMetaData }) => {
                       </svg>{" "}
                       Preview
                     </a>
+                    {/* A V4 template on a site whose Elementor cannot render
+                        atomic elements would import and show nothing, so the
+                        button is withheld and the tooltip says why. */}
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span
+                            className="flex"
+                            tabIndex={
+                              isV4Template(template) && !ATOMIC_IMPORT_AVAILABLE
+                                ? 0
+                                : -1
+                            }
+                          >
                     <Button
-                      className="h-9 w-[150px] bg-[#F6502C] hover:bg-[#F6502C] border-2 border-[#F6502C]  text-white rounded-full text-base font-medium capitalize gap-1"
-                      onClick={() =>
-                        changeRoute(
-                          "required-features",
-                          template?.slug,
-                          template?.id,
-                          template?.is_pro
-                        )
+                      data-aae-import-button
+                      disabled={
+                        isV4Template(template) && !ATOMIC_IMPORT_AVAILABLE
                       }
+                      className={cn(
+                        "h-9 w-[150px] bg-[#F6502C] hover:bg-[#F6502C] border-2 border-[#F6502C]  text-white rounded-full text-base font-medium capitalize gap-1",
+                        isV4Template(template) &&
+                          !ATOMIC_IMPORT_AVAILABLE &&
+                          "opacity-50 pointer-events-none"
+                      )}
+                      onClick={() => changeRoute("required-features", template)}
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -163,6 +231,20 @@ const TemplateShow = ({ allTemplate, metaData, setMetaData }) => {
                       </svg>{" "}
                       Import
                     </Button>
+                          </span>
+                        </TooltipTrigger>
+                        {isV4Template(template) && !ATOMIC_IMPORT_AVAILABLE && (
+                          <TooltipContent>
+                            <p>
+                              {__(
+                                "Needs Elementor V4 (Atomic) switched on",
+                                "animation-addons-for-elementor"
+                              )}
+                            </p>
+                          </TooltipContent>
+                        )}
+                      </Tooltip>
+                    </TooltipProvider>
                     <Toggle
                       aria-label="Wishlist"
                       pressed={metaData?.wishlist?.includes(
@@ -283,6 +365,20 @@ const TemplateShow = ({ allTemplate, metaData, setMetaData }) => {
         </div>
       )}
       <ProConfirmDialog open={open} setOpen={setOpen} />
+      <V4ImportDialog
+        open={!!v4Pending}
+        setOpen={(isOpen) => {
+          if (!isOpen) setV4Pending(null);
+        }}
+        title={v4Pending?.title}
+        inUse={!!v4Pending?.inUse}
+        localizeImages={v4Images}
+        setLocalizeImages={setV4Images}
+        onConfirm={() => {
+          if (v4Pending)
+            navigate(v4Pending.value, v4Pending.slug, v4Pending.id, v4Images);
+        }}
+      />
     </>
   );
 };

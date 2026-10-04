@@ -7,44 +7,39 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class Manager {
 
+	/**
+	 * The one cache key this sheet lives under: `[ 'aae_utility_styles', <context> ]`.
+	 *
+	 * NOT keyed by post id. The utility set is a constant — the same nineteen
+	 * classes whatever document is rendering — yet it used to be registered once
+	 * PER rendered document, and Elementor's manager writes and links one file per
+	 * key per breakpoint. A page with a builder header and footer therefore
+	 * shipped NINE utility stylesheets (3 documents × 3 breakpoints), every file
+	 * byte-identical to its sibling: 9 requests, ~11 KB, for 841 bytes of unique
+	 * CSS. Measured on the store demo, 2026-09-13. One key per context is the
+	 * shape Elementor's own base styles use (`Atomic_Widget_Base_Styles`), and it
+	 * gives three files — `aae_utility_styles-frontend-{desktop,tablet,mobile}.css`
+	 * — shared by every page on the site.
+	 */
+	const STYLES_KEY = 'aae_utility_styles';
+
 	public function register(): void {
 		add_action( 'elementor/atomic-widgets/styles/register', [ $this, 'register_utility_styles' ], 50, 2 );
 
-		// Invalidate cache when Elementor clears all caches
+		// The only invalidation that exists: the sheet's content depends on
+		// nothing a save or a delete can change, so a per-post clear on
+		// `after_save` / `deleted_post` (which this used to do) only ever threw
+		// away a correct file and had it regenerated on the next request.
 		add_action( 'elementor/core/files/clear_cache', function() {
 			$this->invalidate_cache();
-		} );
-
-		// Invalidate cache when a specific post is saved
-		add_action( 'elementor/document/after_save', function( $document ) {
-			$this->invalidate_cache( [ $document->get_main_id() ] );
-		} );
-
-		// Invalidate cache when a post is deleted
-		add_action( 'deleted_post', function( $post_id ) {
-			$this->invalidate_cache( [ $post_id ] );
 		} );
 	}
 
 	/**
-	 * Invalidate the styles cache.
-	 *
-	 * @param array|null $post_ids
-	 * @param string|null $context
+	 * Drop every generated utility stylesheet (both contexts, every breakpoint).
 	 */
-	public function invalidate_cache( ?array $post_ids = null, ?string $context = null ): void {
-		if ( empty( $post_ids ) ) {
-			do_action( 'elementor/atomic-widgets/styles/clear', [ 'aae_utility_styles' ] );
-			return;
-		}
-
-		foreach ( $post_ids as $post_id ) {
-			if ( empty( $context ) ) {
-				do_action( 'elementor/atomic-widgets/styles/clear', [ 'aae_utility_styles', $post_id ] );
-			} else {
-				do_action( 'elementor/atomic-widgets/styles/clear', [ 'aae_utility_styles', $post_id, $context ] );
-			}
-		}
+	public function invalidate_cache(): void {
+		do_action( 'elementor/atomic-widgets/styles/clear', [ self::STYLES_KEY ] );
 	}
 
 	/**
@@ -172,9 +167,6 @@ class Manager {
 			return $styles;
 		};
 
-		foreach ( $post_ids as $post_id ) {
-			$cache_key = [ 'aae_utility_styles', $post_id, $context ];
-			$styles_manager->register( $cache_key, $get_styles );
-		}
+		$styles_manager->register( [ self::STYLES_KEY, $context ], $get_styles );
 	}
 }

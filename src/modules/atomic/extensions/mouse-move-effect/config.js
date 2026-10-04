@@ -4,7 +4,6 @@ import {
 	showPlayButton,
 } from './predicates';
 import { CUSTOM_PROPERTY_OPTIONS } from '../regular-animation/config';
-import { placeholder } from '@codemirror/view';
 const config = {
 
     /*

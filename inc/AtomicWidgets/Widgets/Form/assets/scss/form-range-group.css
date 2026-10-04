@@ -1,0 +1,14 @@
+:where(.aae-a-form-range-value) {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+:where(.aae-a-form-range-group) input[type=range] {
+  cursor: pointer;
+}
+
+.elementor-editor-active .e-atomic-element:has(.aae-a-form-range-group),
+.elementor-edit-mode .e-atomic-element:has(.aae-a-form-range-group) {
+  min-height: 0;
+  min-block-size: 0;
+}/*# sourceMappingURL=form-range-group.css.map */

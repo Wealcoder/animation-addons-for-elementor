@@ -56,7 +56,7 @@ function InnerTabsGroup({ fields, settings, activeBp, element, bindPrefix }) {
 							addLabel={field.addLabel}
 							rowDefaults={field.rowDefaults}
 							rowFields={field.rowFields}
-							defaultValue={field.defaultValue}
+							defaultValue={typeof field.defaultValue === 'function' ? field.defaultValue(settings, activeBp) : field.defaultValue}
 							responsive={field.responsive !== false}
 							propValue={fullBind ? (settings[fullBind] ?? null) : null}
 							activeBp={activeBp}
@@ -144,7 +144,7 @@ export function ResponsiveSection({ config }) {
 			}
 		};
 
-		fieldList.forEach((field) => {
+		fieldList.forEach((field, fIndex) => {
 			if (typeof field.when === 'function' && !field.when(settings, activeBp)) {
 				return;
 			}
@@ -165,7 +165,7 @@ export function ResponsiveSection({ config }) {
 				const label = typeof field.label === 'function' ? field.label(settings, activeBp) : field.label;
 				elements.push(
 					<ResponsiveRow
-						key={fullBind || field.control || Math.random()}
+						key={fullBind || `${field.control || 'row'}-${fIndex}`}
 						bind={fullBind}
 						label={label}
 						control={field.control}
@@ -182,7 +182,7 @@ export function ResponsiveSection({ config }) {
 						addLabel={field.addLabel}
 						rowDefaults={field.rowDefaults}
 						rowFields={field.rowFields}
-						defaultValue={field.defaultValue}
+						defaultValue={typeof field.defaultValue === 'function' ? field.defaultValue(settings, activeBp) : field.defaultValue}
 						responsive={field.responsive !== false}
 						propValue={fullBind ? (settings[fullBind] ?? null) : null}
 						activeBp={activeBp}

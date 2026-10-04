@@ -77,8 +77,7 @@ class Post_Content extends Widget_Base {
 		}
 
 		if ( post_password_required( $post->ID ) ) {
-			// PHPCS - `get_the_password_form`. is safe.
-			echo get_the_password_form( $post->ID ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo aaeaddon_kses_builder_html( get_the_password_form( $post->ID ) );
 
 			return;
 		}
@@ -132,8 +131,7 @@ class Post_Content extends Widget_Base {
 				setup_postdata( $post );
 
 				/** This filter is documented in wp-includes/post-template.php */
-				// PHPCS - `get_the_content` is safe.
-				echo apply_filters( 'the_content', get_the_content() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+				echo aaeaddon_kses_builder_html( apply_filters( 'the_content', get_the_content() ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- core filter.
 
 				wp_link_pages( [
 					'before'      => '<div class="page-links elementor-page-links"><span class="page-links-title elementor-page-links-title">' . esc_html__( 'Pages:', 'animation-addons-for-elementor' ) . '</span>',
@@ -163,10 +161,9 @@ class Post_Content extends Widget_Base {
 		Plugin::$instance->editor->set_edit_mode( $is_edit_mode );
 
 		if ( $with_wrapper ) {
-			// PHPCS - should not be escaped.
-			echo '<div class="elementor-post__content">' . balanceTags( $content, true ) . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo '<div class="elementor-post__content">' . aaeaddon_kses_builder_html( balanceTags( $content, true ) ) . '</div>';
 		} else {
-			echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo aaeaddon_kses_builder_html( $content );
 		}
 
 		$level --;

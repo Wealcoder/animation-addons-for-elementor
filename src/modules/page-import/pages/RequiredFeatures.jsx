@@ -14,12 +14,15 @@ const RequiredFeatures = () => {
   const { setTabKey } = useTNavigation();
   const [currenTemplate, setCurrenTemplate] = useState({});
   const [selectedPlugins, setSelectedPlugins] = useState([]);
-  const [selectedTheme, setSelectedTheme] = useState("");
   const [allowAttachment, setAllowAttachment] = useState(true);
   const [loading, setIsLoading] = useState(true);
 
   const url = new URL(window.location.href);
   const templateid = url.searchParams.get("templateid");
+  // The design-system mode picked in the V4 dialog. Read BEFORE changeRoute
+  // rebuilds the query from scratch, or it is dropped on the way to import.
+  const v4mode = url.searchParams.get("v4mode");
+  const v4images = url.searchParams.get("v4images");
   const changeRoute = (value) => {
     const pageQuery = url.searchParams.get("page");
     const template = url.searchParams.get("template");
@@ -32,10 +35,9 @@ const RequiredFeatures = () => {
     if (selectedPlugins && selectedPlugins?.length) {
       url.searchParams.set("plugins", selectedPlugins.toString());
     }
-    if (selectedTheme) {
-      url.searchParams.set("theme", selectedTheme);
-    }
     url.searchParams.set("attachment", allowAttachment);
+    if (v4mode) url.searchParams.set("v4mode", v4mode);
+    if (v4images) url.searchParams.set("v4images", v4images);
 
     window.history.replaceState({}, "", url);
     setTabKey(value);
@@ -130,7 +132,9 @@ const RequiredFeatures = () => {
             <div className="mb-7">
               <h3 className="text-2xl font-medium">Required Features</h3>
               <p className="mt-1.5 text-text-secondary">
-                Install every plugins, themes and extensions listed below.
+                Pick the plugins to install. Themes are listed for
+                reference only -- this plugin never installs or switches your
+                theme.
               </p>
             </div>
             <div>
@@ -165,7 +169,7 @@ const RequiredFeatures = () => {
                             <Checkbox
                               id={`plugin-${plugin.slug}`}
                               checked={selectedPlugins.includes(plugin?.slug)}
-                              disabled={plugin?.required}
+                              disabled={plugin?.required || plugin?.needs_pro}
                               onCheckedChange={(value) =>
                                 setSelectedPlugins((prev) =>
                                   value
@@ -189,6 +193,9 @@ const RequiredFeatures = () => {
                             >
                               {plugin?.status}
                             </Badge>
+                            {/* Nothing here can install a plugin on its own,
+                                so a missing one needs the Pro add-on. */}
+                            {plugin?.needs_pro && <Badge variant="pro">Pro</Badge>}
                           </div>
                         )
                       )}
@@ -214,27 +221,17 @@ const RequiredFeatures = () => {
                       </div>
                     </AccordionTrigger>
                     <AccordionContent className="mt-2 space-y-4">
+                      {/* Read only. Changing the active theme is the user's
+                          decision and belongs to Appearance > Themes, so these
+                          rows report a status and offer nothing to tick. */}
                       {currenTemplate?.dependencies?.themes?.map((theme, i) => (
                         <div
                           className="flex items-center space-x-2.5"
                           key={theme.slug + i}
                         >
-                          <Checkbox
-                            id={`theme-${theme.slug}`}
-                            checked={selectedTheme === theme?.slug}
-                            disabled={
-                              selectedTheme && selectedTheme !== theme?.slug
-                            }
-                            onCheckedChange={(value) =>
-                              setSelectedTheme(value ? theme?.slug : "")
-                            }
-                          />
-                          <label
-                            htmlFor={`theme-${theme.slug}`}
-                            className="text-base font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                          >
+                          <span className="text-base font-medium leading-none">
                             {theme.title}
-                          </label>
+                          </span>
                           <Badge
                             variant={
                               theme?.status === "Not Installed"
@@ -246,6 +243,18 @@ const RequiredFeatures = () => {
                           </Badge>
                         </div>
                       ))}
+                      <p className="text-sm text-text-secondary">
+                        The template was designed against this theme. Your
+                        active theme is not changed by the import -- install
+                        and activate it yourself from{" "}
+                        <a
+                          className="underline"
+                          href={`${WCF_ADDONS_ADMIN.adminURL || ""}themes.php`}
+                        >
+                          Appearance &gt; Themes
+                        </a>
+                        .
+                      </p>
                     </AccordionContent>
                   </AccordionItem>
                 ) : (

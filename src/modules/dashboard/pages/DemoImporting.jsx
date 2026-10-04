@@ -18,8 +18,14 @@ const DemoImporting = () => {
   const template = url.searchParams.get("template");
   const templateid = url.searchParams.get("templateid");
   const plugins = url.searchParams.get("plugins");
-  const theme = url.searchParams.get("theme");
   const attachment = url.searchParams.get("attachment");
+  // The theme the user ticked on the import screen, if any. Free installs
+  // nothing itself; the server announces this on a hook the Pro add-on
+  // answers, and with nothing attached the active theme is left alone.
+  const theme = url.searchParams.get("theme");
+  // "Copy images into my media library" from the V4 dialog -> the importer's
+  // `aae_localize_images`, which adds the repeating localize-images step.
+  const v4images = url.searchParams.get("v4images");
 
   const changeRoute = (value, meta) => {
     const pageQuery = url.searchParams.get("page");
@@ -30,8 +36,14 @@ const DemoImporting = () => {
     url.searchParams.set("templateid", templateid);
     url.searchParams.set("tab", value);
     if (meta.plugins) url.searchParams.set("plugins", meta.plugins);
-    if (meta.theme) url.searchParams.set("theme", meta.theme);
     url.searchParams.set("attachment", meta.attachment);
+    if (v4images) url.searchParams.set("v4images", v4images);
+    // Retry re-enters the import from the fail screen, so the choice has to
+    // survive the round trip.
+    if (theme) url.searchParams.set("theme", theme);
+    // The fail screen reads this back out of the URL; without it every
+    // failure reads as a bare "An issue occurred while importing".
+    if (meta.msg) url.searchParams.set("msg", meta.msg);
     window.history.replaceState({}, "", url);
     setTabKey(value);
   };
@@ -118,17 +130,22 @@ const DemoImporting = () => {
           const data = await response.json();                  
                  
           if (data?.import_porgress?.type === 'single') {
-            const importCount = data.import_porgress.progress || 0;
-            const totalCount = data.import_porgress.total_items || 1;
+            const totalCount = Math.max(data.import_porgress.total_items || 0, 1);
+            // The server clamps this, but a payload written by an older build
+            // can still read "198 of 197", which looks like a broken import.
+            const importCount = Math.min(Math.max(data.import_porgress.progress || 0, 0), totalCount);
 
             // 🔹 Content Import Only (0-100%)
             const contentProgress = Math.min(Math.round((importCount / totalCount) * 100), 100);
 
-            // 🔸 Total Import (starting from plugin/theme install)
-            const baseProgress = Math.floor(Math.random() * (44 - 40 + 1)) + 40;
-            const scaledImport = 50 * (importCount / totalCount);
-            const totalProgress = Math.min(Math.round(baseProgress + scaledImport), 100); 
-            setTemplateTitle(data.import_porgress?.title);          
+            // 🔸 Total Import: content owns the 40-90 band, and the steps
+            // either side of it report their own figure. CONTENT_BASE is a
+            // constant now: it used to be re-rolled at random between 40 and
+            // 44 on every poll, which is not progress, it is noise that the
+            // Math.max below then latched onto.
+            const CONTENT_BASE = 40;
+            const totalProgress = Math.min(Math.round(CONTENT_BASE + 50 * (importCount / totalCount)), 100);
+            setTemplateTitle(data.import_porgress?.title);
             
             // 👇 You set both
             setProgress((prev) => Math.max(prev, totalProgress));
@@ -155,6 +172,7 @@ const DemoImporting = () => {
         delete tpldata.downloads;
         delete tpldata.is_pro;
         delete tpldata.excerpt;
+        if (v4images) tpldata.aae_localize_images = 1;
         setTempState(tpldata);
         
         const formData = new URLSearchParams();
@@ -168,7 +186,10 @@ const DemoImporting = () => {
         formData.append("template_data", JSON.stringify(tpldata));
         formData.append("nonce", WCF_ADDONS_ADMIN.nonce);
         if (plugins) formData.append("user_plugins", plugins);
-        if (theme) formData.append("theme_slug", theme);
+        // Sent only when the user ticked it. The server checks it against
+        // the slug THIS template declares before announcing it on the hook,
+        // so an edited request cannot install an arbitrary theme.
+        if (theme) formData.append("user_theme", theme);
         formData.append("attachment", attachment);
         const response = await fetch(WCF_ADDONS_ADMIN.ajaxurl, {
           method: "POST",
@@ -208,7 +229,10 @@ const DemoImporting = () => {
             if (completed === true) {
               changeCompleteRoute("complete-import");
             } else if (data.template.next_step === "fail") {
-              changeRoute("fail-import", { plugins, theme, attachment });
+              // No `theme` here: the import neither installs nor switches one,
+              // and referencing it threw a ReferenceError that replaced the
+              // server's own reason and left this screen stuck mid-progress.
+              changeRoute("fail-import", { plugins, attachment, msg: data.msg });
             } else {
               runImport(data.template);
 
@@ -231,7 +255,7 @@ const DemoImporting = () => {
         if (tempstate) {
           runImport(tempstate);
         }else{
-          changeRoute("fail-import", { plugins, theme, attachment , msg: error.message });
+          changeRoute("fail-import", { plugins, attachment, msg: error.message });
         }
       }
     }, 300),

@@ -5,6 +5,19 @@
 .aae-a-flip-box {
 	display: block !important;
 
+	// Keyboard equivalent to every :hover trigger below. The card has no
+	// naturally focusable child by default (plain title/text), so the twig
+	// gives the root a tabindex="0" — :focus-within also matches when the
+	// focused element IS the one it's on, per spec, so this alone covers both
+	// "the card itself is focused" and "a link/button a builder adds inside
+	// it is focused". Without this, a sighted keyboard-only user (no mouse)
+	// can never see the back face at all — the content is reachable to a
+	// screen reader regardless (both faces are always in the DOM), but the
+	// VISUAL reveal was mouse-only. WCAG 2.1.1 (Keyboard).
+	&:focus {
+		outline: revert;
+	}
+
 	.flip-box-front,
 	.flip-box-back {
 		position: absolute !important;
@@ -50,10 +63,12 @@
 		.flip-box-back {
 			transform: perspective( 1000px ) rotateY( -180deg );
 		}
-		&:hover .flip-box-front {
+		&:hover .flip-box-front,
+		&:focus-within .flip-box-front {
 			transform: perspective( 1000px ) rotateY( 180deg );
 		}
-		&:hover .flip-box-back {
+		&:hover .flip-box-back,
+		&:focus-within .flip-box-back {
 			transform: perspective( 1000px ) rotateY( 0deg );
 		}
 	}
@@ -65,10 +80,12 @@
 		.flip-box-back {
 			transform: perspective( 1000px ) rotateY( 180deg );
 		}
-		&:hover .flip-box-front {
+		&:hover .flip-box-front,
+		&:focus-within .flip-box-front {
 			transform: perspective( 1000px ) rotateY( -180deg );
 		}
-		&:hover .flip-box-back {
+		&:hover .flip-box-back,
+		&:focus-within .flip-box-back {
 			transform: perspective( 1000px ) rotateY( 0deg );
 		}
 	}
@@ -80,10 +97,12 @@
 		.flip-box-back {
 			transform: perspective( 1000px ) rotateX( 180deg );
 		}
-		&:hover .flip-box-front {
+		&:hover .flip-box-front,
+		&:focus-within .flip-box-front {
 			transform: perspective( 1000px ) rotateX( -180deg );
 		}
-		&:hover .flip-box-back {
+		&:hover .flip-box-back,
+		&:focus-within .flip-box-back {
 			transform: perspective( 1000px ) rotateX( 0deg );
 		}
 	}
@@ -95,10 +114,12 @@
 		.flip-box-back {
 			transform: perspective( 1000px ) rotateX( -180deg );
 		}
-		&:hover .flip-box-front {
+		&:hover .flip-box-front,
+		&:focus-within .flip-box-front {
 			transform: perspective( 1000px ) rotateX( 180deg );
 		}
-		&:hover .flip-box-back {
+		&:hover .flip-box-back,
+		&:focus-within .flip-box-back {
 			transform: perspective( 1000px ) rotateX( 0deg );
 		}
 	}
@@ -109,7 +130,8 @@
 			transform: scale( 0.75 );
 			transition: opacity 0.5s, transform 0.5s;
 		}
-		&:hover .flip-box-back {
+		&:hover .flip-box-back,
+		&:focus-within .flip-box-back {
 			opacity: 1;
 			transform: scale( 1 );
 		}
@@ -120,7 +142,8 @@
 			z-index: 3;
 			transition: opacity 0.5s, transform 0.5s, visibility 0.5s;
 		}
-		&:hover .flip-box-front {
+		&:hover .flip-box-front,
+		&:focus-within .flip-box-front {
 			opacity: 0;
 			visibility: hidden;
 			transform: scale( 0.75 );
@@ -132,7 +155,8 @@
 			opacity: 0;
 			transition: opacity 0.5s;
 		}
-		&:hover .flip-box-back {
+		&:hover .flip-box-back,
+		&:focus-within .flip-box-back {
 			opacity: 1;
 		}
 	}
@@ -150,6 +174,19 @@
 		.flip-box-front {
 			-webkit-backface-visibility: visible !important;
 			backface-visibility: visible !important;
+		}
+	}
+
+	// Respect the visitor's motion setting for the animate-in variants that
+	// declare an explicit transition (zoom-in/zoom-out/fade-in). The
+	// rotateX/Y variants have no transition of their own here, so there is
+	// nothing to suppress for them — the flip itself (position/backface
+	// mechanics) still works instantly either way.
+	@media (prefers-reduced-motion: reduce) {
+		&.flip-box-animate-zoom-in .flip-box-back,
+		&.flip-box-animate-zoom-out .flip-box-front,
+		&.flip-box-animate-fade-in .flip-box-back {
+			transition: none;
 		}
 	}
 }

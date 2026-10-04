@@ -14,6 +14,8 @@ import {
 } from "@/components/ui/select";
 import { Input } from "../ui/input";
 import { useActiveItem, useAtomicWidgets, useWidgets } from "@/hooks/app.hooks";
+import { useState } from "react";
+import DisableAllV3Dialog from "../shared/DisableAllV3Dialog";
 
 const WidgetTopBar = ({
   filterKey,
@@ -31,6 +33,8 @@ const WidgetTopBar = ({
   const isAtomic = system === "atomic";
   const activeWidgets = isAtomic ? allAtomicWidgets : allWidgets;
 
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
   const setCheck = (data) => {
     if (isAtomic) {
       updateActiveAtomicFullWidget(data);
@@ -38,7 +42,26 @@ const WidgetTopBar = ({
       updateActiveFullWidget(data);
     }
   };
+
+  /*
+   * Turning every V3 widget OFF is the one dashboard action that can blank a
+   * live page — unregistered widgets render nothing at all — so it asks first.
+   * Only that direction: switching them ON needs no confirmation, and the
+   * atomic list is not affected (an atomic widget has no legacy content behind
+   * it that could silently disappear).
+   */
+  const needsConfirm = (value) => !isAtomic && value === false;
+
+  const onToggleAll = (value) => {
+    if (needsConfirm(value)) {
+      setConfirmOpen(true);
+      return;
+    }
+    setCheck({ value });
+  };
+
   return (
+    <>
     <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 xl:gap-11 justify-between items-center">
       <div className="flex items-center gap-3">
         <div className="border rounded-full h-[52px] w-[52px] flex justify-center items-center shadow-common">
@@ -68,7 +91,7 @@ const WidgetTopBar = ({
           <Switch
             id="global-enable-all"
             checked={activeWidgets?.is_active}
-            onCheckedChange={(value) => setCheck({ value })}
+            onCheckedChange={onToggleAll}
             reverse
           />
           <Label htmlFor="global-enable-all">{__("Enable All", "animation-addons-for-elementor")}</Label>
@@ -108,6 +131,15 @@ const WidgetTopBar = ({
         </div>
       </div>
     </div>
+
+    <DisableAllV3Dialog
+      open={confirmOpen}
+      setOpen={setConfirmOpen}
+      kind="widgets"
+      activeCount={widgetCount?.active || 0}
+      onConfirm={() => setCheck({ value: false })}
+    />
+    </>
   );
 };
 

@@ -88,9 +88,14 @@ class Nav_Menu extends Widget_Base {
 	 * @return array
 	 */
 	public function get_style_depends() {
-		return [
-		    'wcf--nav-menu'
-		];
+		// Intentionally empty. This widget's stylesheet builds to nothing — its
+		// SCSS source is entirely commented out — so the 'wcf--nav-menu' STYLE
+		// handle is no longer registered (see Plugin::get_widget_style()). Asking
+		// for an unregistered handle here would be a silent no-op rather than an
+		// error, which is exactly why it is spelled out instead of left dangling.
+		//
+		// The identically named SCRIPT handle is still declared below and is real.
+		return [];
 	}
 	
 	public function get_script_depends() {

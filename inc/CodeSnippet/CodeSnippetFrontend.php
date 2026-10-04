@@ -49,6 +49,24 @@ class CodeSnippetFrontend {
 	private $all_active_posts = null;
 
 	/**
+	 * Snippet post ids whose PHP has already been considered this request,
+	 * so the two lanes below can never execute the same snippet twice.
+	 * Marked when a snippet is EVALUATED, not only when it runs, because a
+	 * context-free visibility answer cannot change between the two lanes.
+	 *
+	 * @var array<int,bool>
+	 */
+	private $php_considered = array();
+
+	/**
+	 * Visibility values that can be answered before the main query exists.
+	 * Everything else asks a conditional query tag and is only valid on 'wp'.
+	 *
+	 * @var string[]
+	 */
+	const CONTEXT_FREE_VISIBILITY = array( 'global', 'admin', 'frontend' );
+
+	/**
 	 * Constructor
 	 *
 	 * @since 2.3.10
@@ -77,8 +95,25 @@ class CodeSnippetFrontend {
 	 * @return void
 	 */
 	private function init_hooks() {
-		// Use 'wp' so conditional tags (is_singular, is_archive, etc.) are available.
-		$this->run_php_code_snippets();
+		// PHP snippets are DEFERRED, never run at include time. This file is
+		// included from the free plugin's own plugins_loaded:10 callback, and
+		// Pro registers wcf_code_snippet_execute_php from ITS plugins_loaded:11
+		// callback -- so the has_action() guard in run_php_code_snippets() was
+		// being asked one priority too early and always answered "no Pro".
+		// Measured with a probe: false at 9/10/11, TRUE at 12.
+		//
+		// Priority 20 keeps snippets as early as they have always been (before
+		// after_setup_theme and init, so a snippet can still hook either) while
+		// being after Pro. The 'wp' pass is for snippets whose visibility asks a
+		// conditional query tag, which is only answerable once the main query
+		// has run; run_php_code_snippets() decides which lane each snippet
+		// belongs to and never repeats one.
+		if ( did_action( 'plugins_loaded' ) && ! doing_action( 'plugins_loaded' ) ) {
+			$this->run_php_code_snippets();
+		} else {
+			add_action( 'plugins_loaded', array( $this, 'run_php_code_snippets' ), 20 );
+		}
+		add_action( 'wp', array( $this, 'run_php_code_snippets' ), 1 );
 		add_action( 'wp_head', array( $this, 'execute_head_snippets' ), 1 );
 		add_action( 'wp_footer', array( $this, 'execute_footer_snippets' ), 999 );
 		// Registered ONCE. It used to be added to wp_body_open three times (a
@@ -97,17 +132,70 @@ class CodeSnippetFrontend {
 	/**
 	 * Run PHP code snippets.
 	 *
+	 * Note: PHP code execution requires Animation Addons Pro. The free plugin
+	 * only ever fires wcf_code_snippet_execute_php; it evaluates nothing.
+	 *
+	 * Called twice per request (plugins_loaded:20 and wp:1). Each snippet is
+	 * considered by exactly one of them -- see $php_considered.
+	 *
 	 * @return void
 	 */
 	public function run_php_code_snippets() {
+		// Guard: Do not process PHP snippets unless Pro handler is registered and file editing is allowed.
+		if ( ! has_action( 'wcf_code_snippet_execute_php' ) ) {
+			return;
+		}
+
+		if ( ( defined( 'DISALLOW_FILE_EDIT' ) && DISALLOW_FILE_EDIT ) || ( defined( 'DISALLOW_FILE_MODS' ) && DISALLOW_FILE_MODS ) ) {
+			return;
+		}
+
+		// Conditional query tags are only meaningful once 'wp' has run.
+		$query_ready = did_action( 'wp' ) > 0;
+
 		$snippets = $this->get_active_snippets( 'php' );
 
 		foreach ( $snippets as $snippet ) {
+			if ( isset( $this->php_considered[ $snippet->ID ] ) ) {
+				continue;
+			}
+
 			$snippet_data = $this->aae_get_code_snippet_settings( $snippet->ID );
+
+			// Leave a query-dependent snippet for the 'wp' pass rather than
+			// asking is_singular() before there is a query to ask about: that
+			// answers false AND emits _doing_it_wrong.
+			if ( ! $query_ready && ! $this->visibility_is_context_free( $snippet_data ) ) {
+				continue;
+			}
+
+			// Marked before executing, so a snippet that fatals cannot be
+			// retried by the second pass.
+			$this->php_considered[ $snippet->ID ] = true;
+
 			if ( $this->check_visibility_conditions( $snippet_data ) ) {
 				$this->execute_snippet( $snippet_data );
 			}
 		}
+	}
+
+	/**
+	 * Can this snippet's visibility be decided without the main query?
+	 *
+	 * @param array $snippet_data Snippet configuration data.
+	 *
+	 * @return bool
+	 */
+	private function visibility_is_context_free( $snippet_data ) {
+		$page = isset( $snippet_data['visibility_page'] ) ? $snippet_data['visibility_page'] : '';
+		$list = isset( $snippet_data['visibility_page_list'] ) ? $snippet_data['visibility_page_list'] : array();
+
+		// A page list is compared against get_the_ID(), so it needs the query.
+		if ( ! empty( $list ) && is_array( $list ) ) {
+			return false;
+		}
+
+		return in_array( $page, self::CONTEXT_FREE_VISIBILITY, true );
 	}
 
 	/**
@@ -462,7 +550,8 @@ class CodeSnippetFrontend {
 				break;
 
 			case 'php':
-				$this->execute_php_snippet( $code_content );
+				// PHP snippet execution is handled by Animation Addons Pro.
+				do_action( 'wcf_code_snippet_execute_php', $code_content, $snippet );
 				break;
 
 			default:
@@ -541,7 +630,7 @@ class CodeSnippetFrontend {
 	private function execute_css_snippet( $content ) {
 		if ( ! empty( $content ) ) {
 			echo '<style type="text/css">' . "\n";
-			echo wp_strip_all_tags( $content ) . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo wp_strip_all_tags( $content ) . "\n";
 			echo '</style>' . "\n";
 		}
 	}
@@ -556,39 +645,12 @@ class CodeSnippetFrontend {
 	 */
 	private function execute_javascript_snippet( $content ) {
 		if ( ! empty( $content ) ) {
-			echo '<script type="text/javascript">' . "\n";
-			echo wp_strip_all_tags( $content ) . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo '</script>' . "\n";
-		}
-	}
-
-	/**
-	 * Execute PHP snippet
-	 *
-	 * @param string $content PHP content.
-	 *
-	 * @since 2.3.10
-	 * @return void
-	 */
-	private function execute_php_snippet( $content ) {
-		$content = preg_replace( '/^\s*<\?(php|PHP)?/i', '', $content );
-		$content = preg_replace( '/\?>\s*$/', '', $content );
-		if ( ! empty( $content ) ) {
-			ob_start();
-
-			try {
-				$wrapped = 'return function() { ' . $content . ' };';
-				$func    = eval( $wrapped ); // phpcs:ignore WordPress.Security.Eval.Discouraged, Generic.PHP.ForbiddenFunctions.Found
-
-				if ( is_callable( $func ) ) {
-					$func();
-				}
-			} catch ( \Throwable $e ) {
-			}
-
-			$output = ob_get_clean();
-
-			echo wp_kses_post( $output );
+			// Core's inline-script printer. wp_strip_all_tags() used to run over
+			// the code, and strip_tags() eats everything from a `<` to the next
+			// `>` -- so `if ( a < b ) { ... } c > d` lost the middle of the
+			// snippet. The snippet is written by an administrator, on the screen
+			// that exists to run it; the tag around it is what has to be right.
+			wp_print_inline_script_tag( $content . "\n" );
 		}
 	}
 }

@@ -118,12 +118,13 @@ final class InteractionsMap {
 			// free ships the runtime and these maps, so the protection cannot
 			// depend on Pro being present. See Pro's Cache_Compat for the
 			// file-path half of the same fence, and CLAUDE.md → cache compat.
-			printf(
-				'<script id="%s" data-no-optimize="1" data-no-defer="1">window.%s=Object.assign(window.%s||{},%s);</script>',
-				esc_attr( $script_id ),
-				esc_js( $window_key ),
-				esc_js( $window_key ),
-				$json // already JSON-encoded; no further escaping inside <script>
+			wp_print_inline_script_tag(
+				sprintf( 'window.%1$s=Object.assign(window.%1$s||{},%2$s);', esc_js( $window_key ), $json ),
+				array(
+					'id'               => $script_id,
+					'data-no-optimize' => '1',
+					'data-no-defer'    => '1',
+				)
 			);
 		}
 

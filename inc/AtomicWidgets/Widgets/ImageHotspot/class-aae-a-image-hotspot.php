@@ -43,6 +43,7 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Number_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropDependencies\Manager as Dependency_Manager;
 
 require_once __DIR__ . '/class-aae-a-hotspot-point.php';
@@ -206,7 +207,7 @@ class AAE_A_Image_Hotspot extends Atomic_Element_Base {
 					Style_Variant::make()
 						->add_prop( 'display', String_Prop_Type::generate( 'block' ) )
 						->add_prop( 'position', String_Prop_Type::generate( 'relative' ) )
-						->add_prop( 'width', String_Prop_Type::generate( '100%' ) )
+						->add_prop( 'width', Size_Prop_Type::generate( array( 'size' => 100, 'unit' => '%' ) ) )
 				),
 		];
 	}

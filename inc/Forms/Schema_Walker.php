@@ -117,8 +117,13 @@ final class Schema_Walker {
 	 *   between/outside steps — e.g. a Submit button placed after all steps).
 	 *   Threaded down exactly like the pro Conditional Display engine threads
 	 *   an ancestor accumulator in its own walk (Engine.php's walk_containers).
+	 * @param string $group_label The caption of the e-aae-a-form-range-group
+	 *   we are descending inside, else ''. A Range Group's caption is a real
+	 *   heading CHILD, not a Label widget pointing at the field's CSS id, so
+	 *   build()'s $labels map can never resolve it — it has to be carried in
+	 *   from the ancestor, the same way $current_step is.
 	 */
-	private static function collect( array $elements, array &$fields, &$submit, array &$labels, array &$message, array &$steps, ?string $current_step ): void {
+	private static function collect( array $elements, array &$fields, &$submit, array &$labels, array &$message, array &$steps, ?string $current_step, string $group_label = '' ): void {
 		foreach ( $elements as $element ) {
 			if ( ! is_array( $element ) ) {
 				continue;
@@ -132,8 +137,16 @@ final class Schema_Walker {
 				continue;
 			}
 
-			$settings   = $element['settings'] ?? [];
-			$step_scope = $current_step;
+			$settings    = $element['settings'] ?? [];
+			$step_scope  = $current_step;
+			$label_scope = $group_label;
+
+			// The caption is whatever heading/paragraph the builder left at the top
+			// of the group — first_label_text() is the same recursive reader the
+			// Submit button's label uses, so a caption nested in a flexbox resolves.
+			if ( 'e-aae-a-form-range-group' === $type ) {
+				$label_scope = self::first_label_text( $element );
+			}
 
 			if ( 'e-aae-a-form-step' === $type ) {
 				$step_scope = (string) ( $element['id'] ?? '' );
@@ -142,15 +155,28 @@ final class Schema_Walker {
 					'title' => (string) Prop::read( $settings, 'step_title', '' ),
 				];
 			} elseif ( isset( self::FIELD_TYPES[ $type ] ) ) {
-				$fields[] = self::build_field( self::FIELD_TYPES[ $type ], $element, $settings, $current_step );
+				$field = self::build_field( self::FIELD_TYPES[ $type ], $element, $settings, $current_step );
+
+				// Inside a Range Group the caption above the slider IS this field's
+				// label, so submissions and notification emails read "Total area to be
+				// cleaned" instead of a bare field key. An explicit Label widget still
+				// wins: build() applies the resolved $labels map after this walk.
+				if ( '' !== $group_label && '' === $field['label'] ) {
+					$field['label'] = $group_label;
+				}
+
+				$fields[] = $field;
 			} elseif ( 'e-aae-a-form-label' === $type ) {
 				$for = (string) Prop::read( $settings, 'input-id', '' );
 				if ( '' !== $for && ! isset( $labels[ $for ] ) ) {
 					$labels[ $for ] = Prop::read_html_text( $settings, 'text', '' );
 				}
 			} elseif ( 'e-aae-a-form-submit' === $type && null === $submit ) {
+				// The label is the Paragraph child, not a `text` prop — the Submit
+				// button is a container (Paragraph + SVG) so the label and icon
+				// can be real, styleable elements.
 				$submit = [
-					'text'          => Prop::read_html_text( $settings, 'text', 'Submit' ),
+					'text'          => self::first_label_text( $element ),
 					'loading_label' => (string) Prop::read( $settings, 'loading_label', '' ),
 				];
 			} elseif ( 'e-aae-a-form-success-message' === $type ) {
@@ -161,7 +187,7 @@ final class Schema_Walker {
 
 			if ( ! empty( $element['elements'] ) && is_array( $element['elements'] )
 				&& ! in_array( $type, [ 'e-aae-a-form-success-message', 'e-aae-a-form-error-message' ], true ) ) {
-				self::collect( $element['elements'], $fields, $submit, $labels, $message, $steps, $step_scope );
+				self::collect( $element['elements'], $fields, $submit, $labels, $message, $steps, $step_scope, $label_scope );
 			}
 		}
 	}
@@ -287,6 +313,45 @@ final class Schema_Walker {
 		}
 
 		return $prefix . ( '' !== $css_id ? $css_id : $element_id );
+	}
+
+	/**
+	 * Label text of a Submit button — the first heading/paragraph anywhere
+	 * underneath it.
+	 *
+	 * RECURSIVE, unlike first_paragraph_text() below: the default children are
+	 * Paragraph + SVG directly under the button, but a builder is free to nest
+	 * the label inside a flexbox — and buttons saved before the wrapper row was
+	 * dropped still have it one level down. Heading stores its text under
+	 * `title`, Paragraph under `paragraph` — both are accepted so swapping one
+	 * for the other on the canvas doesn't blank the schema's submit label.
+	 */
+	private static function first_label_text( array $element ): string {
+		foreach ( $element['elements'] ?? [] as $child ) {
+			if ( ! is_array( $child ) ) {
+				continue;
+			}
+
+			$type = ( 'widget' === ( $child['elType'] ?? '' ) ) ? ( $child['widgetType'] ?? '' ) : ( $child['elType'] ?? '' );
+			$key  = [
+				'e-heading'   => 'title',
+				'e-paragraph' => 'paragraph',
+			][ $type ] ?? null;
+
+			if ( $key ) {
+				$text = Prop::read_html_text( $child['settings'] ?? [], $key, '' );
+				if ( '' !== $text ) {
+					return $text;
+				}
+			}
+
+			$nested = self::first_label_text( $child );
+			if ( '' !== $nested ) {
+				return $nested;
+			}
+		}
+
+		return '';
 	}
 
 	/** Text of the first e-paragraph child (status-message body). */

@@ -100,7 +100,7 @@ class AAE_A_Timeline_Year extends Atomic_Widget_Base {
 						->add_prop( 'display',      String_Prop_Type::generate( 'block' ) )
 						->add_prop( 'font-size',     Size_Prop_Type::generate( [ 'size' => 15, 'unit' => 'px' ] ) )
 						->add_prop( 'font-weight',   String_Prop_Type::generate( '500' ) )
-						->add_prop( 'color',         Color_Prop_Type::generate( '#d4537e' ) )
+						->add_prop( 'color',         Color_Prop_Type::generate( '#943a58' ) )
 						->add_prop( 'margin', Dimensions_Prop_Type::generate( [
 							'block-start'  => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
 							'inline-end'   => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),

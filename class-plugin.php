@@ -152,9 +152,27 @@ class Plugin
 	public function widget_scripts()
 	{
 		$scripts = array(
+			// Inline-only carrier handle: no file of its own — `'src' => false`.
+			//
+			// assets/js/wcf-addons.min.js is a ZERO-BYTE file (so is its unminified
+			// source), and pointing the handle at it cost every visitor one HTTP
+			// round trip per page view to download nothing.
+			//
+			// The HANDLE is emphatically not dead, which is why it is registered
+			// rather than removed. It has two live consumers:
+			//   - wp_localize_script() below attaches WCF_ADDONS_JS to it, and
+			//     WordPress prints that inline block only for a registered,
+			//     enqueued handle.
+			//   - Pro declares 'wcf--addons' as a dependency of 'wcf--addons-ex'
+			//     (its class-plugin.php), and dependency resolution is independent
+			//     of src, so a false-src parent still orders the child correctly.
+			//
+			// If real code is ever added to wcf-addons.min.js, restore the filename
+			// here. check-empty-assets.php fails on the inverse mistake — a handle
+			// still pointing at a file that builds to nothing.
 			'wcf-addons-core' => array(
 				'handler' => 'wcf--addons',
-				'src'     => 'wcf-addons.min.js',
+				'src'     => false,
 				'dep'     => array(),
 				'version' => false,
 				'arg'     => false,
@@ -162,7 +180,11 @@ class Plugin
 		);
 
 		foreach ($scripts as $key => $script) {
-			wp_register_script($script['handler'], plugins_url('/assets/js/' . $script['src'], __FILE__), $script['dep'], self::asset_version($script['version']), $script['arg']);
+			$src = false === $script['src']
+				? false
+				: plugins_url('/assets/js/' . $script['src'], __FILE__);
+
+			wp_register_script($script['handler'], $src, $script['dep'], self::asset_version($script['version']), $script['arg']);
 		}
 
 		$data = apply_filters(
@@ -384,13 +406,6 @@ class Plugin
 		return apply_filters(
 			'aae/lite/widgets/scripts', // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 			array(
-				'typed'                => array(
-					'handler' => 'typed',
-					'src'     => 'typed.min.js',
-					'dep'     => array(),
-					'version' => WCF_ADDONS_VERSION,
-					'arg'     => true,
-				),
 				'ProgressBar'          => array(
 					'handler' => 'progressbar',
 					'src'     => 'progressbar.min.js',
@@ -408,7 +423,7 @@ class Plugin
 				'typewriter'           => array(
 					'handler' => 'wcf--typewriter',
 					'src'     => 'widgets/typewriter.min.js',
-					'dep'     => array('typed', 'jquery'),
+					'dep'     => array('jquery'),
 					'version' => WCF_ADDONS_VERSION,
 					'arg'     => true,
 				),
@@ -555,8 +570,8 @@ class Plugin
 				),
 				'post-rating'          => array(
 					'handler' => 'aae-post-rating',
-					'src'     => 'widgets/post-rating.js',
-					'dep'     => array(),
+					'src'     => 'widgets/post-rating.min.js',
+					'dep'     => array( 'jquery' ),
 					'version' => WCF_ADDONS_VERSION,
 					'arg'     => true,
 				),
@@ -781,13 +796,17 @@ class Plugin
 				'media'   => 'all',
 			),
 
-			'search'             => array(
-				'handler' => 'aae--search',
-				'src'     => 'widgets/search.min.css',
-				'dep'     => array(),
-				'version' => false,
-				'media'   => 'all',
-			),
+			// 'search' is deliberately absent, for the same reason as 'nav-menu'
+			// above: assets/src/scss/widgets/search.scss is 337 lines with every one
+			// commented out, because those rules now live in the inline <style>
+			// block the widget prints itself. The build therefore emits a
+			// stylesheet containing only a sourceMappingURL comment.
+			//
+			// Checked against both plugins: Pro does not reference 'aae--search' at
+			// all, nothing hangs inline CSS on it, and the only other hits are
+			// `.aae--search-filter` CSS SELECTORS inside the widget, which are
+			// unrelated to the handle. The SCRIPT handle of the same name stays —
+			// assets/js/widgets/search.min.js is 4 KB of real code.
 			'image-hotspot'      => array(
 				'handler' => 'aae-image-hotspot',
 				'src'     => 'widgets/image-hotspot.min.css',
@@ -949,13 +968,21 @@ class Plugin
 				'version' => false,
 				'media'   => 'all',
 			),
-			'nav-menu'           => array(
-				'handler' => 'wcf--nav-menu',
-				'src'     => 'widgets/nav-menu.min.css',
-				'dep'     => array(),
-				'version' => false,
-				'media'   => 'all',
-			),
+			// 'nav-menu' is deliberately absent. assets/src/scss/widgets/nav-menu.scss
+			// is 353 lines with every one of them commented out, so the build emits
+			// a stylesheet containing nothing but a sourceMappingURL comment — and
+			// registering it shipped that empty file to every visitor of every page
+			// carrying a nav menu.
+			//
+			// Checked against both plugins before removing: nothing declares
+			// 'wcf--nav-menu' as a style dependency, enqueues it, or hangs inline CSS
+			// on it. Pro's only mention is an Elementor control hook
+			// (elementor/element/wcf--nav-menu/...) keyed on the WIDGET NAME, which
+			// is unrelated to the style handle, and the WPML entry is a
+			// widget-to-translatable-fields map. The widget keeps its SCRIPT handle
+			// of the same name — that file is real.
+			//
+			// To bring it back: uncomment the SCSS, rebuild, and restore the entry.
 			'loop-grid'          => array(
 				'handler' => 'wcf--loop-grid',
 				'src'     => 'widgets/loop-grid.min.css',
@@ -1154,14 +1181,20 @@ class Plugin
 
 		//require_once WCF_ADDONS_PATH . 'config.php';
 		require_once WCF_ADDONS_PATH . 'inc/helper.php';
+
+		// One class, no side effects, no hooks -- it only answers "register the
+		// bundled webfonts and tell me the handle" for the admin stylesheets
+		// that depend on them. Required unconditionally because the screens that
+		// ask for it (notices, code snippet, custom icon, CPT builder) each load
+		// through a different path, and a dependency that is not registered
+		// causes WordPress to silently skip the dependent stylesheet.
+		require_once WCF_ADDONS_PATH . 'inc/admin/class-aae-fonts.php';
+
 		if (is_admin()) {
 			if (get_option('wcf_addons_setup_wizard') !== 'complete') {
 				require_once WCF_ADDONS_PATH . 'inc/admin/setup-wizard.php';
 			}
 			require_once WCF_ADDONS_PATH . 'inc/admin/dashboard.php';
-
-			include_once WCF_ADDONS_PATH . 'inc/admin/Notices/Notices.php';
-			include_once WCF_ADDONS_PATH . 'inc/admin/Notices/ShowNotices.php';
 		}
 
 		// Only load theme builder when needed. added this condition at v-2.6.0
@@ -1235,7 +1268,6 @@ class Plugin
 		include_once WCF_ADDONS_PATH . 'inc/trait-wcf-slider.php';
 		include_once WCF_ADDONS_PATH . 'inc/post-rating-handler.php';
 		include_once WCF_ADDONS_PATH . 'inc/category-fields.php';
-		include_once WCF_ADDONS_PATH . 'inc/admin/image-cache.php';
 		include_once WCF_ADDONS_PATH . 'inc/admin/page-import.php';
 		include_once WCF_ADDONS_PATH . 'widgets/mailchimp/mailchimp-api.php';
 		include_once WCF_ADDONS_PATH . 'inc/trait-wcf-nested-slider.php';
@@ -1533,12 +1565,11 @@ class Plugin
 
 			$timeout = ($force_update) ? 15 : 25;
 
-			$response = wp_remote_get(
+			$response = wp_safe_remote_get(
 				esc_url_raw(self::$instance->api_url),
 				array(
-					'timeout'   => $timeout,
-					'sslverify' => false,
-					'body'      => array(
+					'timeout' => $timeout,
+					'body'    => array(
 						// Which API version is used.
 						'api_version' => 1.1,
 						// Which language to return.
@@ -1581,13 +1612,6 @@ class Plugin
 				true
 			);
 
-			wp_enqueue_style(
-				'aae-plugins-styles',
-				WCF_ADDONS_URL . 'assets/css/plugins.css',
-				array(),
-				WCF_ADDONS_VERSION,
-				'all'
-			);
 		}
 	}
 

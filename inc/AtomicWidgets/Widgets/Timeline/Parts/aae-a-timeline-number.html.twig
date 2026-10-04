@@ -1,5 +1,12 @@
 {% import 'elementor/macros' as m %}
-{%- set classes = settings.classes | merge( [ base_styles.base ] ) | join(' ') -%}
+{# `aae-a-timeline-item-marker` is the part's semantic hook — a plain CSS class
+   (the item twig's marker rule keys off it), NOT an Elementor style-def id. It
+   used to be seeded into the `classes` prop, but the editor resolves every
+   entry there to a local or global class and warns "Some classes are missing"
+   for the ones it can't; dismissing that alert calls unapplyClasses(), which
+   strips the hook off the element for good. Emitting it here keeps the markup
+   identical while the panel stays clean. #}
+{%- set classes = [ 'aae-a-timeline-item-marker' ] | merge( settings.classes | default([]) ) | merge( [ base_styles.base ] ) | join(' ') -%}
 <{{ settings.tag | default('span') | e('html_tag') }} class="{{ classes }} {{ editor_classes | default('') }}"
 	{{- m.render_data_attributes(id, type, interaction_id | default('')) }}
 	{{- m.render_custom_attributes(settings, editor_attributes) }}>

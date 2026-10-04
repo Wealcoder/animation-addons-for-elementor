@@ -255,7 +255,7 @@ export function StackCardsControl( { label } ) {
 									⠿
 								</Box>
 								<Typography variant="body2" sx={ { flex: 1, fontWeight: isExpanded ? 600 : 400 } }>
-									{ row.title }
+									<RowTitle elementId={ row.id } fallback={ row.title } />
 								</Typography>
 								<Tooltip title="Duplicate">
 									<IconButton
@@ -302,6 +302,20 @@ export function StackCardsControl( { label } ) {
 			) }
 		</Stack>
 	);
+}
+
+/**
+ * Row label, read live off the element's own editor_settings rather than off
+ * the cached projection above. That projection only recomputes on a fixed set
+ * of document/elements/* commands, and updateElementEditorSettings() (the
+ * rename field below) fires none of them — it is a bare Backbone
+ * model.set('editor_settings', …) — so typing in the rename field updated the
+ * field itself (which already reads this same live hook) but left the row
+ * title stuck. Subscribing here directly sidesteps that dependency entirely.
+ */
+function RowTitle( { elementId, fallback } ) {
+	const editorSettings = useElementEditorSettings( elementId );
+	return editorSettings?.title || fallback;
 }
 
 function CardNameField( { elementId } ) {

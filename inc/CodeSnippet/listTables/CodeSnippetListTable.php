@@ -263,12 +263,9 @@ class CodeSnippetListTable extends AbstractListTable {
 	protected function get_views() {
 		$current      = $this->get_request_status( 'all' );
 		$status_links = array();
-		$snippets     = array(
-			'all'        => __( 'All', 'animation-addons-for-elementor' ),
-			'html'       => __( 'HTML', 'animation-addons-for-elementor' ),
-			'css'        => __( 'CSS', 'animation-addons-for-elementor' ),
-			'javascript' => __( 'JavaScript', 'animation-addons-for-elementor' ),
-			'php'        => __( 'PHP', 'animation-addons-for-elementor' ),
+		$snippets     = array_merge(
+			array( 'all' => __( 'All', 'animation-addons-for-elementor' ) ),
+			Helpers::get_code_type_list()
 		);
 
 		foreach ( $snippets as $snippet => $label ) {

@@ -2561,8 +2561,7 @@ class Posts extends Widget_Base {
 					$date = get_the_date();
 			endswitch;
 			/** This filter is documented in wp-includes/general-template.php */
-			// PHPCS - The date is safe.
-			echo apply_filters( 'the_date', $date, get_option( 'date_format' ), '', '' ); // phpcs:ignore
+			echo wp_kses_post( apply_filters( 'the_date', $date, get_option( 'date_format' ), '', '' ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- core filter.
 			?>
 		</span>
         </li>

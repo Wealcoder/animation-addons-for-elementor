@@ -8,9 +8,14 @@ import {
 import { buttonVariants } from "../ui/button";
 import { Separator } from "../ui/separator";
 import { DocumentList } from "@/config/data/documentList";
+import { API_ENDPOINTS } from "@/config/api";
+import { useRemoteData } from "@/hooks/useRemoteData";
 
 const Documentation = () => {
-  const documents = DocumentList;
+  const { data: documents } = useRemoteData(
+    API_ENDPOINTS.documentation,
+    DocumentList,
+  );
   const hash = window.location.hash;
   const hashValue = hash?.replace("#", "");
 
@@ -26,12 +31,15 @@ const Documentation = () => {
       <div className="flex justify-between gap-11">
         <div className="flex gap-2 items-center" id="wcf-documentation">
           <RiFileTextLine size={20} color="#4870FF" />
-          <p className="font-medium">{__("Documentation", "animation-addons-for-elementor")}</p>
+          <p className="font-medium">
+            {__("Documentation", "animation-addons-for-elementor")}
+          </p>
         </div>
         <div>
           <a
             href={"https://animation-addons.com/docs"}
             target="_blank"
+            rel="noreferrer"
             className={cn(
               buttonVariants({ variant: "secondary", size: "sm" }),
               "me-1",
@@ -49,21 +57,36 @@ const Documentation = () => {
       <div>
         {documents?.map((el, i) => (
           <div key={`document_list-${i}`}>
-            <div className="flex flex-col gap-2">
-              <a
-                href={el.url}
-                target="_blank"
+            <a
+              href={el.url}
+              target="_blank"
+              rel="noreferrer"
+              className="group flex items-center justify-between gap-4"
+            >
+              <div className="flex items-center gap-[18px] flex-1 min-w-0">
+                <img
+                  src={el.icon}
+                  alt=""
+                  className="w-12 h-12 rounded-full shrink-0"
+                />
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-text group-hover:text-brand truncate">
+                    {el.title}
+                  </p>
+                  <p className="text-sm text-text-secondary mt-1 truncate">
+                    <span dir="ltr">{el.subTitle}</span>
+                  </p>
+                </div>
+              </div>
+              <div
                 className={cn(
-                  "text-sm font-medium inline-flex items-center gap-[6px] hover:text-brand",
+                  "w-8 h-8 rounded-full border flex items-center justify-center shrink-0 text-icon-secondary",
+                  "group-hover:border-brand group-hover:text-brand",
                 )}
               >
-                {el.title}
                 <RiArrowRightLine size={16} className="rtl:rotate-180" />
-              </a>
-              <p className="text-sm text-text-secondary">
-                <span dir="ltr"> {el.subTitle} </span>
-              </p>
-            </div>
+              </div>
+            </a>
             {i + 1 !== documents.length ? (
               <Separator className="my-4 bg-border-secondary" />
             ) : (

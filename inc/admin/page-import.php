@@ -55,7 +55,18 @@ final class AAE_Admin_Page_Importer
         $current_view = isset($_GET['aae-latest-import']) ? sanitize_key(wp_unslash($_GET['aae-latest-import'])) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
         $class        = ('import' === $current_view) ? 'current' : '';
         $url   = add_query_arg('aae-latest-import', 'import', admin_url('edit.php?post_type=page'));
-        $views['latest-import'] = "<a href='$url' class='$class' style='color: #fc6848; font-weight: 500' >AAE Imported <span class='count'>($count)</span></a>";
+
+        // Built with sprintf rather than interpolated: this is returned into $views,
+        // which the list table echoes as-is -- it escapes nothing on our behalf. The
+        // label goes through esc_html__ because a string written straight into the
+        // markup here cannot be translated, and this one never was.
+        $views['latest-import'] = sprintf(
+            '<a href="%1$s" class="%2$s">%3$s <span class="count">(%4$s)</span></a>',
+            esc_url($url),
+            esc_attr(trim($class . ' aae-imported-view')),
+            esc_html__('AAE Imported', 'animation-addons-for-elementor'),
+            esc_html(number_format_i18n($count))
+        );
         return $views;
     }
     function custom_page_filter($query)
@@ -157,7 +168,7 @@ final class AAE_Admin_Page_Importer
             self::HANDLE,
             WCF_ADDONS_URL . 'assets/js/aae-admin-actions.min.js',
             ['jquery'],
-            time(),
+            wcf_asset_version(),
             true
         );
 
@@ -168,11 +179,65 @@ final class AAE_Admin_Page_Importer
             'screen'   => $is_importer_page ? 'animation-addon_page_aae-page-importer' : '',
             'post_id'  => $post_id,
             'logo'     => WCF_ADDONS_URL . 'assets/images/wcf-2.png',
+            'label'    => __('Import Page', 'animation-addons-for-elementor'),
             'page_url' => esc_url(admin_url('admin.php?page=aae-page-importer')),
         ]);
 
-  
         wp_enqueue_script(self::HANDLE);
+
+        // The button is injected next to "Add Page" by aae-admin-actions.js; its look
+        // is owned here so it reads as a brand action rather than a bare link.
+        wp_add_inline_style('wp-admin', $this->heading_button_css());
+    }
+
+    /**
+     * Styles for the "Import Page" action on the Pages list.
+     *
+     * Rides on `.page-title-action` for size and alignment (so it sits level with
+     * "Add Page" on every WordPress version) and overrides only colour and shape.
+     */
+    private function heading_button_css(): string
+    {
+        return '
+        .wrap .page-title-action.aae-import-page-action {
+            margin-left: 6px;
+            padding-left: 10px;
+            padding-right: 12px;
+            border: 1px solid #fc6848;
+            border-radius: 4px;
+            background: #fc6848;
+            color: #fff;
+            font-weight: 500;
+            box-shadow: none;
+            text-decoration: none;
+            transition: background-color .15s ease, border-color .15s ease;
+        }
+        .wrap .page-title-action.aae-import-page-action img {
+            width: 16px;
+            height: 16px;
+            margin-right: 6px;
+            vertical-align: -4px;
+        }
+        .wrap .page-title-action.aae-import-page-action:hover,
+        .wrap .page-title-action.aae-import-page-action:focus {
+            background: #e85a3c;
+            border-color: #e85a3c;
+            color: #fff;
+        }
+        .wrap .page-title-action.aae-import-page-action:focus {
+            box-shadow: 0 0 0 1px #fff, 0 0 0 3px #fc6848;
+            outline: 2px solid transparent;
+        }
+        .wrap .page-title-action.aae-import-page-action:active {
+            background: #d4502f;
+            border-color: #d4502f;
+        }
+        .subsubsub a.aae-imported-view,
+        .subsubsub a.aae-imported-view .count {
+            color: #fc6848;
+            font-weight: 500;
+        }
+        ';
     }
 
    public function importer_assets($hook)
@@ -191,15 +256,15 @@ final class AAE_Admin_Page_Importer
             wp_enqueue_style(
                 'aae-page-importer-admin',
                 WCF_ADDONS_URL . 'assets/build/modules/page-import/index.css',
-                array(),
-                time()
+                array( \WCF_ADDONS\AAE_Fonts::ensure() ),
+                wcf_asset_version()
             );
 
             wp_enqueue_script(
                 'aae-page-importer-admin',
                 WCF_ADDONS_URL . 'assets/build/modules/page-import/index.js',
                 array('wp-element', 'wp-i18n'),
-                time(),
+                wcf_asset_version(),
                 true
             );
 

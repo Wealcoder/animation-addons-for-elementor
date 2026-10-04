@@ -35,6 +35,72 @@ final class Atomic
 	const EXTENSIONS_OPTION_NAME = 'aae_atomic_extensions';
 
 	/**
+	 * The user's answer to the "Elementor V4 is switched on — want AAE's atomic
+	 * set?" notice. See atomic_optin_signal() for the whole feature.
+	 *
+	 * Shape: `[ 'state' => 'accepted'|'dismissed', 'signal' => 'usage'|'experiment'|'none' ]`.
+	 * ABSENT means UNDECIDED, which is not the same as dismissed — the notice
+	 * shows for the first and never for the second at the same signal strength.
+	 *
+	 * `signal` records how strong the evidence was when they answered, so a
+	 * dismissal made while V4 was merely switched ON does not also silence the
+	 * notice later, once the site actually has V4 elements saved on a page.
+	 * That is a different and far more concrete claim, and it earns being made
+	 * once. Never the reverse: a dismissal at 'usage' silences 'experiment' too.
+	 */
+	const OPTIN_OPTION_NAME = 'aae_atomic_optin';
+
+	/**
+	 * Cached answer to "does this site's CONTENT use Elementor V4 elements?".
+	 * One hour, negative-only invalidation — see maybe_invalidate_atomic_usage().
+	 */
+	const USAGE_TRANSIENT = 'aae_atomic_usage';
+
+	/**
+	 * Cached answer to "HOW MANY posts use Elementor V4 elements?".
+	 *
+	 * Deliberately a SECOND transient rather than widening USAGE_TRANSIENT to
+	 * hold the count. The boolean's query stops at the first row (LIMIT 1) and
+	 * runs on every undecided site; counting cannot stop early and has to join
+	 * the posts table to keep revisions out. Keeping them apart means the
+	 * expensive one is only ever paid for when a notice is actually going on
+	 * screen -- see atomic_optin_signal(), which asks for it last and only when
+	 * the notice will show.
+	 */
+	const USAGE_COUNT_TRANSIENT = 'aae_atomic_usage_count';
+
+	/**
+	 * The exact atomic state this site had immediately BEFORE it accepted the
+	 * opt-in notice — the return path out of an accidental "Enable".
+	 *
+	 * Shape: `[ widgets, widgets_absent, extensions, extensions_absent, offered,
+	 * offered_absent, signal, time ]`. See capture_atomic_undo().
+	 *
+	 * ABSENT IS NOT EMPTY, and this is the reason each value has a companion
+	 * boolean rather than a null. `aae_atomic_extensions` missing means "fresh
+	 * install, the wizard decides" to migrate_newly_offered_extensions(), which
+	 * bails only while the option has NEVER been written — restoring an empty
+	 * array where there had been no row would end that state permanently and
+	 * let the migration switch newly-offered extensions on by itself. An undo
+	 * that leaves the site subtly different from where it started is not an undo.
+	 */
+	const UNDO_OPTION_NAME = 'aae_atomic_optin_undo';
+
+	/**
+	 * How long the undo stays on offer.
+	 *
+	 * A backstop, not the main rule: the offer is really ended by the user
+	 * SAVING either atomic list by hand (see write_widget_option()'s callers),
+	 * because from that moment the stored state is their own choice and
+	 * restoring a snapshot over it would destroy real work. The window exists
+	 * for the site that accepts the offer and then never opens the dashboard
+	 * again while quietly building pages with the widgets — after a week,
+	 * "switch off the ones you do not want" is the honest answer and a bulk
+	 * restore is not.
+	 */
+	const UNDO_WINDOW = 7 * DAY_IN_SECONDS;
+
+	/**
 	 * Slugs that have ever been PRESENTED in the Atomic Extensions dashboard.
 	 *
 	 * The settings option only records what is enabled, so on its own it cannot
@@ -474,12 +540,17 @@ final class Atomic
 		'aae-a-toggle-switcher-tab'    => 'aae-a-toggle-switcher',
 		'aae-a-toggle-pane-title'      => 'aae-a-toggle-switcher',
 		'aae-a-toggle-pane-desc'       => 'aae-a-toggle-switcher',
+		'aae-a-toggle-switcher-label'  => 'aae-a-toggle-switcher',
+		'aae-a-toggle-switcher-tablist' => 'aae-a-toggle-switcher',
+		'aae-a-toggle-switcher-track'  => 'aae-a-toggle-switcher',
+		'aae-a-toggle-switcher-knob'   => 'aae-a-toggle-switcher',
 
 		// Video Mask / Flip Box
 		'aae-a-video-mask-btn'         => 'aae-a-video-mask',
 		'aae-a-video-player'           => 'aae-a-video',
 		'aae-a-video-playbtn'          => 'aae-a-video',
 		'aae-a-flip-box-front'         => 'aae-a-flip-box',
+
 		'aae-a-flip-box-back'          => 'aae-a-flip-box',
 		'aae-a-flip-box-title'         => 'aae-a-flip-box',
 		'aae-a-flip-box-text'          => 'aae-a-flip-box',
@@ -496,15 +567,16 @@ final class Atomic
 		'aae-a-loop-loadmore'          => 'aae-a-loop-grid',
 		'aae-a-loop-arrow'             => 'aae-a-loop-grid',
 		'aae-a-loop-nav-wrap'          => 'aae-a-loop-grid',
+		// Advanced Portfolio
+		'aae-a-portfolio-title'        => 'aae-a-advance-portfolio',
+		'aae-a-portfolio-list'         => 'aae-a-advance-portfolio',
+		'aae-a-portfolio-item'         => 'aae-a-advance-portfolio',
+		'aae-a-portfolio-content'      => 'aae-a-advance-portfolio',
+		'aae-a-portfolio-date'         => 'aae-a-advance-portfolio',
+
 		'aae-a-loop-slide-track'       => 'aae-a-loop-grid-slider',
 		'aae-a-loop-slide-item'        => 'aae-a-loop-grid-slider',
 		'aae-a-loop-slide-pagination'  => 'aae-a-loop-grid-slider',
-
-		// Offcanvas
-		'aae-a-offcanvas-panel'        => 'aae-a-offcanvas',
-		'aae-a-offcanvas-trigger'      => 'aae-a-offcanvas',
-		'aae-a-offcanvas-close'        => 'aae-a-offcanvas',
-		'aae-a-offcanvas-overlay'      => 'aae-a-offcanvas',
 
 		// Image Hotspot
 		'aae-a-hotspot-point'          => 'aae-a-image-hotspot',
@@ -524,9 +596,6 @@ final class Atomic
 		'aae-a-post-pagination-preview-author'    => 'aae-a-post-pagination',
 		'aae-a-post-pagination-preview-excerpt'   => 'aae-a-post-pagination',
 
-		// Stack Cards
-		'aae-a-stack-card'             => 'aae-a-stack-cards',
-
 		// Timeline
 		'aae-a-timeline-item'          => 'aae-a-timeline',
 		'aae-a-timeline-number'        => 'aae-a-timeline',
@@ -541,7 +610,9 @@ final class Atomic
 		'aae-a-progressbar-dot'        => 'aae-a-progressbar',
 
 		// Social Share
-		'aae-a-social-share-item'      => 'aae-a-social-share',
+		'aae-a-social-share-item'       => 'aae-a-social-share',
+		'aae-a-social-share-item-icon'  => 'aae-a-social-share',
+		'aae-a-social-share-item-title' => 'aae-a-social-share',
 
 		// Nav
 		'aae-a-nav-item'               => 'aae-a-nav',
@@ -550,6 +621,8 @@ final class Atomic
 
 		// Search Form
 		'aae-a-search-toggle'          => 'aae-a-search-form',
+		'aae-a-search-toggle-open'     => 'aae-a-search-form',
+		'aae-a-search-toggle-close'    => 'aae-a-search-form',
 		'aae-a-search-panel'           => 'aae-a-search-form',
 		'aae-a-search-field'           => 'aae-a-search-form',
 		'aae-a-search-input'           => 'aae-a-search-form',
@@ -575,6 +648,8 @@ final class Atomic
 		'aae-a-form-prev'              => 'aae-a-form',
 		'aae-a-form-rating'            => 'aae-a-form',
 		'aae-a-form-range'             => 'aae-a-form',
+		'aae-a-form-range-group'       => 'aae-a-form',
+		'aae-a-form-range-value'       => 'aae-a-form-range-group',
 		'aae-a-form-password'          => 'aae-a-form',
 		'aae-a-form-calculation'       => 'aae-a-form',
 		'aae-a-form-country'           => 'aae-a-form',
@@ -694,6 +769,64 @@ final class Atomic
 	public function get_extensions_registry(): array
 	{
 		return $this->extensions_registry;
+	}
+
+	/**
+	 * Which saved prop proves an extension is used on a page.
+	 *
+	 * An extension writes nothing of its own into `_elementor_data` — unlike a
+	 * widget, which saves its own type there. All it leaves behind is a prop
+	 * inside some OTHER element's settings, and the prop name cannot be derived
+	 * from the slug: `parallax` writes `aae_plx_*`, `image-hover` writes
+	 * `aae_ih_*`, `regular-animation` writes `aae_anim_*`, Pro's `popup` writes
+	 * `aae_v4_popup_*`. Nor can it be read off the Schema class by convention —
+	 * the constant is called `ENABLE` in some, `PARALLAX_ENABLE` /
+	 * `IH_ENABLE` / `STICKY_ENABLE` / `TOOLTIP_ENABLE` in others, and two
+	 * extensions have no enable prop at all. So it is DECLARED, here, in the
+	 * same array where the extension itself is defined.
+	 *
+	 * `usage_prop` is REQUIRED on every entry — `false` for the ones that
+	 * genuinely have no per-page answer, never simply absent. Absent would mean
+	 * both "not countable" and "someone forgot", and the second one fails
+	 * silently as a permanent zero.
+	 * `E:\Local Testing\verify-extension-usage.php` refuses an entry without it.
+	 *
+	 * Shape: `array( <prop>|<prop[]>, <kind> )`.
+	 *
+	 * | kind      | used on page when                                        |
+	 * |-----------|----------------------------------------------------------|
+	 * | `boolean` | the prop's value is exactly `true`                       |
+	 * | `filled`  | the prop holds anything that is not null/''/[]/{}         |
+	 * | `present` | the key exists at all (style props, which have no toggle) |
+	 *
+	 * `boolean` is not "the key is there": both `aae_bgv_enable` and
+	 * `aae_v4_popup_enabled` appear on this dev site with `"value":false` as
+	 * often as with `true`, because switching a section off leaves the prop
+	 * behind. Counting presence would report those pages as users of an
+	 * extension they explicitly turned off.
+	 *
+	 * @return array<string,array{prop:string[],kind:string}> Keyed by slug;
+	 *                                                        uncountable
+	 *                                                        extensions omitted.
+	 */
+	public function get_extension_usage_props(): array
+	{
+		$props = [];
+
+		foreach ($this->extensions_registry as $slug => $def) {
+			if (empty($def['usage_prop'])) {
+				continue;
+			}
+
+			[$keys, $kind] = $def['usage_prop'];
+
+			$props[$slug] = [
+				'prop' => (array) $keys,
+				'kind' => $kind,
+			];
+		}
+
+		return $props;
 	}
 
 	/**
@@ -979,6 +1112,27 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			'aae-a-post-excerpt' => [
+				'label'        => 'Post Excerpt',
+				'description'  => 'Dynamically displays the current post excerpt, limited by words, characters or a CSS line clamp.',
+				'icon'         => 'eicon-post-excerpt',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'post',
+					'excerpt',
+					'summary',
+					'atomic',
+					'dynamic',
+				],
+				'category'     => 'blog',
+				'order'        => 0,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
 			'aae-a-post-image' => [
 				'label'        => 'Post Image',
 				'description'  => 'Dynamically displays the current post featured image natively in Elementor V4.',
@@ -998,6 +1152,72 @@ final class Atomic
 				'order'        => 0,
 				'demo_url'     => '',
 				'doc_url'      => '',
+			],
+
+			'aae-a-advance-portfolio' => [
+				'is_internal'  => false,
+				'label'        => 'Advanced Portfolio',
+				'description'  => 'Post/project grid with a section title. Atomic port of the Pro Advanced Portfolio widget: its Portfolio Three skin is the seeded shape, and the other skins ship as presets.',
+				'icon'         => 'eicon-gallery-grid',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\AdvancePortfolio\AAE_A_Advance_Portfolio',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'portfolio',
+					'project',
+					'work',
+					'post',
+					'loop',
+					'grid',
+					'atomic',
+				],
+				'category'     => 'blog',
+				'order'        => 0,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+			'aae-a-portfolio-title' => [
+				'is_internal'  => true,
+				'label'        => 'Portfolio Section Title',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\AdvancePortfolio\AAE_A_Portfolio_Title',
+				'icon'         => 'eicon-heading',
+				'keywords'     => [ 'portfolio', 'section', 'title' ],
+				'hide_from_panel' => true,
+			],
+			'aae-a-portfolio-list' => [
+				'is_internal'  => true,
+				'label'        => 'Portfolio Posts List',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\AdvancePortfolio\AAE_A_Portfolio_List',
+				'icon'         => 'eicon-gallery-grid',
+				'keywords'     => [ 'portfolio', 'list', 'grid' ],
+				'hide_from_panel' => true,
+			],
+			'aae-a-portfolio-item' => [
+				'is_internal'  => true,
+				'label'        => 'Portfolio Item',
+				'description'  => 'Repeats once per queried post. Reads the query the Advanced Portfolio root publishes on the Render_Context stack.',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\AdvancePortfolio\AAE_A_Portfolio_Item',
+				'icon'         => 'eicon-post',
+				'keywords'     => [ 'portfolio', 'item', 'post' ],
+				'hide_from_panel' => true,
+			],
+			'aae-a-portfolio-content' => [
+				'is_internal'  => true,
+				'label'        => 'Portfolio Content',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\AdvancePortfolio\AAE_A_Portfolio_Content',
+				'icon'         => 'eicon-text-align-left',
+				'keywords'     => [ 'portfolio', 'content' ],
+				'hide_from_panel' => true,
+			],
+			'aae-a-portfolio-date' => [
+				'is_internal'  => true,
+				'label'        => 'Portfolio Date',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\AdvancePortfolio\AAE_A_Portfolio_Date',
+				'icon'         => 'eicon-calendar',
+				'keywords'     => [ 'portfolio', 'date' ],
+				'hide_from_panel' => true,
 			],
 
 			'aae-a-loop-item' => [
@@ -1121,6 +1341,22 @@ final class Atomic
 				'keywords'     => [ 'search', 'toggle' ],
 				'hide_from_panel' => true,
 			],
+			'aae-a-search-toggle-open' => [
+				'is_internal'  => true,
+				'label'        => 'Open Icon',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Toggle_Open',
+				'icon'         => 'eicon-search',
+				'keywords'     => [ 'search', 'toggle', 'icon' ],
+				'hide_from_panel' => true,
+			],
+			'aae-a-search-toggle-close' => [
+				'is_internal'  => true,
+				'label'        => 'Close Icon',
+				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Toggle_Close',
+				'icon'         => 'eicon-close',
+				'keywords'     => [ 'search', 'toggle', 'icon', 'close' ],
+				'hide_from_panel' => true,
+			],
 			'aae-a-search-panel' => [
 				'is_internal'  => true,
 				'label'        => 'Search Panel',
@@ -1176,23 +1412,6 @@ final class Atomic
 				'icon'         => 'eicon-post-list',
 				'keywords'     => [ 'search', 'results', 'ajax' ],
 				'hide_from_panel' => true,
-			],
-
-			'aae-a-draw-svg' => [
-				'label'        => 'DrawSVG',
-				'description'  => 'Draw an SVG\'s paths with GSAP DrawSVGPlugin — per-path, optional ScrollTrigger, from/to/method/ease/duration/yoyo/scrub and an optional wrapper link.',
-				'icon'         => 'eicon-animation',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\DrawSvg\AAE_A_Draw_Svg',
-				'is_pro'       => true,
-				'badge_only'       => true,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [ 'draw', 'svg', 'gsap', 'animation', 'scroll', 'atomic' ],
-				'category'     => 'animation',
-				'order'        => 0,
-				'demo_url'     => '',
-				'doc_url'      => '',
 			],
 
 			'aae-a-posts' => [
@@ -1748,32 +1967,6 @@ final class Atomic
 				'hide_from_panel' => true,
 			],
 
-			'aae-a-stack-cards' => [
-				'label'        => 'Stack Cards',
-				'description'  => 'A scroll-driven card deck: independently-styleable cards that stack and animate with GSAP ScrollTrigger. First release ships the Scroll Stack animation; more arrive as presets.',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\StackCards\AAE_A_Stack_Cards',
-				'keywords'     => ['atomic', 'stack', 'cards', 'scroll', 'gsap'],
-				'icon'         => 'eicon-post-list',
-				'is_pro'       => true,
-				'badge_only'       => true,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'category'     => 'slider',
-				'order'        => 1,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-			'aae-a-stack-card' => [
-				'is_internal'  => true,
-				'label'        => 'Stack Card (Internal)',
-				'description'  => 'Internal card element for Stack Cards.',
-				'class_name'   => 'WCF_ADDONS\AtomicWidgets\Widgets\StackCards\AAE_A_Stack_Card',
-				'keywords'     => ['atomic', 'stack', 'card', 'internal'],
-				'icon'         => 'eicon-single-post',
-				'hide_from_panel' => true,
-			],
-
 			'aae-a-accordion' => [
 				'label'        => 'Accordion',
 				'description'  => 'Atomic accordion with GSAP interactive effects and smooth controls.',
@@ -1791,30 +1984,6 @@ final class Atomic
 				],
 				'category'     => 'general',
 				'order'        => 6,
-				'demo_url'     => '',
-				'doc_url'      => '',
-			],
-
-			'aae-a-toc' => [
-				'label'        => 'Table of Content',
-				'description'  => 'Auto-generated Table of Contents from the page headings — nested hierarchy, active-heading highlighting, smooth scroll, collapsible + responsive minimize box.',
-				'icon'         => 'eicon-table-of-contents',
-				'is_pro'       => true,
-				'badge_only'       => true,
-				'is_extension' => false,
-				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [
-					'toc',
-					'table',
-					'content',
-					'contents',
-					'anchor',
-					'heading',
-					'atomic',
-				],
-				'category'     => 'blog',
-				'order'        => 7,
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
@@ -1922,6 +2091,38 @@ final class Atomic
 				],
 				'category'     => 'general',
 				'order'        => 11,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-social-share-item-icon' => [
+				'is_internal'  => true,
+				'label'        => 'Social Share Item — Icon',
+				'description'  => 'Internal icon sub-element used by the Social Share Item.',
+				'icon'         => 'eicon-svg',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [ 'social', 'share', 'icon', 'atomic' ],
+				'category'     => 'general',
+				'order'        => 12,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-social-share-item-title' => [
+				'is_internal'  => true,
+				'label'        => 'Social Share Item — Title',
+				'description'  => 'Internal title sub-element used by the Social Share Item.',
+				'icon'         => 'eicon-t-letter-bold',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [ 'social', 'share', 'title', 'atomic' ],
+				'category'     => 'general',
+				'order'        => 12,
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
@@ -2310,82 +2511,68 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
-			'aae-a-offcanvas' => [
-				'label'        => 'Offcanvas',
-				'description'  => 'Offcanvas drawer with trigger + panel and selectable GSAP open/close animations.',
-				'icon'         => 'eicon-sidebar',
-				'is_pro'       => true,
-				'badge_only'       => true,
+			'aae-a-toggle-switcher-label' => [
+				'label'        => 'Toggle Switcher — Label',
+				'description'  => 'Internal before/after label used by the Switch-style Toggle Switcher preset.',
+				'icon'         => 'eicon-t-letter',
+				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
-				'keywords'     => [
-					'offcanvas',
-					'drawer',
-					'sidebar',
-					'panel',
-					'atomic',
-				],
-				'category'     => 'interaction',
-				'order'        => 15,
+				'keywords'     => [ 'toggle', 'switch', 'label', 'atomic' ],
+				'category'     => 'general',
+				'order'        => 14,
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
 
-			'aae-a-offcanvas-panel' => [
-				'is_internal'  => true,
-				'label'        => 'Offcanvas Panel (Internal)',
-				'description'  => 'Internal locked panel container for Offcanvas.',
-				'icon'         => 'eicon-inner-section',
-				'is_pro'       => true,
-				'badge_only'       => true,
+			'aae-a-toggle-switcher-tablist' => [
+				'label'        => 'Toggle Switcher — Tablist',
+				'description'  => 'Internal role="tablist" wrapper for the Track + Labels used by the Switch-style Toggle Switcher preset.',
+				'icon'         => 'eicon-t-letter',
+				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
+				'is_internal'  => true,
 				'default'      => true,
-				'keywords'     => [
-					'offcanvas panel',
-					'internal',
-				],
+				'keywords'     => [ 'toggle', 'switch', 'tablist', 'atomic' ],
 				'category'     => 'general',
-				'order'        => 16,
+				'order'        => 14,
 				'demo_url'     => '',
 				'doc_url'      => '',
 			],
 
-			'aae-a-offcanvas-trigger' => [
-				'is_internal'  => true,
-				'label'           => 'Offcanvas Trigger',
-				'class_name'      => 'WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Trigger',
-				'icon'            => 'eicon-menu-bar',
-				'keywords'        => [ 'offcanvas', 'trigger', 'icon' ],
-				'hide_from_panel' => true,
-			],
-			'aae-a-offcanvas-close' => [
-				'is_internal'  => true,
-				'label'           => 'Offcanvas Close',
-				'class_name'      => 'WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Close',
-				'icon'            => 'eicon-close',
-				'keywords'        => [ 'offcanvas', 'close', 'icon' ],
-				'hide_from_panel' => true,
-			],
-			// ── Offcanvas backdrop — HELPER widget. Seeded as a locked child of
-			// the Offcanvas root, never dragged from the panel on its own, so
-			// `is_internal => true` keeps it out of the dashboard list. This
-			// entry previously carried the class-registry keys (`class_name`,
-			// `hide_from_panel`) instead of dashboard metadata, which rendered
-			// it as a card with no category, toggle state or description.
-			'aae-a-offcanvas-overlay' => [
-				'label'        => 'Offcanvas Overlay',
-				'description'  => 'Backdrop layer behind an open Offcanvas panel.',
-				'icon'         => 'eicon-square',
-				'is_pro'       => true,
-				'badge_only'       => true,
+			'aae-a-toggle-switcher-track' => [
+				'label'        => 'Toggle Switcher — Track',
+				'description'  => 'Internal knob track used by the Switch-style Toggle Switcher preset.',
+				'icon'         => 'eicon-toggle',
+				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
-				'default'      => true,
-				'keywords'     => [ 'offcanvas', 'overlay', 'backdrop', 'scrim' ],
-				'category'     => 'general',
 				'is_internal'  => true,
+				'default'      => true,
+				'keywords'     => [ 'toggle', 'switch', 'track', 'knob', 'atomic' ],
+				'category'     => 'general',
+				'order'        => 14,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-toggle-switcher-knob' => [
+				'label'        => 'Toggle Switcher — Knob',
+				'description'  => 'Internal knob dot used by the Switch-style Toggle Switcher preset.',
+				'icon'         => 'eicon-dot-circle-o',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'is_internal'  => true,
+				'default'      => true,
+				'keywords'     => [ 'toggle', 'switch', 'knob', 'atomic' ],
+				'category'     => 'general',
+				'order'        => 14,
+				'demo_url'     => '',
+				'doc_url'      => '',
 			],
 
 			'aae-a-form' => [
@@ -2632,6 +2819,49 @@ final class Atomic
 					'form range',
 					'slider',
 					'range',
+				],
+				'category'     => 'general',
+				'order'        => 18,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-form-range-group' => [
+				'is_internal'  => true,
+				'label'        => 'Form Range Group',
+				'description'  => 'A labelled slider row — heading, live value readout and slider, each a real child you select and style on its own. The slider is the Range field, so it submits and validates like one.',
+				'icon'         => 'eicon-slider-push',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form range group',
+					'slider',
+					'range',
+					'label',
+					'value',
+				],
+				'category'     => 'general',
+				'order'        => 18,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-form-range-value' => [
+				'is_internal'  => true,
+				'label'        => 'Form Range Value',
+				'description'  => 'The live value readout inside a Range Group — prints the slider\'s current value with an optional prefix/suffix.',
+				'icon'         => 'eicon-number-field',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'form range value',
+					'readout',
+					'output',
+					'internal',
 				],
 				'category'     => 'general',
 				'order'        => 18,
@@ -3189,6 +3419,55 @@ final class Atomic
 				'doc_url'      => '',
 			],
 
+			'aae-a-curved-text' => [
+				'label'        => 'Curved Text',
+				'description'  => 'A spinning circular badge — curved rotating text or a rotating image, with a static icon on top. Purely decorative, no JS runtime.',
+				'icon'         => 'eicon-dot-circle-o',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'curved',
+					'text',
+					'rotate',
+					'rotating',
+					'spin',
+					'spinner',
+					'circle',
+					'circular',
+					'badge',
+					'atomic',
+				],
+				'category'     => 'general',
+				'order'        => 22,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
+			'aae-a-google-maps' => [
+				'label'        => 'Google Maps',
+				'description'  => 'An embedded Google map placed by address, with a zoom level. Reuses the API key from Elementor > Settings > Integrations, and falls back to the keyless embed when none is set.',
+				'icon'         => 'eicon-google-maps',
+				'is_pro'       => false,
+				'is_extension' => false,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => [
+					'google',
+					'map',
+					'maps',
+					'embed',
+					'location',
+					'address',
+					'atomic',
+				],
+				'category'     => 'general',
+				'order'        => 23,
+				'demo_url'     => '',
+				'doc_url'      => '',
+			],
+
 		];
 	}
 
@@ -3198,6 +3477,7 @@ final class Atomic
 
 			'regular-animation' => [
 				'label'        => 'Regular Animation',
+				'usage_prop'   => array( 'aae_anim_interactions', 'filled' ),
 				'description'  => 'Preset-based entrance/exit animations applied to every atomic widget.',
 				'icon'         => 'wcf-icon-Animation',
 				'is_pro'       => true,
@@ -3212,6 +3492,7 @@ final class Atomic
 
 			'parallax' => [
 				'label'        => 'Parallax',
+				'usage_prop'   => array( 'aae_plx_enable', 'boolean' ),
 				'description'  => 'ScrollSmoother-powered parallax depth effect on scroll.',
 				'icon'         => 'wcf-icon-Animation-Builder',
 				'is_pro'       => true,
@@ -3226,6 +3507,7 @@ final class Atomic
 
 			'text-animation' => [
 				'label'        => 'Text Animation',
+				'usage_prop'   => array( 'aae_text_interactions', 'filled' ),
 				'description'  => 'Character/word/line reveal animations for heading-class widgets.',
 				'icon'         => 'wcf-icon-Text-Animation',
 				'is_pro'       => true,
@@ -3240,6 +3522,7 @@ final class Atomic
 
 			'image-animation' => [
 				'label'        => 'Image Animation',
+				'usage_prop'   => array( 'aae_img_interactions', 'filled' ),
 				'description'  => 'Reveal/scale/stretch animations for image and SVG widgets.',
 				'icon'         => 'wcf-icon-Image-Animation',
 				'is_pro'       => true,
@@ -3254,6 +3537,7 @@ final class Atomic
 
 			'image-hover' => [
 				'label'        => 'Image Hover',
+				'usage_prop'   => array( 'aae_ih_enable', 'boolean' ),
 				'description'  => 'Cursor-following floating image overlay on any atomic widget.',
 				'icon'         => 'wcf-icon-Image-Hover-Effect',
 				'is_pro'       => true,
@@ -3268,6 +3552,7 @@ final class Atomic
 
 			'sticky' => [
 				'label'        => 'Sticky',
+				'usage_prop'   => array( 'aae_sticky_enable', 'boolean' ),
 				'description'  => 'Pin elements to viewport on scroll with configurable offsets.',
 				'icon'         => 'wcf-icon-Pin-Elements',
 				'is_pro'       => true,
@@ -3282,6 +3567,7 @@ final class Atomic
 
 			'horizontal-scroll-anim' => [
 				'label'        => 'Horizontal Scroll Animation',
+				'usage_prop'   => array( 'aae_horizontal_enable', 'boolean' ),
 				'description'  => 'GSAP-powered horizontal scroll-triggered animation.',
 				'icon'         => 'wcf-icon-Horizontal',
 				'is_pro'       => true,
@@ -3296,6 +3582,7 @@ final class Atomic
 
 			'cursor-hover-effect' => [
 				'label'        => 'Cursor Hover Effect',
+				'usage_prop'   => array( 'aae_cursor_hover_enable', 'boolean' ),
 				'description'  => 'Cursor-following floating element effect on any atomic widget.',
 				'icon'         => 'wcf-icon-Cursor-Hover-Effect',
 				'is_pro'       => true,
@@ -3310,6 +3597,7 @@ final class Atomic
 
 			'mouse-move-effect' => [
 				'label'        => 'Mouse Move Effect',
+				'usage_prop'   => array( 'aae_mouse_move_effect_enable', 'boolean' ),
 				'description'  => 'Element moves/rotates based on mouse position.',
 				'icon'         => 'wcf-icon-Cursor-Move-Effect',
 				'is_pro'       => true,
@@ -3324,6 +3612,7 @@ final class Atomic
 
 			'advance-tooltip' => [
 				'label'        => 'Advance Tooltip',
+				'usage_prop'   => array( 'aae_advance_tooltip_enable', 'boolean' ),
 				'description'  => 'Rich content tooltips on hover for any atomic widget.',
 				'icon'         => 'wcf-icon-Advanced-Tooltip',
 				'is_pro'       => true,
@@ -3338,6 +3627,7 @@ final class Atomic
 
 			'tilt' => [
 				'label'        => 'Tilt',
+				'usage_prop'   => array( 'aae_tilt_enable', 'boolean' ),
 				'description'  => '3D tilt perspective effect on hover.',
 				'icon'         => 'wcf-icon-Tilt-Effect',
 				'is_pro'       => true,
@@ -3352,6 +3642,7 @@ final class Atomic
 
 			'scroll-to' => [
 				'label'        => 'Scroll To',
+				'usage_prop'   => array( 'aae_scroll_to_enable', 'boolean' ),
 				'description'  => 'Smooth scroll-to-target anchor navigation.',
 				'icon'         => 'wcf-icon-Horizontal',
 				'is_pro'       => true,
@@ -3371,6 +3662,7 @@ final class Atomic
 			// it from this toggle as well — see WCFAddonsPro\Plugin::register_extensions().
 			'dynamic-tags' => [
 				'label'        => 'Dynamic Tags',
+				'usage_prop'   => false,
 				'description'  => 'Bind atomic widget content to dynamic sources: post, author, site, archive, comments and ACF fields.',
 				// Capitalised on purpose: this is the glyph name that actually
 				// exists in the icon font. The lower-case names the other atomic
@@ -3388,6 +3680,7 @@ final class Atomic
 
 			'mask' => [
 				'label'        => 'Mask',
+				'usage_prop'   => array( 'mask-image', 'present' ),
 				'description'  => 'Clip a Flexbox, Div Block or Grid to a shape — 20 built-in shapes or your own SVG, with responsive and hover variants.',
 				'icon'         => 'wcf-icon-Custom-CSS',
 				'is_pro'       => false,
@@ -3401,6 +3694,7 @@ final class Atomic
 
 			'background-video' => [
 				'label'        => 'Background Video',
+				'usage_prop'   => array( 'aae_bgv_enable', 'boolean' ),
 				'description'  => 'Play a looping video behind a Flexbox, Div Block or Grid — the option the atomic Background control is missing.',
 				'icon'         => 'wcf-icon-Custom-CSS',
 				'is_pro'       => false,
@@ -3414,6 +3708,7 @@ final class Atomic
 
 			'custom-css' => [
 				'label'        => 'Custom CSS',
+				'usage_prop'   => array( 'aae_custom_css_enable', 'boolean' ),
 				'description'  => 'Add custom CSS rules per-element in the atomic editor.',
 				'icon'         => 'wcf-icon-Custom-CSS',
 				'is_pro'       => false,
@@ -3423,6 +3718,20 @@ final class Atomic
 				'keywords'     => ['custom css', 'css', 'style', 'custom style'],
 				'category'     => 'utility',
 				'order'        => 14,
+			],
+
+			'image-overlay' => [
+				'label'        => 'Image Overlay',
+				'usage_prop'   => array( 'aae_img_ovl_enable', 'boolean' ),
+				'description'  => 'Color/gradient tint overlay on Image and SVG widgets.',
+				'icon'         => 'wcf-icon-Image',
+				'is_pro'       => false,
+				'is_extension' => true,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => ['image overlay', 'overlay', 'tint', 'color overlay', 'gradient overlay'],
+				'category'     => 'utility',
+				'order'        => 16,
 			],
 
 			/*
@@ -3443,6 +3752,7 @@ final class Atomic
 			// keywords carry both namings so search finds it either way.
 			'flexbox-child-hover' => [
 				'label'        => 'Parent Child Hover',
+				'usage_prop'   => array( array( 'aae_v4_fch_source', 'aae_v4_fch_target' ), 'boolean' ),
 				'description'  => 'Hover a container to trigger a "Parent Hover" style state on its child elements.',
 				'icon'         => 'wcf-icon-Grid-Hover-Posts',
 				'is_pro'       => true,
@@ -3457,6 +3767,7 @@ final class Atomic
 
 			'form-conditions' => [
 				'label'        => 'Conditional Display',
+				'usage_prop'   => array( 'aae_cond_enable', 'boolean' ),
 				'description'  => 'Show or hide AAE Form fields/containers based on the value of other fields.',
 				'icon'         => 'wcf-icon-Toggle-Switch',
 				'is_pro'       => true,
@@ -3472,6 +3783,7 @@ final class Atomic
 
 			'form-validation' => [
 				'label'        => 'Validation Pro',
+				'usage_prop'   => array( 'aae_regex_pattern', 'filled' ),
 				'description'  => 'Regex validation rules with custom messages on form inputs and textareas.',
 				// There is no `wcf-icon-Form` in the icon font — it rendered as
 				// an empty circle on the dashboard card.
@@ -3489,6 +3801,7 @@ final class Atomic
 
 			'form-user' => [
 				'label'        => 'Create User',
+				'usage_prop'   => false,
 				'description'  => 'Turn a form submission into a real WordPress account, with role and alias mapping.',
 				// See the note on Validation Pro above — `wcf-icon-Form` does
 				// not exist in the icon font.
@@ -3506,6 +3819,7 @@ final class Atomic
 
 			'popup' => [
 				'label'        => 'Popup',
+				'usage_prop'   => array( 'aae_v4_popup_enabled', 'boolean' ),
 				'description'  => 'Site-wide popup system for atomic elements, triggered from AAE Builder templates.',
 				'icon'         => 'wcf-icon-Popup',
 				'is_pro'       => true,
@@ -3542,6 +3856,7 @@ final class Atomic
 			 */
 			'template-library' => [
 				'label'        => 'Template Library',
+				'usage_prop'   => false,
 				'description'  => 'Ready-made AAE layouts, importable from a library modal inside the Elementor editor.',
 				// Capitalised to match the glyph that actually exists in the icon
 				// font (\e957) — see the Dynamic Tags note above for why the
@@ -3586,6 +3901,7 @@ final class Atomic
 			 */
 			'custom-fonts' => [
 				'label'        => 'Custom Fonts',
+				'usage_prop'   => false,
 				'description'  => 'Upload and manage your own font families, selectable from the Elementor typography controls.',
 				'icon'         => 'wcf-icon-Custom-Fonts',
 				'is_pro'       => false,
@@ -3601,6 +3917,7 @@ final class Atomic
 
 			'custom-cpt' => [
 				'label'        => 'Post Type Builder',
+				'usage_prop'   => false,
 				'description'  => 'Create custom post types and taxonomies without code, ready to query from a Loop Grid.',
 				'icon'         => 'wcf-icon-Custom-Post-Type',
 				'is_pro'       => false,
@@ -3616,6 +3933,7 @@ final class Atomic
 
 			'custom-icon' => [
 				'label'        => 'Custom Icon',
+				'usage_prop'   => false,
 				'description'  => 'Upload icon-font sets (IcoMoon/Fontello zips) and use them anywhere Elementor offers an icon picker.',
 				'icon'         => 'wcf-icon-Custom-Icons',
 				'is_pro'       => false,
@@ -3631,6 +3949,7 @@ final class Atomic
 
 			'code-snippet' => [
 				'label'        => 'Code Snippet',
+				'usage_prop'   => false,
 				'description'  => 'Add PHP, CSS, JS or HTML snippets from wp-admin, with per-snippet placement and activation.',
 				// There is no `wcf-icon-Code-Snippet` glyph in the icon font —
 				// this is the same one the v3 card uses. See the Dynamic Tags
@@ -3666,10 +3985,38 @@ final class Atomic
 			add_action('wp_ajax_aae_get_atomic_widgets', [$this, 'ajax_get_settings']);
 			add_action('wp_ajax_aae_save_atomic_extensions', [$this, 'ajax_save_extension_settings']);
 			add_action('wp_ajax_aae_get_atomic_extensions', [$this, 'ajax_get_extension_settings']);
+			add_action('wp_ajax_aae_atomic_optin', [$this, 'ajax_atomic_optin']);
+			add_action('wp_ajax_aae_atomic_optin_undo', [$this, 'ajax_atomic_optin_undo']);
 		}
+
+		// Let a new page CHANGE the answer to has_atomic_usage(). Registered
+		// OUTSIDE the is_admin() block on purpose: a page can be saved over the
+		// REST API or by an importer running somewhere that is not wp-admin, and
+		// the stale hour that leaves behind is spent showing the dashboard the
+		// wrong answer. Exact twin of Animation_Settings::maybe_invalidate_v3_usage().
+		add_action('save_post', [__CLASS__, 'maybe_invalidate_atomic_usage'], 10, 2);
+
+		// Import-time data-loss guard, the V4 twin of
+		// Animation_Settings::maybe_enable_used_v3_widgets(): switch on every atomic
+		// widget/extension the content that just arrived uses. `import_end` is fired
+		// once by WXRImporter when a content file has been fully imported; the
+		// starter-template step hook is the belt for a run that ends there without
+		// a WXR pass. Both are idempotent (one LIKE query, a no-op once enabled).
+		add_action('import_end', [$this, 'enable_used_atomic_after_import']);
+		add_action('aaeaddon/starter-template/import/step/metasettings', [$this, 'enable_used_atomic_after_import']);
 
 		add_action('elementor/widgets/register', [$this, 'register_widgets']);
 		add_action('elementor/elements/elements_registered', [$this, 'register_elements']);
+
+		// Locked upsell cards for the Pro-owned atomic widgets, so a free site's
+		// panel shows what it is missing instead of eight silently absent cards.
+		// Registered right beside the real registration because it answers the
+		// same question from the other side: whatever those two hooks did NOT
+		// register is exactly what Pro_Promotion advertises. Hand-required — the
+		// PSR-4 map expects a class-named file, and this one follows the
+		// class-*.php convention its neighbours use.
+		require_once WCF_ADDONS_PATH . 'inc/AtomicWidgets/class-pro-promotion.php';
+		(new Pro_Promotion())->register();
 
 		// Advanced Heading's `content` prop changed shape (string → html-v3) on
 		// 2026-08-04. Registered UNCONDITIONALLY, not behind is_widget_active():
@@ -3711,6 +4058,8 @@ final class Atomic
 		// "Invalid template type"). See inc/AtomicWidgets/Library/.
 		add_action('elementor/documents/register', [$this, 'register_library_documents']);
 		add_action('elementor/atomic-widgets/frontend/loader/scripts/register', [$this, 'register_atomic_scripts'], 16);
+		// Menu breakpoint gate, printed early — see print_menu_breakpoint_bootstrap().
+		add_action('wp_head', [$this, 'print_menu_breakpoint_bootstrap'], 1);
 		add_action('elementor/frontend/before_render', [$this, 'maybe_enqueue_widget_script'], 10, 1);
 		add_action('elementor/preview/enqueue_scripts', [$this, 'enqueue_widget_scripts_in_preview']);
 		add_action('elementor/atomic-widgets/styles/register', [$this, 'register_atomic_styles'], 10, 2);
@@ -3762,6 +4111,29 @@ final class Atomic
 		// logged-out visitors too, so both hooks are registered.
 		add_action('wp_ajax_aae_loop_grid_page', [$this, 'ajax_loop_grid_page']);
 		add_action('wp_ajax_nopriv_aae_loop_grid_page', [$this, 'ajax_loop_grid_page']);
+
+		// Loop Grid query-level hooks: the WooCommerce lookup-table clauses.
+		// A no-op unless a query carries one of the grid's private vars, so it
+		// is hooked here — cheaply, without loading the element class — and only
+		// loads it when it fires. This is the ONLY registration site; the class
+		// deliberately has no register() of its own, because a second one is how
+		// posts_clauses ends up appending the same JOIN twice.
+		//
+		// Title-only search needs no hook at all: it rides WP's own
+		// `search_columns` query var. See merge_visitor_filters().
+		//
+		// The two var names are spelled here as LITERALS on purpose: reading
+		// Loop_Query_Woo::QV_PRICE would mean loading the element class on every
+		// WP_Query on the site just to ask a question that is almost always no.
+		// They mirror that class's public constants, verify-loop-filter-seam.php
+		// asserts the pair still matches, and the constants' own docblock says so.
+		add_filter('posts_clauses', function ($clauses, $query) {
+			if (! $query instanceof \WP_Query || (! $query->get('aae_woo_price') && ! $query->get('aae_woo_sort'))) {
+				return $clauses;
+			}
+			self::load_loop_grid_class();
+			return \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\Loop_Query_Woo::posts_clauses($clauses, $query);
+		}, 10, 2);
 
 		// AAE Post Pagination: invalidate the cached ordered-id lists for a post
 		// type the moment content actually changes, rather than trusting the
@@ -3871,28 +4243,32 @@ final class Atomic
 		);
 
 		if ($missing_metadata) {
-			error_log(
+			wp_trigger_error(
+				__METHOD__,
 				'AAE atomic registry: registered widget(s) with no dashboard metadata — unreachable: '
 				. implode(', ', $missing_metadata)
 			);
 		}
 
 		if ($orphan_children) {
-			error_log(
+			wp_trigger_error(
+				__METHOD__,
 				'AAE atomic registry: internal widget(s) with no WIDGET_PARENT_MAP parent — cannot inherit: '
 				. implode(', ', $orphan_children)
 			);
 		}
 
 		if ($dangling_parents) {
-			error_log(
+			wp_trigger_error(
+				__METHOD__,
 				'AAE atomic registry: WIDGET_PARENT_MAP points at unknown parent(s): '
 				. implode(', ', $dangling_parents)
 			);
 		}
 
 		if ($missing_class) {
-			error_log(
+			wp_trigger_error(
+				__METHOD__,
 				'AAE atomic registry: dashboard metadata with no class/file — toggle does nothing: '
 				. implode(', ', $missing_class)
 			);
@@ -4311,6 +4687,12 @@ final class Atomic
 				'has_script' => false,
 			],
 
+			'aae-a-post-excerpt' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostExcerpt\AAE_A_Post_Excerpt',
+				'file' => 'Widgets/PostExcerpt/class-aae-a-post-excerpt.php',
+				'has_script' => false,
+			],
+
 			'aae-a-post-image' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\PostImage\AAE_A_Post_Image',
 				'file' => 'Widgets/PostImage/class-aae-a-post-image.php',
@@ -4349,11 +4731,55 @@ final class Atomic
 				'editor_style_path'   => '/assets/atomic/css/loop-grid-editor.css',
 			],
 
+			'aae-a-advance-portfolio' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\AdvancePortfolio\AAE_A_Advance_Portfolio',
+				'file' => 'Widgets/AdvancePortfolio/class-aae-a-advance-portfolio.php',
+				'script_handle' => 'aae-a-advance-portfolio-js',
+				'script_path' => '/assets/atomic/js/advance-portfolio.js',
+				// Pro-only handles; advance-portfolio.js already returns early
+				// when window.gsap / window.ScrollTrigger are absent, so the grid
+				// still renders on a free-only install, just unanimated.
+				'script_deps' => defined( 'WCF_ADDONS_PRO_VERSION' ) ? [ 'gsap', 'ScrollTrigger' ] : [],
+				'has_script' => true,
+				'style_handle' => 'aae-a-advance-portfolio-css',
+				'style_path' => '/assets/atomic/css/advance-portfolio.css',
+			],
+			'aae-a-portfolio-title' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\AdvancePortfolio\AAE_A_Portfolio_Title',
+				'file' => 'Widgets/AdvancePortfolio/class-aae-a-portfolio-title.php',
+				'has_script' => false,
+			],
+			'aae-a-portfolio-list' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\AdvancePortfolio\AAE_A_Portfolio_List',
+				'file' => 'Widgets/AdvancePortfolio/class-aae-a-portfolio-list.php',
+				'has_script' => false,
+			],
+			'aae-a-portfolio-item' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\AdvancePortfolio\AAE_A_Portfolio_Item',
+				'file' => 'Widgets/AdvancePortfolio/class-aae-a-portfolio-item.php',
+				'has_script' => false,
+			],
+			'aae-a-portfolio-content' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\AdvancePortfolio\AAE_A_Portfolio_Content',
+				'file' => 'Widgets/AdvancePortfolio/class-aae-a-portfolio-content.php',
+				'has_script' => false,
+			],
+			'aae-a-portfolio-date' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\AdvancePortfolio\AAE_A_Portfolio_Date',
+				'file' => 'Widgets/AdvancePortfolio/class-aae-a-portfolio-date.php',
+				'has_script' => false,
+			],
+
 			'aae-a-loop-item' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Item',
 				'file' => 'Widgets/LoopGrid/class-aae-a-loop-item.php',
 				'has_script' => false,
 			],
+			// --- Loop Filters (M2) -------------------------------------
+			// The visitor-facing half. Classes ship FREE and are ALWAYS
+			// registered, because an element type nobody registers is deleted
+			// from every saved page on the next save; the paid behaviour is
+			// gated at runtime through Pro_Gate instead.
 			'aae-a-loop-layout' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Layout',
 				'file' => 'Widgets/LoopGrid/class-aae-a-loop-layout.php',
@@ -4412,6 +4838,16 @@ final class Atomic
 				'file' => 'Widgets/SearchForm/class-aae-a-search-toggle.php',
 				'has_script' => false,
 			],
+			'aae-a-search-toggle-open' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Toggle_Open',
+				'file' => 'Widgets/SearchForm/class-aae-a-search-toggle-open.php',
+				'has_script' => false,
+			],
+			'aae-a-search-toggle-close' => [
+				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Toggle_Close',
+				'file' => 'Widgets/SearchForm/class-aae-a-search-toggle-close.php',
+				'has_script' => false,
+			],
 			'aae-a-search-panel' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Panel',
 				'file' => 'Widgets/SearchForm/class-aae-a-search-panel.php',
@@ -4445,37 +4881,6 @@ final class Atomic
 			'aae-a-search-results' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\SearchForm\AAE_A_Search_Results',
 				'file' => 'Widgets/SearchForm/class-aae-a-search-results.php',
-				'has_script' => false,
-			],
-
-			'aae-a-draw-svg' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\DrawSvg\AAE_A_Draw_Svg',
-				'file' => 'Widgets/DrawSvg/class-aae-a-draw-svg.php',
-				'script_handle' => 'aae-a-draw-svg-js',
-				'script_path' => '/assets/atomic/js/draw-svg.js',
-				// Only when Pro is present — see aae-a-offcanvas below. Free ships
-				// no GSAP of its own and Atomic\Assets::ensure_gsap_registered()
-				// sources these from Pro's assets/lib, so without Pro the handles
-				// never exist. draw-svg.js guards on `typeof gsap` and no-ops.
-				'script_deps' => defined( 'WCF_ADDONS_PRO_VERSION' )
-					? [ 'gsap', 'ScrollTrigger', 'DrawSVGPlugin', 'MotionPathPlugin' ]
-					: [],
-				'has_script' => true,
-			],
-
-			'aae-a-stack-cards' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\StackCards\AAE_A_Stack_Cards',
-				'file' => 'Widgets/StackCards/class-aae-a-stack-cards.php',
-				'script_handle' => 'aae-a-stack-cards-js',
-				'script_path' => '/assets/atomic/js/stack-cards.js',
-				// Pro-only handles; stack-cards.js already returns early when
-				// window.gsap / window.ScrollTrigger are absent.
-				'script_deps' => defined( 'WCF_ADDONS_PRO_VERSION' ) ? [ 'gsap', 'ScrollTrigger' ] : [],
-				'has_script' => true,
-			],
-			'aae-a-stack-card' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\StackCards\AAE_A_Stack_Card',
-				'file' => 'Widgets/StackCards/class-aae-a-stack-card.php',
 				'has_script' => false,
 			],
 
@@ -4635,22 +5040,6 @@ final class Atomic
 				'style_path' => '/assets/atomic/css/accordion.css',
 			],
 
-			// Table of Content — leaf widget. Its JS uses GSAP ScrollTrigger
-			// (active-heading scroll-spy) + ScrollToPlugin (smooth scroll) when
-			// present, and degrades gracefully to native smooth scroll without
-			// them — so, like Counter, it declares NO gsap script_deps (those
-			// handles live in the Pro plugin; a missing registered dep would
-			// silently prevent this free widget's script from enqueuing).
-			'aae-a-toc' => [
-				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\TableOfContents\AAE_A_Table_Of_Contents',
-				'file' => 'Widgets/TableOfContents/class-aae-a-table-of-contents.php',
-				'script_handle' => 'aae-a-toc-js',
-				'script_path' => '/assets/atomic/js/table-of-contents.js',
-				'has_script' => true,
-				'style_handle' => 'aae-a-toc-css',
-				'style_path' => '/assets/atomic/css/table-of-contents.css',
-			],
-
 			'aae-a-accordion-item' => [
 				'class' => '\WCF_ADDONS\AtomicWidgets\Widgets\Accordion\AAE_A_Accordion_Item',
 				'file' => 'Widgets/Accordion/class-aae-a-accordion-item.php',
@@ -4683,6 +5072,16 @@ final class Atomic
 		'aae-a-social-share-item' => [
 			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\SocialShare\AAE_A_Social_Share_Item',
 			'file'       => 'Widgets/SocialShare/class-aae-a-social-share-item.php',
+			'has_script' => false,
+		],
+		'aae-a-social-share-item-icon' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\SocialShare\AAE_A_Social_Share_Item_Icon',
+			'file'       => 'Widgets/SocialShare/Parts/class-aae-a-social-share-item-icon.php',
+			'has_script' => false,
+		],
+		'aae-a-social-share-item-title' => [
+			'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\SocialShare\AAE_A_Social_Share_Item_Title',
+			'file'       => 'Widgets/SocialShare/Parts/class-aae-a-social-share-item-title.php',
 			'has_script' => false,
 		],
 		// SocialShareMain entries removed — see the note in
@@ -4840,39 +5239,24 @@ final class Atomic
 				'file'       => 'Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-pane-desc.php',
 				'has_script' => false,
 			],
-
-			'aae-a-offcanvas' => [
-				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas',
-				'file'          => 'Widgets/Offcanvas/class-aae-a-offcanvas.php',
-				'script_handle' => 'aae-a-offcanvas-js',
-				'script_path'   => '/assets/atomic/js/offcanvas.js',
-				'has_script'    => true,
-				// GSAP powers the open/close animations, but the `gsap` handle is
-				// registered only by the Pro plugin. Depend on it ONLY when Pro is
-				// present (an unregistered dep would silently block the script);
-				// the runtime falls back to a CSS slide when GSAP is absent.
-				'script_deps'   => defined( 'WCF_ADDONS_PRO_VERSION' ) ? [ 'gsap' ] : [],
-			],
-
-			'aae-a-offcanvas-panel' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Panel',
-				'file'       => 'Widgets/Offcanvas/class-aae-a-offcanvas-panel.php',
+			'aae-a-toggle-switcher-label' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Switcher_Label',
+				'file'       => 'Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-switcher-label.php',
 				'has_script' => false,
 			],
-
-			'aae-a-offcanvas-trigger' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Trigger',
-				'file'       => 'Widgets/Offcanvas/class-aae-a-offcanvas-trigger.php',
+			'aae-a-toggle-switcher-tablist' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Switcher_Tablist',
+				'file'       => 'Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-switcher-tablist.php',
 				'has_script' => false,
 			],
-			'aae-a-offcanvas-close' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Close',
-				'file'       => 'Widgets/Offcanvas/class-aae-a-offcanvas-close.php',
+			'aae-a-toggle-switcher-track' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Switcher_Track',
+				'file'       => 'Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-switcher-track.php',
 				'has_script' => false,
 			],
-			'aae-a-offcanvas-overlay' => [
-				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Offcanvas\AAE_A_Offcanvas_Overlay',
-				'file'       => 'Widgets/Offcanvas/class-aae-a-offcanvas-overlay.php',
+			'aae-a-toggle-switcher-knob' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\ToggleSwitcher\AAE_A_Toggle_Switcher_Knob',
+				'file'       => 'Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-switcher-knob.php',
 				'has_script' => false,
 			],
 
@@ -4965,6 +5349,24 @@ final class Atomic
 				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Range',
 				'file'       => 'Widgets/Form/class-aae-a-form-range.php',
 				'has_script' => false, // ships inside aae-a-form-js itself (lib/range.js).
+			],
+
+			'aae-a-form-range-group' => [
+				'class'         => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Range_Group',
+				'file'          => 'Widgets/Form/class-aae-a-form-range-group.php',
+				// Its own bundle, not form.js: the group is a usable page element
+				// on its own, and form.js only initialises what sits inside a form.
+				'has_script'    => true,
+				'script_handle' => 'aae-a-form-range-group-js',
+				'script_path'   => '/assets/atomic/js/form-range-group.js',
+				'style_handle'  => 'aae-a-form-range-group-css',
+				'style_path'    => '/assets/atomic/css/form-range-group.css',
+			],
+
+			'aae-a-form-range-value' => [
+				'class'      => '\WCF_ADDONS\AtomicWidgets\Widgets\Form\AAE_A_Form_Range_Value',
+				'file'       => 'Widgets/Form/class-aae-a-form-range-value.php',
+				'has_script' => false, // painted by its parent's bundle (form-range-group.js).
 			],
 
 			'aae-a-form-country' => [
@@ -5155,10 +5557,27 @@ final class Atomic
 			'has_script' => false,
 		],
 
+		'aae-a-curved-text' => [
+			'class'        => '\WCF_ADDONS\AtomicWidgets\Widgets\CurvedText\AAE_A_Curved_Text',
+			'file'         => 'Widgets/CurvedText/class-aae-a-curved-text.php',
+			'has_script'   => false,
+			'style_handle' => 'aae-a-curved-text-css',
+			'style_path'   => '/assets/atomic/css/curved-text.css',
+		],
+
+		'aae-a-google-maps' => [
+			'class'        => '\WCF_ADDONS\AtomicWidgets\Widgets\GoogleMaps\AAE_A_Google_Maps',
+			'file'         => 'Widgets/GoogleMaps/class-aae-a-google-maps.php',
+			// No frontend JS: the embed URL is built in the twig, so the map
+			// works with scripting irrelevant. The only stylesheet rule is the
+			// editor-only pointer-events guard (google-maps.scss).
+			'has_script'   => false,
+			'style_handle' => 'aae-a-google-maps-css',
+			'style_path'   => '/assets/atomic/css/google-maps.css',
+		],
+
 		// Add new atomic widgets below...
 		];
-
-		$widgets = self::drop_widgets_owned_by_pro($widgets);
 
 		/**
 		 * The class/asset registry for every atomic widget.
@@ -5228,10 +5647,33 @@ final class Atomic
 			wp_send_json_error(['message' => 'Invalid sample post.'], 404);
 		}
 
-		wp_send_json_success([
+		wp_send_json_success(array_merge([
 			'title' => get_the_title($post),
 			'image' => get_the_post_thumbnail_url($post, 'large') ?: '',
-		]);
+		], self::excerpt_preview_data($post)));
+	}
+
+	/**
+	 * The two texts the editor's Post Excerpt mirror needs for one post: the
+	 * WordPress excerpt (what `none` / a line clamp shows) and the full plain
+	 * text a word / char limit trims from — the SAME two sources the widget's
+	 * PHP uses, so the canvas and the page trim the same words. Empty when the
+	 * widget is switched off (its class is only loaded while it registers).
+	 *
+	 * @param \WP_Post|null $post The post.
+	 * @return array{excerpt?: string, excerpt_full?: string}
+	 */
+	private static function excerpt_preview_data($post): array
+	{
+		$cls = '\WCF_ADDONS\AtomicWidgets\Widgets\PostExcerpt\AAE_A_Post_Excerpt';
+		if (! $post instanceof \WP_Post || ! class_exists($cls)) {
+			return [];
+		}
+
+		return [
+			'excerpt'      => $cls::excerpt_for($post, 'none', 0, ''),
+			'excerpt_full' => $cls::full_text($post),
+		];
 	}
 
 	/**
@@ -5244,6 +5686,47 @@ final class Atomic
 		if (! class_exists(\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::class)) {
 			require_once __DIR__ . '/Widgets/LoopGrid/class-aae-a-loop-grid.php';
 		}
+	}
+
+	/**
+	 * For each public post type: how many taxonomy filters the Loop Grid offers
+	 * it, which of them are currently UNREGISTERED (kept by the known-taxonomy
+	 * ratchet — their plugin is off) and which are offered although not public
+	 * (WooCommerce attributes). The panel cannot compute this per instance
+	 * (controls are built once per type), so it is shipped as data and the
+	 * notice card resolves it against the element's own Source.
+	 *
+	 * @return array<string, array{count:int, unregistered:string[], nonPublic:string[]}>
+	 */
+	private static function loop_grid_taxonomy_notices(): array
+	{
+		self::load_loop_grid_class();
+		$taxes = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::get_query_taxonomies();
+		$out   = [];
+
+		foreach (array_keys(get_post_types(['public' => true])) as $type) {
+			if ('attachment' === $type) {
+				continue;
+			}
+			$entry = ['count' => 0, 'unregistered' => [], 'nonPublic' => []];
+			foreach ($taxes as $tax) {
+				if (! in_array($type, (array) ($tax->object_type ?? []), true)) {
+					continue;
+				}
+				$label = (string) ($tax->label ?? $tax->name);
+				if (! empty($tax->aae_unregistered)) {
+					$entry['unregistered'][] = $label;
+					continue;
+				}
+				$entry['count']++;
+				if (empty($tax->public)) {
+					$entry['nonPublic'][] = $label;
+				}
+			}
+			$out[ $type ] = $entry;
+		}
+
+		return $out;
 	}
 
 	/**
@@ -5262,7 +5745,42 @@ final class Atomic
 		$term = isset($_POST['search']) ? sanitize_text_field(wp_unslash($_POST['search'])) : '';
 		$options = [];
 
-		if ('term' === $kind) {
+		if ('user' === $kind) {
+			// Authors for the grid's authors / exclude_authors chips. Only people
+			// who can publish — a subscriber is never an author. Numeric search
+			// tries the id first, like the post kind.
+			if (ctype_digit($term)) {
+				$by_id = get_user_by('id', (int) $term);
+				if ($by_id instanceof \WP_User && $by_id->has_cap('edit_posts')) {
+					$options[] = ['id' => (int) $by_id->ID, 'label' => $by_id->display_name];
+				}
+			}
+			$users = get_users([
+				'number'              => ('' === $term) ? 8 : 20,
+				'search'              => '' === $term ? '' : '*' . $term . '*',
+				'search_columns'      => ['display_name', 'user_login', 'user_nicename', 'user_email'],
+				'capability'          => 'edit_posts',
+				'orderby'             => 'display_name',
+				'order'               => 'ASC',
+			]);
+			foreach ($users as $u) {
+				if (! empty($by_id) && (int) $u->ID === (int) $by_id->ID) {
+					continue;
+				}
+				$options[] = ['id' => (int) $u->ID, 'label' => $u->display_name];
+			}
+		} elseif ('acf_field' === $kind) {
+			// The Field / Date filters' ACF dropdown (AcfFieldControl.jsx). The
+			// whole catalogue at once — a site has tens of fields, not
+			// thousands — and the control narrows it to the grid's post type
+			// itself. `acf` says whether ACF is running at all, so an empty
+			// list can be told apart from "no ACF here".
+			self::load_loop_grid_class();
+			wp_send_json_success([
+				'acf'     => function_exists('acf_get_field_groups'),
+				'options' => Widgets\LoopGrid\Loop_Filter_Auth::acf_field_catalogue(),
+			]);
+		} elseif ('term' === $kind) {
 			$taxonomy = isset($_POST['taxonomy']) ? sanitize_key(wp_unslash($_POST['taxonomy'])) : '';
 			if (! $taxonomy || ! taxonomy_exists($taxonomy)) {
 				wp_send_json_error(['message' => 'Invalid taxonomy.'], 400);
@@ -5375,12 +5893,12 @@ final class Atomic
 		if ($query->have_posts()) {
 			while ($query->have_posts()) {
 				$query->the_post();
-				$posts[] = [
+				$posts[] = array_merge([
 					'title'   => get_the_title(),
 					'url'     => get_permalink(),
 					'image'   => get_the_post_thumbnail_url(null, 'large') ?: '',
 					'excerpt' => wp_strip_all_tags(get_the_excerpt()),
-				];
+				], self::excerpt_preview_data(get_post()));
 			}
 			wp_reset_postdata();
 		}
@@ -5408,6 +5926,23 @@ final class Atomic
 
 		if (! $post_id || ! $grid_id) {
 			wp_send_json_error(['message' => 'Missing post_id or grid_id.'], 400);
+		}
+
+		$post = get_post($post_id);
+		if (! $post || ('publish' !== $post->post_status && ! current_user_can('read_post', $post_id)) || post_password_required($post)) {
+			wp_send_json_error(['message' => 'Access denied.'], 403);
+		}
+
+
+		// Multilingual context (WPML & Polylang): switch active language to match requesting post.
+		if ( function_exists( 'do_action' ) ) {
+			do_action( 'wpml_switch_language_for_post', $post_id );
+		}
+		if ( function_exists( 'pll_get_post_language' ) && function_exists( 'PLL' ) ) {
+			$pll_lang = pll_get_post_language( $post_id );
+			if ( $pll_lang && isset( PLL()->curlang, PLL()->model ) ) {
+				PLL()->curlang = PLL()->model->get_language( $pll_lang );
+			}
 		}
 
 		$doc = \Elementor\Plugin::$instance->documents->get($post_id);
@@ -5473,9 +6008,51 @@ final class Atomic
 		self::load_loop_grid_class();
 		$gs = (array) ($grid_el['settings'] ?? []);
 
-		// Related source: the requesting page's post is the relatedness anchor
-		// (admin-ajax has no queried object of its own).
-		$gs['_context_post_id'] = $post_id;
+		// The page this request is FOR, as `path?query` — the URL the visitor's
+		// address bar is about to show. Read here rather than at the top of the
+		// handler because it is the first line that may touch Loop_Filter_Auth,
+		// and load_loop_grid_class() immediately above is what puts that class
+		// on disk-to-memory.
+		//
+		// With it the response is, by construction, what a full page load of
+		// that URL would have rendered: the page number and the filter state are
+		// read back out of it by the very code the first render uses, and the
+		// filter widgets re-rendered below build their links against it instead
+		// of against admin-ajax.php. That is what lets the filter runtime be a
+		// pure "same render, no reload" upgrade with no second copy of any rule.
+		//
+		// Without it the handler behaves exactly as it always has, which is what
+		// keeps the existing pagination runtime working untouched.
+		$path = isset($_POST['path']) ? (string) wp_unslash($_POST['path']) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- set_request_url() is the validator: same-host only, capped, no traversal.
+		if ('' !== $path && ! \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\Loop_Filter_Auth::set_request_url($path)) {
+			wp_send_json_error(['message' => 'Invalid path.'], 400);
+		}
+
+		// Related source: the anchor is the post the visitor is READING, which
+		// is not $post_id once the grid lives in a theme-builder template —
+		// there $post_id is the template document, the one whose saved data
+		// declares this grid. The runtime posts the viewed post separately.
+		//
+		// It goes through the SAME gate $post_id did, and for the same reason.
+		// The Related builder reads this post's type and its terms to find posts
+		// "like" it, so an unchecked id lets a visitor anchor the query on a
+		// draft and learn which published posts share its terms. Nothing
+		// unpublished is ever rendered either way — all three builders pin
+		// post_status to publish — but the result set is still an inference
+		// channel about a post nobody was shown. A rejected id falls back to the
+		// document, exactly as an absent one does.
+		$context_id = isset($_POST['context_id']) ? absint($_POST['context_id']) : 0;
+		if ($context_id && $context_id !== $post_id) {
+			$context = get_post($context_id);
+			if (
+				! $context
+				|| ('publish' !== $context->post_status && ! current_user_can('read_post', $context_id))
+				|| post_password_required($context)
+			) {
+				$context_id = 0;
+			}
+		}
+		$gs['_context_post_id'] = $context_id ?: $post_id;
 
 		// Current Query source: the archive's query vars, captured into the
 		// pagination config at render time and posted back by the runtime.
@@ -5486,13 +6063,80 @@ final class Atomic
 			}
 		}
 
+		// Visitor filters: a JSON map of url_key => value, the same shape the
+		// URL carries on the first render. Authorised against the filter widgets
+		// this SAVED document declares for this grid — anything not declared is
+		// dropped — and handed to the builder as its own argument, never inside
+		// the settings blob. Oversized / malformed is a 400, not a guess.
+		$filters = [];
+		if ('' !== $path) {
+			// URL mode: the filter state is IN the path, so it is read with the
+			// same request parser the first render uses. No second shape, and
+			// nothing for the browser to get wrong about which keys are filter
+			// keys — request_args() is already unslashed, hence `false`.
+			\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\Loop_Filter_Auth::prime_document($post_id, $data);
+			$request_args = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\Loop_Filter_Auth::request_args();
+
+			$filters = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\Loop_Filter_Auth::current(
+				$post_id,
+				$grid_id,
+				\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::effective_post_type($gs),
+				$request_args,
+				false
+			);
+
+			// The page number comes from the same place, so a filter link (which
+			// strips it) lands on page 1 without the runtime having to say so.
+			$paged = isset($request_args['aae_page']) ? max(1, absint($request_args['aae_page'])) : 1;
+		} elseif (isset($_POST['filters'])) {
+			$raw = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\Loop_Filter_Auth::decode_payload(wp_unslash($_POST['filters'])); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- decoded + capped, then every value is authorised
+			if (null === $raw) {
+				wp_send_json_error(['message' => 'Invalid filters payload.'], 400);
+			}
+			// current() is the one authorisation pipeline the first render also
+			// uses, so page 2 can never be authorised on different terms than
+			// page 1. The tree is handed over rather than re-read: this handler
+			// already decoded it above. `false` says the payload was unslashed
+			// once already, at decode_payload() — unslashing it twice ate real
+			// backslashes and made page 2 a different result set.
+			\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\Loop_Filter_Auth::prime_document($post_id, $data);
+			$filters = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\Loop_Filter_Auth::current(
+				$post_id,
+				$grid_id,
+				\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::effective_post_type($gs),
+				$raw,
+				false
+			);
+		}
+
 		$query_args = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::build_query_args(
 			$gs,
-			$paged
+			$paged,
+			$filters
 		);
 
-		// Total pages (respects the same query, offset-corrected).
-		$max_pages = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::compute_max_pages($gs, $query_args);
+		// Total + pages (respects the same query, offset-corrected).
+		$total     = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::count_total($gs, $query_args);
+		$max_pages = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::pages_for_total($total, $query_args);
+
+		// Hand the readouts the numbers this request already paid for. A Result
+		// Count re-rendered below would otherwise run the same count again — and,
+		// worse, could answer a different one if anything about the request
+		// changed between the two, so the grid and its own caption would
+		// disagree inside a single response.
+		\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::prime_summary(
+			$post_id,
+			$grid_id,
+			[
+				'grid_id'   => $grid_id,
+				'post_type' => \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::effective_post_type($gs),
+				'filters'   => $filters['active'] ?? [],
+				'total'     => $total,
+				'max_pages' => $max_pages,
+				'paged'     => $paged,
+				'per_page'  => max(1, (int) ($query_args['posts_per_page'] ?? 6)),
+			]
+		);
 
 		// Push context (same key the Loop Item reads) and render the item.
 		\Elementor\Modules\AtomicWidgets\Elements\Base\Render_Context::push(
@@ -5511,11 +6155,101 @@ final class Atomic
 			\WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\AAE_A_Loop_Grid::class
 		);
 
+		// The filter widgets, re-rendered for the same URL.
+		//
+		// Asked for explicitly, so the pagination runtime — which changes the
+		// page and never the filter state — pays nothing for it. The widgets are
+		// rendered rather than patched in the browser because everything they
+		// draw (which terms read as selected, where each link points NEXT, the
+		// Clear link) follows from rules that already exist once, in PHP.
+		// Recomputing them in JS would be a second copy that can disagree with
+		// the page a reload would produce.
+		$filters_html = [];
+		if (! empty($_POST['with_filters'])) {
+			$filters_html = $this->render_loop_filters($post_id, $grid_id, $data);
+		}
+
 		wp_send_json_success([
-			'html'      => $html,
-			'paged'     => $paged,
-			'max_pages' => $max_pages,
+			'html'         => $html,
+			'paged'        => $paged,
+			'max_pages'    => $max_pages,
+			'total'        => $total,
+			'filters'      => (object) ($filters['active'] ?? []),
+			'filters_html' => (object) $filters_html,
 		]);
+	}
+
+	/**
+	 * Every filter widget that targets $grid_id, rendered fresh, keyed by its
+	 * element id.
+	 *
+	 * The list comes from `Loop_Filter_Auth::rerender_ids()`, which is the
+	 * declaration walk — so a widget not authorised to filter this grid is never
+	 * sent back for it — PLUS the READOUTS pointed at the grid. A Result Count
+	 * or an Active Filters bar declares nothing and so has no declaration to be
+	 * found by; it still describes the result set, and leaving it out is how a
+	 * filtered page ends up saying "24 results" over twelve of them.
+	 *
+	 * The document is switched to for the duration: a filter widget asks
+	 * `AAE_A_Loop_Grid::current_document_id()` which document declares it, and
+	 * in an admin-ajax request there is no current document and no global post,
+	 * so without this every widget would resolve nothing and render an empty
+	 * list. `switch_to_document()` only swaps Elementor's own pointer — it
+	 * touches no post globals, so it cannot disturb anything around it.
+	 *
+	 * @param int    $post_id  The document whose saved data declares the filters.
+	 * @param string $grid_id  The Loop Grid element id they target.
+	 * @param array  $elements That document's already-decoded element tree.
+	 * @return array<string, string> element id => HTML.
+	 */
+	private function render_loop_filters(int $post_id, string $grid_id, array $elements): array {
+		$wanted = \WCF_ADDONS\AtomicWidgets\Widgets\LoopGrid\Loop_Filter_Auth::rerender_ids($elements, $grid_id);
+		if (! $wanted) {
+			return [];
+		}
+
+		$found = [];
+		$walk  = function ($els) use (&$walk, &$found, $wanted) {
+			foreach ((array) $els as $el) {
+				if (! is_array($el)) {
+					continue;
+				}
+				$id = (string) ($el['id'] ?? '');
+				if ('' !== $id && isset($wanted[$id])) {
+					$found[$id] = $el;
+				}
+				if (! empty($el['elements'])) {
+					$walk($el['elements']);
+				}
+			}
+		};
+		$walk($elements);
+
+		if (! $found) {
+			return [];
+		}
+
+		$doc = \Elementor\Plugin::$instance->documents->get($post_id);
+		if ($doc) {
+			\Elementor\Plugin::$instance->documents->switch_to_document($doc);
+		}
+
+		$out = [];
+		foreach ($found as $id => $el) {
+			$obj = \Elementor\Plugin::$instance->elements_manager->create_element_instance($el);
+			if (! $obj) {
+				continue;
+			}
+			ob_start();
+			$obj->print_element();
+			$out[$id] = ob_get_clean();
+		}
+
+		if ($doc) {
+			\Elementor\Plugin::$instance->documents->restore_document();
+		}
+
+		return $out;
 	}
 
 	/**
@@ -5551,13 +6285,25 @@ final class Atomic
 		}
 
 		// Our own atomic widget stylesheets (e.g. aae-a-nav-css) must ALSO print
-		// after editor-preview. The early add_style_dependency() in
-		// enqueue_atomic_preview_styles() silently bails when editor-preview isn't
-		// registered yet at preview/enqueue_styles time, so on some hard reloads
-		// the widget CSS printed before editor-preview and its positioning lost —
-		// the Nav dropdown rendered unpositioned / in-flow ("styles missing on
-		// reload"). Patching here (wp_print_styles, when every handle is finally
-		// registered) makes the dependency reliable.
+		// after editor-preview, or the Nav dropdown renders unpositioned / in-flow
+		// ("styles missing on reload").
+		//
+		// THIS PASS IS THE ONLY ONE THAT CAN DO IT, and the reason is timing, not
+		// a race. An earlier revision of this comment blamed the dependency being
+		// added "too early to stick" — that cannot happen: Elementor registers AND
+		// enqueues editor-preview on the two lines immediately before it fires
+		// `elementor/preview/enqueue_styles` (includes/preview.php:271, :287,
+		// :299), so any callback on that hook always finds the handle registered.
+		//
+		// The real reason is that half the handles do not EXIST yet at that point.
+		// Elementor's per-document CSS (`local-<id>-preview-*`,
+		// `elementor-post-<id>`) registers later, while the document renders, so
+		// nothing hooked to an enqueue action can reach it. wp_print_styles at
+		// priority 0 is the last moment when every handle is finally registered
+		// and nothing has been echoed yet.
+		//
+		// Do not "simplify" this away on the assumption the enqueue-time
+		// dependency already covers it — it covers the widget sheets only.
 		$atomic_handles = [];
 		foreach ( $this->get_available_widgets() as $widget_data ) {
 			if ( ! empty( $widget_data['style_handle'] ) ) {
@@ -5655,7 +6401,7 @@ final class Atomic
 			if ( $class && is_callable( [ $class, 'get_frontend_css_override' ] ) ) {
 				$css = $class::get_frontend_css_override();
 				if ( '' !== $css ) {
-					wp_add_inline_style( $handle, $css );
+					wp_add_inline_style( $handle, wp_strip_all_tags( $css ) );
 				}
 			}
 		}
@@ -5690,6 +6436,7 @@ final class Atomic
 		'aae-atomic-general',
 		'aae-atomic-form',
 		'aae-atomic-post',
+		'aae-atomic-woo',
 		'wcf-hf-addon',
 	];
 
@@ -5726,6 +6473,17 @@ final class Atomic
 
 		$elements_manager->add_category('aae-atomic-post', [
 			'title' => esc_html__('AAE Post', 'animation-addons-for-elementor'),
+			'icon'  => 'fa fa-plug',
+		]);
+
+		// Registered here even though every widget that uses it is PRO-owned:
+		// add_category() runs on an Elementor hook the free plugin already
+		// answers, and a widget returning a slug nobody registered lands under
+		// Elementor's own "Atomic Elements" with no error to explain it. Costs
+		// nothing on a site without Pro — an empty category is not rendered,
+		// and promote_panel_categories() skips a slug that is not in the map.
+		$elements_manager->add_category('aae-atomic-woo', [
+			'title' => esc_html__('AAE WooCommerce', 'animation-addons-for-elementor'),
 			'icon'  => 'fa fa-plug',
 		]);
 	}
@@ -5946,6 +6704,80 @@ final class Atomic
 	}
 
 	/**
+	 * Slides an unlicensed site may author in either slider.
+	 *
+	 * Lives HERE, not on AAE_A_Loop_Grid_Slider, because Assets.php has to ship
+	 * it to the editor on every load and that widget's class is only required
+	 * when the widget is switched on — reading it there would fatal on a site
+	 * that has the slider disabled.
+	 *
+	 * PANEL ONLY. Nothing downstream of a saved value consults it, so a slider
+	 * built with more slides keeps rendering all of them if the licence lapses.
+	 */
+	const FREE_SLIDE_LIMIT = 3;
+
+	/**
+	 * Where every in-editor upsell sends the user.
+	 *
+	 * One constant because two of them drifting is not a hypothetical: the
+	 * dashboard already reaches the site root in some places and /pricing/ in
+	 * others, which is how a campaign link ends up half-applied. Anything new
+	 * that upsells from inside the editor should read this rather than typing
+	 * the URL again.
+	 */
+	const UPGRADE_URL = 'https://animation-addons.com/pricing/';
+
+	/**
+	 * Is there a Pro plugin here with a VALID licence?
+	 *
+	 * The same gate Pro puts on its own include_files(), so it answers the only
+	 * question that matters downstream: will Pro's code actually run. Absent
+	 * function means either no Pro at all or one too old to have it, and both
+	 * are correctly "no".
+	 *
+	 * Licence-only, with NO version floor: it answers "has this customer
+	 * paid", which is the only question a feature gate needs. Anything that
+	 * must ALSO know "is the Pro here new enough" has to check
+	 * WCF_ADDONS_PRO_VERSION itself rather than widening this.
+	 *
+	 * Pro memoises the underlying option read in a static, so repeat calls are
+	 * free.
+	 */
+	public static function pro_licensed(): bool
+	{
+		return function_exists('wcf__addons__pro__status') && (bool) wcf__addons__pro__status();
+	}
+
+	/**
+	 * Is the CODE for this atomic widget present on disk?
+	 *
+	 * The registry-entry half and the file half are both required and mean
+	 * different things: a slug missing entirely is a widget this build never
+	 * knew about, while an entry whose file is gone is a widget this build
+	 * expects someone else to ship (a moved-to-Pro slug on a site with no Pro,
+	 * or a partial deploy). Both end the same way in
+	 * resolve_registerable_classes() — the element type never registers — which
+	 * is the only thing a caller asking this question cares about.
+	 *
+	 * Deliberately NOT is_widget_active(): that answers whether the user
+	 * switched it on, which is their choice and not a missing-code condition.
+	 * Pro_Promotion needs exactly this split, so that a widget somebody turned
+	 * off in the dashboard is not advertised back at them as a paid upgrade.
+	 */
+	public function widget_code_present(string $slug): bool
+	{
+		$widgets = $this->get_available_widgets();
+
+		if (! isset($widgets[$slug])) {
+			return false;
+		}
+
+		$file = self::widget_class_file($widgets[$slug]);
+
+		return '' !== $file && file_exists($file);
+	}
+
+	/**
 	 * Absolute path to a registry entry's class file.
 	 *
 	 * `file` is normally relative to this directory. An entry from another
@@ -5953,89 +6785,6 @@ final class Atomic
 	 * Both callers already skip a path that does not exist, so a Pro entry left
 	 * behind by a partial deploy costs that widget, not the request.
 	 */
-	/**
-	 * Atomic widgets that moved to the Pro plugin, and the Pro release that took
-	 * them. Free keeps its own copies for ONE release as a transitional
-	 * fallback: an atomic element type that nothing registers is not merely
-	 * invisible, Elementor DROPS it from `_elementor_data` on the next save
-	 * (get_elements_raw_data(), elementor/core/base/document.php:1111), so a
-	 * version-skew window with no registrar would destroy customers' pages.
-	 *
-	 * Delete these entries, this method and the widget folders in the follow-up
-	 * release, once Pro 4.2.0 is the floor.
-	 */
-	const PRO_OWNS_WIDGETS_FROM = '4.2.0';
-
-	const WIDGETS_MOVED_TO_PRO = [
-		'aae-a-counter',
-		'aae-a-draw-svg',
-		'aae-a-stack-cards',
-		'aae-a-stack-card',
-		'aae-a-btn-pro',
-		'aae-a-offcanvas',
-		'aae-a-offcanvas-panel',
-		'aae-a-offcanvas-trigger',
-		'aae-a-offcanvas-close',
-		'aae-a-offcanvas-overlay',
-		'aae-a-nav',
-		'aae-a-nav-item',
-		'aae-a-nav-sub-item',
-		'aae-a-mobile-nav',
-		'aae-a-toc',
-	];
-
-	/**
-	 * True once the installed Pro is new enough to register the moved widgets
-	 * itself.
-	 *
-	 * Two conditions, and the LICENCE half is the one that matters.
-	 *
-	 * The atomic EXTENSIONS deliberately guard on Pro's version alone: an
-	 * unlicensed Pro must not make free resume rendering a paid effect. Widgets
-	 * cannot use that rule. WCF_ADDONS_PRO_VERSION is defined at Pro's file
-	 * scope, BEFORE its licence gate, while Pro only registers these widgets
-	 * when the licence is valid — so version-only would leave an expired site
-	 * with NOBODY registering them, and an unregistered atomic element type is
-	 * deleted from `_elementor_data` on the next save of any page using it
-	 * (get_elements_raw_data(), elementor/core/base/document.php:1111).
-	 *
-	 * A lapsed customer keeping these widgets alive is a revenue leak. A lapsed
-	 * customer's pages silently losing their content is not recoverable. So free
-	 * stands down only when Pro will actually take over.
-	 *
-	 * Still not `class_exists` on a Pro widget: Pro loads its classes on
-	 * `elementor/init`, long after this runs, so that check would read false
-	 * even on a perfectly licensed site.
-	 */
-	public static function pro_owns_widgets(): bool
-	{
-		if (! defined('WCF_ADDONS_PRO_VERSION')
-			|| version_compare(WCF_ADDONS_PRO_VERSION, self::PRO_OWNS_WIDGETS_FROM, '<')) {
-			return false;
-		}
-
-		// Same gate Pro puts on its own include_files(); absent means a Pro too
-		// old to have the function, which the version check already excluded.
-		return function_exists('wcf__addons__pro__status') && (bool) wcf__addons__pro__status();
-	}
-
-	/**
-	 * @param array<string,array> $widgets
-	 * @return array<string,array>
-	 */
-	private static function drop_widgets_owned_by_pro(array $widgets): array
-	{
-		if (! self::pro_owns_widgets()) {
-			return $widgets;
-		}
-
-		foreach (self::WIDGETS_MOVED_TO_PRO as $slug) {
-			unset($widgets[$slug]);
-		}
-
-		return $widgets;
-	}
-
 	private static function widget_class_file(array $widget_data): string
 	{
 		$file = $widget_data['file'] ?? '';
@@ -6096,6 +6845,87 @@ final class Atomic
 			'path'    => $path,
 			'version' => file_exists($file_path) ? filemtime($file_path) : WCF_ADDONS_VERSION,
 		];
+	}
+
+	/**
+	 * Print the menu breakpoint gate as an inline <head> script.
+	 *
+	 * `.aae-a-menu--mobile` is the ONLY switch between the desktop bar and the
+	 * mobile drawer: the stylesheet carries no `max-width` media query, because a
+	 * media query cannot read the PER-WIDGET "Mobile Breakpoint" value. That makes
+	 * the class load-bearing, and menu.js — a footer module that additionally
+	 * depends on `elementor-v2-frontend-handlers` — is far too late to be its only
+	 * source:
+	 *
+	 *   - Until the module runs, a phone paints the full desktop nav and then
+	 *     snaps to the hamburger. That flash is the visible half of the bug.
+	 *   - If the module never runs for an instance — a JS error earlier in the
+	 *     footer, a deferring/combining optimiser, a header fragment served from a
+	 *     full-page cache — the menu stays in desktop layout for good. That is the
+	 *     "works on some page loads, not others" half.
+	 *
+	 * This runs at `wp_head` priority 1, before any menu markup exists, so it
+	 * installs a MutationObserver and classes each root the moment it is parsed —
+	 * i.e. before that node's first paint. menu.js still does its own sync; the two
+	 * are idempotent and agree on the rule (`innerWidth <= breakpoint`, unparseable
+	 * falls back to 768, and 0 legitimately means "never go mobile").
+	 *
+	 * Deliberately not gated on "does this page use the widget": the check is not
+	 * reliable at wp_head time for theme-builder headers, and the payload is a few
+	 * hundred bytes that no-ops when it finds no menus.
+	 */
+	public function print_menu_breakpoint_bootstrap(): void {
+		if ( ! $this->is_widget_active( 'aae-a-menu' ) ) {
+			return;
+		}
+
+		// Editor preview excluded: menu.js owns the class there, and the panel
+		// re-render churn would fight an observer it does not know about.
+		if ( \Elementor\Plugin::$instance->preview->is_preview_mode() ) {
+			return;
+		}
+
+		$js = <<<'JS'
+(function(){
+var S='.aae-a-menu[data-breakpoint]';
+function sync(el){
+	var bp=parseInt(el.getAttribute('data-breakpoint'),10);
+	if(!isFinite(bp)){bp=768;}
+	el.classList.toggle('aae-a-menu--mobile',window.innerWidth<=bp);
+}
+function all(){
+	var n=document.querySelectorAll(S),i=0;
+	for(;i<n.length;i++){sync(n[i]);}
+}
+var f=0;
+function schedule(){
+	if(f){return;}
+	f=requestAnimationFrame(function(){f=0;all();});
+}
+if(typeof MutationObserver!=='undefined'){
+	new MutationObserver(function(recs){
+		for(var i=0;i<recs.length;i++){
+			var a=recs[i].addedNodes;
+			for(var j=0;j<a.length;j++){
+				var el=a[j];
+				if(el.nodeType!==1){continue;}
+				if(el.matches&&el.matches(S)){sync(el);}
+				if(el.querySelectorAll){
+					var d=el.querySelectorAll(S),k=0;
+					for(;k<d.length;k++){sync(d[k]);}
+				}
+			}
+		}
+	}).observe(document.documentElement,{childList:true,subtree:true});
+}
+window.addEventListener('resize',schedule);
+window.addEventListener('orientationchange',schedule);
+document.addEventListener('DOMContentLoaded',all);
+window.addEventListener('load',all);
+})();
+JS;
+
+		wp_print_inline_script_tag( $js, array( 'id' => 'aae-a-menu-breakpoint-bootstrap' ) );
 	}
 
 	public function register_atomic_scripts($loader)
@@ -6332,7 +7162,11 @@ final class Atomic
 					wp_localize_script(
 						$widget_data['script_handle'],
 						'AAE_MENU_CFG',
-						[ 'ajaxUrl' => admin_url( 'admin-ajax.php' ) ]
+						[
+							'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+							// Verified by ajax_get_menu_html().
+							'nonce'   => wp_create_nonce( 'aae_loop_grid' ),
+						]
 					);
 				}
 			}
@@ -6385,42 +7219,58 @@ final class Atomic
 	}
 
 	/**
-	 * Enqueue every active atomic widget's stylesheet inside the editor
-	 * preview iframe.
+	 * Enqueue the EDITOR-ONLY atomic widget stylesheets into the preview iframe.
 	 *
-	 * Why: `maybe_enqueue_widget_script()` rides on
-	 * `elementor/frontend/before_render`, which does not fire when the v4
-	 * editor renders atomic widgets through its client-side Element_Builder
-	 * pipeline. Without this hook, widgets like Image Compare whose slider
-	 * button / handle styles live only in the external CSS file render
-	 * unstyled inside the editor (frontend is unaffected).
+	 * WHAT IS LEFT HERE, AND WHY IT IS ONLY THIS. An `editor_style_handle` is
+	 * deliberately absent from `register_atomic_styles()` (which feeds the
+	 * frontend), so `register_editor_style()` below is the ONLY thing in the
+	 * codebase that registers it — nothing else can, and without this the sheet
+	 * never reaches the preview and never reaches a published page either.
+	 * Today that is one widget: `aae-a-loop-grid-editor-css`.
+	 *
+	 * WHAT WAS REMOVED, AND WHY IT WAS SAFE. This method used to enqueue every
+	 * active widget's ordinary `style_handle` too, and add the `editor-preview`
+	 * dependency to each. Both halves were already being done, in the same
+	 * request, by two other passes:
+	 *
+	 *   - `enqueue_widget_scripts_in_preview()` walks the same registry with the
+	 *     same `is_widget_active()` filter on `elementor/preview/enqueue_scripts`
+	 *     and enqueues the same `style_handle` (its docblock says so).
+	 *   - `fix_preview_css_order()` re-adds the `editor-preview` dependency to
+	 *     every AAE handle — `editor_style_handle` included — at
+	 *     `wp_print_styles` priority 0, which is the only pass that can also
+	 *     reach Elementor's later-registered per-document CSS.
+	 *
+	 * MEASURED, 16 editor loads with the old loop toggled on/off/on/off across
+	 * two pages: the preview carried 26 AAE stylesheets with it and 25 without,
+	 * with ZERO landing before `editor-preview` either way. The single missing
+	 * sheet was the editor-only one — which is exactly what this method now
+	 * owns, and nothing else changed. Editor-ready time was indistinguishable
+	 * (within-state spread 2.3-4.6 s, larger than any gap between states, and
+	 * the direction flipped between batches).
+	 *
+	 * So this is not a speed change — it removes duplicated work while keeping
+	 * the one job no other pass can do.
+	 *
+	 * `add_style_dependency()` is still called here as belt-and-braces: it costs
+	 * one array check and keeps this sheet correctly ordered even if
+	 * `fix_preview_css_order()` is ever narrowed.
 	 */
 	public function enqueue_atomic_preview_styles(): void {
 		$this->register_atomic_styles();
 
-		// In the editor preview iframe every atomic widget style MUST load AFTER
-		// Elementor's `editor-preview` stylesheet. Otherwise, on a hard reload the
-		// widget CSS can win source-order before editor-preview.css is parsed,
-		// briefly applying the wrong base rules (e.g.
-		// `.e-flexbox-base { display:flex; flex-direction:row }`) and breaking the
-		// layout until editor-preview settles. add_style_dependency() below makes
-		// WordPress emit our <link> after editor-preview's.
 		foreach ( $this->get_available_widgets() as $widget_id => $widget_data ) {
-			if ( $this->is_widget_active( $widget_id ) ) {
-				if ( ! empty( $widget_data['style_handle'] ) ) {
-					$this->add_style_dependency( $widget_data['style_handle'], 'editor-preview' );
-					wp_enqueue_style( $widget_data['style_handle'] );
-				}
-
-				// Editor-only stylesheet: NOT registered by register_atomic_styles()
-				// (which feeds the frontend), so it never reaches a published page.
-				// Register it on the spot here and enqueue it in the preview only.
-				if ( ! empty( $widget_data['editor_style_handle'] ) && ! empty( $widget_data['editor_style_path'] ) ) {
-					$this->register_editor_style( $widget_data['editor_style_handle'], $widget_data['editor_style_path'] );
-					$this->add_style_dependency( $widget_data['editor_style_handle'], 'editor-preview' );
-					wp_enqueue_style( $widget_data['editor_style_handle'] );
-				}
+			if ( ! $this->is_widget_active( $widget_id ) ) {
+				continue;
 			}
+
+			if ( empty( $widget_data['editor_style_handle'] ) || empty( $widget_data['editor_style_path'] ) ) {
+				continue;
+			}
+
+			$this->register_editor_style( $widget_data['editor_style_handle'], $widget_data['editor_style_path'] );
+			$this->add_style_dependency( $widget_data['editor_style_handle'], 'editor-preview' );
+			wp_enqueue_style( $widget_data['editor_style_handle'] );
 		}
 	}
 
@@ -6499,36 +7349,183 @@ final class Atomic
 	}
 
 	/**
+	 * Memoised answer to is_dev_environment().
+	 *
+	 * SAFE TO MEMOISE, unlike count_active_atomic() — and the difference is the
+	 * whole point. Every input here is fixed for the life of the request: two
+	 * constants, the SAPI-populated $_SERVER entries, and the site's own
+	 * home_url(). Nothing in a normal request can change any of them, so a cached
+	 * answer cannot go stale. count_active_atomic() reads OPTIONS, which three
+	 * migrations rewrite mid-request, which is exactly why its memo was reverted.
+	 *
+	 * @var bool|null
+	 */
+	private $dev_environment = null;
+
+	/**
 	 * Return true when running in a dev / local environment.
 	 *
-	 * Minified assets are skipped when ANY of the following is true:
-	 *   - WordPress SCRIPT_DEBUG constant is set to true.
-	 *   - The HTTP_HOST header is 127.0.0.1, localhost, or a *.local / *.test domain.
-	 *   - The server's own IP address (SERVER_ADDR / LOCAL_ADDR) is 127.0.0.1.
+	 * Decides whether minified assets are served, whether the remote preset cache
+	 * is bypassed, and — through wcf_asset_version() — whether admin assets are
+	 * cacheable at all. A FALSE NEGATIVE makes a developer's edits appear not to
+	 * take; a false positive costs a production site its asset caching.
 	 *
 	 * @return bool
 	 */
 	private function is_dev_environment(): bool
 	{
-		if (defined('SCRIPT_DEBUG') && SCRIPT_DEBUG) {
-			return true;
+		if (null === $this->dev_environment) {
+			$this->dev_environment = self::detect_dev_environment();
 		}
 
-		$host = strtolower($_SERVER['HTTP_HOST'] ?? '');
+		return $this->dev_environment;
+	}
 
-		if (
-			$host === '127.0.0.1' ||
-			$host === 'localhost' ||
-			str_ends_with($host, '.local') ||
-			str_ends_with($host, '.test')
+	/**
+	 * The detection itself — pure, static, and deliberately NOT memoised.
+	 *
+	 * Split out from is_dev_environment() so the rule can be exercised for every
+	 * host shape in one process. A memoised method can only be measured once, so
+	 * a suite covering seven cases against it would really cover the first one
+	 * seven times.
+	 *
+	 * WP_DEBUG IS THE MASTER SWITCH. With it off this is a production site
+	 * whatever else says, and nothing below is consulted. Worth knowing it
+	 * outranks SCRIPT_DEBUG, which WordPress itself treats as independent — a
+	 * site running SCRIPT_DEBUG on with WP_DEBUG off gets minified assets here.
+	 * That is a deliberate local choice, not WordPress convention.
+	 *
+	 * Past that gate, any of these means dev:
+	 *
+	 *   - `wp_get_environment_type()` says `local` or `development` — WordPress's
+	 *     own declared answer, set by whoever built the site, so it is asked
+	 *     first. It defaults to `production` when nothing is set, which is why
+	 *     `production` is NOT treated as authoritative: doing so would turn every
+	 *     unconfigured local site into a production one.
+	 *   - `SCRIPT_DEBUG` is on.
+	 *   - The request host, or the site's own home_url() host, is loopback or a
+	 *     development TLD.
+	 *   - The server's own IP is loopback.
+	 *
+	 * THE PORT IS STRIPPED FIRST, and its absence was a real bug. `HTTP_HOST`
+	 * carries `host:port`, so `localhost:8080`, `127.0.0.1:8000` and
+	 * `mysite.local:8888` matched nothing and reported PRODUCTION — that is MAMP,
+	 * `wp server`, Docker and Local's localhost router mode, all served minified
+	 * assets and told their edits had not taken. Measured before the fix: 4 of 8
+	 * real dev host shapes wrong.
+	 *
+	 * IPv6 loopback (`::1`) is included for the same reason — nginx and Apache
+	 * both report it on a modern dual-stack box, and only `127.0.0.1` was tested.
+	 *
+	 * KNOWN LIMIT: `HTTP_HOST` comes from a request header, so a crafted
+	 * `Host: something.local` can force dev mode on. It is still checked, because
+	 * it is what catches a production database copied to a local machine, where
+	 * home_url() still names the live domain. The cost of being wrong is bounded
+	 * — unminified assets, a bypassed preset cache and an uncacheable asset
+	 * version, for that one request, with no data exposed — so the detection is
+	 * worth more than the hardening. Revisit that trade before widening what this
+	 * gates.
+	 *
+	 * @return bool
+	 */
+	public static function detect_dev_environment(): bool
+	{
+		// One test, not two: the short-circuit means !WP_DEBUG is never evaluated
+		// against an undefined constant.
+		if (! defined('WP_DEBUG') || ! WP_DEBUG) {
+			return false;
+		}
+
+		if (function_exists('wp_get_environment_type')
+			&& in_array(wp_get_environment_type(), ['local', 'development'], true)
 		) {
 			return true;
 		}
 
-		// Windows IIS uses LOCAL_ADDR; Apache/Nginx use SERVER_ADDR.
-		$server_ip = $_SERVER['SERVER_ADDR'] ?? $_SERVER['LOCAL_ADDR'] ?? '';
+		if (defined('SCRIPT_DEBUG') && SCRIPT_DEBUG) {
+			return true;
+		}
 
-		return $server_ip === '127.0.0.1';
+		$hosts = [self::request_host()];
+
+		if (function_exists('home_url')) {
+			$hosts[] = strtolower((string) wp_parse_url(home_url(), PHP_URL_HOST));
+		}
+
+		foreach (array_filter(array_unique($hosts)) as $host) {
+			if (self::is_local_host($host)) {
+				return true;
+			}
+		}
+
+		// Windows IIS uses LOCAL_ADDR; Apache/Nginx use SERVER_ADDR.
+		$server_ip = '';
+		if (isset($_SERVER['SERVER_ADDR'])) {
+			$server_ip = sanitize_text_field(wp_unslash($_SERVER['SERVER_ADDR']));
+		} elseif (isset($_SERVER['LOCAL_ADDR'])) {
+			$server_ip = sanitize_text_field(wp_unslash($_SERVER['LOCAL_ADDR']));
+		}
+		$server_ip = strtolower($server_ip);
+
+		return in_array($server_ip, ['127.0.0.1', '::1'], true);
+	}
+
+	/**
+	 * The request's host, lower-cased, with any port removed.
+	 *
+	 * IPv6 arrives bracketed per RFC 3986 (`[::1]:8080`), so the bracketed form is
+	 * unwrapped rather than port-stripped — a naive `:\d+$` trim would turn a bare
+	 * `::1` into `::`. Exactly one colon means `host:port`; more than one and
+	 * unbracketed is a raw IPv6 literal and is left alone.
+	 *
+	 * @return string
+	 */
+	private static function request_host(): string
+	{
+		$host = strtolower(trim(sanitize_text_field(wp_unslash($_SERVER['HTTP_HOST'] ?? ''))));
+
+		if ('' === $host) {
+			return '';
+		}
+
+		if ('[' === $host[0]) {
+			$close = strpos($host, ']');
+
+			return false === $close ? $host : substr($host, 1, $close - 1);
+		}
+
+		if (1 === substr_count($host, ':')) {
+			return (string) strstr($host, ':', true);
+		}
+
+		return $host;
+	}
+
+	/**
+	 * Is this hostname a local one?
+	 *
+	 * `.local` is mDNS/Bonjour; `.test` and `.localhost` are reserved for exactly
+	 * this purpose by RFC 6761 and can never be registered, so none of the three
+	 * can collide with a real production domain. Deliberately NOT `.dev` — that
+	 * is a real gTLD with enforced HSTS and live sites on it.
+	 *
+	 * @param string $host Already lower-cased and port-stripped.
+	 *
+	 * @return bool
+	 */
+	private static function is_local_host(string $host): bool
+	{
+		if (in_array($host, ['127.0.0.1', '::1', 'localhost'], true)) {
+			return true;
+		}
+
+		foreach (['.local', '.test', '.localhost'] as $tld) {
+			if (str_ends_with($host, $tld)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -6573,6 +7570,23 @@ final class Atomic
 		$configs['atomic_widgets']    = $dashboard['atomic_widgets'];
 		$configs['atomic_extensions'] = $dashboard['atomic_extensions'];
 
+		// Whether this site has moved to Elementor V4, and what the user has
+		// already said about it. Read by lib/systemVisibility.js — which is the
+		// ONLY place allowed to turn any of it into a visibility rule.
+		$configs['atomic_optin'] = $this->atomic_optin_signal();
+
+		// The return path out of an accidental "Enable" — see the block above
+		// capture_atomic_undo(). `available => false` most of the time.
+		$configs['atomic_undo'] = $this->atomic_undo_offer();
+
+		// Can a V4 (atomic) starter template or page be imported here at all?
+		// Read by the starter-template grids in BOTH modules (dashboard and
+		// page-import share this filter) to badge V4 cards and to disable their
+		// Import button. `in_use` is deliberately NOT shipped here -- it is asked
+		// fresh at click time (ajax_atomic_import_status), because a payload
+		// snapshot goes stale the moment the first V4 import lands.
+		$configs['atomic_import'] = [ 'available' => self::is_elementor_atomic_active() ];
+
 		return $configs;
 	}
 
@@ -6591,13 +7605,52 @@ final class Atomic
 			wp_send_json_error(esc_html__('Missing fields.', 'animation-addons-for-elementor'));
 		}
 
-		$raw      = sanitize_text_field(wp_unslash($_POST['fields']));
-		$settings = json_decode($raw, true);
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- decode_slug_map() runs sanitize_text_field() on the raw value before json_decode(), and write_widget_option()/write_extension_option() sanitise every key and value again before storing. The handler has already checked the nonce and the capability.
+		$settings = self::decode_slug_map(wp_unslash($_POST['fields']));
 
-		if (! is_array($settings)) {
+		if (null === $settings) {
 			wp_send_json_error(esc_html__('Invalid data.', 'animation-addons-for-elementor'));
 		}
 
+		$result = $this->write_widget_option($settings);
+
+		// A hand save is the user's own choice, and it ENDS the undo offer:
+		// restoring a snapshot over a list somebody has since curated would
+		// destroy real work, which is the one thing an undo must never do.
+		$this->forget_atomic_undo();
+
+		wp_send_json($result);
+	}
+
+	/**
+	 * Decode a `{ slug: bool }` map posted by the dashboard.
+	 *
+	 * @param string $raw Raw, already-unslashed request value.
+	 *
+	 * @return array|null Null when the payload is not a map.
+	 */
+	private static function decode_slug_map($raw): ?array
+	{
+		$decoded = json_decode(sanitize_text_field((string) $raw), true);
+
+		return is_array($decoded) ? $decoded : null;
+	}
+
+	/**
+	 * Write the atomic WIDGET option, sanitised, and drop the derived caches.
+	 *
+	 * Extracted from ajax_save_settings() so the opt-in notice's "Enable" can
+	 * reuse it in the SAME request as its undo snapshot. Going back through the
+	 * AJAX handler would mean the snapshot and the write land in two separate
+	 * requests, with the handler's own forget_atomic_undo() deleting the
+	 * snapshot the notice had just taken.
+	 *
+	 * @param array $settings Raw slug => state map.
+	 *
+	 * @return array{status:bool,total:int}
+	 */
+	private function write_widget_option(array $settings): array
+	{
 		// Build a clean associative array: slug => true for enabled.
 		$clean = [];
 		foreach ($settings as $slug => $state) {
@@ -6616,10 +7669,10 @@ final class Atomic
 		$this->registerable_classes = null;
 		$this->widget_active_cache  = [];
 
-		wp_send_json([
+		return [
 			'status' => $updated,
 			'total'  => count($clean),
-		]);
+		];
 	}
 
 	/**
@@ -6644,6 +7697,12 @@ final class Atomic
 	 */
 	public function ajax_get_menu_html(): void
 	{
+		// Editor-preview only: on the frontend get_atomic_settings() fills
+		// `rendered_menu` server-side, so menu.js never reaches this. The
+		// nonce rides AAE_MENU_CFG next to the ajax URL, and the action is
+		// the same one every other editor-only endpoint in this class uses.
+		check_ajax_referer('aae_loop_grid', 'nonce');
+
 		if (! current_user_can('edit_posts')) {
 			wp_send_json_error(esc_html__('Permission denied.', 'animation-addons-for-elementor'));
 		}
@@ -6743,13 +7802,33 @@ final class Atomic
 			wp_send_json_error(esc_html__('Missing fields.', 'animation-addons-for-elementor'));
 		}
 
-		$raw      = sanitize_text_field(wp_unslash($_POST['fields']));
-		$settings = json_decode($raw, true);
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- decode_slug_map() runs sanitize_text_field() on the raw value before json_decode(), and write_widget_option()/write_extension_option() sanitise every key and value again before storing. The handler has already checked the nonce and the capability.
+		$settings = self::decode_slug_map(wp_unslash($_POST['fields']));
 
-		if (! is_array($settings)) {
+		if (null === $settings) {
 			wp_send_json_error(esc_html__('Invalid data.', 'animation-addons-for-elementor'));
 		}
 
+		$result = $this->write_extension_option($settings);
+
+		// See the twin comment in ajax_save_settings().
+		$this->forget_atomic_undo();
+
+		wp_send_json($result);
+	}
+
+	/**
+	 * Write the atomic EXTENSION option, sanitised, plus the "offered" baseline.
+	 *
+	 * Extracted from ajax_save_extension_settings() for the same reason as
+	 * write_widget_option() — see its docblock.
+	 *
+	 * @param array $settings Raw slug => state map.
+	 *
+	 * @return array{status:bool,total:int}
+	 */
+	private function write_extension_option(array $settings): array
+	{
 		$clean = [];
 		foreach ($settings as $slug => $state) {
 			$slug = sanitize_key($slug);
@@ -6779,10 +7858,10 @@ final class Atomic
 		// Reset cache.
 		$this->active_extensions = null;
 
-		wp_send_json([
+		return [
 			'status' => $updated,
 			'total'  => count($clean),
-		]);
+		];
 	}
 
 	/**
@@ -6818,6 +7897,959 @@ final class Atomic
 		}
 
 		return version_compare(ELEMENTOR_VERSION, self::MIN_ELEMENTOR_VERSION, '>=');
+	}
+
+	/* =====================================================================
+	 *  "This site has moved to V4" — detection, and the one-time offer it feeds
+	 *
+	 *  The dashboard hides the era a site does not use (see
+	 *  src/modules/dashboard/lib/systemVisibility.js). That is right for a
+	 *  settled site and wrong for the moment one MOVES: a long-time v3 user who
+	 *  switches Elementor's V4 on has no way to discover that AAE ships an
+	 *  atomic registry at all, because the tab that would tell them is hidden
+	 *  precisely BECAUSE they have nothing atomic switched on yet — and
+	 *  "nothing atomic switched on" is exactly what someone who just arrived
+	 *  looks like.
+	 *
+	 *  So the notice is the discovery path, and it is the ONLY thing these
+	 *  methods add. Nothing here registers, unregisters or renders anything;
+	 *  every pre-existing rule keeps its pre-existing answer until the user
+	 *  presses the button, which does no more than switching the atomic widgets
+	 *  on by hand already does.
+	 * =================================================================== */
+
+	/**
+	 * Is Elementor's own V4 (Atomic) element system switched on for this site?
+	 *
+	 * `e_atomic_elements` ships hidden and INACTIVE; Elementor defaults it on
+	 * only for sites first installed on 4.0+. On every upgraded site it is
+	 * therefore a deliberate act by the user — which is the moment AAE has
+	 * something worth saying.
+	 *
+	 * Deliberately NOT folded into meets_requirements(). That gate decides
+	 * whether AAE's atomic registry loads AT ALL, and it has to keep saying yes
+	 * while the experiment is off: the Schemas must stay registered or Elementor
+	 * strips every saved `aae_*` prop out of `_elementor_data` on the next save
+	 * (see the docblock on Bootstrap::init()). Toggling the experiment off may
+	 * cost the user their editor panel; it must never cost them their saved work.
+	 */
+	public static function is_elementor_atomic_active(): bool
+	{
+		if (! did_action('elementor/loaded') || ! class_exists('\\Elementor\\Plugin')) {
+			return false;
+		}
+
+		$elementor = \Elementor\Plugin::$instance;
+
+		if (! isset($elementor->experiments) || ! method_exists($elementor->experiments, 'is_feature_active')) {
+			return false;
+		}
+
+		return (bool) $elementor->experiments->is_feature_active('e_atomic_elements');
+	}
+
+	/**
+	 * Switch on every atomic widget and extension the site's CONTENT already uses.
+	 *
+	 * The V4 twin of Animation_Settings::maybe_enable_used_v3_widgets(), and it
+	 * exists for the same reason: an unregistered widget renders NOTHING — no
+	 * error, no wrapper — so a starter template built from `e-aae-a-*` elements
+	 * imports into a site where nothing has switched them on and every page
+	 * comes up blank, looking exactly like a missing-class problem. Nothing on
+	 * the import path wrote `aae_atomic_widgets` before this; only the dashboard
+	 * save handlers and the opt-in flow did.
+	 *
+	 * Two differences from the v3 guard, both deliberate:
+	 *
+	 * 1. It MERGES into the saved option and only ever switches ON. The v3 guard
+	 *    bails once `wcf_save_widgets` has been written by hand; here an
+	 *    explicit switch-off is still honoured for everything the imported
+	 *    content does not use, but the widgets it DOES use come on — importing
+	 *    a demo is the user asking for those pages to render.
+	 * 2. It matches `elType` as well as `widgetType`. AAE's slider, counter,
+	 *    button and every offcanvas part save as their OWN elType — atomic
+	 *    container-style elements are not "widgets" in the data at all — so a
+	 *    `widgetType`-only scan enables the leaf widgets and leaves every
+	 *    container blank. Same finding as Pro's usage scanner.
+	 *
+	 * Internal children (`WIDGET_PARENT_MAP`) resolve to their parent, because
+	 * that is the card the dashboard shows and `is_widget_active()` inherits
+	 * through it. Extensions leave no name in the data, only a prop inside some
+	 * other element's settings, so they are detected through the registry's
+	 * own `usage_prop` declarations — the same rule Pro's usage counter uses —
+	 * on the DECODED data, not by regex.
+	 *
+	 * @param int[]|null $post_ids Restrict the scan to these posts; null = whole site.
+	 * @return array{widgets: string[], extensions: string[]} What was newly switched on.
+	 */
+	public function enable_used_atomic( ?array $post_ids = null ): array
+	{
+		global $wpdb;
+
+		// Two families, two markers: our elements carry `e-aae-a-`, our
+		// extension props carry `aae_` — an extension can sit on a core
+		// e-heading with no AAE element anywhere on the page.
+		$like = [
+			'%' . $wpdb->esc_like( '"e-aae-a-' ) . '%',
+			'%' . $wpdb->esc_like( '"aae_' ) . '%',
+		];
+
+		// One complete literal per branch rather than a base string appended to.
+		// Appending is what puts a variable into the query TEXT; written out this
+		// way the only thing interpolated is a run of %d generated from count().
+		if ( null === $post_ids ) {
+			$sql  = "SELECT meta_value FROM {$wpdb->postmeta} WHERE meta_key = '_elementor_data' AND ( meta_value LIKE %s OR meta_value LIKE %s )";
+			$args = $like;
+		} else {
+			$post_ids = array_values( array_filter( array_map( 'intval', $post_ids ) ) );
+			if ( empty( $post_ids ) ) {
+				return [ 'widgets' => [], 'extensions' => [] ];
+			}
+			// One %d per id; the ids themselves travel as prepare() arguments.
+			$placeholders = implode( ',', array_fill( 0, count( $post_ids ), '%d' ) );
+			$sql          = "SELECT meta_value FROM {$wpdb->postmeta} WHERE meta_key = '_elementor_data' AND ( meta_value LIKE %s OR meta_value LIKE %s ) AND post_id IN ({$placeholders})";
+			$args         = array_merge( $like, $post_ids );
+		}
+
+		// $sql is whichever of the two literals above the branch chose; the only
+		// variable part of it is the generated run of %d.
+		$rows = $wpdb->get_col( $wpdb->prepare( $sql, $args ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- one %d per id; the sniff cannot count through array_merge().
+
+		if ( empty( $rows ) ) {
+			return [ 'widgets' => [], 'extensions' => [] ];
+		}
+
+		$registry      = $this->get_widgets_registry();
+		$parents       = $this->widget_parent_map();
+		$always_active = $this->always_active_lookup();
+		$saved_widgets = $this->get_saved_options();
+		$saved_exts    = $this->get_saved_extension_options();
+
+		// prop => [ [ slug, kind ], ... ] — one prop can belong to several extensions.
+		$prop_index = [];
+		foreach ( $this->get_extension_usage_props() as $slug => $def ) {
+			foreach ( $def['prop'] as $prop ) {
+				$prop_index[ $prop ][] = [ $slug, $def['kind'] ];
+			}
+		}
+
+		$new_widgets = [];
+		$new_exts    = [];
+
+		foreach ( $rows as $row ) {
+			$row = (string) $row;
+
+			if ( preg_match_all( '/"(?:widgetType|elType)":"e-([a-z0-9-]+)"/', $row, $m ) ) {
+				foreach ( $m[1] as $slug ) {
+					if ( isset( $parents[ $slug ] ) ) {
+						$slug = $parents[ $slug ];
+					}
+					if ( ! isset( $registry[ $slug ] ) || isset( $always_active[ $slug ] ) || isset( $saved_widgets[ $slug ] ) ) {
+						continue;
+					}
+					$new_widgets[ $slug ] = true;
+				}
+			}
+
+			if ( ! empty( $prop_index ) && false !== strpos( $row, '"aae_' ) ) {
+				$decoded = json_decode( $row, true );
+				if ( is_array( $decoded ) ) {
+					$this->collect_used_extensions( $decoded, $prop_index, $saved_exts, $new_exts );
+				}
+			}
+		}
+
+		if ( ! empty( $new_widgets ) ) {
+			$this->write_widget_option( $saved_widgets + $new_widgets );
+		}
+
+		if ( ! empty( $new_exts ) ) {
+			$this->write_extension_option( $saved_exts + $new_exts );
+		}
+
+		return [
+			'widgets'    => array_keys( $new_widgets ),
+			'extensions' => array_keys( $new_exts ),
+		];
+	}
+
+	/**
+	 * Hook wrapper — whole-site scan after a content import.
+	 */
+	public function enable_used_atomic_after_import(): void
+	{
+		$this->enable_used_atomic( null );
+	}
+
+	/**
+	 * Walk decoded element data and mark every extension whose usage prop
+	 * qualifies. Same three kinds as Pro's Widget_Usage::prop_qualifies():
+	 * `present` (the key exists), `boolean` (value === true) and `filled`
+	 * (anything with content — an interactions list, a regex string).
+	 * Present is not enabled: a switched-off section leaves its prop behind
+	 * with `"value":false`, so the value has to be looked at.
+	 */
+	private function collect_used_extensions( array $node, array $prop_index, array $saved, array &$found ): void
+	{
+		foreach ( $node as $key => $value ) {
+			if ( is_string( $key ) && isset( $prop_index[ $key ] ) ) {
+				$inner = is_array( $value ) && array_key_exists( 'value', $value ) ? $value['value'] : $value;
+
+				foreach ( $prop_index[ $key ] as [ $slug, $kind ] ) {
+					if ( isset( $saved[ $slug ] ) || isset( $found[ $slug ] ) ) {
+						continue;
+					}
+					if ( 'present' === $kind
+						|| ( 'boolean' === $kind && true === $inner )
+						|| ( 'boolean' !== $kind && self::value_has_content( $inner ) ) ) {
+						$found[ $slug ] = true;
+					}
+				}
+			}
+
+			if ( is_array( $value ) ) {
+				$this->collect_used_extensions( $value, $prop_index, $saved, $found );
+			}
+		}
+	}
+
+	private static function value_has_content( $value ): bool
+	{
+		if ( is_array( $value ) ) {
+			foreach ( $value as $item ) {
+				if ( self::value_has_content( $item ) ) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		return ! ( null === $value || '' === $value || false === $value || 0 === $value );
+	}
+
+	/**
+	 * The two facts the V4 import UI needs, asked fresh.
+	 *
+	 * `available` -- Elementor's atomic element system is on, so a V4 template's
+	 * elements have something to render with. `in_use` -- this site already
+	 * holds V4 content, which is what decides HOW a V4 design system lands
+	 * (`match_site` on an empty site, `keep_create` beside existing classes;
+	 * see inc/admin/atomic-kit-import.php) and is therefore what the second-
+	 * import warning is about.
+	 *
+	 * `has_atomic_usage()` is the same cached signal the import step snapshots
+	 * into `aae_site_has_atomic`, so the dialog and the importer cannot
+	 * disagree about which mode is coming.
+	 *
+	 * @return array{available: bool, in_use: bool}
+	 */
+	public static function import_signal(): array
+	{
+		return [
+			'available' => self::is_elementor_atomic_active(),
+			'in_use'    => self::has_atomic_usage(),
+		];
+	}
+
+	/**
+	 * Does this site's CONTENT already use Elementor V4 elements?
+	 *
+	 * The honest signal, and the stronger of the two: the experiment switch says
+	 * what someone INTENDED, a saved `e-flexbox` says what they actually built.
+	 *
+	 * Every atomic type Elementor ships is `e-`-prefixed and lands in
+	 * `_elementor_data` under one of two keys — a container saves as
+	 * `"elType":"e-flexbox"`, a leaf as `"elType":"widget","widgetType":"e-heading"`
+	 * — so one alternation covers both, and covers types added in later Elementor
+	 * releases without this having to be kept in sync with a list. Its v3 twin
+	 * (`Animation_Settings::v3_widget_name_regexp()`) has to enumerate names only
+	 * because v3 widget names share no prefix at all.
+	 *
+	 * A false positive is harmless here by construction: the worst it can do is
+	 * offer the atomic set to someone who does not want it, and the notice has a
+	 * dismiss button. Nothing on this path enables anything on its own.
+	 *
+	 * Cached for an hour, same as has_v3_usage(), with the same negative-only
+	 * bust on save_post — see maybe_invalidate_atomic_usage().
+	 */
+	public static function has_atomic_usage(): bool
+	{
+		$cached = get_transient(self::USAGE_TRANSIENT);
+
+		if (false !== $cached) {
+			return '1' === $cached;
+		}
+
+		global $wpdb;
+
+		$found = (bool) $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT 1 FROM {$wpdb->postmeta}
+				 WHERE meta_key = '_elementor_data'
+				   AND meta_value REGEXP %s
+				 LIMIT 1",
+				'"(elType|widgetType)":"e-'
+			)
+		);
+
+		set_transient(self::USAGE_TRANSIENT, $found ? '1' : '0', HOUR_IN_SECONDS);
+
+		return $found;
+	}
+
+	/**
+	 * How many of this site's posts are built with Elementor V4 elements?
+	 *
+	 * "Pages on this site are built with V4" is true of a site with one test
+	 * page and of a site that has moved wholesale, and those two people want
+	 * opposite things. The number is the difference, so the notice states it.
+	 *
+	 * MUST EXCLUDE REVISIONS, which the boolean never had to care about.
+	 * _elementor_data is copied onto every revision, so a single page edited
+	 * forty times owns forty-one rows carrying atomic markup -- counting
+	 * postmeta alone would announce "41 pages" to someone who built one. Hence
+	 * the join, and hence auto-drafts and trashed posts are dropped too: they
+	 * are not pages the user thinks of as part of their site.
+	 *
+	 * Same hour-long cache and the same negative-only bust as the boolean; an
+	 * hour-stale count is the right trade for one sentence in a notice that
+	 * disappears the moment it is answered.
+	 */
+	public static function count_atomic_usage(): int
+	{
+		$cached = get_transient(self::USAGE_COUNT_TRANSIENT);
+
+		if (false !== $cached) {
+			return (int) $cached;
+		}
+
+		global $wpdb;
+
+		$count = (int) $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(DISTINCT pm.post_id)
+				 FROM {$wpdb->postmeta} pm
+				 INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+				 WHERE pm.meta_key = '_elementor_data'
+				   AND p.post_type != 'revision'
+				   AND p.post_status NOT IN ('auto-draft', 'trash')
+				   AND pm.meta_value REGEXP %s",
+				'"(elType|widgetType)":"e-'
+			)
+		);
+
+		set_transient(self::USAGE_COUNT_TRANSIENT, (string) $count, HOUR_IN_SECONDS);
+
+		return $count;
+	}
+
+	/**
+	 * Drop the cached usage answer when a save may have changed it.
+	 *
+	 * Only the NEGATIVE is busted, which is what keeps this affordable on a hook
+	 * as hot as save_post: after the first bust every later call is one
+	 * get_transient() read.
+	 *
+	 *  - cached '0' → a save could make it '1', so re-ask next time.
+	 *  - cached '1' → already known, and nothing downstream needs it to go back
+	 *    to '0' in a hurry; by then the notice has already been answered.
+	 *  - nothing cached → nothing to delete.
+	 *
+	 * Deliberately NOT `updated_post_meta`/`added_post_meta`: those fire many
+	 * times per save and are what got the Loop Grid count cache deleted.
+	 *
+	 * @param int           $post_id Saved post.
+	 * @param \WP_Post|null $post    Saved post object.
+	 */
+	public static function maybe_invalidate_atomic_usage($post_id, $post = null): void
+	{
+		if (wp_is_post_revision($post_id) || wp_is_post_autosave($post_id)) {
+			return;
+		}
+
+		// An auto-draft holds no content yet; the real save follows.
+		if ($post instanceof \WP_Post && 'auto-draft' === $post->post_status) {
+			return;
+		}
+
+		if ('0' !== get_transient(self::USAGE_TRANSIENT)) {
+			return;
+		}
+
+		delete_transient(self::USAGE_TRANSIENT);
+
+		// The two answer the same question at different resolutions, so a bust
+		// that left the count behind would have the notice reporting "0 pages"
+		// on a site the boolean had just decided does use V4.
+		delete_transient(self::USAGE_COUNT_TRANSIENT);
+	}
+
+	/**
+	 * Is anything in AAE's atomic registry switched on right now?
+	 *
+	 * Mirrors the JS `V4_HAS_ACTIVE` exactly — raw saved option, intersected
+	 * with the registry, `is_internal` entries skipped — because the two decide
+	 * the same thing from opposite ends. If they disagree the site lands in the
+	 * one state neither was designed for: PHP calls it settled and sends no
+	 * notice, JS calls it empty and shows no V4 tab, and the atomic registry
+	 * becomes unreachable from the dashboard.
+	 */
+	/**
+	 * PUBLIC because the editor-bridge enqueue asks it too.
+	 *
+	 * `Atomic\Assets::enqueue_editor_bridge()` ships ~700 KB of editor JS whose
+	 * only job is to power panel controls for AAE's atomic widgets and
+	 * extensions. With none of them switched on there are no controls to power,
+	 * so the honest precondition is this exact question — and asking it through
+	 * this method rather than re-reading the option keeps one answer, intersected
+	 * with the registry and skipping `is_internal`, in one place.
+	 */
+	public function has_active_atomic(): bool
+	{
+		$counts = $this->count_active_atomic();
+
+		return $counts['widgets'] > 0 || $counts['extensions'] > 0;
+	}
+
+	/**
+	 * How many atomic widgets and extensions are switched on.
+	 *
+	 * The undo notice names both numbers — "37 widgets and 20 extensions will be
+	 * switched back off" is a sentence somebody can check against the list in
+	 * front of them, where "your atomic set" is not.
+	 *
+	 * @return array{widgets:int,extensions:int}
+	 */
+	/*
+	 * NOT MEMOISED, and that was tried and reverted (2026-08-19).
+	 *
+	 * A per-request memo looks free here — three callers ask on one dashboard
+	 * load. It is not: THREE OTHER PLACES write these options directly rather
+	 * than through write_widget_option()/write_extension_option() —
+	 * backfill_formerly_forced_widgets(), migrate_newly_offered_extensions() and
+	 * backfill_v3_admin_extensions(), all on admin_init — so a memo filled before
+	 * one of them runs answers from before the write, order-dependently. Five
+	 * assertions in verify-atomic-optin.php caught exactly that.
+	 *
+	 * What it bought was one walk of ~56 in-memory array entries. Not worth an
+	 * order-dependent staleness bug, and not worth a rule that every future
+	 * writer must remember to reset something.
+	 */
+	private function count_active_atomic(): array
+	{
+		$saved   = $this->get_saved_options();
+		$widgets = 0;
+
+		foreach ($this->get_widgets_registry() as $slug => $def) {
+			if (! empty($def['is_internal'])) {
+				continue;
+			}
+
+			if (isset($saved[$slug])) {
+				$widgets++;
+			}
+		}
+
+		$ext_saved  = $this->get_saved_extension_options();
+		$extensions = 0;
+
+		foreach ($this->extensions_registry as $slug => $def) {
+			if (isset($ext_saved[$slug])) {
+				$extensions++;
+			}
+		}
+
+		return [
+			'widgets'    => $widgets,
+			'extensions' => $extensions,
+		];
+	}
+
+	/* =====================================================================
+	 *  The return path
+	 *
+	 *  "Enable atomic features" switches on everything this site can register
+	 *  in one click. That is the right shape for the offer — and it is exactly
+	 *  the shape that needs a way back, because a click that changes a hundred
+	 *  things is a click somebody can make by mistake.
+	 *
+	 *  Getting back is not the same as switching everything off. The site had a
+	 *  STATE before the click — usually no rows at all, sometimes a half-built
+	 *  one from an abandoned wizard run — and only restoring that exact state
+	 *  puts the user where they were. So the enable snapshots first, and the
+	 *  undo restores; nothing here computes what the state "should" be.
+	 *
+	 *  Note what did NOT need saving: the v3 options. Accepting the offer never
+	 *  touched them, so an accidental accept never cost the user their V3 site
+	 *  in the first place — which is why this is an undo of one option pair
+	 *  rather than a migration rollback.
+	 * =================================================================== */
+
+	/**
+	 * Record the atomic state as it is right now, before the offer writes over it.
+	 *
+	 * Stores the "offered" baseline too: write_extension_option() rewrites it,
+	 * and leaving the new value behind after an undo would change what
+	 * migrate_newly_offered_extensions() does on the next admin_init — a
+	 * difference nobody would connect to a button they pressed a week ago.
+	 *
+	 * @param string $signal Signal strength at the moment of the accept.
+	 */
+	private function capture_atomic_undo(string $signal): void
+	{
+		$missing = '__aae_option_absent__';
+
+		$widgets    = get_option(self::OPTION_NAME, $missing);
+		$extensions = get_option(self::EXTENSIONS_OPTION_NAME, $missing);
+		$offered    = get_option(self::EXTENSIONS_OFFERED_OPTION_NAME, $missing);
+
+		update_option(
+			self::UNDO_OPTION_NAME,
+			[
+				'widgets'           => $missing === $widgets ? [] : $widgets,
+				'widgets_absent'    => $missing === $widgets,
+				'extensions'        => $missing === $extensions ? [] : $extensions,
+				'extensions_absent' => $missing === $extensions,
+				'offered'           => $missing === $offered ? [] : $offered,
+				'offered_absent'    => $missing === $offered,
+				'signal'            => $signal,
+				'time'              => time(),
+			],
+			false
+		);
+	}
+
+	/**
+	 * Put the three options back exactly as capture_atomic_undo() found them.
+	 *
+	 * delete_option() where the row was absent — see UNDO_OPTION_NAME's docblock
+	 * for why an empty array is a different site state, not a tidier one.
+	 *
+	 * @param array $undo A stored snapshot.
+	 */
+	private function restore_atomic_undo(array $undo): void
+	{
+		$map = [
+			self::OPTION_NAME                    => ['widgets', 'widgets_absent'],
+			self::EXTENSIONS_OPTION_NAME         => ['extensions', 'extensions_absent'],
+			self::EXTENSIONS_OFFERED_OPTION_NAME => ['offered', 'offered_absent'],
+		];
+
+		foreach ($map as $name => $keys) {
+			list($value_key, $absent_key) = $keys;
+
+			if (! empty($undo[$absent_key])) {
+				delete_option($name);
+
+				continue;
+			}
+
+			$value = is_array($undo[$value_key] ?? null) ? $undo[$value_key] : [];
+
+			// SANITISED ON THE WAY BACK IN, even though we wrote the snapshot
+			// ourselves. What it captured is whatever the option held BEFORE the
+			// opt-in, which is not necessarily something this plugin wrote — an
+			// import, an older release, or another plugin could have left any shape
+			// there, and restoring it verbatim would put it back unchecked.
+			//
+			// Not a privilege boundary (writing that option already needs database
+			// access) so much as refusing to be the path that launders unvalidated
+			// data into a live option. Anything the two writers produced passes
+			// through unchanged, so the exact-restore promise is intact.
+			$value = self::EXTENSIONS_OFFERED_OPTION_NAME === $name
+				? self::sanitize_slug_list($value)
+				: self::sanitize_slug_map($value);
+
+			update_option($name, $value);
+		}
+
+		// Every derived cache the two writers reset, reset again — this wrote
+		// the same options they do.
+		$this->active_widgets       = null;
+		$this->registerable_classes = null;
+		$this->widget_active_cache  = [];
+		$this->active_extensions    = null;
+	}
+
+	/**
+	 * End the undo offer. Called on an accepted "keep", on a completed undo, and
+	 * on any hand save of either atomic list.
+	 */
+	/**
+	 * `slug => true` for every key that survives sanitize_key().
+	 *
+	 * The shape both atomic settings options are stored in. Values are discarded
+	 * rather than preserved: the writers only ever store `true`, so anything else
+	 * arrived from outside and "on" is the only state the readers understand.
+	 *
+	 * @param array $value Raw map.
+	 *
+	 * @return array
+	 */
+	private static function sanitize_slug_map(array $value): array
+	{
+		$clean = [];
+
+		foreach ($value as $slug => $state) {
+			$slug = sanitize_key($slug);
+
+			if ('' !== $slug && ! empty($state)) {
+				$clean[$slug] = true;
+			}
+		}
+
+		return $clean;
+	}
+
+	/**
+	 * A LIST of slugs — the shape EXTENSIONS_OFFERED_OPTION_NAME uses.
+	 *
+	 * Deliberately separate from sanitize_slug_map(): that option is written as
+	 * `array_keys( $registry )`, so running it through the map sanitiser would
+	 * turn a list into `0 => true, 1 => true` and quietly destroy the record of
+	 * what the user has been shown — which is the one thing standing between
+	 * migrate_newly_offered_extensions() and switching extensions back on by
+	 * itself.
+	 *
+	 * @param array $value Raw list.
+	 *
+	 * @return array
+	 */
+	private static function sanitize_slug_list(array $value): array
+	{
+		$clean = [];
+
+		foreach ($value as $slug) {
+			if (! is_scalar($slug)) {
+				continue;
+			}
+
+			$slug = sanitize_key((string) $slug);
+
+			if ('' !== $slug) {
+				$clean[] = $slug;
+			}
+		}
+
+		return array_values(array_unique($clean));
+	}
+
+	private function forget_atomic_undo(): void
+	{
+		delete_option(self::UNDO_OPTION_NAME);
+	}
+
+	/**
+	 * The undo offer, for the dashboard payload.
+	 *
+	 * Reports `available => false` rather than omitting itself, so the React
+	 * side reads one shape whatever the state.
+	 *
+	 * @return array{available:bool,widgets?:int,extensions?:int,expires?:int}
+	 */
+	public function atomic_undo_offer(): array
+	{
+		$undo = get_option(self::UNDO_OPTION_NAME);
+
+		if (! is_array($undo) || empty($undo['time'])) {
+			return ['available' => false];
+		}
+
+		if ((time() - (int) $undo['time']) > self::UNDO_WINDOW) {
+			return ['available' => false];
+		}
+
+		$counts = $this->count_active_atomic();
+
+		// A snapshot with NOTHING switched on is not an undo, it is a leftover.
+		// The enable takes its snapshot before the first write, so a request that
+		// dies in between (closed tab, PHP timeout) leaves one behind describing
+		// a state nothing ever moved away from. Offering it would put a bar on
+		// screen reading "0 atomic widgets and 0 atomic extensions are active",
+		// whose Undo button restores what is already there.
+		if (0 === $counts['widgets'] && 0 === $counts['extensions']) {
+			return ['available' => false];
+		}
+
+		return [
+			'available'  => true,
+			'widgets'    => $counts['widgets'],
+			'extensions' => $counts['extensions'],
+			'expires'    => (int) $undo['time'] + self::UNDO_WINDOW,
+		];
+	}
+
+	/**
+	 * Rank a signal so a past dismissal can be compared against today's
+	 * evidence. usage > experiment > none.
+	 */
+	private static function signal_rank(string $signal): int
+	{
+		$ranks = [
+			'none'       => 0,
+			'experiment' => 1,
+			'usage'      => 2,
+		];
+
+		return $ranks[$signal] ?? 0;
+	}
+
+	/**
+	 * The strongest evidence available that this site is on Elementor V4.
+	 *
+	 * Reads the CONTENT check first because it is the stronger claim, and the
+	 * two are not nested: a site can hold V4 pages with the experiment since
+	 * switched back off, and that is still a site whose pages want the atomic set.
+	 */
+	private static function atomic_signal_strength(): string
+	{
+		if (self::has_atomic_usage()) {
+			return 'usage';
+		}
+
+		return self::is_elementor_atomic_active() ? 'experiment' : 'none';
+	}
+
+	/**
+	 * Everything the dashboard notice needs, in one payload.
+	 *
+	 * Shipped nested under `addons_config`, NOT at the top level of the localize
+	 * data — nested values keep their real JSON types, whereas wp_localize_script
+	 * stringifies top-level scalars (which is why `v3_in_use` arrives as "1"/""
+	 * and has to be read with `!!`).
+	 *
+	 * `in_use` is `null`, not `false`, when the question was never asked: the
+	 * postmeta scan is skipped entirely once its answer cannot change what is on
+	 * screen, and reporting an unasked question as "no" is how a cheap guard
+	 * turns into a wrong fact somewhere downstream.
+	 *
+	 * @return array{
+	 *     experiment:bool, in_use:bool|null, signal:string, state:string,
+	 *     dismissed_signal:string, has_active:bool, show_notice:bool
+	 * }
+	 */
+	public function atomic_optin_signal(): array
+	{
+		$stored = get_option(self::OPTIN_OPTION_NAME);
+		$stored = is_array($stored) ? $stored : [];
+
+		$state            = isset($stored['state']) ? (string) $stored['state'] : 'undecided';
+		$dismissed_signal = isset($stored['signal']) ? (string) $stored['signal'] : 'none';
+
+		$has_active = $this->has_active_atomic();
+
+		// Nothing below can put a notice on screen once the user has accepted or
+		// already has atomic switched on, so do not pay for the evidence.
+		if ($has_active || 'accepted' === $state) {
+			return [
+				'experiment'       => false,
+				'in_use'           => null,
+				'in_use_count'     => null,
+				'signal'           => 'none',
+				'state'            => $state,
+				'dismissed_signal' => $dismissed_signal,
+				'has_active'       => $has_active,
+				'show_notice'      => false,
+			];
+		}
+
+		$in_use     = self::has_atomic_usage();
+		$experiment = self::is_elementor_atomic_active();
+		$signal     = $in_use ? 'usage' : ($experiment ? 'experiment' : 'none');
+
+		$show = 'none' !== $signal
+			&& (
+				'dismissed' !== $state
+				// A dismissal only covers evidence as strong as what was on the
+				// table when it was made. Real pages built in V4 outrank a
+				// switch, and are worth saying once even to someone who already
+				// said no to the switch.
+				|| self::signal_rank($dismissed_signal) < self::signal_rank($signal)
+			);
+
+		return [
+			'experiment'       => $experiment,
+			'in_use'           => $in_use,
+			// LAST, and only when a notice is actually going on screen: this is
+			// the one query on this path that cannot stop at the first row, and
+			// a dismissed site would otherwise pay for a sentence nobody reads.
+			'in_use_count'     => ($show && 'usage' === $signal) ? self::count_atomic_usage() : null,
+			'signal'           => $signal,
+			'state'            => $state,
+			'dismissed_signal' => $dismissed_signal,
+			'has_active'       => $has_active,
+			'show_notice'      => $show,
+		];
+	}
+
+	/**
+	 * AJAX — record the user's answer to the atomic opt-in notice.
+	 *
+	 * Records the decision, and — when `fields` and `ext_fields` are posted with
+	 * it — performs the enable itself.
+	 *
+	 * ONE REQUEST, deliberately. The first version called the two existing save
+	 * endpoints from the browser and recorded the decision in a third call,
+	 * which reads better and cannot support an undo: those handlers END the undo
+	 * offer (a hand save is a deliberate choice), so a snapshot taken here would
+	 * be deleted by the very writes it was taken for. Doing all three in one
+	 * request also means an accept can never half-land — widgets on, extensions
+	 * off, no decision recorded — from a closed tab.
+	 *
+	 * The SELECTION is still the browser's, and still comes from
+	 * `src/modules/dashboard/lib/setupPresets.js`: this only sanitises and
+	 * stores the map it is handed, exactly as the save handlers do, so "what a
+	 * recommended setup enables" is never restated in PHP.
+	 *
+	 * The signal strength is re-read server-side and never taken from the
+	 * request: it decides how long a dismissal lasts, and the transient makes
+	 * re-reading it free.
+	 */
+	public function ajax_atomic_optin(): void
+	{
+		check_ajax_referer('wcf_admin_nonce', 'nonce');
+
+		if (! current_user_can('manage_options')) {
+			wp_send_json_error(__('Permission denied.', 'animation-addons-for-elementor'));
+		}
+
+		$state = isset($_POST['state']) ? sanitize_key(wp_unslash($_POST['state'])) : '';
+
+		if (! in_array($state, ['accepted', 'dismissed'], true)) {
+			wp_send_json_error(__('Invalid state.', 'animation-addons-for-elementor'));
+		}
+
+		$signal  = self::atomic_signal_strength();
+		$enabled = null;
+
+		// Both maps or neither: an accept that enabled only the widgets would
+		// leave the site in a state the user never chose and the undo snapshot
+		// would describe honestly but uselessly.
+		if ('accepted' === $state && isset($_POST['fields'], $_POST['ext_fields'])) {
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- decode_slug_map() runs sanitize_text_field() on the raw value before json_decode(), and write_widget_option()/write_extension_option() sanitise every key and value again before storing. The handler has already checked the nonce and the capability.
+			$widgets    = self::decode_slug_map(wp_unslash($_POST['fields']));
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- decode_slug_map() runs sanitize_text_field() on the raw value before json_decode(), and write_widget_option()/write_extension_option() sanitise every key and value again before storing. The handler has already checked the nonce and the capability.
+			$extensions = self::decode_slug_map(wp_unslash($_POST['ext_fields']));
+
+			if (null === $widgets || null === $extensions) {
+				wp_send_json_error(__('Invalid data.', 'animation-addons-for-elementor'));
+			}
+
+			// BEFORE the first write. This is the whole return path.
+			$this->capture_atomic_undo($signal);
+
+			$enabled = [
+				'widgets'    => $this->write_widget_option($widgets)['total'],
+				'extensions' => $this->write_extension_option($extensions)['total'],
+			];
+		}
+
+		update_option(
+			self::OPTIN_OPTION_NAME,
+			[
+				'state'  => $state,
+				'signal' => $signal,
+			]
+		);
+
+		wp_send_json_success(
+			[
+				'state'   => $state,
+				'signal'  => $signal,
+				'enabled' => $enabled,
+			]
+		);
+	}
+
+	/**
+	 * AJAX — go back.
+	 *
+	 * Three decisions, and the difference between the first two is the whole
+	 * reason there are three:
+	 *
+	 *  - `undo` — replay the snapshot. EXACT: the site ends up byte-for-byte
+	 *    where it was, including option rows that had never existed. Needs a
+	 *    snapshot, so it is only offered while one is on file.
+	 *  - `off`  — switch both atomic options to an empty array. Available
+	 *    ALWAYS, and it is what the permanent "Back to V3" escape hatch uses.
+	 *    Not an exact restore and does not pretend to be: nothing is deleted,
+	 *    because an absent row and an empty one mean different things here (see
+	 *    UNDO_OPTION_NAME) and guessing which one this site had before would be
+	 *    inventing history. An empty array is the same definite "off" the
+	 *    master Enable All switch writes, and it can never re-arm
+	 *    migrate_newly_offered_extensions() behind the user's back.
+	 *
+	 *    It writes NOTHING when nothing is switched on. That is the "Choose
+	 *    manually" shape — the offer accepted, the tab revealed, no widget ever
+	 *    enabled — and there the options are usually ABSENT. Writing empty rows
+	 *    over no rows would not be reversing anything; it would be making the
+	 *    one change this request exists to take back, and it would end the
+	 *    "fresh install, the wizard decides" state permanently.
+	 *  - `keep` — end the offer, change nothing.
+	 *
+	 * ALL THREE RECORD A DISMISSAL rather than clearing the answer. Going back
+	 * to "undecided" would put the original notice on screen again at the next
+	 * page load, so going back would look like it had not worked — and
+	 * re-offering something somebody just took back is how a helpful prompt
+	 * becomes a nag. Where a snapshot exists the dismissal is recorded at the
+	 * SNAPSHOT's signal rather than today's, so the ranked rule still holds: if
+	 * this site later grows real V4 pages, that stronger signal is still allowed
+	 * to speak once.
+	 */
+	public function ajax_atomic_optin_undo(): void
+	{
+		check_ajax_referer('wcf_admin_nonce', 'nonce');
+
+		if (! current_user_can('manage_options')) {
+			wp_send_json_error(__('Permission denied.', 'animation-addons-for-elementor'));
+		}
+
+		$decision = isset($_POST['decision']) ? sanitize_key(wp_unslash($_POST['decision'])) : '';
+
+		if (! in_array($decision, ['undo', 'keep', 'off'], true)) {
+			wp_send_json_error(__('Invalid decision.', 'animation-addons-for-elementor'));
+		}
+
+		$undo         = get_option(self::UNDO_OPTION_NAME);
+		$has_snapshot = is_array($undo) && ! empty($undo['time']);
+
+		if ('keep' === $decision) {
+			$this->forget_atomic_undo();
+
+			wp_send_json_success(['decision' => 'keep']);
+		}
+
+		// Only `undo` needs a snapshot. `off` deliberately does not — it is the
+		// escape hatch for a site whose snapshot has expired, been ended by a
+		// hand save, or never existed because the accept predates this feature.
+		if ('undo' === $decision && ! $has_snapshot) {
+			wp_send_json_error(esc_html__('There is nothing left to undo.', 'animation-addons-for-elementor'));
+		}
+
+		if ('undo' === $decision) {
+			$this->restore_atomic_undo($undo);
+		} elseif ($this->has_active_atomic()) {
+			$this->write_widget_option([]);
+			$this->write_extension_option([]);
+		}
+
+		// With nothing active there is deliberately no write above: clearing the
+		// stored answer below is the entire reversal, and it is enough — the V4
+		// tab is offered by ATOMIC_OPTED_IN, so a dismissal takes it away again.
+
+		update_option(
+			self::OPTIN_OPTION_NAME,
+			[
+				'state'  => 'dismissed',
+				'signal' => $has_snapshot && isset($undo['signal'])
+					? (string) $undo['signal']
+					: self::atomic_signal_strength(),
+			]
+		);
+
+		$this->forget_atomic_undo();
+
+		wp_send_json_success(['decision' => $decision]);
 	}
 
 	/**
@@ -6863,13 +8895,18 @@ final class Atomic
 		// a small, unrelated outer-frame bridge). See Atomic\Assets::
 		// enqueue_editor_bridge() for the correct wp_localize_script() call.
 
-		// Loop Grid: ajax config for the editor "full grid live" preview module.
+		// Loop Grid: ajax config for the editor "full grid live" preview module,
+		// plus the per-post-type taxonomy map the panel's notice card reads
+		// (NoticeControl.jsx, source 'loop-grid-taxonomies').
 		wp_localize_script(
 			'aae-atomic-editor',
 			'AAE_LOOP_GRID',
 			[
 				'ajaxUrl' => admin_url('admin-ajax.php'),
 				'nonce'   => wp_create_nonce('aae_loop_grid'),
+				'notices' => [
+					'taxonomies' => self::loop_grid_taxonomy_notices(),
+				],
 			]
 		);
 

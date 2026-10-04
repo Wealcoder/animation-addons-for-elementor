@@ -46,6 +46,7 @@ module.exports = {
     "@elementor/editor-props":      ["elementorV2", "editorProps"],
     "@elementor/editor-responsive": ["elementorV2", "editorResponsive"],
     "@elementor/editor-styles":     ["elementorV2", "editorStyles"],
+    "@elementor/editor-styles-repository": ["elementorV2", "editorStylesRepository"],
     "@elementor/editor-ui":         ["elementorV2", "editorUi"],
     "@elementor/schema":            ["elementorV2", "schema"],
     "@elementor/frontend-handlers": ["elementorV2", "frontendHandlers"],
@@ -58,7 +59,6 @@ module.exports = {
     ...getAtomicWidgetEntries(),
     "modules/dashboard/index": "./src/modules/dashboard/main.js",
     "modules/dashboard/wizardSetup": "./src/modules/dashboard/wizardSetup.js",
-    "modules/dashboard/opt-out": "./src/modules/dashboard/opt-out.js",
     "modules/page-import/index": "./src/modules/page-import/main.js",
     "modules/custom-font/main": "./src/modules/custom-font/main.js",
     "modules/custom-icon/main": "./src/modules/custom-icon/main.js",
@@ -75,6 +75,7 @@ module.exports = {
     "modules/atomic/effects/custom-css": "./src/modules/atomic/effects/custom-css/index.js",
     "modules/atomic/effects/image-animation": "./src/modules/atomic/effects/image-animation/index.js",
     "modules/atomic/effects/background-video": "./src/modules/atomic/effects/background-video/index.js",
+    "modules/atomic/effects/image-overlay": "./src/modules/atomic/effects/image-overlay/index.js",
   },
   output: {
     path: path.resolve(__dirname, "assets/build"), // Custom output directory

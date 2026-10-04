@@ -20,6 +20,12 @@ import { startSectionBranding } from './section-branding';
  *       options?:    [{ value, label }, ...],  // for select
  *       placeholder?: 'placeholder',
  *       min?, max?, step?,                     // for number
+ *       defaultValue?: any | (settings, activeBp) => any,  // display fallback;
+ *                                              // a function is resolved per
+ *                                              // element, which is how a row
+ *                                              // can inherit the value stored
+ *                                              // on a legacy non-responsive
+ *                                              // prop (see menu-items).
  *       when?:       (settings, activeBp) => boolean,   // visibility predicate
  *     },
  *     ...

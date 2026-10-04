@@ -2,6 +2,8 @@ import {
   RiFileTextLine,
   RiGift2Line,
   RiHeartLine,
+  RiLayoutLine,
+  RiStackLine,
   RiVipCrown2Line,
 } from "react-icons/ri";
 import {
@@ -19,6 +21,8 @@ const TemplateLeftFilter = ({
   setTypes,
   license,
   setLicense,
+  builder,
+  setBuilder,
   selectedCategory,
   setSelectedCategory,
   setPageNum,
@@ -50,7 +54,7 @@ const TemplateLeftFilter = ({
           <div>
             <Accordion
               type="multiple"
-              defaultValue={["types", "license", "categories"]}
+              defaultValue={["types", "license", "builder", "categories"]}
               className="w-full"
             >
               <AccordionItem value="types" className="border-b-0 border-t">
@@ -117,6 +121,42 @@ const TemplateLeftFilter = ({
                       aria-label="Toggle free"
                     >
                       <RiGift2Line size={18} className="text-icon" /> Free
+                    </ToggleGroupItem>
+                  </ToggleGroup>
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="builder" className="border-b-0 border-t">
+                <AccordionTrigger className="pt-5 pb-5 data-[state=open]:pb-2">
+                  Elementor Version
+                </AccordionTrigger>
+                <AccordionContent className="pb-5">
+                  {/* Single-select, and empty means every page: the server's
+                      `?builder=` filter is only sent for v3 / v4. */}
+                  <ToggleGroup
+                    type="single"
+                    className="justify-start flex-wrap gap-2"
+                    value={builder}
+                    onValueChange={(value) => {
+                      setBuilder(value);
+                      setPageNum(1);
+                    }}
+                    data-aae-builder-filter
+                  >
+                    <ToggleGroupItem
+                      value="v3"
+                      variant="outline"
+                      className="ps-2"
+                      aria-label="Toggle Elementor V3"
+                    >
+                      <RiLayoutLine size={18} className="text-icon" /> V3
+                    </ToggleGroupItem>
+                    <ToggleGroupItem
+                      value="v4"
+                      variant="outline"
+                      className="ps-2"
+                      aria-label="Toggle Elementor V4"
+                    >
+                      <RiStackLine size={18} className="text-icon" /> V4
                     </ToggleGroupItem>
                   </ToggleGroup>
                 </AccordionContent>

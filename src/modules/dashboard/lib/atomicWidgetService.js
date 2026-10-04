@@ -17,6 +17,7 @@ const CATEGORY_LABELS = {
   slider: "Slider Widgets",
   video: "Video Widgets",
   animation: "Animation Widgets",
+  woocommerce: "WooCommerce Widgets",
   // Not used by any widget today — the extensions registry uses these two
   // categories, and both maps are keyed the same way, so keep them labelled
   // rather than falling through to the raw slug if a widget ever adopts one.
@@ -38,6 +39,7 @@ const CATEGORY_ORDER = [
   "slider",
   "video",
   "animation",
+  "woocommerce",
   "utility",
 ];
 
@@ -106,6 +108,7 @@ const INTERNAL_WIDGET_SLUGS = [
   "aae-a-form-checkbox",
   "aae-a-form-radio",
   "aae-a-form-select",
+  "aae-a-form-range-value",
   "aae-a-form-submit",
   "aae-a-form-success-message",
   "aae-a-form-error-message",

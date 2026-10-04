@@ -196,7 +196,7 @@ class AAE_A_Post_Image extends Atomic_Widget_Base {
 			'base' => Style_Definition::make()
 				->add_variant( Style_Variant::make()->add_props( [
 					'display' => String_Prop_Type::generate( 'block' ),
-					'width' => String_Prop_Type::generate( '100%' ),
+					'width' => Size_Prop_Type::generate( array( 'size' => 100, 'unit' => '%' ) ),
 					'position' => String_Prop_Type::generate( 'relative' ),
 					'overflow' => String_Prop_Type::generate( 'hidden' ),
 					'border-radius' => Size_Prop_Type::generate( [

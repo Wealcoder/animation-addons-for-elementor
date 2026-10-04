@@ -28,6 +28,7 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Plugin;
 use Elementor\Utils;
 use WCF_ADDONS\WCF_Theme_Builder;
@@ -196,7 +197,7 @@ class AAE_A_Post_Content extends Atomic_Widget_Base {
 				->add_variant(
 					Style_Variant::make()->add_props( [
 						'display' => String_Prop_Type::generate( 'block' ),
-						'width'   => String_Prop_Type::generate( '100%' ),
+						'width'   => Size_Prop_Type::generate( array( 'size' => 100, 'unit' => '%' ) ),
 					] )
 				),
 		];
@@ -226,7 +227,7 @@ class AAE_A_Post_Content extends Atomic_Widget_Base {
 	protected function render() {
 		$classes = $this->get_render_classes();
 
-		echo '<div class="' . esc_attr( $classes ) . '" data-interaction-id="' . esc_attr( (string) $this->get_interaction_id() ) . '">'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo '<div class="' . esc_attr( $classes ) . '" data-interaction-id="' . esc_attr( (string) $this->get_interaction_id() ) . '">';
 
 		// Post CSS should not be printed here because it overrides the already
 		// existing post CSS (matches the legacy render(): render_post_content(false, false)).
@@ -296,8 +297,7 @@ class AAE_A_Post_Content extends Atomic_Widget_Base {
 		}
 
 		if ( post_password_required( $post->ID ) ) {
-			// PHPCS - `get_the_password_form`. is safe.
-			echo get_the_password_form( $post->ID ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo aaeaddon_kses_builder_html( get_the_password_form( $post->ID ) );
 
 			return;
 		}
@@ -351,7 +351,6 @@ class AAE_A_Post_Content extends Atomic_Widget_Base {
 				setup_postdata( $post );
 
 				/** This filter is documented in wp-includes/post-template.php */
-				// PHPCS - `get_the_content` is safe.
 				//
 				// $post must be passed explicitly. Inside an AAE theme-builder
 				// template the GLOBAL post is the `wcf-addons-template` (whose
@@ -359,7 +358,7 @@ class AAE_A_Post_Content extends Atomic_Widget_Base {
 				// reassign $GLOBALS['post'] — so the argument-less call read
 				// the template and this widget rendered an empty div on every
 				// single-post template.
-				echo apply_filters( 'the_content', get_the_content( null, false, $post ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo aaeaddon_kses_builder_html( apply_filters( 'the_content', get_the_content( null, false, $post ) ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- core filter.
 
 				wp_link_pages( [
 					'before'      => '<div class="page-links elementor-page-links"><span class="page-links-title elementor-page-links-title">' . esc_html__( 'Pages:', 'animation-addons-for-elementor' ) . '</span>',
@@ -389,10 +388,9 @@ class AAE_A_Post_Content extends Atomic_Widget_Base {
 		Plugin::$instance->editor->set_edit_mode( $is_edit_mode );
 
 		if ( $with_wrapper ) {
-			// PHPCS - should not be escaped.
-			echo '<div class="elementor-post__content">' . balanceTags( $content, true ) . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo '<div class="elementor-post__content">' . aaeaddon_kses_builder_html( balanceTags( $content, true ) ) . '</div>';
 		} else {
-			echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo aaeaddon_kses_builder_html( $content );
 		}
 
 		$level --;

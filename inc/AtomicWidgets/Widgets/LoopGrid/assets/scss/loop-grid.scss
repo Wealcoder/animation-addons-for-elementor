@@ -34,6 +34,38 @@
 	padding: 24px;
 	text-align: center;
 	color: var(--e-a-color-txt-muted, #818a96);
+
+	// The grid is a flex/grid container, so without this the message and the
+	// Clear link land side by side as two tracks of an otherwise empty row.
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 10px;
+}
+
+.aae-a-loop-grid-empty-text {
+	margin: 0;
+}
+
+// Deliberately a LINK, not a button: it navigates to this page without the
+// filter keys, so it works with no JavaScript and can be opened in a new tab
+// like any other link. currentColor throughout — this family ships no palette
+// of its own and the surrounding text colour is the only signal it has.
+.aae-a-loop-grid-empty-clear {
+	color: inherit;
+	text-decoration: none;
+	font-size: 0.95em;
+	line-height: 1;
+	padding: 9px 16px;
+	border-radius: 999px;
+	border: 1px solid color-mix(in srgb, currentColor 32%, transparent);
+	transition: border-color 0.16s ease, background-color 0.16s ease;
+
+	&:hover,
+	&:focus-visible {
+		border-color: currentColor;
+		background-color: color-mix(in srgb, currentColor 8%, transparent);
+	}
 }
 
 
@@ -116,4 +148,9 @@ body:not(.elementor-editor-active) {
 
 	.aae-a-loop-pagination.aae-pg-last [data-aae-nav="next"],
 	.aae-a-loop-pagination.aae-pg-last [data-aae-loadmore] { display: none; }
+
+	// Nothing found: there is no page to go to, so the whole bar goes. The
+	// editor still shows it (this block is frontend-only) — a builder styling
+	// a pagination they cannot see is the reason that guard exists.
+	.aae-a-loop-pagination.aae-pg-empty { display: none; }
 }

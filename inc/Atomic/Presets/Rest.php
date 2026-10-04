@@ -36,13 +36,49 @@ final class Rest {
 			[
 				'methods'             => \WP_REST_Server::READABLE,
 				'callback'            => [ $this, 'get_presets' ],
-				'permission_callback' => '__return_true',
+				/*
+				 * Editor-only. This route proxies a REMOTE fetch (Remote_Client ->
+				 * the preset server), so a public permission callback let any
+				 * anonymous visitor make this site issue outbound requests, and
+				 * vary element_type/category to walk straight past the transient
+				 * cache that is supposed to bound them. The only consumer is the
+				 * editor panel's preset picker, which nobody without edit_posts
+				 * can open.
+				 */
+				'permission_callback' => static function () {
+					return current_user_can( 'edit_posts' );
+				},
 				'args'                => [
 					'element_type' => [ 'type' => 'string', 'required' => true ],
 					'category'     => [ 'type' => 'string', 'required' => false ],
 				],
 			]
 		);
+	}
+
+	/**
+	 * Attach "what does this site still need for this design to work".
+	 *
+	 * Computed here rather than fetched by the panel on demand, because the
+	 * answer is what decides whether a card is offered plainly or with a
+	 * requirement line, and a second round trip per card would arrive after the
+	 * list had already painted. Every value it reads is a local lookup — an
+	 * active-plugin check, post_type_exists(), ACF's own — so this costs no
+	 * query and no request.
+	 *
+	 * The RAW `requires` is replaced by its normalised form on the way out: the
+	 * panel and the installer must not be looking at two different readings of
+	 * the same untrusted block.
+	 */
+	private function with_requires_status( array $entry ): array {
+		if ( empty( $entry['requires'] ) ) {
+			return $entry;
+		}
+
+		$entry['requires']        = Requires::normalize( $entry['requires'] );
+		$entry['requires_status'] = Requires::status( $entry['requires'] );
+
+		return $entry;
 	}
 
 	public function get_presets( \WP_REST_Request $request ): \WP_REST_Response {
@@ -66,7 +102,10 @@ final class Rest {
 
 		return new \WP_REST_Response(
 			[
-				'presets' => array_values( $result['presets'] ),
+				'presets' => array_values( array_map(
+					[ $this, 'with_requires_status' ],
+					$result['presets']
+				) ),
 				/*
 				 * A remote outage and a type that genuinely has no presets both
 				 * produce an empty `presets` array on a 200 response, so the

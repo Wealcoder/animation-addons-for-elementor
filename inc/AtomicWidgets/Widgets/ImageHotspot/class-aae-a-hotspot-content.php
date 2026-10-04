@@ -1,4 +1,10 @@
 <?php
+namespace WCF_ADDONS\AtomicWidgets\Widgets\ImageHotspot;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * AAE Hotspot Content — atomic element (container).
  *
@@ -55,12 +61,6 @@
  * @package AnimationAddonsForElementor
  * @since   4.0.0
  */
-
-namespace WCF_ADDONS\AtomicWidgets\Widgets\ImageHotspot;
-
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
 
 if ( ! class_exists( '\Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base' ) ) {
 	return;

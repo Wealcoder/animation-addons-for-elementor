@@ -20,7 +20,7 @@
   --aae-dd-min: var(--aae-menu-dropdown-min-width, 220px);
   --aae-dd-r: var(--aae-menu-dropdown-radius, 12px);
   --aae-drawer-w: var(--aae-menu-drawer-width, 320px);
-  --t: var(--aae-menu-transition, 250ms cubic-bezier(.4, 0, .2, 1));
+  --t: var(--aae-menu-transition, 250ms) cubic-bezier(.4, 0, .2, 1);
   /* Effect defaults — overridden by data-dropdown-effect / data-drawer-effect */
   --aae-dd-from-transform: translateY(-6px) scale(0.97);
   --aae-dd-to-transform: translateY(0) scale(1);

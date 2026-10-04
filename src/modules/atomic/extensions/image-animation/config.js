@@ -168,7 +168,7 @@ const TILE_ORDER_OPTIONS = [
 ];
 
 const SCROLL_POSITION_OPTIONS = [
-	'top top', 'top center', 'top bottom',
+	'top top', 'top center', 'top bottom', 'top 85%',
 	'center top', 'center center', 'center bottom',
 	'bottom top', 'bottom center', 'bottom bottom',
 ];
@@ -263,7 +263,7 @@ const ROW_FIELDS = [
 	},
 	{
 		bind: 'start_position', label: 'Start', control: 'text', datalist: SCROLL_POSITION_OPTIONS,
-		placeholder: 'top center', when: (r) => rowIsAnimated(r) && rowIsScroll(r),
+		placeholder: 'top 85%', when: (r) => rowIsAnimated(r) && rowIsScroll(r),
 	},
 	{
 		bind: 'end_position', label: 'End', control: 'text', datalist: SCROLL_POSITION_OPTIONS,
@@ -356,7 +356,7 @@ const ROW_DEFAULTS = {
 	delay: 0,
 	duration: 1.5,
 	ease: 'power2.out',
-	start_position: 'top center',
+	start_position: 'top 85%',
 	end_position: 'bottom bottom',
 	wrapper: 'default',
 	custom_props: [],

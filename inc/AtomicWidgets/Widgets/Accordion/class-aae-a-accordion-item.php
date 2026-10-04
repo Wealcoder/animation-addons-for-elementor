@@ -27,6 +27,7 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Svg_Src_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Url_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Paragraph\Atomic_Paragraph;
+use Elementor\Modules\AtomicWidgets\Elements\Atomic_Heading\Atomic_Heading;
 use Elementor\Modules\AtomicWidgets\Elements\Atomic_Svg\Atomic_Svg;
 use Elementor\Modules\AtomicWidgets\Elements\Div_Block\Div_Block;
 
@@ -130,16 +131,28 @@ class AAE_A_Accordion_Item extends Atomic_Element_Base {
 		$header_class = static::get_element_type() . '-header_element';
 		$icon_class   = static::get_element_type() . '-header_icon';
 
-		// Header children: Title (Paragraph) + Icon (SVG)
-		$header_title = Atomic_Paragraph::generate()
+		// Header children: Title (Heading) + Icon (SVG)
+		//
+		// The title is an Atomic_Heading, not an Atomic_Paragraph. A paragraph's
+		// Tag control only offers p/span, so an accordion title could never be a
+		// real heading — bad for document outline and for SEO, and the reason the
+		// item's own (commented-out) `title_html_tag` prop existed as a
+		// workaround. As a Heading the builder gets Elementor's own H1–H6 Tag
+		// select on the element they actually select in the Structure panel.
+		//
+		// Default is h3: an accordion normally sits under a section heading (h2),
+		// so h3 is the level that keeps the outline intact. Elementor's own
+		// Atomic_Heading defaults to h2, which would compete with that section
+		// heading out of the box.
+		$header_title = Atomic_Heading::generate()
 			->editor_settings( [ 'title' => 'Header Title' ] )
 			->settings( [
-				'classes'   => Classes_Prop_Type::generate( [ 'aae-header-title-element' ] ),
-				'paragraph' => Html_V3_Prop_Type::generate( [
+				'classes' => Classes_Prop_Type::generate( [ 'aae-header-title-element' ] ),
+				'title'   => Html_V3_Prop_Type::generate( [
 					'content'  => String_Prop_Type::generate( 'Accordion Title' ),
 					'children' => [],
 				] ),
-				'tag'       => String_Prop_Type::generate( 'span' ),
+				'tag'     => String_Prop_Type::generate( 'h3' ),
 			] )
 			->build();
 
@@ -234,7 +247,7 @@ class AAE_A_Accordion_Item extends Atomic_Element_Base {
 		// from the Style panel; these are just sane, good-looking resting values.
 		$wrapper_styles = [
 			'display' => String_Prop_Type::generate( 'block' ),
-			'width' => String_Prop_Type::generate( '100%' ),
+			'width' => Size_Prop_Type::generate( array( 'size' => 100, 'unit' => '%' ) ),
 			'overflow' => String_Prop_Type::generate( 'hidden' ),
 			'background' => Background_Prop_Type::generate( [
 				'color' => Color_Prop_Type::generate( '#ffffff' ),
@@ -290,13 +303,15 @@ class AAE_A_Accordion_Item extends Atomic_Element_Base {
 			'border-color' => Color_Prop_Type::generate(''),
 			'border-width' => Size_Prop_Type::generate([]),
 			'border-radius' => Dimensions_Prop_Type::generate([]),
-			// Tighter vertical padding — a shorter resting row height.
-			'padding' => Dimensions_Prop_Type::generate( [
-				'block-start'  => Size_Prop_Type::generate( [ 'size' => 10, 'unit' => 'px' ] ),
-				'inline-end'   => Size_Prop_Type::generate( [ 'size' => 16, 'unit' => 'px' ] ),
-				'block-end'    => Size_Prop_Type::generate( [ 'size' => 10, 'unit' => 'px' ] ),
-				'inline-start' => Size_Prop_Type::generate( [ 'size' => 16, 'unit' => 'px' ] ),
-			] ),
+			// Header padding lives on the Header div block ($header_element_styles
+			// below), NOT here. The <button> is rendered by this element's twig, so
+			// it is not selectable and nothing in the Style panel can reach it —
+			// padding declared here was unreachable by design. Worse, it did not
+			// merely resist editing: the Header div block IS selectable, so a
+			// builder setting padding there got it ADDED to this button's 10/16
+			// and could never go below it. One owner, and it is the one the
+			// builder can actually select.
+			'padding' => Dimensions_Prop_Type::generate([]),
 			'margin' => Dimensions_Prop_Type::generate([]),
 		];
 
@@ -335,6 +350,14 @@ class AAE_A_Accordion_Item extends Atomic_Element_Base {
 			'background' => Background_Prop_Type::generate([]),
 		];
 
+		// The content inset lives HERE, not in accordion.scss. The stylesheet
+		// used to hardcode it at (0,3,0) — above the (0,2,0) of a builder's own
+		// saved padding — so the Style panel's Padding could never take effect.
+		// As a base style it renders identically and stays overridable.
+		//
+		// Safe to own from here, unlike the header row: this element carries no
+		// `e-div-block-base`, and a bare `.e-con` only DECLARES `--padding-*`
+		// without applying them, so nothing else on it sets padding.
 		$content_styles = [
 			'background' => Background_Prop_Type::generate([]),
 			'color' => Color_Prop_Type::generate( '#4b5563' ),
@@ -344,7 +367,19 @@ class AAE_A_Accordion_Item extends Atomic_Element_Base {
 			'border-color' => Color_Prop_Type::generate(''),
 			'border-width' => Size_Prop_Type::generate([]),
 			'border-radius' => Dimensions_Prop_Type::generate([]),
-			'padding' => Dimensions_Prop_Type::generate([]),
+			// Zero, so the body text lines up with the header title rather than
+			// sitting 16px inside it. It also keeps the frontend matching the
+			// editor: accordion.js's distributeChildren() does not nest the
+			// content child inside .aae-accordion-content in the editor canvas
+			// (Elementor mounts child views on the item root, bypassing the
+			// twig's children_placeholder), so any inset declared here is
+			// invisible there and appears only on the frontend.
+			'padding' => Dimensions_Prop_Type::generate( [
+				'block-start'  => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+				'inline-end'   => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+				'block-end'    => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+				'inline-start' => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+			] ),
 			'margin' => Dimensions_Prop_Type::generate([]),
 		];
 
@@ -355,10 +390,31 @@ class AAE_A_Accordion_Item extends Atomic_Element_Base {
 		// styles, per-element local styles (user edits) still override them.
 		// Icon `display` stays scss-owned (state-driven show/hide), and
 		// flex-shrink/svg-fill live in accordion.scss (no style-schema keys).
+		//
+		// This div block is the header's PADDING OWNER. It fills the <button>
+		// edge to edge (`flex: 1` inside `.aae-header-content`, itself `flex: 1`
+		// in a `width: 100%` button — see accordion.scss), so padding here is
+		// visually identical to padding on the button, and the button's
+		// background and hover tint still paint the whole row. The difference is
+		// that this element is selectable, so Padding in the Style panel — with
+		// its breakpoints and states — now actually governs the row height.
+		//
+		// Zero is declared EXPLICITLY, and an empty Dimensions_Prop_Type is not a
+		// substitute for it. This element also carries Elementor's own
+		// `e-div-block-base`, which ships `padding: 10px` at the same (0,2,0)
+		// specificity — so emitting no padding key here does not produce a flush
+		// row, it silently hands the row back to that 10px. Only an explicit 0
+		// wins the tie. Per-element local styles still override this, as before.
 		$header_element_styles = [
 			'display' => String_Prop_Type::generate( 'flex' ),
 			'flex-direction' => String_Prop_Type::generate( 'row' ),
 			'justify-content' => String_Prop_Type::generate( 'space-between' ),
+			'padding' => Dimensions_Prop_Type::generate( [
+				'block-start'  => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+				'inline-end'   => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+				'block-end'    => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+				'inline-start' => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
+			] ),
 		];
 
 		// A small muted arrow (see open.svg/close.svg — a chevron-down that

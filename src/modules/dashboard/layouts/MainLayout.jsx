@@ -2,7 +2,7 @@ import { __ } from "@wordpress/i18n";
 import MainHeader from "@/components/header/MainHeader";
 import TemplateHeader from "@/components/header/TemplateHeader";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ShowContent } from "@/config/showFullContent";
+import { ShowContent, resolveTabKey } from "@/config/showFullContent";
 import { useNotification, useTNavigation } from "@/hooks/app.hooks";
 import { hideElements } from "@/lib/utils";
 import { useEffect, useState } from "react";
@@ -40,8 +40,24 @@ const MainLayout = () => {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const tabValue = urlParams.get("tab");
-    if (tabValue) {
-      setTabKey(tabValue);
+    if (!tabValue) return;
+
+    const resolved = resolveTabKey(tabValue);
+    setTabKey(resolved);
+
+    /*
+     * A retired tab rewrites itself to the screen that answers it.
+     *
+     * ShowContent resolves the alias on its own, so the right screen renders
+     * either way — this is about the sidebar. MainNav marks the active item by
+     * comparing `?tab=` against each item's path, and a retired value matches
+     * nothing, which would leave the correct screen sitting under a menu with
+     * no item selected.
+     */
+    if (resolved !== tabValue) {
+      const url = new URL(window.location.href);
+      url.searchParams.set("tab", resolved);
+      window.history.replaceState({}, "", url);
     }
   }, []);
 

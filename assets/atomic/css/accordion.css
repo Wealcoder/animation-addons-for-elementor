@@ -7,6 +7,8 @@
   justify-content: space-between;
   width: 100%;
   margin: 0;
+  white-space: normal;
+  padding: 0;
   background: transparent;
   border: none;
   outline: none;
@@ -16,8 +18,12 @@
   transition: background-color 0.2s ease;
   -webkit-tap-highlight-color: transparent;
 }
-.aae-a-accordion .aae-accordion-header:focus, .aae-a-accordion .aae-accordion-header:focus-visible {
+.aae-a-accordion .aae-accordion-header:focus {
   outline: none;
+  box-shadow: none;
+}
+.aae-a-accordion .aae-accordion-header:focus-visible {
+  outline: revert;
   box-shadow: none;
 }
 .aae-a-accordion .aae-accordion-header .aae-header-content {
@@ -37,9 +43,7 @@
   flex: 1;
   min-width: 0;
   margin: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: break-word;
 }
 .aae-a-accordion .aae-accordion-header .aae-header-element .aae-header-icon-element {
   display: inline-flex;
@@ -53,7 +57,20 @@
   width: 100% !important;
   height: 100% !important;
 }
+.aae-a-accordion .aae-header-element {
+  padding: 0;
+}
+.aae-a-accordion .aae-header-title-element {
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  color: #1f2937;
+}
 .aae-a-accordion .aae-a-accordion-item .aae-header-icon-element.aae-header-icon-close {
+  display: none !important;
+}
+.aae-a-accordion .aae-a-accordion-item [data-aae-accordion-icon=close] {
   display: none !important;
 }
 .aae-a-accordion .aae-accordion-content-wrapper {
@@ -67,16 +84,18 @@
 .aae-a-accordion .aae-a-accordion-item.active .aae-header-icon-element.aae-header-icon-close {
   display: inline-flex !important;
 }
+.aae-a-accordion .aae-a-accordion-item.active [data-aae-accordion-icon=open] {
+  display: none !important;
+}
+.aae-a-accordion .aae-a-accordion-item.active [data-aae-accordion-icon=close] {
+  display: inline-flex !important;
+}
 .aae-a-accordion .aae-accordion-content {
   transition: padding var(--aae-accordion-speed, 400ms) ease;
-  /* Inner container padding can be overridden by Elementor */
 }
-.aae-a-accordion .aae-accordion-content.e-con {
-  --padding-top: 0px;
-  --padding-bottom: 12px;
-  --padding-left: 16px;
-  --padding-right: 16px;
-  padding: var(--padding-top) var(--padding-right) var(--padding-bottom) var(--padding-left);
-  transition: padding var(--aae-accordion-speed, 400ms) ease;
+@media (prefers-reduced-motion: reduce) {
+  .aae-a-accordion .aae-accordion-content-wrapper,
+  .aae-a-accordion .aae-accordion-content {
+    transition: none;
+  }
 }
-/*# sourceMappingURL=accordion.css.map */

@@ -5,50 +5,8 @@ import Shape3 from "../../../../../public/images/wizard/shape3.png";
 import Shape4 from "../../../../../public/images/wizard/shape4.png";
 import Shape5 from "../../../../../public/images/wizard/shape5.png";
 import Shape6 from "../../../../../public/images/wizard/shape6.png";
-import CredentialAlert from "@/components/wizards/CredentialAlert";
-import { Checkbox } from "@/components/ui/checkbox";
-import { useSkip } from "@/hooks/app.hooks";
 
 const WizardTerms = () => {
-  const { isSkipTerms, setIsSkipTerms } = useSkip();
-
-  /*
-   * The consent checkbox IS the trigger. Ticking it is the moment the user
-   * agrees to share their data, so that is when the name and email go to our
-   * relay — not a step later, and never on unticking.
-   *
-   * Nothing is sent from the browser: this calls aae_wizard_subscribe
-   * (inc/admin/dashboard.php), which reads the administrator's name and email
-   * from WordPress and forwards them to
-   * https://animation-addons.com/wp-json/leads/v1/subscribe. The relay owns
-   * the Brevo API key and list id, so neither exists in this plugin — free or
-   * pro. Its own once-per-site option keeps a re-tick from sending twice.
-   */
-  const handleConsent = () => {
-    const accepting = isSkipTerms; // checked = accepted = isSkipTerms false
-
-    setIsSkipTerms(!isSkipTerms);
-
-    if (!accepting) {
-      return;
-    }
-
-    try {
-      fetch(WCF_ADDONS_ADMIN.ajaxurl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          Accept: "application/json",
-        },
-        body: new URLSearchParams({
-          action: "aae_wizard_subscribe",
-          nonce: WCF_ADDONS_ADMIN.nonce,
-        }),
-      });
-    } catch (error) {
-      // Deliberately silent: consent must never block or nag during setup.
-    }
-  };
 
   return (
     <div className="rounded-lg overflow-hidden mx-2.5">
@@ -95,44 +53,6 @@ const WizardTerms = () => {
                 these simple steps of easy setup wizard & enjoy your Elementor
                 web-building experience now!
               </p>
-            </div>
-          </div>
-          <div className="mt-[40px] w-[600px] mx-auto text-center">
-            <div className="flex justify-center items-center gap-2.5 ps-3 pe-4 pt-[11px] pb-3 rounded-[10px]">
-              {/* <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
-                fill="none"
-              >
-                <g clip-path="url(#clip0_4477_529)">
-                  <path
-                    d="M10.0001 19.091C4.97932 19.091 0.90918 15.0208 0.90918 10.0001C0.90918 4.97932 4.97932 0.90918 10.0001 0.90918C15.0208 0.90918 19.091 4.97932 19.091 10.0001C19.091 15.0208 15.0208 19.091 10.0001 19.091ZM10.0001 7.72736C10.7532 7.72736 11.3637 7.11684 11.3637 6.36372C11.3637 5.61061 10.7532 5.00009 10.0001 5.00009C9.247 5.00009 8.63645 5.61061 8.63645 6.36372C8.63645 7.11684 9.247 7.72736 10.0001 7.72736ZM11.8183 12.7274H10.9092V8.63645H8.18191V10.4546H9.091V12.7274H8.18191V14.5455H11.8183V12.7274Z"
-                    fill="#717784"
-                  />
-                </g>
-                <defs>
-                  <clipPath id="clip0_4477_529">
-                    <rect width="20" height="20" fill="white" />
-                  </clipPath>
-                </defs>
-              </svg>
-              <p>By continuing, you allow this plugin to collect your data.</p> */}
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="aae-plugin-continuing-terms"
-                  checked={!isSkipTerms}
-                  onCheckedChange={handleConsent}
-                />
-                <label
-                  htmlFor="aae-plugin-continuing-terms"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  By continuing, you allow this plugin to collect your data.
-                </label>
-              </div>
-              <CredentialAlert />
             </div>
           </div>
         </div>

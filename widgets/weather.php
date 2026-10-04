@@ -1215,8 +1215,8 @@ class Weather extends Widget_Base {
 			$current_url  = "https://api.openweathermap.org/data/2.5/weather?q={$city}&appid={$apiKey}&units={$unit}";
 			$forecast_url = "https://api.openweathermap.org/data/2.5/forecast?q={$city}&appid={$apiKey}&units={$unit}";
 
-			$current_res  = wp_remote_get( $current_url );
-			$forecast_res = wp_remote_get( $forecast_url );
+			$current_res  = wp_safe_remote_get( $current_url );
+			$forecast_res = wp_safe_remote_get( $forecast_url );
 
 			if ( is_wp_error( $current_res ) || is_wp_error( $forecast_res ) ) {
 				echo '<div>Unable to load weather data.</div>';

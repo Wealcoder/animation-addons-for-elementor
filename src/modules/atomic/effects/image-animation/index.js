@@ -6,7 +6,7 @@
 
  */
 
-import { wireTrigger, modeFor, resolveTriggerEl } from '../animation/triggers';
+import { wireTrigger, modeFor, resolveTriggerEl, PREHIDE_MODES } from '../animation/triggers';
 
 const { getGsap, configFor, pickConfigResponsive } = window.AAEADDON;
 
@@ -64,9 +64,9 @@ function normalizeRow(row) {
 		effect,
 		trigger: row.trigger || 'on_scroll',
 		triggerSelector: row.triggerSelector || '',
-		start: row.startPosition || 'top center',
+		start: row.startPosition || 'top 85%',
 		end: row.endPosition || 'bottom bottom',
-		startPosition: row.startPosition || 'top center',
+		startPosition: row.startPosition || 'top 85%',
 		endPosition: row.endPosition || 'bottom bottom',
 		startTrigger: row.startTrigger || '',
 		endTrigger: row.endTrigger || '',
@@ -772,6 +772,39 @@ function buildRowTween(el, config, paused, scrub) {
 	}
 }
 
+/**
+ * Does this row have a start state worth parking the image in before its
+ * trigger fires? `reveal` and `scale` are always from-based, and the cinematic
+ * presets all open from a hidden / offset frame. `stretch` runs through
+ * gsap.to and has no start state to hold, and the custom path only does when
+ * the user picked a from-style method.
+ */
+function hasStartState(config) {
+	if (config.effect === 'reveal' || config.effect === 'scale') return true;
+	if (config.effect === 'stretch') return false;
+	if (CINEMATIC_PRESET_BUILDERS[config.effect]) return true;
+	return config.method === 'from' || config.method === 'fromTo';
+}
+
+/**
+ * Build a row's tween PAUSED and make sure the image is actually sitting in
+ * its start state.
+ *
+ * Pausing alone isn't enough for every effect: a `from` / `fromTo` renders its
+ * start state on creation, but the cinematic presets open with `tl.set(...)`
+ * calls, and a zero-duration set in a paused timeline never runs — measured,
+ * and neither progress(0) nor seek(0) forces it, because the playhead is
+ * already at 0 and GSAP skips the no-op render. A forced render at time 0
+ * does apply it, leaves the timeline paused at progress 0, and doesn't fire
+ * onComplete — so play() still behaves normally afterwards.
+ */
+function buildParkedTween(el, config) {
+	const tween = buildRowTween(el, config, true, false);
+	if (!tween) return null;
+	try { tween.render(0, false, true); } catch (_) { /* older gsap — paused from() still parks */ }
+	return tween;
+}
+
 /* ---------- per-element row state ---------- */
 
 function getRowState(el) {
@@ -898,6 +931,28 @@ export function bindImg(el, mapConfig, forcePreview = false) {
 		// so the entrance always measures the now-settled slide and plays in full.
 		const rebuildEachPlay = mode === 'slide-change';
 
+		// Park the start state now for scroll-driven rows.
+		//
+		// Building lazily leaves the image fully visible until the trigger
+		// point lands, so the visitor watches the finished image scroll in and
+		// only then does it blink out to its clipped / scaled start and wipe
+		// in. Measured on a reveal row: on screen, untouched, for 617ms before
+		// clip-path snapped to inset(0px 100% 0px 0px).
+		//
+		// Building it up front is also what captures the correct end value for
+		// a `from`. The trigger then only has to play().
+		//
+		// Click / hover stay lazy: their trigger may never fire and the image
+		// would stay hidden for good. slide-change stays lazy too — it
+		// deliberately rebuilds per play so it measures the settled slide
+		// geometry (see above).
+		if (!rebuildEachPlay
+			&& config.method !== 'set'
+			&& PREHIDE_MODES.includes(mode)
+			&& hasStartState(config)) {
+			entry.tween = buildParkedTween(el, config);
+		}
+
 		const play = () => {
 			// `set` is instant — re-apply each time the trigger fires.
 			// slide-change rows also rebuild every time (fresh geometry, see above).
@@ -914,6 +969,10 @@ export function bindImg(el, mapConfig, forcePreview = false) {
 				} else {
 					entry.tween.restart(true);
 				}
+				// Only once it actually runs — common.js reads playedKey to
+				// tell whether a parent is still animating, and a tween parked
+				// at progress 0 would read as "forever running".
+				el[IMG_PLAYED] = entry.tween;
 			} else {
 				const live = buildRowTween(el, config, false, false);
 				entry.tween = live;

@@ -43,8 +43,16 @@ use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\AtomicWidgets\Styles\Style_States;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
+use WCF_ADDONS\Forms\Pro_Gated;
 
 class AAE_A_Form_Password extends Atomic_Widget_Base {
+
+	/**
+	 * Locks this widget's PANEL CARD (not the element) without a Pro licence:
+	 * not draggable, lock badge, click opens the upgrade card. Instances already
+	 * on the canvas stay fully editable — see the trait.
+	 */
+	use Pro_Gated;
 
 	use Has_Template;
 
@@ -65,8 +73,21 @@ class AAE_A_Form_Password extends Atomic_Widget_Base {
 		return 'eicon-lock-user';
 	}
 
+	/**
+	 * Listed in the AAE Form panel category so a builder can drag this field
+	 * into a form instead of only getting what a preset seeded.
+	 *
+	 * Leaf form widgets extend Atomic_Widget_Base (→ classic Widget_Base), so the
+	 * panel reads THIS pair — show_in_panel() + get_categories(). The
+	 * Atomic_Element_Base pair (should_show_in_panel() + define_panel_categories())
+	 * is silently never called here; see class-atomic.php::register_atomic_categories().
+	 */
 	public function show_in_panel() {
-		return false;
+		return true;
+	}
+
+	public function get_categories(): array {
+		return [ 'aae-atomic-form' ];
 	}
 
 	public function get_keywords() {

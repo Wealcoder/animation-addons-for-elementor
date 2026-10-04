@@ -114,21 +114,27 @@ const FORMAT_BUTTONS = [
 /* ------------------------------------------------------------------ clean */
 
 /**
- * Rewrite every `color: rgb(...)` / `rgba(...)` as `#rrggbb`.
+ * Rewrite every `color: rgb(...)` / `rgba(...)` as `#rrggbb`, or `#rrggbbaa`
+ * when the colour carries alpha.
  *
  * NOT cosmetic — without it colour silently disappears on save. WordPress's
- * `safecss_filter_attr()` accepts hex, named colours and `var()` for `color`
- * but REJECTS the rgb()/rgba() functional forms, dropping the whole style
- * attribute. And rgb() is unavoidable on the client: the CSSOM serialises
- * `style.color = '#c00000'` back out as `rgb(192, 0, 0)`, so even assigning
- * hex produces rgb() in innerHTML.
+ * `safecss_filter_attr()` strips only var()/calc()/min()/max()/minmax()/
+ * clamp()/repeat() from the string it tests (`wp-includes/kses.php`), then
+ * REFUSES any declaration still containing `(`. rgb()/rgba() are not on that
+ * list, so the whole style attribute is dropped. And rgb() is unavoidable on
+ * the client: the CSSOM serialises `style.color = '#c00000'` back out as
+ * `rgb(192, 0, 0)`, so even assigning hex produces rgb() in innerHTML.
  *
  * Done on the STRING rather than via the DOM precisely because the DOM is what
  * re-introduces rgb(): any round-trip through a CSSStyleDeclaration undoes it.
  *
- * Alpha is discarded. `<input type="color">` cannot produce it, and a colour
- * that silently loses its transparency on save would be worse than one that
- * never had it.
+ * ALPHA IS PRESERVED, as the 8-digit form. That spelling is the whole reason
+ * transparency is expressible here at all: it carries the alpha byte with NO
+ * parentheses, so unlike rgba() it passes safecss_filter_attr() untouched and
+ * needs no core filter relaxed and no site-wide security trade. It is CSS
+ * Color 4, supported by every browser this editor runs in. An earlier revision
+ * discarded alpha because `<input type="color">` cannot produce it — the
+ * opacity control added alongside this now can.
  */
 function colorsToHex( html ) {
 	// The leading boundary keeps this off `background-color:` and friends.
@@ -144,8 +150,68 @@ function colorsToHex( html ) {
 			.map( ( n ) => Math.max( 0, Math.min( 255, Math.round( n ) ) ).toString( 16 ).padStart( 2, '0' ) )
 			.join( '' );
 
-		return `${ prefix }color:#${ hex }`;
+		// The 4th component is alpha, 0–1. Appended ONLY when it is genuinely
+		// below 1, so an opaque colour keeps the plain 6-digit spelling every
+		// already-saved heading holds — this must not rewrite existing content.
+		const alpha = parts.length > 3 && ! Number.isNaN( parts[ 3 ] ) ? parts[ 3 ] : 1;
+		const alphaHex = alpha >= 1
+			? ''
+			: Math.max( 0, Math.min( 255, Math.round( alpha * 255 ) ) ).toString( 16 ).padStart( 2, '0' );
+
+		return `${ prefix }color:#${ hex }${ alphaHex }`;
 	} );
+}
+
+/**
+ * Parse anything CSS accepts — `rgba(0,0,0,.5)`, `transparent`, `hsl(…)`, a
+ * named colour, `#rgb`, `#rrggbbaa` — into the spelling that survives the save
+ * path, or null when the value is not a colour at all.
+ *
+ * The BROWSER is the parser rather than a regex of ours: assigning to a
+ * detached element's style silently rejects an invalid value (the property
+ * stays empty), and reading it back gives the canonical serialisation, which
+ * colorsToHex() then folds to hex. So a typed value and a picked one can never
+ * end up in two different spellings.
+ *
+ * Returning null for unparseable input is deliberate: guessing would send
+ * something to wp_kses that it drops on save, and the user would see the
+ * colour simply not apply with nothing explaining why.
+ *
+ * `transparent` and named colours survive as keywords — no parentheses, so
+ * they were always kses-safe; only the functional forms ever needed folding.
+ */
+function normaliseColor( input ) {
+	const text = String( input ?? '' ).trim();
+
+	if ( ! text ) {
+		return null;
+	}
+
+	const probe = document.createElement( 'span' );
+	probe.style.color = text;
+
+	if ( ! probe.style.color ) {
+		return null;
+	}
+
+	return colorsToHex( `color:${ probe.style.color }` ).replace( /^color:/, '' );
+}
+
+/**
+ * Combine the native picker's opaque `#rrggbb` with an opacity percentage.
+ *
+ * 100% returns the 6-digit value unchanged rather than appending `ff`, for the
+ * same reason colorsToHex() does: an opaque colour must keep the spelling it
+ * has always had.
+ */
+function withOpacity( hex6, percent ) {
+	const pct = Math.max( 0, Math.min( 100, Number( percent ) ) );
+
+	if ( pct >= 100 ) {
+		return hex6;
+	}
+
+	return hex6 + Math.round( ( pct / 100 ) * 255 ).toString( 16 ).padStart( 2, '0' );
 }
 
 /**
@@ -429,6 +495,14 @@ export function InlineTextControl() {
 	const [ linkOpen, setLinkOpen ] = useState( false );
 	const [ linkUrl, setLinkUrl ] = useState( '' );
 
+	// Opacity + free-text colour. The native `<input type="color">` is opaque by
+	// construction — it has no alpha channel and no way to express `transparent`
+	// — so transparency needs its own input. Kept as a separate row rather than
+	// crowded into the toolbar, mirroring how the link field opens.
+	const [ colorOpen, setColorOpen ] = useState( false );
+	const [ colorText, setColorText ] = useState( '' );
+	const [ opacity, setOpacity ] = useState( 100 );
+
 	const content = stringPropTypeUtil.extract( value?.content ?? null ) ?? '';
 
 	useEffect( () => () => {
@@ -692,6 +766,72 @@ export function InlineTextControl() {
 		syncFromDom();
 	};
 
+	/**
+	 * Open the opacity / colour-code row.
+	 *
+	 * Captures the selection FIRST, for the same reason the swatch does: the
+	 * moment focus moves to the field or the slider the live selection is gone,
+	 * and everything in this row applies to whatever was highlighted when it
+	 * opened. Always opens rather than toggling, so clicking it again after
+	 * selecting different text re-captures instead of closing.
+	 */
+	const openColorRow = () => {
+		saveSelection();
+		colorSpan.current = null;
+
+		// Seed the field with the colour already on the selection, so the row
+		// opens showing what is there rather than empty.
+		const node = savedRange.current?.commonAncestorContainer;
+		const el = 1 === node?.nodeType ? node : node?.parentElement;
+		const existing = el?.closest?.( '[style*="color"]' )?.style?.color ?? '';
+
+		setColorText( existing ? normaliseColor( existing ) ?? '' : '' );
+		setColorOpen( true );
+	};
+
+	/**
+	 * Repaint the selection at a new opacity, keeping the hue the swatch holds.
+	 *
+	 * `colorSpan` is deliberately NOT reset here: the whole row is one session,
+	 * so dragging repaints the span it already made instead of wrapping a fresh
+	 * one on every drag. The cost is that re-selecting different text needs
+	 * another click on the opacity button to re-capture — which is what that
+	 * button does.
+	 */
+	const applyOpacity = ( pct ) => {
+		setOpacity( pct );
+		applyColor( withOpacity( color, pct ) );
+	};
+
+	/**
+	 * Apply a typed CSS colour. Anything the browser can parse is accepted —
+	 * `transparent`, `rgba(…)`, `hsl(…)`, `#rrggbbaa`, a named colour — and
+	 * normaliseColor() folds it to the spelling that survives wp_kses.
+	 *
+	 * An unparseable value applies nothing and leaves the field alone, so the
+	 * user can see and correct what they typed.
+	 */
+	const submitColorText = () => {
+		const parsed = normaliseColor( colorText );
+
+		if ( ! parsed ) {
+			return;
+		}
+
+		// Keep the swatch and the slider showing what was just applied so the
+		// three inputs cannot drift apart. Only a hex value can drive the native
+		// input; a keyword like `transparent` leaves it on its previous colour.
+		const hex = /^#([0-9a-f]{6})([0-9a-f]{2})?$/i.exec( parsed );
+
+		if ( hex ) {
+			setColor( `#${ hex[ 1 ] }` );
+			setOpacity( hex[ 2 ] ? Math.round( ( parseInt( hex[ 2 ], 16 ) / 255 ) * 100 ) : 100 );
+		}
+
+		setColorText( parsed );
+		applyColor( parsed );
+	};
+
 	const openLink = () => {
 		saveSelection();
 
@@ -854,6 +994,13 @@ export function InlineTextControl() {
 						/>
 					</Box>
 				</Tooltip>
+
+				{ /* The native picker above is opaque by construction — no alpha
+				     channel, no way to say `transparent`. This opens the row that
+				     can express both. */ }
+				<Tooltip title="Opacity / colour code" placement="top">
+					<IconButton size="tiny" onMouseDown={ keepFocus } onClick={ openColorRow } sx={ BTN_SX }>◑</IconButton>
+				</Tooltip>
 			</Stack>
 
 			{ linkOpen ? (
@@ -889,6 +1036,56 @@ export function InlineTextControl() {
 						size="tiny"
 						onMouseDown={ keepFocus }
 						onClick={ submitLink }
+						sx={ {
+							width: 18,
+							height: 18,
+							minWidth: 18,
+							p: 0,
+							fontSize: '11px',
+							lineHeight: 1,
+							flexShrink: 0,
+						} }
+					>✓</IconButton>
+				</Stack>
+			) : null }
+
+			{ colorOpen ? (
+				<Stack direction="row" gap={ 0.5 } alignItems="center" sx={ { mb: 0.5 } }>
+					<TextField
+						size="tiny"
+						fullWidth
+						autoFocus
+						placeholder="transparent, rgba(0,0,0,.5), #rrggbbaa"
+						value={ colorText }
+						onChange={ ( event ) => setColorText( event.target.value ) }
+						onKeyDown={ ( event ) => {
+							if ( 'Enter' === event.key ) {
+								event.preventDefault();
+								submitColorText();
+							}
+
+							if ( 'Escape' === event.key ) {
+								setColorOpen( false );
+							}
+						} }
+					/>
+					{ /* A raw range input, matching how the swatch uses a raw
+					     <input type="color"> — no component dependency for one
+					     slider, and it styles consistently with it. */ }
+					<Tooltip title={ `Opacity ${ opacity }%` } placement="top">
+						<input
+							type="range"
+							min="0"
+							max="100"
+							value={ opacity }
+							onChange={ ( event ) => applyOpacity( Number( event.target.value ) ) }
+							style={ { width: 64, flexShrink: 0 } }
+						/>
+					</Tooltip>
+					<IconButton
+						size="tiny"
+						onMouseDown={ keepFocus }
+						onClick={ submitColorText }
 						sx={ {
 							width: 18,
 							height: 18,

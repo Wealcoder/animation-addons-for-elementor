@@ -1,3 +1,7 @@
+/* Fonts are bundled with the plugin and enqueued as the 'aae-fonts'
+   stylesheet (see inc/admin/class-aae-fonts.php). They used to be pulled
+   from fonts.googleapis.com with an @import here, which contacted a third
+   party on every admin page and could not be dequeued or filtered. */
 .wcfcb2025-wrapper * {
   all: revert-layer;
   box-sizing: border-box;
@@ -18,8 +22,6 @@
   padding: 0;
   line-height: 0;
 }
-
-@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
 
 @tailwind base;
 @tailwind components;

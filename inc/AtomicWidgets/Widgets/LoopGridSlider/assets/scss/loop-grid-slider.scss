@@ -14,7 +14,20 @@
 	// Nav arrows (reused from the Nested Slider) anchor to this positioned box.
 	position: relative;
 
+	.aae-slider__viewport {
+		overflow: hidden;
+		width: 100%;
+		position: relative;
+		box-sizing: border-box;
+		contain: layout paint;
+	}
+
 	.aae-slider-track {
+		overflow: visible !important;
+		will-change: transform;
+		backface-visibility: hidden;
+		-webkit-backface-visibility: hidden;
+		transform: translateZ(0);
 		// The runtime writes transform/gap; keep it a single non-wrapping row so
 		// slides line up horizontally before the runtime measures them.
 		flex-wrap: nowrap;
@@ -38,6 +51,9 @@
 			transform-style: preserve-3d;
 			transition: transform 0.5s ease-out;
 			height: var(--aae-slide-height, auto);
+			will-change: transform, opacity;
+			backface-visibility: hidden;
+			-webkit-backface-visibility: hidden;
 		}
 	}
 
@@ -56,10 +72,20 @@
 	// slider look different in the editor vs the frontend.
 	.aae-a-navigator-prev,
 	.aae-a-navigator-next {
+		cursor: pointer;
+
 		.e-svg-base,
 		svg {
-			max-width: 24px;
-			max-height: 24px;
+			max-width: 100%;
+			max-height: 100%;
+		}
+
+		&.e--disabled,
+		&.is-disabled,
+		&[aria-disabled="true"] {
+			opacity: 0.4;
+			cursor: not-allowed;
+			pointer-events: none;
 		}
 	}
 

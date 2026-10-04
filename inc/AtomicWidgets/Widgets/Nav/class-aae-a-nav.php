@@ -28,6 +28,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+// Per-breakpoint colour/size for the dropdown indicator. Not PSR-4 (this folder is
+// loaded by class-atomic.php's registry, not the autoloader), so it has to be
+// required explicitly. Registering here rather than in class-atomic.php keeps
+// the element self-contained; register() is idempotent.
+require_once __DIR__ . '/class-aae-a-nav-responsive.php';
+AAE_A_Nav_Responsive::register();
+
 class AAE_A_Nav extends Atomic_Element_Base {
 	use Has_Element_Template;
 
@@ -73,7 +80,10 @@ class AAE_A_Nav extends Atomic_Element_Base {
 	}
 
 	protected static function define_props_schema(): array {
-		return [
+		// The `aae_ndi_` icon-style props are MERGED IN, never a replacement:
+		// every prop below keeps its key, its type and its stored value, so an
+		// existing nav renders untouched. See class-aae-a-nav-responsive.php.
+		return AAE_A_Nav_Responsive::props_schema() + [
 			'classes'    => Classes_Prop_Type::make()->default( [] ),
 			'attributes' => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
 			/* Set when the menu was populated via "Import from WordPress menu".
@@ -99,6 +109,23 @@ class AAE_A_Nav extends Atomic_Element_Base {
 			'mobile_position' => String_Prop_Type::make()->default( 'right' ),
 			'mobile_close_on_link' => Boolean_Prop_Type::make()->default( true ),
 			'mobile_lock_scroll' => Boolean_Prop_Type::make()->default( true ),
+			/* EDITOR-ONLY drawer preview switch.
+			 *
+			 * The editor used to open the mobile drawer by itself as soon as the
+			 * device switcher dropped to or below `mobile_breakpoint`. That was
+			 * surprising — previewing tablet popped the menu open over the canvas —
+			 * and the device-mode probe behind it (getEditorDeviceMode) is exactly
+			 * where the intermittent "drawer stuck open, X does nothing" reports came
+			 * from: when the probe answered stale, the preview reopened itself faster
+			 * than the close button could dismiss it.
+			 *
+			 * The breakpoint is now purely a FRONTEND concern (nav.js matchMedia
+			 * against the real viewport); in the editor the builder opens the drawer
+			 * from this switch when they want to fill or style it.
+			 *
+			 * Defaults to false, so opening a page saved before this existed shows a
+			 * closed drawer, and it has NO effect on the frontend at all. */
+			'mobile_editor_open' => Boolean_Prop_Type::make()->default( false ),
 			/* Icon pickers mirrored to the companion's SVG children by the
 			 * NavItemsControl reconciler. Default to the bundled icons so the
 			 * control shows the current icon and swapping is one click. */
@@ -193,6 +220,12 @@ class AAE_A_Nav extends Atomic_Element_Base {
 				->set_items( [
 					Switch_Control::bind_to( 'mobile_enabled' )
 						->set_label( __( 'Enable Mobile Menu', 'animation-addons-for-elementor' ) ),
+					/* Editor-only helper, kept next to Enable Mobile Menu because that is
+					 * the pair a builder reaches for: switch the mobile menu on, then
+					 * open it to style the drawer. Same placement rationale as the
+					 * Offcanvas widget's "Open Panel (Editor)". No frontend effect. */
+					Switch_Control::bind_to( 'mobile_editor_open' )
+						->set_label( __( 'Open Mobile Menu (Editor)', 'animation-addons-for-elementor' ) ),
 					Select_Control::bind_to( 'mobile_breakpoint' )
 						->set_label( __( 'Breakpoint', 'animation-addons-for-elementor' ) )
 						->set_options( self::breakpoint_options() ),
@@ -218,6 +251,7 @@ class AAE_A_Nav extends Atomic_Element_Base {
 						->set_label( '' )
 						->set_meta( [ 'layout' => 'custom' ] ),
 				] ),
+
 			Section::make()
 				->set_label( __( 'Dropdown Icon', 'animation-addons-for-elementor' ) )
 				->set_id( 'dropdown_icon_section' )
@@ -226,6 +260,7 @@ class AAE_A_Nav extends Atomic_Element_Base {
 						->set_label( __( 'Show Icon on Dropdown Items', 'animation-addons-for-elementor' ) ),
 					Svg_Control::bind_to( 'dropdown_icon' )
 						->set_label( __( 'Icon', 'animation-addons-for-elementor' ) ),
+					Text_Control::bind_to( AAE_A_Nav_Responsive::anchor( 'dropdown_icon' ) ),
 				] ),
 			Section::make()
 				->set_label( __( 'Menu Items', 'animation-addons-for-elementor' ) )

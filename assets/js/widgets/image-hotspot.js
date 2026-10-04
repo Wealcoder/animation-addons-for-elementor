@@ -35,3 +35,5 @@
         elementorFrontend.hooks.addAction('frontend/element_ready/aae--image-hotspot.default', ImageHotspot);
     });
 })(jQuery);
+
+//# sourceMappingURL=image-hotspot.js.map

@@ -261,8 +261,14 @@ const focusFirstInvalid = ( form ) => {
 		details.open = true;
 		details = details.parentElement?.closest( 'details:not([open])' );
 	}
-	control.scrollIntoView( { block: 'center', behavior: 'auto' } );
-	control.focus( { preventScroll: true } );
+	// An enhanced control may not be the element the visitor sees: the PRO
+	// date picker turns the real input into type=hidden and shows its own —
+	// focusing a hidden input does nothing, silently, and scrollIntoView on
+	// it scrolls nowhere. Let the enhancement name what should receive focus.
+	// Free stays neutral: with nothing hooked the control itself is used.
+	const target = hooks.applyFilters( 'aae_form/focus_target', control, form ) || control;
+	target.scrollIntoView( { block: 'center', behavior: 'auto' } );
+	target.focus( { preventScroll: true } );
 };
 
 /* ------------------------------------------------------------------ */
@@ -671,20 +677,44 @@ const showRuntimeMessage = ( form, message, tone ) => {
 	}
 };
 
+/**
+ * The element holding a submit button's visible label.
+ *
+ * The Submit button is a container (Flexbox › Heading + SVG), so the label is
+ * a descendant element, not the button's own text. Matched by TAG rather than
+ * a hook class on purpose: a class would have to be seeded into the child's
+ * `classes` prop, where the panel's "Some classes are missing" ✕ can unapply
+ * it — and losing the loading state to a stray click is not a trade worth
+ * making. Falls back to the button itself for the plain-text buttons
+ * multi-step.js injects.
+ */
+const labelElOf = ( button ) =>
+	button.querySelector( 'h1, h2, h3, h4, h5, h6, p, span' ) || button;
+
+/**
+ * Swap the button into its loading state.
+ *
+ * The label element is replaced, NOT the whole button: writing
+ * `button.textContent` would delete the icon child for the duration of the
+ * request — a visible flicker on every submit.
+ */
 const setLoading = ( form, button, loading ) => {
 	if ( ! button ) {
 		return;
 	}
+
+	const label = labelElOf( button );
+
 	if ( loading ) {
-		button.dataset.originalHtml = button.innerHTML;
+		button.dataset.originalHtml = label.innerHTML;
 		button.disabled = true;
 		button.setAttribute( 'aria-busy', 'true' );
-		button.textContent = button.dataset.loadingLabel || t( 'sending', 'Sending…' );
+		label.textContent = button.dataset.loadingLabel || t( 'sending', 'Sending…' );
 	} else {
 		button.disabled = false;
 		button.removeAttribute( 'aria-busy' );
 		if ( button.dataset.originalHtml ) {
-			button.innerHTML = button.dataset.originalHtml;
+			label.innerHTML = button.dataset.originalHtml;
 			delete button.dataset.originalHtml;
 		}
 	}

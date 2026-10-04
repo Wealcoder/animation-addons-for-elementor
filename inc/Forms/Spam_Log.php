@@ -25,6 +25,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 final class Spam_Log {
 
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery -- Custom database tables cannot use core post query APIs ($wpdb is required).
+
 	const ACTION_TYPE = 'bot_shield';
 
 	/**
@@ -61,4 +63,6 @@ final class Spam_Log {
 			[ '%d', '%d', '%s', '%s', '%s', '%s', '%s', '%s' ]
 		);
 	}
+
+	// phpcs:enable WordPress.DB.DirectDatabaseQuery
 }

@@ -24,6 +24,11 @@ const WidgetCard = ({
   exSettings,
   preview = true,
   settingOpen = null,
+  // Pages this widget is used on. `undefined` = no scan has run, which is not
+  // the same as 0 and must not render as "Not used" — that would be the
+  // dashboard asserting something it has never checked, about the one number
+  // someone consults before switching a widget off.
+  usage = undefined,
 }) => {
   const { activated } = useActivate();
 
@@ -89,6 +94,34 @@ const WidgetCard = ({
         )}
         id={slug || ""}
       >
+        {/*
+          Usage sits above the card body, top-left, at the lowest emphasis on
+          the card — it is a fact to glance at, not a control. Rendered only
+          once a scan has actually run (see the `usage` prop note), and "Not
+          used" is deliberately said out loud: it is the answer that makes
+          switching a widget off safe, so leaving it blank would withhold the
+          most useful result.
+        */}
+        {widget && usage !== undefined && usage !== null && (
+          <p
+            data-aae-usage-count={usage}
+            className="text-[11px] leading-4 text-label mb-2 -mt-0.5"
+          >
+            {usage > 0
+              ? sprintf(
+                  /* translators: %d: number of pages the widget appears on. */
+                  _n(
+                    "Used on %d page",
+                    "Used on %d pages",
+                    usage,
+                    "animation-addons-for-elementor"
+                  ),
+                  usage
+                )
+              : __("Not used", "animation-addons-for-elementor")}
+          </p>
+        )}
+
         {widget ? (
           <div className="flex items-center justify-between gap-3">
             <div

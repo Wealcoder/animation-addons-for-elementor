@@ -59,7 +59,7 @@ const ROTATION_DIR_OPTIONS = [
 ];
 
 const SCROLL_POSITION_OPTIONS = [
-	'top top', 'top center', 'top bottom', 'top 25%', 'top 50%', 'top 75%',
+	'top top', 'top center', 'top bottom', 'top 25%', 'top 50%', 'top 75%', 'top 85%',
 	'center top', 'center center', 'center bottom',
 	'bottom top', 'bottom center', 'bottom bottom',
 ];

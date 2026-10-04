@@ -376,7 +376,7 @@ class AAE_A_Post_Pagination extends Atomic_Element_Base {
 						->add_prop( 'justify-content', String_Prop_Type::generate( 'space-between' ) )
 						->add_prop( 'flex-wrap', String_Prop_Type::generate( 'wrap' ) )
 						->add_prop( 'gap', Size_Prop_Type::generate( [ 'size' => 16, 'unit' => 'px' ] ) )
-						->add_prop( 'width', String_Prop_Type::generate( '100%' ) )
+						->add_prop( 'width', Size_Prop_Type::generate( array( 'size' => 100, 'unit' => '%' ) ) )
 						->add_prop( 'padding', Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ) )
 				),
 		];

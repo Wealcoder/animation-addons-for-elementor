@@ -23,8 +23,8 @@ if (function_exists('wcf_set_postview')) {
 if (! function_exists('aae_public_counter_visitor_key')) {
     function aae_public_counter_visitor_key()
     {
-        $ip = isset($_SERVER['REMOTE_ADDR']) ? wp_unslash($_SERVER['REMOTE_ADDR']) : '';
-        $ua = isset($_SERVER['HTTP_USER_AGENT']) ? wp_unslash($_SERVER['HTTP_USER_AGENT']) : '';
+        $ip = isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])) : '';
+        $ua = isset($_SERVER['HTTP_USER_AGENT']) ? sanitize_text_field(wp_unslash($_SERVER['HTTP_USER_AGENT'])) : '';
 
         return substr(wp_hash($ip . '|' . $ua), 0, 16);
     }
@@ -62,26 +62,35 @@ if (! function_exists('aae_public_counter_throttled')) {
 
 function aae_handle_aae_post_shares_count()
 {
+    $nonce = isset($_REQUEST['nonce']) ? sanitize_text_field(wp_unslash($_REQUEST['nonce'])) : '';
 
-    if (!isset($_POST['nonce'])) {
-        exit('No naughty business please . Provide Security Code');
-    }
-
-    $nonce =  sanitize_text_field(wp_unslash($_POST['nonce']));
-
-    if (! wp_verify_nonce($nonce, 'wcf-addons-frontend')) {
-        exit('No naughty business please');
+    if (! $nonce || ! wp_verify_nonce($nonce, 'wcf-addons-frontend')) {
+        wp_send_json_error(['message' => esc_html__('Security check failed.', 'animation-addons-for-elementor')], 403);
     }
 
     if (isset($_POST['post_id']) && isset($_POST['social'])) {
-        $post_id = intval(sanitize_text_field(wp_unslash($_POST['post_id'])));
-        $social = sanitize_text_field(wp_unslash($_POST['social']));
+        $post_id = absint(sanitize_text_field(wp_unslash($_POST['post_id'])));
+        $social  = sanitize_key(wp_unslash($_POST['social']));
+
+        // The vendor list is a fixed SELECT in the Social Share widget, and
+        // this value becomes a POST META KEY. Left open, one unauthenticated
+        // client can mint an unbounded number of distinct meta rows on a post
+        // nobody is actually sharing. Filterable, so adding a network stays a
+        // one-line change rather than a reason to leave it open.
+        $allowed_social = apply_filters(
+            'aae_post_share_networks',
+            array( 'facebook', 'twitter', 'linkedin', 'pinterest', 'tumblr', 'blogger', 'reddit' )
+        );
+
+        if (! in_array($social, (array) $allowed_social, true)) {
+            wp_send_json_error(['message' => esc_html__('Invalid network.', 'animation-addons-for-elementor')]);
+        }
 
         // The target must be a real, published post — otherwise this writes
         // share meta onto arbitrary or non-existent ids.
         $post = get_post($post_id);
         if (! $post || 'publish' !== $post->post_status) {
-            wp_send_json_error('Invalid post ID');
+            wp_send_json_error(['message' => esc_html__('Invalid post ID.', 'animation-addons-for-elementor')]);
         }
 
         // Retrieve current share count, increment it, or set it if it doesn't exist
@@ -124,7 +133,7 @@ function aae_handle_aae_post_shares_count()
         ));
 
     } else {
-        wp_send_json_error('Invalid post ID');
+        wp_send_json_error(['message' => esc_html__('Invalid post ID.', 'animation-addons-for-elementor')]);
     }
 
 }
@@ -136,28 +145,6 @@ function aaeaddon_disable_comments_for_custom_post_type()
     remove_post_type_support('wcf-addons-template', 'comments');
 }
 add_action('init', 'aaeaddon_disable_comments_for_custom_post_type', 100);
-
-function aaeaddon_custom_hide_admin_notices_for_specific_page()
-{
-    $screen = get_current_screen();
-    // ist of admin pages where you want to disable notices
-    $pages_to_hide_notices = array(
-        'wcf-custom-fonts',
-        'wcf-custom-icons',
-        'animation-addon_page_wcf-cpt-builder',
-        'edit-wcf-addons-template',
-        'animation-addon_page_wcf_addons_settings',
-        'animation-addon_page_wcf_addons_setup_page'
-    );
-
-    // Check if current screen ID matches any in the list
-    if (in_array($screen->id, $pages_to_hide_notices)) {
-        // Remove core and plugin notices
-        remove_all_actions('admin_notices');
-        remove_all_actions('all_admin_notices');
-    }
-}
-add_action('admin_head', 'aaeaddon_custom_hide_admin_notices_for_specific_page');
 
 // Btn / BtnPro / Social Share preset interactions used to load unconditionally
 // on every page via a shared "global preset" bundle. They're now registered
@@ -190,6 +177,18 @@ if (!function_exists('aaeaddon_post_lite_reaction_ajax')) {
         $reaction = isset($_POST['reaction']) ? sanitize_text_field(wp_unslash( $_POST['reaction'] )) : [];
 
         if (! $post_id || ! $reaction) {
+            wp_send_json_error('Invalid data');
+        }
+
+        // Same reason as the share vendors: this value becomes a meta key,
+        // and the widget's Type control is a fixed SELECT — anything else
+        // arriving here was not sent by the widget.
+        $allowed_reactions = apply_filters(
+            'aae_post_reaction_types',
+            array( 'emoji', 'like', 'dislike', 'funny', 'wow', 'love', 'sad', 'angry' )
+        );
+
+        if (! in_array($reaction, (array) $allowed_reactions, true)) {
             wp_send_json_error('Invalid data');
         }
 

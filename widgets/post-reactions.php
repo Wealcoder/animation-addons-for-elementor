@@ -555,7 +555,7 @@ class Post_Reactions extends Widget_Base
                 // Display the reaction button
                 if ($reaction_count == 'yes') {
                     echo '<button class="aaeaddon-reaction-btn" data-reaction="' . esc_attr($reaction['reaction_label']) . '" data-rtype="' . esc_attr($reaction['reaction_type']) . '">';
-                    // echo $icon;
+                   
                     echo "<span>" . wp_kses_post($icon) . "</span>";
 
                     echo '<span class="aae-reaction-label">' . esc_html($level_name) . '</span>';

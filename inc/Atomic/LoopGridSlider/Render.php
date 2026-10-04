@@ -67,6 +67,7 @@ final class Render {
 			'pauseOnHover'      => true,
 			'cardScale'         => 0.88,
 			'cardTilt'          => 20,
+			'overflow'          => 'visible',
 		];
 		$extra_bps = $this->get_extra_breakpoints();
 
@@ -94,6 +95,7 @@ final class Render {
 		$this->emit_responsive( $config, $settings, Schema::NS_PAUSE_ON_HOVER, 'pauseOnHover', true, $extra_bps, static fn( $v ) => (bool) $v );
 		$this->emit_responsive( $config, $settings, Schema::NS_CARD_SCALE, 'cardScale', 0.88, $extra_bps, static fn( $v ) => is_numeric( $v ) ? (float) $v : null );
 		$this->emit_responsive( $config, $settings, Schema::NS_CARD_TILT, 'cardTilt', 20, $extra_bps, static fn( $v ) => is_numeric( $v ) ? (int) $v : null );
+		$this->emit_responsive( $config, $settings, Schema::NS_OVERFLOW, 'overflow', 'visible', $extra_bps, static fn( $v ) => is_string( $v ) ? $v : 'visible' );
 
 		// Responsive slides-per-view fallback. The shared NS schema only defaults
 		// desktop (3), so without this a 3-up desktop slider stays 3-up on phones —

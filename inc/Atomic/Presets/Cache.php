@@ -71,12 +71,80 @@ final class Cache {
 			? $this->fetch_remote_fresh( $type, $category )
 			: $this->get_remote_cached_or_fetch( $type, $category );
 
-		$remote_entries = $this->tag_remote( $this->resolve_asset_urls( $remote['entries'] ) );
+		$entries = $remote['entries'];
+		$failed  = $remote['failed'];
+
+		// Pull in entries the server filed under a different element_type than
+		// their model actually is — see REMOTE_TYPE_ALIASES.
+		foreach ( self::REMOTE_TYPE_ALIASES[ $type ] ?? [] as $alias ) {
+			$extra = $is_dev
+				? $this->fetch_remote_fresh( $alias, $category )
+				: $this->get_remote_cached_or_fetch( $alias, $category );
+
+			$entries = array_merge( $entries, $this->only_models_of_type( $extra['entries'], $type ) );
+
+			// If an alias fetch is what supplies this type's presets, a failure
+			// there means the list is incomplete just as surely as a primary
+			// failure does. Consumers key "this type has no presets" off this.
+			$failed = $failed || $extra['failed'];
+		}
+
+		$remote_entries = $this->tag_remote( $this->resolve_asset_urls( $entries ) );
 
 		return [
 			'presets'       => array_merge( $this->drop_shadowed_remote( $remote_entries, $local ), $local ),
-			'remote_failed' => $remote['failed'],
+			'remote_failed' => $failed,
 		];
+	}
+
+	/**
+	 * Element types whose remote presets are filed on the server under a
+	 * DIFFERENT element_type than the one their model actually is.
+	 *
+	 * The Stack Cards decks are the case this exists for. All ten are on the
+	 * server with thumbnails, but filed as `e-aae-a-stack-card` (one CARD)
+	 * while every one of their models is rooted at `e-aae-a-stack-cards` (the
+	 * whole DECK, four cards plus the deck's own animation/overlap/ease
+	 * settings). The picker asks the server for the type it has selected, gets
+	 * nothing back for the deck, and falls through to the bundled local copies
+	 * — which is why those presets appeared as `source: local` and carried no
+	 * thumbnail, since Local_Fallback hardcodes an empty thumbnail_url.
+	 *
+	 * Fixing it properly means re-filing those rows on the preset server; this
+	 * map is the client-side half so the presets work before that happens. It
+	 * is deliberately explicit rather than "fetch every type and sort by
+	 * model", which would mean pulling the whole catalogue on every request.
+	 *
+	 * @var array<string, array<int, string>>
+	 */
+	private const REMOTE_TYPE_ALIASES = [
+		'e-aae-a-stack-cards' => [ 'e-aae-a-stack-card' ],
+	];
+
+	/**
+	 * Keep only entries whose MODEL is rooted at `$type`.
+	 *
+	 * The model root is the authority on what a preset applies to — the
+	 * server's own `element_type` field is what got this wrong. Entries with no
+	 * model are dropped rather than guessed at: applying a preset whose target
+	 * cannot be verified is worse than not offering it.
+	 *
+	 * @param array<int, array> $entries
+	 * @return array<int, array>
+	 */
+	private function only_models_of_type( array $entries, string $type ): array {
+		$out = [];
+		foreach ( $entries as $entry ) {
+			$model = $entry['model'] ?? null;
+			if ( ! is_array( $model ) ) {
+				continue;
+			}
+			$root = $model['widgetType'] ?? $model['elType'] ?? '';
+			if ( $root === $type ) {
+				$out[] = $entry;
+			}
+		}
+		return $out;
 	}
 
 	/**

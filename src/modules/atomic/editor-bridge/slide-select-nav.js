@@ -22,7 +22,11 @@ const SLIDER_TYPE = 'e-aae-a-slider';
 function findSlideAncestor( container ) {
 	let c = container;
 	while ( c ) {
-		const elType = c.model?.get?.( 'elType' ) || c.type;
+		const elType =
+			c.model?.get?.( 'elType' ) ||
+			c.type ||
+			c.model?.attributes?.elType ||
+			c.elType;
 		if ( elType === SLIDE_TYPE ) {
 			return c;
 		}
@@ -37,7 +41,11 @@ function resolveSlidePosition( slide ) {
 	if ( ! track ) {
 		return null;
 	}
-	const trackType = track.model?.get?.( 'elType' ) || track.type;
+	const trackType =
+		track.model?.get?.( 'elType' ) ||
+		track.type ||
+		track.model?.attributes?.elType ||
+		track.elType;
 	if ( trackType !== TRACK_TYPE ) {
 		return null;
 	}
@@ -45,23 +53,48 @@ function resolveSlidePosition( slide ) {
 	if ( ! slider ) {
 		return null;
 	}
-	const sliderType = slider.model?.get?.( 'elType' ) || slider.type;
+	const sliderType =
+		slider.model?.get?.( 'elType' ) ||
+		slider.type ||
+		slider.model?.attributes?.elType ||
+		slider.elType;
 	if ( sliderType !== SLIDER_TYPE ) {
 		return null;
 	}
 
 	// Index = the slide's position among real slide children of the track.
-	const children = track.model?.get?.( 'elements' );
+	const children =
+		track.model?.get?.( 'elements' ) ||
+		track.model?.attributes?.elements ||
+		track.children;
 	let index = -1;
 	let i = 0;
-	children?.each?.( ( childModel ) => {
-		if ( childModel.get( 'elType' ) === SLIDE_TYPE ) {
-			if ( childModel.get( 'id' ) === slide.id ) {
+
+	const inspectChild = ( childModel ) => {
+		const cType =
+			childModel?.get?.( 'elType' ) ||
+			childModel?.type ||
+			childModel?.elType ||
+			childModel?.attributes?.elType;
+		const cId =
+			childModel?.get?.( 'id' ) ||
+			childModel?.id ||
+			childModel?.attributes?.id;
+		if ( cType === SLIDE_TYPE ) {
+			if ( cId === slide.id ) {
 				index = i;
 			}
 			i++;
 		}
-	} );
+	};
+
+	if ( typeof children?.each === 'function' ) {
+		children.each( inspectChild );
+	} else if ( Array.isArray( children ) ) {
+		children.forEach( inspectChild );
+	} else if ( Array.isArray( children?.models ) ) {
+		children.models.forEach( inspectChild );
+	}
 
 	if ( index < 0 ) {
 		return null;
@@ -93,8 +126,30 @@ function navigatePreviewToSlide( sliderId, slideId, index ) {
 	}
 }
 
-/** Check the current selection; if it resolves to a slide, navigate to it. */
+let isTopWindowClick = false;
+let topWindowClickTime = 0;
+
+if ( typeof window !== 'undefined' ) {
+	window.addEventListener(
+		'pointerdown',
+		() => {
+			isTopWindowClick = true;
+			topWindowClickTime = Date.now();
+		},
+		{ capture: true }
+	);
+}
+
+/** Check the current selection; if it resolves to a slide and originated from Structure panel or UI, navigate to it. */
 function handleSelectionChange( last ) {
+	// Only navigate if the selection interaction originated from the top editor UI (Structure tree, panel, etc.).
+	// Clicks inside the preview iframe canvas will have isTopWindowClick === false, so they do NOT shift the slider.
+	const isRecentTopClick =
+		isTopWindowClick && Date.now() - topWindowClickTime < 2500;
+	if ( ! isRecentTopClick ) {
+		return;
+	}
+
 	let selected = null;
 	try {
 		const els = window.elementor?.selection?.getElements?.();
@@ -123,6 +178,7 @@ function handleSelectionChange( last ) {
 	}
 	last.slideId = pos.slideId;
 	last.t = now;
+	isTopWindowClick = false;
 
 	navigatePreviewToSlide( pos.sliderId, pos.slideId, pos.index );
 }

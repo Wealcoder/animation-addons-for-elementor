@@ -198,24 +198,30 @@ class AAE_A_Loop_Pagination extends Atomic_Element_Base {
 		$method  = isset( $s['load_method'] ) ? $s['load_method'] : 'ajax';
 		$current = isset( $ctx['paged'] ) ? (int) $ctx['paged'] : 1;
 		$total   = isset( $ctx['max_num_pages'] ) ? (int) $ctx['max_num_pages'] : 1;
-		$query   = isset( $ctx['query'] ) ? $ctx['query'] : [];
-		$grid_id = isset( $ctx['grid_id'] ) ? $ctx['grid_id'] : '';
 
-		$cfg = [
-			'method'  => $method,
-			'current' => $current,
-			'total'   => $total,
-			'grid'    => $grid_id,
-			'postId'  => get_the_ID(),
-			'query'   => $query,
-			'nonce'   => wp_create_nonce( 'aae_loop_grid_front' ),
-			'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-		];
+		// Identity (grid id, the declaring document, the viewed post, the
+		// captured query vars, the active filters, nonce + endpoint) comes from
+		// the grid's own builder — the same one the grid element publishes, so
+		// the two can never disagree about which grid they address. Only the
+		// three pagination-specific keys are added here.
+		$cfg = array_merge(
+			AAE_A_Loop_Grid::endpoint_config( $ctx ),
+			[
+				'method'  => $method,
+				'current' => $current,
+				'total'   => $total,
+			]
+		);
 
 		return array_merge( $this->build_base_template_context(), [
 			'pg_method'  => $method,
 			'pg_current' => $current,
 			'pg_total'   => $total,
+			// A page bar over an EMPTY result set is noise — and after an
+			// instant filter it is the commonest way to reach this state. The
+			// result COUNT, not the page count: with nothing found max_pages is
+			// still 1, so a bar reading "1" sat under every empty grid.
+			'pg_empty'   => 0 === (int) ( $ctx['total'] ?? 1 ),
 			'pg_config'  => wp_json_encode( $cfg ),
 		] );
 	}

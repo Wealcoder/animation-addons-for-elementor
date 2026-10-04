@@ -1,12 +1,30 @@
 .aae-a-slider {
+    overflow: visible;
 
     // The slider carries tabindex="0" so keyboard users can drive it with the
     // arrow keys. Clicking it then also focuses it, and the UA outline reads as
     // a stray black border across the top — which is what the runtime used to
     // kill with an inline `outline: none`. That killed it for KEYBOARD focus
     // too, leaving a tab stop with no visible indicator (WCAG 2.4.7).
-    // `:focus:not(:focus-visible)` is the narrow version: quiet for pointer
-    // focus, untouched for keyboard focus.
+    //
+    // `:focus:not(:focus-visible)` was the first narrow attempt and it CANNOT
+    // work on its own in Chrome: the runtime focuses the slider from its
+    // pointerdown handler, Chrome treats scripted focus on a non-text element as
+    // focus-visible, and Chrome's UA sheet paints the ring only for
+    // :focus-visible. So whenever the ring is visible the element matches
+    // :focus-visible — precisely what the `:not()` excludes. The rule is kept
+    // because it is the correct path in browsers that honour the
+    // `focusVisible: false` focus option (Firefox), where the ring genuinely is
+    // a plain :focus.
+    //
+    // The marker below is what suppresses it in Chrome. The runtime sets
+    // data-aae-pointer-focus only when IT focuses the slider from a pointerdown,
+    // and removes it on the first keydown, so keyboard focus keeps its ring.
+    &[data-aae-pointer-focus]:focus,
+    &[data-aae-pointer-focus]:focus-visible {
+        outline: none;
+    }
+
     &:focus:not(:focus-visible) {
         outline: none;
     }
@@ -18,28 +36,60 @@
     // padding (NOT the `--padding-*` custom props), and stays overridable by the
     // user's Style-panel padding.
 
-    .aae-slider-track > * {
-        flex: 0 0 calc((100% - (var(--aae-slide-gap) * (var(--aae-slides-per-view) - 1))) / var(--aae-slides-per-view));
-        max-width: calc((100% - (var(--aae-slide-gap) * (var(--aae-slides-per-view) - 1))) / var(--aae-slides-per-view));
+    .aae-slider__viewport {
+        overflow: hidden;
+        width: 100%;
+        position: relative;
         box-sizing: border-box;
-        transform-style: preserve-3d;
-        transition: transform 0.5s ease-out;
-        height: var(--aae-slide-height, auto);
+        contain: layout paint;
     }
 
-    // Contain the nav arrow's SVG to the fixed 44px badge. The nav button is a
-    // constant round badge (see AAE_A_Slider_Nav_{Prev,Next}::define_base_styles()),
-    // but its SVG child can be a huge 65px (an element saved before the `aae-a-svg`
-    // 20px utility existed) — which would overflow the badge and break the circle.
-    // Cap it to the badge's inner box (44px − 8px padding × 2 ≈ 24px) so old-saved
-    // and freshly-dropped arrows look identical. The SVG carries inline
-    // width/height:100%, so constraining its `e-svg-base` wrapper is what bites.
+    .aae-slider-track {
+        overflow: visible !important;
+        will-change: transform;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        transform: translateZ(0);
+
+        > * {
+            flex: 0 0 calc((100% - (var(--aae-slide-gap) * (var(--aae-slides-per-view) - 1))) / var(--aae-slides-per-view));
+            max-width: calc((100% - (var(--aae-slide-gap) * (var(--aae-slides-per-view) - 1))) / var(--aae-slides-per-view));
+            box-sizing: border-box;
+            transform-style: preserve-3d;
+            transition: transform 0.5s ease-out;
+            height: var(--aae-slide-height, auto);
+            will-change: transform, opacity;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+    }
+
+    // Contain the nav arrow's SVG to the badge's own content box (44px badge
+    // minus 8px padding on each side) rather than a fixed pixel cap. A fixed
+    // 24px cap used to sit here and silently overrode the SVG's own Size
+    // control in the Style tab — increasing the icon's width/height there had
+    // no visible effect, because this rule always won regardless of what the
+    // user asked for. A relative cap still stops a legacy element (saved
+    // before the `aae-a-svg` 20px utility existed, so its SVG defaults to
+    // Atomic_Svg's 65px) from overflowing the round badge, but a size the
+    // user explicitly sets — up to the available ~28px — now actually takes
+    // effect.
     .aae-a-navigator-prev,
     .aae-a-navigator-next {
+        cursor: pointer;
+
         .e-svg-base,
         svg {
-            max-width: 24px;
-            max-height: 24px;
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        &.e--disabled,
+        &.is-disabled,
+        &[aria-disabled="true"] {
+            opacity: 0.4;
+            cursor: not-allowed;
+            pointer-events: none;
         }
     }
 }
