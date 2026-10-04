@@ -193,12 +193,17 @@
           beforeSend: function () { },
 
           success: function (response) {
-            //type
-            document.querySelector(
+            //type — a template with no saved type (e.g. a WPML translation
+            // created before its meta was copied) has no matching option;
+            // keep the default instead of throwing before the popup opens.
+            let tmpTypeOption = document.querySelector(
               "#wcf-addons-template-type option[value='" +
               response.data.tmpType +
               "']"
-            ).selected = "true";
+            );
+            if (tmpTypeOption) {
+              tmpTypeOption.selected = "true";
+            }
             $("#wcf-addons-template-title").attr(
               "value",
               response.data.tmpTitle
@@ -236,9 +241,13 @@
             let temDisplay = $(
               ".hf-location:visible select, .archive-location:visible select, .single-location:visible select"
             );
-            temDisplay.find(
+            // Same for an empty display condition: no matching option.
+            let tmpDisplayOption = temDisplay.find(
               "option[value='" + response.responseJSON.data.tmpLocation + "']"
-            )[0].selected = "true";
+            )[0];
+            if (tmpDisplayOption) {
+              tmpDisplayOption.selected = "true";
+            }
 
             //display specific locations
             if (response.responseJSON.data.tmpSpLocation) {
