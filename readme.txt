@@ -23,7 +23,7 @@ Elementor Free is required. Elementor Pro is not required for the Animation Addo
 [Elementor V4 Templates](https://animation-addons.com/)
 [Elementor V4 Toolkit](https://animation-addons.com/) 
 
-###Built for Elementor V4 and the Atomic Editor
+### Built for Elementor V4 and the Atomic Editor
 
 Elementor V4 introduces a more scalable workflow based on Atomic Elements, reusable Classes, Variables, responsive controls, and a unified styling system.
 = Animation Addons extends that workflow with: =
@@ -48,7 +48,7 @@ https://youtu.be/gFRQb_UteKs
 
 Explore 40+ Elementor V4 Atomic Widgets built natively for the Elementor V4 Atomic Editor. Create content, dynamic layouts, forms, navigation, sliders, videos, and GSAP-powered interactions using reusable Classes, Variables, and responsive controls.
 
-### Content & UI Atomic Widgets =
+### Content & UI Atomic Widgets
 
 * **Atomic Counter** – Create animated number counters for stats, achievements, and metrics.
 * **Atomic Advanced Heading** – Build styled Elementor V4 headings with flexible typography and layouts.
@@ -83,7 +83,7 @@ Explore 40+ Elementor V4 Atomic Widgets built natively for the Elementor V4 Atom
 * **Atomic Posts Grid** – Display WordPress posts in responsive grid layouts.
 * **Atomic Loop Grid** – Build dynamic Elementor V4 loop layouts for posts and custom content.
 
-###Blog Atomic Widgets 
+### Blog Atomic Widgets
 
 * **Atomic Post Title** – Display dynamic WordPress post titles in templates.
 * **Atomic Search Query** – Display the current WordPress search query dynamically.
@@ -92,24 +92,24 @@ Explore 40+ Elementor V4 Atomic Widgets built natively for the Elementor V4 Atom
 * **Atomic Post Pagination** – Add navigation between WordPress posts and content.
 * **Atomic Table of Contents** – Generate structured navigation for long-form content.
 
-###Header & Footer Atomic Widgets
+### Header & Footer Atomic Widgets
 
 * **Atomic WP Menu** – Display WordPress menus inside Elementor V4 layouts.
 * **Atomic Nav** – Build flexible navigation menus for headers and websites.
 * **Atomic Site Logo** – Display your WordPress site logo dynamically.
 
-###Slider Atomic Widgets 
+### Slider Atomic Widgets
 
 * **Atomic Loop Grid Slider** – Turn dynamic Loop Grid content into responsive sliders.
 * **Atomic Nested Slider** – Build flexible sliders with nested Elementor content.
 * **Atomic Stack Cards** – Create interactive stacked-card slider experiences.
 
-###Video Atomic Widgets
+### Video Atomic Widgets
 
 * **Atomic Video Mask** – Create masked video layouts for modern Elementor designs.
 * **Atomic Video** – Add responsive videos with customizable controls and layouts.
 
-###Elementor V4 Loop Filter Atomic Widgets
+### Elementor V4 Loop Filter Atomic Widgets
 
 Build advanced filtering experiences for Elementor V4 Loop Grid layouts with Atomic Loop Filter Widgets.
 
@@ -151,17 +151,17 @@ Animation capabilities include:
 📸 Image Sequence Animation 
 🌟 Reveal Animation
 🌫️ Bounce & Fade Animation 
-✨ Cursor Hover, Cursor MoveEffect and Custom Cursor Effects]
+✨ Cursor Hover, Cursor MoveEffect and Custom Cursor Effects
 
-###Elementor V4 Extensions
+### Elementor V4 Extensions
 
 = Animation and interaction extensions: = 
 * **Regular Animation** – Add flexible entrance and motion effects.
 * **Parallax** – Create smooth scroll-based parallax effects.
 * **Text Animation** – Animate headings and text visually.
-* **Image Animation – Add motion effects to images.
-* **Horizontal Scroll Animation – Create horizontal scrolling sections.
-* **Image Hover – Add interactive image hover effects.
+* **Image Animation** – Add motion effects to images.
+* **Horizontal Scroll Animation** – Create horizontal scrolling sections.
+* **Image Hover** – Add interactive image hover effects.
 * **Sticky Pin Element** – Keep elements fixed while scrolling.
 * **Cursor Hover Effect** – Add cursor-based hover interactions.
 * **Mouse Move Effect** – Move elements with cursor movement.
@@ -187,7 +187,7 @@ Animation capabilities include:
 * **Custom Icon** – Upload and use custom icon sets.
 * **Code Snippet** – Add custom CSS, JavaScript, or HTML snippets.
 
-###Elementor V4 Templates
+### Elementor V4 Templates
 
 = The V4 toolkit includes: =
 
@@ -397,14 +397,14 @@ Sends: email and mapped form fields.
 Terms: https://mailchimp.com/legal/terms/
 Privacy: https://mailchimp.com/legal/privacy/
 
-=6. Video Services = 
+= 6. Video Services =
 
 YouTube: https://www.youtube.com/t/terms
 Vimeo: https://vimeo.com/terms
 Dailymotion: https://legal.dailymotion.com/en/terms-of-use/
 VideoPress: https://wordpress.com/tos/
 
-= 8. Google Maps =
+= 7. Google Maps =
 maps.google.com
 Loads the configured map in an iframe.
 Terms: https://policies.google.com/terms
@@ -487,5 +487,5 @@ Vendored libraries:
 
 == Upgrade Notice ==
 
-= 4.2.2 =
-Recommended update for compatibility, stability, Starter Template importing, and Elementor V4 workflows.
+= 4.2.6 =
+Performance optimizations in Theme Builder, Elementor 4.3 compatibility fixes, and WPML enhancements.
