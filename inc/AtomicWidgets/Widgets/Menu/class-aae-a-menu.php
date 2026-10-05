@@ -16,6 +16,8 @@ use Elementor\Modules\AtomicWidgets\Controls\Types\Number_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Svg_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Image_Control;
 use Elementor\Modules\AtomicWidgets\PropTypes\Svg_Src_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Union_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Icon_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Image_Prop_Type;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
@@ -75,6 +77,27 @@ class Aaeaddon_A_Menu extends Atomic_Widget_Base {
 	 */
 	public function get_categories(): array {
 		return [ 'aae-atomic-general', 'wcf-hf-addon' ];
+	}
+
+	/**
+	 * Elementor 4.3's Svg_Control binds BOTH `svg-src` and `icon` and throws
+	 * "Prop type is missing" when the prop is not a union carrying `icon` — the
+	 * control then renders nothing under its label. Mirrors core e-svg's `svg`
+	 * prop; older cores without Icon_Prop_Type keep the plain Svg_Src.
+	 * Uploaded SVGs are still stored as `svg-src`, so existing values and the
+	 * template's `.url` / `.html` reads are unchanged.
+	 */
+	private static function svg_icon_prop( string $default_url = '' ) {
+		$svg_src = Svg_Src_Prop_Type::make();
+		if ( '' !== $default_url ) {
+			$svg_src->default_url( $default_url );
+		}
+
+		if ( ! class_exists( Icon_Prop_Type::class ) ) {
+			return $svg_src;
+		}
+
+		return Union_Prop_Type::create_from( $svg_src )->add_prop_type( Icon_Prop_Type::make() );
 	}
 
 	protected static function define_props_schema(): array {
@@ -182,10 +205,8 @@ class Aaeaddon_A_Menu extends Atomic_Widget_Base {
 			// Twig compares against these paths, so the built-in glyphs (CSS
 			// chevron on flyouts, +/− in Vertical) are untouched until the builder
 			// actually picks a different file. See the `tg_is_custom` note there.
-			'toggle_icon'       => Svg_Src_Prop_Type::make()
-				->default_url( AAEADDON_URL . self::TOGGLE_ICON_DEFAULT ),
-			'toggle_icon_open'  => Svg_Src_Prop_Type::make()
-				->default_url( AAEADDON_URL . self::TOGGLE_ICON_OPEN_DEFAULT ),
+			'toggle_icon'       => self::svg_icon_prop( AAEADDON_URL . self::TOGGLE_ICON_DEFAULT ),
+			'toggle_icon_open'  => self::svg_icon_prop( AAEADDON_URL . self::TOGGLE_ICON_OPEN_DEFAULT ),
 			'toggle_color'      => String_Prop_Type::make()->default( '' ),
 			'toggle_bg'         => String_Prop_Type::make()->default( '' ),
 			'toggle_hover_bg'   => String_Prop_Type::make()->default( '' ),
