@@ -13,6 +13,8 @@ use Elementor\Modules\AtomicWidgets\Controls\Types\Svg_Control;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Svg_Src_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Icon_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Union_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
@@ -103,8 +105,7 @@ class Aaeaddon_A_Nav extends Atomic_Element_Base {
 			/* Desktop dropdown indicator icon. nav.js inlines this SVG next to the
 			 * label of every item that has a dropdown (see injectDropdownIcons). */
 			'show_dropdown_icon' => Boolean_Prop_Type::make()->default( true ),
-			'dropdown_icon' => Svg_Src_Prop_Type::make()
-				->default_url( AAEADDON_URL . 'inc/AtomicWidgets/Widgets/Nav/assets/icons/chevron-down.svg' ),
+			'dropdown_icon' => self::svg_icon_prop( AAEADDON_URL . 'inc/AtomicWidgets/Widgets/Nav/assets/icons/chevron-down.svg' ),
 			'mobile_enabled' => Boolean_Prop_Type::make()->default( false ),
 			'mobile_breakpoint' => String_Prop_Type::make()->default( '767' ),
 			'mobile_position' => String_Prop_Type::make()->default( 'right' ),
@@ -130,15 +131,29 @@ class Aaeaddon_A_Nav extends Atomic_Element_Base {
 			/* Icon pickers mirrored to the companion's SVG children by the
 			 * NavItemsControl reconciler. Default to the bundled icons so the
 			 * control shows the current icon and swapping is one click. */
-			'mobile_hamburger_icon' => Svg_Src_Prop_Type::make()
-				->default_url( AAEADDON_URL . 'inc/AtomicWidgets/Widgets/Nav/assets/icons/hamburger.svg' ),
-			'mobile_close_icon' => Svg_Src_Prop_Type::make()
-				->default_url( AAEADDON_URL . 'inc/AtomicWidgets/Widgets/Nav/assets/icons/close.svg' ),
-			'mobile_dropdown_icon' => Svg_Src_Prop_Type::make()
-				->default_url( AAEADDON_URL . 'inc/AtomicWidgets/Widgets/Nav/assets/icons/chevron-down.svg' ),
-			'mobile_back_icon' => Svg_Src_Prop_Type::make()
-				->default_url( AAEADDON_URL . 'inc/AtomicWidgets/Widgets/Nav/assets/icons/chevron-left.svg' ),
+			'mobile_hamburger_icon' => self::svg_icon_prop( AAEADDON_URL . 'inc/AtomicWidgets/Widgets/Nav/assets/icons/hamburger.svg' ),
+			'mobile_close_icon' => self::svg_icon_prop( AAEADDON_URL . 'inc/AtomicWidgets/Widgets/Nav/assets/icons/close.svg' ),
+			'mobile_dropdown_icon' => self::svg_icon_prop( AAEADDON_URL . 'inc/AtomicWidgets/Widgets/Nav/assets/icons/chevron-down.svg' ),
+			'mobile_back_icon' => self::svg_icon_prop( AAEADDON_URL . 'inc/AtomicWidgets/Widgets/Nav/assets/icons/chevron-left.svg' ),
 		];
+	}
+
+	/**
+	 * Elementor 4.3's Svg_Control binds BOTH `svg-src` and `icon` and throws
+	 * "Prop type is missing" when the prop is not a union carrying `icon` — the
+	 * control then renders nothing under its label. Mirrors core e-svg's `svg`
+	 * prop; older cores without Icon_Prop_Type keep the plain Svg_Src.
+	 * Uploaded SVGs are still stored as `svg-src`, so the Twig `.url` read and
+	 * the companion icon sync are unchanged.
+	 */
+	private static function svg_icon_prop( string $default_url ) {
+		$svg_src = Svg_Src_Prop_Type::make()->default_url( $default_url );
+
+		if ( ! class_exists( Icon_Prop_Type::class ) ) {
+			return $svg_src;
+		}
+
+		return Union_Prop_Type::create_from( $svg_src )->add_prop_type( Icon_Prop_Type::make() );
 	}
 
 	/**
