@@ -11,6 +11,9 @@ defined('ABSPATH') || die();
 class Advance_Accordion extends \WPML_Elementor_Module_With_Items
 {
 
+	use \Wealcoder\AnimationAddons\INC\WPML\Aaeaddon_Wpml_Safe_Items;
+
+
 	/**
 	 * Repeater control name
 	 */

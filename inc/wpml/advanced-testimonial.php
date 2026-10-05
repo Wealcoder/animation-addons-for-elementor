@@ -11,6 +11,9 @@ defined('ABSPATH') || die();
 class Advanced_Testimonial extends \WPML_Elementor_Module_With_Items
 {
 
+	use \Wealcoder\AnimationAddons\INC\WPML\Aaeaddon_Wpml_Safe_Items;
+
+
 	/**
 	 * Repeater field name in widget settings
 	 *

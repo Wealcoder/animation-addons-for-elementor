@@ -133,7 +133,30 @@ abstract class WPML_Module_With_Items implements IWPML_Page_Builders_Module {
 	 * @return mixed
 	 */
 	public function get_items( $element ) {
-		return $element[ WPML_Elementor_Translatable_Nodes::SETTINGS_FIELD ][ $this->get_items_field() ];
+		$items = $element[ WPML_Elementor_Translatable_Nodes::SETTINGS_FIELD ][ $this->get_items_field() ] ?? array();
+
+		return is_array( $items ) ? $items : array();
 	}
 
+}
+
+/**
+ * A repeater the saved element does not carry — a page saved before the control
+ * existed, or a section that was never opened — is simply absent from its
+ * settings. WPML's own get_items() reads it unguarded and then foreach()es the
+ * result, so every such element logged two warnings per save, which land inside
+ * the editor's ajax JSON wherever display_errors is on.
+ */
+trait Aaeaddon_Wpml_Safe_Items {
+
+	/**
+	 * @param array $element
+	 *
+	 * @return array
+	 */
+	public function get_items( $element ) {
+		$items = $element['settings'][ $this->get_items_field() ] ?? array();
+
+		return is_array( $items ) ? $items : array();
+	}
 }

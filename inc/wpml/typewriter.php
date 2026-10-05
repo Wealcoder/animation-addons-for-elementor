@@ -8,6 +8,9 @@ defined( 'ABSPATH' ) || die();
 
 class Typewriter extends \WPML_Elementor_Module_With_Items {
 
+	use \Wealcoder\AnimationAddons\INC\WPML\Aaeaddon_Wpml_Safe_Items;
+
+
 	/**
 	 * Repeater control name
 	 */
