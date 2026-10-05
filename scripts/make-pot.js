@@ -22,7 +22,7 @@ const args = [
 ];
 
 const run = ( cmd, cmdArgs ) =>
-	spawnSync( cmd, cmdArgs, { cwd: root, stdio: 'inherit', shell: false } );
+	spawnSync( cmd, cmdArgs, { cwd: root, stdio: 'inherit', shell: process.platform === 'win32' } );
 
 let result;
 if ( process.env.WP_CLI_PHAR ) {
