@@ -108,9 +108,9 @@
     "watch-win": "gulp watch --development",
     "build": "gulp clean:atomic && wp-scripts build && gulp minify:atomic-js && gulp compile:atomic-scss && gulp copy:atomic-images && gulp minify:atomic-css",
     "production": "gulp zip",
-    "release": "npm run build && npm run build-win && npm run production",
+    "release": "npm run build && npm run i18n && npm run build-win && npm run production",
     "start": "concurrently -n webpack,gulp -c blue,green \"wp-scripts start\" \"gulp buildCss && gulp watch\"",
-    "i18n": "wp i18n make-pot ."
+    "i18n": "node scripts/make-pot.js"
   },
   "author": "wealcoder",
   "license": "GPL-2.0-or-later",

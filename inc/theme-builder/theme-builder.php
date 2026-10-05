@@ -1767,8 +1767,6 @@ class Aaeaddon_Theme_Builder
 		);
 
 		register_post_type(self::CPTTYPE, $args);
-
-		flush_rewrite_rules();
 	}
 
 	/**

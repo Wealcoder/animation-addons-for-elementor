@@ -5,7 +5,7 @@ Tags: elementor, elementor v4, atomic widgets, elementor addons, elementor templ
 Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 4.2.5
+Stable tag: 4.2.6
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -439,6 +439,14 @@ Vendored libraries:
 * Select2 4.1.0: https://github.com/select2/select2
 
 == Changelog ==
+
+= 4.2.6 =
+* Improved: Performance optimization in Theme Builder by removing redundant rewrite rule flushes on request initialization.
+* Fixed: Compatibility with Elementor 4.3 Svg_Control in Atomic Menu and Nav widgets to prevent "Prop type is missing" errors.
+* Improved: Enhanced WPML multilingual compatibility across widgets and theme builder.
+* Fixed: Template Library dependency dialog styling to seamlessly adapt to Elementor's Light and Dark themes.
+* Improved: Template Library V4 insert now honors Live Paste image choices.
+* Fixed: A brand-new install could show the "settings moved to new storage names" migration notice — when activated without the activation hook (installed by a template's dependency installer, or a network site created later) or reinstalled after being deleted.
 
 = 4.2.5 =
 * Fixed: Section template previews in the Template Library opened without the template, because the preview link reached the demo site as "amp;post" instead of "post".

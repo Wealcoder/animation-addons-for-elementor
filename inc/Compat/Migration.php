@@ -163,15 +163,27 @@ final class Migration {
 	/**
 	 * Does this database carry a pre-4.2 row? Raw reads — the bridge must not
 	 * answer, and every sentinel is autoloaded on a site that has one.
+	 *
+	 * An old row whose NEW twin also exists does not count: that pair was
+	 * written by 4.2+ (the new rows are live and every write is mirrored into
+	 * the old name). Uninstall deletes the state but keeps settings, so a
+	 * 4.2+ site deleted and installed again still holds those mirrors — they
+	 * are not pre-4.2 data, and complete_fresh()'s copy() carries any old
+	 * value that differs forward anyway.
 	 */
 	public static function existing_site( $previous_version = '' ) {
 		if ( '' !== (string) $previous_version ) {
 			return true;
 		}
 		foreach ( self::SENTINELS as $name ) {
-			if ( false !== Key_Bridge::raw_get( $name ) ) {
-				return true;
+			if ( false === Key_Bridge::raw_get( $name ) ) {
+				continue;
 			}
+			$twin = Key_Bridge::other_name( $name );
+			if ( null !== $twin && false !== Key_Bridge::raw_get( $twin ) ) {
+				continue;
+			}
+			return true;
 		}
 		return false;
 	}

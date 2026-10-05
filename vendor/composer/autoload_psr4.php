@@ -7,5 +7,4 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Wealcoder\\AnimationAddons\\' => array($baseDir . '/inc'),
-    'PHPCSStandards\\Composer\\Plugin\\Installers\\PHPCodeSniffer\\' => array($vendorDir . '/dealerdirect/phpcodesniffer-composer-installer/src'),
 );
