@@ -10,7 +10,8 @@ const badgeVariants = cva(
         default: "bg-background text-text-primary rounded-full border",
         filter: "bg-background text-text-primary rounded-lg border px-3 py-1.5 text-sm hover:bg-[#FFF3F0] hover:border-[#FFE5DF] hover:text-[#ED745A] hover:font-medium",
         pro: "border-0 px-[7px] py-[3px] h-[18px] text-[11px] leading-[0.91] mt font-medium bg-[linear-gradient(109deg,#FFC47D_7.79%,#FFA132_92.21%)] text-white rounded-full",
-        tPro: "border-0 pe-2.5 h-[26px] text-sm font-medium bg-[linear-gradient(45deg,#FF7A00_0%,#FFD439_100%)] text-white rounded-full",
+        beta: "border-0 px-[7px] py-[3px] h-[18px] text-[11px] leading-[0.91] font-medium bg-[#EBF1FF] text-[#335CFF] rounded-full",
+        tPro:"border-0 pe-2.5 h-[26px] text-sm font-medium bg-[linear-gradient(45deg,#FF7A00_0%,#FFD439_100%)] text-white rounded-full",
         version: "bg-[rgb(255 255 255 / 60%)] text-text rounded-[8px] max-sm:hidden text-[10px]",
         solid:
           "bg-[#E7350F] border-2 border-solid border-background rounded-[4px] p-0 w-2.5 h-2.5",

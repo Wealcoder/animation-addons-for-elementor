@@ -53,7 +53,10 @@ export const generalGroupExtensionFn = (mainContent, data, dispatch) => {
   const result = Object.fromEntries(
     Object.entries(mainContent.elements["general-extensions"].elements).map(
       ([key, value]) => {
-        if (value.is_pro && (value?.pro_only ?? false)) {
+        // Upcoming cards have no switch; bulk toggles leave them as saved.
+        if (value.is_upcoming) {
+          return [key, value];
+        } else if (value.is_pro && (value?.pro_only ?? false)) {
           if (isOnlyPro) {
             value.is_active = data.value;
             return [key, value];
@@ -323,7 +326,7 @@ export const allExtensionFn = (mainContent, data, dispatch) => {
   const generalResult = Object.fromEntries(
     Object.entries(mainContent.elements["general-extensions"].elements).map(
       ([key, value]) => {
-        if (value.is_pro && !isValid) {
+        if (value.is_upcoming || (value.is_pro && !isValid)) {
           return [key, value];
         } else {
           value.is_active = data.value;
@@ -395,7 +398,7 @@ export const allSetupExtensionFn = (mainContent, data) => {
   const generalResult = Object.fromEntries(
     Object.entries(mainContent.elements["general-extensions"].elements).map(
       ([key, value]) => {
-        if (value.is_pro && !isValid) {
+        if (value.is_upcoming || (value.is_pro && !isValid)) {
           return [key, value];
         } else {
           value.is_active = value.setup?.includes(data);

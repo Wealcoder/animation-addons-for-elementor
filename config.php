@@ -3099,6 +3099,7 @@ return array(
 						'is_active'    => false,
 						'is_extension' => true,
 						'is_upcoming'  => false,
+						'is_beta'      => true, // Display only -- see registry/extensions.php.
 						'demo_url'     => '',
 						'doc_url'      => '',
 						'youtube_url'  => '',
