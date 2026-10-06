@@ -12,8 +12,8 @@
  *      block in the main file) calls `on_version_change()`, which writes
  *      `aaeaddon_migration_state = { status: awaiting_consent }`. ONE option
  *      write; no table scan, no count.
- *   3. The Migration screen (`?page=aaeaddon_settings&tab=migration`, also
- *      its own submenu item) and a notice on the plugin's own screens tell
+ *   3. The Migration screen (`?page=aaeaddon_settings&tab=migration`, not
+ *      in the admin menu) and a notice on the plugin's own screens tell
  *      the administrator what would be copied. The counts are taken when
  *      that PAGE is opened, never on a visitor's request.
  *   4. "Start migration" (`aaeaddon_migration_start`) copies every old row
@@ -23,9 +23,9 @@
  *      write-through mirrors: current, never deleted, the rollback point.
  *
  * A FRESH install (no pre-4.2 row anywhere) is `complete` from its activation
- * hook and never sees the screen's consent state or the notice; the submenu
- * item still exists and opens the page in its finished state, so the backup
- * and the log are always reachable.
+ * hook and never sees the screen's consent state or the notice; the URL
+ * still opens the page in its finished state, so the backup and the log are
+ * always reachable.
  *
  * `on_version_change()` also runs the copy again — silently — whenever the
  * state is already `complete`: a site that was downgraded, wrote rows under
@@ -86,8 +86,10 @@ final class Migration {
 
 	/** Hook everything the feature needs. Called once from the plugin bootstrap. */
 	public static function init() {
-		add_action( 'admin_menu', array( __CLASS__, 'register_menu' ), 27 );
-		add_filter( 'submenu_file', array( __CLASS__, 'highlight_menu' ) );
+		// No submenu item: the screen is the dashboard's `?tab=migration`,
+		// reached from the notice, the plugin row and Pro's activation
+		// redirect. With no item of its own, WordPress highlights Settings
+		// while it is open.
 		add_filter( 'wcf_addons_dashboard_config', array( __CLASS__, 'inject_dashboard_config' ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 		add_action( 'admin_init', array( __CLASS__, 'register_notices' ), 11 );
 		add_action( 'after_plugin_row_' . AAEADDON_BASE, array( __CLASS__, 'plugin_row' ), 10, 1 );
@@ -689,32 +691,6 @@ final class Migration {
 	/* ------------------------------------------------------------------ */
 	/* Menu, notices, plugin rows                                           */
 	/* ------------------------------------------------------------------ */
-
-	/**
-	 * Always registered — a person restoring an old database backup months
-	 * later, or installing an old Pro, must be able to reach the tool
-	 * without knowing a URL. Only the NOTICE is gated on the status.
-	 */
-	public static function register_menu() {
-		add_submenu_page(
-			'aaeaddon_page',
-			esc_html__( 'Storage Migration', 'animation-addons-for-elementor' ),
-			esc_html__( 'Migration', 'animation-addons-for-elementor' ),
-			self::CAP,
-			self::PAGE_URL,
-			'',
-			2
-		);
-	}
-
-	public static function highlight_menu( $submenu_file ) {
-		if ( isset( $_GET['page'], $_GET['tab'] ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			&& 'aaeaddon_settings' === $_GET['page'] // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			&& 'migration' === $_GET['tab'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			return self::PAGE_URL;
-		}
-		return $submenu_file;
-	}
 
 	public static function inject_dashboard_config( $configs ) {
 		if ( is_array( $configs ) ) {
