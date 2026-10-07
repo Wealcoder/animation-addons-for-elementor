@@ -17,7 +17,6 @@ use Elementor\Modules\AtomicWidgets\Controls\Types\Inline_Editing_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Dimensions_Prop_Type;
@@ -25,6 +24,7 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Color_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
+use Wealcoder\AnimationAddons\AtomicWidgets\Atomic_Text;
 
 /**
  * AAE Progress Bar — Label. The "0%" counter text progressbar.js animates on
@@ -64,11 +64,7 @@ class Aaeaddon_A_Progressbar_Label extends Atomic_Widget_Base {
 		return [
 			'classes' => Classes_Prop_Type::make()->default( [] ),
 			'attributes' => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
-			'text' => Html_V3_Prop_Type::make()
-				->default( [
-					'content'  => String_Prop_Type::generate( '0%' ),
-					'children' => [],
-				] )
+			'text' => Atomic_Text::inline_prop_type( '0%' )
 				->description( 'The percentage label text.' ),
 			'tag' => String_Prop_Type::make()->default( 'span' ),
 		];
