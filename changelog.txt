@@ -1,6 +1,15 @@
 
 == Changelog ==
 
+= 🌀 Animation Addons for Elementor v4.2.6 – 5th October 2026
+
+  - **Improved:** Performance optimization in Theme Builder by removing redundant rewrite rule flushes on request initialization.
+  - **Fixed:** Compatibility with Elementor 4.3 Svg_Control in Atomic Menu and Nav widgets to prevent "Prop type is missing" errors.
+  - **Improved:** Enhanced WPML multilingual compatibility across widgets and theme builder.
+  - **Fixed:** Template Library dependency dialog styling to seamlessly adapt to Elementor's Light and Dark themes.
+  - **Improved:** Template Library V4 insert now honors Live Paste image choices and drops foreign video IDs.
+  - **Fixed:** A brand-new install could show the "settings moved to new storage names" migration notice — when activated without the activation hook (installed by a template's dependency installer, or a network site created later) or reinstalled after being deleted.
+
 = 🌀 Animation Addons for Elementor v4.1.0 – 8th September 2026
 
   - **Changed:** This plugin no longer installs, activates, deactivates or switches any plugin or theme on your site. Elementor is declared through the "Requires Plugins" header, and WordPress handles the dependency. The only installer left is the one-click Elementor install, which runs from WordPress.org, only on a click, behind a nonce and the "install_plugins" capability.

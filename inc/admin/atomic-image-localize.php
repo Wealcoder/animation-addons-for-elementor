@@ -179,12 +179,18 @@ class Atomic_Image_Localize {
 	 *                                for the caller's message.
 	 * @param bool       $foreign_ids Treat an `id` beside a `url` as another
 	 *                                site's (a block export) — replace or drop.
+	 * @param bool       $photos      false = leave raster photos (`image-src`) on
+	 *                                the demo server: url kept, any foreign id
+	 *                                still removed. SVG icons and Lotties are
+	 *                                copied either way. Live Paste's "Keep demo
+	 *                                image links".
 	 * @return array{elements:array,images:int,lottie:int,reused:int,failed:int,stopped:bool}
 	 */
-	public static function localize_elements( array $elements, bool $images = true, ?float $budget = null, bool $foreign_ids = true ): array {
+	public static function localize_elements( array $elements, bool $images = true, ?float $budget = null, bool $foreign_ids = true, bool $photos = true ): array {
 		$state                = self::fresh_state();
 		$state['images']      = $images;
 		$state['foreign_ids'] = $foreign_ids;
+		$state['photos']      = $photos;
 
 		$budget   = null === $budget ? (float) apply_filters( 'aae/template_library/localize_budget', 20.0 ) : $budget; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 		$deadline = microtime( true ) + $budget;
@@ -197,7 +203,8 @@ class Atomic_Image_Localize {
 			// Anything after the cut is neither downloaded nor recorded; count
 			// what is still pending so the message can say it stays linked.
 			$pending = [];
-			self::collect_urls( $tree, $pending, $images, $foreign_ids );
+			// Photos deliberately left linked are not failures.
+			self::collect_urls( $tree, $pending, $images && $photos, $foreign_ids );
 			foreach ( array_keys( $pending ) as $url ) {
 				if ( ! isset( $state['cache'][ $url ] ) ) {
 					$state['failed'][ $url ] = true;
@@ -253,7 +260,26 @@ class Atomic_Image_Localize {
 			return $node;
 		}
 
+		// A hosted video (`video-src`: AAE Video's "hosted" source, Elementor's
+		// e-self-hosted-video) is never downloaded — a hero mp4 can outweigh
+		// the whole request budget, and it streams fine from its source. But
+		// an id that came WITH it is the source site's, and Video_Src_Transformer
+		// resolves an id before the url (`if ( $id ) $url =
+		// wp_get_attachment_url( $id )`): kept, it plays whatever local file
+		// owns that number, or nothing. So the id goes and the url stays, in
+		// both Live Paste modes. Only when a url is there to fall back on.
+		if ( ! empty( $state['foreign_ids'] ) && self::is_linked_video( $node ) ) {
+			return self::drop_foreign_id( $node, $state );
+		}
+
 		if ( ! empty( $state['images'] ) && self::is_localizable_src( $node, ! empty( $state['foreign_ids'] ) ) ) {
+			// "Keep demo image links": the photo stays a hot-link. The foreign
+			// id still goes (XOR rule, see drop_foreign_id()). Absent = copy,
+			// so every caller that predates the flag behaves as before.
+			if ( false === ( $state['photos'] ?? true ) && 'image-src' === $node['$$type'] ) {
+				return self::drop_foreign_id( $node, $state );
+			}
+
 			$url = (string) $node['value']['url']['value'];
 
 			if ( isset( $state['failed'][ $url ] ) ) {
@@ -345,6 +371,20 @@ class Atomic_Image_Localize {
 		}
 
 		return isset( $node['value']['url']['value'] )
+			&& is_string( $node['value']['url']['value'] )
+			&& '' !== $node['value']['url']['value'];
+	}
+
+	/**
+	 * A `video-src` carrying both an id and a usable url. See walk().
+	 */
+	public static function is_linked_video( $node ): bool {
+		return is_array( $node )
+			&& isset( $node['$$type'], $node['value'] )
+			&& 'video-src' === $node['$$type']
+			&& is_array( $node['value'] )
+			&& ! empty( $node['value']['id'] )
+			&& isset( $node['value']['url']['value'] )
 			&& is_string( $node['value']['url']['value'] )
 			&& '' !== $node['value']['url']['value'];
 	}

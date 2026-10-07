@@ -162,6 +162,28 @@ const WidgetCard = ({
                     ""
                   )}
 
+                  {/* Usable, still early. Sits beside PRO rather than replacing it. */}
+                  {widget?.is_beta && !widget?.is_upcoming ? (
+                    <>
+                      {widget?.is_pro ? (
+                        ""
+                      ) : (
+                        <Dot
+                          className="w-3.5 h-3.5 text-icon-secondary"
+                          strokeWidth={2}
+                        />
+                      )}
+                      <Badge
+                        variant="beta"
+                        className={widget?.is_pro ? "ml-1" : ""}
+                      >
+                        {__("BETA", "animation-addons-for-elementor")}
+                      </Badge>
+                    </>
+                  ) : (
+                    ""
+                  )}
+
                   {/* What this extension depends on. The registry ships the
                       note ready to render (`requires_note`), so nothing is
                       assembled here — extensions that apply to any atomic

@@ -30,9 +30,12 @@ const FailImport = () => {
       <div className="border border-border-secondary rounded-xl p-8 pb-3.5">
         <div className="mb-6">
           <h3 className="text-2xl font-medium">Fail to Import</h3>
-          <p className="mt-1.5 text-text-secondary">
-            An issue occurred while importing {msg? `: ${msg}` : "" }
-          </p>
+          <div
+            className="mt-1.5 text-text-secondary text-sm leading-relaxed"
+            dangerouslySetInnerHTML={{
+              __html: msg ? `An issue occurred while importing : ${msg}` : "An issue occurred while importing"
+            }}
+          />
         </div>
         <div className="mb-6">
           <img

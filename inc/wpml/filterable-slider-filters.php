@@ -8,6 +8,9 @@ defined( 'ABSPATH' ) || die();
 
 class Filterable_Slider_Filters extends \WPML_Elementor_Module_With_Items {
 
+	use \Wealcoder\AnimationAddons\INC\WPML\Aaeaddon_Wpml_Safe_Items;
+
+
 	/**
 	 * Repeater field name
 	 */

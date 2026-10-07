@@ -15,8 +15,8 @@ const LEGACY = {
   save_performance_settings: "aae_save_performance_settings",
   scan_widget_usage: "aae_scan_widget_usage",
   save_library_settings: "save_settings_dashboard_library_ajax",
-  pro_sl_activate: "wcf_addon_pro_sl_activate",
-  pro_sl_deactivate: "wcf_addon_pro_sl_deactivate",
+  pro_sl_activate: "aaeaddon_pro_sl_activate",
+  pro_sl_deactivate: "aaeaddon_pro_sl_deactivate",
   server_opcache_reset: "aae_server_opcache_reset",
 };
 

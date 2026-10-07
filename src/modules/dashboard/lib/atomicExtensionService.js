@@ -37,9 +37,12 @@ export const groupAtomicExtensionsByCategory = (atomicConfig) => {
     categories[categoryKey].elements[slug] = def;
   });
 
+  // An upcoming card has no switch, so its saved state is not the user's to
+  // answer here: leave it out of the "Enable All" state, and out of the bulk
+  // toggles below, which would otherwise change a value nobody can see.
   Object.values(categories).forEach((category) => {
     category.is_active = Object.values(category.elements).every(
-      (extension) => extension.is_active
+      (extension) => extension.is_upcoming || extension.is_active
     );
   });
 
@@ -116,7 +119,9 @@ export const activeAtomicGroupExtensionFn = (mainContent, data, dispatch) => {
       const filteredElements = Object.fromEntries(
         Object.entries(value.elements || {}).filter(([key2, value2]) => {
           if (key === data.slug) {
-            if (value2.is_pro && (value2?.pro_only ?? false)) {
+            if (value2.is_upcoming) {
+              return [key2, value2];
+            } else if (value2.is_pro && (value2?.pro_only ?? false)) {
               if (isOnlyPro) {
                 value2.is_active = data.value;
                 return [key2, value2];
@@ -166,7 +171,9 @@ export const activeAtomicFullExtensionFn = (mainContent, data, dispatch) => {
     Object.entries(mainContent.elements).map(([key, value]) => {
       const filteredElements = Object.fromEntries(
         Object.entries(value.elements || {}).filter(([key2, value2]) => {
-          if (value2.is_pro && (value2?.pro_only ?? false)) {
+          if (value2.is_upcoming) {
+            return [key2, value2];
+          } else if (value2.is_pro && (value2?.pro_only ?? false)) {
             if (isOnlyPro) {
               value2.is_active = data.value;
               return [key2, value2];

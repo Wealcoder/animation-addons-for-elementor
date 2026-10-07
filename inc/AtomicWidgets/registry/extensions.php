@@ -548,6 +548,9 @@ return [
 				'is_pro'       => true,
 				'is_extension' => true,
 				'is_upcoming'  => false,
+				// A BETA chip beside PRO. Display only: the switch works as on any
+				// card, and the screen is off the admin menu but reachable by URL.
+				'is_beta'      => true,
 				'default'      => true,
 				'keywords'     => ['ai', 'mcp', 'claude', 'chatgpt', 'oauth', 'connections', 'assistant', 'api key'],
 				'category'     => 'utility',

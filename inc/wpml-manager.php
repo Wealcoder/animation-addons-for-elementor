@@ -1341,9 +1341,11 @@ class WPML_Manager
 				],
 			];
 
-			if (! empty($data['fields'])) {
-				$entry['fields'] = $data['fields'];
-			}
+			// Always present: WPML iterates `fields` unguarded, so a widget translated
+			// only through an integration class logged two warnings per element on
+			// every save — output that breaks the editor's ajax JSON wherever
+			// display_errors is on.
+			$entry['fields'] = isset($data['fields']) && is_array($data['fields']) ? $data['fields'] : [];
 
 			if (! empty($data['fields_in_item'])) {
 				$entry['fields_in_item'] = $data['fields_in_item'];

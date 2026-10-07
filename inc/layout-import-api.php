@@ -143,7 +143,10 @@ class Layout_Import_Api {
 	}
 
 	/**
-	 * @param array $args `content` — the block's elements array.
+	 * @param array $args `content` — the block's elements array. `media` —
+	 *                    'vector' keeps photos on the demo server (Live
+	 *                    Paste's "Keep demo image links"); anything else, or
+	 *                    absent, copies them as before.
 	 * @return array{content:array,enabled:string[],enabled_extensions:string[],missing:string[],localized:array}
 	 */
 	private function prepare_v4_block( array $args ): array {
@@ -176,7 +179,8 @@ class Layout_Import_Api {
 		}
 
 		if ( class_exists( '\Wealcoder\AnimationAddons\Admin\Base\Atomic_Image_Localize' ) ) {
-			$result  = \Wealcoder\AnimationAddons\Admin\Base\Atomic_Image_Localize::localize_elements( $content, true, null, true );
+			$photos  = 'vector' !== ( $args['media'] ?? 'all' );
+			$result  = \Wealcoder\AnimationAddons\Admin\Base\Atomic_Image_Localize::localize_elements( $content, true, null, true, $photos );
 			$content = $result['elements'];
 			unset( $result['elements'] );
 			$localized = $result;

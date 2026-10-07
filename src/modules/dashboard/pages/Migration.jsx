@@ -6,9 +6,8 @@
  * `aaeaddon_migration_status`. The page invents no wording of its own for a
  * row's outcome: the Details tables print the `items` map verbatim.
  *
- * Reachable ALWAYS — `?tab=migration` and the "Migration" submenu item exist
- * on a fresh site and after the move — so a person restoring an old database
- * months later can find the tool. Only the admin notice is gated on status.
+ * Reachable ALWAYS by `?tab=migration` — on a fresh site and after the move —
+ * though it has no admin-menu item. Only the admin notice is gated on status.
  *
  * States (the server's `status`):
  *   awaiting_consent — an existing database; nothing copied yet. Consent block.

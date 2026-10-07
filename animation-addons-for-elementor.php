@@ -3,7 +3,7 @@
  * Plugin Name:                Animation Addons
  * Description:                Animation Addons for Elementor comes with GSAP Animation Builder, Customizable Widgets, Header Footer, Single Post, Archive Page Builder, and more.
  * Plugin URI:                 https://animation-addons.com/
- * Version:                    4.2.5
+ * Version:                    4.2.6
  * Author:                     Wealcoder
  * Author URI:                 https://animation-addons.com/
  * License:                    GPL v2 or later
@@ -402,15 +402,23 @@ final class Aaeaddon_Plugin {
 			// Set current version to DB
 			$previous_version = get_option( 'aaeaddon_version' );
 			if ( $previous_version !== AAEADDON_VERSION ) {
-				// Update plugin version
-				update_option( 'aaeaddon_version', AAEADDON_VERSION );
-
 				/*
 				 * Decide the storage-name migration once per version: an
 				 * existing database waits for consent, a fresh one is complete.
 				 * One option write, no scan — see inc/Compat/Migration.php.
+				 *
+				 * BEFORE the version write, never after. Until a state exists
+				 * the bridge is in OLD_LIVE, so writing `aaeaddon_version` here
+				 * lands in `wcf_addons_version` — one of the rows that proves a
+				 * site ran a pre-4.2 release. Written first, it made every
+				 * fresh site the activation hook had not already decided (a
+				 * silent activate_plugin(), a network site created later)
+				 * read as an update and show the migration notice.
 				 */
 				\Wealcoder\AnimationAddons\Compat\Migration::on_version_change( is_string( $previous_version ) ? $previous_version : '' );
+
+				// Update plugin version
+				update_option( 'aaeaddon_version', AAEADDON_VERSION );
 
 				/*
 				 * Drop Elementor's cached ATOMIC BASE STYLES on every version change.
