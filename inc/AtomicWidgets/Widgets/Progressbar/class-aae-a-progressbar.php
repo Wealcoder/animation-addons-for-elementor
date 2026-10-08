@@ -17,7 +17,6 @@ use Elementor\Modules\AtomicWidgets\Controls\Types\Switch_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Number_Control;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Number_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
@@ -216,10 +215,7 @@ class Aaeaddon_A_Progressbar extends Atomic_Element_Base
 					// rendered by the label's twig instead. Seeding a hook class
 					// into `classes` makes Elementor's panel report "Some classes
 					// are missing", whose dismiss button then unapplies it.
-					'text' => Html_V3_Prop_Type::generate([
-						'content'  => String_Prop_Type::generate('0%'),
-						'children' => [],
-					]),
+					'text' => Atomic_Text::prop('e-aae-a-progressbar-label', 'text', '0%'),
 					'tag' => String_Prop_Type::generate('span'),
 				])
 				->build(),

@@ -48,7 +48,6 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Boolean_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\Number_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
@@ -410,12 +409,7 @@ class Aaeaddon_A_Form extends Atomic_Element_Base {
 		return Atomic_Text::one( Aaeaddon_A_Form_Label::generate()
 			->settings(
 				[
-					'text'     => Html_V3_Prop_Type::generate(
-						[
-							'content'  => String_Prop_Type::generate( $text ),
-							'children' => [],
-						]
-					),
+					'text'     => Atomic_Text::prop( 'e-aae-a-form-label', 'text', $text ),
 					'input-id' => String_Prop_Type::generate( $input_id ),
 				]
 			)

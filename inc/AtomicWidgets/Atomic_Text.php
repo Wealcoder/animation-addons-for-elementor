@@ -95,6 +95,41 @@ final class Atomic_Text {
 	}
 
 	/**
+	 * The prop type for one of OUR text props edited by core's
+	 * `Inline_Editing_Control`.
+	 *
+	 * From 4.3 that control binds `escapedHtmlPropTypeUtil` only, so on an
+	 * `html-v3` prop the panel renders NO input at all — the label text box
+	 * simply vanishes.
+	 *
+	 * So: escaped-html first, html-v3 KEPT in a union (the atomic-svg
+	 * pattern). Do NOT drop html-v3 and lean on core's prop migration — it is
+	 * cached per post by manifest hash, so a page already marked migrated is
+	 * never revisited and every saved label renders EMPTY (measured on
+	 * atomic4). The control reads an old html-v3 value through its
+	 * `extractInlineHtmlContent()` fallback and writes escaped-html back on
+	 * the first edit. Older Elementor without Escaped_Html: plain html-v3.
+	 *
+	 * @param string $default Plain default text.
+	 * @return \Elementor\Modules\AtomicWidgets\PropTypes\Base\Prop_Type
+	 */
+	public static function inline_prop_type( string $default ) {
+		$escaped = '\Elementor\Modules\AtomicWidgets\PropTypes\Escaped_Html_Prop_Type';
+		if ( class_exists( $escaped ) ) {
+			return \Elementor\Modules\AtomicWidgets\PropTypes\Union_Prop_Type::create_from(
+				$escaped::make()->default( $default )
+			)->add_prop_type( \Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type::make() );
+		}
+
+		return \Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type::make()->default(
+			array(
+				'content'  => \Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type::generate( $default ),
+				'children' => array(),
+			)
+		);
+	}
+
+	/**
 	 * Re-shape every text envelope in a default-children tree.
 	 *
 	 * This is what a widget's `define_default_children()` wraps its return in.

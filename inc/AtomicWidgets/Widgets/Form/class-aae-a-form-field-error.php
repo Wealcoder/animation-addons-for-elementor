@@ -36,13 +36,13 @@ use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Inline_Editing_Control;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Color_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
+use Wealcoder\AnimationAddons\AtomicWidgets\Atomic_Text;
 
 class Aaeaddon_A_Form_Field_Error extends Atomic_Widget_Base {
 
@@ -91,12 +91,7 @@ class Aaeaddon_A_Form_Field_Error extends Atomic_Widget_Base {
 			// Doubles as the form's required-field message: the runtime reads
 			// this element's text for empty-required errors (format errors like
 			// "Please enter a valid email address." keep the localized copy).
-			'text'       => Html_V3_Prop_Type::make()->default(
-				[
-					'content'  => String_Prop_Type::generate( __( 'This field is required.', 'animation-addons-for-elementor' ) ),
-					'children' => [],
-				]
-			),
+			'text'       => Atomic_Text::inline_prop_type( __( 'This field is required.', 'animation-addons-for-elementor' ) ),
 		];
 	}
 
