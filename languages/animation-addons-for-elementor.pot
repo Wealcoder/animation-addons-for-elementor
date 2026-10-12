@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-05T11:48:25+00:00\n"
+"POT-Creation-Date: 2026-10-06T11:40:07+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: animation-addons-for-elementor\n"
@@ -4421,7 +4421,7 @@ msgstr ""
 #: inc/class-blacklist.php:648
 #: inc/class-custom-fonts-admin.php:194
 #: inc/class-custom-icon-admin.php:667
-#: inc/Compat/Migration.php:448
+#: inc/Compat/Migration.php:450
 #: widgets/advanced-testimonial.php:330
 #: widgets/banner-posts.php:218
 #: widgets/feature-posts.php:169
@@ -4598,7 +4598,7 @@ msgstr ""
 #: src/modules/dashboard/components/dashboard/Documentation-old.jsx:29
 #: src/modules/dashboard/components/dashboard/Documentation.jsx:35
 #: src/modules/dashboard/components/shared/IntegrationCard.jsx:123
-#: src/modules/dashboard/components/shared/WidgetCard.jsx:200
+#: src/modules/dashboard/components/shared/WidgetCard.jsx:222
 msgid "Documentation"
 msgstr ""
 
@@ -7137,7 +7137,7 @@ msgid "States"
 msgstr ""
 
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:322
-#: src/modules/dashboard/pages/Migration.jsx:65
+#: src/modules/dashboard/pages/Migration.jsx:64
 msgid "Error"
 msgstr ""
 
@@ -10554,93 +10554,84 @@ msgstr ""
 msgid "Insert Example"
 msgstr ""
 
-#: inc/Compat/Migration.php:449
+#: inc/Compat/Migration.php:451
 msgid "Pro settings"
 msgstr ""
 
-#: inc/Compat/Migration.php:450
+#: inc/Compat/Migration.php:452
 msgid "Menu settings and dismissed notices"
 msgstr ""
 
-#: inc/Compat/Migration.php:609
+#: inc/Compat/Migration.php:611
 msgid "That file is not an Animation Addons backup."
 msgstr ""
 
-#: inc/Compat/Migration.php:632
+#: inc/Compat/Migration.php:634
 msgid "You are not allowed to do that."
 msgstr ""
 
-#: inc/Compat/Migration.php:671
+#: inc/Compat/Migration.php:673
 msgid "The backup file is too large or unreadable."
 msgstr ""
 
-#: inc/Compat/Migration.php:701
-#: src/modules/dashboard/pages/Migration.jsx:291
-msgid "Storage Migration"
-msgstr ""
-
-#: inc/Compat/Migration.php:702
-msgid "Migration"
-msgstr ""
-
-#: inc/Compat/Migration.php:749
+#: inc/Compat/Migration.php:725
 msgid "Animation Addons moved its settings to new storage names."
 msgstr ""
 
-#: inc/Compat/Migration.php:751
+#: inc/Compat/Migration.php:727
 msgid "Your site is working normally. One step needs your attention on the Migration screen."
 msgstr ""
 
-#: inc/Compat/Migration.php:752
+#: inc/Compat/Migration.php:728
 msgid "Your site is working normally. Nothing is copied until you start the migration; your current data is never changed or deleted."
 msgstr ""
 
-#: inc/Compat/Migration.php:754
-#: inc/Compat/Migration.php:818
+#: inc/Compat/Migration.php:730
+#: inc/Compat/Migration.php:794
 #: src/modules/dashboard/components/shared/MigrationPendingNotice.jsx:59
 msgid "Open migration"
 msgstr ""
 
-#: inc/Compat/Migration.php:756
+#: inc/Compat/Migration.php:732
 msgid "Remind me tomorrow"
 msgstr ""
 
 #. translators: 1: installed Pro version, 2: required Pro version
-#: inc/Compat/Migration.php:774
+#: inc/Compat/Migration.php:750
 #, php-format
 msgid "Animation Addons Pro %1$s is older than this version of Animation Addons expects (%2$s)."
 msgstr ""
 
-#: inc/Compat/Migration.php:779
+#: inc/Compat/Migration.php:755
 msgid "Your site works, but Pro is running through a compatibility layer. Update Pro to finish the move."
 msgstr ""
 
-#: inc/Compat/Migration.php:780
+#: inc/Compat/Migration.php:756
 msgid "Your site works, but Pro is running through a compatibility layer. Activate your Pro licence to receive the update."
 msgstr ""
 
-#: inc/Compat/Migration.php:782
+#: inc/Compat/Migration.php:758
 msgid "Update now"
 msgstr ""
 
-#: inc/Compat/Migration.php:782
+#: inc/Compat/Migration.php:758
 msgid "Open licence settings"
 msgstr ""
 
-#: inc/Compat/Migration.php:784
+#: inc/Compat/Migration.php:760
 msgid "Remind me in a week"
 msgstr ""
 
-#: inc/Compat/Migration.php:815
+#: inc/Compat/Migration.php:791
 msgid "Animation Addons: the storage-name migration needs your attention."
 msgstr ""
 
-#: inc/Compat/Migration.php:816
+#: inc/Compat/Migration.php:792
 msgid "Animation Addons: settings are ready to move to new storage names. Nothing changes until you start it."
 msgstr ""
 
 #. translators: %d: number of sites
-#: inc/Compat/Migration.php:847
+#: inc/Compat/Migration.php:823
 #, php-format
 msgid "Animation Addons: %d site still has its storage-name migration pending. It runs per site -- open that site's Animation Addons &rsaquo; Migration screen."
 msgid_plural "Animation Addons: %d sites still have their storage-name migration pending. It runs per site -- open each site's Animation Addons &rsaquo; Migration screen."
@@ -18390,7 +18381,7 @@ msgid "Contact list"
 msgstr ""
 
 #: src/modules/atomic/element-controls/FormActionsControl.jsx:1124
-#: src/modules/dashboard/pages/Migration.jsx:170
+#: src/modules/dashboard/pages/Migration.jsx:169
 msgid "Loading…"
 msgstr ""
 
@@ -19492,7 +19483,7 @@ msgid "You have successfully activated Animation Addon Pro"
 msgstr ""
 
 #: src/modules/dashboard/components/shared/IntegrationCard.jsx:134
-#: src/modules/dashboard/components/shared/WidgetCard.jsx:219
+#: src/modules/dashboard/components/shared/WidgetCard.jsx:241
 #: src/modules/dashboard/pages/Submissions.jsx:484
 msgid "Preview"
 msgstr ""
@@ -19625,15 +19616,19 @@ msgstr ""
 msgid "COMING"
 msgstr ""
 
+#: src/modules/dashboard/components/shared/WidgetCard.jsx:180
+msgid "BETA"
+msgstr ""
+
 #. translators: %d: number of built-in child elements.
-#: src/modules/dashboard/components/shared/WidgetCard.jsx:238
+#: src/modules/dashboard/components/shared/WidgetCard.jsx:260
 #, js-format
 msgid "Includes %d element"
 msgid_plural "Includes %d elements"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/modules/dashboard/components/shared/WidgetCard.jsx:289
+#: src/modules/dashboard/components/shared/WidgetCard.jsx:311
 msgid "Built-in elements of this widget. They turn on and off with it and have no switch of their own."
 msgstr ""
 
@@ -20101,204 +20096,208 @@ msgstr ""
 msgid "Compare our free vs. pro features."
 msgstr ""
 
-#: src/modules/dashboard/pages/Migration.jsx:63
+#: src/modules/dashboard/pages/Migration.jsx:62
 msgid "Waiting"
 msgstr ""
 
-#: src/modules/dashboard/pages/Migration.jsx:64
+#: src/modules/dashboard/pages/Migration.jsx:63
 msgid "Done"
 msgstr ""
 
-#: src/modules/dashboard/pages/Migration.jsx:66
+#: src/modules/dashboard/pages/Migration.jsx:65
 msgid "Kept as is"
 msgstr ""
 
 #. translators: %d: number of settings found
-#: src/modules/dashboard/pages/Migration.jsx:102
+#: src/modules/dashboard/pages/Migration.jsx:101
 #, js-format
 msgid "%d found"
 msgstr ""
 
 #. translators: 1: copied, 2: total, 3: skipped
-#: src/modules/dashboard/pages/Migration.jsx:107
+#: src/modules/dashboard/pages/Migration.jsx:106
 #, js-format
 msgid "%1$d of %2$d copied · %3$d absent"
 msgstr ""
 
-#: src/modules/dashboard/pages/Migration.jsx:121
+#: src/modules/dashboard/pages/Migration.jsx:120
 msgid "Hide details"
 msgstr ""
 
-#: src/modules/dashboard/pages/Migration.jsx:122
+#: src/modules/dashboard/pages/Migration.jsx:121
 msgid "Details"
 msgstr ""
 
-#: src/modules/dashboard/pages/Migration.jsx:188
+#: src/modules/dashboard/pages/Migration.jsx:187
 msgid "Done. Your settings are on the new storage names."
 msgstr ""
 
-#: src/modules/dashboard/pages/Migration.jsx:191
+#: src/modules/dashboard/pages/Migration.jsx:190
 msgid "Something went wrong."
 msgstr ""
 
-#: src/modules/dashboard/pages/Migration.jsx:206
+#: src/modules/dashboard/pages/Migration.jsx:205
 msgid "Could not build the backup."
 msgstr ""
 
 #. translators: 1: restored count, 2: ignored count
-#: src/modules/dashboard/pages/Migration.jsx:234
+#: src/modules/dashboard/pages/Migration.jsx:233
 #, js-format
 msgid "Restored %1$d setting(s); %2$d ignored."
 msgstr ""
 
-#: src/modules/dashboard/pages/Migration.jsx:240
+#: src/modules/dashboard/pages/Migration.jsx:239
 msgid "That file could not be restored."
 msgstr ""
 
-#: src/modules/dashboard/pages/Migration.jsx:253
+#: src/modules/dashboard/pages/Migration.jsx:252
 msgid "Animation Addons 4.2 uses new storage names. Your site is already working on them — this page copies your existing data across, once, when you choose. Nothing is changed or deleted."
 msgstr ""
 
-#: src/modules/dashboard/pages/Migration.jsx:261
+#: src/modules/dashboard/pages/Migration.jsx:260
 msgid "One step needs you: some rows could not be copied. Nothing was switched — your site keeps running on the old names. Press Retry; if it repeats, download the report and send it to support."
 msgstr ""
 
-#: src/modules/dashboard/pages/Migration.jsx:271
+#: src/modules/dashboard/pages/Migration.jsx:270
 msgid "Nothing to migrate: this site was installed on the new storage names."
 msgstr ""
 
 #. translators: %s: date
-#: src/modules/dashboard/pages/Migration.jsx:277
+#: src/modules/dashboard/pages/Migration.jsx:276
 #, js-format
 msgid "Done on %s. Your data is on the new storage names; the old copy is kept in step with it, untouched, so an older version of the plugin would still find everything."
 msgstr ""
 
-#: src/modules/dashboard/pages/Migration.jsx:301
+#: src/modules/dashboard/pages/Migration.jsx:290
+msgid "Storage Migration"
+msgstr ""
+
+#: src/modules/dashboard/pages/Migration.jsx:300
 msgid "Before you start"
 msgstr ""
 
-#: src/modules/dashboard/pages/Migration.jsx:305
+#: src/modules/dashboard/pages/Migration.jsx:304
 msgid "What this does."
 msgstr ""
 
 #. translators: 1: settings count, 2: pro settings count, 3: menu settings count
-#: src/modules/dashboard/pages/Migration.jsx:309
+#: src/modules/dashboard/pages/Migration.jsx:308
 #, js-format
 msgid "Copies your Animation Addons settings to the storage names WordPress.org requires: %1$d settings, %2$d Pro settings, %3$d menu settings. Your current data is not changed or deleted — the copy is written beside it."
 msgstr ""
 
-#: src/modules/dashboard/pages/Migration.jsx:320
+#: src/modules/dashboard/pages/Migration.jsx:319
 msgid "How long."
 msgstr ""
 
-#: src/modules/dashboard/pages/Migration.jsx:322
+#: src/modules/dashboard/pages/Migration.jsx:321
 msgid "A moment — it is one request. Post data, templates and caches are not touched."
 msgstr ""
 
-#: src/modules/dashboard/pages/Migration.jsx:326
+#: src/modules/dashboard/pages/Migration.jsx:325
 msgid "What you should do first."
 msgstr ""
 
-#: src/modules/dashboard/pages/Migration.jsx:328
+#: src/modules/dashboard/pages/Migration.jsx:327
 msgid "Take a backup of your database (your host's backup tool or a plugin), or download the settings backup below."
 msgstr ""
 
 #. translators: %s: Pro version
-#: src/modules/dashboard/pages/Migration.jsx:333
+#: src/modules/dashboard/pages/Migration.jsx:332
 #, js-format
 msgid "Animation Addons Pro %s is installed and up to date. ✓"
 msgstr ""
 
 #. translators: 1: installed Pro version, 2: required Pro version
-#: src/modules/dashboard/pages/Migration.jsx:338
+#: src/modules/dashboard/pages/Migration.jsx:337
 #, js-format
 msgid "Animation Addons Pro %1$s is installed; update it to %2$s or newer when you can — it keeps working either way."
 msgstr ""
 
-#: src/modules/dashboard/pages/Migration.jsx:345
+#: src/modules/dashboard/pages/Migration.jsx:344
 msgid "Afterwards."
 msgstr ""
 
-#: src/modules/dashboard/pages/Migration.jsx:347
+#: src/modules/dashboard/pages/Migration.jsx:346
 msgid "Nothing changes for you. The old data stays as a live copy, never deleted, so downgrading the plugin restores the previous behaviour at any time."
 msgstr ""
 
-#: src/modules/dashboard/pages/Migration.jsx:356
+#: src/modules/dashboard/pages/Migration.jsx:355
 msgid "I have a backup and want to start the migration"
 msgstr ""
 
-#: src/modules/dashboard/pages/Migration.jsx:361
+#: src/modules/dashboard/pages/Migration.jsx:360
 msgid "Start migration"
 msgstr ""
 
-#: src/modules/dashboard/pages/Migration.jsx:364
-#: src/modules/dashboard/pages/Migration.jsx:418
+#: src/modules/dashboard/pages/Migration.jsx:363
+#: src/modules/dashboard/pages/Migration.jsx:417
 msgid "Download backup (JSON)"
 msgstr ""
 
-#: src/modules/dashboard/pages/Migration.jsx:371
+#: src/modules/dashboard/pages/Migration.jsx:370
 msgid "What moves, and what stays"
 msgstr ""
 
-#: src/modules/dashboard/pages/Migration.jsx:379
+#: src/modules/dashboard/pages/Migration.jsx:378
 msgid "Post data, templates, caches, scheduled tasks, form tables"
 msgstr ""
 
 #. translators: 1: post meta keys, 2: term meta keys, 3: user meta keys, 4: transients, 5: cron hooks, 6: tables
-#: src/modules/dashboard/pages/Migration.jsx:386
+#: src/modules/dashboard/pages/Migration.jsx:385
 #, js-format
 msgid "%1$d post fields, %2$d category fields, %3$d user fields, %4$d caches, %5$d scheduled tasks and %6$d form tables keep their names. They are not part of the WordPress.org rule, and several are what your existing templates and the Pro add-on sort by."
 msgstr ""
 
-#: src/modules/dashboard/pages/Migration.jsx:403
+#: src/modules/dashboard/pages/Migration.jsx:402
 msgid "Actions"
 msgstr ""
 
-#: src/modules/dashboard/pages/Migration.jsx:408
+#: src/modules/dashboard/pages/Migration.jsx:407
 msgid "Retry failed"
 msgstr ""
 
-#: src/modules/dashboard/pages/Migration.jsx:413
+#: src/modules/dashboard/pages/Migration.jsx:412
 msgid "Update Animation Addons Pro"
 msgstr ""
 
-#: src/modules/dashboard/pages/Migration.jsx:422
+#: src/modules/dashboard/pages/Migration.jsx:421
 msgid "Restore a backup…"
 msgstr ""
 
-#: src/modules/dashboard/pages/Migration.jsx:433
+#: src/modules/dashboard/pages/Migration.jsx:432
 msgid "Download report"
 msgstr ""
 
 #. translators: 1: installed Pro version, 2: required Pro version
-#: src/modules/dashboard/pages/Migration.jsx:440
+#: src/modules/dashboard/pages/Migration.jsx:439
 #, js-format
 msgid "Pro %1$s still reads the old names through the compatibility layer; update to %2$s or newer for the best result. It never blocks anything here."
 msgstr ""
 
 #. translators: %s: date
-#: src/modules/dashboard/pages/Migration.jsx:450
+#: src/modules/dashboard/pages/Migration.jsx:449
 #, js-format
 msgid "Last backup downloaded %s."
 msgstr ""
 
-#: src/modules/dashboard/pages/Migration.jsx:458
+#: src/modules/dashboard/pages/Migration.jsx:457
 msgid "How this works"
 msgstr ""
 
-#: src/modules/dashboard/pages/Migration.jsx:460
+#: src/modules/dashboard/pages/Migration.jsx:459
 msgid "What is happening: settings are copied to new names, never moved. The old data is kept and stays in step with the new copy."
 msgstr ""
 
-#: src/modules/dashboard/pages/Migration.jsx:461
+#: src/modules/dashboard/pages/Migration.jsx:460
 msgid "What you should do: nothing is required. Start the migration when you have a backup; update Animation Addons Pro if the row above says so."
 msgstr ""
 
-#: src/modules/dashboard/pages/Migration.jsx:462
+#: src/modules/dashboard/pages/Migration.jsx:461
 msgid "If something goes wrong: press Retry, download the report, or restore a backup. Downgrading the plugin restores the previous behaviour at any time, because the old data is still there."
 msgstr ""
 
-#: src/modules/dashboard/pages/Migration.jsx:468
+#: src/modules/dashboard/pages/Migration.jsx:467
 msgid "Log"
 msgstr ""
 
