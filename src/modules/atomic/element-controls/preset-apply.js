@@ -398,6 +398,29 @@ export function normalizeElementShape(model) {
  */
 const IMAGE_SRC_TYPES = ['image-src', 'svg-src'];
 
+const PLUGIN_ASSET_URL = /^https?:\/\/[^?#]*?\/wp-content\/plugins\/(.+)$/;
+
+/**
+ * Presets are exported with absolute URLs to plugin assets on the AUTHORING
+ * site — Elementor's placeholder.png, the slider's nav SVGs — e.g.
+ * http://localhost:10004/wp-content/plugins/elementor/assets/images/placeholder.png.
+ * Those 404 on every other site. A plugin asset lives at the same relative
+ * path everywhere, so rebase it onto this site's plugins URL
+ * (AAE_PRESET_CONFIG.pluginsUrl, see inc/Atomic/Assets.php). Uploads and
+ * external hosts are left alone.
+ */
+function rebasePluginAssetUrl(urlProp) {
+  const base = window.AAE_PRESET_CONFIG && window.AAE_PRESET_CONFIG.pluginsUrl;
+  if (!base || typeof urlProp.value !== 'string') {
+    return;
+  }
+
+  const match = urlProp.value.match(PLUGIN_ASSET_URL);
+  if (match) {
+    urlProp.value = base + match[1];
+  }
+}
+
 /**
  * Sanitize a preset model so it passes Elementor's save-time style validation.
  *
@@ -428,6 +451,8 @@ export function sanitizeImageSrc(node) {
         : src.url.value !== undefined && src.url.value !== null);
     if (hasId && hasUrl) {
       delete src.url;
+    } else if (hasUrl) {
+      rebasePluginAssetUrl(src.url);
     }
   }
 

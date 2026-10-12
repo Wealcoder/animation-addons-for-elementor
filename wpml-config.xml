@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<wpml-config>
+
+  <!-- Custom Post Types registered by the free plugin. Declared here, not only
+       in Pro's wpml-config.xml, so a free-only site gets the same behaviour.
+       Values match Pro's file for the types both declare. -->
+  <custom-types>
+    <!-- Theme Builder templates (header / footer / single / archive).
+         display-as-translated: a template with no translation yet still renders
+         on the other languages' pages instead of the theme's default chrome. -->
+    <custom-type translate="1" display-as-translated="1">wcf-addons-template</custom-type>
+
+    <!-- Post Rating entries. -->
+    <custom-type translate="1">aaeaddon_post_rating</custom-type>
+
+    <!-- Site-wide definitions, one per site regardless of language. -->
+    <custom-type translate="0">wcf-code-snippet</custom-type>
+    <custom-type translate="0">wcf-custom-fonts</custom-type>
+    <custom-type translate="0">wcf-custom-icons</custom-type>
+    <custom-type translate="0">aaeptypebilder</custom-type>
+    <custom-type translate="0">aaetaxebilder</custom-type>
+  </custom-types>
+
+  <!-- Post meta -->
+  <custom-fields>
+    <!-- Theme Builder template type and display conditions. Copied onto every
+         translation: without them a translated header has no type/location and
+         the translated page finds no header. -->
+    <custom-field action="copy">wcf-addons-template-meta_type</custom-field>
+    <custom-field action="copy">wcf-addons-template-meta_location</custom-field>
+    <custom-field action="copy">wcf-addons-template-meta_splocation</custom-field>
+
+    <!-- Theme Builder header smoother settings. -->
+    <custom-field action="copy">aae_header_smoother</custom-field>
+    <custom-field action="copy">aae_header_smoother_offsety</custom-field>
+
+    <!-- Post Rating meta (post_id, user_id, name, email, rating, review) is
+         deliberately NOT declared: WPML applies a custom-field rule to the key
+         site-wide, and keys this generic belong to other plugins too. -->
+  </custom-fields>
+
+  <!-- Term meta (inc/category-fields.php) -->
+  <custom-term-fields>
+    <custom-term-field action="translate">aae_cate_additional_text</custom-term-field>
+    <custom-term-field action="copy">aae_category_image</custom-term-field>
+    <custom-term-field action="copy">aae_category_icon</custom-term-field>
+    <custom-term-field action="copy">aae_cat_color</custom-term-field>
+    <custom-term-field action="copy">aae_cat_bg_color</custom-term-field>
+  </custom-term-fields>
+
+</wpml-config>

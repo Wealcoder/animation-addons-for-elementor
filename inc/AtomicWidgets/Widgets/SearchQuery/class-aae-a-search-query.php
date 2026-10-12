@@ -10,8 +10,10 @@
  * DESIGN-LESS + BASE-STYLE-FIRST (see the aae-v4-complex-widget skill):
  * every pure-styling control from v3 (title/query/filter color, typography,
  * text-stroke, text-shadow, blend, alignment) is DROPPED — Elementor v4's
- * native Style tab styles the widget root, and typography/color inherit down
- * to the query <span> and filter rows. Only the two CONTENT props remain
+ * native Style tab styles the widget root, which is the chosen heading tag
+ * itself (a wrapper <div> let Kit/theme heading rules override the inner
+ * heading), and typography/color inherit down to the query <span> and filter
+ * rows. Only the two CONTENT props remain
  * (HTML tag + the "Search Text" label). No external SCSS, no JS — the dynamic
  * text is computed server-side in get_atomic_settings() (mirrors Post Title).
  */

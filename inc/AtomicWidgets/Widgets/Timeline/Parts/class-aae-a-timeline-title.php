@@ -17,7 +17,6 @@ use Elementor\Modules\AtomicWidgets\Controls\Types\Inline_Editing_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Html_V3_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Dimensions_Prop_Type;
@@ -25,6 +24,7 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Color_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
+use Wealcoder\AnimationAddons\AtomicWidgets\Atomic_Text;
 
 /**
  * AAE Timeline — Title. A single bold milestone heading. Its own widget type
@@ -63,11 +63,7 @@ class Aaeaddon_A_Timeline_Title extends Atomic_Widget_Base {
 		return [
 			'classes' => Classes_Prop_Type::make()->default( [] ),
 			'attributes' => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
-			'text' => Html_V3_Prop_Type::make()
-				->default( [
-					'content'  => String_Prop_Type::generate( 'Event Title' ),
-					'children' => [],
-				] )
+			'text' => Atomic_Text::inline_prop_type( 'Event Title' )
 				->description( 'The milestone title text.' ),
 			'tag' => String_Prop_Type::make()->default( 'h3' ),
 		];

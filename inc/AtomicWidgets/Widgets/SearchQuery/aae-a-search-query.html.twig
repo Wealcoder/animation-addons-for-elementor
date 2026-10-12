@@ -1,13 +1,17 @@
 {# AAE Search Query — design-less dynamic leaf.
-   Root wrapper carries the base-style scope + Style-tab styling; the chosen
-   HTML tag is the inner heading (so "H2" stays a real <h2> for SEO). The query
-   term and filter rows inherit the root's typography/color — no widget CSS. #}
+   The chosen HTML tag IS the root, so it carries the base-style scope and the
+   Style-tab classes itself (same as Post Title). With a wrapper <div> the
+   Style tab only reached the wrapper, and the Kit/theme heading rules
+   (`.elementor-kit-N h2 { color; font-size }`) set on the inner heading beat
+   the inherited values — color/typography never showed. The query term and
+   filter rows inherit the root's styling; filters are block <span>s because a
+   <div> is not valid inside a heading. #}
 {% set allowed_tags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'div', 'span', 'p'] %}
 {% set tag = settings.header_size | default('h2') %}
 {% if tag not in allowed_tags %}{% set tag = 'h2' %}{% endif %}
 {% set classes = ['aae-a-search-query', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') %}
 
-<div class="{{ classes }} {{ editor_classes | default('') }}"
+<{{ tag }} class="{{ classes }} {{ editor_classes | default('') }}"
     data-id="{{ id }}"
     data-e-type="{{ type }}"
     data-interaction-id="{{ interaction_id | default('') }}"
@@ -18,15 +22,11 @@
         {{ settings.attributes | raw }}
     {% endif %}
     {{ editor_attributes | default('') | raw }}>
-
-    <{{ tag }} class="aae-a-search-query-title">
-        {{ settings.search_text | default('') }}
-        <span class="aae-a-search-query-term">{{ settings.query_term | default('') }}</span>
-    </{{ tag }}>
-
+    {{ settings.search_text | default('') }}
+    <span class="aae-a-search-query-term">{{ settings.query_term | default('') }}</span>
     {% if settings.filters is defined and settings.filters is not empty %}
         {% for filter in settings.filters %}
-            <div class="aae-a-search-query-filter">{{ filter }}</div>
+            <span class="aae-a-search-query-filter" style="display:block;">{{ filter }}</span>
         {% endfor %}
     {% endif %}
-</div>
+</{{ tag }}>

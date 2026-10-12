@@ -465,6 +465,13 @@ final class Assets
 				'freeSlideLimit'   => \Wealcoder\AnimationAddons\AtomicWidgets\Atomic::FREE_SLIDE_LIMIT,
 				'placeholderThumb' => AAEADDON_URL . 'assets/images/preset-placeholder.png',
 
+				// This site's plugins URL. Presets carry absolute plugin-asset
+				// URLs from the site that EXPORTED them (Elementor's
+				// placeholder.png, the slider's nav SVGs — measured:
+				// http://localhost:10004/...), which 404 everywhere else.
+				// preset-apply.js's sanitizeImageSrc() rebases them onto this.
+				'pluginsUrl'       => esc_url_raw( trailingslashit( plugins_url() ) ),
+
 				// The `$$type` tag the INSTALLED core registers for the
 				// border-width object prop. Elementor renamed it
 				// `border-width` -> `border-width-v2`, and prop validation
