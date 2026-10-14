@@ -167,8 +167,8 @@
       return;
     }
     state.categories.forEach((item) => {
-      // Same unescaped name the wp.template prints ({{{item.name}}}).
-      $select.append($("<option>", { value: item.id }).html(item.name));
+      // Remote API data: decode its entities, then set as text — never parse it as HTML (XSS).
+      $select.append($("<option>", { value: item.id }).text(decode(item.name || "")));
     });
     $select.val(state.category);
   };
@@ -320,7 +320,7 @@
       </div>
       ${badges(item)}
       ${actionButton(item)}
-      <p class="title">${item.title}</p>
+      <p class="title">${escapeAttr(decode(item.title || ""))}</p>
     </div>`;
 
   const listContainer = () => (state.content ? state.content.find(".wcf-library-templates").get(0) : null);
@@ -346,8 +346,17 @@
     }
     const re = new RegExp(state.search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
     container.querySelectorAll(".wcf-library-template .title").forEach((title) => {
+      // DOM nodes, not innerHTML: textContent is decoded text and must not be re-parsed (XSS).
       const plain = title.textContent;
-      title.innerHTML = re.test(plain) ? plain.replace(re, "<b>$&</b>") : plain;
+      const match = re.exec(plain);
+      title.textContent = "";
+      if (match) {
+        const bold = document.createElement("b");
+        bold.textContent = match[0];
+        title.append(plain.slice(0, match.index), bold, plain.slice(match.index + match[0].length));
+      } else {
+        title.textContent = plain;
+      }
     });
   };
 

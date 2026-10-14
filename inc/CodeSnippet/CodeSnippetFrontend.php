@@ -62,6 +62,24 @@ class CodeSnippetFrontend {
 	const CONTEXT_FREE_VISIBILITY = array( 'global', 'admin', 'frontend' );
 
 	/**
+	 * The meta keys a snippet is made of. Only the snippet screen's own save
+	 * handler (which writes them with update_post_meta()) may set them; the
+	 * generic custom-field paths (admin-ajax add-meta, post.php, XML-RPC
+	 * custom_fields) are refused for snippet posts. Scoped to the snippet post
+	 * type because names like `priority` and `is_active` are common elsewhere.
+	 *
+	 * @var string[]
+	 */
+	const PROTECTED_META_KEYS = array( 'code_type', 'load_location', 'code_content', 'is_active', 'priority', 'visibility_page', 'visibility_page_list' );
+
+	/**
+	 * Per-author run permission, cached per request: author id => code class => bool.
+	 *
+	 * @var array<int,array<string,bool>>
+	 */
+	private static $author_can_run = array();
+
+	/**
 	 * Constructor
 	 *
 	 * @since 2.3.10
@@ -90,6 +108,10 @@ class CodeSnippetFrontend {
 	 * @return void
 	 */
 	private function init_hooks() {
+		foreach ( self::PROTECTED_META_KEYS as $meta_key ) {
+			add_filter( 'auth_post_meta_' . $meta_key . '_for_wcf-code-snippet', '__return_false' );
+		}
+
 		// PHP snippets are DEFERRED, never run at include time. This file is
 		// included from the free plugin's own plugins_loaded:10 callback, and
 		// Pro registers wcf_code_snippet_execute_php from ITS plugins_loaded:11
@@ -138,6 +160,12 @@ class CodeSnippetFrontend {
 	public function run_php_code_snippets() {
 		// Guard: Do not process PHP snippets unless Pro handler is registered and file editing is allowed.
 		if ( ! has_action( 'aaeaddon_code_snippet_execute_php' ) ) {
+			return;
+		}
+
+		// Pro answers this filter from the same callback that registers the
+		// handler above; without it PHP snippets are switched off.
+		if ( ! (bool) apply_filters( 'aaeaddon_allow_php_snippets', false ) ) {
 			return;
 		}
 
@@ -244,7 +272,7 @@ class CodeSnippetFrontend {
 			return $this->all_active_posts;
 		}
 
-		$this->all_active_posts = get_posts(
+		$posts = get_posts(
 			array(
 				'post_type'      => 'wcf-code-snippet',
 				'post_status'    => 'publish',
@@ -261,7 +289,49 @@ class CodeSnippetFrontend {
 			)
 		);
 
+		// A snippet runs only while its author could still have saved it. This
+		// is what makes a snippet planted through any other path (or left by a
+		// demoted/removed administrator) inert.
+		$this->all_active_posts = array();
+		foreach ( $posts as $snippet ) {
+			$code_type = (string) get_post_meta( $snippet->ID, 'code_type', true );
+			if ( self::author_can_run( (int) $snippet->post_author, $code_type ) ) {
+				$this->all_active_posts[] = $snippet;
+			}
+		}
+
 		return $this->all_active_posts;
+	}
+
+	/**
+	 * Does this author (still) hold the rights needed to save a snippet of
+	 * this type? Mirrors CodeSnippet::handle_add_code_snippet(): manage_options
+	 * for all, plus unfiltered_html for anything but CSS, plus edit_plugins
+	 * for PHP.
+	 *
+	 * @param int    $author_id Snippet post_author.
+	 * @param string $code_type Snippet code type.
+	 *
+	 * @return bool
+	 */
+	private static function author_can_run( $author_id, $code_type ) {
+		$class = in_array( $code_type, array( 'css', 'php' ), true ) ? $code_type : 'markup';
+
+		if ( ! isset( self::$author_can_run[ $author_id ][ $class ] ) ) {
+			$allowed = $author_id > 0 && user_can( $author_id, 'manage_options' );
+
+			if ( $allowed && 'css' !== $class ) {
+				$allowed = user_can( $author_id, 'unfiltered_html' );
+			}
+
+			if ( $allowed && 'php' === $class ) {
+				$allowed = user_can( $author_id, 'edit_plugins' );
+			}
+
+			self::$author_can_run[ $author_id ][ $class ] = $allowed;
+		}
+
+		return self::$author_can_run[ $author_id ][ $class ];
 	}
 
 	/**

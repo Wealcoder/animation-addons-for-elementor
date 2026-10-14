@@ -1262,6 +1262,17 @@ class Loop_Grid extends \Elementor\Widget_Base {
 				return;
 			}
 		}
+
+		// Same gate as the load-more / load-page AJAX path: only a published,
+		// non-password-protected loop-builder template may be rendered. The id
+		// (or slug -- get_page_by_path() ignores post status) is a stored widget
+		// setting, so without this a contributor could render any draft or
+		// private Elementor document into a page by number.
+		if ( ! Template_Manager::is_public_loop_template( $template_id ) ) {
+			$this->render_empty_view();
+			return;
+		}
+
 		// Build base classes.
 		$container_classes = array(
 			'custom-loop-container',

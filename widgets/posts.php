@@ -2421,7 +2421,7 @@ class Posts extends Widget_Base {
 		// PHPCS - `get_permalink` is safe.
 		?>
         <div class="thumb">
-            <a href="<?php echo esc_url( get_permalink() ); ?>" aria-label="<?php the_title(); ?>">
+            <a href="<?php echo esc_url( get_permalink() ); ?>" aria-label="<?php the_title_attribute(); ?>">
 				<?php Group_Control_Image_Size::print_attachment_image_html( $settings, 'thumbnail_size' ); ?>
             </a>
         </div>
@@ -2437,7 +2437,7 @@ class Posts extends Widget_Base {
 		?>
 
         <div class="thumb">
-            <a href="<?php echo esc_url( get_permalink() ); ?>" aria-label="<?php the_title(); ?>">
+            <a href="<?php echo esc_url( get_permalink() ); ?>" aria-label="<?php the_title_attribute(); ?>">
 				<?php Group_Control_Image_Size::print_attachment_image_html( $settings, 'thumbnail_size' ); ?>
             </a>
         </div>

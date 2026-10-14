@@ -55,8 +55,22 @@ class Query_Manager {
 		// Use paged from settings if provided, otherwise get the current page.
 		$paged = isset( $settings['paged'] ) ? absint( $settings['paged'] ) : $this->get_current_page();
 
+		// A stored setting is not limited to the control's options: 'any' or a
+		// non-public post type would list content the site never exposes.
+		// Allow only public post types (written back so every branch below
+		// sees the checked value).
+		$public_types = get_post_types( array( 'public' => true ) );
+		$post_type    = $settings['post_type'] ?? 'post';
+		if ( is_array( $post_type ) ) {
+			$post_type = array_values( array_intersect( $post_type, $public_types ) );
+			$post_type = ! empty( $post_type ) ? $post_type : 'post';
+		} elseif ( ! is_string( $post_type ) || ! isset( $public_types[ $post_type ] ) ) {
+			$post_type = 'post';
+		}
+		$settings['post_type'] = $post_type;
+
 		$query_args = array(
-			'post_type'           => $settings['post_type'] ?? 'post',
+			'post_type'           => $post_type,
 			'post_status'         => 'publish',
 			'posts_per_page'      => $settings['posts_per_page'] ?? 6,
 			'paged'               => $paged,

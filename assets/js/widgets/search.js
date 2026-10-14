@@ -127,16 +127,21 @@
             // Update hidden inputs (clear and re-add)
             $categoryContainer.find('input[name="category[]"]').remove(); // clear existing
 
+            // Built with jQuery setters, not HTML strings: values/labels come from the DOM (XSS).
             selectedCategories.forEach(cat => {
-                $categoryContainer.append(`<input type="hidden" name="category[]" value="${cat.value}"/>`);
+                $categoryContainer.append($('<input type="hidden" name="category[]"/>').val(cat.value));
             });
 
             // Show selected category labels
             const $display = $scope.find('.selected-category-display');
             if (selectedCategories.length) {
-                $display.html(
-                    selectedCategories.map(c => `<span class="category-pill">${c.label}</span>`).join(', ')
-                );
+                $display.empty();
+                selectedCategories.forEach((c, i) => {
+                    if (i) {
+                        $display.append(document.createTextNode(', '));
+                    }
+                    $display.append($('<span class="category-pill">').text(c.label));
+                });
             } else {
                 $display.html(`<span class="category-pill">All Categories</span>`);
             }

@@ -405,26 +405,41 @@ class CustomIcons_Icon_Admin
 		if ( ! function_exists( 'unzip_file' ) ) {
 			require_once ABSPATH . 'wp-admin/includes/file.php';
 		}
-		$unzipped = unzip_file( $zip_file_path, $target_dir );
-		
+		// 6) An icon pack is an ordinary zip and unzip_file() writes whatever
+		// is inside it, .php included. An admin uploading a pack they
+		// downloaded somewhere is not consenting to run its code, so it is
+		// extracted into a private temp directory (never under uploads),
+		// pruned there to what an IcoMoon export needs, and only the pruned
+		// tree is copied into the public uploads folder.
+		global $wp_filesystem;
+		$temp_dir = trailingslashit( get_temp_dir() ) . 'aaeaddon-icons-' . wp_generate_password( 12, false ) . '/';
+		$unzipped = wp_mkdir_p( $temp_dir )
+			? unzip_file( $zip_file_path, $temp_dir )
+			: new \WP_Error( 'aaeaddon_icon_tmp', esc_html__( 'Failed to create a temporary directory.', 'animation-addons-for-elementor' ) );
+
 		// Always remove the uploaded zip after processing
 		if ( file_exists( $zip_file_path ) ) {
 			wp_delete_file( $zip_file_path );
 		}
 
+		if ( ! is_wp_error( $unzipped ) ) {
+			$this->prune_extracted( $temp_dir );
+			$unzipped = copy_dir( $temp_dir, $target_dir );
+		}
+
+		if ( $wp_filesystem && $wp_filesystem->is_dir( $temp_dir ) ) {
+			$wp_filesystem->delete( $temp_dir, true );
+		}
+
 		if ( is_wp_error( $unzipped ) ) {
 			$msg = $unzipped->get_error_message();
+			if ( $wp_filesystem && $wp_filesystem->is_dir( $target_dir ) ) {
+				$wp_filesystem->delete( $target_dir, true );
+			}
 			wp_send_json_error( [
 				'message' => $msg ?: esc_html__( 'Failed to unzip the file.', 'animation-addons-for-elementor' ),
 			], 400 );
 		}
-
-		// 6) An icon pack is an ordinary zip and unzip_file() writes whatever
-		// is inside it into a PUBLIC uploads folder, .php included. An admin
-		// uploading a pack they downloaded somewhere is not consenting to run
-		// its code, so anything an IcoMoon export does not need goes now,
-		// before a single line of it can be requested.
-		$this->prune_extracted( $target_dir );
 
 		// 7) Process extracted files (your custom logic)
 		$msg = $this->process_icon_files($target_dir); // should return string/array
@@ -438,20 +453,24 @@ class CustomIcons_Icon_Admin
 
 
 	/**
-	 * File types an IcoMoon export actually needs: the manifest, the
-	 * stylesheet, and the font faces it points at. Everything else that
-	 * arrives in the zip is deleted after extraction.
+	 * File types an IcoMoon export actually needs: the manifest
+	 * (selection.json), the stylesheet, and the font faces it points at.
+	 * Everything else that arrives in the zip is deleted after extraction.
+	 *
+	 * SVG is deliberately absent: the only SVG the stylesheet references is
+	 * the legacy SVG font, which no current browser loads, and an SVG served
+	 * from uploads can carry script.
 	 *
 	 * @since 2.4.0
 	 * @var string[]
 	 */
-	const ICON_ALLOWED_EXT = array( 'json', 'css', 'svg', 'ttf', 'woff', 'woff2', 'eot', 'otf', 'txt' );
+	const ICON_ALLOWED_EXT = array( 'json', 'css', 'ttf', 'woff', 'woff2', 'eot', 'otf', 'txt' );
 
 	/**
 	 * Delete every extracted file whose extension is not in
-	 * self::ICON_ALLOWED_EXT. Runs straight after unzip_file(), so a pack
-	 * carrying a .php (or .html, or .htaccess) never becomes reachable over
-	 * HTTP even for the moment between extraction and processing.
+	 * self::ICON_ALLOWED_EXT, or whose name carries an executable extension
+	 * anywhere (`x.php.css` runs as PHP on some Apache setups). Runs on the
+	 * private temp copy, before anything is copied into uploads.
 	 *
 	 * @param string $dir Absolute path to the extracted pack.
 	 * @since 2.4.0
@@ -474,7 +493,8 @@ class CustomIcons_Icon_Admin
 
 			$ext = strtolower( pathinfo( $item->getFilename(), PATHINFO_EXTENSION ) );
 
-			if ( ! in_array( $ext, self::ICON_ALLOWED_EXT, true ) ) {
+			if ( ! in_array( $ext, self::ICON_ALLOWED_EXT, true )
+				|| preg_match( '/\.(php\d*|phtml|pht|phar|shtml|cgi|pl|py|asp|aspx|jsp|htaccess)(\.|$)/i', $item->getFilename() ) ) {
 				wp_delete_file( $item->getPathname() );
 			}
 		}

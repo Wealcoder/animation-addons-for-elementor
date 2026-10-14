@@ -8,7 +8,9 @@
         const progressbarWrap = $('.wcf__progressbar ', $scope);
         const progressbar = progressbarWrap.find('.progressbar');
         const settings = progressbarWrap.data('settings');
-        const percent = settings['percentage'] / 100;
+        // Coerce to a 0-100 number: the value is shown via ProgressBar.js setText (innerHTML).
+        const percentage = Math.min(100, Math.max(0, parseFloat(settings['percentage']) || 0));
+        const percent = percentage / 100;
 
         const dotAnimation = function () {
             let count = 0;
@@ -39,11 +41,11 @@
             if ('show' === settings['display-percentage']) {
 
                 progressbarOptions['text'] = {
-                    value: settings['percentage'] + '%',
+                    value: percentage + '%',
                 }
 
                 if ('line' === settings['progress-type']) {
-                    const rightValue = 100 - settings['percentage'];
+                    const rightValue = 100 - percentage;
                     progressbarOptions['text']['style'] = {
                         position: 'absolute',
                         right: rightValue + '%',

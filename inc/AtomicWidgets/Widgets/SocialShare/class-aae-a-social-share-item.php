@@ -409,14 +409,36 @@ class Aaeaddon_A_Social_Share_Item extends Atomic_Element_Base {
 		$configured = self::apply_url_tokens( $has_field && '' !== $share_link ? $share_link : $btn_url );
 
 		if ( ! $has_field ) {
-			return $configured;
+			return self::sanitize_share_href( $configured );
 		}
 
 		if ( ! self::share_link_needs_autofill( $detected, $configured ) ) {
-			return $configured;
+			return self::sanitize_share_href( $configured );
 		}
 
-		return self::build_share_url( $detected, $configured );
+		return self::sanitize_share_href( self::build_share_url( $detected, $configured ) );
+	}
+
+	/**
+	 * Scheme allow-list for the final href. btn_url / share_link are free
+	 * text, so a `javascript:` / `data:` value would otherwise render as a
+	 * clickable XSS link. esc_url_raw() (not esc_url() — the twig already
+	 * html_attr-escapes, so entity-encoding here would double-encode `&`)
+	 * drops anything outside WordPress's allowed protocols plus the app
+	 * schemes a hand-written share link legitimately uses (WhatsApp, Viber,
+	 * Telegram, Skype, Messenger).
+	 */
+	protected static function sanitize_share_href( string $href ): string {
+		if ( '' === $href || '#' === $href ) {
+			return $href;
+		}
+
+		$protocols = array_merge(
+			wp_allowed_protocols(),
+			[ 'whatsapp', 'viber', 'tg', 'skype', 'fb-messenger' ]
+		);
+
+		return esc_url_raw( $href, array_unique( $protocols ) );
 	}
 
 	/**

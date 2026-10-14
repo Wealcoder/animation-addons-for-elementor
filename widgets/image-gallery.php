@@ -808,32 +808,26 @@ class Image_Gallery extends Widget_Base {
 				$lightbox_images[] = $this->get_lightbox_image_url( $item['image'] );
 			}
 
-			// Render icon HTML for JS to use
-			ob_start();
-			Icons_Manager::render_icon( $settings['lightbox_close_icon'], [ 'aria-hidden' => 'true' ] );
-			$close_icon_html = ob_get_clean();
-
-			ob_start();
-			Icons_Manager::render_icon( $settings['lightbox_prev_icon'], [ 'aria-hidden' => 'true' ] );
-			$prev_icon_html = ob_get_clean();
-
-			ob_start();
-			Icons_Manager::render_icon( $settings['lightbox_next_icon'], [ 'aria-hidden' => 'true' ] );
-			$next_icon_html = ob_get_clean();
-
-			ob_start();
-			Icons_Manager::render_icon( $settings['lightbox_fullscreen_icon'], [ 'aria-hidden' => 'true' ] );
-			$fullscreen_icon_html = ob_get_clean();
+			// Lightbox icons are printed as Elementor renders them inside inert
+			// <template>s that the JS clones. They used to travel in data-* attributes
+			// and be concatenated into innerHTML, which turned entity-encoded setting
+			// values back into live markup (stored XSS).
+			$lightbox_icons = [
+				'close'      => 'lightbox_close_icon',
+				'prev'       => 'lightbox_prev_icon',
+				'next'       => 'lightbox_next_icon',
+				'fullscreen' => 'lightbox_fullscreen_icon',
+			];
 			?>
 			<div class="wcf--lightbox-data" style="display:none;"
 				data-images="<?php echo esc_attr( wp_json_encode( $lightbox_images ) ); ?>"
 				data-animation="<?php echo esc_attr( $settings['lightbox_animation'] ); ?>"
 				data-counter="<?php echo esc_attr( $settings['lightbox_counter'] ); ?>"
-				data-close-icon="<?php echo esc_attr( $close_icon_html ); ?>"
-				data-prev-icon="<?php echo esc_attr( $prev_icon_html ); ?>"
-				data-next-icon="<?php echo esc_attr( $next_icon_html ); ?>"
-				data-fullscreen-icon="<?php echo esc_attr( $fullscreen_icon_html ); ?>"
-			></div>
+			>
+				<?php foreach ( $lightbox_icons as $icon_key => $setting_key ) : ?>
+					<template class="wcf--lightbox-icon" data-icon="<?php echo esc_attr( $icon_key ); ?>"><?php Icons_Manager::render_icon( $settings[ $setting_key ] ?? [], [ 'aria-hidden' => 'true' ] ); ?></template>
+				<?php endforeach; ?>
+			</div>
 		<?php endif; ?>
 		<?php
 	}

@@ -1520,7 +1520,7 @@ class Plugin
 										<#
 										_.each( data.categories, function( item, key ) {
 										#>
-										<option value="{{item.id}}">{{{item.name}}}</option>
+										<option value="{{item.id}}">{{ item.name }}</option>
 										<#
 										} );
 										#>
@@ -1561,7 +1561,7 @@ class Plugin
 							#>
 							<div class="wcf-library-template" data-id="{{item.id}}" data-url="{{item.url}}">
 								<div class="thumbnail">
-									<img src="{{{ item.thumbnail }}}" alt="{{ item.title }}">
+									<img src="{{ item.thumbnail }}" alt="{{ item.title }}">
 								</div>
 								<# if(item?.valid && item.valid){ #>
 									<button class="library--action insert">
@@ -1588,7 +1588,7 @@ class Plugin
 									</button>
 									<?php } ?>
 								<# } #>
-								<p class="title">{{{ item.title }}}</p>
+								<p class="title">{{ item.title }}</p>
 							</div>
 							<#
 							} );

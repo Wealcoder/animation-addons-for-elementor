@@ -1940,9 +1940,9 @@ class Category_Showcase extends Widget_Base
 		$order   = ! empty($settings['order']) ? $settings['order'] : 'DESC';
 
 		// Dynamic tags
-		$title_tag       = ! empty($settings['title_tag']) ? $settings['title_tag'] : 'h2';
-		$subtitle_tag    = ! empty($settings['subtitle_tag']) ? $settings['subtitle_tag'] : 'p';
-		$description_tag = ! empty($settings['description_tag']) ? $settings['description_tag'] : 'p';
+		$title_tag       = Utils::validate_html_tag(! empty($settings['title_tag']) ? $settings['title_tag'] : 'h2');
+		$subtitle_tag    = Utils::validate_html_tag(! empty($settings['subtitle_tag']) ? $settings['subtitle_tag'] : 'p');
+		$description_tag = Utils::validate_html_tag(! empty($settings['description_tag']) ? $settings['description_tag'] : 'p');
 		$show_child      = $settings['show_child_categories'] === 'yes' ? '' : 0;
 
 		// Get categories with orderby and order

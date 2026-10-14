@@ -119,7 +119,9 @@ class Mailchimp_Api {
         $widget_id       = ! empty( $_POST['widgetId'] ) ? sanitize_text_field( wp_unslash( $_POST['widgetId'] ) ) : '';
         $widget_settings = [];
 
-        if ( $post_id && $widget_id && function_exists( 'aaeaddon_get_widget_settings' ) ) {
+        // Only a published document is read: a draft or private post can hold
+        // a widget a contributor configured but nobody published.
+        if ( $post_id && $widget_id && 'publish' === get_post_status( $post_id ) && function_exists( 'aaeaddon_get_widget_settings' ) ) {
             $widget_settings = aaeaddon_get_widget_settings( $post_id, $widget_id );
             if ( ! empty( $widget_settings['mailchimp_api'] ) ) {
                 $api_key = trim( (string) $widget_settings['mailchimp_api'] );
@@ -138,25 +140,29 @@ class Mailchimp_Api {
         // on, and which tags apply. Those used to be read from the request
         // first, which let a visitor subscribe any address to ANY list in the
         // owner's account, switch the confirmation email off, and attach
-        // arbitrary tags. The posted values are honoured only when the
-        // request names no saved widget at all (a page built before the
-        // widget printed its ids).
+        // arbitrary tags. There used to be a fallback to the posted values
+        // when the request named no saved widget (a page built before the
+        // widget printed its ids), but that fallback was the same hole: drop
+        // the ids and the request again picked list, opt-in and tags for the
+        // site-wide API key. It is gone -- a request must name a saved widget
+        // on a published document, and an old cached page has to be
+        // re-rendered (re-saved / cache cleared) to print the ids.
         $from_widget = $post_id && $widget_id && ! empty( $widget_settings );
-        $list_id     = '';
-        $double      = false;
-        $tags_raw    = '';
-        if ( $from_widget ) {
-            $list_id  = trim( (string) ( $widget_settings['mailchimp_lists'] ?? '' ) );
-            $double   = 'yes' === ( $widget_settings['enable_double_opt_in'] ?? '' );
-            $tags_raw = (string) ( $widget_settings['mailchimp_list_tags'] ?? '' );
-        } else {
-            $list_id  = isset( $_POST['listId'] ) ? trim( (string) sanitize_text_field( wp_unslash( $_POST['listId'] ) ) ) : '';
-            $double   = ( isset( $_POST['doubleOpt'] ) && 'yes' === $_POST['doubleOpt'] );
-            $tags_raw = isset( $_POST['listTags'] ) ? sanitize_text_field( wp_unslash( $_POST['listTags'] ) ) : '';
+        if ( ! $from_widget ) {
+            return ['status' => 0, 'msg' => esc_html__('This form could not be submitted. Please reload the page and try again.', 'animation-addons-for-elementor')];
         }
+
+        $list_id  = trim( (string) ( $widget_settings['mailchimp_lists'] ?? '' ) );
+        $double   = 'yes' === ( $widget_settings['enable_double_opt_in'] ?? '' );
+        $tags_raw = (string) ( $widget_settings['mailchimp_list_tags'] ?? '' );
 
         if ( ! $api_key || ! $list_id ) {
             return ['status' => 0, 'msg' => esc_html__('Missing API key or List ID.', 'animation-addons-for-elementor')];
+        }
+
+        // The list id goes into the API URL path; Mailchimp ids are alphanumeric.
+        if ( ! preg_match( '/^[a-z0-9]+$/i', $list_id ) ) {
+            return ['status' => 0, 'msg' => esc_html__('Invalid List ID.', 'animation-addons-for-elementor')];
         }
 
         $dc = self::dc_from_key($api_key);

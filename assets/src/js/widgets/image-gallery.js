@@ -22,10 +22,23 @@
 
         var animation = dataEl.getAttribute('data-animation') || 'fade-scale';
         var showCounter = dataEl.getAttribute('data-counter') === 'yes';
-        var closeIconHtml = dataEl.getAttribute('data-close-icon') || '&times;';
-        var prevIconHtml = dataEl.getAttribute('data-prev-icon') || '&#8249;';
-        var nextIconHtml = dataEl.getAttribute('data-next-icon') || '&#8250;';
-        var fullscreenIconHtml = dataEl.getAttribute('data-fullscreen-icon') || '&#x26F6;';
+
+        // Icons come from server-rendered <template>s and are cloned as nodes, never
+        // concatenated into innerHTML (decoded attribute values were an XSS vector).
+        function makeButton(className, label, iconName, fallbackText) {
+            var btn = document.createElement('button');
+            btn.className = 'wcf--lightbox-btn ' + className;
+            btn.type = 'button';
+            btn.setAttribute('aria-label', label);
+            var tpl = dataEl.querySelector('template.wcf--lightbox-icon[data-icon="' + iconName + '"]');
+            var content = tpl && tpl.content;
+            if (content && (content.children.length || content.textContent.trim())) {
+                btn.appendChild(content.cloneNode(true));
+            } else {
+                btn.textContent = fallbackText;
+            }
+            return btn;
+        }
 
         if (!images.length) return;
 
@@ -37,20 +50,25 @@
         function createLightbox() {
             var el = document.createElement('div');
             el.className = 'wcf--lightbox wcf--lightbox-' + animation;
+            // Static skeleton only; the icon buttons are added as DOM nodes below.
             el.innerHTML =
                 '<div class="wcf--lightbox-overlay"></div>' +
                 '<div class="wcf--lightbox-content">' +
                     '<div class="wcf--lightbox-toolbar">' +
                         (showCounter ? '<span class="wcf--lightbox-counter"></span>' : '') +
-                        '<button class="wcf--lightbox-btn wcf--lightbox-fullscreen" type="button" aria-label="Fullscreen">' + fullscreenIconHtml + '</button>' +
-                        '<button class="wcf--lightbox-btn wcf--lightbox-close" type="button" aria-label="Close">' + closeIconHtml + '</button>' +
                     '</div>' +
                     '<div class="wcf--lightbox-stage">' +
                         '<img class="wcf--lightbox-image" src="" alt="" />' +
                     '</div>' +
-                    '<button class="wcf--lightbox-btn wcf--lightbox-prev" type="button" aria-label="Previous">' + prevIconHtml + '</button>' +
-                    '<button class="wcf--lightbox-btn wcf--lightbox-next" type="button" aria-label="Next">' + nextIconHtml + '</button>' +
                 '</div>';
+
+            var toolbar = el.querySelector('.wcf--lightbox-toolbar');
+            toolbar.appendChild(makeButton('wcf--lightbox-fullscreen', 'Fullscreen', 'fullscreen', '\u26F6'));
+            toolbar.appendChild(makeButton('wcf--lightbox-close', 'Close', 'close', '\u00D7'));
+
+            var content = el.querySelector('.wcf--lightbox-content');
+            content.appendChild(makeButton('wcf--lightbox-prev', 'Previous', 'prev', '\u2039'));
+            content.appendChild(makeButton('wcf--lightbox-next', 'Next', 'next', '\u203A'));
 
             document.body.appendChild(el);
             return el;

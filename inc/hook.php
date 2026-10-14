@@ -19,10 +19,11 @@ if ( function_exists( 'aaeaddon_set_postview' ) ) {
  */
 if ( ! function_exists( 'aaeaddon_public_counter_visitor_key' ) ) {
 	function aaeaddon_public_counter_visitor_key() {
+		// IP only: the User-Agent is client-controlled, so keying on it let a
+		// single client reset the throttle just by changing that header.
 		$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
-		$ua = isset( $_SERVER['HTTP_USER_AGENT'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ) : '';
 
-		return substr( wp_hash( $ip . '|' . $ua ), 0, 16 );
+		return substr( wp_hash( $ip ), 0, 16 );
 	}
 }
 

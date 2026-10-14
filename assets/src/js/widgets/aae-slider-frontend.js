@@ -111,14 +111,37 @@
                 const editorSettings = this.getElementSettings();
                 const device = elementorFrontend.getCurrentDeviceMode();
 
+                // The icon URL is author-controlled, so the fetched SVG is untrusted:
+                // strip scriptable elements/attributes before it reaches the DOM (XSS).
+                function sanitizeSvgNode(svgNode, doc) {
+                    if (!svgNode || svgNode.localName !== 'svg' || doc.getElementsByTagName('parsererror').length) {
+                        return false;
+                    }
+                    const blocked = ['script', 'foreignobject', 'iframe', 'embed', 'object', 'style',
+                        'animate', 'set', 'animatetransform', 'animatemotion', 'handler', 'listener'];
+                    Array.from(svgNode.querySelectorAll('*')).forEach((el) => {
+                        if (blocked.includes(el.localName.toLowerCase())) {
+                            el.remove();
+                        }
+                    });
+                    [svgNode, ...svgNode.querySelectorAll('*')].forEach((el) => {
+                        Array.from(el.attributes).forEach((attr) => {
+                            const name = attr.name.toLowerCase();
+                            const isHref = name === 'href' || name.endsWith(':href');
+                            if (name.startsWith('on') || (isHref && !/^\s*#/.test(attr.value))) {
+                                el.removeAttribute(attr.name);
+                            }
+                        });
+                    });
+                    return document.importNode(svgNode, true);
+                }
+
                 async function inlineSvg(imgEl) {
                     try {
                         const response = await fetch(imgEl, { mode: 'cors' });
                         const svgText = await response.text();
-                        const svgNode = new DOMParser()
-                            .parseFromString(svgText, 'image/svg+xml')
-                            .documentElement;
-                        return svgNode;
+                        const svgDoc = new DOMParser().parseFromString(svgText, 'image/svg+xml');
+                        return sanitizeSvgNode(svgDoc.documentElement, svgDoc);
                     } catch (e) {
                         return false;
                     }
@@ -218,20 +241,22 @@
 
                     if (propertyName === 'navigation_previous_icon' || propertyName === 'navigation_next_icon' || propertyName === 'navigation') {
                         if (editorSettings?.navigation_previous_icon && editorSettings.navigation_previous_icon.library !== 'svg' && editorSettings.navigation_previous_icon.value != '') {
-                            this.$element.find('.wcf-arrow-prev').html(`<i class="${editorSettings.navigation_previous_icon.value}"></i>`);
+                            this.$element.find('.wcf-arrow-prev').empty().append($('<i>').attr('class', editorSettings.navigation_previous_icon.value));
                         } else if (editorSettings?.navigation_previous_icon && editorSettings.navigation_previous_icon.library == 'svg' && editorSettings.navigation_previous_icon.value?.url != '') {
                             const iprevsvg = inlineSvg(editorSettings.navigation_previous_icon.value.url);
                             iprevsvg.then((svgNode) => {
-                                this.$element.find('.wcf-arrow-prev').html(svgNode);
+                                if (!svgNode) return;
+                                this.$element.find('.wcf-arrow-prev').empty().append(svgNode);
                             });
                         }
 
                         if (editorSettings?.navigation_next_icon && editorSettings.navigation_next_icon.library !== 'svg' && editorSettings.navigation_next_icon.value != '') {
-                            this.$element.find('.wcf-arrow-next').html(`<i class="${editorSettings.navigation_next_icon.value}"></i>`);
+                            this.$element.find('.wcf-arrow-next').empty().append($('<i>').attr('class', editorSettings.navigation_next_icon.value));
                         } else if (editorSettings?.navigation_next_icon && editorSettings.navigation_next_icon.library == 'svg' && editorSettings.navigation_next_icon.value?.url != '') {
                             const inextsvg = inlineSvg(editorSettings.navigation_next_icon.value.url);
                             inextsvg.then((svgNode) => {
-                                this.$element.find('.wcf-arrow-next').html(svgNode);
+                                if (!svgNode) return;
+                                this.$element.find('.wcf-arrow-next').empty().append(svgNode);
                             });
                         }
                     }

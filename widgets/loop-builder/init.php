@@ -178,6 +178,13 @@ class Aaeaddon_Loop_Builder_Integration {
 			wp_send_json_error( 'Invalid template ID' );
 		}
 
+		// edit_posts alone let any contributor read the raw _elementor_data of
+		// any post by id -- drafts, private pages, and secrets stored in widget
+		// settings. Only hand out loop templates the caller may edit.
+		if ( Template_Manager::TEMPLATE_POST_TYPE !== get_post_type( $template_id ) || ! current_user_can( 'edit_post', $template_id ) ) {
+			wp_send_json_error( 'Insufficient permissions' );
+		}
+
 		$template_content = get_post_meta( $template_id, '_elementor_data', true );
 
 		if ( ! $template_content ) {

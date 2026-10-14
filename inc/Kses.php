@@ -66,8 +66,10 @@ final class Kses {
 		// `transform-style`). Hooked around the one wp_kses() and removed
 		// after, so no other kses call on the site is widened.
 		add_filter( 'safe_style_css', array( __CLASS__, 'safe_style_css' ) );
+		add_filter( 'wp_kses_uri_attributes', array( __CLASS__, 'uri_attributes' ) );
 		$html = wp_kses( $html, self::allowed_html() );
 		remove_filter( 'safe_style_css', array( __CLASS__, 'safe_style_css' ) );
+		remove_filter( 'wp_kses_uri_attributes', array( __CLASS__, 'uri_attributes' ) );
 
 		if ( $blocks ) {
 			$html = preg_replace_callback(
@@ -118,6 +120,7 @@ final class Kses {
 		}
 
 		add_filter( 'safe_style_css', array( __CLASS__, 'safe_style_css' ) );
+		add_filter( 'wp_kses_uri_attributes', array( __CLASS__, 'uri_attributes' ) );
 		foreach ( $parts as $i => $part ) {
 			if ( 0 === $i % 2 ) {
 				if ( '' !== $part ) {
@@ -136,6 +139,7 @@ final class Kses {
 			}
 		}
 		remove_filter( 'safe_style_css', array( __CLASS__, 'safe_style_css' ) );
+		remove_filter( 'wp_kses_uri_attributes', array( __CLASS__, 'uri_attributes' ) );
 	}
 
 	/**
@@ -279,6 +283,22 @@ final class Kses {
 		}
 		// The one sequence that could end a data block early, neutralised.
 		return '<script' . $attrs . '>' . str_replace( '</', '<\/', $block['text'] ) . '</script>';
+	}
+
+	/**
+	 * `wp_kses_uri_attributes` filter, scoped like safe_style_css() to this
+	 * class's own wp_kses() calls: core does not list `xlink:href`, so an
+	 * allowed SVG `<use>`/`<image>`/gradient could carry `javascript:` in it
+	 * unchecked. Listing it puts it through the same protocol check as href.
+	 *
+	 * @param string[] $attrs Core's list.
+	 * @return string[]
+	 */
+	public static function uri_attributes( $attrs ) {
+		$attrs   = (array) $attrs;
+		$attrs[] = 'xlink:href';
+
+		return array_values( array_unique( $attrs ) );
 	}
 
 	/**
@@ -643,28 +663,23 @@ final class Kses {
 				'k4'       => true,
 				'result'   => true,
 			),
+			// No attributename/values/from/to/by: with them an <animate> can
+			// rewrite its parent's href to `javascript:` AFTER kses ran. Nothing
+			// this plugin renders uses SMIL animation.
 			'animate'          => array(
-				'attributename' => true,
-				'values'        => true,
 				'dur'           => true,
 				'repeatcount'   => true,
 				'begin'         => true,
-				'from'          => true,
-				'to'            => true,
 				'fill'          => true,
 				'calcmode'      => true,
 				'keytimes'      => true,
 				'keysplines'    => true,
 			),
 			'animatetransform' => array(
-				'attributename' => true,
 				'type'          => true,
-				'values'        => true,
 				'dur'           => true,
 				'repeatcount'   => true,
 				'begin'         => true,
-				'from'          => true,
-				'to'            => true,
 				'additive'      => true,
 			),
 		);

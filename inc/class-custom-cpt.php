@@ -247,12 +247,7 @@ class CustomCpt_Lite {
                         }                      
                     }
                     
-                    if(isset($meta['register_meta_box_cb']) && $meta['register_meta_box_cb'] !='')
-                    {
-                        if(!function_exists($meta['register_meta_box_cb'])){
-                            unset($meta['register_meta_box_cb']);
-                        }
-                    }
+                    $meta = $this->restrict_callbacks( $meta, array( 'register_meta_box_cb' ) );
                    
                     if(isset($meta['capability']) && $meta['capability'] == 1){
                         
@@ -390,12 +385,7 @@ class CustomCpt_Lite {
                          }                      
                      }
                      
-                     if(isset($meta['register_meta_box_cb']) && $meta['register_meta_box_cb'] !='')
-                     {
-                         if(!function_exists($meta['register_meta_box_cb'])){
-                             unset($meta['register_meta_box_cb']);
-                         }
-                     }
+                     $meta = $this->restrict_callbacks( $meta, array( 'register_meta_box_cb', 'meta_box_cb', 'meta_box_sanitize_cb', 'update_count_callback' ) );
                     
                      if(isset($meta['capability']) && $meta['capability'] == 1){
                          
@@ -425,6 +415,43 @@ class CustomCpt_Lite {
         }
       
     }
+    /**
+     * A stored (or kit-imported) config names its callbacks as plain strings
+     * and the whole config is handed to register_post_type()/register_taxonomy().
+     * "Any function that exists" let that data call arbitrary PHP functions, so
+     * a callback is kept only when it is this plugin's own (`aaeaddon_` prefix)
+     * or a site owner allowed it by name on `aaeaddon_cpt_allowed_callbacks`.
+     * `false` (taxonomy meta_box_cb: hide the box) is kept as is.
+     *
+     * @param array    $meta Stored config.
+     * @param string[] $keys Callback keys to check.
+     * @return array
+     */
+    private function restrict_callbacks( $meta, $keys ) {
+        if ( ! is_array( $meta ) ) {
+            return $meta;
+        }
+
+        $allowed = (array) apply_filters( 'aaeaddon_cpt_allowed_callbacks', array() );
+
+        foreach ( $keys as $key ) {
+            if ( ! array_key_exists( $key, $meta ) || false === $meta[ $key ] || null === $meta[ $key ] ) {
+                continue;
+            }
+
+            $cb = $meta[ $key ];
+            $ok = is_string( $cb )
+                && ( 0 === strpos( $cb, 'aaeaddon_' ) || in_array( $cb, $allowed, true ) )
+                && function_exists( $cb );
+
+            if ( ! $ok ) {
+                unset( $meta[ $key ] );
+            }
+        }
+
+        return $meta;
+    }
+
     public function generate_taxonomy_types($posts_types)
     {
         try{

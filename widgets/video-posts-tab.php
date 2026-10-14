@@ -1581,7 +1581,7 @@ class Video_Posts_Tab extends Widget_Base {
 		];
 		?>
         <div class="thumb" data-target="<?php echo esc_attr( get_the_ID() ); ?>">
-            <a href="<?php echo esc_url( get_permalink() ); ?>" aria-label="<?php the_title(); ?>">
+            <a href="<?php echo esc_url( get_permalink() ); ?>" aria-label="<?php the_title_attribute(); ?>">
 				<?php Group_Control_Image_Size::print_attachment_image_html( $settings, 'thumbnail_size' ); ?>
             </a>
         </div>
