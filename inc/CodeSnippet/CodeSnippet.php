@@ -142,25 +142,35 @@ class CodeSnippet {
 			'labels'              => $labels,
 			'supports'            => array( 'title' ),
 			'hierarchical'        => false,
-			'public'              => true,
+			// A snippet is executable site code, not content: never public, never
+			// in REST, and every capability is `manage_options` so an Editor (who
+			// holds the `page` caps this used to borrow) can neither create,
+			// publish nor edit one through post.php, admin-ajax or XML-RPC.
+			'public'              => false,
 			'show_ui'             => true,
 			'show_in_menu'        => false,
 			'show_in_admin_bar'   => false,
 			'show_in_nav_menus'   => false,
 			'can_export'          => true,
 			'has_archive'         => false,
-			'rewrite'             => array(
-				'slug'       => 'wcf-code-snippet',
-				'pages'      => false,
-				'with_front' => true,
-				'feeds'      => false,
-			),
-			'query_var'           => true,
+			'rewrite'             => false,
+			'query_var'           => false,
 			'exclude_from_search' => true,
-			'publicly_queryable'  => true,
+			'publicly_queryable'  => false,
 			'capability_type'     => 'page',
-			'show_in_rest'        => true,
-			'rest_base'           => self::CPTTYPE,
+			'capabilities'        => array(
+				'edit_post'          => 'manage_options',
+				'read_post'          => 'manage_options',
+				'delete_post'        => 'manage_options',
+				'edit_posts'         => 'manage_options',
+				'edit_others_posts'  => 'manage_options',
+				'publish_posts'      => 'manage_options',
+				'read_private_posts' => 'manage_options',
+				'delete_posts'       => 'manage_options',
+				'create_posts'       => 'manage_options',
+			),
+			'map_meta_cap'        => false,
+			'show_in_rest'        => false,
 		);
 
 		register_post_type( self::CPTTYPE, $args );
@@ -366,8 +376,35 @@ class CodeSnippet {
 			);
 		}
 
+		// HTML, JavaScript and PHP snippets are printed/executed verbatim on every
+		// page, so they need the same right WordPress requires for unfiltered
+		// markup. On multisite a site administrator has manage_options but not
+		// unfiltered_html; DISALLOW_UNFILTERED_HTML removes it everywhere. CSS
+		// is tag-stripped on output and keeps the manage_options gate above.
+		if ( 'css' !== $posted_code_type && ! current_user_can( 'unfiltered_html' ) ) {
+			wp_die(
+				esc_html__( 'You are not allowed to save HTML, JavaScript or PHP snippets.', 'animation-addons-for-elementor' ),
+				esc_html__( 'Permission denied', 'animation-addons-for-elementor' ),
+				array( 'response' => 403 )
+			);
+		}
+
 		$snippet_id = isset( $_POST['snippet_id'] ) ? absint( $_POST['snippet_id'] ) : '';
 		$referer    = wp_get_referer();
+
+		// An existing id must be a snippet. wp_insert_post() with an ID updates
+		// that post whatever its type, so without this a forged snippet_id would
+		// rewrite an arbitrary post into a snippet.
+		if ( $snippet_id ) {
+			$existing = get_post( $snippet_id );
+			if ( ! $existing || self::CPTTYPE !== $existing->post_type ) {
+				wp_die(
+					esc_html__( 'Invalid code snippet.', 'animation-addons-for-elementor' ),
+					esc_html__( 'Invalid Snippet', 'animation-addons-for-elementor' ),
+					array( 'response' => 400 )
+				);
+			}
+		}
 
 		// Post title & content.
 		$snippet_title = isset( $_POST['snippet_title'] ) ? sanitize_text_field( wp_unslash( $_POST['snippet_title'] ) ) : '';

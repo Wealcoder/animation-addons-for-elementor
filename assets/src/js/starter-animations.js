@@ -98,7 +98,8 @@
 
         var originalText = target.textContent;
 
-        target.innerHTML = originalText;
+        // textContent, not innerHTML: decoded text must not be re-parsed as markup (XSS).
+        target.textContent = originalText;
         target.dataset.charInit = "";
 
         handleChar(wrapper);

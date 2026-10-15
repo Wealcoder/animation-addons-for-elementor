@@ -10,6 +10,22 @@ defined('ABSPATH') || die();
 class AaeaddonWXRImporter extends \WP_Importer
 {
 	/**
+	 * maybe_unserialize() for imported (remote) meta: never instantiates an
+	 * object, so a crafted WXR cannot reach a PHP object-injection gadget.
+	 *
+	 * @param mixed $value Raw meta value from the WXR.
+	 * @return mixed
+	 */
+	private static function safe_unserialize($value)
+	{
+		if (is_string($value) && is_serialized($value)) {
+			return @unserialize(trim($value), array('allowed_classes' => false)); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize
+		}
+
+		return $value;
+	}
+
+	/**
 	 * Maximum supported WXR version
 	 */
 	const MAX_WXR_VERSION = 1.2;
@@ -1370,7 +1386,7 @@ class AaeaddonWXRImporter extends \WP_Importer
 			if ($key) {
 				// export gets meta straight from the DB so could have a serialized string
 				if (! $value) {
-					$value = maybe_unserialize($meta_item['value']);
+					$value = self::safe_unserialize($meta_item['value']);
 				}
 
 				add_post_meta($post_id, wp_slash($key), wp_slash($value));
@@ -1570,7 +1586,7 @@ class AaeaddonWXRImporter extends \WP_Importer
 
 			// Process the meta items
 			foreach ($meta as $meta_item) {
-				$value = maybe_unserialize($meta_item['value']);
+				$value = self::safe_unserialize($meta_item['value']);
 				add_comment_meta($comment_id, wp_slash($meta_item['key']), wp_slash($value));
 			}
 
@@ -2017,7 +2033,7 @@ class AaeaddonWXRImporter extends \WP_Importer
 			if ($key) {
 				// Export gets meta straight from the DB so could have a serialized string.
 				if (! $value) {
-					$value = maybe_unserialize($meta_item['value']);
+					$value = self::safe_unserialize($meta_item['value']);
 				}
 
 				$result    = add_term_meta($term_id, $key, $value);

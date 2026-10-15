@@ -1191,9 +1191,16 @@ class Mailchimp extends Widget_Base
 	{
 		$settings = $this->get_settings_for_display();
 
-		$post_id = get_the_ID();
-		if ( empty( $post_id ) && class_exists( '\Elementor\Plugin' ) && \Elementor\Plugin::$instance->documents->get_current() ) {
+		// The subscribe handler looks the widget up in THIS id's Elementor data,
+		// so it must be the document the widget lives in. Inside a header,
+		// footer or other template, get_the_ID() is the surrounding page, not
+		// the template, so prefer the document Elementor is rendering.
+		$post_id = 0;
+		if ( class_exists( '\Elementor\Plugin' ) && \Elementor\Plugin::$instance->documents->get_current() ) {
 			$post_id = \Elementor\Plugin::$instance->documents->get_current()->get_main_id();
+		}
+		if ( empty( $post_id ) ) {
+			$post_id = get_the_ID();
 		}
 
 		$this->add_render_attribute('wrapper', 'class', 'wcf--mailchimp');

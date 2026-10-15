@@ -337,8 +337,9 @@ class Progressbar extends Widget_Base {
 	protected function render() {
 		$settings = $this->get_settings_for_display();
 
+		// Numeric casts: percentage ends up in ProgressBar.js text (innerHTML) on the frontend.
 		$progressbar_settings = [
-			'percentage'  => $settings['percentage']['size'],
+			'percentage'  => max( 0, min( 100, (float) ( $settings['percentage']['size'] ?? 0 ) ) ),
 			'color'       => $settings['color'],
 			'trail-color' => $settings['bg-color'],
 		];
@@ -356,8 +357,11 @@ class Progressbar extends Widget_Base {
 		}
 
 		if ( in_array( $settings['element_list'], [ 1, 2 ] ) ) {
-			$progressbar_settings['stroke-width'] = $settings['stroke-width']['size'];
-			$progressbar_settings['trail-width']  = $settings['trail-width']['size'];
+			// Numeric only; a cleared slider stays '' so ProgressBar.js keeps its default width.
+			$stroke_width = $settings['stroke-width']['size'] ?? '';
+			$trail_width  = $settings['trail-width']['size'] ?? '';
+			$progressbar_settings['stroke-width'] = is_numeric( $stroke_width ) ? (float) $stroke_width : '';
+			$progressbar_settings['trail-width']  = is_numeric( $trail_width ) ? (float) $trail_width : '';
 		}
 
 		if ( ! empty( $settings['display_percentage'] ) ) {

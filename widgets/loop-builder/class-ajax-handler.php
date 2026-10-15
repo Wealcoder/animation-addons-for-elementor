@@ -79,8 +79,9 @@ class Ajax_Handler {
 			}
 
 			// Security: Enforce a hard maximum limit on posts per page to prevent DoS via heavy queries.
-			if ( isset( $settings['posts_per_page'] ) && (int) $settings['posts_per_page'] > 100 ) {
-				$settings['posts_per_page'] = 100;
+			// Clamp to 1..100: a bare "> 100" check let -1 (every post) through.
+			if ( isset( $settings['posts_per_page'] ) ) {
+				$settings['posts_per_page'] = max( 1, min( 100, (int) $settings['posts_per_page'] ) );
 			}
 
 			$settings['paged'] = $page;
@@ -197,8 +198,9 @@ class Ajax_Handler {
 			}
 
 			// Security: Enforce a hard maximum limit on posts per page to prevent DoS via heavy queries.
-			if ( isset( $settings['posts_per_page'] ) && (int) $settings['posts_per_page'] > 100 ) {
-				$settings['posts_per_page'] = 100;
+			// Clamp to 1..100: a bare "> 100" check let -1 (every post) through.
+			if ( isset( $settings['posts_per_page'] ) ) {
+				$settings['posts_per_page'] = max( 1, min( 100, (int) $settings['posts_per_page'] ) );
 			}
 
 			$settings['paged'] = $page;

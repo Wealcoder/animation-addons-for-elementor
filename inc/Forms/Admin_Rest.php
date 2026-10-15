@@ -1090,7 +1090,7 @@ final class Admin_Rest {
 		$out = fopen( 'php://output', 'w' );
 		// The explicit escape argument silences the PHP 8.1+ "$escape must be
 		// provided" deprecation (its default changes in a future PHP).
-		fputcsv( $out, array_merge( [ 'ID', 'Form', 'Date', 'Status', 'Source URL' ], array_values( $columns ) ), ',', '"', '\\' );
+		fputcsv( $out, self::csv_safe_row( array_merge( [ 'ID', 'Form', 'Date', 'Status', 'Source URL' ], array_values( $columns ) ) ), ',', '"', '\\' );
 
 		foreach ( $rows as $row ) {
 			$line = [ $row->id, $row->form_key, $row->created_at, $row->status, $row->source_url ];
@@ -1099,10 +1099,30 @@ final class Admin_Rest {
 				// names, multi-select JSON → joined values, plain text as-is.
 				$line[] = self::preview_value( (string) ( $values_by_submission[ (int) $row->id ][ $key ] ?? '' ) );
 			}
-			fputcsv( $out, $line, ',', '"', '\\' );
+			fputcsv( $out, self::csv_safe_row( $line ), ',', '"', '\\' );
 		}
 
 		exit;
+	}
+
+	/**
+	 * Neutralize spreadsheet formula injection: a visitor-submitted value
+	 * starting with =, +, -, @, tab or CR would be evaluated as a formula
+	 * when the export is opened in Excel/Sheets — prefix it with a quote.
+	 */
+	private static function csv_safe_row( array $cells ): array {
+		return array_map(
+			static function ( $cell ) {
+				$cell = (string) $cell;
+
+				if ( '' !== $cell && false !== strpos( "=+-@\t\r", $cell[0] ) ) {
+					$cell = "'" . $cell;
+				}
+
+				return $cell;
+			},
+			$cells
+		);
 	}
 
 	// phpcs:enable WordPress.DB.DirectDatabaseQuery

@@ -228,7 +228,7 @@ class Aaeaddon_A_Accordion extends Atomic_Element_Base {
 			}
 
 			if ( ! empty( $faq_data['mainEntity'] ) ) {
-				$context['faq_schema_json'] = wp_json_encode( $faq_data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
+				$context['faq_schema_json'] = wp_json_encode( $faq_data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG );
 			}
 		}
 

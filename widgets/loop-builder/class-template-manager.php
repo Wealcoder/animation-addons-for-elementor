@@ -152,6 +152,16 @@ class Template_Manager {
 			wp_send_json_error( array( 'message' => 'Insufficient permissions' ) );
 		}
 
+		// The template is inserted as published (the widget only renders a
+		// published loop template, and the editor selects the new id at once),
+		// so the caller must be allowed to publish this post type -- edit_posts
+		// alone let a contributor put published content on the site.
+		$post_type_object = get_post_type_object( self::TEMPLATE_POST_TYPE );
+		$publish_cap      = $post_type_object ? $post_type_object->cap->publish_posts : 'publish_pages';
+		if ( ! current_user_can( $publish_cap ) ) {
+			wp_send_json_error( array( 'message' => 'Insufficient permissions' ) );
+		}
+
 		$template_name = isset( $_POST['template_name'] ) ? sanitize_text_field( wp_unslash( $_POST['template_name'] ) ) : '';
 		$source_type   = isset( $_POST['source_type'] ) ? sanitize_text_field( wp_unslash( $_POST['source_type'] ) ) : '';
 

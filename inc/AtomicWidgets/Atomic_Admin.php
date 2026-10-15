@@ -1413,7 +1413,9 @@ final class Atomic_Admin
 			$users = get_users([
 				'number'              => ('' === $term) ? 8 : 20,
 				'search'              => '' === $term ? '' : '*' . $term . '*',
-				'search_columns'      => ['display_name', 'user_login', 'user_nicename', 'user_email'],
+				// No user_email: a substring search over it lets any editor-side
+				// user enumerate authors' email addresses.
+				'search_columns'      => ['display_name', 'user_login', 'user_nicename'],
 				'capability'          => 'edit_posts',
 				'orderby'             => 'display_name',
 				'order'               => 'ASC',
@@ -1437,7 +1439,10 @@ final class Atomic_Admin
 			]);
 		} elseif ('term' === $kind) {
 			$taxonomy = isset($_POST['taxonomy']) ? sanitize_key(wp_unslash($_POST['taxonomy'])) : '';
-			if (! $taxonomy || ! taxonomy_exists($taxonomy)) {
+			$tax_obj  = $taxonomy ? get_taxonomy($taxonomy) : false;
+			// Public taxonomies only — or an admin-UI one this user may assign
+			// terms of anyway. Private/internal taxonomies are not listed.
+			if (! $tax_obj || ! ($tax_obj->public || ($tax_obj->show_ui && current_user_can($tax_obj->cap->assign_terms)))) {
 				wp_send_json_error(['message' => 'Invalid taxonomy.'], 400);
 			}
 			$terms = get_terms([

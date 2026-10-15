@@ -579,7 +579,10 @@ class Animated_Title extends Widget_Base
       // Replace [text] with highlight span
       title=title.replace(/\[([^\]]*)\]/g, '<span class="highlight">$1</span>' );
 
-      let tag=settings.header_size ? settings.header_size : 'h2' ;
+      // Validate the tag and only allow safe URL schemes in the preview (XSS via settings).
+      let tag=elementor.helpers.validateHTMLTag( settings.header_size ? settings.header_size : 'h2' );
+      let linkUrl=( settings.link && settings.link.url ) ? String( settings.link.url ).trim() : '';
+      let linkHrefSafe=/^(https?:|mailto:|tel:|\/|#)/i.test( linkUrl );
       let classes=['wcf--title'];
       if ( settings.show_title_prefix==='yes' ) {
       classes.push(settings.title_prefix_use);
@@ -588,8 +591,8 @@ class Animated_Title extends Widget_Base
       // Build title HTML
       #>
       <{{{ tag }}} class="{{ classes.join(' ') }}">
-        <# if ( settings.link.url ) { #>
-          <a href="{{ settings.link.url }}"
+        <# if ( linkUrl ) { #>
+          <a <# if ( linkHrefSafe ) { #>href="{{ linkUrl }}"<# } #>
             <# if ( settings.link.is_external ) { #>target="_blank"<# } #>
               <# if ( settings.link.nofollow ) { #>rel="nofollow"<# } #>>
                   {{{ title }}}

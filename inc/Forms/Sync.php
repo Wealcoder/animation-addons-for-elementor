@@ -39,15 +39,38 @@ final class Sync {
 			? (int) $document->get_main_id()
 			: 0;
 
+		// Only a published (or scheduled/private — statuses that already
+		// required publish rights) post makes its forms live. A draft or
+		// pending-review save (e.g. a contributor's) must not mint or replace
+		// a live schema that unauthenticated visitors can submit against.
+		if ( $post_id <= 0 || ! in_array( get_post_status( $post_id ), [ 'publish', 'private', 'future' ], true ) ) {
+			return;
+		}
+
+		// actions_json carries email recipients/subject/body and webhook URLs.
+		// Only users trusted with publishing pages may set it; anyone else
+		// keeps whatever the form's previously stored config was.
+		$can_set_actions = current_user_can( 'publish_pages' ) || current_user_can( 'manage_options' );
+
 		foreach ( self::find_top_level_forms( $data['elements'] ) as $form ) {
 			$form_key = (string) Prop::read( $form['settings'] ?? [], 'form_key', '' );
 			if ( '' === $form_key ) {
 				continue; // Identity filter didn't run — don't invent rows.
 			}
 
+			$schema = Schema_Walker::build( $form );
+
+			if ( ! $can_set_actions ) {
+				$previous = Schema_Store::get_active_schema( $form_key );
+
+				$schema['settings']['actions_json'] = is_array( $previous )
+					? (string) ( $previous['settings']['actions_json'] ?? '' )
+					: '';
+			}
+
 			$form_id = Schema_Store::upsert_form( $form_key, $post_id, (string) ( $form['id'] ?? '' ) );
 			if ( $form_id > 0 ) {
-				Schema_Store::sync_schema( $form_id, Schema_Walker::build( $form ) );
+				Schema_Store::sync_schema( $form_id, $schema );
 			}
 		}
 	}

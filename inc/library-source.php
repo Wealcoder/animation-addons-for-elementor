@@ -50,6 +50,14 @@ class Library_Source extends Source_Base {
 			return;
 		}
 
+		// The id becomes a path segment of the vendor API URL — never let a
+		// client-supplied value add segments, a query string or `..`.
+		$template_id = is_numeric( $template_id ) ? absint( $template_id ) : rawurlencode( (string) $template_id );
+
+		if ( empty( $template_id ) || '.' === $template_id || '..' === $template_id ) {
+			return;
+		}
+
 		$request_url = plugin::instance()->api_url . '/' . $template_id;
 		
 		$response    = wp_safe_remote_get(

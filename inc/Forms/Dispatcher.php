@@ -54,6 +54,13 @@ final class Dispatcher {
 			return;
 		}
 
+		// No emails/webhooks for a form whose source post isn't live
+		// (draft, pending, trashed, deleted) — its schema may have been
+		// written by someone without publish rights.
+		if ( ! self::source_post_is_live( (string) $form_key ) ) {
+			return;
+		}
+
 		$jobs = self::build_jobs( (int) $submission_id, (string) $form_key, $clean, $schema, (array) $meta );
 
 		if ( ! $jobs ) {
@@ -155,6 +162,26 @@ final class Dispatcher {
 		$post_id = url_to_postid( $source_url );
 
 		return $post_id > 0 ? (string) get_the_title( $post_id ) : '';
+	}
+
+	/** Is the post that owns this form currently published (or private)? */
+	private static function source_post_is_live( string $form_key ): bool {
+		global $wpdb;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- custom forms table, see Schema_Store.
+		$post_id = (int) $wpdb->get_var(
+			$wpdb->prepare(
+				'SELECT post_id FROM %i WHERE form_key = %s LIMIT 1',
+				Database::forms_table(),
+				$form_key
+			)
+		);
+
+		if ( $post_id <= 0 ) {
+			return false;
+		}
+
+		return in_array( get_post_status( $post_id ), [ 'publish', 'private' ], true );
 	}
 
 	/** Parse actions_json → [ type => settings ], defensively. */

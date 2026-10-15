@@ -504,7 +504,14 @@ class Aaeaddon_Theme_Builder_Admin
 				wp_send_json_error($errormessage);
 			}
 
-			$tmpid            = ! empty($_POST['tmpId']) ? sanitize_text_field(wp_unslash($_POST['tmpId'])) : '';
+			$tmpid            = ! empty($_POST['tmpId']) ? absint(wp_unslash($_POST['tmpId'])) : 0;
+
+			if (! $tmpid || Aaeaddon_Theme_Builder::CPTTYPE !== get_post_type($tmpid) || ! current_user_can('edit_post', $tmpid)) {
+				wp_send_json_error(array(
+					'message' => esc_html__('You are unauthorize to view this template!', 'animation-addons-for-elementor'),
+				));
+			}
+
 			$postdata         = get_post($tmpid);
 			$tmpType          = ! empty(get_post_meta($tmpid, Aaeaddon_Theme_Builder::CPT_META . '_type', true)) ? get_post_meta($tmpid, Aaeaddon_Theme_Builder::CPT_META . '_type', true) : 'single';
 			$tmpLocation      = ! empty(get_post_meta($tmpid, Aaeaddon_Theme_Builder::CPT_META . '_location', true)) ? get_post_meta($tmpid, Aaeaddon_Theme_Builder::CPT_META . '_location', true) : '';
@@ -775,6 +782,15 @@ class Aaeaddon_Theme_Builder_Admin
 	 */
 	public function update($data)
 	{
+		// Only an existing theme-builder template the current user may edit —
+		// never an arbitrary post id of any type.
+		$data['id'] = absint($data['id']);
+
+		if (! $data['id'] || Aaeaddon_Theme_Builder::CPTTYPE !== get_post_type($data['id']) || ! current_user_can('edit_post', $data['id'])) {
+			wp_send_json_error(array(
+				'message' => esc_html__('You are unauthorize to edit this template!', 'animation-addons-for-elementor'),
+			));
+		}
 
 		$update_post_args = array(
 			'ID'         => $data['id'],

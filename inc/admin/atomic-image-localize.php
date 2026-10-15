@@ -191,6 +191,11 @@ class Atomic_Image_Localize {
 		$state['images']      = $images;
 		$state['foreign_ids'] = $foreign_ids;
 		$state['photos']      = $photos;
+		// A block insert is reachable by any edit_posts user (Contributors
+		// included). Only one who may upload media gets remote files copied
+		// into the Media Library; anyone else keeps the remote URLs as-is
+		// (an already-imported copy is still reused — see resolve()).
+		$state['download']    = current_user_can( 'upload_files' );
 
 		$budget   = null === $budget ? (float) apply_filters( 'aae/template_library/localize_budget', 20.0 ) : $budget; // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 		$deadline = microtime( true ) + $budget;
@@ -478,6 +483,13 @@ class Atomic_Image_Localize {
 				$state['lottie']++;
 			}
 			return $existing;
+		}
+
+		// Downloads disabled for this caller (no upload_files): leave the url
+		// linked. Not recorded as failed — nothing went wrong.
+		if ( isset( $state['download'] ) && ! $state['download'] ) {
+			$state['processed']++;
+			return 0;
 		}
 
 		$id = 'lottie' === $kind ? self::download_lottie( $url ) : self::download( $url );

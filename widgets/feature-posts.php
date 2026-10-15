@@ -2117,11 +2117,31 @@ class Feature_Posts extends Widget_Base
 		$this->end_controls_section();
 	}
 
+	/**
+	 * The `post_type` setting reaches WP_Query as-is, and a stored setting is
+	 * not limited to the SELECT options: 'any' or a non-public type would list
+	 * content the site never exposes. Allow only public post types.
+	 *
+	 * @return string|array
+	 */
+	protected function get_query_post_type()
+	{
+		$post_type    = $this->get_settings('post_type');
+		$public_types = get_post_types(['public' => true]);
+
+		if (is_array($post_type)) {
+			$post_type = array_values(array_intersect($post_type, $public_types));
+			return ! empty($post_type) ? $post_type : 'post';
+		}
+
+		return (is_string($post_type) && isset($public_types[$post_type])) ? $post_type : 'post';
+	}
+
 	protected function query1_arg()
 	{
 
 		$query_args = [
-			'post_type'           => $this->get_settings('post_type'),
+			'post_type'           => $this->get_query_post_type(),
 			'posts_per_page'      => $this->get_settings('tab_posts_per_page'),
 			'ignore_sticky_posts' => empty($this->get_settings('post_sticky_ignore')) ? false : true,
 			'paged'               => $this->get_current_page(),
@@ -2208,7 +2228,7 @@ class Feature_Posts extends Widget_Base
 	{
 
 		$query_args = [
-			'post_type'           => $this->get_settings('post_type'),
+			'post_type'           => $this->get_query_post_type(),
 			'posts_per_page'      => $this->get_settings('grid_posts_per_page'),
 			'ignore_sticky_posts' => empty($this->get_settings('post_sticky_ignore')) ? false : true,
 			'paged'               => $this->get_current_page(),

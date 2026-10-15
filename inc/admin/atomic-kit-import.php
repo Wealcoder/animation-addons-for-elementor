@@ -534,8 +534,12 @@ class Atomic_Kit_Import {
 			WP_Filesystem();
 		}
 
-		$upload = wp_upload_dir();
-		$dir    = trailingslashit( $upload['basedir'] ) . 'aae-kit-' . wp_generate_password( 10, false );
+		// The kit zip can come from a remote URL, so it is extracted into a
+		// private temp directory (never under uploads, where a .php in the zip
+		// would be web-reachable while the import runs), and everything
+		// build_snapshots() does not read -- it only reads .json -- is deleted
+		// straight away. Elementor's own settings import works from the zip.
+		$dir = trailingslashit( get_temp_dir() ) . 'aae-kit-' . wp_generate_password( 12, false );
 
 		if ( ! wp_mkdir_p( $dir ) ) {
 			return new WP_Error( 'aae_kit_mkdir', 'Cannot create temp directory: ' . $dir );
@@ -549,7 +553,45 @@ class Atomic_Kit_Import {
 			return $unzipped;
 		}
 
+		self::prune_extracted( $dir );
+
 		return $dir;
+	}
+
+	/**
+	 * File types build_snapshots() reads out of an extracted kit.
+	 *
+	 * @var string[]
+	 */
+	const KIT_ALLOWED_EXT = [ 'json' ];
+
+	/**
+	 * Delete every extracted file whose extension is not in self::KIT_ALLOWED_EXT.
+	 *
+	 * @param string $dir Absolute path to the extracted kit.
+	 * @return void
+	 */
+	private static function prune_extracted( string $dir ): void {
+		if ( ! is_dir( $dir ) ) {
+			return;
+		}
+
+		$items = new \RecursiveIteratorIterator(
+			new \RecursiveDirectoryIterator( $dir, \FilesystemIterator::SKIP_DOTS ),
+			\RecursiveIteratorIterator::CHILD_FIRST
+		);
+
+		foreach ( $items as $item ) {
+			if ( $item->isDir() ) {
+				continue;
+			}
+
+			$ext = strtolower( pathinfo( $item->getFilename(), PATHINFO_EXTENSION ) );
+
+			if ( ! in_array( $ext, self::KIT_ALLOWED_EXT, true ) ) {
+				wp_delete_file( $item->getPathname() );
+			}
+		}
 	}
 
 	private static function remove_dir( string $dir ): void {

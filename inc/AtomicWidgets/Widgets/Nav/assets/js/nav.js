@@ -941,10 +941,44 @@ function fetchDropdownIconSvg( url ) {
 	}
 	const promise = window.fetch( url )
 		.then( ( r ) => ( r.ok ? r.text() : '' ) )
-		.then( ( text ) => ( /<svg[\s>]/i.test( text ) ? text : '' ) )
-		.catch( () => '' );
+		.then( ( text ) => sanitizeDropdownIconSvg( text ) )
+		.catch( () => null );
 	dropdownIconCache.set( url, promise );
 	return promise;
+}
+
+/* The icon URL is author-controlled, so the fetched markup is untrusted: parse it
+ * as XML (never innerHTML) and strip anything scriptable before it is inlined.
+ * Presentation (fill/stroke/class/viewBox/paths) is kept so `currentColor` works.
+ * Returns a detached <svg> element, or null if the file is not a usable SVG. */
+const SVG_BLOCKED_TAGS = [
+	'script', 'foreignobject', 'iframe', 'embed', 'object', 'style',
+	'animate', 'set', 'animatetransform', 'animatemotion', 'handler', 'listener',
+];
+function sanitizeDropdownIconSvg( text ) {
+	if ( ! text || ! /<svg[\s>]/i.test( text ) ) {
+		return null;
+	}
+	const doc = new window.DOMParser().parseFromString( text, 'image/svg+xml' );
+	const root = doc.documentElement;
+	if ( ! root || root.localName !== 'svg' || doc.getElementsByTagName( 'parsererror' ).length ) {
+		return null;
+	}
+	Array.from( root.querySelectorAll( '*' ) ).forEach( ( el ) => {
+		if ( SVG_BLOCKED_TAGS.includes( el.localName.toLowerCase() ) ) {
+			el.remove();
+		}
+	} );
+	[ root, ...root.querySelectorAll( '*' ) ].forEach( ( el ) => {
+		Array.from( el.attributes ).forEach( ( attr ) => {
+			const name = attr.name.toLowerCase();
+			const isHref = name === 'href' || name.endsWith( ':href' );
+			if ( name.startsWith( 'on' ) || ( isHref && ! /^\s*#/.test( attr.value ) ) ) {
+				el.removeAttribute( attr.name );
+			}
+		} );
+	} );
+	return root;
 }
 
 /* Inline the nav's chosen dropdown icon next to the label of every item that has
@@ -960,6 +994,7 @@ function injectDropdownIcons( nav ) {
 		return;
 	}
 	fetchDropdownIconSvg( url ).then( ( svg ) => {
+		// `svg` is a sanitized, detached <svg> element (see sanitizeDropdownIconSvg).
 		if ( ! svg ) {
 			return;
 		}
@@ -971,7 +1006,7 @@ function injectDropdownIcons( nav ) {
 			const span = document.createElement( 'span' );
 			span.className = 'aae-a-nav-dropdown-icon';
 			span.setAttribute( 'aria-hidden', 'true' );
-			span.innerHTML = svg;
+			span.appendChild( document.importNode( svg, true ) );
 			label.appendChild( span );
 		} );
 	} );

@@ -308,13 +308,22 @@
             let previewHtml = '<div class="template-preview">';
             previewHtml += '<h4><i class="eicon-document-file"></i> Template Preview</h4>';
             
+            // widgetType comes from stored template data: escape before building HTML (XSS).
+            const escapeHtml = (value) => String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+
             if (data.template_data && Array.isArray(data.template_data)) {
                 previewHtml += '<div class="widget-list">';
                 data.template_data.forEach(element => {
                     if (element.widgetType) {
-                        const widgetIcon = this.getWidgetIcon(element.widgetType);
+                        const widgetType = String(element.widgetType);
+                        const widgetIcon = this.getWidgetIcon(widgetType);
                         previewHtml += `<div class="widget-preview">
-                            <i class="${widgetIcon}"></i> ${this.getWidgetLabel(element.widgetType)}
+                            <i class="${escapeHtml(widgetIcon)}"></i> ${escapeHtml(this.getWidgetLabel(widgetType))}
                         </div>`;
                     }
                 });
