@@ -5,7 +5,7 @@ Tags: elementor, elementor v4, atomic widgets, elementor addons, elementor templ
 Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 4.2.6
+Stable tag: 4.2.7
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -486,6 +486,22 @@ Vendored libraries:
 
 == Changelog ==
 
+= 4.2.7 =
+* Security: Fixed a stored XSS in the Countdown widget labels and expire text (CVE-2025-8444), and the same class of issue in Starter Animation, Category Showcase, Image Gallery lightbox, Progress Bar, Search, Animated Title, Loop Builder, Template Library, Atomic Nav, Atomic Slider and Atomic Social Share.
+* Security: Fixed a reflected XSS on the template import failure screens.
+* Security: Tightened permission checks in Loop Builder previews, Toggle Switcher, Loop Grid, Theme Builder, Forms, Mailchimp and Code Snippets. Only published templates render on the front end.
+* Security: Icon pack and kit uploads are extracted to a temporary folder and checked there before being moved into place. The XML importer no longer unserializes objects.
+* Security: CSV exports are protected against spreadsheet formula injection.
+* Security: The site-wide Mailchimp API key is no longer sent to the Elementor editor. Leave the widget's key empty to use the site key; it is applied on the server.
+* Security: The Popup widget renders a template only if it is published or the visitor may read it. The Atomic Loop Grid lists public post types only.
+* Security: SVG icons fetched for the Atomic Nav dropdown and the slider arrows are reduced to plain SVG shapes before they are inserted.
+* Security: Hardened the script-tag check in the HTML sanitizer and the XML importer's handling of serialized meta.
+* Fixed: Presets imported from another site now load Elementor's placeholder image and the slider's arrow icons from your own site instead of the authoring site.
+* Fixed: The Atomic Search Query heading tag is now the widget root, so Kit and theme heading styles no longer override it.
+* Improved: Atomic Timeline text parts use inline editing.
+* Improved: WPML configuration for more widgets.
+* Fixed: Asset version now matches the plugin version, so browsers load the updated scripts and styles after an update.
+
 = 4.2.6 =
 * Improved: Performance optimization in Theme Builder by removing redundant rewrite rule flushes on request initialization.
 * Fixed: Compatibility with Elementor 4.3 Svg_Control in Atomic Menu and Nav widgets to prevent "Prop type is missing" errors.
@@ -532,6 +548,9 @@ Vendored libraries:
 * Added animation performance controls including lazy loading and reduced-motion options.
 
 == Upgrade Notice ==
+
+= 4.2.7 =
+Security release: fixes stored and reflected XSS (including CVE-2025-8444 in the Countdown widget) and tightens permission checks. Update recommended.
 
 = 4.2.6 =
 Performance optimizations in Theme Builder, Elementor 4.3 compatibility fixes, and WPML enhancements.

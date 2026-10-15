@@ -151,9 +151,12 @@ class Mailchimp extends Widget_Base
 				'label'       => __('MailChimp API', 'animation-addons-for-elementor'),
 				'type'        => Controls_Manager::TEXT,
 				'label_block' => true,
-				'placeholder' => __('Enter your mailchimp api here', 'animation-addons-for-elementor'),
+				'placeholder' => __('Leave empty to use the site-wide key', 'animation-addons-for-elementor'),
 				'dynamic'     => ['active' => true],
-				'default' => get_option('aaeaddon_mailchimp_api')
+				// No default: a default is sent to everyone who can open the
+				// editor, Contributors included. An empty key falls back to the
+				// site-wide one on the server (Mailchimp_Api, ajax-handler).
+				'default' => ''
 			]
 		);
 

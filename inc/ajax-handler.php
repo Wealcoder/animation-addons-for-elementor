@@ -99,6 +99,22 @@ class Ajax_Handler {
 			$inline_css = self::atomic_inline_css( $live_template );
 		}
 
+		// The saved template id is whatever the widget's author picked, and a
+		// Contributor's own draft passes the post gate above. Render it only if
+		// it is published or this visitor may read it, so a draft cannot be used
+		// to pull a private page or another author's draft. Same rule as the
+		// Toggle Switcher.
+		if ( isset( $settings['popup_content_type'] ) && 'template' === $settings['popup_content_type'] ) {
+			$tpl_id = absint( $settings['popup_elementor_templates'] ?? 0 );
+			$tpl    = $tpl_id ? get_post( $tpl_id ) : null;
+			if ( ! $tpl
+				|| ( 'publish' !== $tpl->post_status && ! current_user_can( 'read_post', $tpl_id ) )
+				|| post_password_required( $tpl ) ) {
+				wp_send_json_error( 'Access denied', 403 );
+			}
+			$settings['popup_elementor_templates'] = $tpl_id;
+		}
+
 		// Everything below renders content this plugin does not control -- an
 		// Elementor template and its widgets, plus every shortcode on the page
 		// -- so the close is in a finally and unwinds only to our own level.
@@ -296,6 +312,11 @@ class Ajax_Handler {
 		if ( '' !== $api && current_user_can( 'manage_options' ) ) {
 			update_option( 'aaeaddon_mailchimp_api', $api );
 		}
+		// An empty widget key means the site-wide key. It is used here, on the
+		// server, so only the list names reach the editor -- never the key.
+		if ( '' === $api ) {
+			$api = (string) get_option( 'aaeaddon_mailchimp_api', '' );
+		}
 		$response = \Wealcoder\AnimationAddons\Widgets\Mailchimp\Mailchimp_Api::get_mailchimp_lists( $api );
 
 		wp_send_json( $response );
@@ -318,6 +339,9 @@ class Ajax_Handler {
 		}
 		$api     = isset( $_REQUEST['api'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['api'] ) ) : '';
 		$list_id = ! empty( $_REQUEST['list_id'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['list_id'] ) ) : '';
+		if ( '' === $api ) {
+			$api = (string) get_option( 'aaeaddon_mailchimp_api', '' );
+		}
 
 		$response = \Wealcoder\AnimationAddons\Widgets\Mailchimp\Mailchimp_Api::get_form_fields( $api, $list_id );
 

@@ -948,12 +948,26 @@ function fetchDropdownIconSvg( url ) {
 }
 
 /* The icon URL is author-controlled, so the fetched markup is untrusted: parse it
- * as XML (never innerHTML) and strip anything scriptable before it is inlined.
+ * as XML (never innerHTML) and keep only an allowlist of plain SVG shapes and
+ * presentation attributes before it is inlined. The root and every descendant
+ * must be in the SVG namespace: an XHTML-namespaced node would render as live
+ * HTML (a form with a javascript: action, a full-page button, a meta refresh).
  * Presentation (fill/stroke/class/viewBox/paths) is kept so `currentColor` works.
  * Returns a detached <svg> element, or null if the file is not a usable SVG. */
-const SVG_BLOCKED_TAGS = [
-	'script', 'foreignobject', 'iframe', 'embed', 'object', 'style',
-	'animate', 'set', 'animatetransform', 'animatemotion', 'handler', 'listener',
+const SVG_NS = 'http://www.w3.org/2000/svg';
+const SVG_ALLOWED_TAGS = [
+	'svg', 'g', 'path', 'circle', 'rect', 'line', 'polyline', 'polygon', 'ellipse',
+	'defs', 'symbol', 'use', 'title', 'desc', 'lineargradient', 'radialgradient',
+	'stop', 'clippath', 'mask',
+];
+const SVG_ALLOWED_ATTRS = [
+	'xmlns', 'xmlns:xlink', 'id', 'class', 'viewbox', 'width', 'height', 'x', 'y',
+	'x1', 'x2', 'y1', 'y2', 'cx', 'cy', 'r', 'rx', 'ry', 'd', 'points', 'transform',
+	'fill', 'fill-opacity', 'fill-rule', 'clip-rule', 'clip-path', 'mask', 'opacity',
+	'stroke', 'stroke-width', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit',
+	'stroke-dasharray', 'stroke-dashoffset', 'stroke-opacity', 'offset', 'stop-color',
+	'stop-opacity', 'gradientunits', 'gradienttransform', 'preserveaspectratio',
+	'aria-hidden', 'role', 'focusable', 'version', 'href', 'xlink:href',
 ];
 function sanitizeDropdownIconSvg( text ) {
 	if ( ! text || ! /<svg[\s>]/i.test( text ) ) {
@@ -961,19 +975,19 @@ function sanitizeDropdownIconSvg( text ) {
 	}
 	const doc = new window.DOMParser().parseFromString( text, 'image/svg+xml' );
 	const root = doc.documentElement;
-	if ( ! root || root.localName !== 'svg' || doc.getElementsByTagName( 'parsererror' ).length ) {
+	if ( ! root || root.namespaceURI !== SVG_NS || root.localName !== 'svg' || doc.getElementsByTagName( 'parsererror' ).length ) {
 		return null;
 	}
 	Array.from( root.querySelectorAll( '*' ) ).forEach( ( el ) => {
-		if ( SVG_BLOCKED_TAGS.includes( el.localName.toLowerCase() ) ) {
+		if ( el.namespaceURI !== SVG_NS || ! SVG_ALLOWED_TAGS.includes( el.localName.toLowerCase() ) ) {
 			el.remove();
 		}
 	} );
 	[ root, ...root.querySelectorAll( '*' ) ].forEach( ( el ) => {
 		Array.from( el.attributes ).forEach( ( attr ) => {
 			const name = attr.name.toLowerCase();
-			const isHref = name === 'href' || name.endsWith( ':href' );
-			if ( name.startsWith( 'on' ) || ( isHref && ! /^\s*#/.test( attr.value ) ) ) {
+			const isHref = name === 'href' || name === 'xlink:href';
+			if ( ! SVG_ALLOWED_ATTRS.includes( name ) || ( isHref && ! /^#[\w-]*$/.test( attr.value.trim() ) ) ) {
 				el.removeAttribute( attr.name );
 			}
 		} );
