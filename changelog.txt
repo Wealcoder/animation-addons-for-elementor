@@ -3,6 +3,9 @@
 
 = 🌀 Animation Addons for Elementor v4.2.7 – 15th October 2026
 
+  - **Added:** Dynamic Tags are now free. Post, Author, Site, Archive, Taxonomy, Comments, and Contact & Social tags (53 in all) work in Elementor V3 and V4 widgets without Animation Addons Pro. Content already built with these tags keeps working, because tag names are unchanged. ACF, Post Meta, and Custom Fields tags stay in Animation Addons Pro.
+  - **Fixed:** Saving a page as a non-administrator could end in a fatal error when it used an Author Info dynamic tag. The check that keeps email addresses out of non-admin edits now covers every dynamic control, not only the title.
+  - **Changed:** The shortcode dynamic tag's "escape output" filter is now `aaeaddon/dynamic_tags/shortcode_should_escape`. The previous name is still honored.
   - **Security:** Fixed a stored XSS in the Countdown widget labels and expire text (CVE-2025-8444), and the same class of issue in Starter Animation, Category Showcase, Image Gallery lightbox, Progress Bar, Search, Animated Title, Loop Builder, Template Library, Atomic Nav, Atomic Slider and Atomic Social Share.
   - **Security:** Fixed a reflected XSS on the template import failure screens.
   - **Security:** Tightened permission checks in Loop Builder previews, Toggle Switcher, Loop Grid, Theme Builder, Forms, Mailchimp and Code Snippets. Only published templates render on the front end.

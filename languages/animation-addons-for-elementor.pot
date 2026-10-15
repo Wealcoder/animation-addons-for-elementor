@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-15T08:56:38+00:00\n"
+"POT-Creation-Date: 2026-10-15T09:04:34+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: animation-addons-for-elementor\n"
@@ -130,7 +130,7 @@ msgid "Animated"
 msgstr ""
 
 #: class-plugin.php:441
-#: class-plugin.php:1638
+#: class-plugin.php:1640
 msgid "Insert"
 msgstr ""
 
@@ -213,8 +213,8 @@ msgid "Switch on & insert"
 msgstr ""
 
 #: class-plugin.php:471
-#: class-plugin.php:1502
-#: class-plugin.php:1630
+#: class-plugin.php:1504
+#: class-plugin.php:1632
 #: widgets/post-rating-form.php:882
 #: src/modules/dashboard/components/performance/PerformanceWizard.jsx:566
 msgid "Close"
@@ -236,27 +236,29 @@ msgstr ""
 msgid "The parts marked as unavailable will be left out of the insert."
 msgstr ""
 
-#: class-plugin.php:1250
+#: class-plugin.php:1252
+#: inc/class-dynamic-tags.php:69
 msgid "AAE"
 msgstr ""
 
-#: class-plugin.php:1255
+#: class-plugin.php:1257
 msgid "AAE Header & Footer"
 msgstr ""
 
-#: class-plugin.php:1260
+#: class-plugin.php:1262
+#: inc/dynamic-tags/dynamic-tags-module.php:224
 msgid "AAE Archive"
 msgstr ""
 
-#: class-plugin.php:1265
+#: class-plugin.php:1267
 msgid "AAE Search"
 msgstr ""
 
-#: class-plugin.php:1270
+#: class-plugin.php:1272
 msgid "AAE Single"
 msgstr ""
 
-#: class-plugin.php:1519
+#: class-plugin.php:1521
 #: inc/AtomicWidgets/Widgets/PostPagination/Parts/class-aae-a-post-pagination-preview-category.php:41
 #: inc/AtomicWidgets/Widgets/PostPagination/Parts/class-aae-a-post-pagination-preview-category.php:103
 #: inc/theme-builder/theme-builder-admin.php:886
@@ -267,57 +269,57 @@ msgstr ""
 msgid "Category"
 msgstr ""
 
-#: class-plugin.php:1542
+#: class-plugin.php:1544
 msgid "All versions"
 msgstr ""
 
-#: class-plugin.php:1543
+#: class-plugin.php:1545
 #: src/modules/dashboard/pages/Extensions.jsx:136
 #: src/modules/dashboard/pages/Widgets.jsx:153
 msgid "Elementor V3"
 msgstr ""
 
-#: class-plugin.php:1544
+#: class-plugin.php:1546
 #: src/modules/dashboard/pages/Extensions.jsx:128
 #: src/modules/dashboard/pages/Widgets.jsx:145
 msgid "Elementor V4 (Atomic)"
 msgstr ""
 
-#: class-plugin.php:1551
+#: class-plugin.php:1553
 msgid "Search Templates:"
 msgstr ""
 
-#: class-plugin.php:1577
+#: class-plugin.php:1579
 msgid "Go Premium"
 msgstr ""
 
-#: class-plugin.php:1582
+#: class-plugin.php:1584
 msgid "Activate License"
 msgstr ""
 
-#: class-plugin.php:1587
+#: class-plugin.php:1589
 #: inc/CodeSnippet/listTables/CodeSnippetListTable.php:337
 msgid "Activate"
 msgstr ""
 
-#: class-plugin.php:1611
-#: class-plugin.php:1664
+#: class-plugin.php:1613
+#: class-plugin.php:1666
 #: inc/AnimationSettings/class-animation-settings.php:883
 #: src/modules/dashboard/layouts/MainLayout.jsx:121
 msgid "Loading"
 msgstr ""
 
-#: class-plugin.php:1623
+#: class-plugin.php:1625
 msgid "Back to Library"
 msgstr ""
 
-#: class-plugin.php:1687
+#: class-plugin.php:1689
 #: widgets/notification.php:373
 #: widgets/post-comment.php:1069
 msgid "Block"
 msgstr ""
 
-#: class-plugin.php:1690
+#: class-plugin.php:1692
 #: inc/Aaeaddon_Post_Handler_Legacy_Trait.php:697
 #: inc/Aaeaddon_Post_Handler_Trait.php:670
 #: inc/AtomicWidgets/Widgets/PostContent/class-aae-a-post-content.php:368
@@ -327,7 +329,7 @@ msgstr ""
 msgid "Page"
 msgstr ""
 
-#: class-plugin.php:1781
+#: class-plugin.php:1783
 #: widgets/advance-pricing-table/advance-pricing-table.php:53
 msgid "Advanced Pricing Table"
 msgstr ""
@@ -380,6 +382,8 @@ msgstr ""
 #: inc/class-blacklist.php:854
 #: inc/class-blacklist.php:1189
 #: inc/class-blacklist.php:1214
+#: inc/dynamic-tags/post/post-date-tag.php:92
+#: inc/dynamic-tags/post/post-modified-date-tag.php:78
 #: inc/theme-builder/theme-builder-admin.php:376
 #: widgets/advance-accordion.php:142
 #: widgets/advance-pricing-table/advance-pricing-table.php:1140
@@ -666,6 +670,7 @@ msgstr ""
 #: inc/AtomicWidgets/Widgets/PostTitle/class-aae-a-post-title.php:135
 #: inc/AtomicWidgets/Widgets/SiteLogo/class-aae-a-site-logo.php:155
 #: inc/AtomicWidgets/Widgets/SocialShare/class-aae-a-social-share-item.php:188
+#: inc/dynamic-tags/post/post-terms-tag.php:110
 #: widgets/advance-accordion.php:210
 #: widgets/animated-heading.php:141
 #: widgets/animated-text.php:218
@@ -1754,6 +1759,7 @@ msgstr ""
 #: inc/Aaeaddon_Slider_Trait.php:148
 #: inc/class-blacklist.php:929
 #: inc/class-blacklist.php:1179
+#: inc/dynamic-tags/post/post-date-tag.php:120
 #: inc/theme-builder/theme-builder-admin.php:377
 #: widgets/archive-title.php:115
 #: widgets/breadcrumbs.php:63
@@ -1820,6 +1826,7 @@ msgstr ""
 #: inc/Aaeaddon_Slider_Trait.php:149
 #: inc/class-blacklist.php:928
 #: inc/class-blacklist.php:1178
+#: inc/dynamic-tags/post/post-date-tag.php:121
 #: inc/theme-builder/theme-builder-admin.php:378
 #: widgets/archive-title.php:116
 #: widgets/breadcrumbs.php:64
@@ -3531,6 +3538,8 @@ msgstr ""
 #: inc/class-blacklist.php:1215
 #: inc/class-blacklist.php:1240
 #: inc/class-blacklist.php:1253
+#: inc/dynamic-tags/post/post-date-tag.php:98
+#: inc/dynamic-tags/post/post-modified-date-tag.php:83
 #: widgets/advance-pricing-table/advance-pricing-table.php:479
 #: widgets/advance-pricing-table/advance-pricing-table.php:1141
 #: widgets/author-box.php:72
@@ -3595,6 +3604,7 @@ msgstr ""
 #: inc/Aaeaddon_Post_Query_Trait.php:218
 #: inc/Aaeaddon_Post_Query_Trait.php:245
 #: inc/AtomicWidgets/Widgets/PostPagination/Parts/class-aae-a-post-pagination-preview-author.php:42
+#: inc/dynamic-tags/site/internal-url-tag.php:157
 #: inc/post-rating-handler.php:58
 #: widgets/archive-title.php:90
 #: widgets/banner-posts.php:493
@@ -3687,6 +3697,8 @@ msgstr ""
 
 #: inc/Aaeaddon_Post_Query_Trait.php:272
 #: inc/AtomicWidgets/Widgets/CurvedText/class-aae-a-curved-text.php:142
+#: inc/dynamic-tags/site/lightbox-tag.php:91
+#: inc/dynamic-tags/site/lightbox-tag.php:101
 #: widgets/advance-accordion.php:189
 #: widgets/advance-accordion.php:731
 #: widgets/advanced-testimonial.php:906
@@ -3729,6 +3741,7 @@ msgstr ""
 #: inc/AtomicWidgets/Widgets/Video/class-aae-a-video.php:89
 #: inc/AtomicWidgets/Widgets/Video/class-aae-a-video.php:349
 #: inc/AtomicWidgets/Widgets/VideoMask/class-aae-a-video-mask.php:97
+#: inc/dynamic-tags/site/lightbox-tag.php:87
 msgid "Video"
 msgstr ""
 
@@ -4484,6 +4497,7 @@ msgstr ""
 #: inc/AtomicWidgets/Atomic_Admin.php:566
 #: inc/AtomicWidgets/Atomic_Admin.php:1121
 #: inc/AtomicWidgets/Atomic_Admin.php:1212
+#: inc/class-dynamic-tags.php:97
 msgid "Permission denied."
 msgstr ""
 
@@ -5642,6 +5656,7 @@ msgstr ""
 #: inc/class-blacklist.php:513
 #: inc/class-blacklist.php:534
 #: inc/class-blacklist.php:653
+#: inc/dynamic-tags/site/internal-url-tag.php:154
 #: widgets/advance-accordion.php:180
 #: widgets/advance-accordion.php:670
 #: widgets/advanced-testimonial.php:209
@@ -6201,6 +6216,7 @@ msgid "Description"
 msgstr ""
 
 #: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown.php:187
+#: inc/dynamic-tags/post/post-terms-tag.php:101
 #: widgets/countdown.php:431
 #: widgets/countdown.php:440
 #: widgets/counter.php:197
@@ -6566,6 +6582,7 @@ msgstr ""
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-input.php:70
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-input.php:126
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:350
+#: inc/dynamic-tags/author/author-info-tag.php:109
 #: widgets/author-box.php:391
 #: widgets/mailchimp/mailchimp.php:556
 #: widgets/mailchimp/mailchimp.php:557
@@ -6577,6 +6594,7 @@ msgstr ""
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-input.php:74
 #: inc/AtomicWidgets/Widgets/PostPagination/class-aae-a-post-pagination.php:292
 #: inc/AtomicWidgets/Widgets/Timeline/Parts/class-aae-a-timeline-number.php:79
+#: inc/dynamic-tags/comments/comments-number-tag.php:77
 #: widgets/advance-accordion.php:154
 #: widgets/counter.php:330
 #: widgets/services-tab.php:149
@@ -6683,6 +6701,8 @@ msgstr ""
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-input.php:299
 #: inc/AtomicWidgets/Widgets/SearchForm/class-aae-a-search-submit.php:71
 #: inc/class-custom-icon-admin.php:134
+#: inc/dynamic-tags/site/internal-url-tag.php:150
+#: inc/dynamic-tags/site/lightbox-tag.php:83
 #: inc/theme-builder/theme-builder-admin.php:145
 #: inc/theme-builder/theme-builder-admin.php:884
 #: widgets/post-reactions.php:88
@@ -7293,6 +7313,7 @@ msgid "Tooltip"
 msgstr ""
 
 #: inc/AtomicWidgets/Widgets/ImageHotspot/class-aae-a-hotspot-point.php:164
+#: inc/dynamic-tags/site/lightbox-tag.php:46
 #: widgets/image-gallery.php:250
 #: widgets/post-feature-image.php:128
 #: widgets/site-logo.php:131
@@ -8000,6 +8021,7 @@ msgid "Slides"
 msgstr ""
 
 #: inc/AtomicWidgets/Widgets/PostContent/class-aae-a-post-content.php:51
+#: inc/dynamic-tags/post/post-content-tag.php:40
 #: widgets/post-content.php:24
 msgid "Post Content"
 msgstr ""
@@ -8018,6 +8040,7 @@ msgid "Pages:"
 msgstr ""
 
 #: inc/AtomicWidgets/Widgets/PostExcerpt/class-aae-a-post-excerpt.php:72
+#: inc/dynamic-tags/post/post-excerpt-tag.php:42
 #: widgets/post-excerpt.php:23
 msgid "Post Excerpt"
 msgstr ""
@@ -8304,6 +8327,7 @@ msgid "Previous Post"
 msgstr ""
 
 #: inc/AtomicWidgets/Widgets/PostPagination/Parts/class-aae-a-post-pagination-preview-author.php:101
+#: inc/dynamic-tags/author/author-name-tag.php:41
 #: widgets/post-comment.php:177
 msgid "Author Name"
 msgstr ""
@@ -8338,6 +8362,7 @@ msgstr ""
 
 #: inc/AtomicWidgets/Widgets/PostPagination/Parts/class-aae-a-post-pagination-preview-title.php:119
 #: inc/AtomicWidgets/Widgets/PostTitle/class-aae-a-post-title.php:40
+#: inc/dynamic-tags/post/post-title-tag.php:41
 #: inc/post-rating-handler.php:56
 #: widgets/post-paginate.php:421
 #: widgets/post-title.php:24
@@ -8411,6 +8436,7 @@ msgid "Read More Text"
 msgstr ""
 
 #: inc/AtomicWidgets/Widgets/Posts/class-aae-a-posts.php:134
+#: inc/dynamic-tags/post/post-type-tag.php:40
 #: inc/post-rating-handler.php:57
 msgid "Post Type"
 msgstr ""
@@ -8607,6 +8633,7 @@ msgstr ""
 
 #: inc/AtomicWidgets/Widgets/SiteLogo/class-aae-a-site-logo.php:46
 #: inc/AtomicWidgets/Widgets/SiteLogo/class-aae-a-site-logo.php:145
+#: inc/dynamic-tags/site/site-logo-tag.php:42
 #: widgets/site-logo.php:33
 #: widgets/site-logo.php:57
 #: widgets/site-logo.php:68
@@ -8624,6 +8651,7 @@ msgid "Custom (Child Image)"
 msgstr ""
 
 #: inc/AtomicWidgets/Widgets/SiteLogo/class-aae-a-site-logo.php:158
+#: inc/dynamic-tags/site/site-url-tag.php:41
 #: widgets/site-logo.php:106
 msgid "Site URL"
 msgstr ""
@@ -9918,6 +9946,18 @@ msgctxt "Screen reader text for the items list heading on the post type listing 
 msgid "Icons list"
 msgstr ""
 
+#: inc/class-dynamic-tags.php:76
+msgid "AAE Posts"
+msgstr ""
+
+#: inc/class-dynamic-tags.php:93
+msgid "Security check failed"
+msgstr ""
+
+#: inc/class-dynamic-tags.php:101
+msgid "Invalid Taxonomy"
+msgstr ""
+
 #: inc/class-starter-animations.php:76
 #: inc/class-starter-animations.php:737
 msgid "Starter Animations"
@@ -10178,6 +10218,7 @@ msgid "Not found in Trash"
 msgstr ""
 
 #: inc/CodeSnippet/CodeSnippet.php:128
+#: inc/dynamic-tags/post/post-featured-image-tag.php:42
 #: inc/theme-builder/theme-builder.php:1731
 msgid "Featured Image"
 msgstr ""
@@ -10654,6 +10695,511 @@ msgid "Animation Addons: %d site still has its storage-name migration pending. I
 msgid_plural "Animation Addons: %d sites still have their storage-name migration pending. It runs per site -- open each site's Animation Addons &rsaquo; Migration screen."
 msgstr[0] ""
 msgstr[1] ""
+
+#: inc/dynamic-tags/archive/archive-description-tag.php:41
+msgid "Archive Description"
+msgstr ""
+
+#: inc/dynamic-tags/archive/archive-title-tag.php:41
+#: widgets/archive-title.php:23
+msgid "Archive Title"
+msgstr ""
+
+#: inc/dynamic-tags/author/author-avatar-tag.php:43
+#: widgets/banner-posts.php:567
+#: widgets/feature-posts.php:1071
+#: widgets/grid-hover-posts.php:1546
+#: widgets/post-timeline.php:1998
+msgid "Author Avatar"
+msgstr ""
+
+#. translators: %s: Author name
+#: inc/dynamic-tags/author/author-avatar-tag.php:98
+#, php-format
+msgid "%s Avatar"
+msgstr ""
+
+#: inc/dynamic-tags/author/author-bio-tag.php:41
+msgid "Author Bio"
+msgstr ""
+
+#: inc/dynamic-tags/author/author-display-name-tag.php:41
+msgid "Author Display Name"
+msgstr ""
+
+#: inc/dynamic-tags/author/author-email-tag.php:41
+msgid "Author Email"
+msgstr ""
+
+#: inc/dynamic-tags/author/author-email-tag.php:74
+#: inc/dynamic-tags/author/author-info-tag.php:85
+#: inc/dynamic-tags/comments/comments-number-tag.php:73
+#: inc/dynamic-tags/contact/contact-email-tag.php:101
+#: inc/dynamic-tags/contact/contact-phone-tag.php:86
+#: inc/dynamic-tags/post/post-modified-date-tag.php:75
+msgid "Format"
+msgstr ""
+
+#: inc/dynamic-tags/author/author-email-tag.php:77
+#: inc/dynamic-tags/contact/contact-email-tag.php:104
+msgid "Plain Email"
+msgstr ""
+
+#: inc/dynamic-tags/author/author-email-tag.php:78
+#: inc/dynamic-tags/contact/contact-email-tag.php:105
+msgid "mailto: Link"
+msgstr ""
+
+#: inc/dynamic-tags/author/author-first-name-tag.php:41
+msgid "Author First Name"
+msgstr ""
+
+#: inc/dynamic-tags/author/author-info-tag.php:42
+#: widgets/author-box.php:60
+msgid "Author Info"
+msgstr ""
+
+#: inc/dynamic-tags/author/author-info-tag.php:75
+#: src/modules/atomic/element-controls/FormConditionsControl.jsx:366
+#: src/modules/atomic/element-controls/FormConditionsControl.jsx:369
+msgid "Field"
+msgstr ""
+
+#: inc/dynamic-tags/author/author-info-tag.php:88
+msgid "Plain Text"
+msgstr ""
+
+#: inc/dynamic-tags/author/author-info-tag.php:89
+msgid "Link Format"
+msgstr ""
+
+#: inc/dynamic-tags/author/author-info-tag.php:106
+msgid "Bio"
+msgstr ""
+
+#: inc/dynamic-tags/author/author-info-tag.php:112
+#: src/modules/dashboard/components/dashboard/ConnectWithUs.jsx:51
+msgid "Website"
+msgstr ""
+
+#: inc/dynamic-tags/author/author-info-tag.php:113
+#: widgets/mailchimp/mailchimp.php:333
+#: widgets/mailchimp/mailchimp.php:334
+#: widgets/mailchimp/mailchimp.php:347
+#: widgets/mailchimp/mailchimp.php:348
+msgid "First Name"
+msgstr ""
+
+#: inc/dynamic-tags/author/author-info-tag.php:114
+#: widgets/mailchimp/mailchimp.php:403
+#: widgets/mailchimp/mailchimp.php:404
+#: widgets/mailchimp/mailchimp.php:417
+#: widgets/mailchimp/mailchimp.php:418
+msgid "Last Name"
+msgstr ""
+
+#: inc/dynamic-tags/author/author-info-tag.php:115
+msgid "Nickname"
+msgstr ""
+
+#: inc/dynamic-tags/author/author-last-name-tag.php:40
+msgid "Author Last Name"
+msgstr ""
+
+#: inc/dynamic-tags/author/author-url-tag.php:40
+msgid "Author URL"
+msgstr ""
+
+#: inc/dynamic-tags/author/author-website-tag.php:41
+msgid "Author Website"
+msgstr ""
+
+#: inc/dynamic-tags/comments/comments-link-tag.php:41
+msgid "Comments Link"
+msgstr ""
+
+#: inc/dynamic-tags/comments/comments-number-tag.php:43
+msgid "Comments Number"
+msgstr ""
+
+#: inc/dynamic-tags/comments/comments-number-tag.php:78
+msgid "Formatted (K, M, B)"
+msgstr ""
+
+#: inc/dynamic-tags/comments/post-comments-count-tag.php:41
+msgid "Post Comments Count"
+msgstr ""
+
+#: inc/dynamic-tags/contact/contact-email-tag.php:42
+msgid "Contact Email"
+msgstr ""
+
+#: inc/dynamic-tags/contact/contact-email-tag.php:75
+msgid "Email Source"
+msgstr ""
+
+#: inc/dynamic-tags/contact/contact-email-tag.php:78
+#: inc/dynamic-tags/site/site-admin-email-tag.php:41
+msgid "Site Admin Email"
+msgstr ""
+
+#: inc/dynamic-tags/contact/contact-email-tag.php:79
+msgid "Post Author Email"
+msgstr ""
+
+#: inc/dynamic-tags/contact/contact-email-tag.php:80
+#: inc/dynamic-tags/contact/contact-email-tag.php:89
+msgid "Custom Email"
+msgstr ""
+
+#: inc/dynamic-tags/contact/contact-phone-tag.php:42
+msgid "Contact Phone"
+msgstr ""
+
+#: inc/dynamic-tags/contact/contact-phone-tag.php:75
+msgid "Phone Number"
+msgstr ""
+
+#: inc/dynamic-tags/contact/contact-phone-tag.php:79
+msgid "Enter phone number with country code (e.g., +1234567890)"
+msgstr ""
+
+#: inc/dynamic-tags/contact/contact-phone-tag.php:89
+msgid "Plain Number"
+msgstr ""
+
+#: inc/dynamic-tags/contact/contact-phone-tag.php:90
+msgid "tel: Link"
+msgstr ""
+
+#: inc/dynamic-tags/contact/contact-skype-tag.php:42
+msgid "Contact Skype"
+msgstr ""
+
+#: inc/dynamic-tags/contact/contact-skype-tag.php:75
+msgid "Skype Username"
+msgstr ""
+
+#: inc/dynamic-tags/contact/contact-skype-tag.php:85
+#: src/modules/atomic/element-controls/FormConditionsControl.jsx:337
+#: src/modules/atomic/element-controls/FormConditionsControl.jsx:340
+#: src/modules/dashboard/pages/Submissions.jsx:831
+msgid "Action"
+msgstr ""
+
+#: inc/dynamic-tags/contact/contact-skype-tag.php:88
+msgid "Call"
+msgstr ""
+
+#: inc/dynamic-tags/contact/contact-skype-tag.php:89
+msgid "Chat"
+msgstr ""
+
+#: inc/dynamic-tags/contact/contact-skype-tag.php:90
+msgid "View Profile"
+msgstr ""
+
+#: inc/dynamic-tags/contact/contact-skype-tag.php:91
+msgid "Add Contact"
+msgstr ""
+
+#: inc/dynamic-tags/contact/contact-telegram-tag.php:41
+msgid "Contact Telegram"
+msgstr ""
+
+#: inc/dynamic-tags/contact/contact-telegram-tag.php:74
+msgid "Telegram Username"
+msgstr ""
+
+#: inc/dynamic-tags/contact/contact-telegram-tag.php:78
+msgid "Enter Telegram username without @"
+msgstr ""
+
+#: inc/dynamic-tags/contact/contact-whatsapp-tag.php:42
+msgid "Contact WhatsApp"
+msgstr ""
+
+#: inc/dynamic-tags/contact/contact-whatsapp-tag.php:75
+msgid "WhatsApp Number"
+msgstr ""
+
+#: inc/dynamic-tags/contact/contact-whatsapp-tag.php:79
+msgid "Enter WhatsApp number with country code (no spaces or dashes)"
+msgstr ""
+
+#: inc/dynamic-tags/contact/contact-whatsapp-tag.php:86
+msgid "Pre-filled Message"
+msgstr ""
+
+#: inc/dynamic-tags/contact/contact-whatsapp-tag.php:89
+msgid "Hello, I would like to..."
+msgstr ""
+
+#: inc/dynamic-tags/contact/contact-whatsapp-tag.php:90
+msgid "Optional: Message that will be pre-filled in WhatsApp"
+msgstr ""
+
+#: inc/dynamic-tags/contact/social-facebook-tag.php:42
+msgid "Social Facebook"
+msgstr ""
+
+#: inc/dynamic-tags/contact/social-facebook-tag.php:75
+msgid "Facebook Page/Profile URL"
+msgstr ""
+
+#: inc/dynamic-tags/contact/social-instagram-tag.php:42
+msgid "Social Instagram"
+msgstr ""
+
+#: inc/dynamic-tags/contact/social-instagram-tag.php:75
+msgid "Instagram Username"
+msgstr ""
+
+#: inc/dynamic-tags/contact/social-instagram-tag.php:79
+#: inc/dynamic-tags/contact/social-twitter-tag.php:79
+msgid "Enter username without @"
+msgstr ""
+
+#: inc/dynamic-tags/contact/social-linkedin-tag.php:42
+msgid "Social LinkedIn"
+msgstr ""
+
+#: inc/dynamic-tags/contact/social-linkedin-tag.php:75
+msgid "LinkedIn Profile/Company URL"
+msgstr ""
+
+#: inc/dynamic-tags/contact/social-twitter-tag.php:42
+msgid "Social Twitter/X"
+msgstr ""
+
+#: inc/dynamic-tags/contact/social-twitter-tag.php:75
+msgid "Twitter/X Username"
+msgstr ""
+
+#: inc/dynamic-tags/contact/social-youtube-tag.php:42
+msgid "Social YouTube"
+msgstr ""
+
+#: inc/dynamic-tags/contact/social-youtube-tag.php:75
+msgid "YouTube Channel URL"
+msgstr ""
+
+#: inc/dynamic-tags/controls/select2-control.php:69
+msgid "Select..."
+msgstr ""
+
+#: inc/dynamic-tags/dynamic-tags-module.php:215
+msgid "AAE Author"
+msgstr ""
+
+#: inc/dynamic-tags/dynamic-tags-module.php:218
+msgid "AAE Site"
+msgstr ""
+
+#: inc/dynamic-tags/dynamic-tags-module.php:221
+msgid "AAE Taxonomy"
+msgstr ""
+
+#: inc/dynamic-tags/dynamic-tags-module.php:227
+msgid "AAE Comments"
+msgstr ""
+
+#: inc/dynamic-tags/dynamic-tags-module.php:230
+msgid "AAE Contact and Social"
+msgstr ""
+
+#: inc/dynamic-tags/post/post-author-name-tag.php:43
+msgid "Post Author Name"
+msgstr ""
+
+#: inc/dynamic-tags/post/post-date-tag.php:42
+msgid "Post Date"
+msgstr ""
+
+#: inc/dynamic-tags/post/post-date-tag.php:75
+msgid "Date Type"
+msgstr ""
+
+#: inc/dynamic-tags/post/post-date-tag.php:79
+msgid "Published Date"
+msgstr ""
+
+#: inc/dynamic-tags/post/post-date-tag.php:80
+msgid "Modified Date"
+msgstr ""
+
+#: inc/dynamic-tags/post/post-date-tag.php:88
+#: widgets/current-date.php:102
+msgid "Date Format"
+msgstr ""
+
+#: inc/dynamic-tags/post/post-date-tag.php:93
+msgid "January 1, 2024"
+msgstr ""
+
+#: inc/dynamic-tags/post/post-date-tag.php:94
+msgid "2024-01-01"
+msgstr ""
+
+#: inc/dynamic-tags/post/post-date-tag.php:95
+msgid "Jan 1, 2024"
+msgstr ""
+
+#: inc/dynamic-tags/post/post-date-tag.php:96
+msgid "01/01/2024"
+msgstr ""
+
+#: inc/dynamic-tags/post/post-date-tag.php:97
+msgid "01/01/2024 (US)"
+msgstr ""
+
+#: inc/dynamic-tags/post/post-date-tag.php:106
+#: inc/dynamic-tags/post/post-modified-date-tag.php:92
+#: widgets/current-date.php:118
+msgid "Custom Format"
+msgstr ""
+
+#: inc/dynamic-tags/post/post-date-tag.php:118
+msgid "Human Readable"
+msgstr ""
+
+#. translators: %s: time difference.
+#: inc/dynamic-tags/post/post-date-tag.php:148
+#, php-format
+msgctxt "%s = time difference"
+msgid "%s ago"
+msgstr ""
+
+#: inc/dynamic-tags/post/post-excerpt-tag.php:72
+#: widgets/grid-hover-posts.php:1051
+#: widgets/post-timeline.php:1492
+#: widgets/posts.php:297
+#: widgets/video-posts-tab.php:250
+msgid "Excerpt Length"
+msgstr ""
+
+#: inc/dynamic-tags/post/post-featured-image-tag.php:72
+#: inc/dynamic-tags/site/site-logo-tag.php:72
+msgid "Fallback"
+msgstr ""
+
+#: inc/dynamic-tags/post/post-id-tag.php:41
+msgid "Post ID"
+msgstr ""
+
+#: inc/dynamic-tags/post/post-modified-date-tag.php:42
+msgid "Post Modified Date"
+msgstr ""
+
+#: inc/dynamic-tags/post/post-slug-tag.php:40
+msgid "Post Slug"
+msgstr ""
+
+#: inc/dynamic-tags/post/post-terms-tag.php:42
+msgid "Post Terms"
+msgstr ""
+
+#: inc/dynamic-tags/post/post-terms-tag.php:72
+#: inc/dynamic-tags/site/internal-url-tag.php:155
+#: widgets/feature-posts.php:277
+#: widgets/feature-posts.php:726
+#: widgets/feature-posts.php:737
+#: widgets/feature-posts.php:762
+#: widgets/grid-hover-posts.php:372
+#: widgets/grid-hover-posts.php:393
+#: widgets/grid-hover-posts.php:1116
+#: widgets/grid-hover-posts.php:1127
+#: widgets/grid-hover-posts.php:1152
+#: widgets/post-timeline.php:815
+#: widgets/post-timeline.php:873
+#: widgets/post-timeline.php:1557
+#: widgets/post-timeline.php:1568
+#: widgets/post-timeline.php:1593
+#: widgets/posts.php:407
+#: widgets/posts.php:819
+#: widgets/posts.php:1616
+msgid "Taxonomy"
+msgstr ""
+
+#: inc/dynamic-tags/post/post-terms-tag.php:89
+msgid "Terms to Show"
+msgstr ""
+
+#: inc/dynamic-tags/post/post-url-tag.php:40
+#: widgets/post-feature-image.php:125
+msgid "Post URL"
+msgstr ""
+
+#: inc/dynamic-tags/site/internal-url-tag.php:46
+msgid "Internal URL"
+msgstr ""
+
+#: inc/dynamic-tags/site/internal-url-tag.php:156
+msgid "Media"
+msgstr ""
+
+#: inc/dynamic-tags/site/internal-url-tag.php:166
+#: inc/dynamic-tags/site/internal-url-tag.php:186
+#: inc/dynamic-tags/site/internal-url-tag.php:206
+#: inc/dynamic-tags/site/internal-url-tag.php:223
+msgid "Search & Select"
+msgstr ""
+
+#: inc/dynamic-tags/site/internal-url-tag.php:169
+#: inc/dynamic-tags/site/internal-url-tag.php:189
+#: inc/dynamic-tags/site/internal-url-tag.php:209
+#: inc/dynamic-tags/site/internal-url-tag.php:226
+msgid "Type to search..."
+msgstr ""
+
+#: inc/dynamic-tags/site/lightbox-tag.php:112
+msgid "Video URL"
+msgstr ""
+
+#: inc/dynamic-tags/site/shortcode-tag.php:44
+#: inc/dynamic-tags/site/shortcode-tag.php:80
+msgid "Shortcode"
+msgstr ""
+
+#: inc/dynamic-tags/site/site-charset-tag.php:41
+msgid "Site Charset"
+msgstr ""
+
+#: inc/dynamic-tags/site/site-description-tag.php:40
+msgid "Site Description"
+msgstr ""
+
+#: inc/dynamic-tags/site/site-language-tag.php:41
+msgid "Site Language"
+msgstr ""
+
+#: inc/dynamic-tags/site/site-tagline-tag.php:41
+msgid "Site Tagline"
+msgstr ""
+
+#: inc/dynamic-tags/site/site-title-tag.php:41
+msgid "Site Title"
+msgstr ""
+
+#: inc/dynamic-tags/taxonomy/current-term-count-tag.php:41
+msgid "Current Term Count"
+msgstr ""
+
+#: inc/dynamic-tags/taxonomy/current-term-description-tag.php:40
+msgid "Current Term Description"
+msgstr ""
+
+#: inc/dynamic-tags/taxonomy/current-term-image-tag.php:42
+msgid "Current Term Image"
+msgstr ""
+
+#: inc/dynamic-tags/taxonomy/current-term-name-tag.php:42
+msgid "Current Term Name"
+msgstr ""
+
+#: inc/dynamic-tags/taxonomy/current-term-url-tag.php:40
+msgid "Current Term URL"
+msgstr ""
 
 #: inc/Forms/Actions/Admin_Email.php:45
 msgid "New form submission — {{site.title}}"
@@ -14034,10 +14580,6 @@ msgstr ""
 msgid "Prefix Color"
 msgstr ""
 
-#: widgets/archive-title.php:23
-msgid "Archive Title"
-msgstr ""
-
 #: widgets/archive-title.php:70
 #: widgets/post-meta-info.php:151
 msgid "List Title"
@@ -14114,10 +14656,6 @@ msgstr ""
 
 #: widgets/author-box.php:32
 msgid "Author Box"
-msgstr ""
-
-#: widgets/author-box.php:60
-msgid "Author Info"
 msgstr ""
 
 #: widgets/author-box.php:71
@@ -14413,13 +14951,6 @@ msgstr ""
 #: widgets/grid-hover-posts.php:1539
 #: widgets/post-timeline.php:1991
 msgid "By"
-msgstr ""
-
-#: widgets/banner-posts.php:567
-#: widgets/feature-posts.php:1071
-#: widgets/grid-hover-posts.php:1546
-#: widgets/post-timeline.php:1998
-msgid "Author Avatar"
 msgstr ""
 
 #: widgets/banner-posts.php:568
@@ -15203,10 +15734,6 @@ msgstr ""
 msgid "Current Date"
 msgstr ""
 
-#: widgets/current-date.php:102
-msgid "Date Format"
-msgstr ""
-
 #: widgets/current-date.php:106
 #: widgets/current-date.php:120
 #: widgets/current-date.php:121
@@ -15223,10 +15750,6 @@ msgstr ""
 
 #: widgets/current-date.php:109
 msgid "d/m/Y"
-msgstr ""
-
-#: widgets/current-date.php:118
-msgid "Custom Format"
 msgstr ""
 
 #: widgets/current-date.php:129
@@ -15295,26 +15818,6 @@ msgstr ""
 #: src/modules/dashboard/pages/Dashboard-old.jsx:47
 #: src/modules/dashboard/pages/Dashboard-old.jsx:88
 msgid "Banner"
-msgstr ""
-
-#: widgets/feature-posts.php:277
-#: widgets/feature-posts.php:726
-#: widgets/feature-posts.php:737
-#: widgets/feature-posts.php:762
-#: widgets/grid-hover-posts.php:372
-#: widgets/grid-hover-posts.php:393
-#: widgets/grid-hover-posts.php:1116
-#: widgets/grid-hover-posts.php:1127
-#: widgets/grid-hover-posts.php:1152
-#: widgets/post-timeline.php:815
-#: widgets/post-timeline.php:873
-#: widgets/post-timeline.php:1557
-#: widgets/post-timeline.php:1568
-#: widgets/post-timeline.php:1593
-#: widgets/posts.php:407
-#: widgets/posts.php:819
-#: widgets/posts.php:1616
-msgid "Taxonomy"
 msgstr ""
 
 #: widgets/feature-posts.php:343
@@ -15701,13 +16204,6 @@ msgstr ""
 
 #: widgets/grid-hover-posts.php:1019
 msgid "Masonry Title Margin"
-msgstr ""
-
-#: widgets/grid-hover-posts.php:1051
-#: widgets/post-timeline.php:1492
-#: widgets/posts.php:297
-#: widgets/video-posts-tab.php:250
-msgid "Excerpt Length"
 msgstr ""
 
 #: widgets/grid-hover-posts.php:1379
@@ -16379,22 +16875,8 @@ msgstr ""
 msgid "First Name:"
 msgstr ""
 
-#: widgets/mailchimp/mailchimp.php:333
-#: widgets/mailchimp/mailchimp.php:334
-#: widgets/mailchimp/mailchimp.php:347
-#: widgets/mailchimp/mailchimp.php:348
-msgid "First Name"
-msgstr ""
-
 #: widgets/mailchimp/mailchimp.php:389
 msgid "Last Name:"
-msgstr ""
-
-#: widgets/mailchimp/mailchimp.php:403
-#: widgets/mailchimp/mailchimp.php:404
-#: widgets/mailchimp/mailchimp.php:417
-#: widgets/mailchimp/mailchimp.php:418
-msgid "Last Name"
 msgstr ""
 
 #: widgets/mailchimp/mailchimp.php:463
@@ -16814,10 +17296,6 @@ msgstr ""
 
 #: widgets/post-feature-image.php:76
 msgid "To use Post Format option, make sure your Posts supports post formats."
-msgstr ""
-
-#: widgets/post-feature-image.php:125
-msgid "Post URL"
 msgstr ""
 
 #: widgets/post-feature-image.php:126
@@ -18584,12 +19062,6 @@ msgstr ""
 msgid "This field is not inside an AAE Form — conditions have nothing to react to."
 msgstr ""
 
-#: src/modules/atomic/element-controls/FormConditionsControl.jsx:337
-#: src/modules/atomic/element-controls/FormConditionsControl.jsx:340
-#: src/modules/dashboard/pages/Submissions.jsx:831
-msgid "Action"
-msgstr ""
-
 #: src/modules/atomic/element-controls/FormConditionsControl.jsx:344
 msgid "Show this field when…"
 msgstr ""
@@ -18609,11 +19081,6 @@ msgstr ""
 
 #: src/modules/atomic/element-controls/FormConditionsControl.jsx:357
 msgid "Any rule matches"
-msgstr ""
-
-#: src/modules/atomic/element-controls/FormConditionsControl.jsx:366
-#: src/modules/atomic/element-controls/FormConditionsControl.jsx:369
-msgid "Field"
 msgstr ""
 
 #: src/modules/atomic/element-controls/FormConditionsControl.jsx:382
@@ -18728,10 +19195,6 @@ msgstr ""
 
 #: src/modules/dashboard/components/dashboard/ConnectWithUs.jsx:41
 msgid "Feel like you want to consult with an expert? Take live chat support immediately from our"
-msgstr ""
-
-#: src/modules/dashboard/components/dashboard/ConnectWithUs.jsx:51
-msgid "Website"
 msgstr ""
 
 #: src/modules/dashboard/components/dashboard/ConnectWithUs.jsx:64
