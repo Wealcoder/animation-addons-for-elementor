@@ -79,6 +79,13 @@ final class Nonce {
 	const LOOP_BUILDER = 'aaeaddon_loop_builder';
 
 	/**
+	 * The Dynamic Tags editor controls (post / term / author / attachment
+	 * autocomplete). Same string the Pro plugin has always minted for it, so a
+	 * nonce printed by either plugin verifies in the other.
+	 */
+	const DYNAMIC_TAGS = 'aaeaddon_dynamic_tags_nonce';
+
+	/**
 	 * The pre-4.2 spelling of each action. verify() accepts these for good;
 	 * create() mints the ones in PRO_VERIFIES while an older Pro is active.
 	 */
@@ -97,6 +104,7 @@ final class Nonce {
 		self::CATEGORY_META    => 'aae_category_meta_action',
 		self::CATEGORY_MEDIA   => 'aae_category_media',
 		self::LOOP_BUILDER     => 'aae_loop_builder_nonce',
+		self::DYNAMIC_TAGS     => 'aae_dynamic_tags_nonce',
 	);
 
 	/**

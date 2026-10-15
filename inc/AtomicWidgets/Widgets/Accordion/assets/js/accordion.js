@@ -357,6 +357,51 @@ const setItemActive = (item, active, animate = true) => {
     }
 };
 
+// The items that belong to THIS accordion. A nested accordion sits inside an
+// item's content, so a plain querySelectorAll() on the outer container also
+// returns the inner accordion's items and would seed them with the outer one's
+// rules (and count them in its "first item").
+const ownItems = (container) =>
+    Array.from(container.querySelectorAll('.aae-a-accordion-item'))
+        .filter((item) => item.closest('.aae-a-accordion') === container);
+
+// Which items start open.
+//
+// The twig renders an `active` class on every item whose "Open by default"
+// switch is on, and on a first load that is all the markup knows — it cannot see
+// its siblings. So the initial state has to be reconciled with the parent's
+// "Max items expanded" HERE, not just trusted: with `one`, every flagged item
+// used to start open at once (a duplicated item carries its switch with it, as
+// does a pasted or imported section), so a single-open accordion could paint
+// with all of its panels expanded, and the "first item" rule opened one more on
+// top of any flagged item. The user-facing toggle already enforces `one` on
+// every click; this makes the starting state obey the same rule.
+//
+//   - All Closed (`none`)  → nothing is open, whatever the items say.
+//   - `one`                → one item: the first flagged one, else the first item
+//                            when the default is "First Open".
+//   - `multiple`           → every flagged item, plus the first one when the
+//                            default is "First Open" (unchanged).
+const initialOpenItems = (items, defaultState, maxItemsExpanded) => {
+    const open = new Set();
+    if (defaultState === 'none' || !items.length) return open;
+
+    const flagged = items.filter((item) => item.classList.contains('active'));
+
+    if (maxItemsExpanded === 'multiple') {
+        flagged.forEach((item) => open.add(item));
+        if (defaultState === 'first') open.add(items[0]);
+        return open;
+    }
+
+    if (flagged.length) {
+        open.add(flagged[0]);
+    } else if (defaultState === 'first') {
+        open.add(items[0]);
+    }
+    return open;
+};
+
 // Apply the configured default open/closed state to the items in a container.
 // Runs once per container (seeds the openItems registry). User clicks
 // afterwards are handled by the delegated listener; re-renders are healed by
@@ -365,17 +410,17 @@ const applyDefaultState = (container) => {
     if (container.dataset.aaeStateApplied === 'true') return;
     container.dataset.aaeStateApplied = 'true';
 
-    const items = container.querySelectorAll('.aae-a-accordion-item');
+    const items = ownItems(container);
     if (!items.length) return;
 
     const defaultState = container.dataset.defaultState || 'first';
+    const maxItemsExpanded = container.dataset.maxItemsExpanded || 'one';
+    const open = initialOpenItems(items, defaultState, maxItemsExpanded);
 
-    items.forEach((item, index) => {
-        const startsActive = item.classList.contains('active') ||
-            (defaultState === 'first' && index === 0);
+    items.forEach((item) => {
         // No animation for the initial state — items render in their resting
         // open/closed position without a visible slide.
-        setItemActive(item, defaultState === 'none' ? false : startsActive, false);
+        setItemActive(item, open.has(item), false);
     });
 };
 

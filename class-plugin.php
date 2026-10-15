@@ -1185,6 +1185,7 @@ class Plugin
 		'custom-css'   => 'inc/class-custom-css.php',
 		'custom-fonts' => 'inc/class-custom-fonts.php',
 		'custom-icon'  => 'inc/class-custom-icon.php',
+		'dynamic-tags' => 'inc/class-dynamic-tags.php',
 	);
 
 	public function register_extensions()
@@ -1210,8 +1211,9 @@ class Plugin
 		 * atomic Typography control, a post type built here is what an atomic
 		 * Loop Grid queries. Loading exclusively from the v3 list above meant a
 		 * site running purely on v4 — every legacy extension switched off — had
-		 * no way to reach any of them. Same shape as the Dynamic Tags gate in
-		 * the Pro plugin's register_extensions().
+		 * no way to reach any of them. Dynamic Tags is gated the same way: it
+		 * moved here from the Pro plugin, whose register_extensions() carries
+		 * the same v4 toggle for the Pro-only tags.
 		 *
 		 * This is an OR, not a replacement: an existing v3 site is unaffected,
 		 * and `include_once` plus each file's own class_exists() guard make a
@@ -1224,7 +1226,7 @@ class Plugin
 		if (class_exists('\Wealcoder\AnimationAddons\AtomicWidgets\Atomic')) {
 			$atomic = \Wealcoder\AnimationAddons\AtomicWidgets\Atomic::instance();
 
-			foreach (['custom-fonts', 'custom-cpt', 'custom-icon'] as $slug) {
+			foreach (['custom-fonts', 'custom-cpt', 'custom-icon', 'dynamic-tags'] as $slug) {
 				if (! $atomic->is_extension_active($slug)) {
 					continue;
 				}

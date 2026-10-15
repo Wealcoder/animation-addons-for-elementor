@@ -802,8 +802,7 @@ return [
 				'label'        => 'Counter',
 				'description'  => 'An animated number counter that counts up on scroll, with a minimal CSS footprint.',
 				'icon'         => 'eicon-counter',
-				'is_pro'       => true,
-				'badge_only'       => true,
+				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
 				'default'      => true,
@@ -817,7 +816,7 @@ return [
 				'category'     => 'general',
 				'order'        => 0,
 				'demo_url'     => '',
-				'doc_url'      => '',
+				'doc_url'      => 'https://animation-addons.com/docs/v4-elements/counter/',
 			],
 
 			'aae-a-advanced-heading' => [
@@ -839,7 +838,7 @@ return [
 				'category'     => 'general',
 				'order'        => 0,
 				'demo_url'     => '',
-				'doc_url'      => '',
+				'doc_url'      => 'https://animation-addons.com/docs/v4-elements/advanced-heading/',
 			],
 
 			'aae-a-slider' => [
@@ -1002,7 +1001,7 @@ return [
 				'category'     => 'general',
 				'order'        => 6,
 				'demo_url'     => '',
-				'doc_url'      => '',
+				'doc_url'      => 'https://animation-addons.com/docs/v4-elements/accordion/',
 			],
 
 			'aae-a-accordion-item' => [
@@ -1042,7 +1041,7 @@ return [
 				'category'     => 'general',
 				'order'        => 8,
 				'demo_url'     => '',
-				'doc_url'      => '',
+				'doc_url'      => 'https://animation-addons.com/docs/v4-elements/icon-list/',
 			],
 
 			'aae-a-icon-list-item' => [
@@ -1084,7 +1083,7 @@ return [
 				'category'     => 'general',
 				'order'        => 10,
 				'demo_url'     => '',
-				'doc_url'      => '',
+				'doc_url'      => 'https://animation-addons.com/docs/v4-elements/social-share/',
 			],
 
 			// ── Social Share — HELPER widget below. `is_internal => true`
@@ -1171,7 +1170,7 @@ return [
 				'category'     => 'general',
 				'order'        => 9,
 				'demo_url'     => '',
-				'doc_url'      => '',
+				'doc_url'      => 'https://animation-addons.com/docs/v4-elements/image-compare/',
 			],
 
 
@@ -1194,7 +1193,7 @@ return [
 				'category'     => 'general',
 				'order'        => 11,
 				'demo_url'     => '',
-				'doc_url'      => '',
+				'doc_url'      => 'https://animation-addons.com/docs/v4-elements/countdown/',
 			],
 
 			'aae-a-countdown-unit' => [
@@ -2038,8 +2037,7 @@ return [
 				'label'        => 'Nav',
 				'description'  => 'Atomic navbar with fully styleable items and dropdown support.',
 				'icon'         => 'eicon-nav-menu',
-				'is_pro'       => true,
-				'badge_only'       => true,
+				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
 				'default'      => true,
@@ -2055,8 +2053,7 @@ return [
 				'label'        => 'Nav Item (Internal)',
 				'description'  => 'Internal child item for Nav.',
 				'icon'         => 'eicon-nav-menu',
-				'is_pro'       => true,
-				'badge_only'       => true,
+				'is_pro'       => false,
 				'is_extension' => false,
 				'is_upcoming'  => false,
 				'default'      => true,

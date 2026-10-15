@@ -503,6 +503,9 @@ Vendored libraries:
 * Fixed: Asset version now matches the plugin version, so browsers load the updated scripts and styles after an update.
 
 = 4.2.6 =
+* Added: Dynamic Tags are now free. Post, Author, Site, Archive, Taxonomy, Comments, and Contact & Social tags (53 in all) work in Elementor V3 and V4 widgets without Animation Addons Pro. Content already built with these tags keeps working, because tag names are unchanged. ACF, Post Meta, and Custom Fields tags stay in Animation Addons Pro.
+* Fixed: Saving a page as a non-administrator could end in a fatal error when it used an Author Info dynamic tag. The check that keeps email addresses out of non-admin edits now covers every dynamic control, not only the title.
+* Changed: The shortcode dynamic tag's "escape output" filter is now `aaeaddon/dynamic_tags/shortcode_should_escape`. The previous name is still honored.
 * Improved: Performance optimization in Theme Builder by removing redundant rewrite rule flushes on request initialization.
 * Fixed: Compatibility with Elementor 4.3 Svg_Control in Atomic Menu and Nav widgets to prevent "Prop type is missing" errors.
 * Improved: Enhanced WPML multilingual compatibility across widgets and theme builder.

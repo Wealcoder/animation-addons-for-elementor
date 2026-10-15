@@ -2921,7 +2921,7 @@ return array(
 						'location'     => array(
 							'cTab' => 'general',
 						),
-						'is_pro'       => true,
+						'is_pro'       => false,
 						'is_active'    => false,
 						'is_extension' => false,
 						'is_upcoming'  => false,
