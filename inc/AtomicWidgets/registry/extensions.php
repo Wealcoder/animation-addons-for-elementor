@@ -34,6 +34,7 @@ return [
 				'keywords'     => ['animation', 'entrance', 'fade', 'slide', 'regular animation'],
 				'category'     => 'animation',
 				'order'        => 1,
+				'doc_url'      => 'https://animation-addons.com/docs/v4-extentions/regular-animation/',
 			],
 
 			'parallax' => [
@@ -49,6 +50,7 @@ return [
 				'keywords'     => ['parallax', 'scroll', 'depth', 'scroll smoother'],
 				'category'     => 'animation',
 				'order'        => 2,
+				'doc_url'      => 'https://animation-addons.com/docs/v4-extentions/parallax/',
 			],
 
 			'text-animation' => [
@@ -64,6 +66,7 @@ return [
 				'keywords'     => ['text animation', 'char animation', 'word reveal', 'text reveal'],
 				'category'     => 'animation',
 				'order'        => 3,
+				'doc_url'      => 'https://animation-addons.com/docs/v4-extentions/text-animation/',
 			],
 
 			'image-animation' => [
@@ -79,6 +82,7 @@ return [
 				'keywords'     => ['image animation', 'image reveal', 'scale', 'stretch'],
 				'category'     => 'animation',
 				'order'        => 4,
+				'doc_url'      => 'https://animation-addons.com/docs/v4-extentions/image-animation/',
 			],
 
 			'image-hover' => [
@@ -94,6 +98,7 @@ return [
 				'keywords'     => ['image hover', 'cursor follow', 'floating image', 'hover effect'],
 				'category'     => 'interaction',
 				'order'        => 5,
+				'doc_url'      => 'https://animation-addons.com/docs/v4-extentions/image-hover/',
 			],
 
 			'sticky' => [
@@ -109,6 +114,7 @@ return [
 				'keywords'     => ['sticky', 'pin', 'fixed', 'scroll pin'],
 				'category'     => 'interaction',
 				'order'        => 6,
+				'doc_url'      => 'https://animation-addons.com/docs/v4-extentions/sticky/',
 			],
 
 			'horizontal-scroll-anim' => [
@@ -124,6 +130,7 @@ return [
 				'keywords'     => ['horizontal scroll', 'scroll animation', 'sideways', 'horizontal'],
 				'category'     => 'animation',
 				'order'        => 7,
+				'doc_url'      => 'https://animation-addons.com/docs/v4-extentions/horizontal-scroll-animation/',
 			],
 
 			'cursor-hover-effect' => [
@@ -139,6 +146,7 @@ return [
 				'keywords'     => ['cursor', 'hover', 'cursor effect', 'mouse hover'],
 				'category'     => 'interaction',
 				'order'        => 8,
+				'doc_url'      => 'https://animation-addons.com/docs/v4-extentions/cursor-hover-effect/',
 			],
 
 			'mouse-move-effect' => [
@@ -154,6 +162,7 @@ return [
 				'keywords'     => ['mouse move', 'mouse parallax', 'tilt on move', 'mouse effect'],
 				'category'     => 'interaction',
 				'order'        => 9,
+				'doc_url'      => 'https://animation-addons.com/docs/v4-extentions/mouse-move-effect/',
 			],
 
 			'advance-tooltip' => [
@@ -169,6 +178,7 @@ return [
 				'keywords'     => ['tooltip', 'hover tooltip', 'info popup', 'advance tooltip'],
 				'category'     => 'interaction',
 				'order'        => 10,
+				'doc_url'      => 'https://animation-addons.com/docs/v4-extentions/advanced-tooltip/',
 			],
 
 			'tilt' => [
@@ -184,6 +194,7 @@ return [
 				'keywords'     => ['tilt', '3d tilt', 'perspective', 'hover tilt'],
 				'category'     => 'interaction',
 				'order'        => 11,
+				'doc_url'      => 'https://animation-addons.com/docs/v4-extentions/tilt/',
 			],
 
 			'scroll-to' => [
@@ -199,29 +210,32 @@ return [
 				'keywords'     => ['scroll to', 'anchor', 'smooth scroll', 'scroll navigation'],
 				'category'     => 'interaction',
 				'order'        => 12,
+				'doc_url'      => 'https://animation-addons.com/docs/v4-extentions/scroll-to/',
 			],
 
-			// Implemented in the Pro plugin (inc/extensions/dynamic-tags.php +
-			// inc/core/dynamic-tags/). It used to be reachable ONLY through the v3
-			// extension list, so a site working purely in v4 had no way to switch it
-			// on and dynamic tags silently did nothing on atomic widgets. Pro loads
-			// it from this toggle as well — see Pro's Plugin::register_extensions().
+			// Free since 4.3 (inc/class-dynamic-tags.php + inc/dynamic-tags/). It
+			// used to be a Pro feature reachable ONLY through the v3 extension list,
+			// so a site working purely in v4 had no way to switch it on and dynamic
+			// tags silently did nothing on atomic widgets. Pro adds its own tags
+			// (ACF, post meta, custom fields) on top and loads from this toggle too
+			// — see Pro's Plugin::register_extensions().
 			'dynamic-tags' => [
 				'label'        => 'Dynamic Tags',
 				'usage_prop'   => false,
-				'description'  => 'Bind atomic widget content to dynamic sources: post, author, site, archive, comments and ACF fields.',
+				'description'  => 'Bind atomic widget content to dynamic sources: post, author, site, archive, taxonomy, comments and contact details. ACF and custom fields need Pro.',
 				// Capitalised on purpose: this is the glyph name that actually
 				// exists in the icon font. The lower-case names the other atomic
 				// extensions use (wcf-icon-parallax, wcf-icon-custom-css, …) match
 				// nothing, which is why they render as empty circles.
 				'icon'         => 'wcf-icon-Dynamic-Tags',
-				'is_pro'       => true,
+				'is_pro'       => false,
 				'is_extension' => true,
 				'is_upcoming'  => false,
 				'default'      => true,
 				'keywords'     => ['dynamic tags', 'dynamic', 'acf', 'custom field', 'post data'],
 				'category'     => 'utility',
 				'order'        => 13,
+				'doc_url'      => 'https://animation-addons.com/docs/v4-extentions/dynamic-tags/',
 			],
 
 			'mask' => [
@@ -236,6 +250,7 @@ return [
 				'keywords'     => ['mask', 'shape', 'clip', 'svg', 'container'],
 				'category'     => 'utility',
 				'order'        => 16,
+				'doc_url'      => 'https://animation-addons.com/docs/v4-extentions/mask/',
 			],
 
 			'background-video' => [
@@ -250,6 +265,7 @@ return [
 				'keywords'     => ['background video', 'video', 'background', 'container'],
 				'category'     => 'utility',
 				'order'        => 15,
+				'doc_url'      => 'https://animation-addons.com/docs/v4-extentions/background-video/',
 			],
 
 			'custom-css' => [
@@ -264,6 +280,7 @@ return [
 				'keywords'     => ['custom css', 'css', 'style', 'custom style'],
 				'category'     => 'utility',
 				'order'        => 14,
+				'doc_url'      => 'https://animation-addons.com/docs/v4-extentions/custom-css/',
 			],
 
 			'image-overlay' => [
@@ -278,6 +295,7 @@ return [
 				'keywords'     => ['image overlay', 'overlay', 'tint', 'color overlay', 'gradient overlay'],
 				'category'     => 'utility',
 				'order'        => 16,
+				'doc_url'      => 'https://animation-addons.com/docs/v4-extentions/image-overlay/',
 			],
 
 			/*
@@ -309,6 +327,7 @@ return [
 				'category'     => 'interaction',
 				'order'        => 15,
 				'requires_note' => 'Applies to Elementor\'s Flexbox container and its children.',
+				'doc_url'      => 'https://animation-addons.com/docs/v4-extentions/parent-child-hover/',
 			],
 
 			'form-conditions' => [
@@ -325,6 +344,7 @@ return [
 				'order'        => 16,
 				'requires'     => ['aae-a-form'],
 				'requires_note' => 'Requires the Form widget.',
+				'doc_url'      => 'https://animation-addons.com/docs/v4-extentions/conditional-display/',
 			],
 
 			'form-validation' => [
@@ -343,6 +363,7 @@ return [
 				'order'        => 17,
 				'requires'     => ['aae-a-form'],
 				'requires_note' => 'Requires the Form widget.',
+				'doc_url'      => 'https://animation-addons.com/docs/v4-extentions/validation-pro/',
 			],
 
 			'form-user' => [
@@ -376,6 +397,7 @@ return [
 				'category'     => 'interaction',
 				'order'        => 19,
 				'requires_note' => 'Popups are built as AAE Builder templates.',
+				'doc_url'      => 'https://animation-addons.com/docs/v4-extentions/popup/',
 			],
 
 			/*
@@ -416,6 +438,7 @@ return [
 				'keywords'     => ['template library', 'templates', 'layout', 'import', 'blocks', 'pages', 'library'],
 				'category'     => 'utility',
 				'order'        => 20,
+				'doc_url'      => 'https://animation-addons.com/docs/v4-extentions/template-library/',
 			],
 
 			/*
@@ -475,7 +498,7 @@ return [
 				'category'     => 'utility',
 				'order'        => 22,
 				'demo_url'     => 'https://animation-addons.com/docs/general-extensions/post-type-builder/',
-				'doc_url'      => 'https://animation-addons.com/docs/general-extensions/post-type-builder/',
+				'doc_url'      => 'https://animation-addons.com/docs/v4-extentions/post-type-builder/',
 			],
 
 			'custom-icon' => [
@@ -537,7 +560,7 @@ return [
 				'category'     => 'utility',
 				'order'        => 25,
 				'demo_url'     => '',
-				'doc_url'      => '',
+				'doc_url'      => 'https://animation-addons.com/docs/v4-extentions/custom-fields/',
 			],
 
 			'ai-connections' => [
