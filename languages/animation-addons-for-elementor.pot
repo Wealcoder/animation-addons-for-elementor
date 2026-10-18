@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-15T09:04:34+00:00\n"
+"POT-Creation-Date: 2026-10-18T05:24:55+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: animation-addons-for-elementor\n"
@@ -4261,74 +4261,82 @@ msgstr ""
 msgid "An error occurred while fetching file from: %1$s%2$s%3$s!%4$sReason: %5$s - %6$s."
 msgstr ""
 
+#: inc/admin/base/Helpers.php:136
+msgid "This template could not be imported: its content file is an Elementor JSON template, not the WordPress export (XML) the importer needs. The template is set up incorrectly on our server. Please let our support team know which template you picked."
+msgstr ""
+
+#: inc/admin/base/Helpers.php:142
+msgid "This template could not be imported: its content file is not a WordPress export (XML). Please try again later, or let our support team know which template you picked."
+msgstr ""
+
 #. translators: %1$s - br HTML tag, %2$s - file path
-#: inc/admin/base/Helpers.php:121
-#: inc/admin/base/Helpers.php:164
+#: inc/admin/base/Helpers.php:169
+#: inc/admin/base/Helpers.php:212
 #, php-format
 msgid "An error occurred while writing file to your server! Tried to write a file to: %1$s%2$s."
 msgstr ""
 
 #. translators: %1$s - br HTML tag, %2$s - file path
-#: inc/admin/base/Helpers.php:198
+#: inc/admin/base/Helpers.php:246
 #, php-format
 msgid "An error occurred while reading a file from your server! Tried reading file from path: %1$s%2$s."
 msgstr ""
 
 #. translators: %1$s and %2$s - strong HTML tags, %3$s - HTML link to a doc page.
-#: inc/admin/base/Helpers.php:232
+#: inc/admin/base/Helpers.php:280
 #, php-format
 msgid "This WordPress page does not have %1$sdirect%2$s write file access. This plugin needs it in order to save the demo import xml file to the upload directory of your site. You can change this setting with these instructions: %3$s."
 msgstr ""
 
-#: inc/admin/base/Helpers.php:249
+#: inc/admin/base/Helpers.php:297
 msgid "An error occurred while retrieving reading/writing permissions to your server (could not retrieve WP filesystem credentials)!"
 msgstr ""
 
-#: inc/admin/base/Helpers.php:257
+#: inc/admin/base/Helpers.php:305
 msgid "Your WordPress login credentials don't allow to use WP_Filesystem!"
 msgstr ""
 
-#: inc/admin/base/Helpers.php:297
+#: inc/admin/base/Helpers.php:345
 msgid "Starter Template Import - "
 msgstr ""
 
 #. translators: %1$s - opening div and paragraph HTML tags, %2$s - closing div and paragraph HTML tags.
-#: inc/admin/base/Helpers.php:332
+#: inc/admin/base/Helpers.php:380
 msgid "Your user role isn't high enough. You don't have permission to import demo data."
 msgstr ""
 
-#: inc/admin/base/Helpers.php:375
+#: inc/admin/base/Helpers.php:423
 msgid "No file provided."
 msgstr ""
 
 #. translators: %s - the error message.
-#: inc/admin/base/Helpers.php:392
+#: inc/admin/base/Helpers.php:440
 #, php-format
 msgid "Content file was not uploaded. Error: %s"
 msgstr ""
 
-#: inc/admin/base/Helpers.php:396
-#: inc/admin/base/Helpers.php:405
+#: inc/admin/base/Helpers.php:444
+#: inc/admin/base/Helpers.php:453
 msgid "Upload files"
 msgstr ""
 
-#: inc/admin/base/Helpers.php:403
+#: inc/admin/base/Helpers.php:451
 msgid "The import files were successfully uploaded!"
 msgstr ""
 
 #. translators: %s - the max execution time.
-#: inc/admin/base/Helpers.php:422
+#: inc/admin/base/Helpers.php:470
 #, php-format
 msgid "Initial max execution time = %s"
 msgstr ""
 
 #. translators: %1$s - new line break, %2$s - the site URL, %3$s - the file path for content import, %4$s - the file path for widgets import, %5$s - the file path for widgets import, %6$s - the file path for redux import.
-#: inc/admin/base/Helpers.php:426
+#: inc/admin/base/Helpers.php:474
 #, php-format
 msgid "Files info:%1$sSite URL = %2$s%1$sData file = %3$s%1$s"
 msgstr ""
 
-#: inc/admin/base/Helpers.php:429
+#: inc/admin/base/Helpers.php:477
 msgid "not defined!"
 msgstr ""
 

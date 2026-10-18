@@ -1,6 +1,10 @@
 
 == Changelog ==
 
+= 🌀 Animation Addons for Elementor v4.2.8 – Unreleased
+
+  - **Improved:** A starter page or template whose content file is not a WordPress export (XML) now fails with a message that says so, instead of "No page was imported". The failure screen highlights the cause, links to the support forum and shows the template's name and ID to quote.
+
 = 🌀 Animation Addons for Elementor v4.2.7 – 15th October 2026
 
   - **Added:** Dynamic Tags are now free. Post, Author, Site, Archive, Taxonomy, Comments, and Contact & Social tags (53 in all) work in Elementor V3 and V4 widgets without Animation Addons Pro. Content already built with these tags keeps working, because tag names are unchanged. ACF, Post Meta, and Custom Fields tags stay in Animation Addons Pro.
