@@ -461,16 +461,20 @@ final class Atomic_Admin
 			wp_send_json_error(['message' => 'Access denied.'], 403);
 		}
 
-		$menus = wp_get_nav_menus();
-		$out   = [];
+		$menus     = wp_get_nav_menus();
+		$out       = [];
+		$locations = function_exists('get_nav_menu_locations') ? (array) get_nav_menu_locations() : [];
 
 		if (! is_wp_error($menus)) {
 			foreach ($menus as $menu) {
 				$items = wp_get_nav_menu_items($menu->term_id);
 				$out[] = [
-					'id'    => (int) $menu->term_id,
-					'name'  => $menu->name,
-					'items' => Atomic::build_nav_menu_tree(is_array($items) ? $items : []),
+					'id'        => (int) $menu->term_id,
+					'name'      => $menu->name,
+					'items'     => Atomic::build_nav_menu_tree(is_array($items) ? $items : []),
+					// Theme locations this menu is assigned to (additive; lets the
+					// editor pick the site's main menu for a freshly dropped Nav).
+					'locations' => array_values(array_keys($locations, (int) $menu->term_id, true)),
 				];
 			}
 		}

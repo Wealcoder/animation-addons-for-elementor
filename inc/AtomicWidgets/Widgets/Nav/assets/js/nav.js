@@ -128,8 +128,26 @@ function readEditorBoolSetting( id, key ) {
  * over the rendered attribute, and an unreachable model falls back to whatever
  * the page rendered with.
  */
+/* Closing the drawer with its own X ends a panel "peek" (see isEditorMobilePreviewOpen):
+ * the Nav goes back to the desktop view instead of leaving the hamburger up. The
+ * marker is runtime-only; selecting a part again starts a new peek. */
+function dismissEditorPeek( companion ) {
+	const sourceId = companion?.dataset?.sourceNavId;
+	const source = sourceId ? document.querySelector( `.aae-a-nav[data-id="${ sourceId }"]` ) : null;
+
+	if ( source && 'true' === source.dataset.aaePeek ) {
+		source.dataset.aaePeek = 'dismissed';
+	}
+}
+
 function isEditorMobilePreviewOpen( nav ) {
 	const navId = nav?.getAttribute?.( 'data-id' );
+
+	/* Runtime-only "peek": the panel's part shortcuts (Hamburger, Drawer, ...) park
+	 * this attribute on the Nav's DOM while one of those parts is selected, so the
+	 * drawer can be seen without touching the saved `mobile_editor_open` setting.
+	 * Never part of the model; it vanishes with the selection. */
+	if ( 'true' === nav?.dataset?.aaePeek ) return true;
 
 	if ( navId ) {
 		const live = readEditorBoolSetting( navId, 'mobile_editor_open' );
@@ -271,6 +289,31 @@ function selectEditorElementById( id ) {
 	}
 }
 
+/* The editor's own selection (model level), as element ids. The canvas marker
+ * `.elementor-element-editable` is only a DOM side effect of that selection and
+ * is wiped whenever the selected element re-renders - which is exactly what
+ * Paste Style / any Style-tab edit does. */
+function selectedEditorIds() {
+	try {
+		const editorWindow = window.parent && window.parent !== window ? window.parent : window;
+		return ( editorWindow.elementor?.selection?.getElements?.() || [] ).map( container => container.id );
+	} catch ( error ) {
+		return [];
+	}
+}
+
+/* The dropdown-owning nav-item that contains (or is) the selected element,
+ * resolved from the editor selection instead of the DOM marker. */
+function dropdownOwnerOfEditorSelection( nav ) {
+	for ( const id of selectedEditorIds() ) {
+		if ( ! id ) continue;
+		const el = nav.querySelector( `[data-id="${ id }"]` );
+		const owner = el?.closest( '.aae-a-nav-item[data-has-dropdown="true"]' );
+		if ( owner ) return owner;
+	}
+	return null;
+}
+
 function initEditorDropdownUX( nav ) {
 	const navId = nav.getAttribute( 'data-id' );
 	if ( ! navId || nav.dataset.aaeEditorDropdownUx === 'true' ) return;
@@ -340,7 +383,10 @@ function initEditorDropdownUX( nav ) {
 		 * and openEditorDropdownChain walks up so all ancestors open too. When
 		 * nothing in the nav is selected, every dropdown stays closed. */
 		const selected = nav.querySelector( '.elementor-element-editable, .elementor-element-selected' );
-		const owner = selected?.closest( '.aae-a-nav-item[data-has-dropdown="true"]' );
+		/* Fall back to the editor's real selection when the re-render dropped the
+		 * DOM marker (Paste Style on a sub-item used to close its own dropdown). */
+		const owner = selected?.closest( '.aae-a-nav-item[data-has-dropdown="true"]' )
+			|| dropdownOwnerOfEditorSelection( nav );
 		if ( owner ) {
 			openEditorDropdownChain( owner );
 			lastOpenOwnerId = owner.getAttribute( 'data-id' );
@@ -822,6 +868,7 @@ function initEditorMobilePreview( companion ) {
 		if ( e.target.closest( '.aae-mobile-nav-close' ) ) {
 			companion.dataset.editorPreviewClosed = 'true';
 			companion.classList.remove( 'is-open' );
+			dismissEditorPeek( companion );
 		}
 		const proxy = e.target.closest( '[data-editor-source-id]' );
 		if ( ! proxy ) return;
@@ -861,6 +908,7 @@ function initEditorMobilePreview( companion ) {
 			e.preventDefault();
 			companion.dataset.editorPreviewClosed = 'true';
 			companion.classList.remove( 'is-open' );
+			dismissEditorPeek( companion );
 			return;
 		}
 		if ( e.target.closest( '.aae-mobile-nav-toggle' ) ) {
@@ -919,6 +967,10 @@ function markActiveNavItems( nav ) {
 	const current = normalizeNavUrl( window.location.href );
 	if ( ! current ) return;
 	nav.querySelectorAll( 'a.aae-a-nav-item-label[href]' ).forEach( anchor => {
+		// `anchor.href` is always absolute, so a bare "#section" link resolves to
+		// THIS page and every one of them used to be marked current. A hash link
+		// points at a section, not a page - read the raw attribute and skip it.
+		if ( ( anchor.getAttribute( 'href' ) || '' ).trim().charAt( 0 ) === '#' ) return;
 		if ( normalizeNavUrl( anchor.href ) !== current ) return;
 		const item = anchor.closest( '.aae-a-nav-item' );
 		if ( ! item ) return;
@@ -1155,6 +1207,25 @@ function initDesktopKeyboardNav( nav, sig ) {
 	}, { signal: sig } );
 }
 
+/* Menu-wide dropdown behaviour. The Nav's "Open On" / "Dropdown Animation"
+ * (data-dropdown-trigger / data-dropdown-animation) override every item's own
+ * trigger and animation, so one setting styles the whole menu. Absent or empty
+ * attributes leave each item's own value alone - saved navs behave as before. */
+const ROOT_TRIGGERS = [ 'click', 'hover' ];
+const ROOT_ANIMS = [ 'gsap', 'grow-down', 'rotate-3d', 'grow-out', 'slide-items', 'rotate-items' ];
+
+function applyRootDropdownBehavior( nav ) {
+	const trigger = nav.dataset.dropdownTrigger;
+	const anim = nav.dataset.dropdownAnimation;
+	const useTrigger = ROOT_TRIGGERS.includes( trigger );
+	const useAnim = ROOT_ANIMS.includes( anim );
+	if ( ! useTrigger && ! useAnim ) return;
+	nav.querySelectorAll( '.aae-a-nav-item[data-has-dropdown="true"]' ).forEach( item => {
+		if ( useTrigger ) item.dataset.trigger = trigger;
+		if ( useAnim ) item.dataset.dropdownAnim = anim;
+	} );
+}
+
 register( {
 	elementType: 'e-aae-a-nav',
 	id: 'aae-a-nav-handler',
@@ -1173,6 +1244,8 @@ register( {
 		 * idempotent authoring helper so the dropdown Flexbox itself remains
 		 * selectable/styleable/drop-target friendly in the canvas.
 		 */
+		applyRootDropdownBehavior( nav );
+
 		if ( isEditor() ) {
 			normalizeRenderedDropdowns( nav );
 			initEditorDropdownUX( nav );
@@ -1595,7 +1668,11 @@ register( {
 			if ( e.key === 'Escape' && companion.classList.contains( 'is-open' ) ) closeDrawer();
 			if ( e.key !== 'Tab' || ! companion.classList.contains( 'is-open' ) ) return;
 			const focusable = [ close, ...drawer.querySelectorAll( 'a[href], button, [tabindex="0"]' ) ]
-				.filter( ( node, index, list ) => ! node.hidden && list.indexOf( node ) === index );
+				.filter( ( node, index, list ) => ! node.hidden && list.indexOf( node ) === index &&
+					/* Skip nodes that are not actually reachable (a closed submenu, the
+					 * root items behind an open drill panel): a hidden "last" stop let
+					 * Tab walk out of the drawer into the page behind it. */
+					node.getClientRects().length > 0 && 'hidden' !== getComputedStyle( node ).visibility );
 			if ( ! focusable.length ) return;
 			const first = focusable[ 0 ];
 			const last = focusable[ focusable.length - 1 ];

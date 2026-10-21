@@ -64,10 +64,12 @@ require_once __DIR__ . '/class-aae-rich-text-prop-type.php';
 use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Widget_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Template;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
+use Elementor\Modules\AtomicWidgets\Controls\Types\Link_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Select_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Link_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Primitives\String_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
@@ -77,6 +79,11 @@ use Elementor\Modules\Components\PropTypes\Overridable_Prop_Type;
 class Aaeaddon_A_Advanced_Heading extends Atomic_Widget_Base {
 
 	use Has_Template;
+
+	// Style key of the <a> that wraps the text when a link is set. Same name as
+	// Elementor's own Heading and our Post Title, because the Twig reads
+	// `base_styles['link-base']` to put the class on the anchor.
+	const LINK_BASE_STYLE_KEY = 'link-base';
 
 	public static $widget_description = 'Heading with rich inline text editing — bold, italic, underline, strikethrough, super/subscript and links, on any tag from h1 to span.';
 
@@ -133,6 +140,11 @@ class Aaeaddon_A_Advanced_Heading extends Atomic_Widget_Base {
 			// canvas inline editor (the only thing that reads a `tag` key) can
 			// never attach to this type anyway. See the class docblock.
 			'ah_tag'  => String_Prop_Type::make()->default( 'h2' ),
+
+			// Optional link around the heading text. Elementor's own Link prop, so the
+			// panel shows the standard Link control (URL search, new tab, dynamic tags).
+			// Empty by default: a heading with no link renders exactly as before.
+			'link' => Link_Prop_Type::make(),
 
 			'content' => $content,
 
@@ -200,6 +212,12 @@ class Aaeaddon_A_Advanced_Heading extends Atomic_Widget_Base {
 				->set_label( __( 'Settings', 'animation-addons-for-elementor' ) )
 				->set_id( 'settings' )
 				->set_items( [
+					Link_Control::bind_to( 'link' )
+						->set_placeholder( __( 'Type or paste your URL', 'animation-addons-for-elementor' ) )
+						->set_label( __( 'Link', 'animation-addons-for-elementor' ) )
+						->set_meta( [
+							'topDivider' => true,
+						] ),
 					Text_Control::bind_to( '_cssid' )
 						->set_label( __( 'ID', 'animation-addons-for-elementor' ) )
 						->set_meta( $this->get_css_id_control_meta() ),
@@ -238,6 +256,16 @@ class Aaeaddon_A_Advanced_Heading extends Atomic_Widget_Base {
 							'unit' => 'px',
 							'size' => 0,
 						] ) )
+				),
+
+			// The anchor that wraps the text when a link is set. `all: unset` makes it
+			// take the heading's own look (colour, font, size) instead of the theme's
+			// link style. Same two props as core's Heading.
+			self::LINK_BASE_STYLE_KEY => Style_Definition::make()
+				->add_variant(
+					Style_Variant::make()
+						->add_prop( 'all', 'unset' )
+						->add_prop( 'cursor', 'pointer' )
 				),
 		];
 	}

@@ -1,0 +1,27 @@
+/*
+ * Nav presets (Header Nav, Mega Menu) - the ONLY stylesheet they ship.
+ *
+ * Every visual value of those presets (colours, padding, borders, radius, shadow,
+ * grid, typography, hover state) is an ordinary Elementor local style, editable in
+ * the Style tab. What is left here cannot be expressed as one, and every rule uses
+ * :where() so it has ZERO specificity - any value set in the Style tab, or by a
+ * theme, wins over it.
+ */
+
+/* Structural: stretch the label's link over the whole item, so the padding set on
+ * the item in the Style tab is still clickable (the padding lives on the item, the
+ * link on the label inside it). */
+:where(.aae-nav-studio, .aae-nav-mega) .aae-a-nav-item-label::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+}
+
+/* The page the visitor is on. Only a background, so it never fights the colour a
+ * builder sets on the item. */
+:where(.aae-nav-studio) .aae-a-nav-item-active {
+	background-color: rgba(99, 102, 241, 0.13);
+}
+:where(.aae-nav-mega) .aae-a-nav-item-active {
+	background-color: rgba(255, 255, 255, 0.75);
+}

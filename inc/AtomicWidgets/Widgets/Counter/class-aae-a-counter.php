@@ -14,6 +14,7 @@ use Elementor\Modules\AtomicWidgets\Elements\Base\Atomic_Element_Base;
 use Elementor\Modules\AtomicWidgets\Elements\Base\Has_Element_Template;
 use Elementor\Modules\AtomicWidgets\Controls\Section;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Number_Control;
+use Elementor\Modules\AtomicWidgets\Controls\Types\Select_Control;
 use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
@@ -83,6 +84,12 @@ class Aaeaddon_A_Counter extends Atomic_Element_Base {
 			'attributes'   => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
 			'start_number' => Number_Prop_Type::make()->default( 0 ),
 			'duration'     => Number_Prop_Type::make()->default( 2000 ),
+			// Optional extras. Every default reproduces the behaviour counters
+			// had before these props existed, so saved counters are unchanged.
+			'count_easing'    => String_Prop_Type::make()->default( 'ease-out' ),
+			'count_replay'    => String_Prop_Type::make()->default( 'once' ),
+			'count_separator' => String_Prop_Type::make()->default( 'auto' ),
+			'count_decimals'  => String_Prop_Type::make()->default( 'auto' ),
 		];
 	}
 
@@ -97,6 +104,37 @@ class Aaeaddon_A_Counter extends Atomic_Element_Base {
 					Number_Control::bind_to( 'duration' )
 						->set_label( __( 'Duration (ms)', 'animation-addons-for-elementor' ) )
 						->set_meta( [ 'min' => 100, 'max' => 10000, 'step' => 100 ] ),
+					Select_Control::bind_to( 'count_easing' )
+						->set_label( __( 'Easing', 'animation-addons-for-elementor' ) )
+						->set_options( [
+							[ 'value' => 'ease-out',    'label' => __( 'Ease out (default)', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'linear',      'label' => __( 'Linear', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'ease-in',     'label' => __( 'Ease in', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'ease-in-out', 'label' => __( 'Ease in out', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'bounce',      'label' => __( 'Bounce', 'animation-addons-for-elementor' ) ],
+						] ),
+					Select_Control::bind_to( 'count_replay' )
+						->set_label( __( 'Play', 'animation-addons-for-elementor' ) )
+						->set_options( [
+							[ 'value' => 'once',   'label' => __( 'Once (default)', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'replay', 'label' => __( 'Every time it scrolls into view', 'animation-addons-for-elementor' ) ],
+						] ),
+					Select_Control::bind_to( 'count_separator' )
+						->set_label( __( 'Thousand separator', 'animation-addons-for-elementor' ) )
+						->set_options( [
+							[ 'value' => 'auto', 'label' => __( 'Auto (follow the number text)', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'on',   'label' => __( 'On (1,250)', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'off',  'label' => __( 'Off (1250)', 'animation-addons-for-elementor' ) ],
+						] ),
+					Select_Control::bind_to( 'count_decimals' )
+						->set_label( __( 'Decimals', 'animation-addons-for-elementor' ) )
+						->set_options( [
+							[ 'value' => 'auto', 'label' => __( 'Auto (follow the number text)', 'animation-addons-for-elementor' ) ],
+							[ 'value' => '0',    'label' => '0' ],
+							[ 'value' => '1',    'label' => '1' ],
+							[ 'value' => '2',    'label' => '2' ],
+							[ 'value' => '3',    'label' => '3' ],
+						] ),
 				] ),
 			Section::make()
 				->set_label( __( 'Settings', 'animation-addons-for-elementor' ) )

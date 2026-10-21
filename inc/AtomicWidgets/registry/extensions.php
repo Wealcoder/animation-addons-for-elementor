@@ -482,7 +482,7 @@ return [
 				'keywords'     => ['custom fonts', 'fonts', 'typography', 'webfont', 'woff', 'font upload'],
 				'category'     => 'utility',
 				'order'        => 21,
-				'demo_url'     => 'https://animation-addons.com/docs/general-extensions/custom-fonts/',
+				'demo_url'     => 'https://animation-addons.com/docs/v4-extentions/custom-fonts-v4/',
 				'doc_url'      => 'https://animation-addons.com/docs/v4-extentions/custom-fonts-v4/',
 			],
 
@@ -498,7 +498,7 @@ return [
 				'keywords'     => ['post type builder', 'custom post type', 'cpt', 'taxonomy', 'content type'],
 				'category'     => 'utility',
 				'order'        => 22,
-				'demo_url'     => 'https://animation-addons.com/docs/general-extensions/post-type-builder/',
+				'demo_url'     => 'https://animation-addons.com/docs/v4-extentions/post-type-builder/',
 				'doc_url'      => 'https://animation-addons.com/docs/v4-extentions/post-type-builder/',
 			],
 
@@ -514,7 +514,7 @@ return [
 				'keywords'     => ['custom icon', 'icons', 'icon font', 'icomoon', 'fontello', 'svg icons'],
 				'category'     => 'utility',
 				'order'        => 23,
-				'demo_url'     => 'https://animation-addons.com/docs/general-extensions/custom-icon/',
+				'demo_url'     => 'https://animation-addons.com/docs/v4-extentions/custom-icon-v4/',
 				'doc_url'      => 'https://animation-addons.com/docs/v4-extentions/custom-icon-v4/',
 			],
 

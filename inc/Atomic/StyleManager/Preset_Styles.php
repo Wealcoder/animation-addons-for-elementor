@@ -59,6 +59,9 @@ final class Preset_Styles {
 			'aae-glass-card'   => [ 'handle' => 'aae-preset-glass', 'path' => $base . 'glass-frosted-card.css' ],
 			'aae-slideup-card' => [ 'handle' => 'aae-preset-slide-up', 'path' => $base . 'slide-up-content.css' ],
 			'aae-bold-card'    => [ 'handle' => 'aae-preset-bold', 'path' => $base . 'bold-overlay-zoom.css' ],
+			'aae-nav-studio'   => [ 'handle' => 'aae-preset-nav', 'path' => 'inc/AtomicWidgets/Widgets/Nav/presets/css/nav-presets.css' ],
+			'aae-pf-studio'    => [ 'handle' => 'aae-preset-pf-studio', 'path' => 'inc/AtomicWidgets/Widgets/AdvancePortfolio/presets/css/studio-grid.css' ],
+			'aae-nav-mega'     => [ 'handle' => 'aae-preset-nav', 'path' => 'inc/AtomicWidgets/Widgets/Nav/presets/css/nav-presets.css' ],
 		];
 	}
 
