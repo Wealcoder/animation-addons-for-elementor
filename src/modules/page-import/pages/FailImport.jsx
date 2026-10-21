@@ -3,36 +3,6 @@ import CompleteBG from "../../../../public/images/complete-bg.png";
 import { cn } from "../lib/utils";
 import { buttonVariants } from "../components/ui/button";
 
-const SUPPORT_URL = "https://wordpress.org/support/plugin/animation-addons-for-elementor/";
-
-// Highlights "XML" and links "support team" in the server's message. Plain
-// text split into React nodes: `msg` comes from the URL and must never be
-// rendered as HTML (reflected XSS).
-const renderMessage = (text) =>
-  text.split(/(XML|support team)/).map((part, i) => {
-    if (part === "XML") {
-      return (
-        <span key={i} className="font-semibold text-brand bg-[#fff1ec] px-1 rounded">
-          XML
-        </span>
-      );
-    }
-    if (part === "support team") {
-      return (
-        <a
-          key={i}
-          href={SUPPORT_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-semibold text-brand underline underline-offset-2"
-        >
-          support team
-        </a>
-      );
-    }
-    return part;
-  });
-
 const FailImport = () => {
   const url = new URL(window.location.href);
   const template = url.searchParams.get("template");
@@ -64,20 +34,8 @@ const FailImport = () => {
           <h3 className="text-2xl font-medium">Fail to Import</h3>
           {/* `msg` comes from the URL: render it as text, never as HTML (reflected XSS). */}
           <div className="mt-1.5 text-text-secondary text-sm leading-relaxed">
-            {msg ? (
-              <>An issue occurred while importing : {renderMessage(msg)}</>
-            ) : (
-              "An issue occurred while importing"
-            )}
+            {msg ? `An issue occurred while importing : ${msg}` : "An issue occurred while importing"}
           </div>
-          {templateid && (
-            <div className="mt-3 inline-flex items-center gap-1.5 rounded-md bg-[#fff1ec] px-2.5 py-1 text-xs">
-              <span className="text-text-secondary">Template</span>
-              <span className="font-semibold text-brand">
-                {template ? `${template} · ` : ""}ID {templateid}
-              </span>
-            </div>
-          )}
         </div>
         <div className="mb-6">
           <img

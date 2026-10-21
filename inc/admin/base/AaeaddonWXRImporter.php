@@ -19,39 +19,10 @@ class AaeaddonWXRImporter extends \WP_Importer
 	private static function safe_unserialize($value)
 	{
 		if (is_string($value) && is_serialized($value)) {
-			$data = @unserialize(trim($value), array('allowed_classes' => false)); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize
-
-			// allowed_classes only turns an object into __PHP_Incomplete_Class,
-			// and serializing that again writes the ORIGINAL class name back --
-			// so the meta write would store the object and core's
-			// maybe_unserialize() would build it on the next read. Meta from a
-			// WXR is never an object; drop the value if one is anywhere in it.
-			return self::contains_object($data) ? '' : $data;
+			return @unserialize(trim($value), array('allowed_classes' => false)); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize
 		}
 
 		return $value;
-	}
-
-	/**
-	 * Does an unserialized value hold an object at any depth?
-	 *
-	 * @param mixed $value Unserialized value.
-	 * @return bool
-	 */
-	private static function contains_object($value)
-	{
-		if (is_object($value)) {
-			return true;
-		}
-		if (is_array($value)) {
-			foreach ($value as $item) {
-				if (self::contains_object($item)) {
-					return true;
-				}
-			}
-		}
-
-		return false;
 	}
 
 	/**

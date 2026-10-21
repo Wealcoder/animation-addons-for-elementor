@@ -351,12 +351,7 @@ final class Kses {
 	 * @return bool
 	 */
 	private static function is_data_script( $raw ) {
-		// Anchored to a whole attribute name: `\btype` would also match the
-		// `type` inside `data-type=`, and a runnable script would pass as data.
-		// More than one `type` is ambiguous (the printer and the browser could
-		// each pick a different one), so it is treated as code.
-		if ( preg_match_all( '/(?<![\w-])type\s*=/i', $raw ) !== 1
-			|| ! preg_match( '/(?<![\w-])type\s*=\s*("([^"]*)"|\'([^\']*)\')/i', $raw, $m ) ) {
+		if ( ! preg_match( '/\btype\s*=\s*("([^"]*)"|\'([^\']*)\')/i', $raw, $m ) ) {
 			return false;
 		}
 		$type = strtolower( trim( isset( $m[3] ) && '' !== $m[3] ? $m[3] : $m[2] ) );
@@ -374,7 +369,7 @@ final class Kses {
 	private static function script_attributes( $raw ) {
 		$out  = array();
 		$seen = array();
-		if ( preg_match_all( '/(?<![\w-])(type|id|data-[a-z0-9_-]+)\s*=\s*("([^"]*)"|\'([^\']*)\')/i', $raw, $m, PREG_SET_ORDER ) ) {
+		if ( preg_match_all( '/\b(type|id|data-[a-z0-9_-]+)\s*=\s*("([^"]*)"|\'([^\']*)\')/i', $raw, $m, PREG_SET_ORDER ) ) {
 			foreach ( $m as $a ) {
 				$name         = strtolower( $a[1] );
 				$out[ $name ] = isset( $a[4] ) && '' !== $a[4] ? $a[4] : $a[3];
