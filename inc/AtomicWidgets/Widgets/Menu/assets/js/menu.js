@@ -58,29 +58,47 @@ const playSubMenuEffect = (subMenu, effectName, durationMs, direction, onFinish)
 	subMenu.style.transformOrigin = 'top center';
 	subMenu.style.willChange = 'transform, opacity';
 
-	// Wait one frame so display:none → display:flex has been committed and the
-	// element has computed layout before the animation starts.
-	requestAnimationFrame(() => {
-		try {
-			const anim = subMenu.animate(frames, {
-				duration: durationMs,
-				easing: easing,
-				fill: 'both',
-			});
-			const cleanup = (cancelled) => {
-				subMenu.style.willChange = '';
-				done(cancelled);
-			};
-			if (anim && anim.finished && typeof anim.finished.then === 'function') {
-				anim.finished.then(() => cleanup(false), () => cleanup(true));
-			} else if (anim && typeof anim.addEventListener === 'function') {
-				anim.addEventListener('finish', () => cleanup(false));
-				anim.addEventListener('cancel', () => cleanup(true));
-			} else {
-				done();
-			}
-		} catch (e) { done(); }
-	});
+	// Start in the same frame the sub-menu became visible, not one frame later:
+	// reading the layout below already forces display:none → display:flex to be
+	// committed, and waiting a frame let the full-size panel flash before the
+	// animation began.
+	try {
+		// The effect only fades/moves the panel. The rows under it must also glide
+		// out of its way, or they jump by the panel's whole height at once. So the
+		// panel collapses to nothing and back, height and spacing together.
+		// Measured from the resolved style, which is the used value under either
+		// box-sizing. On open it reverts to the CSS value afterwards (fill:none), so
+		// a nested sub-menu opened later still gets its natural, auto height.
+		const cs = getComputedStyle(subMenu);
+		const spaceProps = ['height', 'paddingTop', 'paddingBottom', 'marginTop', 'marginBottom'];
+		const full = {};
+		const none = {};
+		spaceProps.forEach((p) => { full[p] = cs[p]; none[p] = '0px'; });
+		const spaceFrames = direction === 'close' ? [full, none] : [none, full];
+
+		subMenu.style.overflow = 'hidden';
+		const effect = subMenu.animate(frames, { duration: durationMs, easing: easing, fill: 'both' });
+		const space = subMenu.animate(spaceFrames, {
+			duration: durationMs,
+			easing: 'cubic-bezier(.4, 0, .2, 1)',
+			fill: direction === 'close' ? 'forwards' : 'none',
+		});
+		const cleanup = (cancelled) => {
+			subMenu.style.willChange = '';
+			subMenu.style.overflow = '';
+			done(cancelled);
+		};
+		const finished = (a) => (a && a.finished && typeof a.finished.then === 'function' ? a.finished : null);
+		const both = finished(effect) && finished(space);
+		if (both) {
+			Promise.all([finished(effect), finished(space)]).then(() => cleanup(false), () => cleanup(true));
+		} else if (effect && typeof effect.addEventListener === 'function') {
+			effect.addEventListener('finish', () => cleanup(false));
+			effect.addEventListener('cancel', () => cleanup(true));
+		} else {
+			cleanup(false);
+		}
+	} catch (e) { subMenu.style.overflow = ''; done(); }
 };
 
 /* ---------- Editor canvas: drop the wrapper's `display: contents` ----------
@@ -386,18 +404,22 @@ const initMenu = (root) => {
 						if (sib !== item && sib.classList && sib.classList.contains('aae-a-menu-item--open')) {
 							const sArrow = sib.querySelector(':scope > .aae-a-menu-arrow');
 							const sSub   = sib.querySelector(':scope > .sub-menu');
-							sib.classList.remove('aae-a-menu-item--open');
 							if (sArrow) sArrow.setAttribute('aria-expanded', 'false');
-							// Same reset the manual close does — a sibling auto-closed
-							// here would otherwise keep its own expanded subtree and
-							// restore it wholesale when the visitor returns to it.
-							closeDescendants(sib);
 							if (isStacked() && sSub) {
-								// Sibling closes simultaneously — just cancel its animation;
-								// removing the class above hides it via CSS.
-								if (typeof sSub.getAnimations === 'function') {
-									sSub.getAnimations().forEach((a) => { try { a.cancel(); } catch (e) { /* already settled — nothing to cancel */ } });
-								}
+								// Collapse it in step with the one opening, so the rows
+								// below slide instead of jumping. Same reset as the manual
+								// close, run once the panel is gone: collapsing its subtree
+								// first would pull rows out from under a visible panel.
+								playSubMenuEffect(sSub, dropdownEffect, duration, 'close', () => {
+									sib.classList.remove('aae-a-menu-item--open');
+									closeDescendants(sib);
+								});
+							} else {
+								sib.classList.remove('aae-a-menu-item--open');
+								// Same reset the manual close does — a sibling auto-closed
+								// here would otherwise keep its own expanded subtree and
+								// restore it wholesale when the visitor returns to it.
+								closeDescendants(sib);
 							}
 						}
 					});
