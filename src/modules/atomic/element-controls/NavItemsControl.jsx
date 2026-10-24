@@ -56,14 +56,13 @@ const DROPDOWN_CLASS = 'aae-a-nav-dropdown';
 const dropdownSelectTimers = new Set();
 
 /* Soft gradient look for the Menu Items panel. Editor-only styling - no logic.
- * Text colours are explicit (not theme tokens) because the card background is a
- * fixed light peach, so they must stay dark in the editor's dark theme too. */
+ * The panel cards are outline-only (see nav-panel-style.js), so rows, the sync
+ * box and their text use the editor's own theme tokens and stay readable in both
+ * its light and dark theme. Only the orange accent is fixed. */
 const NAV_ACCENT = '#F97316';
 const NAV_ACCENT_DARK = '#EA580C';
 const NAV_ACCENT_SOFT = 'rgba(249, 115, 22, 0.12)';
 const NAV_ACCENT_LINE = 'rgba(249, 115, 22, 0.24)';
-const NAV_INK = '#2A1608';
-const NAV_MUTED = '#8A5A3C';
 
 const NAV_SOFT_CARD_SX = {
 	p: 1.25,
@@ -78,7 +77,7 @@ const NAV_OUTLINE_BTN_SX = {
 	color: NAV_ACCENT_DARK,
 	borderColor: NAV_ACCENT,
 	borderRadius: '9px',
-	bgcolor: 'rgba(255, 255, 255, 0.7)',
+	bgcolor: 'transparent',
 	'&:hover': { borderColor: NAV_ACCENT_DARK, bgcolor: NAV_ACCENT_SOFT },
 };
 
@@ -142,7 +141,7 @@ const NAV_ROW_ACTIONS_SX = {
 	pointerEvents: 'none',
 	transition: 'opacity 120ms ease',
 	background: ( theme ) =>
-		`linear-gradient(to right, rgba(255, 255, 255, 0), #fff 20px)`,
+		`linear-gradient(to right, transparent, ${ theme.palette.background.default } 20px)`,
 };
 
 const prop = ( type, value ) => ( { $$type: type, value } );
@@ -886,12 +885,12 @@ function NavMenuImport( { linkedMenuId, onImport, onUpdate } ) {
 	const isLinked = linkedMenuId && String( selectedId ) === String( linkedMenuId );
 
 	return (
-		<Box sx={ { p: 1, border: '1px dashed', borderColor: NAV_ACCENT_LINE, borderRadius: '10px', bgcolor: 'rgba(255, 255, 255, 0.55)' } }>
+		<Box sx={ { p: 1, border: '1px dashed', borderColor: NAV_ACCENT_LINE, borderRadius: '10px' } }>
 			<Stack direction="row" gap={ 0.75 } alignItems="flex-start" sx={ { mb: 0.75 } }>
 				<Box component="span" aria-hidden sx={ { color: NAV_ACCENT, fontSize: 14, lineHeight: 1.3, flexShrink: 0 } }>
 					{ isLinked ? '\u21BB' : '\u2913' }
 				</Box>
-				<Typography variant="caption" sx={ { color: NAV_MUTED, display: 'block' } }>
+				<Typography variant="caption" sx={ { color: 'text.secondary', display: 'block' } }>
 					{ isLinked
 						? 'Re-sync now and reset labels from WordPress. Styling stays.'
 						: 'Import from a WordPress menu. Items are appended.' }
@@ -902,7 +901,7 @@ function NavMenuImport( { linkedMenuId, onImport, onUpdate } ) {
 					size="tiny"
 					value={ selectedId }
 					onChange={ ( e ) => setSelectedId( e.target.value ) }
-					sx={ { flex: 1, minWidth: 0, bgcolor: '#fff', color: NAV_INK, borderRadius: '9px' } }
+					sx={ { flex: 1, minWidth: 0, borderRadius: '9px' } }
 				>
 					{ menus.map( ( m ) => (
 						<MenuItem key={ m.id } value={ String( m.id ) }>{ m.name }</MenuItem>
@@ -1554,7 +1553,7 @@ export function MobileNavPartsControl() {
 
 	return (
 		<Box sx={ { px: 0, pb: 1 } }>
-			<Typography variant="caption" sx={ { display: 'block', mb: 0.75, color: NAV_MUTED } }>
+			<Typography variant="caption" sx={ { display: 'block', mb: 0.75, color: 'text.secondary' } }>
 				Pick a part to style it in the Style tab:
 			</Typography>
 			{ MOBILE_PART_GROUPS.map( ( { title, note, parts } ) => {
@@ -1568,7 +1567,7 @@ export function MobileNavPartsControl() {
 							{ title }
 						</Typography>
 						{ note && (
-							<Typography variant="caption" sx={ { display: 'block', mb: 0.5, color: NAV_MUTED } }>
+							<Typography variant="caption" sx={ { display: 'block', mb: 0.5, color: 'text.secondary' } }>
 								{ note }
 							</Typography>
 						) }
@@ -2258,7 +2257,7 @@ export function NavItemsControl( { label } ) {
 					<Box component="span" aria-hidden sx={ { ...NAV_BADGE_SX, minWidth: 22, height: 22, fontSize: 12 } }>
 						{ '\u2630' }
 					</Box>
-					<Typography variant="caption" sx={ { fontWeight: 600, color: NAV_INK } }>
+					<Typography variant="caption" sx={ { fontWeight: 600, color: 'text.primary' } }>
 						{ label }
 					</Typography>
 				</Stack>
@@ -2266,7 +2265,7 @@ export function NavItemsControl( { label } ) {
 					{ '+ Add main item' }
 				</Button>
 			</Stack>
-			<Typography variant="caption" sx={ { color: NAV_MUTED } }>
+			<Typography variant="caption" sx={ { color: 'text.secondary' } }>
 				{ 'Click ▶ to open a submenu. Drag up/down to reorder, right to nest, left to unnest.' }
 			</Typography>
 
@@ -2317,8 +2316,8 @@ export function NavItemsControl( { label } ) {
 									borderColor: NAV_ACCENT_LINE,
 									borderRadius: '10px',
 									overflow: 'hidden',
-									bgcolor: '#fff',
-									color: NAV_INK,
+									bgcolor: 'background.default',
+									color: 'text.primary',
 									transition: 'border-color 120ms ease, box-shadow 120ms ease',
 									'&:hover': { borderColor: NAV_ACCENT, boxShadow: '0 2px 8px rgba(249, 115, 22, 0.12)' },
 									opacity: isDragging ? 0.4 : 1,
@@ -2337,7 +2336,7 @@ export function NavItemsControl( { label } ) {
 									sx={ { position: 'relative', px: 0.5, py: 0.5, userSelect: 'none', flexWrap: 'nowrap' } }
 								>
 									<Box component="span" aria-hidden
-										sx={ { color: NAV_MUTED, opacity: 0.6, cursor: 'grab', fontSize: 12, lineHeight: 1, flexShrink: 0 } }>
+										sx={ { color: 'text.secondary', opacity: 0.6, cursor: 'grab', fontSize: 12, lineHeight: 1, flexShrink: 0 } }>
 										⠿
 									</Box>
 									{ /* Disclosure chevron for a main item that owns a submenu
