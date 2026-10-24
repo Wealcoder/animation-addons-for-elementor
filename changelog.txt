@@ -55,6 +55,37 @@
   - **Improved:** Template Library V4 insert now honors Live Paste image choices and drops foreign video IDs.
   - **Fixed:** A brand-new install could show the "settings moved to new storage names" migration notice — when activated without the activation hook (installed by a template's dependency installer, or a network site created later) or reinstalled after being deleted.
 
+= 🌀 Animation Addons for Elementor v4.2.5 – 3rd October 2026
+
+  - **Fixed:** Section template previews in the Template Library opened without the template, because the preview link reached the demo site as "amp;post" instead of "post".
+
+= 🌀 Animation Addons for Elementor v4.2.4 – 28th September 2026
+
+  - **Fixed:** Starter Template import now says "Theme ready" when the template's theme is already your active theme, instead of asking you to install it.
+
+= 🌀 Animation Addons for Elementor v4.2.3 – 27th September 2026
+
+  - **Added:** Section Template v4 Filter.
+  - **Improved:** The Template Library lists Elementor V3 and V4 templates together; the version your site uses is simply the one selected first.
+  - **Changed:** Image Animation now runs from Animation Addons Pro. The free plugin keeps its settings in the editor.
+  - **Fixed:** The "Choose how to apply styles" dialog was unreadable in Elementor's dark mode.
+  - **Fixed:** Activating the plugin while Animation Addons Pro was already active reported "unexpected output during activation".
+  - **Fixed:** Translator notes for the Template Library strings, and numbered placeholders so a translation can reorder them.
+  - **Fixed:** Direct-access protection on the image import helper file.
+
+= 🌀 Animation Addons for Elementor v4.2.2 – 20th September 2026
+
+  - **Fixed:** Compatibility with older Animation Addons Pro releases.
+  - **Improved:** Multilingual dashboard stability.
+  - **Improved:** Form-table upgrade handling.
+  - **Improved:** Starter Template import error reporting.
+
+= 🌀 Animation Addons for Elementor v4.2.1 – 17th September 2026
+
+  - **Added:** Unique `aaeaddon` prefixes across plugin-defined functions, classes, constants, and namespaces.
+  - **Improved:** Security checks across public and editor-facing requests.
+  - **Improved:** Compatibility when Eliminator is disabled.
+
 = 🌀 Animation Addons for Elementor v4.1.0 – 8th September 2026
 
   - **Changed:** This plugin no longer installs, activates, deactivates or switches any plugin or theme on your site. Elementor is declared through the "Requires Plugins" header, and WordPress handles the dependency. The only installer left is the one-click Elementor install, which runs from WordPress.org, only on a click, behind a nonce and the "install_plugins" capability.

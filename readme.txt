@@ -450,36 +450,7 @@ Vendored libraries:
 = 4.2.4 =
 * Fixed: Starter Template import now says "Theme ready" when the template's theme is already your active theme, instead of asking you to install it.
 
-= 4.2.3 =
-* Added Section Template v4 Filter.
-* Improved: The Template Library lists Elementor V3 and V4 templates together; the version your site uses is simply the one selected first.
-* Changed: Image Animation now runs from Animation Addons Pro. The free plugin keeps its settings in the editor.
-* Fixed: The "Choose how to apply styles" dialog was unreadable in Elementor's dark mode.
-* Fixed: Activating the plugin while Animation Addons Pro was already active reported "unexpected output during activation".
-* Fixed: Translator notes for the Template Library strings, and numbered placeholders so a translation can reorder them.
-* Fixed: Direct-access protection on the image import helper file.
-
-= 4.2.2 =
-* Fixed compatibility with older Animation Addons Pro releases.
-* Improved multilingual dashboard stability.
-* Improved form-table upgrade handling.
-* Improved Starter Template import error reporting.
-
-= 4.2.1 =
-* Added unique `aaeaddon` prefixes across plugin-defined functions, classes, constants, and namespaces.
-* Improved security checks across public and editor-facing requests.
-* Improved compatibility when Eliminator is disabled.
-
-= 4.1.0 =
-* Moved Elementor dependency handling to WordPress dependency support.
-* Removed activation/deactivation tracking and remote dashboard requests.
-* Improved security, translation readiness, and admin loading.
-
-= 4.0.0 =
-* Added Elementor V4 Atomic Widgets & animation extensions.
-* Added Elementor V4 template import with Classes and Variables.
-* Added Form Builder, Code Snippets, Custom Fonts, Custom Icons, and Post Type Builder.
-* Added animation performance controls including lazy loading and reduced-motion options.
+Older versions: see [changelog.txt](https://plugins.svn.wordpress.org/animation-addons-for-elementor/trunk/changelog.txt) for the full changelog.
 
 == Upgrade Notice ==
 
