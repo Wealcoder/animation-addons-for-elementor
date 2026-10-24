@@ -54,7 +54,7 @@ class Aaeaddon_A_Form_Textarea extends Atomic_Widget_Base {
 	}
 
 	public function get_icon() {
-		return 'eicon-textarea';
+		return 'eicon-text-area';
 	}
 
 	/**

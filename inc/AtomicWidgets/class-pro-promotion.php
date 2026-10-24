@@ -110,7 +110,9 @@ final class Pro_Promotion {
 			],
 			'aae-a-btn-pro'     => [
 				'label' => esc_html__( 'Button Pro', 'animation-addons-for-elementor' ),
-				'icon'  => 'wcf-icon-Button',
+				// eicons, like the real Pro widget: the wcf-icon font is loaded on
+				// the dashboard only, so 'wcf-icon-Button' left this tile blank.
+				'icon'  => 'eicon-button',
 			],
 			'aae-a-offcanvas'   => [
 				'label' => esc_html__( 'Offcanvas', 'animation-addons-for-elementor' ),
