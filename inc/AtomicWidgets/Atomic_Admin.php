@@ -483,6 +483,63 @@ final class Atomic_Admin
 	}
 
 	/**
+	 * AJAX handler — search the site's content for a Nav item's Link field.
+	 *
+	 * Pages, posts and every public custom post type, published only (a menu
+	 * link is for visitors). Queried directly rather than through
+	 * `wp/v2/search`, which only sees post types registered with show_in_rest,
+	 * so many plugins' CPTs would be missing.
+	 */
+	public static function ajax_search_nav_links(): void
+	{
+		check_ajax_referer( Nonce::action( Nonce::LOOP_GRID, 'nonce' ), 'nonce' );
+
+		if (! current_user_can('edit_posts')) {
+			wp_send_json_error(['message' => 'Access denied.'], 403);
+		}
+
+		$search = isset($_POST['search']) ? sanitize_text_field(wp_unslash($_POST['search'])) : '';
+		if ('' === $search) {
+			wp_send_json_success(['results' => []]);
+		}
+
+		// Builder internals are public post types too, but never a page to link to:
+		// Elementor's library, and this plugin's theme-builder templates, fonts and icons.
+		$types = array_values(array_diff(
+			get_post_types(['public' => true], 'names'),
+			['attachment', 'elementor_library', 'e-landing-page', 'e-floating-buttons', 'wcf-addons-template', 'wcf-custom-fonts', 'wcf-custom-icons']
+		));
+
+		$query = new \WP_Query([
+			's'                   => $search,
+			'post_type'           => $types,
+			'post_status'         => 'publish',
+			'posts_per_page'      => 15,
+			'no_found_rows'       => true,
+			'ignore_sticky_posts' => true,
+		]);
+
+		$results = [];
+		foreach ($query->posts as $post) {
+			$type  = get_post_type_object($post->post_type);
+			$title = html_entity_decode(wp_strip_all_tags(get_the_title($post)), ENT_QUOTES, 'UTF-8');
+
+			$results[] = [
+				'id'    => (int) $post->ID,
+				'title' => '' !== $title ? $title : sprintf(
+					/* translators: %d: post ID. */
+					__('(no title) #%d', 'animation-addons-for-elementor'),
+					$post->ID
+				),
+				'url'   => get_permalink($post),
+				'type'  => $type ? $type->labels->singular_name : $post->post_type,
+			];
+		}
+
+		wp_send_json_success(['results' => $results]);
+	}
+
+	/**
 	 * AJAX handler — save atomic extension toggle states.
 	 */
 	public static function ajax_save_extension_settings(): void

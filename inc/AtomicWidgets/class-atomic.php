@@ -1059,6 +1059,9 @@ final class Atomic
 		// 'aae_get_nav_menus' is a deprecated alias (a cached admin bundle) -- remove in 4.3.
 		\Wealcoder\AnimationAddons\Ajax_Alias::register( 'aae_get_nav_menus', 'aaeaddon_get_nav_menus', [ Atomic_Admin::class, 'ajax_get_nav_menus' ] );
 
+		// AAE Nav: search pages, posts and public CPTs for an item's Link field.
+		\Wealcoder\AnimationAddons\Ajax_Alias::register( 'aaeaddon_search_nav_links', 'aaeaddon_search_nav_links', [ Atomic_Admin::class, 'ajax_search_nav_links' ] );
+
 		// Dynamic tags editor preview: `ajax_render_tags` switches to the EDITED
 		// document before resolving tags, so a Featured Image / Post Title tag
 		// inside a loop item resolves against the PAGE (usually no thumbnail →

@@ -37,6 +37,7 @@ import { useElement } from '@elementor/editor-editing-panel';
 import { track } from '../editor-bridge/disposables';
 import { regenerateModelStyleIds } from './preset-apply';
 import {
+	Autocomplete,
 	Box,
 	Button,
 	Collapse,
@@ -2908,6 +2909,117 @@ function SubItemsManager( { itemId } ) {
 	);
 }
 
+/* Anything that already reads as a link rather than a search word: a scheme
+ * (https:, mailto:, tel:), a path, an #anchor, a ?query, or a bare domain. */
+const URL_LIKE = /^(?:[a-z][a-z0-9+.-]*:|\/|#|\?|www\.)|^[^\s/]+\.[a-z]{2,}(?:[/?#]|$)/i;
+
+/** Pages, posts and public CPTs matching `term`, each with its permalink. */
+function searchNavLinks( term ) {
+	const cfg = window.AAE_LOOP_GRID || {};
+
+	if ( ! cfg.ajaxUrl ) {
+		return Promise.resolve( [] );
+	}
+
+	const body = new window.FormData();
+	body.append( 'action', 'aaeaddon_search_nav_links' );
+	body.append( 'nonce', cfg.nonce || '' );
+	body.append( 'search', term );
+
+	return window.fetch( cfg.ajaxUrl, { method: 'POST', body, credentials: 'same-origin' } )
+		.then( ( r ) => r.json() )
+		.then( ( json ) => ( Array.isArray( json?.data?.results ) ? json.data.results : [] ) )
+		.catch( () => [] );
+}
+
+/* The Link field: paste a URL as before, or type a word to search the site's
+ * pages, posts and CPT entries and pick one - its permalink becomes the link.
+ * A search word is never saved as the link itself: only a URL-looking value or
+ * a picked result is, and leaving the field puts the saved link back. */
+function NavLinkField( { url, onChange } ) {
+	const [ input, setInput ] = React.useState( url );
+	const [ options, setOptions ] = React.useState( [] );
+	const [ loading, setLoading ] = React.useState( false );
+
+	React.useEffect( () => {
+		setInput( url );
+	}, [ url ] );
+
+	React.useEffect( () => {
+		const term = input.trim();
+
+		if ( term.length < 2 || term === url || URL_LIKE.test( term ) ) {
+			setOptions( [] );
+			setLoading( false );
+			return undefined;
+		}
+
+		let live = true;
+		setLoading( true );
+		const timer = window.setTimeout( () => {
+			searchNavLinks( term ).then( ( results ) => {
+				if ( live ) {
+					setOptions( results );
+					setLoading( false );
+				}
+			} );
+		}, 250 );
+
+		return () => {
+			live = false;
+			window.clearTimeout( timer );
+		};
+	}, [ input, url ] );
+
+	return (
+		<Autocomplete
+			freeSolo
+			size="tiny"
+			fullWidth
+			options={ options }
+			loading={ loading }
+			value={ url || null }
+			inputValue={ input }
+			/* The server already matched the term; don't filter its results again. */
+			filterOptions={ ( list ) => list }
+			getOptionLabel={ ( option ) => ( typeof option === 'string' ? option : option.url || '' ) }
+			isOptionEqualToValue={ ( option, value ) => option.url === value }
+			onInputChange={ ( event, value, reason ) => {
+				if ( 'reset' === reason ) {
+					return;
+				}
+				setInput( value );
+				const trimmed = value.trim();
+				if ( '' === trimmed || URL_LIKE.test( trimmed ) ) {
+					onChange( trimmed );
+				}
+			} }
+			onChange={ ( event, picked ) => {
+				if ( picked && typeof picked === 'object' ) {
+					setInput( picked.url );
+					onChange( picked.url );
+				}
+			} }
+			onBlur={ () => setInput( url ) }
+			renderOption={ ( props, option ) => (
+				<li { ...props } key={ option.id }>
+					<Stack direction="row" gap={ 1 } alignItems="baseline" sx={ { minWidth: 0, width: '100%' } }>
+						<Typography variant="caption" noWrap sx={ { flex: 1, minWidth: 0 } }>
+							{ option.title }
+						</Typography>
+						<Typography variant="caption" sx={ { color: 'text.tertiary', flexShrink: 0 } }>
+							{ option.type }
+						</Typography>
+					</Stack>
+				</li>
+			) }
+			renderInput={ ( params ) => (
+				<TextField { ...params } size="tiny" placeholder="Paste URL or search pages, posts" />
+			) }
+		/>
+	);
+}
+
 function NavItemFields( { elementId, fallbackTitle, onDropdownToggle, onTitleChange, hideChildManager } ) {
 	const data = useListenTo(
 		[
@@ -3096,12 +3208,7 @@ function NavItemFields( { elementId, fallbackTitle, onDropdownToggle, onTitleCha
 			<Typography variant="caption" sx={ { fontWeight: 500, color: 'text.secondary' } }>
 				{ 'Link' }
 			</Typography>
-			<TextField
-				size="tiny"
-				placeholder="Paste URL"
-				value={ data.url }
-				onChange={ ( { target } ) => updateLink( target.value ) }
-			/>
+			<NavLinkField url={ data.url } onChange={ updateLink } />
 			<Stack direction="row" alignItems="center" justifyContent="space-between">
 				<Typography variant="caption">{ 'Dropdown Content' }</Typography>
 				<Switch
