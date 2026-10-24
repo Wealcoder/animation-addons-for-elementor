@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-24T06:07:34+00:00\n"
+"POT-Creation-Date: 2026-10-24T08:32:12+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: animation-addons-for-elementor\n"
@@ -4503,10 +4503,10 @@ msgstr ""
 #: inc/AtomicWidgets/Atomic_Admin.php:325
 #: inc/AtomicWidgets/Atomic_Admin.php:409
 #: inc/AtomicWidgets/Atomic_Admin.php:430
-#: inc/AtomicWidgets/Atomic_Admin.php:493
-#: inc/AtomicWidgets/Atomic_Admin.php:570
-#: inc/AtomicWidgets/Atomic_Admin.php:1125
-#: inc/AtomicWidgets/Atomic_Admin.php:1216
+#: inc/AtomicWidgets/Atomic_Admin.php:550
+#: inc/AtomicWidgets/Atomic_Admin.php:627
+#: inc/AtomicWidgets/Atomic_Admin.php:1182
+#: inc/AtomicWidgets/Atomic_Admin.php:1273
 #: inc/class-dynamic-tags.php:97
 msgid "Permission denied."
 msgstr ""
@@ -5402,14 +5402,15 @@ msgstr ""
 
 #. translators: %d: post ID.
 #: inc/AnimationSettings/class-animation-settings.php:2181
+#: inc/AtomicWidgets/Atomic_Admin.php:531
 #, php-format
 msgid "(no title) #%d"
 msgstr ""
 
 #: inc/AnimationSettings/class-animation-settings.php:2213
 #: inc/AtomicWidgets/Atomic_Admin.php:336
-#: inc/AtomicWidgets/Atomic_Admin.php:504
-#: inc/AtomicWidgets/Atomic_Admin.php:1147
+#: inc/AtomicWidgets/Atomic_Admin.php:561
+#: inc/AtomicWidgets/Atomic_Admin.php:1204
 msgid "Invalid data."
 msgstr ""
 
@@ -5545,7 +5546,7 @@ msgid "Tilt"
 msgstr ""
 
 #: inc/AtomicWidgets/Atomic_Admin.php:329
-#: inc/AtomicWidgets/Atomic_Admin.php:497
+#: inc/AtomicWidgets/Atomic_Admin.php:554
 msgid "Missing fields."
 msgstr ""
 
@@ -5553,31 +5554,72 @@ msgstr ""
 msgid "No menu slug provided."
 msgstr ""
 
-#: inc/AtomicWidgets/Atomic_Admin.php:1131
+#: inc/AtomicWidgets/Atomic_Admin.php:461
+#: inc/AtomicWidgets/Atomic_Admin.php:498
+#: inc/AtomicWidgets/Atomic_Admin.php:1457
+#: inc/AtomicWidgets/Atomic_Admin.php:1572
+#: inc/AtomicWidgets/Atomic_Admin.php:1641
+#: inc/AtomicWidgets/Atomic_Admin.php:1743
+msgid "Access denied."
+msgstr ""
+
+#: inc/AtomicWidgets/Atomic_Admin.php:1188
 msgid "Invalid state."
 msgstr ""
 
-#: inc/AtomicWidgets/Atomic_Admin.php:1222
+#: inc/AtomicWidgets/Atomic_Admin.php:1279
 msgid "Invalid decision."
 msgstr ""
 
-#: inc/AtomicWidgets/Atomic_Admin.php:1238
+#: inc/AtomicWidgets/Atomic_Admin.php:1295
 msgid "There is nothing left to undo."
 msgstr ""
 
-#: inc/AtomicWidgets/class-atomic.php:2747
+#: inc/AtomicWidgets/Atomic_Admin.php:1507
+msgid "Invalid taxonomy."
+msgstr ""
+
+#: inc/AtomicWidgets/Atomic_Admin.php:1646
+msgid "Invalid sample post."
+msgstr ""
+
+#: inc/AtomicWidgets/Atomic_Admin.php:1738
+msgid "Missing post_id or grid_id."
+msgstr ""
+
+#: inc/AtomicWidgets/Atomic_Admin.php:1760
+msgid "Document not found."
+msgstr ""
+
+#: inc/AtomicWidgets/Atomic_Admin.php:1791
+msgid "Loop grid not found."
+msgstr ""
+
+#: inc/AtomicWidgets/Atomic_Admin.php:1812
+msgid "Loop item not found."
+msgstr ""
+
+#: inc/AtomicWidgets/Atomic_Admin.php:1838
+msgid "Invalid path."
+msgstr ""
+
+#: inc/AtomicWidgets/Atomic_Admin.php:1904
+msgid "Invalid filters payload."
+msgstr ""
+
+#: inc/AtomicWidgets/class-atomic.php:2750
 msgid "AAE General"
 msgstr ""
 
-#: inc/AtomicWidgets/class-atomic.php:2752
+#: inc/AtomicWidgets/class-atomic.php:2755
 msgid "AAE Form"
 msgstr ""
 
-#: inc/AtomicWidgets/class-atomic.php:2757
+#: inc/AtomicWidgets/class-atomic.php:2760
 msgid "AAE Post"
 msgstr ""
 
-#: inc/AtomicWidgets/class-atomic.php:2768
+#: inc/AtomicWidgets/class-atomic.php:2771
 msgid "AAE WooCommerce"
 msgstr ""
 
