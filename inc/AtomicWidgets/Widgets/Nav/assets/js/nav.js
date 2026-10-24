@@ -1293,11 +1293,31 @@ register( {
 			if ( ownSub && ownSub.contains( e.target ) ) return;
 
 			const wasOpen = item.classList.contains( 'is-open' );
+
+			/* A parent's own label is usually a real <a href>, and the browser followed
+			 * it on the very click meant to OPEN the dropdown — with `trigger` defaulting
+			 * to "click", a linked parent's submenu was unreachable by mouse.
+			 *
+			 * Two-step, so nothing becomes impossible: the FIRST click opens the dropdown
+			 * and suppresses the link; a second click on the still-open parent lets the
+			 * link through, so the parent page stays reachable. A placeholder href
+			 * ("#", empty) has nowhere to go, so it keeps the plain open/close toggle.
+			 * Links inside the dropdown returned above; leaf items never reach here. */
+			const ownLabel = e.target.closest( 'a' );
+			const href = ownLabel && item.contains( ownLabel ) ? ownLabel.getAttribute( 'href' ) : null;
+			const followable = !! href && '#' !== href && ! href.startsWith( 'javascript:' );
+
+			if ( followable && ! wasOpen ) {
+				e.preventDefault();
+			}
+
 			closeSiblings( item );
-			if ( wasOpen ) {
-				closeItem( item );
-			} else {
+			if ( ! wasOpen ) {
 				openItem( item );
+			} else if ( ! followable ) {
+				/* Already open with nowhere to navigate: plain toggle. When it IS
+				 * followable the browser is leaving the page, so leave it open. */
+				closeItem( item );
 			}
 			e.stopPropagation();
 		} );
