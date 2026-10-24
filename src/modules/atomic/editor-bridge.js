@@ -167,6 +167,10 @@ import { applySettingsToDom, applySettingsToDoms, replayInPreview } from './edit
 import { startSlideSelectNav } from './editor-bridge/slide-select-nav';
 import { startSliderEditorPreview } from './editor-bridge/slider-editor-preview';
 import { startAutoPreset } from './editor-bridge/auto-preset';
+import { startCounterFitWidth } from './editor-bridge/counter-fit-width';
+import { startNavPanelStyle } from './editor-bridge/nav-panel-style';
+import { startNavAutoMenu } from './editor-bridge/nav-auto-menu';
+import { startNavIconSync } from './editor-bridge/nav-icon-sync';
 import { startFormGuards } from './editor-bridge/form-guards';
 import { startNavCompanionLifecycle } from './editor-bridge/nav-companion-lifecycle';
 
@@ -191,6 +195,19 @@ function bootstrap() {
 	// Apply a default preset the first time certain widgets (Loop Grid Slider) are
 	// dropped, so they land styled instead of as a bare Post Image + Title card.
 	startAutoPreset();
+
+	// A new Counter hugs its content rather than spanning the row. New drops only;
+	// Counters already on a page are not touched.
+	startCounterFitWidth();
+
+	// Soft-gradient look for the Nav's own panel sections (presentation only).
+	startNavPanelStyle();
+
+	// A freshly dropped Nav starts from the site's WordPress menu (drops only).
+	startNavAutoMenu();
+
+	// Icons picked in the Nav's Mobile Menu Icons section reach the companion at once.
+	startNavIconSync();
 
 	// Save-time warnings: form without a Submit button / nested forms
 	// (spec hard rules — warn, never block the save).

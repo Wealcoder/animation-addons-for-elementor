@@ -125,6 +125,16 @@ export const JS_HOOK_CLASSES = [
 
 	// Form — the row a checkbox group is measured against (form.js)
 	'aae-form-checkbox-row',
+
+	// Nav presets (nav-presets.css): the root marker each preset scopes its few
+	// :where() structural rules under.
+	'aae-nav-studio',
+	'aae-nav-mega',
+
+	// Advanced Portfolio "Studio Grid" preset (studio-grid.css): root, card, thumbnail.
+	'aae-pf-studio',
+	'aae-pf-card',
+	'aae-pf-img',
 ];
 
 /* A style definition in the shape the repository consumers expect. `variants`

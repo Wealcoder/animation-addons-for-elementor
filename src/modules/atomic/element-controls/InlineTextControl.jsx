@@ -48,7 +48,7 @@ import { useBoundProp } from '@elementor/editor-controls';
 import { useElement } from '@elementor/editor-editing-panel';
 import { getContainer } from '@elementor/editor-elements';
 import { htmlV3PropTypeUtil, stringPropTypeUtil } from '@elementor/editor-props';
-import { Box, IconButton, Stack, TextField, Tooltip } from '@elementor/ui';
+import { Box, IconButton, Stack, TextField, Tooltip, UnstableColorPicker } from '@elementor/ui';
 
 const COMMIT_DEBOUNCE_MS = 250;
 
@@ -83,19 +83,116 @@ const DEFAULT_COLOR = '#000000';
 // other run of text.
 const DEFAULT_LINK_COLOR = '#2563eb';
 
+// Toolbar palette. One accent; every control is a small white chip with a thin
+// border, tinted on hover and filled on its active state.
+const ACCENT = '#5b3fd6';
+const ACCENT_INK = '#4b34c4';
+const ACCENT_TINT = 'rgba( 91, 63, 214, 0.08 )';
+const ACCENT_TINT_STRONG = 'rgba( 91, 63, 214, 0.16 )';
+const ACCENT_LINE = '#e3defa';
+const CHIP_BORDER = '#d6cef7';
+
 // The buttons carry TEXT glyphs, not icon components, so MUI's size="tiny" only
 // shrinks the padding — the glyph keeps the inherited font size and holds the
 // box open. Pin both.
 const BTN_SX = {
+	width: 22,
+	height: 22,
+	minWidth: 22,
+	p: 0,
+	fontSize: '12px',
+	lineHeight: 1,
+	borderRadius: '7px',
+	color: ACCENT_INK,
+	bgcolor: '#ffffff',
+	border: '1px solid',
+	borderColor: CHIP_BORDER,
+	'&:hover': { bgcolor: ACCENT_TINT, borderColor: ACCENT },
+};
+
+// The look of a chip whose panel is open / whose format is on.
+const CHIP_ACTIVE_SX = {
+	bgcolor: ACCENT_TINT_STRONG,
+	borderColor: ACCENT,
+	color: ACCENT_INK,
+	'&:hover': { bgcolor: ACCENT_TINT_STRONG, borderColor: ACCENT },
+};
+
+// The colour swatch is Elementor's own picker indicator, sized to match the chips.
+const SWATCH_SX = {
+	width: 22,
+	height: 22,
+	borderRadius: '7px',
+};
+
+// The toolbar icons are Elementor's own, the same set its Heading uses. They are
+// read off the global the editor already loads (`elementorV2.icons`) rather than
+// imported, so this bundle takes no new build-time dependency. A name missing in
+// some Elementor build falls back to the text glyph.
+const ICONS = ( typeof window !== 'undefined' && window.elementorV2 && window.elementorV2.icons ) || {};
+
+const toolIcon = ( name, glyph, size = 'tiny' ) => {
+	const Icon = ICONS[ name ];
+	return Icon ? <Icon fontSize={ size } /> : glyph;
+};
+
+// The card holds the toolbar and the text box: a soft tinted panel, and a plain
+// white field underneath.
+const CARD_SX = {
+	p: 1,
+	borderRadius: '14px',
+	border: '1px solid',
+	borderColor: ACCENT_LINE,
+	background: 'linear-gradient(180deg, #ffffff 0%, #f5f2ff 100%)',
+	boxShadow: '0 1px 2px rgba(91, 63, 214, 0.06), 0 8px 22px rgba(91, 63, 214, 0.08)',
+};
+
+// The small panel that opens under the toolbar for the link.
+const PANEL_SX = {
+	p: 1,
+	mb: 1,
+	borderRadius: '10px',
+	bgcolor: 'rgba( 255, 255, 255, 0.8 )',
+	border: '1px solid',
+	borderColor: ACCENT_LINE,
+};
+
+const PANEL_TITLE_SX = {
+	fontSize: '11px',
+	fontWeight: 600,
+	letterSpacing: '0.04em',
+	textTransform: 'uppercase',
+	color: 'text.secondary',
+};
+
+const PANEL_HINT_SX = {
+	mt: 0.75,
+	fontSize: '11px',
+	lineHeight: 1.4,
+	color: 'text.tertiary',
+};
+
+const APPLY_SX = {
+	...BTN_SX,
 	width: 24,
 	height: 24,
 	minWidth: 24,
-	p: 0,
-	fontSize: '13px',
-	lineHeight: 1,
+	flexShrink: 0,
+	bgcolor: ACCENT,
+	borderColor: ACCENT,
+	color: '#ffffff',
+	'&:hover': { bgcolor: ACCENT_INK, borderColor: ACCENT_INK },
 };
 
-const SWATCH_SIZE = 18;
+const CLOSE_SX = {
+	width: 20,
+	height: 20,
+	minWidth: 20,
+	p: 0,
+	borderRadius: '6px',
+	color: 'text.secondary',
+};
+
 
 // Stable reference for "no active formats". Returned as-is whenever the caret
 // leaves the editable, so the identity check in syncFormatState() can short out
@@ -103,12 +200,12 @@ const SWATCH_SIZE = 18;
 const EMPTY_FORMATS = Object.freeze( {} );
 
 const FORMAT_BUTTONS = [
-	{ cmd: 'bold', label: 'Bold', glyph: 'B', sx: { fontWeight: 700 } },
-	{ cmd: 'italic', label: 'Italic', glyph: 'I', sx: { fontStyle: 'italic' } },
-	{ cmd: 'underline', label: 'Underline', glyph: 'U', sx: { textDecoration: 'underline' } },
-	{ cmd: 'strikeThrough', label: 'Strikethrough', glyph: 'S', sx: { textDecoration: 'line-through' } },
-	{ cmd: 'superscript', label: 'Superscript', glyph: 'x²' },
-	{ cmd: 'subscript', label: 'Subscript', glyph: 'x₂' },
+	{ cmd: 'bold', label: 'Bold', glyph: 'B', icon: 'BoldIcon', sx: { fontWeight: 700 } },
+	{ cmd: 'italic', label: 'Italic', glyph: 'I', icon: 'ItalicIcon', sx: { fontStyle: 'italic' } },
+	{ cmd: 'underline', label: 'Underline', glyph: 'U', icon: 'UnderlineIcon', sx: { textDecoration: 'underline' } },
+	{ cmd: 'strikeThrough', label: 'Strikethrough', glyph: 'S', icon: 'StrikethroughIcon', sx: { textDecoration: 'line-through' } },
+	{ cmd: 'superscript', label: 'Superscript', glyph: 'x²', icon: 'SuperscriptIcon' },
+	{ cmd: 'subscript', label: 'Subscript', glyph: 'x₂', icon: 'SubscriptIcon' },
 ];
 
 /* ------------------------------------------------------------------ clean */
@@ -470,7 +567,6 @@ export function InlineTextControl() {
 	const { element } = useElement();
 
 	const editableRef = useRef( null );
-	const colorInputRef = useRef( null );
 	const commitTimer = useRef( null );
 
 	// Which format commands are active at the caret, so the toolbar shows what
@@ -495,12 +591,8 @@ export function InlineTextControl() {
 	const [ linkOpen, setLinkOpen ] = useState( false );
 	const [ linkUrl, setLinkUrl ] = useState( '' );
 
-	// Opacity + free-text colour. The native `<input type="color">` is opaque by
-	// construction — it has no alpha channel and no way to express `transparent`
-	// — so transparency needs its own input. Kept as a separate row rather than
-	// crowded into the toolbar, mirroring how the link field opens.
-	const [ colorOpen, setColorOpen ] = useState( false );
-	const [ colorText, setColorText ] = useState( '' );
+	// The opacity of the current text colour. Elementor's colour picker has an opacity
+	// slider of its own, so this only keeps the swatch's value in step with it.
 	const [ opacity, setOpacity ] = useState( 100 );
 
 	const content = stringPropTypeUtil.extract( value?.content ?? null ) ?? '';
@@ -767,60 +859,29 @@ export function InlineTextControl() {
 	};
 
 	/**
-	 * Open the opacity / colour-code row.
+	 * The picker is Elementor's own (hue, opacity slider, hex / rgb fields), replacing
+	 * the native colour input, which has no opacity, and the separate opacity row that
+	 * stood in for it.
 	 *
-	 * Captures the selection FIRST, for the same reason the swatch does: the
-	 * moment focus moves to the field or the slider the live selection is gone,
-	 * and everything in this row applies to whatever was highlighted when it
-	 * opened. Always opens rather than toggling, so clicking it again after
-	 * selecting different text re-captures instead of closing.
+	 * Same two steps the native swatch had. The selection is captured when the picker
+	 * opens, because its popover takes focus and the live selection goes with it; then
+	 * every change repaints the ONE span made for this session (see applyColor()), so
+	 * dragging does not wrap a fresh span on every move.
 	 */
-	const openColorRow = () => {
+	const beginColor = () => {
 		saveSelection();
 		colorSpan.current = null;
-
-		// Seed the field with the colour already on the selection, so the row
-		// opens showing what is there rather than empty.
-		const node = savedRange.current?.commonAncestorContainer;
-		const el = 1 === node?.nodeType ? node : node?.parentElement;
-		const existing = el?.closest?.( '[style*="color"]' )?.style?.color ?? '';
-
-		setColorText( existing ? normaliseColor( existing ) ?? '' : '' );
-		setColorOpen( true );
 	};
 
-	/**
-	 * Repaint the selection at a new opacity, keeping the hue the swatch holds.
-	 *
-	 * `colorSpan` is deliberately NOT reset here: the whole row is one session,
-	 * so dragging repaints the span it already made instead of wrapping a fresh
-	 * one on every drag. The cost is that re-selecting different text needs
-	 * another click on the opacity button to re-capture — which is what that
-	 * button does.
-	 */
-	const applyOpacity = ( pct ) => {
-		setOpacity( pct );
-		applyColor( withOpacity( color, pct ) );
-	};
-
-	/**
-	 * Apply a typed CSS colour. Anything the browser can parse is accepted —
-	 * `transparent`, `rgba(…)`, `hsl(…)`, `#rrggbbaa`, a named colour — and
-	 * normaliseColor() folds it to the spelling that survives wp_kses.
-	 *
-	 * An unparseable value applies nothing and leaves the field alone, so the
-	 * user can see and correct what they typed.
-	 */
-	const submitColorText = () => {
-		const parsed = normaliseColor( colorText );
+	const handleColor = ( next ) => {
+		// Folded to the spelling that survives wp_kses (`#rrggbb` / `#rrggbbaa`).
+		const parsed = normaliseColor( next );
 
 		if ( ! parsed ) {
 			return;
 		}
 
-		// Keep the swatch and the slider showing what was just applied so the
-		// three inputs cannot drift apart. Only a hex value can drive the native
-		// input; a keyword like `transparent` leaves it on its previous colour.
+		// Keep the swatch showing what was just applied.
 		const hex = /^#([0-9a-f]{6})([0-9a-f]{2})?$/i.exec( parsed );
 
 		if ( hex ) {
@@ -828,7 +889,6 @@ export function InlineTextControl() {
 			setOpacity( hex[ 2 ] ? Math.round( ( parseInt( hex[ 2 ], 16 ) / 255 ) * 100 ) : 100 );
 		}
 
-		setColorText( parsed );
 		applyColor( parsed );
 	};
 
@@ -909,13 +969,9 @@ export function InlineTextControl() {
 	const keepFocus = ( event ) => event.preventDefault();
 
 	return (
-		<Box>
-			<Stack direction="row" alignItems="center" gap={ 0.25 } sx={ { mb: 0.5, flexWrap: 'wrap' } }>
-				<Tooltip title="Clear formatting" placement="top">
-					<IconButton size="tiny" onMouseDown={ keepFocus } onClick={ clearFormatting } sx={ BTN_SX }>—</IconButton>
-				</Tooltip>
-
-				{ FORMAT_BUTTONS.map( ( { cmd, label, glyph, sx } ) => (
+		<Box sx={ CARD_SX }>
+			<Stack direction="row" alignItems="center" justifyContent="space-between" flexWrap="wrap" rowGap="4px" sx={ { mb: 1 } }>
+				{ FORMAT_BUTTONS.map( ( { cmd, label, glyph, icon, sx } ) => (
 					<Tooltip key={ cmd } title={ label } placement="top">
 						<IconButton
 							size="tiny"
@@ -930,174 +986,93 @@ export function InlineTextControl() {
 								...sx,
 								...( activeFormats[ cmd ]
 									? {
-										bgcolor: 'action.selected',
-										color: 'text.primary',
+										bgcolor: ACCENT_TINT_STRONG,
+										borderColor: ACCENT,
+										color: ACCENT_INK,
 										// Hold the pressed look through hover, which would
 										// otherwise repaint the background and make an
 										// active button read as inactive under the pointer.
-										'&:hover': { bgcolor: 'action.selected' },
+										'&:hover': { bgcolor: ACCENT_TINT_STRONG, borderColor: ACCENT },
 									}
 									: {} ),
 							} }
 						>
-							{ glyph }
+							{ toolIcon( icon, glyph ) }
 						</IconButton>
 					</Tooltip>
 				) ) }
 
 				<Tooltip title="Link" placement="top">
-					<IconButton size="tiny" onMouseDown={ keepFocus } onClick={ openLink } sx={ BTN_SX }>🔗</IconButton>
+					<IconButton
+						size="tiny"
+						onMouseDown={ keepFocus }
+						onClick={ openLink }
+						aria-pressed={ linkOpen }
+						sx={ linkOpen ? { ...BTN_SX, ...CHIP_ACTIVE_SX } : BTN_SX }
+					>{ toolIcon( 'LinkIcon', '🔗' ) }</IconButton>
 				</Tooltip>
 
-				<Tooltip title="Text colour" placement="top">
-					{ /* A real <input type="color"> — the OS/browser palette, no
-					     library. The visible swatch is the input itself so the
-					     native picker anchors to it. */ }
-					<Box
-						component="label"
-						sx={ {
-							width: SWATCH_SIZE,
-							height: SWATCH_SIZE,
-							ml: 0.25,
-							borderRadius: '3px',
-							border: '1px solid',
-							borderColor: 'grey.300',
-							backgroundColor: color,
-							cursor: 'pointer',
-							display: 'inline-block',
-							flex: '0 0 auto',
-						} }
-						onMouseDown={ () => {
-							// Capture BEFORE the picker opens and the selection
-							// is lost, and start a fresh span for this session.
-							saveSelection();
-							colorSpan.current = null;
-						} }
-					>
-						<input
-							ref={ colorInputRef }
-							type="color"
-							value={ color }
-							style={ { opacity: 0, width: 0, height: 0, border: 0, padding: 0, display: 'block' } }
-							// Chrome fires `input` live while dragging and
-							// `change` on commit; Firefox only fires `change`.
-							// Both are wired, and the colorSpan guard makes the
-							// duplicate harmless.
-							onInput={ ( event ) => {
-								setColor( event.target.value );
-								applyColor( event.target.value );
-							} }
-							onChange={ ( event ) => {
-								setColor( event.target.value );
-								applyColor( event.target.value );
-							} }
-						/>
-					</Box>
-				</Tooltip>
+				{ /* Elementor's own picker: colour area, hue, an opacity slider and hex / rgb
+				     fields. Its swatch is the toolbar's colour chip. */ }
+				<UnstableColorPicker
+					size="tiny"
+					value={ withOpacity( color, opacity ) }
+					onChange={ handleColor }
+					slotProps={ {
+						colorIndicator: {
+							onMouseDown: beginColor,
+							title: 'Text colour',
+							'aria-label': 'Text colour',
+							sx: SWATCH_SX,
+						},
+					} }
+				/>
 
-				{ /* The native picker above is opaque by construction — no alpha
-				     channel, no way to say `transparent`. This opens the row that
-				     can express both. */ }
-				<Tooltip title="Opacity / colour code" placement="top">
-					<IconButton size="tiny" onMouseDown={ keepFocus } onClick={ openColorRow } sx={ BTN_SX }>◑</IconButton>
+				<Tooltip title="Clear formatting" placement="top">
+					<IconButton size="tiny" onMouseDown={ keepFocus } onClick={ clearFormatting } sx={ BTN_SX }>{ toolIcon( 'ClearIcon', '—' ) }</IconButton>
 				</Tooltip>
 			</Stack>
 
 			{ linkOpen ? (
-				// `alignItems: center` is what puts the ✓ on the input's centre line.
-				// Without it the row stretches both children to its own height and
-				// the button, being shorter than the field, sat at the top.
-				<Stack direction="row" gap={ 0.5 } alignItems="center" sx={ { mb: 0.5 } }>
-					<TextField
-						size="tiny"
-						fullWidth
-						autoFocus
-						placeholder="https://…"
-						value={ linkUrl }
-						onChange={ ( event ) => setLinkUrl( event.target.value ) }
-						onKeyDown={ ( event ) => {
-							if ( 'Enter' === event.key ) {
-								event.preventDefault();
-								submitLink();
-							}
+				<Box sx={ PANEL_SX }>
+					<Stack direction="row" alignItems="center" justifyContent="space-between" sx={ { mb: 0.75 } }>
+						<Box component="span" sx={ PANEL_TITLE_SX }>Link</Box>
+						<Tooltip title="Close" placement="top">
+							<IconButton size="tiny" onMouseDown={ keepFocus } onClick={ () => setLinkOpen( false ) } sx={ CLOSE_SX }>
+								{ toolIcon( 'XIcon', '×' ) }
+							</IconButton>
+						</Tooltip>
+					</Stack>
+					{ /* `alignItems: center` puts the apply button on the input's centre line. */ }
+					<Stack direction="row" gap={ 0.75 } alignItems="center">
+						<TextField
+							size="tiny"
+							fullWidth
+							autoFocus
+							placeholder="https://…"
+							value={ linkUrl }
+							onChange={ ( event ) => setLinkUrl( event.target.value ) }
+							onKeyDown={ ( event ) => {
+								if ( 'Enter' === event.key ) {
+									event.preventDefault();
+									submitLink();
+								}
 
-							if ( 'Escape' === event.key ) {
-								setLinkOpen( false );
-							}
-						} }
-					/>
-					{ /* Smaller than the format buttons: this one sits beside a text
-					     field rather than in the toolbar row, and at BTN_SX's 24px it
-					     towered over the tiny input. The glyph is sized explicitly
-					     because MUI's size="tiny" only trims padding — the ✓ would
-					     otherwise keep the inherited font size and hold the box
-					     open. */ }
-					<IconButton
-						size="tiny"
-						onMouseDown={ keepFocus }
-						onClick={ submitLink }
-						sx={ {
-							width: 18,
-							height: 18,
-							minWidth: 18,
-							p: 0,
-							fontSize: '11px',
-							lineHeight: 1,
-							flexShrink: 0,
-						} }
-					>✓</IconButton>
-				</Stack>
-			) : null }
-
-			{ colorOpen ? (
-				<Stack direction="row" gap={ 0.5 } alignItems="center" sx={ { mb: 0.5 } }>
-					<TextField
-						size="tiny"
-						fullWidth
-						autoFocus
-						placeholder="transparent, rgba(0,0,0,.5), #rrggbbaa"
-						value={ colorText }
-						onChange={ ( event ) => setColorText( event.target.value ) }
-						onKeyDown={ ( event ) => {
-							if ( 'Enter' === event.key ) {
-								event.preventDefault();
-								submitColorText();
-							}
-
-							if ( 'Escape' === event.key ) {
-								setColorOpen( false );
-							}
-						} }
-					/>
-					{ /* A raw range input, matching how the swatch uses a raw
-					     <input type="color"> — no component dependency for one
-					     slider, and it styles consistently with it. */ }
-					<Tooltip title={ `Opacity ${ opacity }%` } placement="top">
-						<input
-							type="range"
-							min="0"
-							max="100"
-							value={ opacity }
-							onChange={ ( event ) => applyOpacity( Number( event.target.value ) ) }
-							style={ { width: 64, flexShrink: 0 } }
+								if ( 'Escape' === event.key ) {
+									setLinkOpen( false );
+								}
+							} }
 						/>
-					</Tooltip>
-					<IconButton
-						size="tiny"
-						onMouseDown={ keepFocus }
-						onClick={ submitColorText }
-						sx={ {
-							width: 18,
-							height: 18,
-							minWidth: 18,
-							p: 0,
-							fontSize: '11px',
-							lineHeight: 1,
-							flexShrink: 0,
-						} }
-					>✓</IconButton>
-				</Stack>
+						<Tooltip title="Apply link" placement="top">
+							<IconButton size="tiny" onMouseDown={ keepFocus } onClick={ submitLink } sx={ APPLY_SX }>
+								{ toolIcon( 'CheckIcon', '✓' ) }
+							</IconButton>
+						</Tooltip>
+					</Stack>
+					<Box sx={ PANEL_HINT_SX }>Leave it empty and apply to remove the link.</Box>
+				</Box>
 			) : null }
+
 
 			<Box
 				ref={ editableRef }
@@ -1266,17 +1241,18 @@ export function InlineTextControl() {
 					}
 				} }
 				sx={ {
-					p: 0.8,
-					minHeight: '70px',
-					fontSize: '12px',
+					p: 1.25,
+					minHeight: '84px',
+					fontSize: '13px',
 					// Editing-surface only — the panel field, never the rendered
 					// heading. Typed markup makes these lines long and they wrap
 					// several times, so the extra leading is what separates one
 					// wrapped line from the next while you are reading the source.
 					lineHeight: 2,
+					bgcolor: '#ffffff',
 					border: '1px solid',
-					borderColor: 'grey.200',
-					borderRadius: '8px',
+					borderColor: ACCENT_LINE,
+					borderRadius: '10px',
 					outline: 'none',
 					overflowWrap: 'anywhere',
 					// Drag the bottom-right corner to make the box taller.
@@ -1288,8 +1264,8 @@ export function InlineTextControl() {
 					resize: 'vertical',
 					overflow: 'auto',
 					transition: 'border-color .2s ease, box-shadow .2s ease',
-					'&:hover': { borderColor: 'black' },
-					'&:focus': { borderColor: 'black', boxShadow: '0 0 0 1px black' },
+					'&:hover': { borderColor: '#c9c0f5' },
+					'&:focus': { borderColor: ACCENT, boxShadow: '0 0 0 3px rgba( 91, 63, 214, 0.15 )' },
 					'&:empty::before': {
 						content: 'attr(data-placeholder)',
 						color: 'text.tertiary',

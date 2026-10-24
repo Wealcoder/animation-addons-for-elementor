@@ -27,6 +27,25 @@ const DEFAULT_DURATION = 2000;
 /** power1.out equivalent — matches the easing the GSAP version used. */
 const easeOut = ( t ) => 1 - ( 1 - t ) * ( 1 - t );
 
+const bounce = ( t ) => {
+	const n = 7.5625;
+	const d = 2.75;
+	if ( t < 1 / d ) return n * t * t;
+	if ( t < 2 / d ) return n * ( t -= 1.5 / d ) * t + 0.75;
+	if ( t < 2.5 / d ) return n * ( t -= 2.25 / d ) * t + 0.9375;
+	return n * ( t -= 2.625 / d ) * t + 0.984375;
+};
+
+// Chosen by the panel's Easing control (data-counter-easing). Missing or unknown
+// values fall back to easeOut, which is what every counter used before.
+const EASINGS = {
+	'ease-out':    easeOut,
+	linear:        ( t ) => t,
+	'ease-in':     ( t ) => t * t,
+	'ease-in-out': ( t ) => ( t < 0.5 ? 2 * t * t : 1 - Math.pow( -2 * t + 2, 2 ) / 2 ),
+	bounce,
+};
+
 const isEditMode = () =>
 	!! ( window.elementorFrontend?.isEditMode?.() ||
 		document.body?.classList.contains( 'elementor-editor-active' ) );
@@ -169,8 +188,16 @@ const play = ( parent, numberEl ) => {
 		? durationAttr
 		: DEFAULT_DURATION;
 
+	// Panel overrides. Absent attributes leave the text-derived shape alone.
+	const shape     = { ...info };
+	const groupAttr = parent.getAttribute( 'data-counter-group' );
+	if ( groupAttr === 'on' || groupAttr === 'off' ) shape.group = groupAttr === 'on';
+	const decAttr = parseInt( parent.getAttribute( 'data-counter-decimals' ), 10 );
+	if ( Number.isFinite( decAttr ) && decAttr >= 0 ) shape.decimals = decAttr;
+	const ease = EASINGS[ parent.getAttribute( 'data-counter-easing' ) ] || easeOut;
+
 	const write = ( value ) => {
-		const text = format( value, info );
+		const text = format( value, shape );
 		numberEl.textContent = text;
 		info.lastWritten     = text;
 	};
@@ -186,7 +213,7 @@ const play = ( parent, numberEl ) => {
 
 	const tick = ( now ) => {
 		const progress = Math.min( ( now - startedAt ) / duration, 1 );
-		write( from + ( info.value - from ) * easeOut( progress ) );
+		write( from + ( info.value - from ) * ease( progress ) );
 
 		if ( progress < 1 ) {
 			frames.set( numberEl, window.requestAnimationFrame( tick ) );
@@ -230,11 +257,23 @@ register( {
 			return () => stop( numberEl );
 		}
 
+		const replay = element.getAttribute( 'data-counter-replay' ) === '1';
+
 		const observer = new IntersectionObserver( ( entries, obs ) => {
 			for ( const entry of entries ) {
 				if ( entry.isIntersecting ) {
 					play( element, numberEl );
-					obs.disconnect();
+					if ( ! replay ) obs.disconnect();
+				} else if ( replay ) {
+					// Left the viewport: park at the start so it can count again.
+					stop( numberEl );
+					const f    = parseFloat( element.getAttribute( 'data-counter-from' ) );
+					const info = resolveTarget( numberEl );
+					if ( info && ! prefersReducedMotion() ) {
+						const text = format( Number.isFinite( f ) ? f : 0, info );
+						numberEl.textContent = text;
+						info.lastWritten     = text;
+					}
 				}
 			}
 		}, { threshold: 0.3 } );

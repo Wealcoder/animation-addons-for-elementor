@@ -31,6 +31,8 @@ use Elementor\Modules\AtomicWidgets\Controls\Types\Text_Control;
 use Elementor\Modules\AtomicWidgets\PropTypes\Classes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Attributes_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Svg_Src_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Icon_Prop_Type;
+use Elementor\Modules\AtomicWidgets\PropTypes\Union_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Color_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Background_Prop_Type;
@@ -70,14 +72,34 @@ class Aaeaddon_A_Hotspot_Close extends Atomic_Widget_Base {
 		return true;
 	}
 
+	/**
+	 * An SVG prop that Elementor's `svg-media` control can bind to.
+	 *
+	 * That control binds to BOTH `svg-src` and `icon`; a plain Svg_Src prop makes it
+	 * throw "Prop type is missing" and the field renders empty. Uploaded SVGs are
+	 * still stored as `svg-src`, so saved values and the template's reads are
+	 * unchanged. Older cores without Icon_Prop_Type keep the plain Svg_Src.
+	 */
+	private static function svg_icon_prop( string $default_url = '' ) {
+		$svg_src = Svg_Src_Prop_Type::make();
+		if ( '' !== $default_url ) {
+			$svg_src->default_url( $default_url );
+		}
+
+		if ( ! class_exists( Icon_Prop_Type::class ) ) {
+			return $svg_src;
+		}
+
+		return Union_Prop_Type::create_from( $svg_src )->add_prop_type( Icon_Prop_Type::make() );
+	}
+
 	protected static function define_props_schema(): array {
 		return [
 			'classes'    => Classes_Prop_Type::make()->default( [] ),
 			'attributes' => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
 
 			// Empty by default → Twig falls back to a built-in X glyph.
-			'icon' => Svg_Src_Prop_Type::make()
-				->default_url( AAEADDON_URL . 'inc/AtomicWidgets/Widgets/ImageHotspot/assets/icons/close.svg' ),
+			'icon' => self::svg_icon_prop( AAEADDON_URL . 'inc/AtomicWidgets/Widgets/ImageHotspot/assets/icons/close.svg' ),
 		];
 	}
 

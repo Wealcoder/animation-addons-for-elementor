@@ -1,0 +1,35 @@
+/*
+ * Studio Grid (Advanced Portfolio preset).
+ *
+ * The widget's shared stylesheet (skin-portfolio-three) styles the section
+ * title, the grid, the staggered rows and a dark slide-in caption with 3-class
+ * selectors, which beat any Style-tab value. This sheet is scoped under the
+ * preset's root marker (.aae-pf-studio) and matches that specificity, so it
+ * only ever affects a portfolio the preset was applied to.
+ *
+ * Columns are NOT set here: the Posts List's Style > Layout > Columns control
+ * owns them (the preset seeds 3 desktop / 2 tablet / 1 mobile there).
+ */
+.wcf--advance-portfolio.skin-portfolio-three.aae-pf-studio .section-title { text-align: left; }
+
+/* No stagger, no hidden slide-in caption: the content sits under the image. */
+.wcf--advance-portfolio.skin-portfolio-three.aae-pf-studio .posts-list .item:nth-child(even) { top: 0; }
+.wcf--advance-portfolio.skin-portfolio-three.aae-pf-studio .content {
+	position: static;
+	width: auto;
+	background-color: transparent;
+	color: inherit;
+	border-radius: 0;
+	opacity: 1;
+	visibility: visible;
+	transform: none;
+}
+.wcf--advance-portfolio.skin-portfolio-three.aae-pf-studio .item:hover .content { transform: none; }
+
+/* Hover: card lifts, thumbnail zooms. The marker class sits on the <img> itself. */
+.aae-pf-studio .aae-pf-card { transition: transform .35s ease, box-shadow .35s ease; }
+.aae-pf-studio .aae-pf-card .aae-a-post-image-wrapper { overflow: hidden; }
+.aae-pf-studio .aae-pf-img { transition: transform .7s ease; }
+.aae-pf-studio .aae-pf-card:hover { transform: translateY(-6px); box-shadow: 0 18px 40px rgba(15, 23, 42, .12); }
+.aae-pf-studio .aae-pf-card:hover .aae-pf-img { transform: scale(1.06); }
+@media (max-width: 1024px) { .aae-pf-studio .aae-pf-card:hover { transform: none; } }

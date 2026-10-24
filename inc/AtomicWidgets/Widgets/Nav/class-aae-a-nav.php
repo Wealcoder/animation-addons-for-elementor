@@ -26,6 +26,8 @@ require_once __DIR__ . '/class-aae-a-nav-sub-item.php';
 require_once __DIR__ . '/class-aae-a-nav-items-control.php';
 require_once __DIR__ . '/class-aae-a-mobile-nav.php';
 require_once __DIR__ . '/class-aae-a-mobile-nav-lifecycle-control.php';
+require_once __DIR__ . '/class-aae-a-mobile-nav-parts-control.php';
+require_once __DIR__ . '/class-aae-a-nav-preset-picker-control.php';
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -104,6 +106,11 @@ class Aaeaddon_A_Nav extends Atomic_Element_Base {
 			'menu_autosync' => Boolean_Prop_Type::make()->default( false ),
 			/* Desktop dropdown indicator icon. nav.js inlines this SVG next to the
 			 * label of every item that has a dropdown (see injectDropdownIcons). */
+			/* Menu-wide dropdown behaviour. '' = defer to each item's own Trigger /
+			 * Dropdown Animation (the behaviour before these existed), so saved navs are
+			 * untouched. Any other value overrides EVERY item - applied by nav.js. */
+			'dropdown_trigger'   => String_Prop_Type::make()->default( '' ),
+			'dropdown_animation' => String_Prop_Type::make()->default( '' ),
 			'show_dropdown_icon' => Boolean_Prop_Type::make()->default( true ),
 			'dropdown_icon' => self::svg_icon_prop( AAEADDON_URL . 'inc/AtomicWidgets/Widgets/Nav/assets/icons/chevron-down.svg' ),
 			'mobile_enabled' => Boolean_Prop_Type::make()->default( false ),
@@ -231,6 +238,47 @@ class Aaeaddon_A_Nav extends Atomic_Element_Base {
 	protected function define_atomic_controls(): array {
 		return [
 			Section::make()
+				->set_label( __( 'Presets', 'animation-addons-for-elementor' ) )
+				->set_id( 'aae_presets' )
+				->set_items( [
+					Aaeaddon_A_Nav_Preset_Picker_Control::make()
+						->set_label( __( 'Apply Preset', 'animation-addons-for-elementor' ) )
+						->set_meta( [ 'layout' => 'custom' ] ),
+				] ),
+			Section::make()
+				->set_label( __( 'Menu Items', 'animation-addons-for-elementor' ) )
+				->set_id( 'menu_items' )
+				->set_items( [
+					Switch_Control::bind_to( 'menu_autosync' )
+						->set_label( __( 'Auto-sync from WordPress', 'animation-addons-for-elementor' ) ),
+					Aaeaddon_A_Nav_Items_Control::make()
+						->set_label( __( 'Items', 'animation-addons-for-elementor' ) )
+						->set_meta( [ 'layout' => 'custom' ] ),
+				] ),
+			Section::make()
+				->set_label( __( 'Dropdown Behavior', 'animation-addons-for-elementor' ) )
+				->set_id( 'dropdown_behavior' )
+				->set_items( [
+					Select_Control::bind_to( 'dropdown_trigger' )
+						->set_label( __( 'Open On', 'animation-addons-for-elementor' ) )
+						->set_options( [
+							[ 'value' => '',      'label' => __( 'Per item (default)', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'click', 'label' => __( 'Click', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'hover', 'label' => __( 'Hover', 'animation-addons-for-elementor' ) ],
+						] ),
+					Select_Control::bind_to( 'dropdown_animation' )
+						->set_label( __( 'Dropdown Animation', 'animation-addons-for-elementor' ) )
+						->set_options( [
+							[ 'value' => '',             'label' => __( 'Per item (default)', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'gsap',         'label' => __( 'Default (GSAP)', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'grow-down',    'label' => __( 'Grow Down', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'rotate-3d',    'label' => __( 'Rotate 3D', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'grow-out',     'label' => __( 'Grow Out', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'slide-items',  'label' => __( 'Slide Items', 'animation-addons-for-elementor' ) ],
+							[ 'value' => 'rotate-items', 'label' => __( 'Rotate Items', 'animation-addons-for-elementor' ) ],
+						] ),
+				] ),
+			Section::make()
 				->set_label( __( 'Mobile Menu', 'animation-addons-for-elementor' ) )
 				->set_id( 'mobile_menu' )
 				->set_items( [
@@ -255,6 +303,22 @@ class Aaeaddon_A_Nav extends Atomic_Element_Base {
 						->set_label( __( 'Close on Link Click', 'animation-addons-for-elementor' ) ),
 					Switch_Control::bind_to( 'mobile_lock_scroll' )
 						->set_label( __( 'Lock Body Scroll', 'animation-addons-for-elementor' ) ),
+					/* One-click jump to the three styleable parts of the mobile menu, so a
+					 * builder never has to hunt for them in the Structure panel. Shows
+					 * nothing until the mobile menu is enabled. */
+					Aaeaddon_A_Mobile_Nav_Parts_Control::make()
+						->set_label( '' )
+						->set_meta( [ 'layout' => 'custom' ] ),
+					Aaeaddon_A_Mobile_Nav_Lifecycle_Control::make()
+						->set_label( '' )
+						->set_meta( [ 'layout' => 'custom' ] ),
+				] ),
+			/* The four mobile-menu icons live in their own (collapsed) section so the
+			 * Mobile Menu section stays short. Same props, same bindings. */
+			Section::make()
+				->set_label( __( 'Mobile Menu Icons', 'animation-addons-for-elementor' ) )
+				->set_id( 'mobile_menu_icons' )
+				->set_items( [
 					Svg_Control::bind_to( 'mobile_hamburger_icon' )
 						->set_label( __( 'Hamburger Icon', 'animation-addons-for-elementor' ) ),
 					Svg_Control::bind_to( 'mobile_close_icon' )
@@ -263,9 +327,6 @@ class Aaeaddon_A_Nav extends Atomic_Element_Base {
 						->set_label( __( 'Dropdown Icon', 'animation-addons-for-elementor' ) ),
 					Svg_Control::bind_to( 'mobile_back_icon' )
 						->set_label( __( 'Back Icon', 'animation-addons-for-elementor' ) ),
-					Aaeaddon_A_Mobile_Nav_Lifecycle_Control::make()
-						->set_label( '' )
-						->set_meta( [ 'layout' => 'custom' ] ),
 				] ),
 
 			Section::make()
@@ -277,16 +338,6 @@ class Aaeaddon_A_Nav extends Atomic_Element_Base {
 					Svg_Control::bind_to( 'dropdown_icon' )
 						->set_label( __( 'Icon', 'animation-addons-for-elementor' ) ),
 					Text_Control::bind_to( Aaeaddon_A_Nav_Responsive::anchor( 'dropdown_icon' ) ),
-				] ),
-			Section::make()
-				->set_label( __( 'Menu Items', 'animation-addons-for-elementor' ) )
-				->set_id( 'menu_items' )
-				->set_items( [
-					Switch_Control::bind_to( 'menu_autosync' )
-						->set_label( __( 'Auto-sync from WordPress', 'animation-addons-for-elementor' ) ),
-					Aaeaddon_A_Nav_Items_Control::make()
-						->set_label( __( 'Items', 'animation-addons-for-elementor' ) )
-						->set_meta( [ 'layout' => 'custom' ] ),
 				] ),
 			Section::make()
 				->set_label( __( 'Settings', 'animation-addons-for-elementor' ) )

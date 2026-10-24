@@ -23,7 +23,7 @@ import { IconListItemsControl } from './IconListItemsControl';
 import { PresetPickerControl } from './PresetPickerControl';
 import { FormActionsControl } from './FormActionsControl';
 import { FormConditionsControl } from './FormConditionsControl';
-import { MobileNavLifecycleControl, NavItemsControl, NavSubItemsControl } from './NavItemsControl';
+import { MobileNavLifecycleControl, MobileNavPartsControl, NavItemsControl, NavSubItemsControl } from './NavItemsControl';
 import { QueryChipsControl } from './QueryChipsControl';
 import { DrawPlayControl } from './DrawPlayControl';
 import { HotspotsControl } from './HotspotsControl';
@@ -47,6 +47,7 @@ const ELEMENT_CONTROLS = [
 	{ type: 'aae-nav-items', component: NavItemsControl, layout: 'full' },
 	{ type: 'aae-nav-sub-items', component: NavSubItemsControl, layout: 'full' },
 	{ type: 'aae-mobile-nav-lifecycle', component: MobileNavLifecycleControl, layout: 'full' },
+	{ type: 'aae-mobile-nav-parts', component: MobileNavPartsControl, layout: 'full' },
 	{ type: 'aae-preset-picker', component: PresetPickerControl, layout: 'full' },
 	{ type: 'aae-form-actions', component: FormActionsControl, layout: 'full' },
 	{ type: 'aae-form-conditions', component: FormConditionsControl, layout: 'full' },

@@ -18,6 +18,7 @@
 
 import * as React from 'react';
 import {
+	createElementStyle,
 	createElements,
 	duplicateElements,
 	getContainer,
@@ -34,6 +35,7 @@ import {
 } from '@elementor/editor-v1-adapters';
 import { useElement } from '@elementor/editor-editing-panel';
 import { track } from '../editor-bridge/disposables';
+import { regenerateModelStyleIds } from './preset-apply';
 import {
 	Box,
 	Button,
@@ -52,6 +54,59 @@ const NAV_ITEM_TYPE = 'e-aae-a-nav-item';
 const MOBILE_NAV_TYPE = 'e-aae-a-mobile-nav';
 const DROPDOWN_CLASS = 'aae-a-nav-dropdown';
 const dropdownSelectTimers = new Set();
+
+/* Soft gradient look for the Menu Items panel. Editor-only styling - no logic.
+ * Text colours are explicit (not theme tokens) because the card background is a
+ * fixed light peach, so they must stay dark in the editor's dark theme too. */
+const NAV_ACCENT = '#F97316';
+const NAV_ACCENT_DARK = '#EA580C';
+const NAV_ACCENT_SOFT = 'rgba(249, 115, 22, 0.12)';
+const NAV_ACCENT_LINE = 'rgba(249, 115, 22, 0.24)';
+const NAV_INK = '#2A1608';
+const NAV_MUTED = '#8A5A3C';
+
+const NAV_SOFT_CARD_SX = {
+	p: 1.25,
+	borderRadius: '14px',
+	border: '1px solid',
+	borderColor: NAV_ACCENT_LINE,
+	background: 'linear-gradient(145deg, #FFF8F1 0%, #FFEEDF 100%)',
+	boxShadow: '0 4px 14px rgba(249, 115, 22, 0.08)',
+};
+
+const NAV_OUTLINE_BTN_SX = {
+	color: NAV_ACCENT_DARK,
+	borderColor: NAV_ACCENT,
+	borderRadius: '9px',
+	bgcolor: 'rgba(255, 255, 255, 0.7)',
+	'&:hover': { borderColor: NAV_ACCENT_DARK, bgcolor: NAV_ACCENT_SOFT },
+};
+
+const NAV_SOLID_BTN_SX = {
+	color: '#fff',
+	bgcolor: NAV_ACCENT,
+	borderRadius: '9px',
+	boxShadow: 'none',
+	'&:hover': { bgcolor: NAV_ACCENT_DARK, boxShadow: 'none' },
+	'&.Mui-disabled': { bgcolor: 'rgba(249, 115, 22, 0.35)', color: '#fff' },
+};
+
+const NAV_BADGE_SX = {
+	flexShrink: 0,
+	minWidth: 18,
+	height: 18,
+	px: 0.5,
+	display: 'inline-flex',
+	alignItems: 'center',
+	justifyContent: 'center',
+	borderRadius: '5px',
+	bgcolor: NAV_ACCENT_SOFT,
+	color: NAV_ACCENT_DARK,
+	fontSize: 10,
+	fontWeight: 700,
+	lineHeight: 1,
+};
+
 
 /* Compact action-icon button for the menu-item rows. The default IconButton
  * padding makes four icons + the level badge overflow to a second line once
@@ -87,7 +142,7 @@ const NAV_ROW_ACTIONS_SX = {
 	pointerEvents: 'none',
 	transition: 'opacity 120ms ease',
 	background: ( theme ) =>
-		`linear-gradient(to right, transparent 0, ${ theme.palette.background.default } 20px)`,
+		`linear-gradient(to right, rgba(255, 255, 255, 0), #fff 20px)`,
 };
 
 const prop = ( type, value ) => ( { $$type: type, value } );
@@ -306,6 +361,74 @@ function genElementId() {
 	return Math.random().toString( 36 ).slice( 2, 9 ).padEnd( 7, '0' );
 }
 
+/* ------------------------------------------------------------ style template
+ *
+ * A menu imported from WordPress is built from scratch, so its items carry NO
+ * styling. When the Nav already holds styled items - typically a menu copied in
+ * from another site - the importer clones that look onto every new item instead:
+ *   - top-level items copy the first top-level item's styles/classes,
+ *   - dropdown flexboxes copy the first dropdown's,
+ *   - sub items copy the first sub item's (deeper levels reuse it).
+ * It also remembers the template per Nav for this editor session, so deleting
+ * the copied items first and importing afterwards keeps the look.
+ * Labels, links and dropdown structure still come from WordPress. */
+const styleTemplates = new Map();
+
+function readStyleSnapshot( container ) {
+	const model = container?.model;
+	if ( ! model ) {
+		return null;
+	}
+	const styles = model.get( 'styles' ) || {};
+	const classProp = container.settings?.get?.( 'classes' );
+	const classes = Array.isArray( classProp?.value ) ? classProp.value : [];
+	if ( ! Object.keys( styles ).length && ! classes.length ) {
+		return null;
+	}
+	return { styles: JSON.parse( JSON.stringify( styles ) ), classes: [ ...classes ] };
+}
+
+function captureStyleTemplate( nav ) {
+	const tops = directNavItems( nav );
+	const tpl = { item: null, flex: null, sub: null, trigger: '', anim: '' };
+	if ( tops.length ) {
+		tpl.item = readStyleSnapshot( tops[ 0 ] );
+	}
+	for ( const top of tops ) {
+		const flex = findFirstChildOfType( top, 'e-flexbox' );
+		if ( ! flex ) {
+			continue;
+		}
+		tpl.flex = readStyleSnapshot( flex );
+		const subs = directNavItems( flex );
+		if ( subs.length ) {
+			tpl.sub = readStyleSnapshot( subs[ 0 ] );
+		}
+		tpl.trigger = readProp( top.settings?.get?.( 'trigger' ), '' );
+		tpl.anim = readProp( top.settings?.get?.( 'dropdown_animation' ), '' );
+		break;
+	}
+	return tpl.item || tpl.flex || tpl.sub ? tpl : null;
+}
+
+/* The Nav's current look, or the one remembered from earlier in this session. */
+function resolveStyleTemplate( navId ) {
+	const fresh = captureStyleTemplate( getContainer( navId ) );
+	if ( fresh ) {
+		styleTemplates.set( navId, fresh );
+		return fresh;
+	}
+	return styleTemplates.get( navId ) || null;
+}
+
+function applySnapshot( model, snapshot ) {
+	if ( ! snapshot ) {
+		return;
+	}
+	model.styles = JSON.parse( JSON.stringify( snapshot.styles ) );
+	model.settings = { ...model.settings, classes: prop( 'classes', [ ...snapshot.classes ] ) };
+}
+
 /* Build a full nav-item model (with link + nested dropdown) from one imported
  * WordPress menu node `{ title, url, target, children }`. Recurses so the whole
  * subtree is created in a SINGLE createElements call — this sidesteps the
@@ -314,7 +437,7 @@ function genElementId() {
  * children live in one core Flexbox (identified by TYPE, not a hook class —
  * nav.js adds the `.aae-a-nav-dropdown` DOM hook at runtime). Every node gets an
  * explicit id (see genElementId). */
-function buildImportedItemModel( node ) {
+function buildImportedItemModel( node, tpl = null, depth = 0 ) {
 	const title = node.title || 'Menu Item';
 	const hasChildren = Array.isArray( node.children ) && node.children.length > 0;
 	const settings = {
@@ -333,6 +456,14 @@ function buildImportedItemModel( node ) {
 			tag: prop( 'string', 'a' ),
 		} );
 	}
+	if ( tpl && hasChildren ) {
+		if ( tpl.trigger ) {
+			settings.trigger = prop( 'string', tpl.trigger );
+		}
+		if ( tpl.anim ) {
+			settings.dropdown_animation = prop( 'string', tpl.anim );
+		}
+	}
 	const model = {
 		id: genElementId(),
 		elType: NAV_ITEM_TYPE,
@@ -340,16 +471,24 @@ function buildImportedItemModel( node ) {
 		settings,
 		elements: [],
 	};
+	if ( tpl ) {
+		applySnapshot( model, depth === 0 ? tpl.item : tpl.sub || tpl.item );
+	}
 	if ( hasChildren ) {
-		model.elements = [ {
+		const flexModel = {
 			id: genElementId(),
 			elType: 'e-flexbox',
 			editor_settings: { title: 'Dropdown' },
 			settings: {},
-			elements: node.children.map( buildImportedItemModel ),
-		} ];
+			elements: node.children.map( ( child ) => buildImportedItemModel( child, tpl, depth + 1 ) ),
+		};
+		if ( tpl ) {
+			applySnapshot( flexModel, tpl.flex );
+		}
+		model.elements = [ flexModel ];
 	}
-	return model;
+	/* Cloned snapshots share style ids; mint fresh ones per tree (walks all levels). */
+	return depth === 0 && tpl ? regenerateModelStyleIds( model ) : model;
 }
 
 /* The link prop for an imported node (or null when the node has no real url —
@@ -455,7 +594,7 @@ function syncMenuLevel( containerId, wpNodes, options = {} ) {
 					flex = ensureItemFlexbox( matchId );
 				}
 				if ( flex ) {
-					syncMenuLevel( getElementId( flex ), node.children, options );
+					syncMenuLevel( getElementId( flex ), node.children, { ...options, depth: ( options.depth || 0 ) + 1 } );
 				}
 			}
 		} else {
@@ -464,7 +603,7 @@ function syncMenuLevel( containerId, wpNodes, options = {} ) {
 				createElements( {
 					title: 'Update Menu',
 					subtitle: 'Added item from WordPress',
-					elements: [ { container: fresh, model: buildImportedItemModel( node ), options: {} } ],
+					elements: [ { container: fresh, model: buildImportedItemModel( node, options.template || null, options.depth || 0 ), options: {} } ],
 				} );
 			}
 		}
@@ -490,6 +629,84 @@ function fetchWpMenus() {
 		// null (not []) on failure — runAutoSync relies on that distinction.
 		.then( ( json ) => ( Array.isArray( json?.data?.menus ) ? json.data.menus : null ) )
 		.catch( () => null );
+}
+
+/* ------------------------------------------------------- fresh-drop population
+ *
+ * A Nav that was JUST dropped from the panel arrives with four placeholder items
+ * ("Menu Item 1-4"). When the site has a WordPress menu, replace them with that
+ * menu so the builder starts from their real navigation. It only touches a Nav
+ * whose items are still the untouched placeholders, never a pasted, duplicated or
+ * edited one, and it leaves the Nav as it was when the site has no menu, the
+ * request fails, or anything looks different from a pristine drop. */
+const PLACEHOLDER_TITLE = /^Menu Item [1-4]$/;
+
+function isPristinePlaceholderNav( nav ) {
+	const items = directNavItems( nav );
+	if ( items.length !== 4 ) {
+		return false;
+	}
+	return items.every( ( item, index ) => {
+		const text = readProp( item.settings?.get?.( 'text' ), null );
+		const label = text && typeof text === 'object' ? readProp( text.content, '' ) : '';
+		return label === `Menu Item ${ index + 1 }` && PLACEHOLDER_TITLE.test( label )
+			&& ! readProp( item.settings?.get?.( 'link' ), null )
+			&& ! readProp( item.settings?.get?.( 'has_dropdown' ), false )
+			&& ! Object.keys( item.model?.get?.( 'styles' ) || {} ).length
+			&& ! ( item.model?.get?.( 'elements' )?.length );
+	} );
+}
+
+/* The site's main menu: one assigned to a primary/main/header location, else the
+ * first menu that has items. */
+function pickMainMenu( menus ) {
+	const usable = ( menus || [] ).filter( ( m ) => Array.isArray( m.items ) && m.items.length );
+	const preferred = usable.find( ( m ) => ( m.locations || [] ).some( ( l ) => /primary|main|header/i.test( l ) ) );
+	return preferred || usable[ 0 ] || null;
+}
+
+export function autoPopulateNavFromWordPress( navId, attempt = 0 ) {
+	const nav = getContainer( navId );
+	if ( ! nav ) {
+		return;
+	}
+	/* The four placeholder children are seeded a moment after the Nav lands. */
+	if ( ! isPristinePlaceholderNav( nav ) ) {
+		if ( attempt < 12 && directNavItems( nav ).length < 4 ) {
+			window.setTimeout( () => autoPopulateNavFromWordPress( navId, attempt + 1 ), 250 );
+		}
+		return;
+	}
+
+	fetchWpMenus().then( ( menus ) => {
+		const menu = pickMainMenu( menus );
+		const fresh = getContainer( navId );
+		/* Re-check: the builder may have started editing while we waited. */
+		if ( ! menu || ! fresh || ! isPristinePlaceholderNav( fresh ) || isEditorModalOrPopoverActive() ) {
+			return;
+		}
+		const placeholderIds = directNavItems( fresh ).map( ( item ) => item.id );
+		createElements( {
+			title: 'Import Menu',
+			subtitle: `Imported "${ menu.name }"`,
+			elements: menu.items.map( ( node, i ) => ( {
+				container: fresh,
+				model: buildImportedItemModel( node, null ),
+				options: { at: placeholderIds.length + i },
+			} ) ),
+		} );
+		removeElements( {
+			elementIds: placeholderIds,
+			title: 'Import Menu',
+			subtitle: 'Placeholder items replaced',
+		} );
+		/* Linked, so the panel offers "Update" - but NOT auto-sync: that stays the
+		 * builder's own choice. */
+		updateElementSettings( {
+			id: navId,
+			props: { imported_menu_id: prop( 'string', String( menu.id ) ) },
+		} );
+	} );
 }
 
 /** Every nav in the document that has opted into auto-sync. */
@@ -555,7 +772,7 @@ function runAutoSync() {
 				return;
 			}
 
-			syncMenuLevel( navId, menu.items, { structureOnly: true } );
+			syncMenuLevel( navId, menu.items, { structureOnly: true, template: resolveStyleTemplate( navId ) } );
 		} );
 	} );
 }
@@ -661,18 +878,23 @@ function NavMenuImport( { linkedMenuId, onImport, onUpdate } ) {
 	const isLinked = linkedMenuId && String( selectedId ) === String( linkedMenuId );
 
 	return (
-		<Box sx={ { p: 1, border: '1px dashed', borderColor: 'divider', borderRadius: 1 } }>
-			<Typography variant="caption" sx={ { color: 'text.tertiary', display: 'block', mb: 0.5 } }>
-				{ isLinked
-					? 'Re-sync now and reset labels from WordPress. Styling stays.'
-					: 'Import from a WordPress menu. Items are appended.' }
-			</Typography>
+		<Box sx={ { p: 1, border: '1px dashed', borderColor: NAV_ACCENT_LINE, borderRadius: '10px', bgcolor: 'rgba(255, 255, 255, 0.55)' } }>
+			<Stack direction="row" gap={ 0.75 } alignItems="flex-start" sx={ { mb: 0.75 } }>
+				<Box component="span" aria-hidden sx={ { color: NAV_ACCENT, fontSize: 14, lineHeight: 1.3, flexShrink: 0 } }>
+					{ isLinked ? '\u21BB' : '\u2913' }
+				</Box>
+				<Typography variant="caption" sx={ { color: NAV_MUTED, display: 'block' } }>
+					{ isLinked
+						? 'Re-sync now and reset labels from WordPress. Styling stays.'
+						: 'Import from a WordPress menu. Items are appended.' }
+				</Typography>
+			</Stack>
 			<Stack direction="row" gap={ 0.5 } alignItems="center">
 				<Select
 					size="tiny"
 					value={ selectedId }
 					onChange={ ( e ) => setSelectedId( e.target.value ) }
-					sx={ { flex: 1, minWidth: 0 } }
+					sx={ { flex: 1, minWidth: 0, bgcolor: '#fff', color: NAV_INK, borderRadius: '9px' } }
 				>
 					{ menus.map( ( m ) => (
 						<MenuItem key={ m.id } value={ String( m.id ) }>{ m.name }</MenuItem>
@@ -681,6 +903,7 @@ function NavMenuImport( { linkedMenuId, onImport, onUpdate } ) {
 				<Button
 					size="tiny"
 					variant={ isLinked ? 'contained' : 'outlined' }
+					sx={ isLinked ? NAV_SOLID_BTN_SX : NAV_OUTLINE_BTN_SX }
 					disabled={ ! selected?.items?.length }
 					onClick={ () => selected && ( isLinked ? onUpdate( selected ) : onImport( selected ) ) }
 				>
@@ -1028,7 +1251,7 @@ function useMobileNavSettings( navId ) {
 	);
 }
 
-function findMobileCompanion( nav ) {
+export function findMobileCompanion( nav ) {
 	const siblings = nav?.parent?.model?.get?.( 'elements' );
 	let match = null;
 	siblings?.each?.( ( model ) => {
@@ -1128,10 +1351,27 @@ const MOBILE_ICON_MAP = [
 	{ prop: 'mobile_back_icon',      className: 'aae-mobile-nav-back-icon' },
 ];
 
-function syncCompanionIcons( nav, companion ) {
+/* What the picker last held for each Nav prop. An icon is copied to the companion
+ * only when the PICKER changed - not whenever the two differ - so an icon set
+ * directly on a companion part (its own SVG control) is no longer overwritten by
+ * the Nav's picker the next time the reconciler ticks. */
+const iconSyncSeen = new Map();
+const DEFAULT_ICON_URL = /\/Nav\/assets\/icons\/[a-z-]+\.svg$/;
+
+/* `fromEdit`: the picker was just changed by the user, so even a default-looking icon
+ * is a deliberate choice and is copied. */
+export function syncCompanionIcons( nav, companion, fromEdit = false ) {
+	if ( ! nav || ! companion ) return;
 	MOBILE_ICON_MAP.forEach( ( { prop, className } ) => {
 		const iconValue = nav.settings?.get?.( prop );
 		if ( ! iconValue ) return;
+		const key = `${ nav.id }:${ prop }`;
+		const json = JSON.stringify( iconValue );
+		const seen = iconSyncSeen.get( key );
+		if ( seen === json ) return;
+		iconSyncSeen.set( key, json );
+		/* First sight of an untouched (default) icon: nothing to copy. */
+		if ( ! fromEdit && undefined === seen && DEFAULT_ICON_URL.test( String( iconValue?.value?.url?.value || '' ) ) ) return;
 		const svgChild = findDescendantByClass( companion, className );
 		if ( ! svgChild ) return;
 		/* Both the picker and the child store the same `svg-src` shape, so copy
@@ -1141,6 +1381,221 @@ function syncCompanionIcons( nav, companion ) {
 		if ( JSON.stringify( current ) === JSON.stringify( iconValue ) ) return;
 		updateElementSettings( { id: svgChild.id, props: { svg: iconValue } } );
 	} );
+}
+
+/* Neutral first look for a mobile menu that was JUST created by this editor
+ * session. The hamburger / close / back parts are real <button>s, so the active
+ * theme's own button styling used to show through (a red box on some themes).
+ * Applied as ordinary local styles (the Style tab can change or clear them) and
+ * ONLY to the companion this reconciler just created, never to existing ones.
+ * Children are seeded client-side a moment after the companion lands, so wait
+ * for them. */
+const COMPANION_LOOK = [
+	[ 'aae-mobile-nav-toggle', 'button' ],
+	[ 'aae-mobile-nav-close', 'button' ],
+	[ 'aae-mobile-nav-back', 'button' ],
+	[ 'aae-mobile-nav-drawer', 'drawer' ],
+	[ 'aae-mobile-nav-menu-area', 'menu' ],
+];
+const lookSize = ( size ) => prop( 'size', { size, unit: 'px' } );
+const lookPad = ( v, h ) => prop( 'dimensions', {
+	'block-start': lookSize( v ), 'inline-end': lookSize( h ), 'block-end': lookSize( v ), 'inline-start': lookSize( h ),
+} );
+const LOOK_PROPS = {
+	button: () => ( {
+		background: prop( 'background', { color: prop( 'color', 'transparent' ) } ),
+		color: prop( 'color', '#0F172A' ),
+		'border-width': lookSize( 0 ),
+		'border-radius': lookSize( 10 ),
+		padding: lookPad( 8, 8 ),
+		width: lookSize( 40 ),
+		height: lookSize( 40 ),
+	} ),
+	/* 350px is a starting value in the drawer's own local style, so the Style tab's Width
+	 * overrides it. The base CSS still caps the drawer at 100vw on small phones. */
+	drawer: () => ( { width: lookSize( 350 ), padding: lookPad( 20, 24 ) } ),
+	menu: () => ( { gap: lookSize( 6 ), padding: lookPad( 8, 0 ) } ),
+};
+
+function applyCompanionDefaultLook( companionId, attempt = 0 ) {
+	const retry = () => {
+		if ( attempt < 12 ) {
+			window.setTimeout( () => applyCompanionDefaultLook( companionId, attempt + 1 ), 250 );
+		}
+	};
+	const companion = getContainer( companionId );
+	if ( ! companion ) {
+		return;
+	}
+	const parts = COMPANION_LOOK.map( ( [ className, kind ] ) => [ findDescendantByClass( companion, className ), kind ] );
+	/* The hamburger and the drawer are the pair that must exist before we start. */
+	if ( ! parts[ 0 ][ 0 ] || ! parts[ 3 ][ 0 ] || isEditorModalOrPopoverActive() ) {
+		retry();
+		return;
+	}
+	parts.forEach( ( [ part, kind ] ) => {
+		if ( ! part || Object.keys( part.model?.get?.( 'styles' ) || {} ).length ) {
+			return;
+		}
+		try {
+			createElementStyle( {
+				elementId: part.id,
+				classesProp: 'classes',
+				label: 'local',
+				meta: { breakpoint: 'desktop', state: null },
+				props: LOOK_PROPS[ kind ](),
+			} );
+		} catch ( e ) {
+			/* Cosmetic only - never block the companion. */
+		}
+	} );
+}
+
+/* Shortcut list of the styleable parts of the mobile menu. Selecting a
+ * part opens its own Style tab in the panel; nothing is created or changed here.
+ * Hidden until the mobile menu is enabled and its companion exists. */
+const MOBILE_PART_GROUPS = [
+	{
+		title: 'Open button',
+		parts: [
+			{ label: 'Hamburger', hint: 'The icon on the open button', className: 'aae-mobile-nav-toggle', iconClass: 'aae-mobile-nav-hamburger' },
+		],
+	},
+	{
+		title: 'Drawer',
+		note: 'Turn on "Open Mobile Menu (Editor)" above to see these on the canvas.',
+		parts: [
+			{ label: 'Drawer', hint: 'The panel the menu slides in on', className: 'aae-mobile-nav-drawer' },
+			{ label: 'Overlay', hint: 'The dim backdrop behind the drawer', className: 'aae-mobile-nav-overlay' },
+			{ label: 'Header bar', hint: 'Row holding the Close and Back buttons', className: 'aae-mobile-nav-header' },
+			{ label: 'Close button', hint: 'The icon that closes the drawer', className: 'aae-mobile-nav-close', iconClass: 'aae-mobile-nav-close-icon' },
+			{ label: 'Back button', hint: 'The icon that returns from a submenu', className: 'aae-mobile-nav-back', iconClass: 'aae-mobile-nav-back-icon' },
+		],
+	},
+	{
+		title: 'Links',
+		parts: [
+			{ label: 'Menu area', hint: 'Holds your links. Style the links themselves in Menu Items (use the ⇉ button to apply to every level)', className: 'aae-mobile-nav-menu-area' },
+		],
+	},
+];
+
+/* Peek: while one of the mobile parts is selected, show the drawer on the canvas
+ * even though "Open Mobile Menu (Editor)" is off. DOM only - a runtime attribute on
+ * the Nav element in the preview (read by nav.js), never a setting, so nothing is
+ * saved and the drawer closes again once the selection leaves the mobile menu. */
+let peekTimer = null;
+
+function previewNavElement( navId ) {
+	const doc = window.elementor?.$preview?.[ 0 ]?.contentDocument;
+	return doc?.querySelector( `.aae-a-nav[data-id="${ navId }"]` ) || null;
+}
+
+function selectionIsInsideMobileMenu( companionId ) {
+	const selected = window.elementor?.selection?.getElements?.() || [];
+	return selected.some( ( container ) => {
+		let node = container;
+		while ( node ) {
+			if ( node.id === companionId ) {
+				return true;
+			}
+			node = node.parent;
+		}
+		return false;
+	} );
+}
+
+function startMobilePeek( navId, companionId ) {
+	window.clearInterval( peekTimer );
+	const apply = () => {
+		const navEl = previewNavElement( navId );
+		if ( ! selectionIsInsideMobileMenu( companionId ) || ! getContainer( companionId ) ) {
+			window.clearInterval( peekTimer );
+			peekTimer = null;
+			if ( navEl ) {
+				delete navEl.dataset.aaePeek;
+			}
+			return;
+		}
+		/* 'dismissed' = the drawer's own X ended this peek; leave it until the selection moves. */
+		if ( navEl && undefined === navEl.dataset.aaePeek ) {
+			navEl.dataset.aaePeek = 'true';
+		}
+	};
+	/* The click that got us here is still selecting; show the drawer straight away and
+	 * let the timer decide, from the next tick on, whether the selection has left. */
+	const first = previewNavElement( navId );
+	if ( first ) {
+		first.dataset.aaePeek = 'true';
+	}
+	peekTimer = window.setInterval( apply, 400 );
+}
+
+export function MobileNavPartsControl() {
+	const { element } = useElement();
+	const navId = element.id;
+	const mobileSettings = useMobileNavSettings( navId );
+	/* Re-read on the same events useMobileNavSettings listens to, so the list
+	 * appears as soon as the companion lands in the tree. */
+	const nav = getContainer( navId );
+	const companion = findMobileCompanion( nav );
+
+	if ( ! mobileSettings?.enabled || ! companion ) {
+		return null;
+	}
+
+	return (
+		<Box sx={ { px: 0, pb: 1 } }>
+			<Typography variant="caption" sx={ { display: 'block', mb: 0.75, color: NAV_MUTED } }>
+				Pick a part to style it in the Style tab:
+			</Typography>
+			{ MOBILE_PART_GROUPS.map( ( { title, note, parts } ) => {
+				const present = parts.filter( ( { className } ) => findDescendantByClass( companion, className ) );
+				if ( ! present.length ) {
+					return null;
+				}
+				return (
+					<Box key={ title } sx={ { mb: 1 } }>
+						<Typography variant="caption" sx={ { display: 'block', mb: 0.5, fontWeight: 600 } }>
+							{ title }
+						</Typography>
+						{ note && (
+							<Typography variant="caption" sx={ { display: 'block', mb: 0.5, color: NAV_MUTED } }>
+								{ note }
+							</Typography>
+						) }
+						<Stack direction="column" gap={ 0.75 }>
+							{ present.map( ( { label, hint, className, iconClass } ) => {
+								/* Buttons that carry an icon select the ICON (its SVG controls are what
+								 * people reach for). */
+								const selectPart = ( cls ) => {
+									const target = findDescendantByClass( findMobileCompanion( getContainer( navId ) ), cls );
+									if ( target ) {
+										selectElement( target.id );
+										startMobilePeek( navId, companion.id );
+									}
+								};
+								const hasIcon = iconClass && findDescendantByClass( companion, iconClass );
+								return (
+									<Stack key={ className } direction="row" gap={ 0.5 } alignItems="stretch">
+										<Button
+											size="small"
+											variant="outlined"
+											sx={ { ...NAV_OUTLINE_BTN_SX, flex: 1, justifyContent: 'flex-start', textAlign: 'start', flexDirection: 'column', alignItems: 'flex-start', gap: 0 } }
+											onClick={ () => selectPart( hasIcon ? iconClass : className ) }
+										>
+											<span>{ label }</span>
+											<span style={ { fontSize: 11, fontWeight: 400, opacity: 0.7, whiteSpace: 'normal', textAlign: 'start' } }>{ hint }</span>
+										</Button>
+									</Stack>
+								);
+							} ) }
+						</Stack>
+					</Box>
+				);
+			} ) }
+		</Box>
+	);
 }
 
 export function MobileNavLifecycleControl() {
@@ -1244,7 +1699,7 @@ export function MobileNavLifecycleControl() {
 			creatingRef.current = true;
 			const siblings = nav.parent.model?.get?.( 'elements' );
 			const navIndex = siblings?.indexOf?.( nav.model ) ?? -1;
-			createElements( {
+			const created = createElements( {
 				title: 'Mobile Menu',
 				subtitle: 'Mobile companion added',
 				elements: [ {
@@ -1257,6 +1712,10 @@ export function MobileNavLifecycleControl() {
 					options: { at: navIndex >= 0 ? navIndex + 1 : siblings?.length ?? 0 },
 				} ],
 			} );
+			const createdId = created?.createdElements?.[ 0 ]?.containerId;
+			if ( createdId ) {
+				window.setTimeout( () => applyCompanionDefaultLook( createdId ), 250 );
+			}
 		};
 
 		reconcile();
@@ -1283,7 +1742,7 @@ export function MobileNavLifecycleControl() {
 		};
 		const siblings = currentNav.parent.model?.get?.( 'elements' );
 		const navIndex = siblings?.indexOf?.( currentNav.model ) ?? -1;
-		createElements( {
+		const created = createElements( {
 			title: 'Mobile Menu',
 			subtitle: 'Mobile companion added',
 			elements: [ {
@@ -1296,6 +1755,10 @@ export function MobileNavLifecycleControl() {
 				options: { at: navIndex >= 0 ? navIndex + 1 : siblings?.length ?? 0 },
 			} ],
 		} );
+		const createdId = created?.createdElements?.[ 0 ]?.containerId;
+		if ( createdId ) {
+			window.setTimeout( () => applyCompanionDefaultLook( createdId ), 250 );
+		}
 	};
 
 	if ( ! mobileSettings?.enabled ) return null;
@@ -1430,6 +1893,14 @@ export function NavItemsControl( { label } ) {
 	const navId = element.id;
 
 	const tree = useNavTree( navId );
+
+	/* Remember the Nav's styled look for this session - see resolveStyleTemplate. */
+	React.useEffect( () => {
+		const captured = captureStyleTemplate( getContainer( navId ) );
+		if ( captured ) {
+			styleTemplates.set( navId, captured );
+		}
+	}, [ navId, tree ] );
 	/* Tight indent so deeply-nested rows still fit the ~300px panel without the
 	 * title wrapping or the action icons overflowing to a second line. */
 	const INDENT = 12;
@@ -1517,12 +1988,13 @@ export function NavItemsControl( { label } ) {
 			return;
 		}
 		const topCount = tree.filter( ( r ) => r.depth === 0 ).length;
+		const template = resolveStyleTemplate( navId );
 		createElements( {
 			title: 'Import Menu',
 			subtitle: `Imported "${ menu.name }"`,
 			elements: menu.items.map( ( node, i ) => ( {
 				container: nav,
-				model: buildImportedItemModel( node ),
+				model: buildImportedItemModel( node, template ),
 				options: { at: topCount + i },
 			} ) ),
 		} );
@@ -1544,7 +2016,7 @@ export function NavItemsControl( { label } ) {
 		if ( ! getContainer( navId ) || ! menu?.items ) {
 			return;
 		}
-		syncMenuLevel( navId, menu.items );
+		syncMenuLevel( navId, menu.items, { template: resolveStyleTemplate( navId ) } );
 		updateElementSettings( { id: navId, props: { imported_menu_id: prop( 'string', String( menu.id ) ) } } );
 	};
 
@@ -1603,6 +2075,32 @@ export function NavItemsControl( { label } ) {
 			title: 'Menu Item',
 			subtitle: 'Menu item duplicated',
 		} );
+	};
+
+	/* Copy THIS item's look onto every other item at the same level (same parent),
+	 * using Elementor's own Copy + Paste Style commands - the exact thing you would
+	 * otherwise do item by item from the right-click menu. Labels, links, dropdown
+	 * settings and children of the other items are untouched. Note: it uses (and so
+	 * overwrites) Elementor's clipboard. */
+	const handleApplyStyleToLevel = ( row ) => {
+		const source = getContainer( row.id );
+		const parent = source?.parent;
+		if ( ! source || ! parent ) {
+			return;
+		}
+		const siblings = directNavItems( parent ).filter( ( item ) => item.id !== row.id );
+		const editor = window.$e;
+		if ( ! siblings.length || ! editor?.run ) {
+			return;
+		}
+		try {
+			editor.run( 'document/elements/copy', { container: source } );
+			siblings.forEach( ( item ) => {
+				editor.run( 'document/elements/paste-style', { container: item } );
+			} );
+		} catch ( e ) {
+			/* Best effort: a failed paste on one item must not break the panel. */
+		}
 	};
 
 	const handleRemove = ( row ) => {
@@ -1746,16 +2244,21 @@ export function NavItemsControl( { label } ) {
 	};
 
 	return (
-		<Stack gap={ 1 }>
+		<Stack gap={ 1 } sx={ NAV_SOFT_CARD_SX } data-aae-soft-card="">
 			<Stack direction="row" alignItems="center" justifyContent="space-between">
-				<Typography variant="caption" sx={ { fontWeight: 500, color: 'text.secondary' } }>
-					{ label }
-				</Typography>
-				<Button size="tiny" variant="outlined" onClick={ handleAddMain }>
+				<Stack direction="row" alignItems="center" gap={ 0.75 }>
+					<Box component="span" aria-hidden sx={ { ...NAV_BADGE_SX, minWidth: 22, height: 22, fontSize: 12 } }>
+						{ '\u2630' }
+					</Box>
+					<Typography variant="caption" sx={ { fontWeight: 600, color: NAV_INK } }>
+						{ label }
+					</Typography>
+				</Stack>
+				<Button size="tiny" variant="outlined" sx={ NAV_OUTLINE_BTN_SX } onClick={ handleAddMain }>
 					{ '+ Add main item' }
 				</Button>
 			</Stack>
-			<Typography variant="caption" sx={ { color: 'text.tertiary' } }>
+			<Typography variant="caption" sx={ { color: NAV_MUTED } }>
 				{ 'Click ▶ to open a submenu. Drag up/down to reorder, right to nest, left to unnest.' }
 			</Typography>
 
@@ -1803,10 +2306,13 @@ export function NavItemsControl( { label } ) {
 								sx={ {
 									ml: `${ row.depth * INDENT }px`,
 									border: '1px solid',
-									borderColor: 'divider',
-									borderRadius: 1,
+									borderColor: NAV_ACCENT_LINE,
+									borderRadius: '10px',
 									overflow: 'hidden',
-									bgcolor: 'background.default',
+									bgcolor: '#fff',
+									color: NAV_INK,
+									transition: 'border-color 120ms ease, box-shadow 120ms ease',
+									'&:hover': { borderColor: NAV_ACCENT, boxShadow: '0 2px 8px rgba(249, 115, 22, 0.12)' },
 									opacity: isDragging ? 0.4 : 1,
 									/* Reveal the quick-action cluster on hover or when a
 									 * keyboard user focuses one of its buttons. */
@@ -1823,7 +2329,7 @@ export function NavItemsControl( { label } ) {
 									sx={ { position: 'relative', px: 0.5, py: 0.5, userSelect: 'none', flexWrap: 'nowrap' } }
 								>
 									<Box component="span" aria-hidden
-										sx={ { color: 'text.tertiary', cursor: 'grab', fontSize: 12, lineHeight: 1, flexShrink: 0 } }>
+										sx={ { color: NAV_MUTED, opacity: 0.6, cursor: 'grab', fontSize: 12, lineHeight: 1, flexShrink: 0 } }>
 										⠿
 									</Box>
 									{ /* Disclosure chevron for a main item that owns a submenu
@@ -1836,7 +2342,7 @@ export function NavItemsControl( { label } ) {
 											onClick={ ( e ) => { e.stopPropagation(); openBranchFor( row, index ); } }
 											sx={ {
 												flexShrink: 0, width: 14, textAlign: 'center', cursor: 'pointer',
-												color: 'text.secondary', fontSize: 9, lineHeight: 1,
+												color: NAV_ACCENT, fontSize: 9, lineHeight: 1,
 												transform: isBranchOpen ? 'rotate(90deg)' : 'none',
 												transition: 'transform 120ms ease',
 											} }>
@@ -1845,11 +2351,11 @@ export function NavItemsControl( { label } ) {
 									) : row.depth === 0 ? (
 										<Box component="span" aria-hidden sx={ { flexShrink: 0, width: 14 } } />
 									) : null }
-									<Typography variant="caption"
+									<Box component="span"
 										title={ row.depth === 0 ? 'Main item' : `Level ${ row.depth }` }
-										sx={ { color: row.depth === 0 ? 'text.tertiary' : 'primary.main', fontWeight: 700, fontSize: 10, minWidth: 14, flexShrink: 0, textAlign: 'center' } }>
+										sx={ NAV_BADGE_SX }>
 										{ row.depth === 0 ? 'M' : `L${ row.depth }` }
-									</Typography>
+									</Box>
 									<Typography
 										variant="body2"
 										noWrap
@@ -1886,6 +2392,13 @@ export function NavItemsControl( { label } ) {
 												sx={ NAV_ROW_ICON_SX }
 												onClick={ ( e ) => { e.stopPropagation(); handleDuplicate( row ); } }>
 												<span style={ { fontSize: 11, lineHeight: 1 } }>⧉</span>
+											</IconButton>
+										</Tooltip>
+										<Tooltip title="Apply this item's style to all items at this level">
+											<IconButton size="tiny" aria-label="Apply style to all items at this level"
+												sx={ NAV_ROW_ICON_SX }
+												onClick={ ( e ) => { e.stopPropagation(); handleApplyStyleToLevel( row ); } }>
+												<span style={ { fontSize: 11, lineHeight: 1 } }>⇉</span>
 											</IconButton>
 										</Tooltip>
 										{ tree.length > 1 && (

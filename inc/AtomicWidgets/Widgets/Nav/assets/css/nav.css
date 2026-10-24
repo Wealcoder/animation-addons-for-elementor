@@ -276,8 +276,8 @@
    * tall with its sub-items spaced ~120px apart (ugly, unlike the compact
    * frontend). Only genuine dropdown containers should get the droppable size. */
 }
-.elementor-editor-active .aae-a-nav :is(.aae-a-nav-dropdown, [data-aae-dropdown-for], .e-con, .e-flexbox-base):not(.aae-a-nav-item):has(.elementor-empty-view):not(:has(> .aae-a-nav-item)),
-.elementor-edit-mode .aae-a-nav :is(.aae-a-nav-dropdown, [data-aae-dropdown-for], .e-con, .e-flexbox-base):not(.aae-a-nav-item):has(.elementor-empty-view):not(:has(> .aae-a-nav-item)) {
+.elementor-editor-active .aae-a-nav :is(.aae-a-nav-dropdown, [data-aae-dropdown-for], .e-con, .e-flexbox-base):not(.aae-a-nav-item):has(> .elementor-empty-view):not(:has(> .aae-a-nav-item)),
+.elementor-edit-mode .aae-a-nav :is(.aae-a-nav-dropdown, [data-aae-dropdown-for], .e-con, .e-flexbox-base):not(.aae-a-nav-item):has(> .elementor-empty-view):not(:has(> .aae-a-nav-item)) {
   width: 240px;
   min-width: 200px;
   min-height: 120px;
@@ -878,3 +878,15 @@ body.aae-mobile-nav-scroll-lock {
     animation-duration: 0.01ms !important;
   }
 }/*# sourceMappingURL=nav.css.map */
+/* A submenu panel is lifted out of its nav-item, so the desktop stacking rule
+ * (scoped under `.aae-a-nav-item > ...`) no longer reaches it and its items sat in a
+ * row. Same `:has()` guard: a pure mega-menu panel keeps the Style-tab direction. */
+.aae-a-nav.aae-nav-mobile-mounted .aae-mobile-drill-panel > .aae-a-nav-dropdown:has(> .aae-a-nav-item) {
+  flex-direction: column !important;
+  flex-wrap: nowrap !important;
+  align-items: stretch !important;
+}
+.aae-a-nav.aae-nav-mobile-mounted .aae-mobile-drill-panel > .aae-a-nav-dropdown:has(> .aae-a-nav-item) > .aae-a-nav-item {
+  width: 100% !important;
+  flex: 0 0 auto !important;
+}
