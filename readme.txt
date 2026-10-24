@@ -5,7 +5,7 @@ Tags: elementor addons, elementor widgets, animation, elementor templates, eleme
 Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 4.2.7
+Stable tag: 4.2.8
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
  
@@ -393,6 +393,30 @@ Vendored libraries:
 
 == Changelog ==
 
+= 4.2.8 =
+* Added: Nav presets. Two one-click looks, "Header Nav" and "Mega Menu (Pill)", applied from a new Presets section.
+* Added: A Nav dropped on the canvas now builds itself from your WordPress menu. Only a freshly dropped Nav is touched — a pasted, duplicated or already-edited menu is left alone, and nothing is imported if the site has no menu.
+* Added: Nav: "Auto-sync from WordPress", with an Update button that pulls fresh labels from a chosen menu while keeping your styling and any items you added by hand.
+* Added: Nav: a Dropdown Behavior section. "Open On" (Click or Hover) and a dropdown animation now apply to the whole menu, instead of being set on every item separately.
+* Added: Nav: a Mobile Menu Icons section for choosing your own hamburger, close, dropdown and back icons.
+* Added: Nav: a "pick a part to style" list in the Mobile Menu panel. One click selects the Hamburger, Drawer, Overlay, Header bar, Close button, Back button or Menu area and opens its Style tab, and the drawer appears on the canvas while you work on it.
+* Added: Nav: copy one menu item's styling to every item on the same level, from the menu item's row.
+* Added: Counter: Easing (five curves), Play once or every time it scrolls into view, a thousand separator, and decimal places.
+* Added: Advanced Heading: a Link option.
+* Added: Advanced Portfolio: a "Studio Grid" preset.
+* Improved: A newly dropped Counter sizes to its content instead of spanning the whole row. Counters already on a page are not changed.
+* Improved: A new mobile menu drawer starts at a 350px width and a neutral look, so it no longer picks up the theme's button styling. Both stay editable in the Style tab, and existing menus are untouched.
+* Improved: The inline text formatting toolbar has a cleaner look.
+* Improved: A starter page or template whose content file is not a WordPress export (XML) now fails with a message that says so, instead of "No page was imported". The failure screen highlights the cause, links to the support forum and shows the template's name and ID to quote.
+* Fixed: Nav: with "Open On: Click", a parent item that had a link followed that link instead of opening its dropdown, so the submenu could never be opened with a mouse. The first click now opens the dropdown and a second click follows the link. A parent with no link, or with "#", keeps its plain open and close toggle.
+* Fixed: Nav: in the mobile drawer, a submenu's items were laid out in a row, so only the first one was visible.
+* Fixed: Nav: Tab could move focus out of an open mobile drawer and onto the page behind it.
+* Fixed: Nav: on themes with a large line height, the mobile Back and Close icons were drawn below the drawer header instead of inside it.
+* Fixed: Nav: icons chosen under "Mobile Menu Icons" only reached the mobile menu while the Mobile Menu section was open, and an icon set directly on a menu part was overwritten again on the next edit.
+* Fixed: Nav: closing the drawer preview in the editor left the canvas showing the hamburger instead of the desktop menu.
+* Fixed: The Elementor 4.3 "Prop type is missing" SVG error also affected the Search Form's open and close buttons, the Form's Next and Previous buttons, and the Image Hotspot close button.
+* Fixed: Documentation links on the dashboard's Extensions tab.
+
 = 4.2.7 =
 * Added: Dynamic Tags are now free. Post, Author, Site, Archive, Taxonomy, Comments, and Contact & Social tags (53 in all) work in Elementor V3 and V4 widgets without Animation Addons Pro. Content already built with these tags keeps working, because tag names are unchanged. ACF, Post Meta, and Custom Fields tags stay in Animation Addons Pro.
 * Fixed: Saving a page as a non-administrator could end in a fatal error when it used an Author Info dynamic tag. The check that keeps email addresses out of non-admin edits now covers every dynamic control, not only the title.
@@ -458,6 +482,9 @@ Vendored libraries:
 * Added animation performance controls including lazy loading and reduced-motion options.
 
 == Upgrade Notice ==
+
+= 4.2.8 =
+Nav presets, auto-build from your WordPress menu, new mobile menu controls, Counter options, and Nav dropdown and mobile drawer fixes.
 
 = 4.2.7 =
 Security release: fixes stored and reflected XSS (including CVE-2025-8444 in the Countdown widget) and tightens permission checks. Dynamic Tags are now free. Update recommended.

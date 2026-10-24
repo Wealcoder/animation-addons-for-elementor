@@ -1,7 +1,7 @@
 {
   "name": "animation-addons",
-  "version": "4.2.7",
-  "description": "Elementor WCF Addons",
+  "version": "4.2.8",
+  "description": "Elementor Addons",
   "main": "echo \"Nothing much here.\" && exit 1",
   "dependencies": {
     "@codemirror/autocomplete": "^6.15.0",
