@@ -380,6 +380,7 @@ return [
 				'keywords'     => ['create user', 'registration', 'signup', 'account'],
 				'category'     => 'form',
 				'order'        => 18,
+				'doc_url'      => 'https://animation-addons.com/docs/v4-extentions/create-user/',
 				'requires'     => ['aae-a-form'],
 				'requires_note' => 'Requires the Form widget. Configured per form in the Actions dialog.',
 			],
@@ -482,7 +483,7 @@ return [
 				'category'     => 'utility',
 				'order'        => 21,
 				'demo_url'     => 'https://animation-addons.com/docs/general-extensions/custom-fonts/',
-				'doc_url'      => 'https://animation-addons.com/docs/general-extensions/custom-fonts/',
+				'doc_url'      => 'https://animation-addons.com/docs/v4-extentions/custom-fonts-v4/',
 			],
 
 			'custom-cpt' => [
@@ -514,7 +515,7 @@ return [
 				'category'     => 'utility',
 				'order'        => 23,
 				'demo_url'     => 'https://animation-addons.com/docs/general-extensions/custom-icon/',
-				'doc_url'      => 'https://animation-addons.com/docs/general-extensions/custom-icon/',
+				'doc_url'      => 'https://animation-addons.com/docs/v4-extentions/custom-icon-v4/',
 			],
 
 			'code-snippet' => [

@@ -64,7 +64,7 @@ return [
 				'category'     => 'header-footer',
 				'order'        => 0,
 				'demo_url'     => '',
-				'doc_url'      => '',
+				'doc_url'      => 'https://animation-addons.com/docs/v4-elements/wp-menu/',
 			],
 
 			'aae-a-post-title' => [
@@ -85,7 +85,7 @@ return [
 				'category'     => 'blog',
 				'order'        => 0,
 				'demo_url'     => '',
-				'doc_url'      => '',
+				'doc_url'      => 'https://animation-addons.com/docs/v4-elements/post-widgets/',
 			],
 
 			'aae-a-search-query' => [
@@ -106,7 +106,7 @@ return [
 				'category'     => 'blog',
 				'order'        => 0,
 				'demo_url'     => '',
-				'doc_url'      => '',
+				'doc_url'      => 'https://animation-addons.com/docs/v4-elements/search-query/',
 			],
 
 			'aae-a-post-content' => [
@@ -126,7 +126,7 @@ return [
 				'category'     => 'blog',
 				'order'        => 0,
 				'demo_url'     => '',
-				'doc_url'      => '',
+				'doc_url'      => 'https://animation-addons.com/docs/v4-elements/post-widgets/',
 			],
 
 			'aae-a-post-excerpt' => [
@@ -147,7 +147,7 @@ return [
 				'category'     => 'blog',
 				'order'        => 0,
 				'demo_url'     => '',
-				'doc_url'      => '',
+				'doc_url'      => 'https://animation-addons.com/docs/v4-elements/post-widgets/',
 			],
 
 			'aae-a-post-image' => [
@@ -168,7 +168,7 @@ return [
 				'category'     => 'blog',
 				'order'        => 0,
 				'demo_url'     => '',
-				'doc_url'      => '',
+				'doc_url'      => 'https://animation-addons.com/docs/v4-elements/post-widgets/',
 			],
 
 			'aae-a-advance-portfolio' => [
@@ -193,7 +193,7 @@ return [
 				'category'     => 'blog',
 				'order'        => 0,
 				'demo_url'     => '',
-				'doc_url'      => '',
+				'doc_url'      => 'https://animation-addons.com/docs/v4-elements/advanced-portfolio/',
 			],
 			'aae-a-portfolio-title' => [
 				'is_internal'  => true,
@@ -348,7 +348,7 @@ return [
 				'category'     => 'form',
 				'order'        => 0,
 				'demo_url'     => '',
-				'doc_url'      => '',
+				'doc_url'      => 'https://animation-addons.com/docs/v4-elements/search-form/',
 			],
 			'aae-a-search-toggle' => [
 				'is_internal'  => true,
@@ -449,7 +449,7 @@ return [
 				'category'     => 'dynamic',
 				'order'        => 0,
 				'demo_url'     => '',
-				'doc_url'      => '',
+				'doc_url'      => 'https://animation-addons.com/docs/v4-elements/posts-grid/',
 			],
 
 			'aae-a-post-card' => [
@@ -487,7 +487,7 @@ return [
 				'category'     => 'dynamic',
 				'order'        => 0,
 				'demo_url'     => '',
-				'doc_url'      => '',
+				'doc_url'      => 'https://animation-addons.com/docs/v4-elements/loop-grid/',
 			],
 
 			'aae-a-loop-grid-slider' => [
@@ -510,7 +510,7 @@ return [
 				'category'     => 'slider',
 				'order'        => 1,
 				'demo_url'     => '',
-				'doc_url'      => '',
+				'doc_url'      => 'https://animation-addons.com/docs/v4-elements/loop-grid-slider/',
 			],
 			'aae-a-loop-slide-track' => [
 				'is_internal'  => true,
@@ -557,7 +557,7 @@ return [
 				'category'     => 'blog',
 				'order'        => 0,
 				'demo_url'     => '',
-				'doc_url'      => '',
+				'doc_url'      => 'https://animation-addons.com/docs/v4-elements/post-pagination/',
 			],
 
 			'aae-a-post-pagination-prev' => [
@@ -853,7 +853,7 @@ return [
 				'category'     => 'slider',
 				'order'        => 1,
 				'demo_url'     => '',
-				'doc_url'      => '',
+				'doc_url'      => 'https://animation-addons.com/docs/v4-elements/nested-slider/',
 			],
 			'aae-a-slide' => [
 				'is_internal'  => true,
@@ -1236,7 +1236,7 @@ return [
 				'category'     => 'general',
 				'order'        => 13,
 				'demo_url'     => '',
-				'doc_url'      => '',
+				'doc_url'      => 'https://animation-addons.com/docs/v4-elements/timeline/',
 			],
 
 			// ── Timeline — HELPER widgets below. `is_internal => true` hides
@@ -1348,7 +1348,7 @@ return [
 				'category'     => 'general',
 				'order'        => 12,
 				'demo_url'     => '',
-				'doc_url'      => '',
+				'doc_url'      => 'https://animation-addons.com/docs/v4-elements/progress-bar/',
 			],
 
 			// ── Progress Bar Template — HELPER widgets below. `is_internal
@@ -1438,7 +1438,7 @@ return [
 				'category'     => 'general',
 				'order'        => 13,
 				'demo_url'     => '',
-				'doc_url'      => '',
+				'doc_url'      => 'https://animation-addons.com/docs/v4-elements/toggle-switcher/',
 			],
 
 			// ── Toggle Switcher — HELPER widgets below. `is_internal =>
@@ -1608,7 +1608,7 @@ return [
 				'category'     => 'form',
 				'order'        => 17,
 				'demo_url'     => '',
-				'doc_url'      => '',
+				'doc_url'      => 'https://animation-addons.com/docs/v4-elements/form/',
 			],
 
 			'aae-a-form-label' => [
@@ -2045,7 +2045,7 @@ return [
 				'category'     => 'header-footer',
 				'order'        => 17,
 				'demo_url'     => '',
-				'doc_url'      => '',
+				'doc_url'      => 'https://animation-addons.com/docs/v4-elements/nav/',
 			],
 
 			'aae-a-nav-item' => [
@@ -2105,7 +2105,7 @@ return [
 				'category'     => 'interaction',
 				'order'        => 14,
 				'demo_url'     => '',
-				'doc_url'      => '',
+				'doc_url'      => 'https://animation-addons.com/docs/v4-elements/flip-box/',
 			],
 
 			'aae-a-flip-box-front' => [
@@ -2160,7 +2160,7 @@ return [
 				'category'     => 'interaction',
 				'order'        => 20,
 				'demo_url'     => '',
-				'doc_url'      => '',
+				'doc_url'      => 'https://animation-addons.com/docs/v4-elements/image-hotspot/',
 			],
 
 			'aae-a-hotspot-point' => [
@@ -2293,7 +2293,7 @@ return [
 				'category'     => 'header-footer',
 				'order'        => 17,
 				'demo_url'     => '',
-				'doc_url'      => '',
+				'doc_url'      => 'https://animation-addons.com/docs/v4-elements/site-logo/',
 			],
 
 			'aae-a-video-mask' => [
@@ -2314,7 +2314,7 @@ return [
 				'category'     => 'video',
 				'order'        => 18,
 				'demo_url'     => '',
-				'doc_url'      => '',
+				'doc_url'      => 'https://animation-addons.com/docs/v4-elements/video-mask/',
 			],
 
 			'aae-a-video-mask-btn' => [
@@ -2351,7 +2351,7 @@ return [
 				'category'     => 'general',
 				'order'        => 21,
 				'demo_url'     => '',
-				'doc_url'      => '',
+				'doc_url'      => 'https://animation-addons.com/docs/v4-elements/button/',
 			],
 
 			'aae-a-btn-pro' => [
@@ -2376,7 +2376,7 @@ return [
 				'category'     => 'general',
 				'order'        => 22,
 				'demo_url'     => '',
-				'doc_url'      => '',
+				'doc_url'      => 'https://animation-addons.com/docs/v4-elements/button-pro/',
 			],
 
 			'aae-a-video' => [
@@ -2398,7 +2398,7 @@ return [
 				'category'     => 'video',
 				'order'        => 19,
 				'demo_url'     => '',
-				'doc_url'      => '',
+				'doc_url'      => 'https://animation-addons.com/docs/v4-elements/video/',
 			],
 
 			'aae-a-video-player' => [
@@ -2456,7 +2456,7 @@ return [
 				'category'     => 'general',
 				'order'        => 22,
 				'demo_url'     => '',
-				'doc_url'      => '',
+				'doc_url'      => 'https://animation-addons.com/docs/v4-elements/curved-text/',
 			],
 
 			'aae-a-google-maps' => [
@@ -2479,7 +2479,7 @@ return [
 				'category'     => 'general',
 				'order'        => 23,
 				'demo_url'     => '',
-				'doc_url'      => '',
+				'doc_url'      => 'https://animation-addons.com/docs/v4-elements/google-maps/',
 			],
 
 		];

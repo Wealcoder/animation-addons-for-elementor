@@ -112,33 +112,23 @@
                 const device = elementorFrontend.getCurrentDeviceMode();
 
                 // The icon URL is author-controlled, so the fetched SVG is untrusted:
-                // keep only an allowlist of plain SVG shapes and presentation attributes
-                // before it reaches the DOM (XSS). Root and children must be in the SVG
-                // namespace: an XHTML-namespaced node would render as live HTML.
+                // strip scriptable elements/attributes before it reaches the DOM (XSS).
                 function sanitizeSvgNode(svgNode, doc) {
-                    const svgNs = 'http://www.w3.org/2000/svg';
-                    if (!svgNode || svgNode.namespaceURI !== svgNs || svgNode.localName !== 'svg' || doc.getElementsByTagName('parsererror').length) {
+                    if (!svgNode || svgNode.localName !== 'svg' || doc.getElementsByTagName('parsererror').length) {
                         return false;
                     }
-                    const allowedTags = ['svg', 'g', 'path', 'circle', 'rect', 'line', 'polyline', 'polygon', 'ellipse',
-                        'defs', 'symbol', 'use', 'title', 'desc', 'lineargradient', 'radialgradient', 'stop', 'clippath', 'mask'];
-                    const allowedAttrs = ['xmlns', 'xmlns:xlink', 'id', 'class', 'viewbox', 'width', 'height', 'x', 'y',
-                        'x1', 'x2', 'y1', 'y2', 'cx', 'cy', 'r', 'rx', 'ry', 'd', 'points', 'transform',
-                        'fill', 'fill-opacity', 'fill-rule', 'clip-rule', 'clip-path', 'mask', 'opacity',
-                        'stroke', 'stroke-width', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit',
-                        'stroke-dasharray', 'stroke-dashoffset', 'stroke-opacity', 'offset', 'stop-color',
-                        'stop-opacity', 'gradientunits', 'gradienttransform', 'preserveaspectratio',
-                        'aria-hidden', 'role', 'focusable', 'version', 'href', 'xlink:href'];
+                    const blocked = ['script', 'foreignobject', 'iframe', 'embed', 'object', 'style',
+                        'animate', 'set', 'animatetransform', 'animatemotion', 'handler', 'listener'];
                     Array.from(svgNode.querySelectorAll('*')).forEach((el) => {
-                        if (el.namespaceURI !== svgNs || !allowedTags.includes(el.localName.toLowerCase())) {
+                        if (blocked.includes(el.localName.toLowerCase())) {
                             el.remove();
                         }
                     });
                     [svgNode, ...svgNode.querySelectorAll('*')].forEach((el) => {
                         Array.from(el.attributes).forEach((attr) => {
                             const name = attr.name.toLowerCase();
-                            const isHref = name === 'href' || name === 'xlink:href';
-                            if (!allowedAttrs.includes(name) || (isHref && !/^#[\w-]*$/.test(attr.value.trim()))) {
+                            const isHref = name === 'href' || name.endsWith(':href');
+                            if (name.startsWith('on') || (isHref && !/^\s*#/.test(attr.value))) {
                                 el.removeAttribute(attr.name);
                             }
                         });

@@ -1,200 +1,297 @@
-=== Animation Addons – Elementor Addons, GSAP Animations, Elementor V4 Atomic Widgets & Elementor Templates ===
+=== Animation Addons for Elementor – Elementor V4 Atomic Widgets, GSAP Animations & Templates ===
 Contributors: wealcoder, habib00, wcrayhan, ahsanriad
 Donate link: https://buy.stripe.com/3cs3dI7DQauI0py9AC
-Tags: elementor addons, elementor widgets, animation, elementor templates, elementor v4
+Tags: elementor, elementor v4, atomic widgets, elementor addons, elementor templates
 Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 4.2.7
+Stable tag: 4.2.6
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
- 
-Animation Addons: all-in-one Elementor addons pack – GSAP scroll animations, 100+ Elementor widgets, 40+ Elementor 4 Atomic Widgets & 300+ templates.
- 
-== Description ==
- 
-**Animation Addons for Elementor** is an all-in-one Elementor addons pack: 100+ Elementor widgets, 25+ Elementor extensions, 300+ Elementor templates and 10,000+ sections, 40+ Atomic Widgets built natively for Elementor 4, and the GSAP animation system that gives the plugin its name — scroll animations, text animation and motion effects inside the Elementor editor.
- 
-It is fully updated for **Elementor 4**. Animation Addons includes **40+ Atomic Widgets built natively for the Elementor V4 Atomic Editor**, 30+ Elementor V4 website templates and 500+ V4 sections, all working with Classes, Variables and the unified Style tab — so the same plugin carries your sites from the classic editor into Elementor 4.
- 
-And when a page needs motion, you do not need a second plugin: scroll animations, text animation, motion effects, parallax, hover effects, sticky elements and interactive sections are built in, powered by GSAP, and set visually without writing a single line of code.
- 
-Animation Addons works with **Elementor Free**. Elementor Pro is not required – it is a free Elementor addons pack for the Elementor page builder, with Pro features for teams that need more.
 
-[Animation Addons](https://animation-addons.com/)
-[Elementor Widgets](https://animation-addons.com/v3/widgets/)
-[Elementor V4 Atomic Widgets](https://animation-addons.com/atomic-elements/)
-[Animation Extensions](https://animation-addons.com/extensions/)
-[Elementor Templates](https://animation-addons.com/starter-templates/)
-[Section Templates](https://animation-addons.com/section-templates/)
+Elementor V4 addon with Atomic Widgets, GSAP animations, Elementor V4 templates, extensions, forms, dynamic content, and performance controls.
+
+== Description ==
+
+Animation Addons is an **Elementor V4 addon built natively for the Atomic Editor**, with 40+ Atomic Widgets, Elementor V4 templates, reusable Classes and Variables, GSAP animations, dynamic content, forms, and advanced extensions. It also includes the established Elementor V3 widget, extension, and template library for existing Elementor websites.
+
+The new Elementor V4 toolkit is built for the Atomic Editor workflow. It works with reusable Classes, Variables, responsive styling, and Atomic Elements while continuing to support existing Elementor websites.
+
+Elementor Free is required. Elementor Pro is not required for the Animation Addons V4 Atomic Widgets.
+
+
+[Elementor V4 Toolkit](https://animation-addons.com/)
+[Atomic Widgets](https://animation-addons.com/atomic-elements/)
+[Elementor V4 Extensions](https://animation-addons.com/extensions/)
+[Elementor V4 Templates](https://animation-addons.com/starter-templates/)
+[Elementor V4 Sections](https://animation-addons.com/section-templates/)
+[Elementor V3 Library](https://animation-addons.com/v3/)
 [Free vs Pro](https://animation-addons.com/free-vs-pro/)
 [Pricing](https://animation-addons.com/pricing/)
 [Documentation](https://animation-addons.com/docs/)
 
+### Built for Elementor V4 and the Atomic Editor
+
+Elementor V4 introduces a more scalable workflow based on Atomic Elements, reusable Classes, Variables, responsive controls, and a unified styling system.
+
+= Animation Addons extends that workflow with: =
+* 40+ [Elementor V4 Atomic Widgets](https://animation-addons.com/atomic-elements/).
+* [Atomic animation and interaction extensions](https://animation-addons.com/extensions/).
+* 30+ [Elementor V4 full website templates](https://animation-addons.com/starter-templates/).
+* 500+ [Elementor V4 section templates](https://animation-addons.com/section-templates/).
+* GSAP-powered animation controls.
+* Loop Grid filters and dynamic content tools.
+* Popup Builder.
+* Header Footer Builder.
+* Atomic Nested Slider.
+* Form Builder and form extensions.
+* Performance and reduced-motion options.
+* 100+ [existing Elementor V3 widgets](https://animation-addons.com/v3/widgets/) for projects that still need them.
+* 300+ [existing Elementor V3 full website templates](https://animation-addons.com/v3/starter-templates/).
+
 https://youtu.be/gFRQb_UteKs
 
-### Why Animation Addons: One Elementor Addons Pack for Widgets, Elementor 4 and Elementor Animation
+### 40+ Elementor V4 Atomic Widgets Built Natively for Elementor V4
 
-Most Elementor addons give you widgets. Animation Addons gives you widgets, native Elementor 4 Atomic Widgets **and** a complete GSAP Elementor animation system — so one plugin covers the design, the editor upgrade and the motion.
+Explore 40+ Elementor V4 Atomic Widgets built natively for the Elementor V4 Atomic Editor. Create content, dynamic layouts, forms, navigation, sliders, videos, and GSAP-powered interactions using reusable Classes, Variables, and responsive controls.
 
-* **GSAP scroll animations** – ScrollTrigger, scrub, pin, horizontal scroll, parallax and timeline animations on any Elementor element, classic or Atomic.
-* **Text animation and motion effects** – GSAP SplitText by character, word or line, text scramble, typewriter, reveal animations, hover animations and hover effects, cursor effects, mouse-move effects, tilt, flip and draggable.
-* **100+ Elementor widgets** for content, marketing, navigation, sliders, forms, posts and dynamic WordPress data.
-* **40+ Atomic Widgets built natively for Elementor 4** – real Atomic Elements with Classes, Variables, the unified Style tab and selectable child elements.
-* **Elementor templates** – 300+ website templates, 10,000+ sections and ready page templates, plus 30+ Elementor V4 website templates and 500+ V4 sections.
-* **Dynamic content and site-building tools** – Loop Grid and Loop Grid filters, Posts Grid, Dynamic Tags, Post Type Builder, forms, headers, footers and popups.
-* **Performance controls** – lazy animation loading, reduced-motion support and per-widget on/off switches.
+Browse the complete [Elementor V4 Atomic Widgets library](https://animation-addons.com/atomic-elements/). Each widget below links to its own page with a live demo and settings overview.
 
-### GSAP Animations for Elementor: Scroll Animations, Text Animation and Motion Effects
+### Content & UI Atomic Widgets
 
-Animation Addons brings GSAP animations for Elementor into the editor itself — the classic editor and the Elementor V4 Atomic Editor — so you can build advanced, high-performance Elementor animations without custom JavaScript.
+* **[Atomic Counter](https://animation-addons.com/atomic-elements/atomic-counter/)** – Create animated number counters for stats, achievements, and metrics.
+* **[Atomic Advanced Heading](https://animation-addons.com/atomic-elements/atomic-advanced-heading/)** – Build styled Elementor V4 headings with flexible typography and layouts.
+* **[Atomic Accordion](https://animation-addons.com/atomic-elements/atomic-accordion/)** – Create responsive accordions for FAQs and expandable content.
+* **[Atomic Icon List](https://animation-addons.com/atomic-elements/atomic-icon-list/)** – Build customizable icon lists for features, benefits, and navigation.
+* **[Atomic Social Share](https://animation-addons.com/atomic-elements/atomic-social-share/)** – Add social sharing buttons to Elementor V4 pages.
+* **[Atomic Image Compare](https://animation-addons.com/atomic-elements/atomic-image-compare/)** – Create interactive before-and-after image comparisons.
+* **[Atomic Countdown](https://animation-addons.com/atomic-elements/atomic-countdown/)** – Add countdown timers for launches, events, and offers.
+* **[Atomic Timeline](https://animation-addons.com/atomic-elements/atomic-timeline/)** – Build structured timelines for events, processes, and milestones.
+* **[Atomic Progress Bar](https://animation-addons.com/atomic-elements/atomic-progress-bar/)** – Display animated progress bars for skills, goals, and statistics.
+* **[Atomic Toggle Switcher](https://animation-addons.com/atomic-elements/atomic-toggle-switcher/)** – Create content, pricing, and feature toggle switches.
+* **[Atomic Button](https://animation-addons.com/atomic-elements/atomic-button/)** – Build customizable Elementor V4 buttons with flexible styling.
+* **[Atomic Button Pro](https://animation-addons.com/atomic-elements/atomic-button-pro/)** – Create advanced buttons with additional effects and interactions.
+* **[Atomic Curved Text](https://animation-addons.com/atomic-elements/atomic-curved-text/)** – Display curved or circular text for creative layouts.
+* **[Atomic Google Maps](https://animation-addons.com/atomic-elements/atomic-google-maps/)** – Add Google Maps directly inside Elementor layouts.
+* **[Atomic Flip Box](https://animation-addons.com/atomic-elements/atomic-flip-box/)** – Create interactive flip boxes with front and back content.
+* **[Atomic Image Hotspot](https://animation-addons.com/atomic-elements/atomic-image-hotspot/)** – Add interactive hotspots and information points to images.
 
-Elementor's built-in motion effects cover simple entrance animations. Animation Addons adds the professional layer: scroll-driven storytelling, timeline control, text animation, SVG animation and interaction effects. That is why it is often chosen as the Elementor animation plugin even by teams that already use another addon for widgets.
+### Interaction & Animation Atomic Widgets
 
-GSAP animation features include:
+* **[Atomic Offcanvas](https://animation-addons.com/atomic-elements/atomic-offcanvas/)** – Create off-canvas menus, panels, and hidden content areas.
+* **[Atomic Stack Cards](https://animation-addons.com/atomic-elements/atomic-stack-cards/)** – Build animated stacked-card layouts with scroll interactions.
+* **[Atomic Lottie](https://animation-addons.com/atomic-elements/atomic-lottie/)** – Add lightweight Lottie animations to Elementor V4 pages.
+* **[Atomic Draw SVG](https://animation-addons.com/atomic-elements/atomic-draw-svg/)** – Create SVG drawing animations with GSAP.
 
-🌟 GSAP ScrollTrigger scroll animations – scroll trigger, scrub, pin and markers
-🎨 GSAP Animation Builder with timeline control and stagger animation
-🎬 Preset Animations – one-click entrance, reveal, fade and bounce animations
-⚡ Smooth Scrolling (ScrollSmoother), Horizontal Scroll sections and Scroll To
-📌 Sticky Elements and Pin Element on Scroll
-✂️ Split Text Animation (GSAP SplitText) and Text Scramble
-🔄 Flip Animation, Draggable and Motion Path Animation
-🎥 Lottie Animation, DrawSVG Animation and MorphSVG
-🌍 Parallax Effects and multi-layer parallax
-🎞️ Clip Path Animation, Image Mask and Image Sequence Animation
-✨ Cursor Hover Effect, Mouse Move Effect and Custom Cursor
+### Form Atomic Widgets
 
-Every GSAP animation can be previewed live in the editor, set per device, and switched off for visitors who prefer reduced motion. Combine them for interactive animations – smooth scroll plus pinned sections plus text reveal – or apply a single preset for quick animation effects.
+* **[Atomic Search Form](https://animation-addons.com/atomic-elements/atomic-search-form/)** – Add customizable WordPress search forms to Elementor.
+* **[Atomic Form](https://animation-addons.com/atomic-elements/atomic-form/)** – Build flexible forms directly inside the Elementor V4 editor.
 
-= What you can build with GSAP animation in Elementor =
+### Dynamic Content Atomic Widgets
 
-* **Hero text reveal** – a headline that animates in word by word with SplitText, then a subheading and button that stagger in on a timeline.
-* **Scroll-pinned product showcase** – pin an image while feature text scrolls past, powered by ScrollTrigger scrub.
-* **Horizontal scroll portfolio** – a sideways-scrolling gallery of projects, like the best agency websites.
-* **Parallax and image sequence heroes** – multi-layer parallax backgrounds, or a frame-by-frame image sequence scrubbed by the scrollbar.
-* **Sticky header effects** – a header that shrinks, changes color or hides on scroll with the Sticky Pin extension.
-* **Hover and cursor interactions** – image reveal on hover, tilt cards, a custom cursor that follows the mouse, and buttons with GSAP hover effects.
-* **SVG and Lottie motion** – logos that draw themselves with DrawSVG, shapes that morph, and lightweight Lottie icons.
+* **[Atomic Posts Grid](https://animation-addons.com/atomic-elements/atomic-posts-grid/)** – Display WordPress posts in responsive grid layouts.
+* **[Atomic Loop Grid](https://animation-addons.com/atomic-elements/atomic-loop-grid/)** – Build dynamic Elementor V4 loop layouts for posts and custom content.
 
-Presets cover the common cases in one click; the GSAP Animation Builder gives full control over easing, delay, duration, stagger and triggers when you want the animation to be exactly yours.
+### Blog Atomic Widgets
 
-### Elementor Extensions for Animation and Interaction
+* **[Atomic Post Title](https://animation-addons.com/atomic-elements/atomic-post-title/)** – Display dynamic WordPress post titles in templates.
+* **[Atomic Search Query](https://animation-addons.com/atomic-elements/atomic-search-query/)** – Display the current WordPress search query dynamically.
+* **[Atomic Post Content](https://animation-addons.com/atomic-elements/atomic-post-content/)** – Add dynamic post content to Elementor templates.
+* **[Atomic Post Image](https://animation-addons.com/atomic-elements/atomic-post-image/)** – Display featured images dynamically in post layouts.
+* **[Atomic Post Pagination](https://animation-addons.com/atomic-elements/atomic-post-pagination/)** – Add navigation between WordPress posts and content.
+* **[Atomic Table of Contents](https://animation-addons.com/atomic-elements/atomic-table-of-contents/)** – Generate structured navigation for long-form content.
 
-Browse the complete [Elementor extensions library](https://animation-addons.com/extensions/). Each extension adds GSAP animation controls to any Elementor element, in the classic editor and on Elementor V4 Atomic Elements.
+### Header & Footer Atomic Widgets
 
-* **Scroll:** [Regular Animation](https://animation-addons.com/extensions/regular-animation/) (entrance and scroll animations), [Parallax](https://animation-addons.com/extensions/parallax/), [Horizontal Scroll](https://animation-addons.com/extensions/horizontal-scroll/), [Sticky Pin Element](https://animation-addons.com/extensions/sticky/) (sticky sections and pinned elements), [Scroll To](https://animation-addons.com/extensions/scroll-to/).
-* **Text and image:** [Text Animation](https://animation-addons.com/extensions/text-animation/) (GSAP SplitText), [Image Animation](https://animation-addons.com/extensions/image-animation/) (image reveal on scroll), [Image Hover](https://animation-addons.com/extensions/image-hover/) (image hover effects).
-* **Cursor and hover:** [Cursor Hover Effect](https://animation-addons.com/extensions/cursor-hover-effect/) (custom cursor), [Mouse Move Effect](https://animation-addons.com/extensions/mouse-move-effect/), [Tilt](https://animation-addons.com/extensions/tilt/), [Advanced Tooltip](https://animation-addons.com/extensions/advanced-tooltip/).
-* **Layout:** [Popup](https://animation-addons.com/extensions/popup/) (animated popups), [Background Video](https://animation-addons.com/extensions/background-video/).
+* **[Atomic WP Menu](https://animation-addons.com/atomic-elements/atomic-wp-menu/)** – Display WordPress menus inside Elementor V4 layouts.
+* **[Atomic Nav](https://animation-addons.com/atomic-elements/atomic-nav/)** – Build flexible navigation menus for headers and websites.
+* **[Atomic Site Logo](https://animation-addons.com/atomic-elements/atomic-site-logo/)** – Display your WordPress site logo dynamically.
 
-### Built for Elementor 4: the Atomic Editor, Classes and Variables
+### Slider Atomic Widgets
 
-Elementor 4 introduces a more scalable way to build: Atomic Elements, reusable Classes, Variables, responsive controls and a unified styling system. Animation Addons was rebuilt for that workflow rather than patched onto it – a complete Elementor V4 toolkit, and one of the first Elementor 4 addons with native Atomic Widgets. Elementor 4 widgets, Elementor 4 templates and Elementor 4 animation extensions ship together in one package, so the Atomic Editor is production-ready from the day you switch it on.
+* **[Atomic Loop Grid Slider](https://animation-addons.com/atomic-elements/atomic-loop-grid-slider/)** – Turn dynamic Loop Grid content into responsive sliders.
+* **[Atomic Nested Slider](https://animation-addons.com/atomic-elements/atomic-nested-slider/)** – Build flexible sliders with nested Elementor content.
+* **[Atomic Stack Cards](https://animation-addons.com/atomic-elements/atomic-stack-cards/)** – Create interactive stacked-card slider experiences.
 
-* 40+ [Elementor V4 Atomic Widgets](https://animation-addons.com/atomic-elements/) – native Atomic Elements, not classic widgets wrapped for the new editor.
-* [Elementor V4 extensions](https://animation-addons.com/extensions/) – GSAP animation and interaction controls that attach to any Atomic Element.
-* 30+ [Elementor V4 website templates](https://animation-addons.com/starter-templates/) and 500+ [Elementor V4 section templates](https://animation-addons.com/section-templates/), imported with their Classes and Variables so your design system comes with the template.
-* Everything else in the plugin – the 100+ widgets, templates and tools – keeps working in Elementor 4 and alongside Atomic Elements on the same page.
+### Video Atomic Widgets
 
-= How the Elementor 4 workflow changes with Animation Addons =
+* **[Atomic Video Mask](https://animation-addons.com/atomic-elements/atomic-video-mask/)** – Create masked video layouts for modern Elementor designs.
+* **[Atomic Video](https://animation-addons.com/atomic-elements/atomic-video/)** – Add responsive videos with customizable controls and layouts.
 
-* **Classes and Variables** – Style an Atomic Widget once with a Class, reuse it across the site, and change colors or spacing from a Variable. Elementor 4 templates from Animation Addons import with their Classes and Variables attached.
-* **Unified Style tab** – Every Atomic Widget uses the Elementor 4 Style tab, not a custom panel, so there is nothing new to learn.
-* **Child elements** – Composite widgets (Accordion, Timeline, Nested Slider, Loop Grid) expose their parts as selectable child elements you can style and animate individually.
-* **Elementor Free** – None of the Atomic Widgets, V4 templates or animation extensions require Elementor Pro.
+### Elementor V4 Loop Filter Atomic Widgets
 
-If you are moving to Elementor 4, you do not need to change your Elementor addon. Read the [Elementor V4 guide](https://animation-addons.com/blog/elementor-v4-and-atomic-editor/) for how Animation Addons fits the Atomic Editor.
+Build advanced filtering experiences for Elementor V4 Loop Grid layouts with the [Atomic Loop Filter widgets](https://animation-addons.com/atomic-elements/atomic-loop-filter/).
 
-### 40+ Elementor V4 Atomic Widgets Built Natively for Elementor 4
+* **Atomic Taxonomy Filter** – Filter Loop Grid content by categories, tags, and custom taxonomies.
+* **Atomic Author Filter** – Filter posts and dynamic content by author.
+* **Atomic Field Filter** – Filter Loop Grid results using custom field values.
+* **Atomic Date Filter** – Filter posts and content by date or date range.
+* **Atomic Search Filter** – Add keyword search for Loop Grid and dynamic content.
+* **Atomic Sort Filter** – Sort Loop Grid results by supported content fields.
+* **Atomic Result Count** – Display the number of matching Loop Grid results.
+* **Atomic Active Filters** – Show currently selected filters with easy removal options.
+* **Atomic Filter Drawer** – Display filters inside a compact off-canvas filter panel.
 
-The Elementor V4 Atomic Widgets in Animation Addons are real Atomic Elements: they appear in the Atomic Elements panel, use the Elementor 4 unified Style tab, support reusable Classes and Variables and responsive controls, and composite widgets are made of selectable child elements you can style on their own. Browse the complete [Atomic Widgets library](https://animation-addons.com/atomic-elements/) — each widget links to its own page with a live demo and settings overview.
+These filters are designed for dynamic Elementor V4 layouts and can update Loop Grid results without a full page reload.
 
-* **Content and UI:** [Atomic Advanced Heading](https://animation-addons.com/atomic-elements/atomic-advanced-heading/), [Atomic Accordion](https://animation-addons.com/atomic-elements/atomic-accordion/), [Atomic Icon List](https://animation-addons.com/atomic-elements/atomic-icon-list/), [Atomic Social Share](https://animation-addons.com/atomic-elements/atomic-social-share/), [Atomic Image Compare](https://animation-addons.com/atomic-elements/atomic-image-compare/), [Atomic Countdown](https://animation-addons.com/atomic-elements/atomic-countdown/), [Atomic Timeline](https://animation-addons.com/atomic-elements/atomic-timeline/), [Atomic Progress Bar](https://animation-addons.com/atomic-elements/atomic-progress-bar/), [Atomic Toggle Switcher](https://animation-addons.com/atomic-elements/atomic-toggle-switcher/), [Atomic Button](https://animation-addons.com/atomic-elements/atomic-button/), [Atomic Curved Text](https://animation-addons.com/atomic-elements/atomic-curved-text/), [Atomic Google Maps](https://animation-addons.com/atomic-elements/atomic-google-maps/), [Atomic Flip Box](https://animation-addons.com/atomic-elements/atomic-flip-box/), [Atomic Counter](https://animation-addons.com/atomic-elements/atomic-counter/) (Pro), [Atomic Button Pro](https://animation-addons.com/atomic-elements/atomic-button-pro/) (Pro), [Atomic Image Hotspot](https://animation-addons.com/atomic-elements/atomic-image-hotspot/) (Pro).
-* **Animation and interaction:** [Atomic Stack Cards](https://animation-addons.com/atomic-elements/atomic-stack-cards/) (Pro), [Atomic Lottie](https://animation-addons.com/atomic-elements/atomic-lottie/) (Pro), [Atomic Draw SVG](https://animation-addons.com/atomic-elements/atomic-draw-svg/) (Pro), [Atomic Offcanvas](https://animation-addons.com/atomic-elements/atomic-offcanvas/) (Pro).
-* **Forms:** [Atomic Form](https://animation-addons.com/atomic-elements/atomic-form/) (forms with Conditional Display, validation and Create User actions), [Atomic Search Form](https://animation-addons.com/atomic-elements/atomic-search-form/).
-* **Posts, dynamic content and blog:** [Atomic Loop Grid](https://animation-addons.com/atomic-elements/atomic-loop-grid/), [Atomic Posts Grid](https://animation-addons.com/atomic-elements/atomic-posts-grid/), [Atomic Post Title](https://animation-addons.com/atomic-elements/atomic-post-title/), [Atomic Post Content](https://animation-addons.com/atomic-elements/atomic-post-content/), [Atomic Post Image](https://animation-addons.com/atomic-elements/atomic-post-image/), [Atomic Post Pagination](https://animation-addons.com/atomic-elements/atomic-post-pagination/), [Atomic Search Query](https://animation-addons.com/atomic-elements/atomic-search-query/), [Atomic Table of Contents](https://animation-addons.com/atomic-elements/atomic-table-of-contents/) (Pro).
-* **Header and footer:** [Atomic WP Menu](https://animation-addons.com/atomic-elements/atomic-wp-menu/), [Atomic Site Logo](https://animation-addons.com/atomic-elements/atomic-site-logo/), [Atomic Nav](https://animation-addons.com/atomic-elements/atomic-nav/) (Pro).
-* **Sliders and video:** [Atomic Nested Slider](https://animation-addons.com/atomic-elements/atomic-nested-slider/), [Atomic Loop Grid Slider](https://animation-addons.com/atomic-elements/atomic-loop-grid-slider/), [Atomic Video](https://animation-addons.com/atomic-elements/atomic-video/), [Atomic Video Mask](https://animation-addons.com/atomic-elements/atomic-video-mask/).
+### GSAP Animations for Elementor
 
-= Loop Grid Filters (Pro) =
-Build filtering experiences for Loop Grid layouts with the nine [Atomic Loop Filter widgets](https://animation-addons.com/atomic-elements/atomic-loop-filter/): Taxonomy Filter, Author Filter, Field Filter, Date Filter, Search Filter, Sort Filter, Result Count, Active Filters and Filter Drawer. Results update without a full page reload.
+Animation Addons brings a complete GSAP-powered motion system directly into the Elementor V4 Atomic Editor, allowing you to create advanced, high-performance animations without writing custom JavaScript.
 
-### 100+ Elementor Widgets
+Animation capabilities include:
 
-Animation Addons is a full Elementor widgets addon, not only an animation layer. The complete [Elementor widgets library](https://animation-addons.com/v3/widgets/) works in every Elementor version, with Elementor Free and any WordPress theme, and each widget can be switched on or off from the dashboard. Unlike other Elementor addons, every one of these Elementor widgets can carry GSAP animation from the same panel.
+🌟 ScrollTrigger
+🎨 GSAP Animation Builder
+🎬 Preset Animation
+⚡ Smooth Scrolling
+🌐 Horizontal Scrolling
+📌 Sticky Elements
+⏳ Timeline-Based Animation
+✂️ Split Text Animation & Text Scramble
+🔄 Flip Animation & Draggable
+🛒 Scroll To Animation
+🎥 Lottie Animation
+🖼️ DrawSVG Animation & Morph SVG
+➡️ Motion Path Animation
+📏 Stagger Animation
+🌪️ Scroll Smoother
+🌍 Parallax Effects
+🎥 Nested Elements
+🎞️ Clip Path Animation
+📸 Image Sequence Animation
+🌟 Reveal Animation
+🌫️ Bounce & Fade Animation
+✨ Cursor Hover, Cursor Move Effect and Custom Cursor Effects
 
+### Elementor V4 Extensions
+
+Browse the complete [Elementor V4 Extensions library](https://animation-addons.com/extensions/). Each extension below links to its own page.
+
+= Animation and interaction extensions: =
+* **[Regular Animation](https://animation-addons.com/extensions/regular-animation/)** – Add flexible entrance and motion effects.
+* **[Parallax](https://animation-addons.com/extensions/parallax/)** – Create smooth scroll-based parallax effects.
+* **[Text Animation](https://animation-addons.com/extensions/text-animation/)** – Animate headings and text visually.
+* **[Image Animation](https://animation-addons.com/extensions/image-animation/)** – Add motion effects to images.
+* **[Horizontal Scroll Animation](https://animation-addons.com/extensions/horizontal-scroll/)** – Create horizontal scrolling sections.
+* **[Image Hover](https://animation-addons.com/extensions/image-hover/)** – Add interactive image hover effects.
+* **[Sticky Pin Element](https://animation-addons.com/extensions/sticky/)** – Keep elements fixed while scrolling.
+* **[Cursor Hover Effect](https://animation-addons.com/extensions/cursor-hover-effect/)** – Add cursor-based hover interactions.
+* **[Mouse Move Effect](https://animation-addons.com/extensions/mouse-move-effect/)** – Move elements with cursor movement.
+* **[Advanced Tooltip](https://animation-addons.com/extensions/advanced-tooltip/)** – Add customizable interactive tooltips.
+* **[Tilt](https://animation-addons.com/extensions/tilt/)** – Create 3D tilt effects on hover.
+* **[Scroll To](https://animation-addons.com/extensions/scroll-to/)** – Smoothly scroll to target sections.
+* **[Popup](https://animation-addons.com/extensions/popup/)** – Create custom Elementor popups.
+* **[Background Video](https://animation-addons.com/extensions/background-video/)** – Add video backgrounds to sections.
+
+= Form Extensions =
+
+* **[Conditional Display](https://animation-addons.com/extensions/conditional-display/)** – Show or hide fields based on conditions.
+* **[Validation Pro](https://animation-addons.com/extensions/validation-pro/)** – Add advanced form validation rules.
+* **[Create User](https://animation-addons.com/extensions/create-user/)** – Create WordPress users from form submissions.
+
+= Utility Extensions & Tools =
+
+* **[Dynamic Tags Atomic](https://animation-addons.com/extensions/dynamic-tags/)** – Add dynamic WordPress data to Elementor V4.
+* **[Mask Atomic](https://animation-addons.com/extensions/mask/)** – Apply creative masks to elements.
+* **[Custom CSS](https://animation-addons.com/extensions/custom-css/)** – Add custom CSS directly to elements.
+* **[Custom Fonts](https://animation-addons.com/extensions/custom-fonts/)** – Upload and use custom fonts.
+* **[Post Type Builder](https://animation-addons.com/extensions/post-type-builder/)** – Create custom post types visually.
+* **[Custom Icon](https://animation-addons.com/extensions/custom-icon/)** – Upload and use custom icon sets.
+* **[Code Snippet](https://animation-addons.com/extensions/code-snippet/)** – Add custom CSS, JavaScript, or HTML snippets.
+
+### Elementor V4 Templates
+
+Browse [Elementor V4 website templates](https://animation-addons.com/starter-templates/) and [Elementor V4 section templates](https://animation-addons.com/section-templates/).
+
+= The V4 toolkit includes: =
+
+* 30+ [Elementor V4 website templates](https://animation-addons.com/starter-templates/).
+* 500+ [Elementor V4 section templates](https://animation-addons.com/section-templates/).
+* Atomic Editor layouts using reusable Classes and Variables.
+* Responsive Elementor V4 layouts.
+* Template importing with design-system information.
+* Optional local importing of supported template assets.
+
+Compare [Free vs Pro](https://animation-addons.com/free-vs-pro/), review [pricing](https://animation-addons.com/pricing/), or explore the complete [Elementor V4 toolkit](https://animation-addons.com/).
+
+### Form Builder
+
+Build forms visually inside Elementor.
+
+Available capabilities include:
+
+* **Form widget**
+* **Conditional Display**
+* **Custom validation**
+* **Custom validation messages**
+* **Date and time fields**
+* **Create User actions**
+* **Mailchimp integration**
+* **Brevo integration**
+
+### Performance Controls
+
+Animation Addons is modular so site owners can enable only the widgets and extensions they need.
+
+Performance-focused features include:
+
+* Widget and extension enable/disable controls.
+* Lazy animation loading.
+* Reduced-motion support.
+* Per-page performance controls.
+* Widget and extension usage information.
+* Cache compatibility controls.
+* GSAP library display conditions.
+* Performance diagnostics.
+
+Actual front-end performance depends on the widgets, animations, media, theme, hosting, caching configuration, and other plugins used on the website.
+
+### Elementor V3 Classic Library
+
+Still building with the classic Elementor editor? Animation Addons keeps its established Elementor V3 library, separate from the Elementor V4 Atomic toolkit above. It works with Elementor Free, and some widgets and extensions are marked Pro. See the full [Elementor V3 library](https://animation-addons.com/v3/), or compare what each version includes on the [V3 Free vs Pro page](https://animation-addons.com/v3/free-vs-pro/) and [V3 pricing page](https://animation-addons.com/v3/pricing/).
+
+= What you get with Elementor V3: =
+
+* 100+ [Elementor V3 widgets](https://animation-addons.com/v3/widgets/) for content, marketing, navigation, sliders, forms, and dynamic WordPress data.
+* 25+ [Elementor V3 extensions](https://animation-addons.com/v3/extensions/) for animation, scroll, cursor, popup, and design controls.
+* 300+ [Elementor V3 full website templates](https://animation-addons.com/v3/starter-templates/).
+* 10,000+ [Elementor V3 section templates](https://animation-addons.com/v3/section-templates/).
+* Ready-made [Elementor V3 page templates](https://animation-addons.com/v3/page-templates/).
+* GSAP-powered animation extensions such as scroll animation, split text, pin, horizontal scroll, and cursor effects.
+
+= V3 widgets: =
 * **Content and media:** Image Box, Image Box Slider, Image, Image Gallery, Brand Slider, Text Hover Image, Image Compare, Image Hotspot.
-* **Marketing and conversion:** Counter, Progress Bar, Countdown, Notification, Advanced Pricing Table, Call to Action layouts.
-* **UI and interaction:** Button, Advanced Button, Icon Box, Tabs, Services Tab, Advanced Accordion, Toggle Switcher, Clickdrop, Floating Elements, Advanced Tooltip.
-* **Sliders and carousels:** Event Slider, Content Slider, Nested Slider, Scrollmotion Cards.
+* **Marketing and conversion:** Counter, Progress Bar, Countdown, Notification, Advanced Pricing Table.
+* **UI and interaction:** Button, Advanced Button, Icon Box, Tabs, Services Tab, Advanced Accordion, Toggle Switcher, Clickdrop, Floating Elements.
+* **Sliders and motion:** Event Slider, Content Slider, Nested Slider, Scrollmotion Cards.
 * **Testimonials and team:** Testimonial, Team.
-* **Navigation and layout:** One Page Nav, Nav Menu, Mega Menu, Site Logo, Breadcrumbs, Offcanvas.
-* **Posts and dynamic WordPress data:** Post Title, Post Content, Post Excerpt, Post Featured Image, Post Meta Info, Post Pagination, Posts, Featured Posts, Banner Posts, Archive Title, Portfolio, Category Showcase, Grid Hover Posts, Post Reactions, Post Rating, Video Posts Tab, Current Date, Search Form, Filterable Posts, Posts Read Later.
-* **Forms and integrations:** Contact Form 7, Mailchimp, Advanced Mailchimp, Brevo.
+* **Navigation and layout:** One Page Nav, Nav Menu, Site Logo, Breadcrumbs.
+* **Dynamic WordPress data:** Post Title, Post Content, Post Excerpt, Post Featured Image, Post Meta Info, Post Pagination, Posts, Featured Posts, Banner Posts, Archive Title, Portfolio, Category Showcase, Grid Hover Posts, Post Reactions, Post Rating, Video Posts Tab, Current Date, Search Form, Filterable Posts, Posts Read Later.
+* **Forms and integrations:** Contact Form 7, Mailchimp, Advanced Mailchimp.
 * **Animated text and media:** Animated Text, Animated Title, Animated Heading, Typewriter, YouTube Video, Weather, Author Box.
 * **Pro widgets:** GSAP DrawSVG, Lottie, Cube Scroll Reveal, Video Box Slider, Advanced Posts, Video Story, Live Events, Posts Slider, Breaking News Slider, Video Popup, Video Box, Video Mask, Scrollable Video, Stacked Cards, Flip Box, Vertical Marquee, Advanced Portfolio, Nested Motion Card.
 
-### Elementor Templates: 300+ Website Templates, 10,000+ Sections and Elementor V4 Templates
+= V3 extensions: =
+* **Free:** Code Snippet, Custom CSS, Popup Builder, Custom Fonts, Custom Icon Fonts, Custom Post Type, Wrapper Link, Mega Menu Builder, and [Advanced Tooltip](https://animation-addons.com/v3/extensions/advanced-tooltip/).
+* **Pro:** Smooth Scroller, Advanced Animation Control, [Pin Element on Scroll](https://animation-addons.com/v3/extensions/sticky-elements/), [Text Animation](https://animation-addons.com/v3/extensions/text-animation/), [Image Animation](https://animation-addons.com/v3/image-animation/), [Cursor Hover Effect](https://animation-addons.com/v3/extensions/cursor-hover-effect/), [Image Reveal on Hover](https://animation-addons.com/v3/extensions/image-reveal-on-hover/), [Cursor Move Effect](https://animation-addons.com/v3/extensions/cursor-move-effect/), [Horizontal ScrollTrigger](https://animation-addons.com/v3/extensions/horizontal-scroll/), Portfolio Filter, and Tilt Effect.
 
-Start from a finished design instead of a blank page. The Animation Addons template library includes:
-
-= Elementor V4 templates =
-* 30+ [Elementor V4 website templates](https://animation-addons.com/starter-templates/) – full-site template kits built with Atomic Elements for the Elementor 4 Atomic Editor.
-* 500+ [Elementor V4 section templates](https://animation-addons.com/section-templates/) – hero, pricing, testimonial, team, CTA, header and footer sections.
-* Template import carries the design system: Classes and Variables come in with the layout, and supported template assets can be imported locally.
-
-= Elementor templates for every site =
-* 300+ [Elementor website templates](https://animation-addons.com/v3/starter-templates/) – Elementor template kits for agencies, business, SaaS, portfolios, blogs and magazines, restaurants, real estate, medical, travel, fitness and more.
-* 10,000+ [Elementor section templates](https://animation-addons.com/v3/section-templates/) – hero, services, pricing, testimonials, team, FAQ, CTA, header and footer blocks.
-* Ready-made [Elementor page templates](https://animation-addons.com/v3/page-templates/) – landing, about, contact, service and coming-soon pages.
-* Live Copy Paste and one-click template kit import from the Elementor template library.
-
-Templates are pre-animated: import a section and the GSAP scroll animations and hover effects come with it.
-
-### Dynamic Content and Site-Building Tools
-
-* **Loop Grid and Posts Grid** – Dynamic post layouts for blogs, magazines and portfolios, with Loop Grid Slider and nine Loop Grid filters (Pro).
-* **Dynamic Tags and custom fields** – Dynamic WordPress data in any Elementor control, for dynamic websites built on posts, custom post types and custom fields.
-* **Post Type Builder** – Create custom post types visually, without code.
-* **Header Footer Builder and Theme Builder** – Custom headers, footers, single and archive templates with display conditions, on Elementor Free.
-* **Popup Builder** – Banners, opt-ins and notices with animated entrances and exit-intent triggers.
-* **Form Builder** – Visual forms with Conditional Display, custom validation and messages, date and time fields, Create User actions, Mailchimp and Brevo integration.
-
-### Utility Extensions
-
-* **Design and code:** [Dynamic Tags](https://animation-addons.com/extensions/dynamic-tags/), [Mask](https://animation-addons.com/extensions/mask/) (image masking), [Custom CSS](https://animation-addons.com/extensions/custom-css/), [Custom Fonts](https://animation-addons.com/extensions/custom-fonts/), [Custom Icon](https://animation-addons.com/extensions/custom-icon/) (IcoMoon), [Code Snippet](https://animation-addons.com/extensions/code-snippet/) (CSS, JavaScript, HTML), Wrapper Link.
-* **Content and forms:** [Post Type Builder](https://animation-addons.com/extensions/post-type-builder/), [Conditional Display](https://animation-addons.com/extensions/conditional-display/), [Validation Pro](https://animation-addons.com/extensions/validation-pro/), [Create User](https://animation-addons.com/extensions/create-user/).
-
-### Lightweight and Built for Performance
-
-Animation Addons is modular: enable only the widgets and extensions you use, and nothing else loads. Lazy animation loading fetches GSAP only when an animated element nears the viewport; reduced-motion support respects visitor preferences; and per-page performance controls, usage information, cache compatibility settings, GSAP display conditions and performance diagnostics are built into the dashboard.
-
-Actual front-end performance depends on the widgets, animations, media, theme, hosting, caching configuration and other plugins used on the website.
-
-### Animation Addons vs Elementor's Built-in Motion Effects
-
-Elementor includes basic motion effects: simple entrance animations, limited scroll effects, no timeline control. As a WordPress animation plugin for Elementor, Animation Addons adds GSAP ScrollTrigger, SplitText, MotionPath and DrawSVG, timeline and trigger control, cursor and hover interactions and sticky effects inside the same editor. If you only need a fade-in, Elementor's built-in animations are enough; for scroll storytelling and interactive motion, Animation Addons gives you the tools.
+The Elementor V3 widgets and templates are separate from the Elementor V4 Atomic Widgets and V4 templates. You can use both on the same site, and each widget or extension can be switched on or off from the Animation Addons dashboard.
 
 ### Who Is Animation Addons For?
 
-Anyone who wants one Elementor addon instead of three.
-
-* **Agencies and freelancers** – Free Elementor widgets, ready Elementor templates and GSAP animation in one plugin; switch off what a project does not use.
-* **SaaS, startup and product landing pages** – High-converting Elementor landing pages with scroll animations and pre-animated sections.
-* **Portfolios and creative studios** – Scroll storytelling, text animation and interactive motion effects without a JavaScript developer.
-* **Bloggers, magazines and small businesses** – Posts Grid, Loop Grid, dynamic content and 300+ Elementor templates.
-* **Teams moving to Elementor 4** – An Elementor V4 addon with native Atomic Widgets, V4 templates and design systems built on Classes and Variables.
-
-Works on Elementor Free or Pro, in the classic editor or the Elementor 4 Atomic Editor.
+Animation Addons is built for Elementor V4 users, Elementor V3 users, WordPress designers, freelancers, agencies, developers, no-code creators, and teams building reusable Elementor design systems.
 
 = Documentation and Support =
 
 Documentation:
 https://animation-addons.com/docs/
 
-Animation Addons:
+Elementor V4 Toolkit:
 https://animation-addons.com/
+
+Elementor V3 Library:
+https://animation-addons.com/v3/
 
 Support:
 https://crowdyflow.ticksy.com/
@@ -203,7 +300,7 @@ Elementor V4 Guide:
 https://animation-addons.com/blog/elementor-v4-and-atomic-editor/
 
 ### Trusted By Leading WordPress & Elementor Creators
-Animation Addons is trusted and reviewed by WordPress and Elementor educators who demonstrate real-world animation workflows.
+Animation Addons is trusted and reviewed by top WordPress & Elementor educators who actively demonstrate real-world animation workflows.
 
 #### Featured & Reviewed By:
 = Matt Tutorials =
@@ -236,84 +333,80 @@ https://youtu.be/ml_irWYVam0
 4. Open Animation Addons from the WordPress admin menu.
 5. Enable the widgets and extensions you need.
 6. Open a page with Elementor.
-7. To use the Atomic Widgets, enable the Elementor 4 Atomic Editor experience from Elementor settings.
-8. Add widgets, extensions, templates or GSAP animations to the page.
+7. For Elementor V4, enable the Atomic Editor experience from Elementor settings.
+8. Add Atomic Widgets, extensions, templates, forms, or GSAP animations to the page.
 
 == Frequently Asked Questions ==
 
-= Is Animation Addons only an animation plugin, or a complete Elementor addon? =
+= Is Animation Addons built for Elementor V4? =
 
-A complete Elementor addon. Animation Addons includes 100+ Elementor widgets, 40+ Atomic Widgets for Elementor 4, 25+ extensions, 300+ Elementor templates, 10,000+ sections, Loop Grid, dynamic content and site-building tools – and a GSAP animation system on top. You can use it as your only Elementor addon.
+Yes. Animation Addons includes a dedicated Elementor V4 toolkit with [Atomic Widgets](https://animation-addons.com/atomic-elements/), [Atomic extensions](https://animation-addons.com/extensions/), Elementor V4 templates, forms, dynamic tools, and GSAP-powered animation features.
 
-= Does Animation Addons work with Elementor 4 and the Atomic Editor? =
+= What are Elementor V4 Atomic Widgets? =
 
-Yes. Animation Addons is fully updated for Elementor 4. It includes 40+ [Atomic Widgets](https://animation-addons.com/atomic-elements/) built natively for the Elementor V4 Atomic Editor, with support for Classes, Variables and responsive controls, plus 30+ Elementor V4 website templates and 500+ V4 sections. All other widgets and animation extensions also work in Elementor 4 and alongside Atomic Elements.
+Atomic Widgets are elements designed for Elementor's Atomic Editor workflow. They work with the newer styling system, including reusable Classes, Variables, and responsive controls.
 
-= Is Animation Addons the best WordPress animation plugin for Elementor? =
+= Does Animation Addons support Elementor V4 Classes and Variables? =
 
-Animation Addons combines GSAP's animation engine with Elementor's visual editor: ScrollTrigger scroll animations, SplitText text animation, MotionPath, DrawSVG, MorphSVG, Flip, Draggable, smooth scrolling and timeline control, all set visually without code – and it ships inside a full Elementor widgets and templates pack, so you do not need a separate animation plugin.
-
-= Is Animation Addons a free Elementor animation plugin? =
-
-Yes. The free plugin includes animation extensions, preset animations, free Elementor widgets, Atomic Widgets and Elementor templates. Animation Addons Pro adds advanced GSAP animations, Pro widgets and Pro extensions. Compare on the [Free vs Pro](https://animation-addons.com/free-vs-pro/) page.
-
-= How does Animation Addons compare with other popular Elementor addons? =
-
-Most popular Elementor addons offer widgets and templates. Animation Addons offers those – 100+ Elementor widgets, 300+ Elementor templates, 10,000+ sections and dynamic content tools – and adds two things the others do not: 40+ Atomic Widgets built natively for Elementor 4, and a complete GSAP animation system with ScrollTrigger, SplitText and timeline control. It also works alongside any other Elementor addon, so you can add it for the animation and the Elementor 4 widgets without replacing what you use today.
-
-= Which widgets are Atomic Widgets? =
-
-The 40+ widgets listed under "Elementor V4 Atomic Widgets Built Natively for Elementor 4" are Atomic Elements. The 100+ Elementor widgets in the main library are standard Elementor widgets that work in the classic editor and in Elementor 4. You can use both on the same site.
+Yes. The V4 workflow is designed around Elementor Classes and Variables, including template imports that can carry design-system information.
 
 = Do I need Elementor Pro? =
 
-No. Animation Addons works with Elementor Free. The Atomic Widgets, animation extensions, Elementor templates, Header Footer Builder, Theme Builder, Popup Builder and Form Builder do not require Elementor Pro.
+No. Elementor Free is required, but Elementor Pro is not required for the Animation Addons V4 Atomic Widgets.
 
-= Can I add GSAP scroll animations in Elementor without coding? =
+= Can I use Animation Addons with existing Elementor V3 pages? =
 
-Yes. Select any element, open the Animation Addons controls, choose a preset or build a custom GSAP animation with ScrollTrigger, timeline, easing and device settings, and preview it live in the editor. No JavaScript is needed.
+Yes. Elementor V4 Atomic Elements can coexist with existing Elementor widgets. Animation Addons also keeps its existing widget library for projects that still use the previous Elementor workflow.
 
-= Can I animate Elementor 4 Atomic Elements? =
+= What do I get if I still use Elementor V3? =
 
-Yes. The animation extensions – Regular Animation, Text Animation, Image Animation, Parallax, Horizontal Scroll, Sticky, Tilt, Mouse Move, Cursor Hover, Scroll To and more – work on Atomic Elements as well as on standard Elementor widgets.
+You get the established [Elementor V3 library](https://animation-addons.com/v3/): 100+ widgets, 25+ extensions, 300+ full website templates, 10,000+ section templates, and page templates. Some items are Pro features. See the [V3 widgets](https://animation-addons.com/v3/widgets/) and [V3 extensions](https://animation-addons.com/v3/extensions/) pages for details.
 
-= How do I enable smooth scrolling? =
+= Does Animation Addons include GSAP animations for Elementor? =
 
-Go to Animation Addons > Settings in your WordPress dashboard, open the Extensions tab, enable Smooth Scroller (ScrollSmoother), then save.
+Yes. It includes GSAP-powered tools for scroll, text, image, hover, parallax, timeline, SVG, motion-path, sticky, and interaction-based animation. Availability depends on the Free or Pro feature.
 
-= Does Animation Addons include Elementor templates? =
+= Can I animate Elementor V4 Atomic Elements? =
 
-Yes. 300+ Elementor website templates, 10,000+ section templates and ready page templates, plus 30+ Elementor V4 website templates and 500+ Elementor V4 section templates built with Classes and Variables.
-
-= Does it include Loop Grid filters? =
-
-Yes. Animation Addons Pro includes nine [Atomic Loop Filter widgets](https://animation-addons.com/atomic-elements/atomic-loop-filter/): Taxonomy, Author, Field, Date, Search, Sort, Result Count, Active Filters and Filter Drawer.
-
-= Will Animation Addons slow down my Elementor website? =
-
-Animation Addons loads only the widgets and extensions you enable, and GSAP loads lazily when an animated element nears the viewport. Reduced-motion support and cache compatibility controls are built in. Keep unused widgets disabled for the best Core Web Vitals.
+Yes. The [Atomic extensions](https://animation-addons.com/extensions/) include Regular Animation, Text Animation, Image Animation, Parallax, Horizontal Scroll, Sticky, Tilt, Mouse Move, Cursor Hover, Scroll To, and more.
 
 = Can I disable unused widgets and extensions? =
 
 Yes. The dashboard lets you switch individual widgets and extensions on or off.
 
-= Does Animation Addons work with my theme and other Elementor addons? =
+= Does it include Elementor V4 templates? =
 
-Yes. It works with any theme that works with Elementor and alongside other Elementor addons. Each widget and extension can be disabled if you prefer another plugin's version.
+Yes. The V4 toolkit includes 30+ [Elementor V4 website templates](https://animation-addons.com/starter-templates/) and 500+ [Elementor V4 section templates](https://animation-addons.com/section-templates/).
+
+= Are the existing 100+ widgets Elementor V4 Atomic Widgets? =
+
+No. The 100+ existing widgets belong to the established Animation Addons library. The dedicated Elementor V4 library is a separate set of Atomic Widgets built for the V4 workflow.
+
+= Are the existing 300+ starter templates built for Elementor V4? =
+
+No. The existing starter templates are part of the earlier Animation Addons library. The V4 toolkit separately includes 30+ Elementor V4 website templates and 500+ Elementor V4 sections.
+
+= Does it include Loop Grid filters? =
+
+Yes. Animation Addons Pro includes nine [Atomic Loop Filter widgets](https://animation-addons.com/atomic-elements/atomic-loop-filter/): Taxonomy, Author, Field, Date, Search, Sort, Result Count, Active Filters, and Filter Drawer.
+
+= Can I use Animation Addons without coding? =
+
+Yes. Most widget, template, extension, form, and animation controls are available visually inside Elementor.
 
 = What snippet types are supported in Code Snippets? =
 
-The free plugin supports CSS, JavaScript and HTML snippets. PHP snippet execution is an advanced feature available in Animation Addons Pro.
+The free plugin supports CSS, JavaScript, and HTML snippets. PHP snippet execution is an advanced feature available in Animation Addons Pro.
 
 == Screenshots ==
 
-1. Animation Addons dashboard – Elementor widgets, Atomic Widgets and extensions.
-2. Elementor V4 Atomic Widgets inside the Atomic Editor.
-3. GSAP animation controls – ScrollTrigger, timeline and presets.
-4. Animation and interaction extensions.
-5. Template library – website templates and sections.
-6. Forms and form extensions.
-7. Loop Grid and dynamic filters.
+1. Elementor V4 Atomic Widgets dashboard.
+2. Elementor V4 animation and interaction extensions.
+3. Atomic Widget controls inside Elementor.
+4. GSAP animation controls.
+5. Elementor V4 template library.
+6. Form Builder and form extensions.
+7. Dynamic Loop Grid and filters.
 8. Performance controls and usage information.
 
 == External Services ==
@@ -393,26 +486,10 @@ Vendored libraries:
 
 == Changelog ==
 
-= 4.2.7 =
+= 4.2.6 =
 * Added: Dynamic Tags are now free. Post, Author, Site, Archive, Taxonomy, Comments, and Contact & Social tags (53 in all) work in Elementor V3 and V4 widgets without Animation Addons Pro. Content already built with these tags keeps working, because tag names are unchanged. ACF, Post Meta, and Custom Fields tags stay in Animation Addons Pro.
 * Fixed: Saving a page as a non-administrator could end in a fatal error when it used an Author Info dynamic tag. The check that keeps email addresses out of non-admin edits now covers every dynamic control, not only the title.
 * Changed: The shortcode dynamic tag's "escape output" filter is now `aaeaddon/dynamic_tags/shortcode_should_escape`. The previous name is still honored.
-* Security: Fixed a stored XSS in the Countdown widget labels and expire text (CVE-2025-8444), and the same class of issue in Starter Animation, Category Showcase, Image Gallery lightbox, Progress Bar, Search, Animated Title, Loop Builder, Template Library, Atomic Nav, Atomic Slider and Atomic Social Share.
-* Security: Fixed a reflected XSS on the template import failure screens.
-* Security: Tightened permission checks in Loop Builder previews, Toggle Switcher, Loop Grid, Theme Builder, Forms, Mailchimp and Code Snippets. Only published templates render on the front end.
-* Security: Icon pack and kit uploads are extracted to a temporary folder and checked there before being moved into place. The XML importer no longer unserializes objects.
-* Security: CSV exports are protected against spreadsheet formula injection.
-* Security: The site-wide Mailchimp API key is no longer sent to the Elementor editor. Leave the widget's key empty to use the site key; it is applied on the server.
-* Security: The Popup widget renders a template only if it is published or the visitor may read it. The Atomic Loop Grid lists public post types only.
-* Security: SVG icons fetched for the Atomic Nav dropdown and the slider arrows are reduced to plain SVG shapes before they are inserted.
-* Security: Hardened the script-tag check in the HTML sanitizer and the XML importer's handling of serialized meta.
-* Fixed: Presets imported from another site now load Elementor's placeholder image and the slider's arrow icons from your own site instead of the authoring site.
-* Fixed: The Atomic Search Query heading tag is now the widget root, so Kit and theme heading styles no longer override it.
-* Improved: Atomic Timeline text parts use inline editing.
-* Improved: WPML configuration for more widgets.
-* Fixed: Asset version now matches the plugin version, so browsers load the updated scripts and styles after an update.
-
-= 4.2.6 =
 * Improved: Performance optimization in Theme Builder by removing redundant rewrite rule flushes on request initialization.
 * Fixed: Compatibility with Elementor 4.3 Svg_Control in Atomic Menu and Nav widgets to prevent "Prop type is missing" errors.
 * Improved: Enhanced WPML multilingual compatibility across widgets and theme builder.
@@ -458,9 +535,6 @@ Vendored libraries:
 * Added animation performance controls including lazy loading and reduced-motion options.
 
 == Upgrade Notice ==
-
-= 4.2.7 =
-Security release: fixes stored and reflected XSS (including CVE-2025-8444 in the Countdown widget) and tightens permission checks. Dynamic Tags are now free. Update recommended.
 
 = 4.2.6 =
 Performance optimizations in Theme Builder, Elementor 4.3 compatibility fixes, and WPML enhancements.
