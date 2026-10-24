@@ -668,11 +668,19 @@ function pickMainMenu( menus ) {
 export function autoPopulateNavFromWordPress( navId, attempt = 0 ) {
 	const nav = getContainer( navId );
 	if ( ! nav ) {
+		/* The create hook fires before the editor registers the new element's
+		 * container, so it is not there yet on the first call. Try again shortly. */
+		if ( attempt < 12 ) {
+			window.setTimeout( () => autoPopulateNavFromWordPress( navId, attempt + 1 ), 250 );
+		}
 		return;
 	}
-	/* The four placeholder children are seeded a moment after the Nav lands. */
+	/* The four placeholder children are seeded a moment after the Nav lands: their
+	 * containers exist at once, but their "Menu Item N" text lands ~200ms later. So
+	 * keep waiting while there are four items or fewer, not only while fewer than
+	 * four exist; stopping at four left the Nav on its placeholders for good. */
 	if ( ! isPristinePlaceholderNav( nav ) ) {
-		if ( attempt < 12 && directNavItems( nav ).length < 4 ) {
+		if ( attempt < 12 && directNavItems( nav ).length <= 4 ) {
 			window.setTimeout( () => autoPopulateNavFromWordPress( navId, attempt + 1 ), 250 );
 		}
 		return;

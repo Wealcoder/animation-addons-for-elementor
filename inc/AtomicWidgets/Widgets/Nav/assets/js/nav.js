@@ -1706,7 +1706,15 @@ register( {
 					/* Skip nodes that are not actually reachable (a closed submenu, the
 					 * root items behind an open drill panel): a hidden "last" stop let
 					 * Tab walk out of the drawer into the page behind it. */
-					node.getClientRects().length > 0 && 'hidden' !== getComputedStyle( node ).visibility );
+					node.getClientRects().length > 0 && 'hidden' !== getComputedStyle( node ).visibility &&
+					/* The menu items carry a roving tabindex of -1 (only one stop is in the
+					 * Tab order), so Tab can never land on them. Counting one as "last" made
+					 * the wrap below never fire and Tab walked out of the drawer. */
+					node.tabIndex >= 0 && ! node.disabled )
+				/* Document order is the Tab order. The Close button comes AFTER the Back
+				 * button in the header, so listing it first made it the "first" stop
+				 * when it is really the last one, and Tab walked out from it. */
+				.sort( ( a, b ) => ( a === b ? 0 : ( a.compareDocumentPosition( b ) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1 ) ) );
 			if ( ! focusable.length ) return;
 			const first = focusable[ 0 ];
 			const last = focusable[ focusable.length - 1 ];
