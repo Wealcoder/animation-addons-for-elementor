@@ -30,6 +30,14 @@ class Notices {
 	}
 
 	/**
+	 * Id of the seasonal upgrade banner registered for this request, if any.
+	 * Dismissing a banner is stored under its id, so every campaign has its own.
+	 *
+	 * @var string
+	 */
+	protected $promo_notice_id = '';
+
+	/**
 	 * The plugin prefix.
 	 *
 	 * @var array|string|string[]
@@ -52,8 +60,15 @@ class Notices {
 	public function __construct() {
 		
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
-		add_action( 'admin_init', array( $this, 'add_admin_notices' ) );
-		
+		// The migration and import notices instantiate this class from inside
+		// admin_init (priorities 11 and 12), after priority 10 has already run,
+		// so a hook added here would never fire on that request.
+		if ( did_action( 'admin_init' ) ) {
+			$this->add_admin_notices();
+		} else {
+			add_action( 'admin_init', array( $this, 'add_admin_notices' ) );
+		}
+
 
 		$this->plugin_prefix = 'aaeaddon_notice';
 		add_action( 'wp_ajax_' . $this->plugin_prefix . '_dismiss_notice', array( $this, 'ajax_dismiss_notice' ) );
@@ -79,6 +94,12 @@ class Notices {
 		}
 		wp_register_style( 'aae-notice', AAEADDON_URL . 'assets/css/css/notice.css', array( \Wealcoder\AnimationAddons\Aaeaddon_Fonts::ensure() ), AAEADDON_VERSION );
 		wp_register_script( 'aae-notice', AAEADDON_URL . 'assets/js/js/notice.js', array( 'jquery' ), AAEADDON_VERSION, true );
+		wp_register_style( 'aaeaddon-notice-promo', AAEADDON_URL . 'assets/css/css/promo-banner.css', array(), AAEADDON_VERSION );
+
+		// Only load the banner stylesheet on the screen that will actually show it.
+		if ( $this->promo_notice_id && isset( $this->notices[ $this->promo_notice_id ] ) && $this->should_display( $this->notices[ $this->promo_notice_id ] ) ) {
+			wp_enqueue_style( 'aaeaddon-notice-promo' );
+		}
 	}
 
 	/**
@@ -87,10 +108,153 @@ class Notices {
 	 * @since 2.4.16
 	 */
 	public function add_admin_notices() {
-		// No notice is registered here at present. The seasonal promotion this
-		// method used to carry is switched off, and its stylesheet is no longer
-		// enqueued -- it was still loading on every admin page for a notice that
-		// never rendered.
+		$forced = $this->is_campaign_forced();
+
+		if ( ! $forced && $this->has_pro() ) {
+			return;
+		}
+
+		// One banner at a time: the first campaign whose date range covers today.
+		foreach ( $this->get_campaigns() as $id => $campaign ) {
+			if ( ! $this->is_campaign_live( $campaign, $forced ) ) {
+				continue;
+			}
+
+			// `aaeaddon_notice_` is the prefix the dismissal row is migrated,
+			// kept and uninstalled under (see Compat/key-map.php).
+			$this->promo_notice_id = 'aaeaddon_notice_promo_' . $id;
+			$this->add(
+				array(
+					'message'     => $this->get_campaign_message( $campaign ),
+					'notice_id'   => $this->promo_notice_id,
+					'class'       => 'aae-promo-notice',
+					'dismissible' => false,
+				)
+			);
+			break;
+		}
+	}
+
+	/**
+	 * Testing switch: `define( 'AAEADDON_CAMPAIGN_SHOW', true )` shows the first
+	 * campaign whose artwork exists whatever the date, whether Pro is installed
+	 * or not, and even after it was dismissed. Never define it in a release.
+	 *
+	 * @since 4.2.8
+	 * @return bool
+	 */
+	protected function is_campaign_forced() {
+		return defined( 'AAEADDON_CAMPAIGN_SHOW' ) && true === AAEADDON_CAMPAIGN_SHOW;
+	}
+
+	/**
+	 * Seasonal upgrade banners for free users.
+	 *
+	 * 'start' and 'end' are inclusive dates (Y-m-d) in the site's timezone; an
+	 * empty 'start' means "from the release onwards". 'image' is a 1100x150
+	 * file in assets/images/notice/ with the close button drawn at its top
+	 * right. A new campaign needs a new key: dismissing is stored under it.
+	 *
+	 * @since 4.2.8
+	 * @return array
+	 */
+	protected function get_campaigns() {
+		return array(
+			'halloween_2026' => array(
+				'start'        => '2026-10-20',
+				'end'          => '2026-11-05',
+				'image'        => 'halloween-2026.png',
+				'alt'          => __( 'Upgrade to Pro and save 40% this Halloween', 'animation-addons-for-elementor' ),
+				'label'        => __( 'Upgrade to Pro - 40% off', 'animation-addons-for-elementor' ),
+				'utm_campaign' => 'halloween_2026',
+			),
+			'bfcm_2026'      => array(
+				'start'        => '2026-11-10',
+				'end'          => '2026-12-10',
+				'image'        => 'bfcm-2026.png',
+				'alt'          => __( 'Black Friday deal on Animation Addons Pro. Upgrade now', 'animation-addons-for-elementor' ),
+				'label'        => __( 'Upgrade to Pro - Black Friday deal', 'animation-addons-for-elementor' ),
+				'utm_campaign' => 'bfcm_2026',
+			),
+		);
+	}
+
+	/**
+	 * Does the Pro plugin exist on this site, active or not?
+	 *
+	 * Anyone who has it has nothing to upgrade to.
+	 *
+	 * @since 4.2.8
+	 * @return bool
+	 */
+	protected function has_pro() {
+		return defined( 'AAEADDON_PRO_VERSION' )
+			|| defined( 'WCF_ADDONS_PRO_VERSION' )
+			|| file_exists( WP_PLUGIN_DIR . '/animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php' );
+	}
+
+	/**
+	 * Is today inside the campaign's date range (and its artwork shipped)?
+	 *
+	 * @param array $campaign A get_campaigns() entry.
+	 * @param bool  $forced   Ignore the date range (testing switch).
+	 *
+	 * @since 4.2.8
+	 * @return bool
+	 */
+	protected function is_campaign_live( $campaign, $forced = false ) {
+		if ( ! file_exists( AAEADDON_PATH . 'assets/images/notice/' . $campaign['image'] ) ) {
+			return false;
+		}
+
+		if ( $forced ) {
+			return true;
+		}
+
+		$today = wp_date( 'Y-m-d' );
+
+		return ( empty( $campaign['start'] ) || $today >= $campaign['start'] ) && $today <= $campaign['end'];
+	}
+
+	/**
+	 * Markup of a campaign banner: the artwork, a click-through over the whole
+	 * image and an invisible close button over the one drawn into it.
+	 *
+	 * @param array $campaign A get_campaigns() entry.
+	 *
+	 * @since 4.2.8
+	 * @return string
+	 */
+	protected function get_campaign_message( $campaign ) {
+		$url = add_query_arg(
+			array(
+				'utm_source'   => 'plugin_dashboard',
+				'utm_medium'   => 'free_user_notice',
+				'utm_campaign' => $campaign['utm_campaign'],
+				'utm_content'  => 'upgrade_button',
+			),
+			'https://animation-addons.com/pricing/'
+		);
+
+		// The end date is a plain calendar day, so format it in UTC: going through
+		// the site's timezone could land on the neighbouring day.
+		$ends = wp_date( 'M j', strtotime( $campaign['end'] . ' 00:00:00 UTC' ), new \DateTimeZone( 'UTC' ) );
+
+		// The artwork's own X snoozes for a day (notice.js reads data-snooze);
+		// the row under it offers the other two answers.
+		return sprintf(
+			'<div class="aae-promo-banner"><img src="%1$s" alt="%2$s" width="1100" height="150" /><a class="aae-promo-link" href="%3$s" target="_blank" rel="noopener noreferrer"><span class="screen-reader-text">%4$s</span></a><button type="button" class="aae-promo-close" data-snooze="%5$d"><span class="screen-reader-text">%6$s</span></button></div><div class="aae-promo-actions"><a href="#" data-snooze="%5$d">%7$s</a><span aria-hidden="true">&middot;</span><a href="#" data-dismiss="1">%8$s</a><span class="aae-promo-ends">%9$s</span></div>',
+			esc_url( AAEADDON_URL . 'assets/images/notice/' . $campaign['image'] ),
+			esc_attr( $campaign['alt'] ),
+			esc_url( $url ),
+			esc_html( $campaign['label'] ),
+			DAY_IN_SECONDS,
+			esc_html__( 'Remind me tomorrow', 'animation-addons-for-elementor' ),
+			esc_html__( 'Remind me tomorrow', 'animation-addons-for-elementor' ),
+			esc_html__( "Don't show again", 'animation-addons-for-elementor' ),
+			/* translators: %s: last day of the offer, e.g. "Nov 5". */
+			esc_html( sprintf( __( 'Offer ends %s', 'animation-addons-for-elementor' ), $ends ) )
+		);
 	}
 
 	/**
@@ -297,14 +461,18 @@ class Notices {
 		if ( function_exists( 'get_current_screen' ) ) {
 			$screen = get_current_screen();
 			if ( $screen ) {
-				$is_plugin_screen = ( false !== strpos( $screen->id, 'animation-addons' ) || false !== strpos( $screen->id, 'wcf' ) );
+				// 'aaeaddon' covers the dashboard, whose screen id is
+				// animation-addon_page_aaeaddon_settings.
+				$is_plugin_screen = ( false !== strpos( $screen->id, 'animation-addons' ) || false !== strpos( $screen->id, 'aaeaddon' ) || false !== strpos( $screen->id, 'wcf' ) );
 				if ( ! $is_plugin_screen && ( empty( $notice['type'] ) || 'error' !== $notice['type'] ) ) {
 					return false;
 				}
 			}
 		}
 
-		if ( ( $notice['notice_id'] && $this->is_dismissed( $notice['notice_id'] ) ) || ( $notice['capability'] && ! current_user_can( $notice['capability'] ) ) ) {
+		$dismissed = $notice['notice_id'] && $this->is_dismissed( $notice['notice_id'] ) && ! ( $this->is_campaign_forced() && $notice['notice_id'] === $this->promo_notice_id );
+
+		if ( $dismissed || ( $notice['capability'] && ! current_user_can( $notice['capability'] ) ) ) {
 			return false;
 		}
 

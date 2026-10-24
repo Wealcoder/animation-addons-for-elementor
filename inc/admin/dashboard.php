@@ -651,6 +651,11 @@ class Aaeaddon_Admin_Init
 		// admin <html lang> is not English while this UI is: Chrome offers to
 		// translate, and once it has, the first tab switch blanks the page. The
 		// attribute is what Google documents for opting a subtree out.
+
+		// remove_all_notices() strips admin_notices on this screen, so the
+		// seasonal upgrade banner (free users only) is printed here instead.
+		// It sits outside the translate="no" app root on purpose.
+		\Wealcoder\AnimationAddons\Admin\Notices\Notices::instance()->admin_notices();
 ?>
 		<div class="wrap wcf-admin-wrapper notranslate" id="wcf-admin-ds-cr-js" translate="no"></div>
 <?php

@@ -1,0 +1,77 @@
+/* Seasonal upgrade banner (free users only, see Notices.php). */
+.notice.aae-notice.aae-promo-notice {
+  padding: 0;
+  margin: 15px 20px 15px 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  max-width: 1100px;
+}
+
+.aae-promo-banner {
+  position: relative;
+  line-height: 0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.aae-promo-banner img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.aae-promo-banner .aae-promo-link {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+.aae-promo-banner .aae-promo-link:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: -4px;
+}
+
+/* Sits on top of the close button drawn into the artwork (1100x150 canvas). */
+.aae-promo-banner .aae-promo-close {
+  position: absolute;
+  left: 96%;
+  top: 4.7%;
+  width: 3.3%;
+  height: 24%;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+
+.aae-promo-banner .aae-promo-close:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 0;
+}
+
+/* Row under the artwork: snooze / permanent dismiss / end date. */
+.aae-promo-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #646970;
+}
+
+.aae-promo-actions a {
+  color: #646970;
+  text-decoration: underline;
+}
+
+.aae-promo-actions a:hover,
+.aae-promo-actions a:focus {
+  color: #1d2327;
+}
+
+.aae-promo-actions .aae-promo-ends {
+  margin-inline-start: auto;
+}
