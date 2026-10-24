@@ -1,0 +1,59 @@
+name: WordPress Plugin Check & JS Security
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - '**.php'
+      - '**.js'
+      - '**.css'
+      - 'readme.txt'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/plugin-check.yml'
+  pull_request:
+    branches: [ main, master ]
+    paths:
+      - '**.php'
+      - '**.js'
+      - '**.css'
+      - 'readme.txt'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/plugin-check.yml'
+  workflow_dispatch:
+
+jobs:
+  plugin-check:
+    name: Plugin Check (PCP) & JS Security
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies and build assets
+        run: |
+          npm ci
+          npm run build
+
+      - name: Check JS Security Vulnerabilities (npm audit)
+        run: npm audit --omit=dev --audit-level=high
+        continue-on-error: true
+
+      - name: Scan Vendored JS Libraries (Retire.js)
+        run: npx --yes retire --path assets/ --outputformat text
+        continue-on-error: true
+
+      - name: Run WordPress Plugin Check
+        uses: wordpress/plugin-check-action@v1
+        with:
+          slug: animation-addons-for-elementor
+          build-dir: '.'
+          # Set to true to allow warnings to show as annotations without failing the workflow.
+          ignore-warnings: true

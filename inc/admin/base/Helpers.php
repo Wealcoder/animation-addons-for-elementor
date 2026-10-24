@@ -90,9 +90,57 @@ class Helpers {
 			if ( is_wp_error( $downloaded_files['content'] ) ) {
 				return $downloaded_files['content'];
 			}
+
+			// The template server returns whatever is attached to the entry's
+			// content field. A JSON template export attached there by mistake
+			// was saved as .xml, the WXR parser found nothing in it, and the
+			// user only saw "No page was imported". Name the real cause.
+			$not_xml = self::content_file_problem( $downloaded_files['content'] );
+			if ( is_wp_error( $not_xml ) ) {
+				self::cleanup_import_file( $downloaded_files['content'] );
+				return $not_xml;
+			}
 		}
 
 		return $downloaded_files;
+	}
+
+
+	/**
+	 * Is the downloaded content file something the WXR importer can read?
+	 *
+	 * Only looks at how the file starts: a WordPress export is XML, so its
+	 * first non-blank character is "<". A file that cannot be read is left
+	 * for the importer to report, as before.
+	 *
+	 * @param string $file_path Path to the downloaded content file.
+	 * @return true|\WP_Error True when it looks like XML, WP_Error naming the problem otherwise.
+	 */
+	private static function content_file_problem( $file_path ) {
+		$data = self::data_from_file( $file_path );
+		if ( is_wp_error( $data ) ) {
+			return true;
+		}
+
+		// Skip a UTF-8 byte order mark and leading whitespace.
+		$head  = ltrim( substr( $data, 0, 1024 ), "\xEF\xBB\xBF \t\r\n" );
+		$first = substr( $head, 0, 1 );
+
+		if ( '<' === $first ) {
+			return true;
+		}
+
+		if ( '{' === $first || '[' === $first ) {
+			return new \WP_Error(
+				'aaeaddon_content_not_xml',
+				esc_html__( 'This template could not be imported: its content file is an Elementor JSON template, not the WordPress export (XML) the importer needs. The template is set up incorrectly on our server. Please let our support team know which template you picked.', 'animation-addons-for-elementor' )
+			);
+		}
+
+		return new \WP_Error(
+			'aaeaddon_content_not_xml',
+			esc_html__( 'This template could not be imported: its content file is not a WordPress export (XML). Please try again later, or let our support team know which template you picked.', 'animation-addons-for-elementor' )
+		);
 	}
 
 

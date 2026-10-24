@@ -1399,6 +1399,18 @@ class Aaeaddon_A_Loop_Grid extends Atomic_Element_Base {
 			? sanitize_key( $s['post_type'] )
 			: 'post';
 
+		// The source reaches here from saved settings AND from an editor AJAX
+		// request, so it is not limited to the control's options. A non-public
+		// type (shop_coupon, elementor_library, an LMS's lessons) would list
+		// content the site never exposes. Same rule as Query_Manager.
+		if ( 'related' !== $post_type && 'current_query' !== $post_type ) {
+			$public_types = get_post_types( [ 'public' => true ] );
+			unset( $public_types['attachment'] );
+			if ( ! isset( $public_types[ $post_type ] ) ) {
+				$post_type = 'post';
+			}
+		}
+
 		// Special sources — not post types. Related builds its own term query
 		// from the current post; Current Query inherits the page's main
 		// (archive) query. Both skip the builder's manual filters (their

@@ -1,1 +1,74 @@
-node_modules
+# ─── Editors / OS / local scratch ────────────────────────────────────
+.idea/
+.project
+.sass-cache/
+.DS_Store
+Thumbs.db
+log/
+z_temp/
+/dist
+*.log
+*.md
+
+# ─── Dependencies ────────────────────────────────────────────────────
+node_modules/
+# NOTE: composer.lock is deliberately NOT ignored — it pins the exact PHP
+# dependency versions, so every machine resolves the same tree.
+
+# ─── Source maps (dev-only, rewritten by every `gulp watch`) ─────────
+*.map
+
+# ─── Build output ────────────────────────────────────────────────────
+# RULE: ignore a build directory ONLY if `npm run build` regenerates it
+# completely from a tracked source. Anything else stays committed — a
+# blanket ignore over a mixed directory silently drops newly-added files,
+# and they then go missing on every other machine.
+#
+#   /assets/build/   ← webpack (wp-scripts) from src/**
+#   /assets/atomic/  ← webpack + gulp from inc/AtomicWidgets/**
+#
+# `build/` used to be written bare, which matches a directory named
+# `build` at ANY depth; anchored so it can only ever mean this one.
+/assets/build/
+/assets/atomic/
+
+# assets/css/ and assets/js/ are NOT ignored, on purpose:
+#   1. They are produced by `gulp buildCss` / `gulp buildJs`, which
+#      `npm run build` does NOT run (it only runs wp-scripts + the three
+#      atomic gulp tasks) — so a fresh clone never regenerates them.
+#   2. They also hold vendored third-party libraries with no source at
+#      all (select2, typed.js, chroma, progressbar.js, the CodeMirror
+#      modes under cs-js/, …). Those can never be rebuilt.
+# The old `assets/css/*` / `assets/js/*` lines ignored both kinds
+# indiscriminately while 258 of the 273 files there were tracked anyway,
+# so all the rule actually did was hide the newest 15.
+
+# ─── Local data ──────────────────────────────────────────────────────
+templates.json
+
+# ─── Claude Code ─────────────────────────────────────────────────────
+# A MIXED directory, so it follows the same rule as the build output
+# above rather than being ignored wholesale: skills/ is shared team
+# content and stays tracked, everything else is per-machine.
+#
+# worktrees/ is why this section exists. Agent worktrees are full copies
+# of the plugin — 36 MB in two of them — living inside the plugin
+# directory. Git registers them as worktrees, so they never appear in
+# `git status` and were invisible while still being large enough to land
+# in a release ZIP built by copying the directory.
+#
+# settings.json and settings.local.json are permission allow-lists full
+# of absolute paths from one developer's machine (C:/Users/…, D:/programs/…).
+# They grow with every session, conflict on every merge, and mean nothing
+# on anyone else's machine.
+.claude/*
+!.claude/skills/
+
+# ─── Developer documentation ─────────────────────────────────────────
+# A learning guide and a teaching example (an "Alert Box" atomic widget),
+# not plugin code. It lives inside the plugin directory, so it was tracked
+# and it shipped: nothing in `gulp zip` excluded it, and its example used
+# the boilerplate text domain 'my-plugin', which is the kind of thing a
+# WordPress.org review flags. gulpfile.js now excludes it from the release
+# ZIP as well — this rule keeps it out of the repository.
+elementor-atomic-learning-guide/

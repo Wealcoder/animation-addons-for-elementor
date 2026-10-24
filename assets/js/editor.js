@@ -61,12 +61,12 @@
     const $mailchimp_lists = panel.$el.find('[data-setting="mailchimp_lists"]');
     const $element = panel.$el.find('[data-setting="mailchimp_api"]');
 
-    if ($element.val()) {
-      ajax_request($element.val(), $mailchimp_lists);
-    }
+    // An empty key means "use the site-wide key"; the server applies it, so
+    // the key itself never reaches the editor.
+    ajax_request($element.val(), $mailchimp_lists);
 
     $mailchimp_lists.on("change", function () {
-      if ($mailchimp_lists.val() && $element.val()) {
+      if ($mailchimp_lists.val()) {
         forms_fields_ajax_request($element.val(), $mailchimp_lists.val());
       }
     });
