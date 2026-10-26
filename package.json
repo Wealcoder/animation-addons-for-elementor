@@ -65,7 +65,7 @@
   "devDependencies": {
     "@babel/core": "^7.10.4",
     "@babel/preset-env": "^7.10.4",
-    "@mr-hope/gulp-sass": "^2.0.0",
+    "@mr-hope/gulp-sass": "^3.1.1",
     "@wordpress/browserslist-config": "^2.7.0",
     "@wordpress/scripts": "^27.9.0",
     "@wordpress/stylelint-config": "^20.0.2",
