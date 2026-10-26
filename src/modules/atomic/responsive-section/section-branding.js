@@ -46,6 +46,27 @@ const AAE_SECTION_LABELS = new Set([
 	'Popup',
 ]);
 
+/* AAE sections that live in the STYLE tab. Everything else in AAE_SECTION_LABELS
+ * is registered in the General tab.
+ *
+ * Needed because branding matches on the header's TEXT, and Elementor ships its
+ * own "Custom CSS" section in the Style tab. Sharing the name meant our logo and
+ * "Try" link were painted onto Elementor's section (its own upgrade promo), which
+ * looked like we had taken over their control. Outside the Style tab nothing
+ * changes. */
+const AAE_STYLE_TAB_LABELS = new Set([
+	'Mask',
+]);
+
+/** The panel a header sits in: 'style', 'settings', 'interactions', or ''. */
+function tabOf(el) {
+	const panel = el.closest('[role="tabpanel"]');
+	const id = panel ? panel.id || '' : '';
+	const match = /-([a-z]+)$/.exec(id);
+
+	return match ? match[1] : '';
+}
+
 let started = false;
 
 /** Brand one section-header label element (idempotent via data flag). */
@@ -54,6 +75,9 @@ function brandLabel(labelEl) {
 
 	const text = (labelEl.textContent || '').trim();
 	if (!AAE_SECTION_LABELS.has(text)) return;
+
+	// Same name, different owner: only OUR Style-tab sections are branded there.
+	if ('style' === tabOf(labelEl) && !AAE_STYLE_TAB_LABELS.has(text)) return;
 
 	labelEl.dataset.aaeBranded = '1';
 
