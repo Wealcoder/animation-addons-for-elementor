@@ -6,7 +6,11 @@
    for the ones it can't; dismissing that alert calls unapplyClasses(), which
    strips the hook off the element for good. Emitting it here keeps the markup
    identical while the panel stays clean. #}
-{%- set classes = [ 'aae-a-timeline-item-marker' ] | merge( settings.classes | default([]) ) | merge( [ base_styles.base ] ) | join(' ') -%}
+{# …plus `m.default_tag_class(…)`, the `e-default-<tag>` hook for Design System >
+   Defaults. It takes the RESOLVED tag, not a literal, because this part's tag is
+   a prop: the class has to name the element actually rendered. See
+   aae-a-timeline.html.twig for the cascade reasoning. #}
+{%- set classes = [ 'aae-a-timeline-item-marker' ] | merge( settings.classes | default([]) ) | merge( [ base_styles.base, m.default_tag_class( settings.tag | default('span') ) ] ) | join(' ') -%}
 <{{ settings.tag | default('span') | e('html_tag') }} class="{{ classes }} {{ editor_classes | default('') }}"
 	{{- m.render_data_attributes(id, type, interaction_id | default('')) }}
 	{{- m.render_custom_attributes(settings, editor_attributes) }}>

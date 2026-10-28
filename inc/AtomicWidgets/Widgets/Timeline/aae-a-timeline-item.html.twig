@@ -1,4 +1,8 @@
-{% set classes = ['aae-a-timeline-item', 'e-con', 'e-atomic-element', base_styles.base] | merge(settings.classes | default([])) | join(' ') %}
+{% import 'elementor/macros' as m %}
+{# `m.default_tag_class('div')` emits the `e-default-div` hook for Elementor's
+   Design System > Defaults. Rationale and the tag-choice rules for this group
+   live in aae-a-timeline.html.twig. #}
+{% set classes = ['aae-a-timeline-item', 'e-con', 'e-atomic-element', base_styles.base, m.default_tag_class('div')] | merge(settings.classes | default([])) | join(' ') %}
 
 <div class="{{ classes }} {{ editor_classes | default('') }}"
     data-id="{{ id }}"

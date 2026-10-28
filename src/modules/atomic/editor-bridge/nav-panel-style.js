@@ -78,13 +78,17 @@ ${ BODY } .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline,
 ${ BODY } .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
 	border-color: #F97316;
 }
-${ BODY } .MuiButton-outlined {
+/* [data-aae-plain] opts a button out of the accent. The Mobile Menu part
+ * pickers use it: there are up to seven of them stacked in a column and the
+ * accent on every one read as a wall of orange. They keep the editor's own
+ * divider/text tokens, set via sx in NavItemsControl. */
+${ BODY } .MuiButton-outlined:not([data-aae-plain]) {
 	color: #EA580C;
 	border-color: #F97316;
 	border-radius: 9px;
 	background-color: transparent;
 }
-${ BODY } .MuiButton-outlined:hover {
+${ BODY } .MuiButton-outlined:not([data-aae-plain]):hover {
 	border-color: #EA580C;
 	background-color: rgba(249, 115, 22, 0.12);
 }

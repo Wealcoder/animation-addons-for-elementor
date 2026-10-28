@@ -5,7 +5,11 @@
   form.js copies this span's classes + text onto every runtime-injected
   .aae-form-field-error span in the same form.
 #}
-{% set classes = ['aae-a-form-field-error', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') | trim %}
+{% import 'elementor/macros' as m %}
+{# `m.default_tag_class(…)` emits the `e-default-<tag>` hook for Elementor's
+   Design System > Defaults. Rationale and the tag-choice rules for this whole
+   group live in aae-a-form.html.twig. #}
+{% set classes = ['aae-a-form-field-error', 'e-atomic-element', base_styles.base | default(''), m.default_tag_class('span')] | merge(settings.classes | default([])) | join(' ') | trim %}
 {% set allowed_tags = '<b><strong><sup><sub><s><em><i><u><del><span><br>' %}
 
 <span

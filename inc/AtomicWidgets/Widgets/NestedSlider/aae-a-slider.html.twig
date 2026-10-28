@@ -1,4 +1,27 @@
-{% set classes = ['aae-a-slider', 'e-con', 'e-atomic-element', base_styles.base] | merge(settings.classes | default([])) | join(' ') %}
+{% import 'elementor/macros' as m %}
+{# `m.default_tag_class(tag)` emits `e-default-<tag>` — the hook Elementor's
+   Design System > Defaults writes against (`.elementor .e-default-div { … }`).
+   Every part of this slider carries it; without it the whole group is invisible
+   to the Defaults panel while a core element beside it obeys.
+
+   The tag is always a LITERAL across this group, because each template renders
+   one fixed element: `div` for the slider, track, slide, nav arrows, pagination,
+   indicators, progress, progress fill and counter; `span` for the dot, current,
+   total, percentage and divider.
+
+   Safe against a `div` default that carries spacing: effects/nested-slider
+   re-measures on every layout pass — getSlideWidth() reads offsetWidth live and
+   the viewport width subtracts the track's own horizontal padding — so extra
+   padding shifts the look but never desynchronises the transform. The track's
+   mechanical properties (display/gap/width/touch-action/perspective) are inline
+   on the element, so no default can reach them either way.
+
+   Cascade order needs no help — `.elementor .e-default-div` and
+   `.elementor .e-aae-a-slider-base` are both (0,2,0), and the defaults sheet
+   loads after the base sheet, so a default beats our base style; a Style-tab
+   value, written to the per-document sheet after both, still beats the default.
+   Per property, so anything set by hand is kept. #}
+{% set classes = ['aae-a-slider', 'e-con', 'e-atomic-element', base_styles.base, m.default_tag_class('div')] | merge(settings.classes | default([])) | join(' ') %}
 <div class="{{ classes }} {{ editor_classes | default('') }}"
     data-id="{{ id }}"
     data-element_type="{{ type }}"

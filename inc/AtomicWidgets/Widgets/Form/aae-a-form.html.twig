@@ -10,7 +10,25 @@
   tells it which schema to submit against (empty until the first save).
 #}
 {% set form_state = settings['form-state'] | default('default') %}
-{% set classes = ['aae-a-form', 'e-con', 'e-atomic-element', base_styles.base | default(''), 'form-state-' ~ form_state] | merge(settings.classes | default([])) | join(' ') | trim %}
+{% import 'elementor/macros' as m %}
+{# `m.default_tag_class(tag)` emits `e-default-<tag>` — the hook Elementor's
+   Design System > Defaults writes against (`.elementor .e-default-form { … }`).
+   Every atomic element in this Form group carries it; without it the group is
+   invisible to the Defaults panel while a core element beside it obeys.
+
+   The tag is always a LITERAL here, because each of these templates renders one
+   fixed element and nothing switches it at runtime. It must name the element
+   ACTUALLY rendered: the Password, Rating and Calculation widgets are styleable
+   `div` wrappers around a hidden or transparent input, so they take `div`, not
+   `input`. Range Value renders an `<output>`, which is not in Elementor's
+   Default_Styles_Allowed_Tags, so it gets no class at all rather than a dead one.
+
+   The cascade needs no help — `.elementor .e-default-form` and
+   `.elementor .e-aae-a-form-base` are both (0,2,0), and the defaults sheet loads
+   after the base sheet, so a default beats our base style; a Style-tab value,
+   written to the per-document sheet after both, still beats the default. Per
+   property, so anything set by hand is kept. #}
+{% set classes = ['aae-a-form', 'e-con', 'e-atomic-element', base_styles.base | default(''), 'form-state-' ~ form_state, m.default_tag_class('form')] | merge(settings.classes | default([])) | join(' ') | trim %}
 
 <form class="{{ classes }} {{ editor_classes | default('') }}"
     data-id="{{ id }}"

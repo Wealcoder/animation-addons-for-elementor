@@ -92,6 +92,16 @@ const ACCENT_TINT_STRONG = 'rgba( 91, 63, 214, 0.16 )';
 const ACCENT_LINE = '#e3defa';
 const CHIP_BORDER = '#d6cef7';
 
+// Ink for the card. CARD_SX and the field below it paint a FIXED light surface,
+// so everything written on them needs a fixed dark colour to match. The theme
+// tokens (`text.secondary`, `text.tertiary`) that used to be here follow the
+// editor's own theme, which flips them to near-white in dark mode — white text
+// on the white field, so the heading's content looked like an empty box while
+// the text was in fact there the whole time.
+const INK = '#0c0d0e';
+const INK_MUTED = '#55595c';
+const INK_FAINT = '#7a7f83';
+
 // The buttons carry TEXT glyphs, not icon components, so MUI's size="tiny" only
 // shrinks the padding — the glyph keeps the inherited font size and holds the
 // box open. Pin both.
@@ -162,14 +172,14 @@ const PANEL_TITLE_SX = {
 	fontWeight: 600,
 	letterSpacing: '0.04em',
 	textTransform: 'uppercase',
-	color: 'text.secondary',
+	color: INK_MUTED,
 };
 
 const PANEL_HINT_SX = {
 	mt: 0.75,
 	fontSize: '11px',
 	lineHeight: 1.4,
-	color: 'text.tertiary',
+	color: INK_FAINT,
 };
 
 const APPLY_SX = {
@@ -190,7 +200,7 @@ const CLOSE_SX = {
 	minWidth: 20,
 	p: 0,
 	borderRadius: '6px',
-	color: 'text.secondary',
+	color: INK_MUTED,
 };
 
 
@@ -523,6 +533,34 @@ const FORMAT_ELEMENTS = new Set( [
 	'b', 'strong', 'i', 'em', 'u', 's', 'strike', 'del', 'ins',
 	'sub', 'sup', 'mark', 'a',
 ] );
+
+/**
+ * The execCommand that produced each wrapper.
+ *
+ * Needed to clear the browser's TYPING STYLE when the caret steps out of a run
+ * — see the Space handler. Moving the caret in the DOM is not enough on its
+ * own: execCommand('subscript') and friends also set a sticky "what I type
+ * next looks like this" state, which survives the move. The next character is
+ * then re-formatted and Chrome merges it back into the element the caret just
+ * left, swallowing the escape space with it — so `H2O<sub>abc</sub> ` became
+ * `H2O<sub>abcXYZ</sub>`, with the space gone and the subscript running on.
+ *
+ * Only the wrappers a command can toggle are listed. `a`, `mark`, `ins` and the
+ * colour swatch's styled `span` are applied by wrapping a Range directly, never
+ * through a typing style, so they have nothing to clear.
+ */
+const TAG_COMMANDS = {
+	b: 'bold',
+	strong: 'bold',
+	i: 'italic',
+	em: 'italic',
+	u: 'underline',
+	s: 'strikeThrough',
+	strike: 'strikeThrough',
+	del: 'strikeThrough',
+	sub: 'subscript',
+	sup: 'superscript',
+};
 
 /**
  * Is this element one the caret should escape when a space is typed at its end?
@@ -1210,6 +1248,11 @@ export function InlineTextControl() {
 								let child = escNode;
 								let parent = escNode.parentNode;
 								let outermost = null;
+								// Only the wrappers actually stepped out of. A run the
+								// caret stays inside (its `lastChild` test fails) keeps
+								// its typing style — clearing that too would silently
+								// drop formatting the user never left.
+								const escapedTags = [];
 
 								while (
 									parent &&
@@ -1218,6 +1261,7 @@ export function InlineTextControl() {
 									parent.lastChild === child
 								) {
 									outermost = parent;
+									escapedTags.push( parent.nodeName.toLowerCase() );
 									child = parent;
 									parent = parent.parentNode;
 								}
@@ -1225,7 +1269,27 @@ export function InlineTextControl() {
 								if ( outermost?.parentNode ) {
 									event.preventDefault();
 
-									const space = document.createTextNode( ' ' );
+									// A PLAIN space is collapsible when nothing follows it, so
+									// the browser discards it the moment the next character
+									// arrives: `H2O<sub>abc</sub> ` + `X` came back as
+									// `H2O<sub>abc</sub>X` — the space gone and the escape
+									// undone with it. NBSP is what the browser itself puts
+									// at the end of a contenteditable for the same reason,
+									// and collapseSpaces() already treats the two alike.
+									//
+									// Only when trailing: mid-text a plain space is safe and
+									// a run of NBSPs would glue the words either side of it
+									// together, which changes how a long heading wraps.
+									const probe = document.createRange();
+									probe.setStartAfter( outermost );
+									probe.setEnd(
+										editableRef.current,
+										editableRef.current.childNodes.length
+									);
+
+									const space = document.createTextNode(
+										'' === probe.toString() ? ' ' : ' '
+									);
 									outermost.parentNode.insertBefore( space, outermost.nextSibling );
 
 									const after = document.createRange();
@@ -1233,6 +1297,26 @@ export function InlineTextControl() {
 									after.collapse( true );
 									escSel.removeAllRanges();
 									escSel.addRange( after );
+
+									// Drop the sticky typing style for every run just left,
+									// or the next keystroke is re-formatted and merged back
+									// into it — see TAG_COMMANDS. Toggling with the caret
+									// collapsed changes only that state, not the document.
+									// Deduped: `<b><strong>` would otherwise toggle bold
+									// twice and turn it straight back on.
+									const cleared = new Set();
+
+									for ( const escapedTag of escapedTags ) {
+										const cmd = TAG_COMMANDS[ escapedTag ];
+
+										if ( cmd && ! cleared.has( cmd ) ) {
+											cleared.add( cmd );
+
+											if ( document.queryCommandState( cmd ) ) {
+												document.execCommand( cmd, false, null );
+											}
+										}
+									}
 
 									syncFromDom();
 								}
@@ -1250,6 +1334,7 @@ export function InlineTextControl() {
 					// wrapped line from the next while you are reading the source.
 					lineHeight: 2,
 					bgcolor: '#ffffff',
+					color: INK,
 					border: '1px solid',
 					borderColor: ACCENT_LINE,
 					borderRadius: '10px',
@@ -1268,7 +1353,7 @@ export function InlineTextControl() {
 					'&:focus': { borderColor: ACCENT, boxShadow: '0 0 0 3px rgba( 91, 63, 214, 0.15 )' },
 					'&:empty::before': {
 						content: 'attr(data-placeholder)',
-						color: 'text.tertiary',
+						color: INK_FAINT,
 						opacity: 0.6,
 						pointerEvents: 'none',
 					},

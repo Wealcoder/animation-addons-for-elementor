@@ -1,4 +1,20 @@
-{% set btn_classes = ['aae-a-btn', 'e-con', 'e-atomic-element', base_styles.base]
+{% import 'elementor/macros' as m %}
+{# `m.default_tag_class('a')` emits `e-default-a` — the hook Elementor's Design
+   System > Defaults writes against (`.elementor .e-default-a { … }`). Core's
+   Button puts it on the root the same way; without it this widget is invisible
+   to the Defaults panel while a core Button beside it obeys.
+
+   The tag is the LITERAL 'a', not a variable, because this template always
+   renders an <a>: with no link it keeps the element and switches to
+   `tabindex="0" role="button"` rather than becoming a <button>. The class has
+   to describe the element actually rendered, so `a` is right even in that case.
+
+   Cascade order needs no help — `.elementor .e-default-a` and
+   `.elementor .e-aae-a-btn-base` are both (0,2,0) and the defaults sheet loads
+   after the base sheet, so a default beats our base style while a Style-tab
+   value, written to the per-document sheet after both, still beats the default.
+   Per property, so anything set by hand is kept. #}
+{% set btn_classes = ['aae-a-btn', 'e-con', 'e-atomic-element', base_styles.base, m.default_tag_class('a')]
     | merge(settings.aae_btn_text_flip ? ['aae-btn-txtflip'] : [])
     | merge(settings.aae_btn_border_divide ? ['aae-btn-borderdivide'] : [])
     | merge(settings.aae_btn_mask ? ['aae-btn-mask'] : [])

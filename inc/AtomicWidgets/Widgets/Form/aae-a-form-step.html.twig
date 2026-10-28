@@ -5,7 +5,11 @@
   the runtime's step-progress indicator without needing a JS re-read of the
   atomic prop.
 #}
-{% set classes = ['aae-a-form-step', 'e-con', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') | trim %}
+{% import 'elementor/macros' as m %}
+{# `m.default_tag_class(…)` emits the `e-default-<tag>` hook for Elementor's
+   Design System > Defaults. Rationale and the tag-choice rules for this whole
+   group live in aae-a-form.html.twig. #}
+{% set classes = ['aae-a-form-step', 'e-con', 'e-atomic-element', base_styles.base | default(''), m.default_tag_class('div')] | merge(settings.classes | default([])) | join(' ') | trim %}
 
 <div class="{{ classes }} {{ editor_classes | default('') }}"
     data-id="{{ id }}"

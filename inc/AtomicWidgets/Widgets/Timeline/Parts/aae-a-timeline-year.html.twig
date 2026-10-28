@@ -1,7 +1,11 @@
 {% import 'elementor/macros' as m %}
 {# `aae-a-timeline-item-date` is a plain CSS hook, not an Elementor style-def id — see
    the matching comment in aae-a-timeline-number.html.twig. #}
-{%- set classes = [ 'aae-a-timeline-item-date' ] | merge( settings.classes | default([]) ) | merge( [ base_styles.base ] ) | join(' ') -%}
+{# …plus `m.default_tag_class(…)`, the `e-default-<tag>` hook for Design System >
+   Defaults. It takes the RESOLVED tag, not a literal, because this part's tag is
+   a prop: the class has to name the element actually rendered. See
+   aae-a-timeline.html.twig for the cascade reasoning. #}
+{%- set classes = [ 'aae-a-timeline-item-date' ] | merge( settings.classes | default([]) ) | merge( [ base_styles.base, m.default_tag_class( settings.tag | default('span') ) ] ) | join(' ') -%}
 <{{ settings.tag | default('span') | e('html_tag') }} class="{{ classes }} {{ editor_classes | default('') }}"
 	{{- m.render_data_attributes(id, type, interaction_id | default('')) }}
 	{{- m.render_custom_attributes(settings, editor_attributes) }}>

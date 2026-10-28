@@ -5,7 +5,11 @@
   Icon renders BEFORE the text (back-action convention): an uploaded SVG
   (Icon control) if set, else a built-in chevron glyph.
 #}
-{% set classes = ['aae-a-form-prev', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') | trim %}
+{% import 'elementor/macros' as m %}
+{# `m.default_tag_class(…)` emits the `e-default-<tag>` hook for Elementor's
+   Design System > Defaults. Rationale and the tag-choice rules for this whole
+   group live in aae-a-form.html.twig. #}
+{% set classes = ['aae-a-form-prev', 'e-atomic-element', base_styles.base | default(''), m.default_tag_class('button')] | merge(settings.classes | default([])) | join(' ') | trim %}
 {% set allowed_tags = '<b><strong><sup><sub><s><em><i><u><del><span><br>' %}
 {% set icon_url = settings.icon.url | default('') %}
 

@@ -1589,7 +1589,28 @@ export function MobileNavPartsControl() {
 										<Button
 											size="small"
 											variant="outlined"
-											sx={ { ...NAV_OUTLINE_BTN_SX, flex: 1, justifyContent: 'flex-start', textAlign: 'start', flexDirection: 'column', alignItems: 'flex-start', gap: 0 } }
+											/* Opts out of the panel-wide orange button rule in
+											 * nav-panel-style.js, which would otherwise outrank the sx below. */
+											data-aae-plain=""
+											/* Plain, theme-token styling — NOT the orange NAV_OUTLINE_BTN_SX.
+											 * There are up to seven of these stacked in a column, and the
+											 * accent on every one of them read as a wall of orange. They are
+											 * ordinary navigation into the Style tab, not calls to action, so
+											 * they follow the editor's own divider/text tokens like the other
+											 * list rows in this panel and stay readable in both themes. */
+											sx={ {
+												flex: 1,
+												justifyContent: 'flex-start',
+												textAlign: 'start',
+												flexDirection: 'column',
+												alignItems: 'flex-start',
+												gap: 0,
+												borderRadius: '9px',
+												borderColor: 'divider',
+												color: 'text.primary',
+												bgcolor: 'transparent',
+												'&:hover': { borderColor: 'text.secondary', bgcolor: 'action.hover' },
+											} }
 											onClick={ () => selectPart( hasIcon ? iconClass : className ) }
 										>
 											<span>{ label }</span>

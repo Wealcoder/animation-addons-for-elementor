@@ -5,7 +5,11 @@
   `multiple`, plus autocomplete="country-name" for browser autofill. name
   falls back to _cssid, then element id.
 #}
-{% set classes = ['aae-a-form-country', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') | trim %}
+{% import 'elementor/macros' as m %}
+{# `m.default_tag_class(…)` emits the `e-default-<tag>` hook for Elementor's
+   Design System > Defaults. Rationale and the tag-choice rules for this whole
+   group live in aae-a-form.html.twig. #}
+{% set classes = ['aae-a-form-country', 'e-atomic-element', base_styles.base | default(''), m.default_tag_class('select')] | merge(settings.classes | default([])) | join(' ') | trim %}
 {% set input_name = settings.name is defined and settings.name is not empty ? settings.name : (settings._cssid is defined and settings._cssid is not empty ? settings._cssid : id) %}
 {% set placeholder = settings.placeholder | default('') | trim %}
 

@@ -1,4 +1,15 @@
-{% set classes = ['aae-a-accordion', 'e-con', 'e-atomic-element', base_styles.base] | merge(settings.classes | default([])) | join(' ') %}
+{% import 'elementor/macros' as m %}
+{# `m.default_tag_class(tag)` emits `e-default-<tag>` — the hook Elementor's
+   Design System > Defaults writes against (`.elementor .e-default-div { … }`).
+   Without it this widget is invisible to the Defaults panel while a core
+   element beside it obeys.
+
+   Cascade order needs no help — `.elementor .e-default-div` and
+   `.elementor .e-aae-a-accordion-base` are both (0,2,0), and the defaults sheet
+   loads after the base sheet, so a default beats our base style; a Style-tab
+   value, written to the per-document sheet after both, still beats the default.
+   Per property, so anything set by hand is kept. #}
+{% set classes = ['aae-a-accordion', 'e-con', 'e-atomic-element', base_styles.base, m.default_tag_class('div')] | merge(settings.classes | default([])) | join(' ') %}
 {% set multiple_open = settings.multiple_open | default(false) %}
 {% set animation_speed = settings.animation_speed | default(400) %}
 <div class="{{ classes }} {{ editor_classes | default('') }}"

@@ -23,7 +23,11 @@
    which would stretch the submit button across the whole form. The leaf
    version of this button never had the class and rendered correctly, so this
    stays the known-good class list. #}
-{% set classes = ['aae-a-form-submit', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') | trim %}
+{% import 'elementor/macros' as m %}
+{# `m.default_tag_class(…)` emits the `e-default-<tag>` hook for Elementor's
+   Design System > Defaults. Rationale and the tag-choice rules for this whole
+   group live in aae-a-form.html.twig. #}
+{% set classes = ['aae-a-form-submit', 'e-atomic-element', base_styles.base | default(''), m.default_tag_class('button')] | merge(settings.classes | default([])) | join(' ') | trim %}
 {% set btn_type = settings.button_type | default('submit') %}
 
 <button

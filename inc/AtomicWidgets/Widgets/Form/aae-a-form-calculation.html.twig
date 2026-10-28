@@ -7,7 +7,11 @@
   readonly (not disabled) — a disabled control wouldn't submit at all.
   name falls back to _cssid, then element id, same as the text-family Input.
 #}
-{% set classes = ['aae-a-form-calculation', 'e-atomic-element', base_styles.base | default('')] | merge(settings.classes | default([])) | join(' ') | trim %}
+{% import 'elementor/macros' as m %}
+{# `m.default_tag_class(…)` emits the `e-default-<tag>` hook for Elementor's
+   Design System > Defaults. Rationale and the tag-choice rules for this whole
+   group live in aae-a-form.html.twig. #}
+{% set classes = ['aae-a-form-calculation', 'e-atomic-element', base_styles.base | default(''), m.default_tag_class('div')] | merge(settings.classes | default([])) | join(' ') | trim %}
 {% set input_name = settings.name is defined and settings.name is not empty ? settings.name : (settings._cssid is defined and settings._cssid is not empty ? settings._cssid : id) %}
 {% set decimals = settings.decimals is defined and settings.decimals is not empty ? settings.decimals : 2 %}
 {% set empty_text = settings.empty_text is defined and settings.empty_text is not empty ? settings.empty_text : '—' %}

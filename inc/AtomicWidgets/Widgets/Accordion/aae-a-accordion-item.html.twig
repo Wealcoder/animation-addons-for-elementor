@@ -1,5 +1,29 @@
+{% import 'elementor/macros' as m %}
+{# `m.default_tag_class(tag)` emits `e-default-<tag>`, the hook Elementor's
+   Design System > Defaults writes against — see aae-a-accordion.html.twig for
+   the cascade reasoning, which is the same here.
+
+   It goes on the three surfaces that carry a base-style class, because those
+   are the parts a builder can style and therefore the parts a default should
+   reach: this root `div` (base), the header `button` (header) and the content
+   `div` (content). Core does the same — its Heading puts the class on the inner
+   link too, not only on the root.
+
+   Deliberately NOT on the other three elements here. `.aae-children-injector`
+   is `display:none` plumbing. `.aae-accordion-content-wrapper` is the element
+   accordion.js animates the height of. The `{{ heading_tag }}` wrapper is a
+   semantic shell with no base-style class and no panel control any more (the
+   `title_html_tag` control is commented out in class-aae-a-accordion-item.php);
+   the visible title is a child Atomic_Heading that already carries core's own
+   default-tag class for whatever H-level it is set to.
+
+   Note what a default CANNOT reach: the header button and the content div each
+   carry an inline `style` attribute, and inline beats every class rule. On the
+   button that is display/align-items/justify-content/width/background/border/
+   cursor; on the content div, display/flex-direction/gap. A `button` or `div`
+   default still lands on everything else — colour, font, padding, radius. #}
 {% set is_active_class = settings.is_active ? 'active' : '' %}
-{% set classes = ['aae-a-accordion-item', 'e-con', 'e-atomic-element', base_styles.base, is_active_class] | merge(settings.classes | default([])) | join(' ') %}
+{% set classes = ['aae-a-accordion-item', 'e-con', 'e-atomic-element', base_styles.base, is_active_class, m.default_tag_class('div')] | merge(settings.classes | default([])) | join(' ') %}
 
 <div class="{{ classes }} {{ editor_classes | default('') }}"
     data-id="{{ id }}"
@@ -26,7 +50,7 @@
     {# Header Div - Clickable area #}
     {% set heading_tag = settings.title_html_tag | default('div') %}
     <{{ heading_tag }} class="aae-accordion-title-wrapper" style="margin: 0; padding: 0;">
-        <button class="aae-accordion-header {{ base_styles.header | default('') }}"
+        <button class="aae-accordion-header {{ base_styles.header | default('') }} {{ m.default_tag_class('button') }}"
             type="button"
             aria-expanded="{{ settings.is_active ? 'true' : 'false' }}"
             aria-controls="aae-accordion-content-{{ id }}"
@@ -54,7 +78,7 @@
          aria-labelledby="aae-accordion-header-{{ id }}"
          style="overflow: hidden;">
         {# Content Div_Block (Text) - injected here by JS #}
-        <div class="aae-accordion-content {{ base_styles.content | default('') }} e-con" style="display: flex; flex-direction: column; gap: 15px;"></div>
+        <div class="aae-accordion-content {{ base_styles.content | default('') }} e-con {{ m.default_tag_class('div') }}" style="display: flex; flex-direction: column; gap: 15px;"></div>
     </div>
 </div>
 
