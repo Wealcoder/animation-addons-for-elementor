@@ -1,9 +1,17 @@
 {% import 'elementor/macros' as m %}
-{% set classes = ['aae-a-loop-item', 'e-con', 'e-atomic-element', base_styles.base] | merge(settings.classes | default([])) | join(' ') %}
+{# The tag is RESOLVED first, because `m.default_tag_class(tag)` below has to
+   name the element actually rendered: this item is a plain `div` until a link
+   is set on it, and an `<a>` (or whatever `settings.link.tag` says) once one
+   is. The `set classes` line used to sit above this block; it was moved below
+   so it can read `tag`. Nothing between the two lines used `classes`. #}
 {% set tag = 'div' %}
 {% if settings.link is defined and settings.link.href is defined and settings.link.href is not empty %}
     {% set tag = settings.link.tag | default('a') %}
 {% endif %}
+{# `m.default_tag_class(tag)` emits `e-default-<tag>` — the hook Elementor's
+   Design System > Defaults writes against. See aae-a-loop-grid.html.twig for
+   the cascade reasoning, which is the same here. #}
+{% set classes = ['aae-a-loop-item', 'e-con', 'e-atomic-element', base_styles.base, m.default_tag_class(tag)] | merge(settings.classes | default([])) | join(' ') %}
 <{{ tag }} class="{{ classes }} {{ editor_classes | default('') }}"
     data-id="{{ id }}"
     data-element_type="{{ type }}"

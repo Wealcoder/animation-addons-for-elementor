@@ -1,4 +1,23 @@
-{% set classes = ['aae-a-loop-grid-wrap', 'e-con', 'e-atomic-element', base_styles.base] | merge(settings.classes | default([])) | join(' ') %}
+{% import 'elementor/macros' as m %}
+{# `m.default_tag_class(tag)` emits `e-default-<tag>` — the hook Elementor's
+   Design System > Defaults writes against (`.elementor .e-default-div { … }`).
+   Without it this widget is invisible to the Defaults panel while a core
+   element beside it obeys.
+
+   Across this group the tag is a LITERAL, because each template renders one
+   fixed element: `div` for the grid, layout, pagination, numbers, nav,
+   nav-wrap and load-more; `span` for the arrow; `a` for the page number. Two
+   of those are worth stating, because the markup and the role disagree: the
+   Load More renders a `div` carrying `role="button"`, and the Arrow a `span`.
+   The class names the ELEMENT, not the role, so they take `div` and `span`.
+   Only the Item varies at runtime — see aae-a-loop-item.html.twig.
+
+   Cascade order needs no help — `.elementor .e-default-div` and
+   `.elementor .e-aae-a-loop-grid-base` are both (0,2,0), and the defaults
+   sheet loads after the base sheet, so a default beats our base style; a
+   Style-tab value, written to the per-document sheet after both, still beats
+   the default. Per property, so anything set by hand is kept. #}
+{% set classes = ['aae-a-loop-grid-wrap', 'e-con', 'e-atomic-element', base_styles.base, m.default_tag_class('div')] | merge(settings.classes | default([])) | join(' ') %}
 <div class="{{ classes }} {{ editor_classes | default('') }}"
     data-id="{{ id }}"
     data-element_type="{{ type }}"

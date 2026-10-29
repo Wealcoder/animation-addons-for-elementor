@@ -1,7 +1,11 @@
+{% import 'elementor/macros' as m %}
+{# `m.default_tag_class(…)` emits the `e-default-<tag>` hook for Elementor's
+   Design System > Defaults. Rationale and the tag-choice rules for this whole
+   group live in aae-a-loop-grid.html.twig. #}
 {% set display_number = page_number | default(1) %}
 {% set is_current = is_current | default(false) %}
 {% set is_gap = is_gap | default(false) %}
-{% set classes = ['aae-a-loop-num', 'aae-a-loop-number', 'e-atomic-element', base_styles.base] | merge(settings.classes | default([])) %}
+{% set classes = ['aae-a-loop-num', 'aae-a-loop-number', 'e-atomic-element', base_styles.base, m.default_tag_class('a')] | merge(settings.classes | default([])) %}
 {% if is_current %}
     {% set classes = classes | merge(['is-active', 'e--selected']) %}
 {% endif %}
