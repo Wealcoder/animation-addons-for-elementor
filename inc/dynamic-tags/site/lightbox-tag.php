@@ -182,11 +182,32 @@ class Lightbox_Tag extends Tag_Base {
 			return '';
 		}
 
-		return array(
+		$video_settings = array(
 			'type'      => 'video',
 			'videoType' => $video_type,
 			'url'       => $embed_url,
 		);
+
+		// A self-hosted file is rendered by core as a bare `<video src autoplay>`:
+		// setVideoContent() in elementor/assets/js/chunks/lightbox-lightbox.js adds
+		// nothing else unless `videoParams` says so. Without this the visitor gets a
+		// clip with no pause, no seek bar and no volume. Elementor's own Video widget
+		// passes the same keys from Video::get_hosted_params(); `controls` and
+		// `playsinline` are the two this tag can know about without inventing new
+		// controls -- `playsinline` keeps iOS from hijacking the lightbox into the
+		// native fullscreen player.
+		//
+		// Providers are deliberately excluded: YouTube and Vimeo draw their own
+		// controls inside the iframe, and that branch of setVideoContent() ignores
+		// `videoParams` entirely.
+		if ( 'hosted' === $video_type ) {
+			$video_settings['videoParams'] = array(
+				'controls'    => '',
+				'playsinline' => '',
+			);
+		}
+
+		return $video_settings;
 	}
 
 	/**
@@ -210,6 +231,22 @@ class Lightbox_Tag extends Tag_Base {
 
 		if ( ! $value || empty( $value['url'] ) ) {
 			return;
+		}
+
+		// The lightbox, and the handler that turns this '#elementor-action:...' hash
+		// into an open modal, both live in the legacy `elementor-frontend` bundle
+		// (`elementorFrontend.utils.urlActions`). A page built only from V4 atomic
+		// elements never enqueues that bundle, so the link was inert -- clicking it
+		// only put the hash in the address bar. Core's newer `[data-action-link]`
+		// handler bails out on the same missing global, so correct markup alone
+		// would not help either.
+		//
+		// Enqueued from render() rather than globally, and only past the guard
+		// above: the weight (~300KB of JS, swiper included) then lands solely on
+		// pages where this tag resolved to a real image or video. On a page that
+		// already loads Elementor's frontend this is a no-op.
+		if ( wp_script_is( 'elementor-frontend', 'registered' ) ) {
+			wp_enqueue_script( 'elementor-frontend' );
 		}
 
 		// Use Elementor core lightbox.

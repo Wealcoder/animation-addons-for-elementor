@@ -35,12 +35,31 @@ const DRAWER_EFFECTS = {
 // editor doesn't leave stale inline styles behind).
 const DRAWER_NAV_RESET_KEYS = ['left','right','top','bottom','width','maxWidth','height','maxHeight','margin','borderRadius','transformOrigin','boxShadow'];
 
+/** Is the drawer the active presentation for this root RIGHT NOW?
+ *
+ *  `navStyle` describes a fixed panel -- anchor edges, width, max-height, a
+ *  box-shadow. On the desktop bar the very same `.aae-a-menu-nav` is an
+ *  ordinary inline <nav>, so writing those inline put a drawer's shadow on the
+ *  horizontal menu (slide-right / slide-top / slide-bottom) and squeezed it to
+ *  the drawer width (fade / zoom-in). Only `slide-left` has no navStyle, which
+ *  is why the default never showed it.
+ *
+ *  Mirrors the gate in `syncMobileClass()`, plus the hamburger switch: with
+ *  Mobile Hamburger off there is no drawer at any width.
+ */
+const isDrawerActive = (root) =>
+	root.getAttribute('data-hamburger') === 'true'
+	&& window.innerWidth <= menuBreakpoint(root);
+
 const applyDrawerEffect = (root, nav, effectName) => {
 	const eff = DRAWER_EFFECTS[effectName] || DRAWER_EFFECTS['slide-left'];
+	// The two transform custom props stay unconditional: they are read only by
+	// the `.aae-a-menu--mobile[data-hamburger="true"]` rule in menu.scss, so a
+	// desktop bar never sees them.
 	root.style.setProperty('--aae-drawer-from-transform', eff.from);
 	root.style.setProperty('--aae-drawer-to-transform', eff.to);
 	DRAWER_NAV_RESET_KEYS.forEach((k) => { nav.style[k] = ''; });
-	if (eff.navStyle) Object.assign(nav.style, eff.navStyle);
+	if (eff.navStyle && isDrawerActive(root)) Object.assign(nav.style, eff.navStyle);
 };
 
 const playSubMenuEffect = (subMenu, effectName, durationMs, direction, onFinish) => {
@@ -236,6 +255,14 @@ const menuBreakpoint = (root) => {
  *  whichever value was current when the listener was bound. */
 const syncMobileClass = (root) => {
 	root.classList.toggle('aae-a-menu--mobile', window.innerWidth <= menuBreakpoint(root));
+	// The per-effect inline styles are breakpoint-dependent in exactly the same
+	// way, so they are re-applied from here rather than on init alone. Crossing
+	// the breakpoint otherwise left a fixed-panel shadow and width on the desktop
+	// bar -- or, going the other way, a drawer without them -- until a re-init.
+	// This runs inside the rAF-coalesced sweep below, so a drag-resize costs one
+	// pass per frame, not one per event.
+	const nav = root.querySelector('.aae-a-menu-nav');
+	if (nav) applyDrawerEffect(root, nav, root.getAttribute('data-drawer-effect') || 'slide-left');
 };
 
 /* Sweep EVERY menu on the page, not a retained list. A retained list holds

@@ -243,11 +243,21 @@ class Aaeaddon_A_Menu extends Atomic_Widget_Base {
 			'overlay_color'   => String_Prop_Type::make()->default( '' ),
 			// Drawer header — the bar holding the label/logo and the close button.
 			//
-			// `drawer_logo` is intentionally left with NO default: Image_Transformer
+			// `drawer_logo` is intentionally given no default IMAGE: Image_Transformer
 			// throws "Invalid image URL" when it resolves an image with neither an
 			// attachment id nor a url, so seeding it the way the toggle icons are
-			// seeded would break rendering rather than show a placeholder.
-			'drawer_logo'                => Image_Prop_Type::make(),
+			// seeded would break rendering rather than show a placeholder. The props
+			// resolver swallows that throw and hands the template null, so a widget
+			// nobody has touched keeps showing its text label.
+			//
+			// `default_size()` is a different matter, and it is load-bearing.
+			// Image_Prop_Type marks `size` required, and Object_Prop_Type::validate_value()
+			// falls back to a field's DEFAULT -- not its initial_value -- when the key
+			// is absent. The panel's image control writes `src` alone when you pick a
+			// file, so without this every save was refused with
+			// "drawer_logo: invalid_value" and the Resolution select rendered blank.
+			// 'full' is what core's own Atomic Image widget uses.
+			'drawer_logo'                => Image_Prop_Type::make()->default_size( 'full' ),
 			'drawer_logo_width'          => Number_Prop_Type::make()->default( 120 ),
 			// 17px ≈ the 1.05em the label was hardcoded to at a 16px base, and 600
 			// is its previous weight, so the header reads the same until touched.
