@@ -208,6 +208,25 @@ $stacked-inner: ':is(:where(.aae-a-menu--mobile)[data-hamburger="true"], [data-l
 	color: var(--dd-c);
 }
 
+/* Dropdown Items -> Active Text Color. Separate from the menu-wide Active
+   Color: the highlighted row inside a panel usually wants a different colour
+   from the highlighted item in the bar, and both read plain `--active` before
+   this rule existed.
+
+   POSITION IS LOAD-BEARING, twice over. At (0,3,1) this beats the generic
+   `.current-menu-item > a` rule further down (0,2,1) from anywhere, which is
+   the whole point. But `.sub-menu a:hover` below is ALSO (0,3,1), so that tie
+   breaks on document order -- move this past the hover block and an active row
+   stops reacting to the pointer. It belongs here, above it.
+
+   Falls back to `--active`, so a menu that never sets the field renders
+   exactly as it did before. */
+.aae-a-menu-list .sub-menu .current-menu-item > a,
+.aae-a-menu-list .sub-menu .current-menu-parent > a,
+.aae-a-menu-list .sub-menu .current-menu-ancestor > a {
+	color: var(--aae-menu-dropdown-active-color, var(--active));
+}
+
 /* Dropdown Style → Item Background / Item Hover Background paint the ROW
    (<li>), not the link inside it. The <a> is `flex: 1 1 auto` and does not
    cover the arrow button, so painting the link left the toggle column

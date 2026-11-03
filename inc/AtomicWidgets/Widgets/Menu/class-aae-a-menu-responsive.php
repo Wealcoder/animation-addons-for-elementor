@@ -211,6 +211,10 @@ final class Aaeaddon_A_Menu_Responsive {
 				'text_color'       => [ 'var' => '--aae-menu-dropdown-text-color',       'kind' => 'color' ],
 				'hover_bg'         => [ 'var' => '--aae-menu-dropdown-hover-bg',         'kind' => 'color' ],
 				'hover_text_color' => [ 'var' => '--aae-menu-dropdown-hover-text-color', 'kind' => 'color' ],
+				// The active row INSIDE a panel. Separate from the menu-wide
+				// `active_color`, which until now painted both. menu.scss falls back
+				// to that one, so this stays inert until a builder sets it.
+				'active_color'     => [ 'var' => '--aae-menu-dropdown-active-color',   'kind' => 'color' ],
 				'padding_x'        => [ 'var' => '--aae-menu-dropdown-padding-x',        'kind' => 'px' ],
 				'padding_y'        => [ 'var' => '--aae-menu-dropdown-padding-y',        'kind' => 'px' ],
 				'gap'              => [ 'var' => '--aae-menu-dropdown-item-gap',         'kind' => 'px' ],

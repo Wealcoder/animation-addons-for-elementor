@@ -63,6 +63,12 @@ final class Loop_Filter_Auth {
 	public const TYPE_DATE   = 'e-aae-a-loop-filter-date';
 	public const TYPE_SORT   = 'e-aae-a-loop-sort';
 
+	/**
+	 * Mirrors Aaeaddon_A_Loop_Filter_Tax's `taxonomy` prop default, for when the
+	 * real schema cannot be reached. @see default_taxonomy()
+	 */
+	private const TAX_DEFAULT_FALLBACK = 'category';
+
 	public const FILTER_TYPES = [
 		self::TYPE_TAX,
 		self::TYPE_META,
@@ -503,11 +509,71 @@ final class Loop_Filter_Auth {
 		return $decl;
 	}
 
+	/**
+	 * The Taxonomy filter's own default taxonomy, read from its declared prop
+	 * schema so the two can never drift apart.
+	 *
+	 * Guarded twice over. The widget lives in the PRO plugin, so without Pro
+	 * there is no element to ask and this returns the mirrored constant -- the
+	 * same answer the schema would have given. And it never calls the elements
+	 * manager before registration has run, because that call would FORCE
+	 * registration; every caller here renders long after it, so the guard only
+	 * ever trips on an unexpectedly early call, and then it still answers.
+	 *
+	 * Memoised: the schema build measured ~0.7ms, and declarations() can ask
+	 * once per filter widget on the page.
+	 */
+	private static function default_taxonomy(): string {
+		static $memo = null;
+		if ( null !== $memo ) {
+			return $memo;
+		}
+
+		$memo = self::TAX_DEFAULT_FALLBACK;
+
+		if ( ! did_action( 'elementor/elements/elements_registered' )
+			|| ! class_exists( '\Elementor\Plugin' )
+			|| ! isset( \Elementor\Plugin::$instance->elements_manager ) ) {
+			return $memo;
+		}
+
+		$element = \Elementor\Plugin::$instance->elements_manager->get_element_types( self::TYPE_TAX );
+		if ( ! $element || ! method_exists( $element, 'get_props_schema' ) ) {
+			return $memo;
+		}
+
+		$schema = $element::get_props_schema();
+		if ( ! isset( $schema['taxonomy'] ) ) {
+			return $memo;
+		}
+
+		// get_default() hands back the wrapped `{$$type, value}` shape.
+		$default = Aaeaddon_A_Loop_Grid::unwrap( $schema['taxonomy']->get_default() );
+		if ( is_string( $default ) && '' !== $default ) {
+			$memo = sanitize_key( $default );
+		}
+
+		return $memo;
+	}
+
 	/** The per-type half of declare(). @see declare() */
 	private static function declare_type( string $type, array $s, string $element_id ): ?array {
 		switch ( $type ) {
 			case self::TYPE_TAX:
+				// A widget that has never had its Taxonomy control CHANGED saves no
+				// `taxonomy` key at all -- Elementor only persists props the builder
+				// actually edited -- so this read came back empty and the filter
+				// declared nothing and rendered as an empty box. The panel is no help:
+				// it DISPLAYS "Categories" from the prop default, so picking that same
+				// value fires no change and writes nothing. Falling back to the prop's
+				// own default is what makes an untouched widget work on drop, and it
+				// widens nothing: the widget already advertises that taxonomy in its
+				// own `data-aae-filter-taxonomy` attribute, so this only makes the gate
+				// agree with what the markup has been claiming all along.
 				$taxonomy = sanitize_key( (string) ( $s['taxonomy'] ?? '' ) );
+				if ( '' === $taxonomy ) {
+					$taxonomy = self::default_taxonomy();
+				}
 				if ( '' === $taxonomy || ! taxonomy_exists( $taxonomy ) ) {
 					return null;
 				}

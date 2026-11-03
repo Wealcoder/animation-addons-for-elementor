@@ -3,8 +3,32 @@
 		display: none;
 	}
 
-	.aae-ts-switch.active .aae-ts-knob {
-		transform: translate(20px, -50%);
+	// Knob travel for the classic Switch preset. This used to be a hardcoded
+	// `translate(20px, -50%)`, which only ever looked right at the stock
+	// geometry: Track 40px wide with a 2px border (36px inner box) and a 16px
+	// Knob -- 36 - 16 = exactly 20. Track width, border width and Knob width
+	// are all Style-panel props, so the moment a builder widened the Track the
+	// Knob still moved its fixed 20px and stopped short of the right edge,
+	// leaving a gap that grew with every extra pixel of Track.
+	//
+	// Anchoring to 100% of the containing block instead makes the travel
+	// derive from the real boxes: `inset-inline-start: 100%` is the Track's
+	// PADDING box (Knob is absolute, Track is position:relative), and the
+	// -100% in the transform is the Knob's OWN width, so the Knob's right edge
+	// lands flush on the Track's inner right edge at any size. At the stock
+	// geometry it still computes to 20px, so nothing already published moves.
+	//
+	// Both properties are animatable and share the Knob's `transition: all`,
+	// so the slide stays smooth -- which rules out the tidier
+	// `inset-inline-start: auto; inset-inline-end: 0`, since `auto` is not
+	// interpolable and the Knob would jump instead of slide.
+	//
+	// `:not(.aae-ts-knob--pill)` keeps this away from the Pill preset, whose
+	// Knob is a 50%-wide full-height slot already travelling by its own width
+	// (rule further down) and whose transform carries no -50% Y to preserve.
+	.aae-ts-switch.active .aae-ts-knob:not(.aae-ts-knob--pill) {
+		inset-inline-start: 100%;
+		transform: translate(-100%, -50%);
 	}
 
 	// The Track/Knob "on" look (background/border color) used to be this

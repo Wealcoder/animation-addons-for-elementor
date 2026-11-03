@@ -166,6 +166,11 @@ export const MENU_SECTIONS = [
 			// appears until this is set.
 			{ bind: 'hover_bg',         cssVar: '--aae-menu-dropdown-hover-bg',         kind: 'color', legacy: 'dropdown_hover_bg',         legacyDefault: null, label: 'Hover Background', placeholder: 'None' },
 			{ bind: 'hover_text_color', cssVar: '--aae-menu-dropdown-hover-text-color', kind: 'color', legacy: 'dropdown_hover_text_color', legacyDefault: null, label: 'Hover Text Color', placeholder: '#2563eb' },
+			// No `legacy` key, unlike every colour above it: this field is new, so
+			// there is no flat prop from an earlier version to read a display
+			// default from. The placeholder names the CSS fallback instead, so the
+			// empty state tells the truth about what the row is painted with.
+			{ bind: 'active_color',     cssVar: '--aae-menu-dropdown-active-color',     kind: 'color', label: 'Active Text Color', placeholder: 'Inherits menu Active Color' },
 			{ bind: 'padding_x',        cssVar: '--aae-menu-dropdown-padding-x',        kind: 'px',    legacy: 'dropdown_padding_x',        legacyDefault: 14,   label: 'Padding X (px)', hidden: true },
 			{ bind: 'padding_y',        cssVar: '--aae-menu-dropdown-padding-y',        kind: 'px',    legacy: 'dropdown_padding_y',        legacyDefault: 9,    label: 'Padding Y (px)', hidden: true },
 			{
