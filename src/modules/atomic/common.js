@@ -588,7 +588,10 @@ function resetEl(el, playGroup = "") {
 	el = resolveElement(el);
 	if (!el) return;
 
-	if (!playGroup) {
+	// GSAP is not a dependency of this runtime (only the effect bundles that
+	// tween declare it), so it may be absent — nothing to kill/clear then.
+	const gsap = getGsap();
+	if (!playGroup && gsap) {
 		// Kill all tweens
 		gsap.killTweensOf(el);
 

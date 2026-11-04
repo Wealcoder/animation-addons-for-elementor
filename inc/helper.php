@@ -313,30 +313,50 @@ if ( ! function_exists( 'wcf_addons_get_settings' ) ) {
 	}
 }
 
+if ( ! function_exists( 'wcf_post_views_post_types' ) ) {
+	/**
+	 * Post types whose single views are counted in `wcf_post_views_count`.
+	 *
+	 * Filterable so Pro can widen it to every single-view post type without
+	 * running a second counter of its own.
+	 *
+	 * @return string[]
+	 */
+	function wcf_post_views_post_types() {
+		return (array) apply_filters( 'aae_post_views_post_types', array( 'post' ) );
+	}
+}
+
 if ( ! function_exists( 'wcf_set_postview' ) ) {
 	/**
-	 * save single post view count
+	 * Increment a post's view count — the ONE place `wcf_post_views_count` is
+	 * written. Called from the async view beacon (aae_post_view ajax), never
+	 * during the page render, so cached pages still count and the render does
+	 * no meta writes. Fires `aae_post_view_counted` so Pro can update its
+	 * trending score off the same single increment.
+	 *
+	 * @param int $post_id Post to count; defaults to the current post.
+	 * @return int|false New count, or false when nothing was counted.
 	 */
-	function wcf_set_postview() {
+	function wcf_set_postview( $post_id = 0 ) {
+		// Was hooked to `wp` (which passes the WP object), so ignore non-ids.
+		$post_id = is_numeric( $post_id ) && $post_id ? absint( $post_id ) : get_the_ID();
 
-		// Avoid admin / ajax
-		if ( is_admin() || wp_doing_ajax() ) {
-			return;
+		if ( ! $post_id ) {
+			return false;
 		}
 
-		// Only single posts (change if needed)
-		if ( ! is_singular('post') ) {
-			return;
-		}
-
-		$post_id  = get_the_ID();
 		$meta_key = 'wcf_post_views_count';
 
-		$count = (int) get_post_meta($post_id, $meta_key, true);
+		$count = (int) get_post_meta( $post_id, $meta_key, true );
 
 		$count++;
 
-		update_post_meta($post_id, $meta_key, $count);
+		update_post_meta( $post_id, $meta_key, $count );
+
+		do_action( 'aae_post_view_counted', $post_id, $count );
+
+		return $count;
 	}
 }
 

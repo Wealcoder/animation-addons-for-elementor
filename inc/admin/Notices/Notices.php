@@ -32,6 +32,14 @@ class Notices {
 	}
 
 	/**
+	 * Id of the seasonal upgrade banner registered for this request, if any.
+	 * Dismissing a banner is stored under its id, so every campaign has its own.
+	 *
+	 * @var string
+	 */
+	protected $promo_notice_id = '';
+
+	/**
 	 * The plugin prefix.
 	 *
 	 * @var array|string|string[]
@@ -71,6 +79,12 @@ class Notices {
 	public function enqueue_scripts() {
 		wp_register_style( 'aae-notice', WCF_ADDONS_URL . 'assets/css/css/notice.css', array( \WCF_ADDONS\AAE_Fonts::ensure() ), WCF_ADDONS_VERSION );
 		wp_register_script( 'aae-notice', WCF_ADDONS_URL . 'assets/js/js/notice.js', array( 'jquery' ), WCF_ADDONS_VERSION, true );
+		wp_register_style( 'aae-notice-promo', WCF_ADDONS_URL . 'assets/css/css/promo-banner.css', array(), WCF_ADDONS_VERSION );
+
+		// Only load the banner stylesheet on the screen that will actually show it.
+		if ( $this->promo_notice_id && isset( $this->notices[ $this->promo_notice_id ] ) && $this->should_display( $this->notices[ $this->promo_notice_id ] ) ) {
+			wp_enqueue_style( 'aae-notice-promo' );
+		}
 	}
 
 	/**
@@ -79,10 +93,123 @@ class Notices {
 	 * @since 2.4.16
 	 */
 	public function add_admin_notices() {
-		// No notice is registered here at present. The seasonal promotion this
-		// method used to carry is switched off, and its stylesheet is no longer
-		// enqueued -- it was still loading on every admin page for a notice that
-		// never rendered.
+		if ( $this->has_pro() ) {
+			return;
+		}
+
+		// One banner at a time: the first campaign whose date range covers today.
+		foreach ( $this->get_campaigns() as $id => $campaign ) {
+			if ( ! $this->is_campaign_live( $campaign ) ) {
+				continue;
+			}
+
+			$this->promo_notice_id = 'aae_promo_' . $id;
+			$this->add(
+				array(
+					'message'     => $this->get_campaign_message( $campaign ),
+					'notice_id'   => $this->promo_notice_id,
+					'class'       => 'aae-promo-notice',
+					'dismissible' => false,
+				)
+			);
+			break;
+		}
+	}
+
+	/**
+	 * Seasonal upgrade banners for free users.
+	 *
+	 * 'start' and 'end' are inclusive dates (Y-m-d) in the site's timezone; an
+	 * empty 'start' means "from the release onwards". 'image' is a 1100x150
+	 * file in assets/images/notice/ with the close button drawn at its top
+	 * right. A new campaign needs a new key: dismissing is stored under it.
+	 *
+	 * @since 2.6.0
+	 * @return array
+	 */
+	protected function get_campaigns() {
+		return array(
+			'halloween_2026' => array(
+				'start'        => '2026-10-20',
+				'end'          => '2026-11-05',
+				'image'        => 'halloween-2026.png',
+				'alt'          => __( 'Upgrade to Pro and save 40% this Halloween', 'animation-addons-for-elementor' ),
+				'label'        => __( 'Upgrade to Pro - 40% off', 'animation-addons-for-elementor' ),
+				'utm_campaign' => 'halloween2026',
+			),
+			// The artwork is not in the plugin yet: until assets/images/notice/bfcm-2026.png
+			// exists, is_campaign_live() keeps this one hidden. Alt/label are placeholders
+			// to match the final image text.
+			'bfcm_2026'      => array(
+				'start'        => '2026-11-10',
+				'end'          => '2026-12-10',
+				'image'        => 'bfcm-2026.png',
+				'alt'          => __( 'Upgrade to Pro and save big this Black Friday and Cyber Monday', 'animation-addons-for-elementor' ),
+				'label'        => __( 'Upgrade to Pro - Black Friday offer', 'animation-addons-for-elementor' ),
+				'utm_campaign' => 'bfcm2026',
+			),
+		);
+	}
+
+	/**
+	 * Does the Pro plugin exist on this site, active or not?
+	 *
+	 * Anyone who has it has nothing to upgrade to.
+	 *
+	 * @since 2.6.0
+	 * @return bool
+	 */
+	protected function has_pro() {
+		return defined( 'WCF_ADDONS_PRO_VERSION' )
+			|| defined( 'AAEADDON_PRO_VERSION' )
+			|| file_exists( WP_PLUGIN_DIR . '/animation-addons-for-elementor-pro/animation-addons-for-elementor-pro.php' );
+	}
+
+	/**
+	 * Is today inside the campaign's date range (and its artwork shipped)?
+	 *
+	 * @param array $campaign A get_campaigns() entry.
+	 *
+	 * @since 2.6.0
+	 * @return bool
+	 */
+	protected function is_campaign_live( $campaign ) {
+		if ( ! file_exists( WCF_ADDONS_PATH . 'assets/images/notice/' . $campaign['image'] ) ) {
+			return false;
+		}
+
+		$today = wp_date( 'Y-m-d' );
+
+		return ( empty( $campaign['start'] ) || $today >= $campaign['start'] ) && $today <= $campaign['end'];
+	}
+
+	/**
+	 * Markup of a campaign banner: the artwork, a click-through over the whole
+	 * image and an invisible close button over the one drawn into it.
+	 *
+	 * @param array $campaign A get_campaigns() entry.
+	 *
+	 * @since 2.6.0
+	 * @return string
+	 */
+	protected function get_campaign_message( $campaign ) {
+		$url = add_query_arg(
+			array(
+				'utm_source'   => 'wp',
+				'utm_medium'   => 'noticebanner',
+				'utm_campaign' => $campaign['utm_campaign'],
+			),
+			'https://animation-addons.com/pricing/'
+		);
+
+		return sprintf(
+			'<div class="aae-promo-banner"><img src="%1$s" alt="%2$s" width="1100" height="150" /><a class="aae-promo-link" href="%3$s" target="_blank" rel="noopener noreferrer"><span class="screen-reader-text">%4$s</span></a><button type="button" class="aae-promo-close" data-dismiss="1"><span class="screen-reader-text">%5$s</span></button></div>',
+			esc_url( WCF_ADDONS_URL . 'assets/images/notice/' . $campaign['image'] ),
+			esc_attr( $campaign['alt'] ),
+			esc_url( $url ),
+			esc_html( $campaign['label'] ),
+			esc_html__( 'Dismiss this notice', 'animation-addons-for-elementor' )
+		);
 	}
 
 	/**

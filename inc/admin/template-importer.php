@@ -523,6 +523,11 @@ class AAEAddon_Importer {
 							array( 'option_value' => $serialized_data ),
 							array( 'option_name'  => $option_name )
 						);
+						if ( 'wcf_save_extensions' === $option_name ) {
+							// Explicit extension settings: let Pro enqueue only what
+							// they enable (same flag the dashboard save sets).
+							update_option( 'wcf_extension_dashboardv2', true );
+						}
 						do_action('aae/addons/options/import',$option_name, $serialized_data); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Established plugin hook using slash-namespaced form; kept for backward compatibility.
 					}
 				} else {
@@ -536,6 +541,9 @@ class AAEAddon_Importer {
 						array( 'option_value' => $serialized_data ),
 						array( 'option_name'  => $option_name )
 					);
+					if ( 'wcf_save_extensions' === $option_name ) {
+						update_option( 'wcf_extension_dashboardv2', true );
+					}
 					do_action('aae/addons/options/import',$option_name, $serialized_data); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Established plugin hook using slash-namespaced form; kept for backward compatibility.
 				}
 			}

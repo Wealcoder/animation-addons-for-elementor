@@ -116,6 +116,38 @@ class CustomCpt_Lite {
         // Measured on a real demo: definition at item #11, its six posts at
         // #163, none imported. Re-register as soon as a definition is written.
         add_action( 'wxr_importer.processed.post', [ $this, 'register_from_import' ], 10, 2 );
+
+        // The registration caches are now trusted even when EMPTY (an empty
+        // array means "computed, nothing defined"), so drop them whenever a
+        // definition post or its meta changes, whatever path wrote it -- not
+        // only from the builder's own AJAX handlers.
+        add_action( 'save_post_' . $this->post_type, [ $this, 'flush_registration_caches' ] );
+        add_action( 'save_post_' . $this->tax_type, [ $this, 'flush_registration_caches' ] );
+        add_action( 'delete_post', [ $this, 'flush_on_definition_delete' ] );
+        add_action( 'added_post_meta', [ $this, 'flush_on_definition_meta' ], 10, 3 );
+        add_action( 'updated_post_meta', [ $this, 'flush_on_definition_meta' ], 10, 3 );
+        add_action( 'deleted_post_meta', [ $this, 'flush_on_definition_meta' ], 10, 3 );
+    }
+
+    /**
+     * Drop both registration caches; the next request's init rebuilds them.
+     */
+    public function flush_registration_caches() {
+        delete_option( $this->cache_key );
+        delete_option( $this->cache_tax_key );
+    }
+
+    public function flush_on_definition_delete( $post_id ) {
+        $type = get_post_type( $post_id );
+        if ( $this->post_type === $type || $this->tax_type === $type ) {
+            $this->flush_registration_caches();
+        }
+    }
+
+    public function flush_on_definition_meta( $meta_id, $object_id, $meta_key ) {
+        if ( $this->meta_key === $meta_key || $this->tax_meta_key === $meta_key ) {
+            $this->flush_registration_caches();
+        }
     }
 
     /**
@@ -184,7 +216,10 @@ class CustomCpt_Lite {
 
     public function register_cpt() {
        $cpt_posts = get_option($this->cache_key);
-       if(is_array($cpt_posts) && !empty($cpt_posts)) {
+       // false = never computed; an array -- EMPTY included -- is a computed
+       // result. Treating an empty cache as a miss re-ran the -1 get_posts()
+       // + update_option() on every request of every site with no CPTs.
+       if(is_array($cpt_posts)) {
         $this->generate_post_types($cpt_posts); 
         return;
        }

@@ -8,10 +8,6 @@ if (! defined('ABSPATH')) {
 
 use Elementor\Plugin;
 
-if (function_exists('wcf_set_postview')) {
-   add_action('wp', 'wcf_set_postview');
-}
-
 /**
  * A stable per-visitor key for the public counters (shares/reactions).
  *
@@ -59,6 +55,99 @@ if (! function_exists('aae_public_counter_throttled')) {
         return false;
     }
 }
+
+/**
+ * Should views by logged-in users be counted? Pro turns this off.
+ */
+function aae_post_views_count_logged_in()
+{
+    return (bool) apply_filters('aae_post_views_count_logged_in', true);
+}
+
+/**
+ * Post view counter endpoint, hit by the beacon printed in the footer below.
+ *
+ * Views used to be counted on `wp` during the page render — a meta write on
+ * every single view, double-counted when Pro ran its own counter, and never
+ * counted at all once a page cache served the HTML. Counting here keeps the
+ * render write-free and cacheable.
+ *
+ * No nonce on purpose: the beacon ships inside cached HTML, where a nonce
+ * goes stale. The post is validated and the write throttled per visitor
+ * instead, same as the share/reaction counters.
+ */
+function aae_handle_post_view()
+{
+    // phpcs:ignore WordPress.Security.NonceVerification.Missing -- public, cache-safe counter; see above.
+    $post_id = isset($_POST['post_id']) ? absint(wp_unslash($_POST['post_id'])) : 0;
+
+    if (is_user_logged_in() && ! aae_post_views_count_logged_in()) {
+        wp_send_json_success(['counted' => false]);
+    }
+
+    // Real, published, publicly viewable post of a counted type only.
+    $post = $post_id ? get_post($post_id) : null;
+    if (
+        ! $post
+        || 'publish' !== $post->post_status
+        || ! is_post_type_viewable($post->post_type)
+        || ! in_array($post->post_type, wcf_post_views_post_types(), true)
+    ) {
+        wp_send_json_error(['message' => esc_html__('Invalid post ID.', 'animation-addons-for-elementor')], 400);
+    }
+
+    // One view per visitor per post per hour (the client dedupes too).
+    if (aae_public_counter_throttled($post_id, 'view')) {
+        wp_send_json_success(['counted' => false]);
+    }
+
+    wcf_set_postview($post_id);
+
+    wp_send_json_success(['counted' => true]);
+}
+add_action('wp_ajax_aae_post_view', 'aae_handle_post_view');
+add_action('wp_ajax_nopriv_aae_post_view', 'aae_handle_post_view');
+
+/**
+ * Print the view beacon on counted single views.
+ *
+ * Inline and tiny, so it needs no enqueue. Dedupes per post per hour in
+ * localStorage (replacing the old server-set cookie, whose Set-Cookie header
+ * stopped page caches from storing the page), skips headless/automated
+ * browsers, and sends via sendBeacon with a fetch keepalive fallback.
+ */
+function aae_print_post_view_beacon()
+{
+    if (! is_singular(wcf_post_views_post_types()) || is_preview()) {
+        return;
+    }
+
+    if (is_user_logged_in() && ! aae_post_views_count_logged_in()) {
+        return;
+    }
+
+    // Elementor's editor preview renders the post too — not a view.
+    if (class_exists('\Elementor\Plugin') && isset(Plugin::$instance->preview) && Plugin::$instance->preview->is_preview_mode()) {
+        return;
+    }
+
+    $post_id = get_queried_object_id();
+    if (! $post_id) {
+        return;
+    }
+
+    $script = sprintf(
+        '(function(){var id=%1$d,k="aae_pv_"+id,n=Date.now();if(navigator.webdriver)return;'
+        . 'try{var t=+localStorage.getItem(k);if(t&&n-t<36e5)return;localStorage.setItem(k,n);}catch(e){}'
+        . 'var u=%2$s,d=new FormData();d.append("action","aae_post_view");d.append("post_id",id);'
+        . 'if(!(navigator.sendBeacon&&navigator.sendBeacon(u,d))&&window.fetch){fetch(u,{method:"POST",body:d,credentials:"same-origin",keepalive:true});}})();',
+        $post_id,
+        wp_json_encode(admin_url('admin-ajax.php'))
+    );
+
+    wp_print_inline_script_tag($script, ['id' => 'aae-post-view']);
+}
+add_action('wp_footer', 'aae_print_post_view_beacon');
 
 function aae_handle_aae_post_shares_count()
 {

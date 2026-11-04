@@ -1206,19 +1206,35 @@ class Weather extends Widget_Base {
 
 		$cache_key_current  = 'weather_current_' . md5( $city . $unit );
 		$cache_key_forecast = 'weather_forecast_' . md5( $city . $unit );
+		// Failure marker (includes the API key so fixing the key retries immediately).
+		$cache_key_error    = 'weather_error_' . md5( $city . $unit . $apiKey );
 
 		// Try to get cached data (3 hours = 10800 seconds)
 		$current_data  = get_transient( $cache_key_current );
 		$forecast_data = get_transient( $cache_key_forecast );
 
 		if ( false === $current_data || false === $forecast_data ) {
+			// A recent request failed: don't block the render on the API again.
+			if ( false !== get_transient( $cache_key_error ) ) {
+				echo '<div>Unable to load weather data.</div>';
+
+				return;
+			}
+
 			$current_url  = "https://api.openweathermap.org/data/2.5/weather?q={$city}&appid={$apiKey}&units={$unit}";
 			$forecast_url = "https://api.openweathermap.org/data/2.5/forecast?q={$city}&appid={$apiKey}&units={$unit}";
 
-			$current_res  = wp_safe_remote_get( $current_url );
-			$forecast_res = wp_safe_remote_get( $forecast_url );
+			$current_res  = wp_safe_remote_get( $current_url, [ 'timeout' => 5 ] );
+			$forecast_res = is_wp_error( $current_res ) ? $current_res : wp_safe_remote_get( $forecast_url, [ 'timeout' => 5 ] );
 
-			if ( is_wp_error( $current_res ) || is_wp_error( $forecast_res ) ) {
+			if (
+				is_wp_error( $current_res ) || is_wp_error( $forecast_res )
+				|| 200 !== (int) wp_remote_retrieve_response_code( $current_res )
+				|| 200 !== (int) wp_remote_retrieve_response_code( $forecast_res )
+			) {
+				// Cache the failure briefly (5 minutes).
+				set_transient( $cache_key_error, [ 'error' => true ], 5 * MINUTE_IN_SECONDS );
+
 				echo '<div>Unable to load weather data.</div>';
 
 				return;

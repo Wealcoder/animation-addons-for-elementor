@@ -127,6 +127,104 @@ class WCF_Theme_Builder
 		// …and must survive the editor canvas — see the method docblocks.
 		add_action('wp_head', array($this, 'defer_builder_template_styles'), 7);
 		add_action('wp_footer', array($this, 'print_builder_template_styles'), 1);
+
+		// Invalidate the cached per-type template ID lists — see get_template_ids_by_type().
+		add_action('save_post_' . self::CPTTYPE, array(__CLASS__, 'flush_template_ids_cache'));
+		add_action('transition_post_status', array($this, 'flush_template_ids_on_status_change'), 10, 3);
+		add_action('delete_post', array($this, 'flush_template_ids_on_post_change'));
+		add_action('added_post_meta', array($this, 'flush_template_ids_on_meta_change'), 10, 3);
+		add_action('updated_post_meta', array($this, 'flush_template_ids_on_meta_change'), 10, 3);
+		add_action('deleted_post_meta', array($this, 'flush_template_ids_on_meta_change'), 10, 3);
+	}
+
+	/**
+	 * Transient holding the candidate template IDs per template type (and
+	 * locale), i.e. the result of the `_type` meta query in
+	 * get_template_ids_by_type(). Only membership/order is cached — which
+	 * template wins for the current request is still evaluated per request.
+	 */
+	const TEMPLATE_IDS_TRANSIENT = 'aae_tb_template_ids';
+
+	public static function flush_template_ids_cache()
+	{
+		delete_transient(self::TEMPLATE_IDS_TRANSIENT);
+	}
+
+	public function flush_template_ids_on_status_change($new_status, $old_status, $post)
+	{
+		if ($new_status !== $old_status && $post instanceof \WP_Post && self::CPTTYPE === $post->post_type) {
+			self::flush_template_ids_cache();
+		}
+	}
+
+	public function flush_template_ids_on_post_change($post_id)
+	{
+		if (self::CPTTYPE === get_post_type($post_id)) {
+			self::flush_template_ids_cache();
+		}
+	}
+
+	public function flush_template_ids_on_meta_change($meta_id, $object_id, $meta_key)
+	{
+		if (is_string($meta_key) && 0 === strpos($meta_key, self::CPT_META) && self::CPTTYPE === get_post_type($object_id)) {
+			self::flush_template_ids_cache();
+		}
+	}
+
+	/**
+	 * IDs of every template of $tmpType (date ASC), with their post meta
+	 * primed so the per-template get_post_meta() calls that follow are cache
+	 * hits rather than one query each (fields => ids skips meta priming).
+	 *
+	 * For anonymous front-end requests the ID list itself is cached in a
+	 * non-expiring transient keyed by type + locale, flushed whenever a
+	 * template is saved, deleted, changes status or has its template meta
+	 * changed. Logged-in and admin requests always query live: WP_Query's
+	 * default post_status differs there (private / draft templates), so a
+	 * shared cache entry would be wrong for them.
+	 *
+	 * @param string $tmpType Template type (header, footer, single, archive, popup…).
+	 * @return int[]
+	 */
+	private function get_template_ids_by_type($tmpType)
+	{
+		$use_cache = ! is_admin() && ! is_user_logged_in();
+		$cache_key = $tmpType . '|' . get_locale();
+		$cached    = $use_cache ? get_transient(self::TEMPLATE_IDS_TRANSIENT) : false;
+
+		if (is_array($cached) && isset($cached[$cache_key]) && is_array($cached[$cache_key])) {
+			$ids = $cached[$cache_key];
+		} else {
+			$query = new \WP_Query(array(
+				'post_type'      => self::CPTTYPE,
+				'fields'         => 'ids',
+				'posts_per_page' => -1,
+				'no_found_rows'  => true,
+				'order'          => 'ASC',
+				'orderby'        => 'date',
+				// Templates are selected by their _type marker meta; meta lookup is required here.
+				'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+					array(
+						'key'   => self::CPT_META . '_type',
+						'value' => $tmpType,
+					),
+				),
+			));
+
+			$ids = array_map('absint', $query->posts);
+
+			if ($use_cache) {
+				$cached             = is_array($cached) ? $cached : array();
+				$cached[$cache_key] = $ids;
+				set_transient(self::TEMPLATE_IDS_TRANSIENT, $cached);
+			}
+		}
+
+		if (! empty($ids)) {
+			update_meta_cache('post', $ids);
+		}
+
+		return $ids;
 	}
 
 	/**
@@ -732,13 +830,15 @@ class WCF_Theme_Builder
 				),
 			),
 		);
-		
-		$query              = new \WP_Query($query_args);
-		$count              = $query->post_count;
+
+		// Same query as $query_args (kept above for the narrower follow-up
+		// queries below), but cached + meta-primed — see get_template_ids_by_type().
+		$template_ids       = $this->get_template_ids_by_type($tmpType);
+		$count              = count($template_ids);
 		$templates          = array();
 		$templates_specific = array('specifics' => array());
 
-		foreach ($query->posts as $key => $post_id) {
+		foreach ($template_ids as $key => $post_id) {
 
 			$location   = get_post_meta(absint($post_id), self::CPT_META . '_location', true);
 			$splocation = get_post_meta(absint($post_id), self::CPT_META . '_splocation', true);
@@ -840,6 +940,9 @@ class WCF_Theme_Builder
 				);
 				$query                      = new \WP_Query($query_args);
 				$cat_id                     = null;
+				if (! empty($query->posts)) {
+					update_meta_cache('post', $query->posts); // fields => ids doesn't prime meta.
+				}
 				foreach ($query->posts as $key => $post_id) {
 					$location   = get_post_meta(absint($post_id), self::CPT_META . '_location', true);
 					$splocation = json_decode(get_post_meta(absint($post_id), self::CPT_META . '_splocation', true));
@@ -912,6 +1015,9 @@ class WCF_Theme_Builder
 
 					$query  = new \WP_Query($query_args);
 					$cat_id = null;
+					if (! empty($query->posts)) {
+						update_meta_cache('post', $query->posts); // fields => ids doesn't prime meta.
+					}
 					foreach ($query->posts as $key => $post_id) {
 						$format     = get_post_format($post_id) ?: 'standard';
 						$location   = get_post_meta(absint($post_id), self::CPT_META . '_location', true);
@@ -979,33 +1085,22 @@ class WCF_Theme_Builder
 
 	public function get_current_popup_by_condition($tmpType, $extraConditions)
 	{
-		$typeCondition = array(
-			array(
-				'key'   => self::CPT_META . '_type',
-				'value' => $tmpType,
-			),
-		);
+		// $extraConditions is intentionally NOT applied (it never was — the
+		// query merged an empty array in its place). Pro passes a popup_trigger
+		// IN ('', 'false', 'pageloaded') filter, but click/scroll/delay popups
+		// still need their markup on the page, so applying it would hide them.
 
 		$return_ids = [];
 		$poup_data = [];
 
-		$meta_query = array_merge($typeCondition, []);
-		$query_args = array(
-			'post_type'      => self::CPTTYPE,
-			'fields'         => 'ids',
-			'posts_per_page' => -1,
-			'order'          => 'ASC',
-			'orderby'        => 'date',
-			// Templates are filtered by their _type marker meta; meta lookup is required here.
-			'meta_query'     => array_merge(array('relation' => 'AND'), $meta_query), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-		);
-
-		$query              = new \WP_Query($query_args);
-		$count              = $query->post_count;
+		// Templates of this type (date ASC) — cached + meta-primed, so the
+		// seven get_post_meta() reads per template below are cache hits.
+		$template_ids       = $this->get_template_ids_by_type($tmpType);
+		$count              = count($template_ids);
 		$templates          = array();
 		$templates_specific = array('specifics' => array());
 
-		foreach ($query->posts as $key => $post_id) {
+		foreach ($template_ids as $key => $post_id) {
 			// to strong
 			$location   = get_post_meta(absint($post_id), self::CPT_META . '_location', true);
 			$splocation = get_post_meta(absint($post_id), self::CPT_META . '_splocation', true);

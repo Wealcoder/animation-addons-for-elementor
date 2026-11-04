@@ -1195,6 +1195,7 @@ class Plugin
 				require_once WCF_ADDONS_PATH . 'inc/admin/setup-wizard.php';
 			}
 			require_once WCF_ADDONS_PATH . 'inc/admin/dashboard.php';
+			require_once WCF_ADDONS_PATH . 'inc/admin/Notices/Notices.php';
 		}
 
 		// Only load theme builder when needed. added this condition at v-2.6.0
@@ -1776,10 +1777,16 @@ class Plugin
 		// unconditionally shipped the file on every page of the site.
 		wp_register_style(
 			'aae-starter-animations',
-			WCF_ADDONS_URL . 'assets/css/starter-animations.css',
+			WCF_ADDONS_URL . 'assets/css/' . self::starter_animation_asset('css'),
 			[],
 			WCF_ADDONS_VERSION
 		);
+
+		// The stylesheet pre-hides animated content until JS adds .wcf-animate,
+		// so without JS that content would never appear. Print a <noscript>
+		// override right after this handle's <link> — only on pages that
+		// actually load the stylesheet.
+		add_filter('style_loader_tag', [$this, 'starter_animation_noscript_fallback'], 10, 2);
 	}
 
 	public function register_starter_animation_script()
@@ -1789,11 +1796,67 @@ class Plugin
 		// per-element through the control's `assets => scripts` condition.
 		wp_register_script(
 			'aae-starter-animations',
-			WCF_ADDONS_URL . 'assets/js/starter-animations.js',
+			WCF_ADDONS_URL . 'assets/js/' . self::starter_animation_asset('js'),
 			[],
 			WCF_ADDONS_VERSION,
 			true
 		);
+	}
+
+	/**
+	 * File name of the starter-animations asset to load: the gulp-built `.min`
+	 * twin unless SCRIPT_DEBUG is on (or the minified file is missing).
+	 *
+	 * @param string $ext 'css' or 'js'.
+	 * @return string
+	 */
+	private static function starter_animation_asset($ext)
+	{
+		$file = 'starter-animations.' . $ext;
+
+		if (defined('SCRIPT_DEBUG') && SCRIPT_DEBUG) {
+			return $file;
+		}
+
+		$min = 'starter-animations.min.' . $ext;
+
+		return file_exists(WCF_ADDONS_PATH . 'assets/' . $ext . '/' . $min) ? $min : $file;
+	}
+
+	/**
+	 * No-JS fallback for the starter animations: forces every effect's
+	 * pre-hidden initial state (opacity 0, clip-path, width 0, mask overlay,
+	 * transparent text) back to visible. Selectors mirror the initial-state
+	 * rules in assets/src/scss/starter-animations.scss — keep them in sync
+	 * when an effect is added there.
+	 *
+	 * @param string $tag    The link tag.
+	 * @param string $handle Style handle.
+	 * @return string
+	 */
+	public function starter_animation_noscript_fallback($tag, $handle)
+	{
+		if ('aae-starter-animations' !== $handle) {
+			return $tag;
+		}
+
+		$targets = static function ($class, $suffix = '') {
+			return ".{$class} .elementor-widget-container>*{$suffix},.{$class}>*{$suffix},.wcf-target-self.{$class}{$suffix}";
+		};
+
+		$show = [];
+		foreach (['reveal', 'scale-up', 'rotate-in', 'slide', 'skew-reveal', 'flip', 'zoom-in', 'combo-reveal'] as $effect) {
+			$show[] = $targets('wcf-starter-animations-' . $effect);
+		}
+		$show[] = '.wcf-starter-animations-slide.e-con,.wcf-starter-animations-flip.e-con,.wcf-starter-animations-text-pop';
+		$show[] = '[class*=wcf-starter-animations-text-char] .elementor-widget-container>* span,[class*=wcf-starter-animations-text-char]>* span,.wcf-target-self[class*=wcf-starter-animations-text-char] span';
+
+		$css  = implode(',', $show) . '{opacity:1!important;transform:none!important;clip-path:none!important}';
+		$css .= $targets('wcf-starter-animations-text-typewriter') . '{width:auto!important;white-space:normal!important}';
+		$css .= $targets('wcf-starter-animations-text-wave') . '{color:inherit!important}';
+		$css .= $targets('wcf-starter-animations-text-mask-wipe', '::after') . ',' . $targets('wcf-starter-animations-text-wave', '::after') . '{display:none!important}';
+
+		return $tag . '<noscript><style id="aae-starter-animations-noscript">' . $css . '</style></noscript>' . "\n";
 	}
 
 

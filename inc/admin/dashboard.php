@@ -634,6 +634,11 @@ class WCF_Admin_Init
 
 	public function plugin_dashboard_entry_page()
 	{
+		// remove_all_notices() strips admin_notices on this screen, so the
+		// seasonal upgrade banner (free users only) is printed here instead.
+		if (class_exists('\WCF_ADDONS\Admin\Notices\Notices')) {
+			\WCF_ADDONS\Admin\Notices\Notices::instance()->admin_notices();
+		}
 ?>
 		<div class="wrap wcf-admin-wrapper" id="wcf-admin-ds-cr-js"></div>
 <?php

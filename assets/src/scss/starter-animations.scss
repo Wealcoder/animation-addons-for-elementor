@@ -696,3 +696,34 @@
     opacity: 1;
   }
 }
+
+/* =========================================
+   REDUCED MOTION
+   Everything above pre-hides content until JS adds .wcf-animate and then
+   plays a keyframe to the visible end state. For visitors who ask for
+   reduced motion, collapse every starter animation to an (effectively)
+   instant jump to that end state: fill-mode forwards keeps the final
+   keyframe, so content still appears — just without movement — and the
+   infinite loops (glow, wave, bg-clip) stop after one imperceptible cycle.
+   Durations rather than `animation: none` on purpose: the end state lives
+   in the keyframes, so this needs no per-effect "visible" overrides that
+   could fight Elementor's own transform controls.
+   (The no-JS fallback is a <noscript> style printed next to this
+   stylesheet's <link> — see Plugin::starter_animation_noscript_fallback().)
+========================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  [class*="wcf-starter-animations-"],
+  [class*="wcf-starter-animations-"] .elementor-widget-container > *,
+  [class*="wcf-starter-animations-"] > *,
+  [class*="wcf-starter-animations-"] .elementor-widget-container > *::after,
+  [class*="wcf-starter-animations-"] > *::after,
+  .wcf-target-self[class*="wcf-starter-animations-"]::after,
+  [class*="wcf-starter-animations-text-char"] .elementor-widget-container > * span,
+  [class*="wcf-starter-animations-text-char"] > * span,
+  .wcf-target-self[class*="wcf-starter-animations-text-char"] span {
+    animation-duration: 1ms !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+  }
+}

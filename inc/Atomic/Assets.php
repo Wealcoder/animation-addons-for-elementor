@@ -32,7 +32,10 @@ final class Assets
 	const EFFECT_BUNDLES = [
 		'aae-effect-custom-css'      => 'effects/custom-css.js',
 		'aae-effect-nested-slider'   => 'effects/nested-slider.js',
-		'aae-effect-image-animation' => 'effects/image-animation.js',
+		// The only free bundle that tweens: GSAP + ScrollTrigger (via the shared
+		// trigger wiring) are declared here, NOT on the core runtime — see
+		// frontend_deps() / gsap_deps().
+		'aae-effect-image-animation' => ['file' => 'effects/image-animation.js', 'gsap' => ['gsap', 'ScrollTrigger']],
 		// No GSAP dependency — a muted looping <video> needs none, so this one
 		// costs only its own ~2KB on pages that use it.
 		'aae-effect-background-video' => 'effects/background-video.js',
@@ -112,6 +115,9 @@ final class Assets
 		foreach (self::EFFECT_BUNDLES as $handle => $config) {
 			$relative = is_array($config) ? $config['file'] : $config;
 			$manual_deps = is_array($config) && isset($config['deps']) ? $config['deps'] : [];
+			if (is_array($config) && ! empty($config['gsap'])) {
+				$manual_deps = array_merge($manual_deps, self::gsap_deps($config['gsap']));
+			}
 
 			// Path uses the same .asset.php sidecar as the core runtime; the
 			// webpack entry name (without .js) matches the relative path.
@@ -144,12 +150,23 @@ final class Assets
 	}
 
 	/**
-	 * Merge GSAP / ScrollTrigger into the dep list. Falls back to the Pro
-	 * plugin's bundled copies when nobody else has registered them — Pro
-	 * gates its own registration behind a dashboard setting, so on a plain
-	 * install our atomic widgets would otherwise tween-less.
+	 * Make sure the GSAP family is REGISTERED (not depended on) before any
+	 * effect bundle is. Falls back to the Pro plugin's bundled copies when
+	 * nobody else has registered them — Pro gates its own registration behind
+	 * a dashboard setting, so on a plain install our atomic widgets would
+	 * otherwise be tween-less.
 	 *
-	 * Deliberately NOT here: SplitText and ScrollToPlugin. Those belong to
+	 * GSAP / ScrollTrigger are deliberately NOT added to the core runtime's
+	 * deps any more. common.js only reads window.gsap lazily (getGsap() /
+	 * getScrollTrigger(), and resetEl() null-checks it), so it has no load-
+	 * order dependency on GSAP. Listing them here shipped ~117KB to every page
+	 * whose only effects are GSAP-free (background-video, image-overlay,
+	 * custom-css, nested-slider). Each bundle that tweens declares them itself
+	 * — the 'gsap' key in EFFECT_BUNDLES here, and Pro's
+	 * inc/AtomicV4/Extensions/Assets.php for the bundles that live there —
+	 * so WordPress pulls them in exactly where an animation needs them.
+	 *
+	 * Same reasoning, older: SplitText and ScrollToPlugin. Those belong to
 	 * single effects, and the bundles that need them declare them — those
 	 * bundles now live in Pro (inc/AtomicV4/Extensions/Assets.php:
 	 * aae-effect-animation -> SplitText, aae-effect-scroll-to ->
@@ -166,13 +183,21 @@ final class Assets
 	private function frontend_deps(array $deps): array
 	{
 		$this->ensure_gsap_registered();
-		if (wp_script_is('gsap', 'registered')) {
-			$deps[] = 'gsap';
-		}
-		if (wp_script_is('ScrollTrigger', 'registered')) {
-			$deps[] = 'ScrollTrigger';
-		}
 		return $deps;
+	}
+
+	/**
+	 * Filter a list of GSAP-family handles down to the ones actually
+	 * registered. A dependency on an unregistered handle makes WordPress drop
+	 * the dependent script entirely, so — exactly as the old core-runtime
+	 * logic did — a missing library is skipped rather than declared (the
+	 * bundles null-check getGsap() and simply don't tween).
+	 */
+	public static function gsap_deps(array $handles): array
+	{
+		return array_values(array_filter($handles, static function ($handle) {
+			return wp_script_is($handle, 'registered');
+		}));
 	}
 
 	/**
