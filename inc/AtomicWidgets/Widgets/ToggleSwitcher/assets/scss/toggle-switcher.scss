@@ -26,9 +26,17 @@
 	// `:not(.aae-ts-knob--pill)` keeps this away from the Pill preset, whose
 	// Knob is a 50%-wide full-height slot already travelling by its own width
 	// (rule further down) and whose transform carries no -50% Y to preserve.
+	//
+	// The X half is written as `translate`, NOT as part of `transform`, for two
+	// reasons. It stops clobbering the Knob's own Transform -- a Style-panel
+	// prop a builder may have set -- because `translate` is its own property
+	// and the two COMPOSE. And that composition is what lets this one rule
+	// serve both Knob models: a legacy absolutely-positioned Knob keeps the
+	// `translateY(-50%)` that pairs with its `inset-block-start: 50%`, while an
+	// in-flow Knob (centred by the Track's `align-items`) carries no Y at all.
 	.aae-ts-switch.active .aae-ts-knob:not(.aae-ts-knob--pill) {
 		inset-inline-start: 100%;
-		transform: translate(-100%, -50%);
+		translate: -100%;
 	}
 
 	// The Track/Knob "on" look (background/border color) used to be this
@@ -114,6 +122,25 @@
 	// anchors to Track as intended — its resize handles are already hidden
 	// above, so this loses nothing. Editor-only, no-op on the frontend.
 	.elementor-widget-e-aae-a-toggle-switcher-knob {
+		// `display: contents` makes this wrapper generate no box at all, so the
+		// real `.aae-ts-knob` becomes a direct child of Track in the editor,
+		// exactly as it already is on the frontend. That matters now that the
+		// Knob sits in NORMAL FLOW: with the wrapper still a box, Track's flex
+		// line held the WRAPPER, the Knob's `inset-inline-start: 100%` resolved
+		// against the wrapper's shrink-to-fit width -- its own width -- and the
+		// -100% cancelled it exactly, so the Knob did not move at all when
+		// toggled and Track's `align-items` never reached it. Measured in the
+		// editor: 12/92 in BOTH states with the wrapper, 12/92 -> 92/12 without.
+		display: contents !important;
+
+		// Kept alongside, and still load-bearing for the Pill preset, whose Knob
+		// stays absolutely positioned: jQuery UI's resizable() puts an inline
+		// `position: relative` on this wrapper so its handles can sit inside it,
+		// which made the wrapper -- not Track -- that Knob's containing block,
+		// collapsing its percentage sizing to zero. `display: contents` already
+		// prevents that, but this costs nothing and keeps the old guarantee if a
+		// browser ever drops the box back in. The handles are hidden above, so
+		// nothing is lost either way. Editor-only, no-op on the frontend.
 		position: static !important;
 	}
 }

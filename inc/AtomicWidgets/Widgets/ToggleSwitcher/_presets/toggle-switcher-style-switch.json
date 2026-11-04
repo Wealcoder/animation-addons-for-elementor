@@ -189,14 +189,7 @@
                                                             },
                                                             "position": {
                                                                 "$$type": "string",
-                                                                "value": "absolute"
-                                                            },
-                                                            "inset-block-start": {
-                                                                "$$type": "size",
-                                                                "value": {
-                                                                    "unit": "%",
-                                                                    "size": 50
-                                                                }
+                                                                "value": "relative"
                                                             },
                                                             "inset-inline-start": {
                                                                 "$$type": "size",
@@ -225,42 +218,6 @@
                                                                     "color": {
                                                                         "$$type": "color",
                                                                         "value": "#ffffff"
-                                                                    }
-                                                                }
-                                                            },
-                                                            "transform": {
-                                                                "$$type": "transform",
-                                                                "value": {
-                                                                    "transform-functions": {
-                                                                        "$$type": "transform-functions",
-                                                                        "value": [
-                                                                            {
-                                                                                "$$type": "transform-move",
-                                                                                "value": {
-                                                                                    "x": {
-                                                                                        "$$type": "size",
-                                                                                        "value": {
-                                                                                            "unit": "px",
-                                                                                            "size": 0
-                                                                                        }
-                                                                                    },
-                                                                                    "y": {
-                                                                                        "$$type": "size",
-                                                                                        "value": {
-                                                                                            "unit": "%",
-                                                                                            "size": -50
-                                                                                        }
-                                                                                    },
-                                                                                    "z": {
-                                                                                        "$$type": "size",
-                                                                                        "value": {
-                                                                                            "unit": "px",
-                                                                                            "size": 0
-                                                                                        }
-                                                                                    }
-                                                                                }
-                                                                            }
-                                                                        ]
                                                                     }
                                                                 }
                                                             },
@@ -399,7 +356,11 @@
                                                     },
                                                     "display": {
                                                         "$$type": "string",
-                                                        "value": "inline-block"
+                                                        "value": "flex"
+                                                    },
+                                                    "align-items": {
+                                                        "$$type": "string",
+                                                        "value": "center"
                                                     }
                                                 },
                                                 "custom_css": null

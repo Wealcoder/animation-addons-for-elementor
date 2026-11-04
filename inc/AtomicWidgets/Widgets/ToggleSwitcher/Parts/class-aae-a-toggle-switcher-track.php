@@ -140,7 +140,20 @@ class Aaeaddon_A_Toggle_Switcher_Track extends Atomic_Element_Base {
 						'border-color'   => Color_Prop_Type::generate( '#999999' ),
 						'border-style'   => String_Prop_Type::generate( 'solid' ),
 						'background'     => Background_Prop_Type::generate( [ 'color' => Color_Prop_Type::generate( '#999999' ) ] ),
-						'display'        => String_Prop_Type::generate( 'inline-block' ),
+						// Flex, not `inline-block`, so the Knob can sit in NORMAL FLOW
+						// inside this box. While the Knob was absolutely positioned its
+						// offsets resolved against this element's PADDING box, so the
+						// Padding control right here in the Style panel moved nothing --
+						// CSS never applies a parent's padding to an absolute child, and
+						// only Border (which the padding box does sit inside) appeared to
+						// work. In flow the Knob is laid out in the CONTENT box, so
+						// Padding insets it on both sides and shortens its travel to
+						// match. `align-items` then does the vertical centring the Knob
+						// used to do for itself with `inset-block-start: 50%` plus a
+						// -50% Y transform. At padding 0 the geometry is unchanged, which
+						// is why nothing already published moves.
+						'display'        => String_Prop_Type::generate( 'flex' ),
+						'align-items'    => String_Prop_Type::generate( 'center' ),
 					] )
 				),
 		];

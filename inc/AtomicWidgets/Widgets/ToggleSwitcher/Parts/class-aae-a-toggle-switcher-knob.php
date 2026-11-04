@@ -24,9 +24,6 @@ use Elementor\Modules\AtomicWidgets\PropTypes\Background_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Transition_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Selection_Size_Prop_Type;
 use Elementor\Modules\AtomicWidgets\PropTypes\Key_Value_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Transform\Transform_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Transform\Transform_Functions_Prop_Type;
-use Elementor\Modules\AtomicWidgets\PropTypes\Transform\Functions\Transform_Move_Prop_Type;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Definition;
 use Elementor\Modules\AtomicWidgets\Styles\Style_Variant;
 use Elementor\Modules\AtomicWidgets\Styles\Style_States;
@@ -139,21 +136,24 @@ class Aaeaddon_A_Toggle_Switcher_Knob extends Atomic_Widget_Base {
 						'width'              => Size_Prop_Type::generate( [ 'size' => 16, 'unit' => 'px' ] ),
 						'height'             => Size_Prop_Type::generate( [ 'size' => 16, 'unit' => 'px' ] ),
 						'min-width'          => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
-						'position'           => String_Prop_Type::generate( 'absolute' ),
-						'inset-block-start'  => Size_Prop_Type::generate( [ 'size' => 50, 'unit' => '%' ] ),
+						// `relative`, not `absolute`: an absolute Knob anchors to the
+						// Track's PADDING box, which is why the Track's Padding control
+						// could never inset it. In flow it is laid out in the Track's
+						// CONTENT box instead, so Padding works -- and `inset-inline-start`
+						// percentages now resolve against that content box too, which is
+						// what makes the `100%` in toggle-switcher.scss land the Knob on
+						// the inner right edge. Still positioned (not `static`) because
+						// that same offset is how it slides.
+						//
+						// Vertical centring moved to the Track's `align-items`, so the
+						// `inset-block-start: 50%` that used to pair with a -50% Y
+						// transform is gone, and so is that transform -- which also hands
+						// the Transform control back to the builder.
+						'position'           => String_Prop_Type::generate( 'relative' ),
 						'inset-inline-start' => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
 						'padding'            => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
 						'border-radius'      => Size_Prop_Type::generate( [ 'size' => 50, 'unit' => '%' ] ),
 						'background'         => Background_Prop_Type::generate( [ 'color' => Color_Prop_Type::generate( '#ffffff' ) ] ),
-						'transform'          => Transform_Prop_Type::generate( [
-							'transform-functions' => Transform_Functions_Prop_Type::generate( [
-								Transform_Move_Prop_Type::generate( [
-									'x' => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
-									'y' => Size_Prop_Type::generate( [ 'size' => -50, 'unit' => '%' ] ),
-									'z' => Size_Prop_Type::generate( [ 'size' => 0, 'unit' => 'px' ] ),
-								] ),
-							] ),
-						] ),
 						'transition'         => Transition_Prop_Type::generate( [
 							Selection_Size_Prop_Type::generate( [
 								'selection' => Key_Value_Prop_Type::generate( [
