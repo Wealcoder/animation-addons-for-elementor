@@ -1,0 +1,80 @@
+// Advanced Portfolio (atomic) - the skin-three presentation.
+//
+// Ported from the Pro v3 widget's stylesheet (`.wcf--advance-portfolio
+// .skin-portfolio-three`). The atomic parts render the same class names
+// (`section-title`, `posts-list`, `item`, `content`), so the selectors keep the
+// v3 shape and specificity: the "Studio Grid" preset (presets/css/studio-grid.css)
+// is written to match it, and v3 site CSS written against these selectors keeps
+// applying.
+//
+// Scoped with :where(.e-atomic-element) so it only ever matches the atomic
+// widget. :where() adds no specificity, and the Pro v3 widget, which has no
+// `e-atomic-element` class, is never touched by this file nor styled twice.
+//
+// Layout is NOT set here. The grid, its gap and its two columns, the item's
+// flex column and position, and the title's size and padding come from each
+// part's define_base_styles(), where the Style tab can change them. Putting
+// them in this sheet at selector specificity would make them impossible to
+// override from the editor.
+
+.wcf--advance-portfolio.skin-portfolio-three:where(.e-atomic-element) {
+	svg {
+		width: 1em;
+		height: 1em;
+	}
+
+	.title {
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+
+	img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	// Dark caption that slides in over the item on hover.
+	.content {
+		width: 175px;
+		padding: 15px;
+		border-radius: 5px;
+		background-color: #000;
+		color: #fff;
+		position: absolute;
+		right: 0;
+		bottom: 50px;
+		z-index: 1;
+		-webkit-transform: translateX(60px);
+		transform: translateX(60px);
+		-webkit-transition: all 0.3s;
+		transition: all 0.3s;
+		opacity: 0;
+		visibility: hidden;
+	}
+
+	.item:hover .content {
+		opacity: 1;
+		visibility: visible;
+		-webkit-transform: translateX(0);
+		transform: translateX(0);
+	}
+
+	// The skin's signature: every even item sits half a row lower. It only
+	// reads as intentional in two columns, so it is limited to the same
+	// breakpoint the v3 two-column grid used.
+	.posts-list {
+		.item {
+			top: 0;
+			left: 0;
+		}
+
+		@media (min-width: 768px) {
+			.item:nth-child(even) {
+				top: 50%;
+			}
+		}
+	}
+}
