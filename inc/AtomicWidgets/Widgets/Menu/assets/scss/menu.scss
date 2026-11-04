@@ -638,7 +638,16 @@ $stacked-inner: ':is(:where(.aae-a-menu--mobile)[data-hamburger="true"], [data-l
 }
 
 /* ============== HAMBURGER TOGGLE (mobile only) ============== */
-.aae-a-menu-toggle {
+/* `button` + the widget root are in the selector on purpose. Bare
+   `.aae-a-menu-toggle` (0-1-0) only TIED a theme reset such as Hello
+   Elementor`s `[type="button"], button { display: inline-block; ... }`, so
+   whichever sheet loaded last decided it -- and the reset loads later, which
+   put the hamburger on the desktop menu. At 0-2-1 the theme can no longer
+   reach any property below. The drawer rule that SHOWS it
+   (`.aae-a-menu:where(.aae-a-menu--mobile)[data-hamburger="true"]
+   .aae-a-menu-toggle`) is 0-3-0, so it still wins at the widget`s own
+   breakpoint -- which is why no breakpoint value appears here. */
+.aae-a-menu button.aae-a-menu-toggle {
 	all: unset;
 	display: none;
 	box-sizing: border-box;
@@ -664,7 +673,7 @@ $stacked-inner: ':is(:where(.aae-a-menu--mobile)[data-hamburger="true"], [data-l
 	   --aae-menu-dropdown-hover-bg — so setting the DROPDOWN's item hover colour
 	   silently repainted the hamburger's hover too. The fallback is --bg-2's own
 	   default, so an untouched button is unchanged. */
-	.aae-a-menu-toggle:hover { background: var(--aae-menu-hamburger-hover-bg, rgba(0, 0, 0, 0.05)); }
+	.aae-a-menu button.aae-a-menu-toggle:hover { background: var(--aae-menu-hamburger-hover-bg, rgba(0, 0, 0, 0.05)); }
 }
 .aae-a-menu-toggle-bars {
 	display: inline-flex;

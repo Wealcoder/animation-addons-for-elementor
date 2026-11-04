@@ -100,6 +100,39 @@ class Aaeaddon_A_Menu extends Atomic_Widget_Base {
 		return Union_Prop_Type::create_from( $svg_src )->add_prop_type( Icon_Prop_Type::make() );
 	}
 
+	/**
+	 * The Drawer Header logo: an image whose `src` AND `size` may both be absent.
+	 *
+	 * Two failures pull in opposite directions, and each is a save the editor
+	 * refuses with "drawer_logo: invalid_value":
+	 *
+	 *  - PICKING a file. The image control writes `src` alone, and Image_Prop_Type
+	 *    marks `size` required; Object_Prop_Type::validate_value() falls back to a
+	 *    field's DEFAULT (not its initial_value) when the key is absent. So `size`
+	 *    needs a default -- `default_size()`. 'full' is what core's own Atomic
+	 *    Image widget uses.
+	 *
+	 *  - NOT picking one. That same default makes Object_Prop_Type::get_default()
+	 *    non-null, so an untouched widget is validated as `{ size: full }` with no
+	 *    `src` -- and `src` is required. A freshly dropped Menu could not be
+	 *    published until a logo was uploaded.
+	 *
+	 * The logo IS optional (the text label is the fallback), so `src` is marked
+	 * optional. A real image still validates exactly as before; only the absent
+	 * case changes, from refused to accepted.
+	 *
+	 * Deliberately no default IMAGE: Image_Transformer throws "Invalid image URL"
+	 * for an image with neither an attachment id nor a url, so seeding one would
+	 * break rendering. The props resolver swallows that throw and hands the
+	 * template null, so an untouched widget keeps showing its text label.
+	 */
+	private static function drawer_logo_prop(): Image_Prop_Type {
+		$logo = Image_Prop_Type::make()->default_size( 'full' );
+		$logo->get_shape_field( 'src' )->optional();
+
+		return $logo;
+	}
+
 	protected static function define_props_schema(): array {
 		// The responsive `aae_m*_` props are MERGED IN, never a replacement:
 		// every legacy prop below keeps its key, its type and its stored value,
@@ -257,7 +290,7 @@ class Aaeaddon_A_Menu extends Atomic_Widget_Base {
 			// file, so without this every save was refused with
 			// "drawer_logo: invalid_value" and the Resolution select rendered blank.
 			// 'full' is what core's own Atomic Image widget uses.
-			'drawer_logo'                => Image_Prop_Type::make()->default_size( 'full' ),
+			'drawer_logo'                => self::drawer_logo_prop(),
 			'drawer_logo_width'          => Number_Prop_Type::make()->default( 120 ),
 			// 17px ≈ the 1.05em the label was hardcoded to at a 16px base, and 600
 			// is its previous weight, so the header reads the same until touched.
