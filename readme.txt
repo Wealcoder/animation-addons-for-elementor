@@ -5,7 +5,7 @@ Tags: elementor addons, elementor widgets, animation, elementor templates, eleme
 Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 4.2.8
+Stable tag: 4.2.9
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
  
@@ -393,6 +393,22 @@ Vendored libraries:
 
 == Changelog ==
 
+= 4.2.9 =
+* Fixed: Toggle Switcher: the knob now travels the full width of the switch when the Track width is changed. Previously the distance was hardcoded for the default size.
+* Fixed: Toggle Switcher: the Track's left and right Padding now moves the knob. The knob is laid out inside the Track instead of being absolutely positioned. At zero padding the appearance is unchanged.
+* Fixed: Toggle Switcher: corrected the knob position inside the Elementor editor.
+* Changed: Toggle Switcher: the "Style Switch" preset now includes the fixes above, so new Toggle Switchers get them. Toggle Switchers already on your pages are not changed.
+* Fixed: Loop Grid / Loop Filter: Loop Filter (Taxonomy) now works when added from a preset. The taxonomy was not being saved with the page, so the filter showed nothing.
+* Added: WP Menu: "Active Color" control for menu items.
+* Added: WP Menu: separate "Active Color" control for dropdown items.
+* Fixed: WP Menu: the Mobile Drawer effect no longer shows an unwanted box shadow on the right side.
+* Fixed: WP Menu: saving a page failed with "drawer_logo: invalid_value" after choosing a Drawer Header logo.
+* Fixed: WP Menu: a newly added Menu could not be published unless a Drawer Header logo had been uploaded.
+* Fixed: WP Menu: the hamburger button no longer appears on desktop with Hello Elementor and other themes that style all buttons.
+* Changed: WP Menu: on such themes the mobile hamburger now follows the widget's own size, border, radius and hover settings instead of the theme's button style. It is 40×40 by default.
+* Fixed: Dashboard: PRO extensions are no longer switched on by default without a valid license. Extensions already enabled are not turned off.
+* Added: Atomic Widgets (all): default styling classes (e-default-<tag>) on Form, Nested Slider, Loop Grid, Timeline, Accordion, Advanced Heading and Button. Their built-in styles can now be overridden from the Style tab without writing CSS.
+
 = 4.2.8 =
 * Added: Nav presets. Two one-click looks, "Header Nav" and "Mega Menu (Pill)", applied from a new Presets section.
 * Added: A Nav dropped on the canvas now builds itself from your WordPress menu. Only a freshly dropped Nav is touched — a pasted, duplicated or already-edited menu is left alone, and nothing is imported if the site has no menu.
@@ -453,6 +469,9 @@ Vendored libraries:
 Older versions: see [changelog.txt](https://plugins.svn.wordpress.org/animation-addons-for-elementor/trunk/changelog.txt) for the full changelog.
 
 == Upgrade Notice ==
+
+= 4.2.9 =
+Toggle Switcher knob and padding fixes, Loop Filter (Taxonomy) preset fix, WP Menu Active Color and Mobile Drawer fixes, and PRO extensions no longer enabled by default without a license.
 
 = 4.2.8 =
 Nav presets, auto-build from your WordPress menu, new mobile menu controls, Counter options, and Nav dropdown and mobile drawer fixes.

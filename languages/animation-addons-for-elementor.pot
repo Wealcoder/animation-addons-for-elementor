@@ -2,14 +2,14 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Animation Addons 4.2.8\n"
+"Project-Id-Version: Animation Addons 4.2.9\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/animation-addons-for-elementor\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-24T08:32:12+00:00\n"
+"POT-Creation-Date: 2026-11-04T10:40:15+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: animation-addons-for-elementor\n"
@@ -481,7 +481,7 @@ msgstr ""
 #: inc/AtomicWidgets/Widgets/ImageHotspot/class-aae-a-image-hotspot.php:153
 #: inc/AtomicWidgets/Widgets/ImageHotspot/class-aae-a-image-hotspot.php:164
 #: inc/AtomicWidgets/Widgets/ImageHotspot/Parts/class-aae-a-hotspot-marker.php:125
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:290
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:333
 #: inc/AtomicWidgets/Widgets/PostExcerpt/class-aae-a-post-excerpt.php:148
 #: inc/AtomicWidgets/Widgets/PostTitle/class-aae-a-post-title.php:123
 #: inc/AtomicWidgets/Widgets/SiteLogo/class-aae-a-site-logo.php:157
@@ -1339,7 +1339,7 @@ msgstr ""
 #: inc/Aaeaddon_Nested_Slider_Trait.php:499
 #: inc/Aaeaddon_Slider_Trait.php:470
 #: inc/AtomicWidgets/Widgets/ImageHotspot/class-aae-a-image-hotspot.php:151
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:389
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:432
 #: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav-item.php:94
 #: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:267
 #: inc/class-blacklist.php:705
@@ -4342,13 +4342,13 @@ msgstr ""
 msgid "not defined!"
 msgstr ""
 
-#: inc/admin/dashboard.php:351
-#: inc/admin/dashboard.php:352
+#: inc/admin/dashboard.php:359
+#: inc/admin/dashboard.php:360
 msgid "Animation Addon"
 msgstr ""
 
-#: inc/admin/dashboard.php:372
-#: inc/admin/dashboard.php:373
+#: inc/admin/dashboard.php:380
+#: inc/admin/dashboard.php:381
 #: inc/admin/row-actions.php:75
 #: inc/AtomicWidgets/Widgets/AdvancedHeading/class-aae-a-advanced-heading.php:212
 #: inc/AtomicWidgets/Widgets/Btn/class-aae-a-btn.php:208
@@ -4431,7 +4431,7 @@ msgstr ""
 #: inc/AtomicWidgets/Widgets/ToggleSwitcher/class-aae-a-toggle-switcher.php:133
 #: inc/AtomicWidgets/Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-pane-desc.php:86
 #: inc/AtomicWidgets/Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-pane-title.php:86
-#: inc/AtomicWidgets/Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-switcher-knob.php:124
+#: inc/AtomicWidgets/Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-switcher-knob.php:121
 #: inc/AtomicWidgets/Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-switcher-label.php:101
 #: inc/AtomicWidgets/Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-switcher-tab.php:160
 #: inc/AtomicWidgets/Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-switcher-tablist.php:87
@@ -4464,13 +4464,13 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 
-#: inc/admin/dashboard.php:701
-#: inc/admin/dashboard.php:820
-#: inc/admin/dashboard.php:908
-#: inc/admin/dashboard.php:930
-#: inc/admin/dashboard.php:959
-#: inc/admin/dashboard.php:1122
-#: inc/admin/dashboard.php:1186
+#: inc/admin/dashboard.php:709
+#: inc/admin/dashboard.php:828
+#: inc/admin/dashboard.php:916
+#: inc/admin/dashboard.php:938
+#: inc/admin/dashboard.php:967
+#: inc/admin/dashboard.php:1130
+#: inc/admin/dashboard.php:1194
 #: inc/admin/template-importer.php:101
 #: inc/class-custom-fonts-admin.php:83
 #: inc/class-custom-fonts-admin.php:113
@@ -4481,22 +4481,22 @@ msgstr ""
 msgid "you are not allowed to do this action"
 msgstr ""
 
-#: inc/admin/dashboard.php:713
-#: inc/admin/dashboard.php:788
-#: inc/admin/dashboard.php:836
-#: inc/admin/dashboard.php:1134
+#: inc/admin/dashboard.php:721
+#: inc/admin/dashboard.php:796
+#: inc/admin/dashboard.php:844
+#: inc/admin/dashboard.php:1142
 #: inc/class-custom-icon-admin.php:298
 msgid "Invalid option name."
 msgstr ""
 
-#: inc/admin/dashboard.php:742
-#: inc/admin/dashboard.php:1169
-#: inc/admin/dashboard.php:1205
+#: inc/admin/dashboard.php:750
+#: inc/admin/dashboard.php:1177
+#: inc/admin/dashboard.php:1213
 msgid "Option name not found!"
 msgstr ""
 
-#: inc/admin/dashboard.php:764
-#: inc/admin/dashboard.php:863
+#: inc/admin/dashboard.php:772
+#: inc/admin/dashboard.php:871
 #: inc/ajax-handler.php:294
 #: inc/ajax-handler.php:328
 #: inc/AnimationSettings/class-animation-settings.php:2131
@@ -4511,7 +4511,7 @@ msgstr ""
 msgid "Permission denied."
 msgstr ""
 
-#: inc/admin/dashboard.php:777
+#: inc/admin/dashboard.php:785
 #: inc/admin/plugin-installer.php:52
 #: inc/admin/plugin-installer.php:71
 #: inc/admin/plugin-installer.php:97
@@ -4519,64 +4519,64 @@ msgstr ""
 msgid "You are not allowed to do this action"
 msgstr ""
 
-#: inc/admin/dashboard.php:781
+#: inc/admin/dashboard.php:789
 msgid "Missing setting name."
 msgstr ""
 
-#: inc/admin/dashboard.php:876
+#: inc/admin/dashboard.php:884
 msgid "The Loop Grid widget is not available."
 msgstr ""
 
 #. translators: %d: number of taxonomies forgotten.
-#: inc/admin/dashboard.php:885
+#: inc/admin/dashboard.php:893
 #, php-format
 msgid "Forgot %d unused taxonomy."
 msgid_plural "Forgot %d unused taxonomies."
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/admin/dashboard.php:887
+#: inc/admin/dashboard.php:895
 msgid "Nothing to forget — every remembered taxonomy is either registered or still used by a page."
 msgstr ""
 
 #. translators: %d: number of taxonomies kept because pages still use them.
-#: inc/admin/dashboard.php:892
+#: inc/admin/dashboard.php:900
 #, php-format
 msgid "%d was kept because a page still filters by it."
 msgid_plural "%d were kept because pages still filter by them."
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/admin/dashboard.php:970
+#: inc/admin/dashboard.php:978
 msgid "Please provide your name, a valid email address, and a feature description."
 msgstr ""
 
-#: inc/admin/dashboard.php:984
+#: inc/admin/dashboard.php:992
 msgid "You have just sent a request. Please wait a moment before sending another."
 msgstr ""
 
-#: inc/admin/dashboard.php:1009
+#: inc/admin/dashboard.php:1017
 msgid "Could not reach the feature request service. Please try again later."
 msgstr ""
 
-#: inc/admin/dashboard.php:1025
+#: inc/admin/dashboard.php:1033
 #: src/modules/dashboard/components/dashboard/RequestFeatureForm.jsx:63
 #: src/modules/dashboard/components/dashboard/RequestFeatureForm.jsx:72
 msgid "Something went wrong. Please try again."
 msgstr ""
 
-#: inc/admin/dashboard.php:1049
+#: inc/admin/dashboard.php:1057
 msgid "The service accepted the request but did not confirm it was saved. Nothing has been stored — please try again or contact support."
 msgstr ""
 
 #. translators: %d: stored feature request id.
-#: inc/admin/dashboard.php:1064
+#: inc/admin/dashboard.php:1072
 #, php-format
 msgid "You have already sent this request — it is on file as #%d."
 msgstr ""
 
 #. translators: %d: stored feature request id.
-#: inc/admin/dashboard.php:1073
+#: inc/admin/dashboard.php:1081
 #, php-format
 msgid "Thanks! Your feature request has been saved as #%d."
 msgstr ""
@@ -4984,8 +4984,8 @@ msgstr ""
 #: inc/AnimationSettings/class-animation-settings.php:1076
 #: inc/AtomicWidgets/Widgets/AdvancePortfolio/class-aae-a-advance-portfolio.php:203
 #: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown.php:140
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:314
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:318
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:357
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:361
 #: inc/AtomicWidgets/Widgets/Posts/class-aae-a-posts.php:98
 #: widgets/advance-pricing-table/skins/skin-pricing-table-1.php:202
 #: widgets/advance-pricing-table/skins/skin-pricing-table-2.php:73
@@ -5607,19 +5607,19 @@ msgstr ""
 msgid "Invalid filters payload."
 msgstr ""
 
-#: inc/AtomicWidgets/class-atomic.php:2750
+#: inc/AtomicWidgets/class-atomic.php:2793
 msgid "AAE General"
 msgstr ""
 
-#: inc/AtomicWidgets/class-atomic.php:2755
+#: inc/AtomicWidgets/class-atomic.php:2798
 msgid "AAE Form"
 msgstr ""
 
-#: inc/AtomicWidgets/class-atomic.php:2760
+#: inc/AtomicWidgets/class-atomic.php:2803
 msgid "AAE Post"
 msgstr ""
 
-#: inc/AtomicWidgets/class-atomic.php:2771
+#: inc/AtomicWidgets/class-atomic.php:2814
 msgid "AAE WooCommerce"
 msgstr ""
 
@@ -5635,27 +5635,27 @@ msgstr ""
 msgid "Button Pro"
 msgstr ""
 
-#: inc/AtomicWidgets/class-pro-promotion.php:116
+#: inc/AtomicWidgets/class-pro-promotion.php:118
 msgid "Offcanvas"
 msgstr ""
 
-#: inc/AtomicWidgets/class-pro-promotion.php:120
+#: inc/AtomicWidgets/class-pro-promotion.php:122
 msgid "Lottie"
 msgstr ""
 
-#: inc/AtomicWidgets/class-pro-promotion.php:124
+#: inc/AtomicWidgets/class-pro-promotion.php:126
 msgid "Table of Content"
 msgstr ""
 
-#: inc/AtomicWidgets/class-pro-promotion.php:165
+#: inc/AtomicWidgets/class-pro-promotion.php:167
 msgid "Animation Addons Pro"
 msgstr ""
 
-#: inc/AtomicWidgets/class-pro-promotion.php:166
+#: inc/AtomicWidgets/class-pro-promotion.php:168
 msgid "Unlock Counter, Stack Cards, Offcanvas, Nav, Lottie and more scroll-driven atomic widgets."
 msgstr ""
 
-#: inc/AtomicWidgets/class-pro-promotion.php:167
+#: inc/AtomicWidgets/class-pro-promotion.php:169
 msgid "Upgrade now"
 msgstr ""
 
@@ -5729,7 +5729,7 @@ msgstr ""
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:202
 #: inc/AtomicWidgets/Widgets/ImageHotspot/Parts/class-aae-a-hotspot-close.php:109
 #: inc/AtomicWidgets/Widgets/ImageHotspot/Parts/class-aae-a-hotspot-marker.php:119
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:305
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:348
 #: inc/AtomicWidgets/Widgets/Progressbar/Parts/class-aae-a-progressbar-label.php:76
 #: inc/AtomicWidgets/Widgets/SearchQuery/class-aae-a-search-query.php:88
 #: inc/AtomicWidgets/Widgets/Timeline/Parts/class-aae-a-timeline-desc.php:75
@@ -6028,7 +6028,7 @@ msgstr ""
 #: inc/AtomicWidgets/Widgets/ToggleSwitcher/class-aae-a-toggle-switcher.php:137
 #: inc/AtomicWidgets/Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-pane-desc.php:90
 #: inc/AtomicWidgets/Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-pane-title.php:90
-#: inc/AtomicWidgets/Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-switcher-knob.php:128
+#: inc/AtomicWidgets/Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-switcher-knob.php:125
 #: inc/AtomicWidgets/Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-switcher-label.php:105
 #: inc/AtomicWidgets/Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-switcher-tab.php:164
 #: inc/AtomicWidgets/Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-switcher-tablist.php:91
@@ -6197,7 +6197,7 @@ msgstr ""
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-submit.php:351
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-submit.php:432
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form.php:416
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:451
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:494
 #: inc/AtomicWidgets/Widgets/Progressbar/Parts/class-aae-a-progressbar-label.php:79
 #: inc/AtomicWidgets/Widgets/SearchForm/class-aae-a-search-filter-category.php:70
 #: inc/AtomicWidgets/Widgets/SearchForm/class-aae-a-search-filter-date.php:70
@@ -6248,7 +6248,7 @@ msgstr ""
 
 #: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown.php:142
 #: inc/AtomicWidgets/Widgets/ImageCompare/class-aae-a-image-compare.php:138
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:320
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:363
 #: widgets/image-accordion.php:183
 #: widgets/image-box-slider.php:373
 #: widgets/nav-menu/nav-menu.php:173
@@ -6257,7 +6257,7 @@ msgstr ""
 
 #: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown.php:143
 #: inc/AtomicWidgets/Widgets/ImageCompare/class-aae-a-image-compare.php:139
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:321
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:364
 #: widgets/image-accordion.php:184
 #: widgets/image-box-slider.php:374
 #: widgets/nav-menu/nav-menu.php:174
@@ -7369,7 +7369,7 @@ msgid "Location"
 msgstr ""
 
 #: inc/AtomicWidgets/Widgets/GoogleMaps/class-aae-a-google-maps.php:199
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:493
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:536
 #: inc/class-blacklist.php:1029
 msgid "Zoom"
 msgstr ""
@@ -7497,7 +7497,7 @@ msgid "Trigger"
 msgstr ""
 
 #: inc/AtomicWidgets/Widgets/ImageHotspot/class-aae-a-image-hotspot.php:152
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:390
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:433
 #: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav-item.php:93
 #: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:266
 #: inc/class-blacklist.php:547
@@ -7772,143 +7772,143 @@ msgstr ""
 msgid "WP Menu"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:286
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:329
 #: widgets/timeline.php:964
 msgid "Solid"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:287
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:330
 #: widgets/timeline.php:965
 msgid "Dashed"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:288
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:331
 #: widgets/timeline.php:966
 msgid "Dotted"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:289
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:332
 #: widgets/timeline.php:967
 msgid "Double"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:295
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:309
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:338
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:352
 msgid "Select Menu"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:329
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:372
 msgid "Mobile Hamburger"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:331
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:374
 msgid "Mobile Breakpoint (px)"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:332
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:375
 msgid "0 means never switch to the mobile drawer, at any width."
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:355
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:398
 msgid "Menu Items Style"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:378
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:421
 msgid "Dropdown Panel"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:386
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:429
 #: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav.php:263
 msgid "Open On"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:387
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:430
 msgid "Applies to flyout dropdowns. With Layout set to Vertical, sub-menus always expand from the +/− toggle — and from the item itself when this is set to Click."
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:396
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:439
 msgid "Dropdown Items"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:406
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:449
 msgid "Sub-menu Toggle"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:414
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:457
 msgid "Icon (Collapsed)"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:415
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:458
 msgid "Showing the built-in chevron. Vertical layout draws a +/− instead until you upload your own icon, which then applies to every layout."
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:417
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:460
 msgid "Icon (Expanded)"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:418
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:461
 msgid "Optional. Falls back to the collapsed icon when you upload one here."
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:429
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:472
 #: widgets/nav-menu/nav-menu.php:1006
 msgid "Hamburger"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:440
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:483
 msgid "Drawer Header"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:448
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:491
 #: inc/AtomicWidgets/Widgets/SiteLogo/class-aae-a-site-logo.php:148
 #: widgets/site-logo.php:64
 msgid "Logo"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:449
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:492
 msgid "Replaces the label below when set. The label is still used as the logo’s alt text."
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:452
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:495
 msgid "Menu"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:461
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:504
 msgid "Drawer"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:468
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:511
 msgid "Motion"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:475
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:518
 msgid "Mobile Drawer Effect"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:477
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:520
 msgid "Slide from Left"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:478
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:521
 msgid "Slide from Right"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:479
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:522
 msgid "Slide from Top"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:480
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:523
 msgid "Slide from Bottom"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:481
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:490
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:524
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:533
 #: widgets/content-slider.php:262
 #: widgets/image-box-slider.php:399
 msgid "Fade"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:482
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:525
 #: inc/class-blacklist.php:264
 #: inc/class-blacklist.php:811
 #: inc/class-blacklist.php:1122
@@ -7919,7 +7919,7 @@ msgstr ""
 msgid "Scale"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:483
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:526
 #: widgets/grid-hover-posts.php:549
 #: widgets/image-box-slider.php:561
 #: widgets/image-box.php:375
@@ -7929,8 +7929,8 @@ msgstr ""
 msgid "Zoom In"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:484
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:494
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:527
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:537
 #: inc/class-starter-animations.php:756
 #: inc/class-starter-animations.php:977
 #: inc/theme-builder/theme-builder-admin.php:364
@@ -7941,23 +7941,23 @@ msgstr ""
 msgid "Flip"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:487
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:530
 msgid "Sub-menu Dropdown Effect"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:489
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:532
 msgid "Slide Down"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:491
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:534
 msgid "Slide + Fade"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:492
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:535
 msgid "Scale (Origin)"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:541
+#: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:584
 msgid "Please select a menu"
 msgstr ""
 
@@ -8995,7 +8995,7 @@ msgstr ""
 msgid "Toggle Pane Title"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-switcher-knob.php:61
+#: inc/AtomicWidgets/Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-switcher-knob.php:58
 msgid "Toggle Switcher — Knob"
 msgstr ""
 

@@ -119,7 +119,13 @@ window.addEventListener("elementor/frontend/init", () => {
       // });
 
 
-      this.findElements(".wcf-nav-item").forEach((link) => {
+      // Every parent link, at every depth. The walker only puts `wcf-nav-item`
+      // on depth 0, so binding to that class left level 2 and deeper with no
+      // handler at all: the click fell through to the <a> and the browser
+      // navigated away, and those submenus could never be opened on mobile.
+      // The back links below are already inserted at every depth, so this is
+      // the only piece that was missing.
+      this.findElements(".wcf-nav-menu-nav .menu-item-has-children > a").forEach((link) => {
         link.addEventListener("click", (e) => {
           const menuItem = link.closest(".menu-item");
           if (!menuItem) return;
