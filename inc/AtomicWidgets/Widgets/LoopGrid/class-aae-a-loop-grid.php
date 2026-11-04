@@ -138,6 +138,12 @@ class Aaeaddon_A_Loop_Grid extends Atomic_Element_Base {
 			'classes'        => Classes_Prop_Type::make()->default( [] ),
 			'attributes'     => Attributes_Prop_Type::make()->meta( Overridable_Prop_Type::ignore() ),
 
+			// The name a filter's "Loop Grid ID" may use instead of this element's
+			// random id, so a builder picks a word instead of copying a hash. Empty is
+			// every grid saved before this existed, and means "no name": nothing that
+			// already works reads it. See resolve_grid_ref().
+			'grid_name'      => String_Prop_Type::make()->default( '' ),
+
 			// Query.
 			'post_type'      => String_Prop_Type::make()->default( 'post' ),
 			'posts_per_page' => Number_Prop_Type::make()->default( 6 ),
@@ -479,6 +485,16 @@ class Aaeaddon_A_Loop_Grid extends Atomic_Element_Base {
 				->set_label( __( 'Query Filters', 'animation-addons-for-elementor' ) )
 				->set_id( 'aae_loop_query_filters' )
 				->set_items( $this->get_filter_controls() ),
+
+			Section::make()
+				->set_label( __( 'Settings', 'animation-addons-for-elementor' ) )
+				->set_id( 'aae_loop_settings' )
+				->set_items( [
+					Text_Control::bind_to( 'grid_name' )
+						->set_label( __( 'Grid ID', 'animation-addons-for-elementor' ) )
+						->set_placeholder( __( 'e.g. portfolio', 'animation-addons-for-elementor' ) )
+						->set_description( __( 'Only needed when the page holds more than one Loop Grid. Name this grid here, then type the same name in the Loop Grid ID field of each filter that should drive it.', 'animation-addons-for-elementor' ) ),
+				] ),
 
 			// No Layout section: the column layout is flexbox-driven — the Loop
 			// Item's base style (`flex: 1 1 32%`) sets the default 3-up grid and
@@ -1166,7 +1182,8 @@ class Aaeaddon_A_Loop_Grid extends Atomic_Element_Base {
 
 		$grid_id = $this->get_id();
 		$hit     = false;
-		$walk    = static function ( $els ) use ( &$walk, &$hit, $grid_id ) {
+		$refs    = [ 'ids' => [], 'names' => [] ];
+		$walk    = static function ( $els ) use ( &$walk, &$hit, $grid_id, &$refs ) {
 			foreach ( (array) $els as $el ) {
 				if ( $hit || ! is_array( $el ) ) {
 					continue;
@@ -1175,7 +1192,7 @@ class Aaeaddon_A_Loop_Grid extends Atomic_Element_Base {
 				if ( Loop_Filter_Auth::TYPE_RESULT_COUNT === $type ) {
 					$s      = self::unwrap( (array) ( $el['settings'] ?? [] ) );
 					$target = trim( (string) ( $s['target_grid'] ?? '' ) );
-					if ( '' === $target || $target === $grid_id ) {
+					if ( '' === $target || self::resolve_grid_ref( $refs, $target ) === $grid_id ) {
 						$hit = true;
 						return;
 					}
@@ -1189,7 +1206,9 @@ class Aaeaddon_A_Loop_Grid extends Atomic_Element_Base {
 		if ( class_exists( '\Elementor\Plugin' ) ) {
 			$doc = \Elementor\Plugin::$instance->documents->get( $document_id );
 			if ( $doc ) {
-				$walk( (array) $doc->get_elements_data() );
+				$tree = (array) $doc->get_elements_data();
+				$refs = self::grid_refs( $tree );
+				$walk( $tree );
 			}
 		}
 
@@ -1295,6 +1314,92 @@ class Aaeaddon_A_Loop_Grid extends Atomic_Element_Base {
 
 		$memo[ $document_id ] = ( 1 === count( $found ) ) ? $found[0] : '';
 		return $memo[ $document_id ];
+	}
+
+	/**
+	 * What a builder typed as a Grid ID, reduced to the form it is compared in.
+	 * Case and spacing do not matter ("Portfolio" and "portfolio" are one grid).
+	 */
+	public static function grid_name_key( string $name ): string {
+		return sanitize_title( trim( $name ) );
+	}
+
+	/**
+	 * Every Loop Grid in a saved tree: its element id, and the name it was given.
+	 *
+	 * Two grids sharing a name is a builder mistake with no right answer, so the
+	 * FIRST in document order owns it rather than the filter silently driving
+	 * both.
+	 *
+	 * @param array $elements Saved element tree.
+	 * @return array{ids: array<string,true>, names: array<string,string>}
+	 */
+	public static function grid_refs( array $elements ): array {
+		$refs = [ 'ids' => [], 'names' => [] ];
+
+		$walk = static function ( $els ) use ( &$walk, &$refs ) {
+			foreach ( (array) $els as $el ) {
+				if ( ! is_array( $el ) ) {
+					continue;
+				}
+				$type = (string) ( $el['widgetType'] ?? ( $el['elType'] ?? '' ) );
+				if ( in_array( $type, self::GRID_TYPES, true ) ) {
+					$id = (string) ( $el['id'] ?? '' );
+					if ( '' !== $id ) {
+						$refs['ids'][ $id ] = true;
+						$s    = self::unwrap( (array) ( $el['settings'] ?? [] ) );
+						$key  = self::grid_name_key( (string) ( $s['grid_name'] ?? '' ) );
+						if ( '' !== $key && ! isset( $refs['names'][ $key ] ) ) {
+							$refs['names'][ $key ] = $id;
+						}
+					}
+				}
+				if ( ! empty( $el['elements'] ) ) {
+					$walk( $el['elements'] );
+				}
+			}
+		};
+		$walk( $elements );
+
+		return $refs;
+	}
+
+	/**
+	 * Turn a filter's "Loop Grid ID" into the grid's ELEMENT id.
+	 *
+	 * An element id always wins, so every page saved before grids could be named
+	 * resolves exactly as it did. Anything that is neither a known id nor a known
+	 * name is handed back untouched, which is what an unknown value always did.
+	 *
+	 * @param array{ids: array<string,true>, names: array<string,string>} $refs From grid_refs().
+	 */
+	public static function resolve_grid_ref( array $refs, string $ref ): string {
+		$ref = trim( $ref );
+		if ( '' === $ref || isset( $refs['ids'][ $ref ] ) ) {
+			return $ref;
+		}
+
+		$key = self::grid_name_key( $ref );
+
+		return ( '' !== $key && isset( $refs['names'][ $key ] ) ) ? $refs['names'][ $key ] : $ref;
+	}
+
+	/**
+	 * resolve_grid_ref() for a saved document, with the tree read once per request.
+	 */
+	public static function resolve_grid_id( int $document_id, string $ref ): string {
+		$ref = trim( $ref );
+		if ( '' === $ref || $document_id < 1 || ! class_exists( '\\Elementor\\Plugin' ) ) {
+			return $ref;
+		}
+
+		static $memo = [];
+		if ( ! isset( $memo[ $document_id ] ) ) {
+			$doc                  = \Elementor\Plugin::$instance->documents->get( $document_id );
+			$memo[ $document_id ] = self::grid_refs( $doc ? (array) $doc->get_elements_data() : [] );
+		}
+
+		return self::resolve_grid_ref( $memo[ $document_id ], $ref );
 	}
 
 	/**

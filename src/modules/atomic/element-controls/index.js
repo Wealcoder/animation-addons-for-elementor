@@ -36,6 +36,7 @@ import { ProNoticeControl } from './ProNoticeControl';
 import { NoticeControl } from './NoticeControl';
 import { AaeColorControl } from './ColorControl';
 import { AcfFieldControl } from './AcfFieldControl';
+import { LoopGridControl } from './LoopGridControl';
 
 const ELEMENT_CONTROLS = [
 	{ type: 'aae-slides', component: SlidesControl, layout: 'full' },
@@ -82,6 +83,10 @@ const ELEMENT_CONTROLS = [
 	// site's ACF fields, narrowed to the post type of the Loop Grid the
 	// filter targets. inc/AtomicWidgets/Controls/class-aae-acf-field-control.php.
 	{ type: 'aae-acf-field', component: AcfFieldControl, layout: 'full', propTypeUtil: stringPropTypeUtil },
+	// Prop-bound to a plain String (a filter's `target_grid`): a dropdown of the
+	// Loop Grids on this page instead of a box to paste an id into.
+	// inc/AtomicWidgets/Controls/class-aae-loop-grid-control.php.
+	{ type: 'aae-loop-grid', component: LoopGridControl, layout: 'full', propTypeUtil: stringPropTypeUtil },
 ];
 
 let registered = false;

@@ -135,7 +135,9 @@ final class Loop_Filter_Auth {
 			}
 		}
 
-		$walk = static function ( $els ) use ( &$walk, &$ids, $grid_id ) {
+		// A readout may target this grid by the name it was given, not just its id.
+		$refs = Aaeaddon_A_Loop_Grid::grid_refs( $elements );
+		$walk = static function ( $els ) use ( &$walk, &$ids, $grid_id, $refs ) {
 			foreach ( (array) $els as $el ) {
 				if ( ! is_array( $el ) ) {
 					continue;
@@ -145,7 +147,7 @@ final class Loop_Filter_Auth {
 					$s      = Aaeaddon_A_Loop_Grid::unwrap( (array) ( $el['settings'] ?? [] ) );
 					$target = trim( (string) ( $s['target_grid'] ?? '' ) );
 					$id     = (string) ( $el['id'] ?? '' );
-					if ( '' !== $id && ( '' === $target || $target === $grid_id ) ) {
+					if ( '' !== $id && ( '' === $target || Aaeaddon_A_Loop_Grid::resolve_grid_ref( $refs, $target ) === $grid_id ) ) {
 						$ids[ $id ] = true;
 					}
 				}
@@ -287,7 +289,11 @@ final class Loop_Filter_Auth {
 			return $out;
 		}
 
-		$walk = static function ( $els ) use ( &$walk, &$out, $grid_id ) {
+		// A filter may target a grid by its element id (as it always could) or by
+		// the Grid ID the builder gave it. Both resolve to the element id here, so
+		// everything below -- the gate, the memo, the key -- still speaks one id.
+		$refs = Aaeaddon_A_Loop_Grid::grid_refs( $elements );
+		$walk = static function ( $els ) use ( &$walk, &$out, $grid_id, $refs ) {
 			foreach ( (array) $els as $el ) {
 				if ( ! is_array( $el ) ) {
 					continue;
@@ -302,7 +308,7 @@ final class Loop_Filter_Auth {
 					// widget declares, and a page with two grids is where the
 					// builder fills the field in.
 					$target = trim( (string) ( $s['target_grid'] ?? '' ) );
-					if ( '' === $target || $target === $grid_id ) {
+					if ( '' === $target || Aaeaddon_A_Loop_Grid::resolve_grid_ref( $refs, $target ) === $grid_id ) {
 						$decl = self::declare( $type, $s, (string) ( $el['id'] ?? '' ) );
 						if ( $decl ) {
 							$out[] = $decl;

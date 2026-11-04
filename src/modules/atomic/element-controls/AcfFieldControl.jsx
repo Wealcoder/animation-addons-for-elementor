@@ -77,7 +77,7 @@ export function loadAcfCatalog() {
 }
 
 /** Unwrap one { $$type, value } setting off a container. */
-function settingOf( container, key ) {
+export function settingOf( container, key ) {
 	try {
 		const raw = container?.model?.get( 'settings' )?.get( key );
 		return raw && typeof raw === 'object' && 'value' in raw ? raw.value : raw;
@@ -86,7 +86,7 @@ function settingOf( container, key ) {
 	}
 }
 
-function typeOf( container ) {
+export function typeOf( container ) {
 	const m = container?.model;
 	return m?.get?.( 'widgetType' ) || m?.get?.( 'elType' ) || '';
 }
@@ -138,9 +138,13 @@ export function resolvePostType( elementId, postTypeProp = 'acf_post_type', grid
 	}
 	const wanted = String( settingOf( self, gridProp ) || '' ).trim();
 	const grids = findGrids();
-	// `target_grid` holds the grid's ELEMENT id — what the authoriser matches.
+	// `target_grid` holds the grid's ELEMENT id -- what the authoriser matches -- or
+	// the Grid ID the builder gave that grid. An element id wins, exactly as it does
+	// on the server (Aaeaddon_A_Loop_Grid::resolve_grid_ref).
+	const slug = ( v ) => String( v || '' ).trim().toLowerCase().replace( /[^a-z0-9]+/g, '-' ).replace( /^-+|-+$/g, '' );
 	const grid = wanted
 		? grids.find( ( g ) => String( g.id ) === wanted )
+			|| grids.find( ( g ) => slug( settingOf( g, 'grid_name' ) ) !== '' && slug( settingOf( g, 'grid_name' ) ) === slug( wanted ) )
 		: grids.length === 1 ? grids[ 0 ] : null;
 	const gridType = String( settingOf( grid, 'post_type' ) || '' );
 	if ( gridType && gridType !== 'related' && gridType !== 'current_query' ) {
