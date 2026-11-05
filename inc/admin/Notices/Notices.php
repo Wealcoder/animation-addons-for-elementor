@@ -160,14 +160,6 @@ class Notices {
 	 */
 	protected function get_campaigns() {
 		return array(
-			'halloween_2026' => array(
-				'start'        => '2026-10-20',
-				'end'          => '2026-11-05',
-				'image'        => 'halloween-2026.png',
-				'alt'          => __( 'Upgrade to Pro and save 40% this Halloween', 'animation-addons-for-elementor' ),
-				'label'        => __( 'Upgrade to Pro - 40% off', 'animation-addons-for-elementor' ),
-				'utm_campaign' => 'halloween_2026',
-			),
 			'bfcm_2026'      => array(
 				'start'        => '2026-11-10',
 				'end'          => '2026-12-10',

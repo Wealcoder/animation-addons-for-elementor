@@ -13,14 +13,13 @@
  * Requires at least: 		   6.6
  * Requires PHP:               7.4
  * Requires Plugins:           elementor
- * Elementor tested up to:     4.2.4
- * Elementor Pro tested up to: 4.2.3
+ * Elementor tested up to:     4.3.6
+ * Elementor Pro tested up to: 4.3.3
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 } // Exit if accessed directly
-
 
 
 if ( ! function_exists( 'aaeaddon_define' ) ) :

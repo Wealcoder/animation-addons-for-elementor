@@ -275,6 +275,9 @@ gulp.task('zip', () => {
         '!vendor/phpcsstandards/**',
         '!vendor/dealerdirect/**',
         '!vendor/bin/**',
+        '!vendor/automattic/**',
+        '!vendor/phpcompatibility/**',
+        '!vendor/sirbrillig/**',
         '!README.md',
         '!.env',
         '!**/.DS_Store'

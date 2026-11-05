@@ -3209,9 +3209,12 @@ final class Atomic
 
 		$file_path = $base . $path;
 
+		$exists = file_exists($file_path);
+
 		return $cache[$key] = [
 			'path'    => $path,
-			'version' => file_exists($file_path) ? filemtime($file_path) : AAEADDON_VERSION,
+			'exists'  => $exists,
+			'version' => $exists ? filemtime($file_path) : AAEADDON_VERSION,
 		];
 	}
 
@@ -3304,6 +3307,15 @@ JS;
 				$asset   = $this->resolve_asset_meta($widget_data, 'script');
 				$path    = $asset['path'];
 				$version = $asset['version'];
+
+				// A registry entry can point at a file this install does not
+				// have: a Pro-owned widget's entry stays in the free registry
+				// while the Pro plugin is inactive, and its assets live in Pro.
+				// Registering it anyway made every page that rendered the widget
+				// request a 404. An unregistered handle is a no-op to enqueue.
+				if ( empty( $asset['exists'] ) ) {
+					continue;
+				}
 
 				$deps = [ 'elementor-v2-frontend-handlers' ]; // Required for @elementor/frontend-handlers register API
 				if ( ! empty( $widget_data['script_deps'] ) ) {
@@ -3504,13 +3516,17 @@ JS;
 					$file_path = AAEADDON_PATH . $path;
 					$version   = file_exists( $file_path ) ? filemtime( $file_path ) : AAEADDON_VERSION;
 
-					wp_register_script(
-						$widget_data['script_handle'],
-						self::asset_url( $path ),
-						[ 'elementor-v2-frontend-handlers' ],
-						$version,
-						true
-					);
+					// Only register a file that exists here; a Pro-owned entry
+					// whose assets live in Pro would otherwise 404 in the editor.
+					if ( file_exists( $file_path ) ) {
+						wp_register_script(
+							$widget_data['script_handle'],
+							self::asset_url( $path ),
+							[ 'elementor-v2-frontend-handlers' ],
+							$version,
+							true
+						);
+					}
 				}
 
 				wp_enqueue_script( $widget_data['script_handle'] );
@@ -3553,13 +3569,16 @@ JS;
 					$style_file = AAEADDON_PATH . $style_path;
 					$style_ver  = file_exists( $style_file ) ? filemtime( $style_file ) : AAEADDON_VERSION;
 
-					wp_register_style(
-						$widget_data['style_handle'],
-						self::asset_url( $style_path ),
-						[],
-						$style_ver
-					);
-					self::add_style_rtl( $widget_data['style_handle'], $style_path );
+					// Same guard as the script above: no file here, no handle.
+					if ( file_exists( $style_file ) ) {
+						wp_register_style(
+							$widget_data['style_handle'],
+							self::asset_url( $style_path ),
+							[],
+							$style_ver
+						);
+						self::add_style_rtl( $widget_data['style_handle'], $style_path );
+					}
 				}
 
 				wp_enqueue_style( $widget_data['style_handle'] );
@@ -3577,6 +3596,13 @@ JS;
 				$asset   = $this->resolve_asset_meta($widget_data, 'style');
 				$path    = $asset['path'];
 				$version = $asset['version'];
+
+				// See register_atomic_scripts(): never register a stylesheet that
+				// is not on disk, or enqueueing it is a guaranteed 404.
+				if ( empty( $asset['exists'] ) ) {
+					continue;
+				}
+
 				wp_register_style(
 					$widget_data['style_handle'],
 					self::asset_url($path, self::widget_base_url($widget_data)),
