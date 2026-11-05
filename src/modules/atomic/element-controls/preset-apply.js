@@ -490,6 +490,17 @@ export function sanitizeImageSrc(node) {
 const BORDER_WIDTH_ALIASES = ['border-width', 'border-width-v2'];
 const BORDER_WIDTH_FALLBACK_KEY = 'border-width-v2';
 
+// border-radius drifted the same way and is handled by the very same walk below:
+// `border-radius` on older cores, `border-radius-v2` on current ones
+// (Border_Radius_Prop_Type::get_key()). A preset authored on the other spelling
+// fails validation identically -- Style_Parser rejects `variants[0].border-radius`
+// and the WHOLE style is dropped at save. The Button Pro Ellipse preset lost its
+// root and its overlay this way: padding, ellipse radius, background and the
+// overlay's `position: absolute` all vanished, so after a reload the overlay sat
+// in the flex row at 100% width, squeezed the label and broke the text.
+const BORDER_RADIUS_ALIASES = ['border-radius', 'border-radius-v2'];
+const BORDER_RADIUS_FALLBACK_KEY = 'border-radius-v2';
+
 /** The border-width prop key registered by the installed Elementor core. */
 function getBorderWidthKey() {
   const key = window.AAE_PRESET_CONFIG && window.AAE_PRESET_CONFIG.borderWidthKey;
@@ -497,11 +508,22 @@ function getBorderWidthKey() {
   return BORDER_WIDTH_ALIASES.indexOf(key) !== -1 ? key : BORDER_WIDTH_FALLBACK_KEY;
 }
 
+/** The border-radius prop key registered by the installed Elementor core. */
+function getBorderRadiusKey() {
+  const key = window.AAE_PRESET_CONFIG && window.AAE_PRESET_CONFIG.borderRadiusKey;
+
+  return BORDER_RADIUS_ALIASES.indexOf(key) !== -1 ? key : BORDER_RADIUS_FALLBACK_KEY;
+}
+
+// Despite the name this rewrites BOTH drifting border keys (width and radius). It
+// keeps its name because outside code calls it through window.AAEPresetApply (the
+// Template Library modal), and a new name would leave that path unfixed.
 export function sanitizeBorderWidthType(node) {
   // Resolved once per call rather than per node, and NOT taken as a
   // parameter: this function is handed straight to Array#forEach below, which
   // would pass the array index as a second argument.
   const targetKey = getBorderWidthKey();
+  const radiusKey = getBorderRadiusKey();
 
   const walk = (current) => {
     if (Array.isArray(current)) {
@@ -514,6 +536,9 @@ export function sanitizeBorderWidthType(node) {
 
     if (BORDER_WIDTH_ALIASES.indexOf(current.$$type) !== -1) {
       current.$$type = targetKey;
+    }
+    if (BORDER_RADIUS_ALIASES.indexOf(current.$$type) !== -1) {
+      current.$$type = radiusKey;
     }
 
     Object.keys(current).forEach((key) => {

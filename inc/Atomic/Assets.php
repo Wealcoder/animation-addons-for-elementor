@@ -486,6 +486,12 @@ final class Assets
 				'borderWidthKey'   => class_exists( '\Elementor\Modules\AtomicWidgets\PropTypes\Border_Width_Prop_Type' )
 					? \Elementor\Modules\AtomicWidgets\PropTypes\Border_Width_Prop_Type::get_key()
 					: 'border-width-v2',
+				// Same drift, same remedy, for border-radius (`border-radius` ->
+				// `border-radius-v2`). Without it a preset with a rounded corner is
+				// stripped of its whole style on save.
+				'borderRadiusKey'  => class_exists( '\Elementor\Modules\AtomicWidgets\PropTypes\Border_Radius_Prop_Type' )
+					? \Elementor\Modules\AtomicWidgets\PropTypes\Border_Radius_Prop_Type::get_key()
+					: 'border-radius-v2',
 			]
 		);
 	}
