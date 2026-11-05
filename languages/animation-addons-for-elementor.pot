@@ -2,14 +2,14 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Animation Addons 4.2.9\n"
+"Project-Id-Version: Animation Addons 4.2.10\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/animation-addons-for-elementor\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-04T11:37:19+00:00\n"
+"POT-Creation-Date: 2026-11-05T06:37:41+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: animation-addons-for-elementor\n"
@@ -3188,7 +3188,7 @@ msgstr ""
 #: inc/Aaeaddon_Slider_Trait.php:1041
 #: inc/Aaeaddon_Slider_Trait.php:1084
 #: inc/AtomicWidgets/Widgets/AdvancePortfolio/class-aae-a-advance-portfolio.php:262
-#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:454
+#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:460
 #: widgets/countdown.php:468
 #: widgets/floating-elements.php:141
 #: widgets/floating-elements.php:173
@@ -3516,7 +3516,7 @@ msgstr ""
 
 #: inc/Aaeaddon_Post_Query_Trait.php:93
 #: inc/AtomicWidgets/Widgets/AdvancePortfolio/class-aae-a-advance-portfolio.php:241
-#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:433
+#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:439
 #: inc/AtomicWidgets/Widgets/PostPagination/class-aae-a-post-pagination.php:228
 #: inc/AtomicWidgets/Widgets/Posts/class-aae-a-posts.php:130
 #: widgets/banner-posts.php:159
@@ -3563,7 +3563,7 @@ msgstr ""
 
 #: inc/Aaeaddon_Post_Query_Trait.php:116
 #: inc/AtomicWidgets/Widgets/AdvancePortfolio/class-aae-a-advance-portfolio.php:245
-#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:437
+#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:443
 #: inc/AtomicWidgets/Widgets/Video/class-aae-a-video.php:334
 #: widgets/author-box.php:67
 #: widgets/feature-posts.php:1734
@@ -3767,7 +3767,7 @@ msgstr ""
 #: inc/Aaeaddon_Post_Query_Trait.php:340
 #: inc/AtomicWidgets/Widgets/AdvancePortfolio/class-aae-a-advance-portfolio.php:250
 #: inc/AtomicWidgets/Widgets/AdvancePortfolio/class-aae-a-portfolio-date.php:52
-#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:460
+#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:466
 #: inc/AtomicWidgets/Widgets/PostPagination/class-aae-a-post-pagination.php:279
 #: inc/AtomicWidgets/Widgets/PostPagination/Parts/class-aae-a-post-pagination-preview-date.php:47
 #: inc/AtomicWidgets/Widgets/Posts/class-aae-a-posts.php:143
@@ -3840,7 +3840,7 @@ msgstr ""
 
 #: inc/Aaeaddon_Post_Query_Trait.php:336
 #: inc/AtomicWidgets/Widgets/AdvancePortfolio/class-aae-a-advance-portfolio.php:248
-#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:458
+#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:464
 #: inc/AtomicWidgets/Widgets/PostPagination/class-aae-a-post-pagination.php:277
 #: inc/AtomicWidgets/Widgets/Posts/class-aae-a-posts.php:141
 #: widgets/category-showcase.php:395
@@ -3855,7 +3855,7 @@ msgstr ""
 #: inc/AtomicWidgets/Widgets/AdvancePortfolio/class-aae-a-advance-portfolio.php:251
 #: inc/AtomicWidgets/Widgets/Countdown/class-aae-a-countdown.php:154
 #: inc/AtomicWidgets/Widgets/FlipBox/Parts/class-aae-a-flip-box-title.php:92
-#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:461
+#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:467
 #: inc/AtomicWidgets/Widgets/PostPagination/class-aae-a-post-pagination.php:280
 #: inc/AtomicWidgets/Widgets/PostPagination/Parts/class-aae-a-post-pagination-preview-title.php:42
 #: inc/AtomicWidgets/Widgets/Posts/class-aae-a-posts.php:144
@@ -3943,7 +3943,7 @@ msgstr ""
 
 #: inc/Aaeaddon_Post_Query_Trait.php:342
 #: inc/AtomicWidgets/Widgets/AdvancePortfolio/class-aae-a-advance-portfolio.php:252
-#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:462
+#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:468
 #: widgets/feature-posts.php:1914
 #: widgets/feature-posts.php:2096
 #: widgets/video-posts-tab.php:1461
@@ -3968,7 +3968,7 @@ msgstr ""
 
 #: inc/Aaeaddon_Post_Query_Trait.php:345
 #: inc/AtomicWidgets/Widgets/AdvancePortfolio/class-aae-a-advance-portfolio.php:253
-#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:463
+#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:469
 #: inc/AtomicWidgets/Widgets/Posts/class-aae-a-posts.php:145
 #: widgets/category-showcase.php:401
 #: widgets/category-slider.php:535
@@ -3980,7 +3980,7 @@ msgstr ""
 
 #: inc/Aaeaddon_Post_Query_Trait.php:354
 #: inc/AtomicWidgets/Widgets/AdvancePortfolio/class-aae-a-advance-portfolio.php:256
-#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:467
+#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:473
 #: inc/AtomicWidgets/Widgets/PostPagination/class-aae-a-post-pagination.php:296
 #: inc/AtomicWidgets/Widgets/Posts/class-aae-a-posts.php:149
 #: widgets/category-showcase.php:409
@@ -4392,6 +4392,7 @@ msgstr ""
 #: inc/AtomicWidgets/Widgets/ImageHotspot/Parts/class-aae-a-hotspot-close.php:117
 #: inc/AtomicWidgets/Widgets/ImageHotspot/Parts/class-aae-a-hotspot-lightbox.php:104
 #: inc/AtomicWidgets/Widgets/ImageHotspot/Parts/class-aae-a-hotspot-marker.php:137
+#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:490
 #: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-item.php:99
 #: inc/AtomicWidgets/Widgets/LoopGridSlider/class-aae-a-loop-slide-track.php:82
 #: inc/AtomicWidgets/Widgets/Nav/class-aae-a-nav-item.php:85
@@ -6038,7 +6039,7 @@ msgid "Advanced Portfolio"
 msgstr ""
 
 #: inc/AtomicWidgets/Widgets/AdvancePortfolio/class-aae-a-advance-portfolio.php:207
-#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:449
+#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:455
 #: inc/AtomicWidgets/Widgets/Posts/class-aae-a-posts.php:109
 #: widgets/feature-posts.php:1766
 #: widgets/feature-posts.php:1948
@@ -6094,14 +6095,14 @@ msgid "Title Pin Area End"
 msgstr ""
 
 #: inc/AtomicWidgets/Widgets/AdvancePortfolio/class-aae-a-advance-portfolio.php:258
-#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:469
+#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:475
 #: inc/AtomicWidgets/Widgets/PostPagination/class-aae-a-post-pagination.php:299
 #: inc/AtomicWidgets/Widgets/Posts/class-aae-a-posts.php:151
 msgid "Descending"
 msgstr ""
 
 #: inc/AtomicWidgets/Widgets/AdvancePortfolio/class-aae-a-advance-portfolio.php:259
-#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:470
+#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:476
 #: inc/AtomicWidgets/Widgets/Posts/class-aae-a-posts.php:152
 msgid "Ascending"
 msgstr ""
@@ -7583,85 +7584,97 @@ msgstr ""
 msgid "Loop Grid"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:441
+#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:447
 msgid "Related By"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:443
+#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:449
 msgid "Categories & Tags"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:444
+#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:450
 msgid "Categories"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:445
+#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:451
 #: widgets/mailchimp/mailchimp.php:179
 msgid "Tags"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:479
+#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:485
 msgid "Query Filters"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:515
+#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:494
+msgid "Grid ID"
+msgstr ""
+
+#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:495
+msgid "e.g. portfolio"
+msgstr ""
+
+#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:496
+msgid "Only needed when the page holds more than one Loop Grid. Name this grid here, then type the same name in the Loop Grid ID field of each filter that should drive it."
+msgstr ""
+
+#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:531
 #: inc/AtomicWidgets/Widgets/PostPagination/class-aae-a-post-pagination.php:248
 #: inc/AtomicWidgets/Widgets/PostPagination/class-aae-a-post-pagination.php:254
 msgid "Search terms…"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:519
+#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:535
 #: inc/AtomicWidgets/Widgets/PostPagination/class-aae-a-post-pagination.php:267
 msgid "Include Posts"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:521
-#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:526
+#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:537
+#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:542
 #: inc/AtomicWidgets/Widgets/PostPagination/class-aae-a-post-pagination.php:269
 #: inc/AtomicWidgets/Widgets/PostPagination/class-aae-a-post-pagination.php:274
 msgid "Search by title or ID…"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:524
+#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:540
 #: inc/AtomicWidgets/Widgets/PostPagination/class-aae-a-post-pagination.php:272
 msgid "Exclude Posts"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:529
+#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:545
 msgid "Authors"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:531
-#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:536
+#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:547
+#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:552
 msgid "Search by name…"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:534
+#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:550
 msgid "Exclude Authors"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:539
+#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:555
 #: widgets/search-form.php:1734
 msgid "Date Range"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:542
+#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:558
 msgid "Meta Key Exists"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:545
+#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:561
 msgid "Only With Featured Image"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:548
+#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:564
 msgid "Sticky Posts First"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:566
+#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:582
 msgid "Related Posts"
 msgstr ""
 
-#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:567
+#: inc/AtomicWidgets/Widgets/LoopGrid/class-aae-a-loop-grid.php:583
 msgid "Current Query (Archive)"
 msgstr ""
 

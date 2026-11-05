@@ -1,6 +1,12 @@
 
 == Changelog ==
 
+= 🌀 Animation Addons for Elementor v4.2.10 – 5th November 2026
+
+  - **Added:** Loop Grid: a "Grid ID" field. Name a grid here, then use the same name in the Loop Grid ID field of any filter that should drive it. Only needed when a page holds more than one Loop Grid.
+  - **Changed:** Loop Filter: the "Loop Grid ID" field is now a dropdown listing the Loop Grids on the page, instead of a text box. Filters that already hold a grid's element id keep working.
+  - **Fixed:** Presets: Button presets such as Pro Ellipse lost their border radius when saved on some Elementor versions, which broke the layout after a reload. Border radius is now converted to the key the installed Elementor expects.
+
 = 🌀 Animation Addons for Elementor v4.2.9 – 4th November 2026
 
   - **Fixed:** Toggle Switcher: the knob now travels the full width of the switch when the Track width is changed. Previously the distance was hardcoded for the default size.

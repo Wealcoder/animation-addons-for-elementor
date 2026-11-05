@@ -5,7 +5,7 @@ Tags: elementor addons, elementor widgets, animation, elementor templates, eleme
 Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 4.2.9
+Stable tag: 4.2.10
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
  
@@ -393,6 +393,11 @@ Vendored libraries:
 
 == Changelog ==
 
+= 4.2.10 =
+* Added: Loop Grid: a "Grid ID" field. Name a grid here, then use the same name in the Loop Grid ID field of any filter that should drive it. Only needed when a page holds more than one Loop Grid.
+* Changed: Loop Filter: the "Loop Grid ID" field is now a dropdown listing the Loop Grids on the page, instead of a text box. Filters that already hold a grid's element id keep working.
+* Fixed: Presets: Button presets such as Pro Ellipse lost their border radius when saved on some Elementor versions, which broke the layout after a reload. Border radius is now converted to the key the installed Elementor expects.
+
 = 4.2.9 =
 * Fixed: Toggle Switcher: the knob now travels the full width of the switch when the Track width is changed. Previously the distance was hardcoded for the default size.
 * Fixed: Toggle Switcher: the Track's left and right Padding now moves the knob. The knob is laid out inside the Track instead of being absolutely positioned. At zero padding the appearance is unchanged.
@@ -469,6 +474,9 @@ Vendored libraries:
 Older versions: see [changelog.txt](https://plugins.svn.wordpress.org/animation-addons-for-elementor/trunk/changelog.txt) for the full changelog.
 
 == Upgrade Notice ==
+
+= 4.2.10 =
+Loop Grid gets a Grid ID, Loop Filter picks its grid from a dropdown, and Button presets keep their border radius.
 
 = 4.2.9 =
 Toggle Switcher knob and padding fixes, Loop Filter (Taxonomy) preset fix, WP Menu Active Color and Mobile Drawer fixes, and PRO extensions no longer enabled by default without a license.
