@@ -473,6 +473,15 @@ class Timeline extends Widget_Base {
 		);
 
 
+		$this->add_group_control(
+			Group_Control_Border::get_type(),
+			[
+				'name'      => 'content_wrapper_border',
+				'selector'  => '{{WRAPPER}} .content-wrap',
+				'separator' => 'before',
+			]
+		);
+
 		$this->add_responsive_control(
 			'content_wrapper_border_radius',
 			[
