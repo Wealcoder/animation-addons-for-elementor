@@ -1,0 +1,20 @@
+{
+  "id": "service",
+  "title": "Service",
+  "description": "A service or offering with a summary and a featured image.",
+  "icon": "layers",
+  "category": "marketing",
+  "plural_label": "Services",
+  "suggested_taxonomy": "Service Category",
+  "meta": {
+    "singular_name": "Service",
+    "post_type_key": "aae_service",
+    "taxonomies": [],
+    "public": true,
+    "hierarchical": false,
+    "active": true,
+    "advance": true,
+    "supports": ["title", "editor", "excerpt", "thumbnail"],
+    "description": "One service or offering."
+  }
+}

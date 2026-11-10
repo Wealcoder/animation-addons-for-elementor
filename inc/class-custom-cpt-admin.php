@@ -403,8 +403,18 @@ class CustomCpt_Cpt_Admin {
             );
 
             wp_localize_script( 'wcf-addon-pro-cpt-builder', 'WCF_ADDONS_ADMIN', [
-                'ajaxurl' => admin_url( 'admin-ajax.php' ),
-                'nonce'   => Nonce::create( Nonce::ADMIN ),
+                'ajaxurl'   => admin_url( 'admin-ajax.php' ),
+                'nonce'     => Nonce::create( Nonce::ADMIN ),
+                // Ready-made post type presets - free, always available.
+                'templates' => \Wealcoder\AnimationAddons\Extensions\Cpt_Templates::summaries(),
+                // "Describe it to AI" - Pro fills this in when it is active and configured
+                // (see aaeaddon/cpt_builder/ai_status in Pro's PostTypes\Admin\Ajax).
+                'ai'        => apply_filters( 'aaeaddon/cpt_builder/ai_status', [
+                    'available'  => false,
+                    'configured' => false,
+                    'label'      => '',
+                    'settings'   => '',
+                ] ),
             ] );
         //}
     }

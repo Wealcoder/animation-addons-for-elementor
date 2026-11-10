@@ -5,6 +5,7 @@ import {
   RiLayoutGridLine,
   RiMagicLine,
   RiShareBoxLine,
+  RiSparklingLine,
 } from "react-icons/ri";
 
 export const MainNavData = [
@@ -82,5 +83,21 @@ export const MainNavData = [
     role: ["administrator"],
     icon: <RiShareBoxLine size={20} />,
     targetBlank: true,
+  },
+  /*
+   * The AI provider / API-key form, ported from Pro's "AI & Connections"
+   * screen into this app's own UI kit (see pages/AiConfiguration.jsx) so it
+   * lives in-app rather than redirecting away. `addons_config.ai` is
+   * published by Pro through the same `wcf_addons_dashboard_config` filter
+   * chain `dashboardProWidget` / `pro_actions` already use -
+   * `ai.available === false` (or absent) means "Pro not here (or the AI
+   * module is off)", same convention as Migration / the Library tab.
+   */
+  {
+    name: "AI Configuration",
+    path: "ai-configuration",
+    role: ["administrator"],
+    icon: <RiSparklingLine size={20} />,
+    visible: !!window.WCF_ADDONS_ADMIN?.addons_config?.ai?.available,
   },
 ];

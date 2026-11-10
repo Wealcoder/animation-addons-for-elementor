@@ -1,0 +1,20 @@
+{
+  "id": "portfolio",
+  "title": "Portfolio",
+  "description": "Showcase projects or case studies, each with a summary and a featured image.",
+  "icon": "briefcase",
+  "category": "content",
+  "plural_label": "Portfolio",
+  "suggested_taxonomy": "Portfolio Category",
+  "meta": {
+    "singular_name": "Portfolio Item",
+    "post_type_key": "portfolio_item",
+    "taxonomies": [],
+    "public": true,
+    "hierarchical": false,
+    "active": true,
+    "advance": true,
+    "supports": ["title", "editor", "excerpt", "thumbnail"],
+    "description": "A single project or case study."
+  }
+}

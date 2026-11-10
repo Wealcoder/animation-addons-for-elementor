@@ -1,4 +1,5 @@
 import MainLayout from "@/layouts/MainLayout";
+import AiConfiguration from "@/pages/AiConfiguration";
 import AnimationSettings from "@/pages/AnimationSettings";
 import CompleteImport from "@/pages/CompleteImport";
 import Dashboard from "@/pages/Dashboard";
@@ -57,6 +58,12 @@ export const ShowContent = (item) => {
       return (
         <MainLayout.FirstLayout>
           <AnimationSettings />
+        </MainLayout.FirstLayout>
+      );
+    case "ai-configuration":
+      return (
+        <MainLayout.FirstLayout>
+          <AiConfiguration />
         </MainLayout.FirstLayout>
       );
     // `performance` is deliberately still routable even though the sidebar no

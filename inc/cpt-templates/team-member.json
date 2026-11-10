@@ -1,0 +1,20 @@
+{
+  "id": "team-member",
+  "title": "Team Member",
+  "description": "A staff directory entry with a bio and a photo.",
+  "icon": "users",
+  "category": "people",
+  "plural_label": "Team Members",
+  "suggested_taxonomy": "Team Department",
+  "meta": {
+    "singular_name": "Team Member",
+    "post_type_key": "team_member",
+    "taxonomies": [],
+    "public": true,
+    "hierarchical": false,
+    "active": true,
+    "advance": true,
+    "supports": ["title", "editor", "thumbnail"],
+    "description": "One person on the team."
+  }
+}

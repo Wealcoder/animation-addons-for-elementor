@@ -1,0 +1,20 @@
+{
+  "id": "testimonial",
+  "title": "Testimonial",
+  "description": "A customer quote with who said it, for reviews and social proof.",
+  "icon": "message-square",
+  "category": "marketing",
+  "plural_label": "Testimonials",
+  "suggested_taxonomy": "",
+  "meta": {
+    "singular_name": "Testimonial",
+    "post_type_key": "testimonial",
+    "taxonomies": [],
+    "public": true,
+    "hierarchical": false,
+    "active": true,
+    "advance": true,
+    "supports": ["title", "editor", "thumbnail"],
+    "description": "One customer quote."
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "id": "faq",
+  "title": "FAQ",
+  "description": "A single question-and-answer entry for an FAQ page or accordion.",
+  "icon": "help-circle",
+  "category": "content",
+  "plural_label": "FAQs",
+  "suggested_taxonomy": "FAQ Category",
+  "meta": {
+    "singular_name": "FAQ",
+    "post_type_key": "aae_faq",
+    "taxonomies": [],
+    "public": true,
+    "hierarchical": false,
+    "active": true,
+    "advance": true,
+    "supports": ["title", "editor"],
+    "description": "One question and its answer."
+  }
+}

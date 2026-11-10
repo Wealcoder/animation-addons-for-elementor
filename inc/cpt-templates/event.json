@@ -1,0 +1,20 @@
+{
+  "id": "event",
+  "title": "Event",
+  "description": "A scheduled happening with a description and a featured image.",
+  "icon": "calendar",
+  "category": "content",
+  "plural_label": "Events",
+  "suggested_taxonomy": "Event Category",
+  "meta": {
+    "singular_name": "Event",
+    "post_type_key": "aae_event",
+    "taxonomies": [],
+    "public": true,
+    "hierarchical": false,
+    "active": true,
+    "advance": true,
+    "supports": ["title", "editor", "excerpt", "thumbnail"],
+    "description": "One scheduled event."
+  }
+}

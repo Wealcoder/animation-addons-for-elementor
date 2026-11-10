@@ -1,10 +1,15 @@
+import { useState } from "react";
 import { Button } from "S/components/ui/button";
 import { usePostType, useTab } from "S/hooks/app.hooks";
 import ShowAllPostType from "./ShowAllPostType";
+import TemplatesModal from "S/components/TemplatesModal";
+import AiDescribeModal from "S/components/AiDescribeModal";
 
 const PostTypes = () => {
   const { updateTabKey } = useTab();
   const { setAllPostTypes } = usePostType();
+  const [templatesOpen, setTemplatesOpen] = useState(false);
+  const [aiOpen, setAiOpen] = useState(false);
   const url = new URL(window.location.href);
 
   const createPostType = async () => {
@@ -47,7 +52,13 @@ const PostTypes = () => {
           <div className="flex items-center">
             <h2 className="text-[18px] font-medium ">Post Types</h2>
           </div>
-          <div>
+          <div className="flex gap-2">
+            <Button variant="secondary" onClick={() => setAiOpen(true)}>
+              Describe it to AI
+            </Button>
+            <Button variant="secondary" onClick={() => setTemplatesOpen(true)}>
+              Start from a template
+            </Button>
             <Button onClick={() => createPostType()}>Add New</Button>
           </div>
         </div>
@@ -55,6 +66,8 @@ const PostTypes = () => {
       <div className="mt-4">
         <ShowAllPostType />
       </div>
+      <TemplatesModal open={templatesOpen} onOpenChange={setTemplatesOpen} />
+      <AiDescribeModal open={aiOpen} onOpenChange={setAiOpen} />
     </div>
   );
 };
