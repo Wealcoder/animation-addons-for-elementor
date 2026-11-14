@@ -1,6 +1,13 @@
 
 == Changelog ==
 
+= 🌀 Animation Addons for Elementor v4.2.11 – 14th November 2026
+
+  - **Added:** Black Friday offers until December 10. Sites without Animation Addons Pro see the lifetime plan offer; sites with Pro see the Agency Bundle offer.
+  - **Changed:** The offer shows on the WordPress Dashboard and Plugins screens at most twice per administrator, at least 10 minutes apart. Its close button hides it for 10 minutes; "Don't show again" hides it for good.
+  - **Changed:** On the Animation Addons screens the offer shows on every visit while it runs. Its close button hides it until the page is opened again.
+  - **Removed:** The old Black Friday banner and the expired 2025 Cyber Sale video in the dashboard.
+
 = 🌀 Animation Addons for Elementor v4.2.10 – 5th November 2026
 
   - **Added:** Loop Grid: a "Grid ID" field. Name a grid here, then use the same name in the Loop Grid ID field of any filter that should drive it. Only needed when a page holds more than one Loop Grid.

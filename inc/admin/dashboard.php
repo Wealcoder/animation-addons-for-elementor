@@ -515,8 +515,6 @@ class Aaeaddon_Admin_Init
 				? AAEADDON_URL . 'assets/images/hero-banner.jpg'
 				: 'no',
 
-			'hero_offer' => AAEADDON_URL . 'assets/video/cyber-sale.mp4',
-
 			// Animation Settings screen. Shipped in the initial payload rather
 			// than fetched, so the panel paints filled in on first open.
 			'animation_settings' => array(

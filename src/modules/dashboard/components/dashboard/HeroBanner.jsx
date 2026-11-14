@@ -3,16 +3,6 @@ import { Badge } from "../ui/badge";
 import GetProButton from "../shared/GetProButton";
 import DashboardHeroBanner from "../../../../../public/images/dashboard-v4-hero-banner.png";
 
-function isInOfferPeriod() {
-  const today = new Date();
-
-  // Note: Months are 0-indexed in JavaScript (0 = January, 11 = December)
-  const offerStart = new Date(2025, 11, 1); // 1 December 2025
-  const offerEnd = new Date(2025, 11, 7); // 7 December 2025
-
-  return today >= offerStart && today <= offerEnd;
-}
-
 /**
  * The hero, the 60% half of the top row.
  *
@@ -37,36 +27,8 @@ function isInOfferPeriod() {
 const HeroBanner = () => {
   const version = WCF_ADDONS_ADMIN?.version;
 
-  // The seasonal promo is a link to pricing, so it must NOT carry the button —
-  // GetProButton renders its own anchor, and nesting one inside another is
-  // invalid markup with unpredictable click behaviour.
-  if (isInOfferPeriod()) {
-    return (
-      <a
-        href="https://animation-addons.com/pricing"
-        target="_blank"
-        rel="noreferrer"
-        className="relative h-full block overflow-hidden rounded-[10px]"
-      >
-        <video
-          src={WCF_ADDONS_ADMIN.hero_offer}
-          autoPlay
-          loop
-          muted
-          playsInline
-          controls={false}
-          className="w-full h-full object-cover rounded-[10px]"
-        />
-        <Badge
-          className="absolute bottom-[20px] right-[20px] bg-white"
-          variant="version"
-        >
-          {__("Ver.", "animation-addons-for-elementor")} {version}
-        </Badge>
-      </a>
-    );
-  }
-
+  // Seasonal offers are the admin-notice banner (inc/admin/Notices/Notices.php),
+  // printed above this app; the hero stays the same all year.
   return (
     <div className="relative h-full overflow-hidden rounded-[10px]">
       <img

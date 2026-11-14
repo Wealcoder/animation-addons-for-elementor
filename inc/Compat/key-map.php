@@ -183,7 +183,7 @@ return array(
 		'_aae_cache_compat', '_aae_cache_compat_ls',
 	),
 	'termmeta'    => array( 'aae_cat_bg_color', 'aae_cat_color', 'aae_cate_additional_text', 'aae_category_icon', 'aae_category_image' ),
-	'usermeta'    => array( 'wcf_phone_number', 'author_social_profiles', 'aae_free_version_notice_dismissed', 'aae_theme_assets_notice_dismissed' ),
+	'usermeta'    => array( 'wcf_phone_number', 'author_social_profiles', 'aae_free_version_notice_dismissed', 'aae_theme_assets_notice_dismissed', 'aaeaddon_notice_views' ),
 	'transients'  => array(
 		// Both spellings: the pre-4.2 rows an upgraded site may still hold (they
 		// expire within the hour) and the names the code writes now.
