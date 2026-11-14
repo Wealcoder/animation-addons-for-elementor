@@ -5,7 +5,7 @@ Tags: elementor addons, elementor widgets, animation, elementor templates, eleme
 Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 4.2.11
+Stable tag: 4.2.12
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
  
@@ -393,6 +393,9 @@ Vendored libraries:
 
 == Changelog ==
 
+= 4.2.12 =
+* Changed: The Black Friday offer now shows on every visit to the Plugins screen until "Don't show again" is clicked. The WordPress Dashboard still shows it at most twice per administrator, at least 10 minutes apart.
+
 = 4.2.11 =
 * Added: Black Friday offers until December 10. Sites without Animation Addons Pro see the lifetime plan offer; sites with Pro see the Agency Bundle offer.
 * Changed: The offer shows on the WordPress Dashboard and Plugins screens at most twice per administrator, at least 10 minutes apart. Its close button hides it for 10 minutes; "Don't show again" hides it for good.
@@ -480,6 +483,9 @@ Vendored libraries:
 Older versions: see [changelog.txt](https://plugins.svn.wordpress.org/animation-addons-for-elementor/trunk/changelog.txt) for the full changelog.
 
 == Upgrade Notice ==
+
+= 4.2.12 =
+The Black Friday offer stays on the Plugins screen until you dismiss it.
 
 = 4.2.11 =
 Black Friday offers until December 10 for sites with and without Animation Addons Pro.

@@ -1,6 +1,10 @@
 
 == Changelog ==
 
+= 🌀 Animation Addons for Elementor v4.2.12 – 14th November 2026
+
+  - **Changed:** The Black Friday offer now shows on every visit to the Plugins screen until "Don't show again" is clicked. The WordPress Dashboard still shows it at most twice per administrator, at least 10 minutes apart.
+
 = 🌀 Animation Addons for Elementor v4.2.11 – 14th November 2026
 
   - **Added:** Black Friday offers until December 10. Sites without Animation Addons Pro see the lifetime plan offer; sites with Pro see the Agency Bundle offer.

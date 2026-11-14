@@ -38,8 +38,8 @@ class Notices {
 	protected $promo_notice_id = '';
 
 	/**
-	 * Times each user sees a seasonal banner on the WordPress Dashboard and
-	 * Plugins screens, the seconds between two of those views, and the user
+	 * Times each user sees a seasonal banner on the WordPress Dashboard
+	 * screen, the seconds between two of those views, and the user
 	 * meta that counts them (removed on uninstall, see Compat/key-map.php).
 	 */
 	const PROMO_MAX_VIEWS  = 2;
@@ -165,9 +165,9 @@ class Notices {
 	 * - on this plugin's own screens (the dashboard included) on every visit
 	 *   while the campaign runs, even after it was dismissed; its X only hides
 	 *   it until the next page load;
-	 * - on the WordPress Dashboard and Plugins screens at most twice per user
-	 *   in all, at least 10 minutes apart; its X hides it for 10 minutes and
-	 *   "Don't show again" for good.
+	 * - on the WordPress Dashboard screen at most twice per user, at least 10
+	 *   minutes apart, and on the Plugins screen on every visit; on both its
+	 *   X hides it for 10 minutes and "Don't show again" for good.
 	 *
 	 * @param array $notice The promo notice.
 	 *
@@ -192,6 +192,9 @@ class Notices {
 		if ( $this->is_dismissed( $notice['notice_id'] ) ) {
 			return false;
 		}
+		if ( 'plugins' === $screen->id ) {
+			return true;
+		}
 
 		$views = $this->get_promo_views( $notice['notice_id'] );
 		if ( $views['total'] >= self::PROMO_MAX_VIEWS ) {
@@ -201,7 +204,7 @@ class Notices {
 	}
 
 	/**
-	 * Times the current user saw a banner on the Dashboard / Plugins screens,
+	 * Times the current user saw a banner on the Dashboard screen,
 	 * and when they last did.
 	 *
 	 * @param string $id The notice id.
@@ -219,7 +222,7 @@ class Notices {
 	}
 
 	/**
-	 * Count one view of a banner on the Dashboard / Plugins screens.
+	 * Count one view of a banner on the Dashboard screen.
 	 *
 	 * @param string $id The notice id.
 	 *
@@ -428,11 +431,12 @@ class Notices {
 				$message = $notice['message'];
 
 				// The seasonal banner: built for the screen it is on, and counted
-				// on the WordPress Dashboard / Plugins screens (see should_display_promo()).
+				// on the WordPress Dashboard (see should_display_promo()).
 				if ( $this->promo_notice_id && $notice['notice_id'] === $this->promo_notice_id && ! empty( $notice['campaign'] ) ) {
 					$plugin_screen = $this->is_plugin_screen();
 					$message       = $this->get_campaign_message( $notice['campaign'], $plugin_screen );
-					if ( ! $plugin_screen ) {
+					$screen        = get_current_screen();
+					if ( $screen && 'dashboard' === $screen->id ) {
 						$this->count_promo_view( $notice['notice_id'] );
 					}
 				}

@@ -2,14 +2,14 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Animation Addons 4.2.11\n"
+"Project-Id-Version: Animation Addons 4.2.12\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/animation-addons-for-elementor\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-14T10:35:42+00:00\n"
+"POT-Creation-Date: 2026-11-14T11:18:32+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: animation-addons-for-elementor\n"
@@ -215,7 +215,7 @@ msgstr ""
 #: class-plugin.php:471
 #: class-plugin.php:1504
 #: class-plugin.php:1632
-#: inc/admin/Notices/Notices.php:347
+#: inc/admin/Notices/Notices.php:350
 #: widgets/post-rating-form.php:882
 #: src/modules/dashboard/components/performance/PerformanceWizard.jsx:566
 msgid "Close"
@@ -4588,33 +4588,33 @@ msgstr ""
 msgid "Content installing"
 msgstr ""
 
-#: inc/admin/Notices/Notices.php:274
+#: inc/admin/Notices/Notices.php:277
 msgid "Black Friday: Animation Addons Pro lifetime plans from $51. Pay once, no renewals."
 msgstr ""
 
-#: inc/admin/Notices/Notices.php:275
+#: inc/admin/Notices/Notices.php:278
 msgid "Get Animation Addons Pro lifetime - Black Friday deal"
 msgstr ""
 
-#: inc/admin/Notices/Notices.php:283
+#: inc/admin/Notices/Notices.php:286
 msgid "Agency Bundle lifetime at 70 percent off: Animation Addons Pro, MotionKit, BricksFly, Arolax and Axtra themes for $449."
 msgstr ""
 
-#: inc/admin/Notices/Notices.php:284
+#: inc/admin/Notices/Notices.php:287
 msgid "Get the Agency Bundle - Black Friday deal"
 msgstr ""
 
-#: inc/admin/Notices/Notices.php:361
+#: inc/admin/Notices/Notices.php:364
 msgid "Don't show again"
 msgstr ""
 
 #. translators: %s: last day of the offer, e.g. "Nov 5".
-#: inc/admin/Notices/Notices.php:363
+#: inc/admin/Notices/Notices.php:366
 #, php-format
 msgid "Offer ends %s"
 msgstr ""
 
-#: inc/admin/Notices/Notices.php:479
+#: inc/admin/Notices/Notices.php:483
 msgid "Dismiss this notice"
 msgstr ""
 
