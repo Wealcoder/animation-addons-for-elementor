@@ -40,7 +40,7 @@ class Notices {
 	/**
 	 * Times each user sees a seasonal banner on the WordPress Dashboard
 	 * screen, the seconds between two of those views, and the user
-	 * meta that counts them (removed on uninstall, see Compat/key-map.php).
+	 * meta that counts them (removed on uninstall by Aaeaddon_Plugin::plugin_unregister_hook()).
 	 */
 	const PROMO_MAX_VIEWS  = 2;
 	const PROMO_VIEW_GAP   = 600;

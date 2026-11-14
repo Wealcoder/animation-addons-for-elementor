@@ -339,6 +339,9 @@ final class Aaeaddon_Plugin {
 	public static function plugin_unregister_hook() {
 		// MULTISITE: uninstall runs once for the network; the rows are per site.
 		\Wealcoder\AnimationAddons\Compat\Migration::for_each_site( array( __CLASS__, 'uninstall_site' ), is_multisite() );
+
+		// Seasonal banner view counts (inc/admin/Notices/Notices.php); user meta is shared by every site.
+		delete_metadata( 'user', 0, 'aaeaddon_notice_views', '', true );
 	}
 
 	/** The per-site half of uninstall. Runs with the site in question current. */
@@ -362,6 +365,25 @@ final class Aaeaddon_Plugin {
 		}
 		foreach (\Wealcoder\AnimationAddons\Compat\Key_Bridge::map()['dead'] as $option) {
 			delete_option($option);
+		}
+
+		// Seasonal banner dismiss / snooze rows: an option or a transient named
+		// after the banner's notice id (aaeaddon_notice_promo_<campaign>).
+		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-off cleanup on uninstall; the campaign ids are not known in advance.
+		$names = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
+				$wpdb->esc_like( 'aaeaddon_notice_promo_' ) . '%',
+				$wpdb->esc_like( '_transient_aaeaddon_notice_promo_' ) . '%'
+			)
+		);
+		foreach ($names as $name) {
+			if (0 === strpos($name, '_transient_')) {
+				delete_transient(substr($name, strlen('_transient_')));
+			} else {
+				delete_option($name);
+			}
 		}
 	}
 
@@ -466,8 +488,8 @@ final class Aaeaddon_Plugin {
 		});
 		
 		// Once we get here, We have passed all validation checks so we can safely include our plugin
-		require_once 'class-plugin.php';
-		require_once 'inc/AtomicWidgets/class-atomic.php';
+		require_once __DIR__ . '/class-plugin.php';
+		require_once __DIR__ . '/inc/AtomicWidgets/class-atomic.php';
 
 		/*
 		 * The plugin is fully loaded and its classes are available.
