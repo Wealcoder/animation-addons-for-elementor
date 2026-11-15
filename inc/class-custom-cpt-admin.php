@@ -87,6 +87,7 @@ class CustomCpt_Cpt_Admin {
     public function __construct() {
         add_action( 'admin_menu', [ $this, 'register_sub_menu' ], 30 );
         add_action( 'admin_enqueue_scripts', [ $this, 'admin_scripts' ] );
+        add_action( 'current_screen', [ $this, 'remove_admin_footer_text' ] );
         // Deprecated admin-ajax aliases (a cached admin bundle posts the old name) -- remove in 4.3.
         \Wealcoder\AnimationAddons\Ajax_Alias::register( 'aae_add_or_update_new_post_type_builder', 'aaeaddon_add_or_update_new_post_type_builder', [ $this, 'add_or_update_post_type' ] );
         \Wealcoder\AnimationAddons\Ajax_Alias::register( 'aae_delete_post_type_builder', 'aaeaddon_delete_post_type_builder', [ $this, 'delete_post_type' ] );
@@ -133,6 +134,21 @@ class CustomCpt_Cpt_Admin {
         $all_caps = array_values( array_unique($all_caps) );
     
         return $all_caps;
+    }
+
+    /**
+     * The CPT Builder is a full-screen app: hide WordPress's "Thank you for
+     * creating with WordPress" line and the version number under it, on this
+     * screen only.
+     *
+     * @param \WP_Screen $screen Current screen.
+     * @return void
+     */
+    public function remove_admin_footer_text( $screen ) {
+        if ( is_object( $screen ) && ! empty( $screen->id ) && false !== strpos( $screen->id, '_page_aaeaddon-cpt-builder' ) ) {
+            add_filter( 'admin_footer_text', '__return_empty_string' );
+            add_filter( 'update_footer', '__return_empty_string', 11 );
+        }
     }
 
     /**
