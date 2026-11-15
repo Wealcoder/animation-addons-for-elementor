@@ -263,7 +263,7 @@ final class Aaeaddon_Admin_Page_Importer
             wp_enqueue_script(
                 'aaeaddon-page-importer-admin',
                 AAEADDON_URL . 'assets/build/modules/page-import/index.js',
-                array('wp-element', 'wp-i18n'),
+                array('react', 'react-dom', 'react-jsx-runtime', 'wp-element', 'wp-i18n'),
                 aaeaddon_asset_version(),
                 true
             );

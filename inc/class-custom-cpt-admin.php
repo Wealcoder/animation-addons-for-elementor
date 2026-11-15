@@ -397,7 +397,7 @@ class CustomCpt_Cpt_Admin {
             wp_enqueue_script(
                 'wcf-addon-pro-cpt-builder',
                 AAEADDON_URL . 'assets/build/modules/cpt-builder/main.js',
-                [ 'react', 'react-dom', 'wp-element', 'wp-i18n' ],
+                [ 'react', 'react-dom', 'react-jsx-runtime', 'wp-element', 'wp-i18n' ],
                 AAEADDON_VERSION,
                 true
             );

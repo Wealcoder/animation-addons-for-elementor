@@ -4,6 +4,7 @@ const { getWebpackEntryPoints } = require("@wordpress/scripts/utils/config");
 const path = require("path");
 
 const fs = require('fs');
+const DependencyExtractionWebpackPlugin = require("@wordpress/dependency-extraction-webpack-plugin");
 
 // Helper to automatically find all JS files inside AtomicWidgets/Widgets/*/assets/js/
 const getAtomicWidgetEntries = () => {
@@ -53,6 +54,10 @@ module.exports = {
     "@elementor/ui":                ["elementorV2", "ui"],
     react:                          "React",
     "react-dom":                    "ReactDOM",
+    // The automatic JSX runtime must NOT be bundled: WordPress 6.6+ ships it as
+    // the `react-jsx-runtime` script (window.ReactJSXRuntime). Inlining it
+    // copies a React build into every bundle (Plugin Check: inlined_react_jsx_runtime).
+    "react/jsx-runtime":            "ReactJSXRuntime",
   },
   entry: {
     ...getWebpackEntryPoints(),
@@ -89,7 +94,25 @@ module.exports = {
     ],
   },
   plugins: [
-    ...defaultConfig.plugins,
+    // wp-scripts' own DependencyExtractionWebpackPlugin is swapped for one that
+    // also knows the JSX runtime, so every *.asset.php lists `react-jsx-runtime`
+    // as a dependency and WordPress loads it before our bundle runs.
+    ...defaultConfig.plugins.filter(
+      (plugin) => plugin.constructor.name !== "DependencyExtractionWebpackPlugin"
+    ),
+    new DependencyExtractionWebpackPlugin({
+      injectPolyfill: false,
+      requestToExternal(request) {
+        if (request === "react/jsx-runtime") {
+          return ["ReactJSXRuntime"];
+        }
+      },
+      requestToHandle(request) {
+        if (request === "react/jsx-runtime") {
+          return "react-jsx-runtime";
+        }
+      },
+    }),
     // Additional plugins can be added here
   ],
   resolve: {

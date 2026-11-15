@@ -418,7 +418,7 @@ class Aaeaddon_Admin_Init
 		wp_enqueue_script(
 			'wcf-admin',
 			AAEADDON_URL . 'assets/build/modules/dashboard/index.js',
-			array('react', 'react-dom', 'wp-element', 'wp-i18n'),
+			array('react', 'react-dom', 'react-jsx-runtime', 'wp-element', 'wp-i18n'),
 			aaeaddon_asset_version(),
 			true
 		);

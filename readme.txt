@@ -399,6 +399,7 @@ Vendored libraries:
 * Added: Dashboard, CPT Builder and Code Snippet: "Describe it to AI" and an AI Configuration tab, shown only when Animation Addons Pro's AI module is active and set up.
 * Fixed: Deleting the plugin now also removes the seasonal offer banner records (dismiss and snooze settings and the per-user view counts).
 * Improved: The plugin's core files now load through absolute paths, so they are found whichever folder WordPress or WP-CLI runs from.
+* Improved: Dashboard, Setup Wizard, Page Import and CPT Builder now use WordPress's own React JSX runtime instead of a bundled copy, which makes their scripts smaller. Requires WordPress 6.6 or newer, as the plugin already does.
 
 = 4.2.12 =
 * Changed: The Black Friday offer now shows on every visit to the Plugins screen until "Don't show again" is clicked. The WordPress Dashboard still shows it at most twice per administrator, at least 10 minutes apart.
