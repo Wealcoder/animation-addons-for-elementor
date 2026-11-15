@@ -1337,3 +1337,5 @@
   // through insertV4 / resolveDependencies with `tpl` (and no jurl).
   window.aaeaddonTemplateLibrary = { state, insertV4, insertV3, renderList, resolveDependencies, eras, PENDING_KEY };
 })(jQuery, window, document);
+
+//# sourceMappingURL=wcf-template-library.js.map

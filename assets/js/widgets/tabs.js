@@ -44,3 +44,4 @@
         }
     });
 } )( jQuery );
+//# sourceMappingURL=tabs.js.map

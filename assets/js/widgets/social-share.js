@@ -45,3 +45,4 @@
         elementorFrontend.hooks.addAction( 'frontend/element_ready/wcf--blog--post--social-share.default', Social_Share_Count );
     } );
 } )( jQuery );
+//# sourceMappingURL=social-share.js.map

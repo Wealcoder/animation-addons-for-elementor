@@ -257,7 +257,7 @@ class CodeSnippet {
 				'codemirror-editor',
 				AAEADDON_URL . 'assets/js/code-snippet.min.js',
 				array( 'jquery', 'select2', 'codemirror-core' ),
-				'1.0.0',
+				AAEADDON_VERSION,
 				true
 			);
 
@@ -291,6 +291,14 @@ class CodeSnippet {
 					'loading'           => __( 'Loading...', 'animation-addons-for-elementor' ),
 					'error'             => __( 'An error occurred. Please try again.', 'animation-addons-for-elementor' ),
 				),
+				// "Describe it to AI" - Pro fills this in when active with the module on
+				// (see aaeaddon/code_snippet/ai_status in Pro's CodeSnippetPro::ai_status()).
+				'ai'            => apply_filters( 'aaeaddon/code_snippet/ai_status', array(
+					'available'  => false,
+					'configured' => false,
+					'label'      => '',
+					'settings'   => '',
+				) ),
 			);
 			wp_localize_script( 'codemirror-editor', 'WCFCustomCodeVars', $localize_data );
 			wp_enqueue_script( 'select2', AAEADDON_URL . 'assets/js/select2.min.js', array( 'jquery' ), AAEADDON_VERSION, true );

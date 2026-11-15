@@ -22,3 +22,4 @@
         elementorFrontend.hooks.addAction('frontend/element_ready/aae--video-posts-tab.default', VideoPostsTab);
     });
 })(jQuery);
+//# sourceMappingURL=video-posts-tab.js.map

@@ -225,6 +225,12 @@ if ( 'php' === $snippet_details['code_type'] ) {
 				<input type="hidden" id="code-content-hidden" name="code_content" value="<?php echo esc_textarea( $snippet_details['code_content'] ?? '' ); ?>">
 				<div class="aae-csp-editor__footer">
 					<div id="editor-stats" class="editor-stats"></div>
+					<button class="aae-csp-editor__insertBtn" type="button" id="describe-to-ai-btn">
+						<svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<path d="M7 1.16675L8.18 4.73341L11.6667 5.83341L8.18 7.03341L7 10.5001L5.82 7.03341L2.33333 5.83341L5.82 4.73341L7 1.16675Z" stroke="#717784" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+						</svg>
+						<?php esc_html_e( 'Describe it to AI', 'animation-addons-for-elementor' ); ?>
+					</button>
 					<button class="aae-csp-editor__insertBtn" type="button" id="insert-example-btn">
 						<svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
 							<path d="M12.8334 1.16675L8.05005 5.95008" stroke="#717784" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -244,3 +250,52 @@ if ( 'php' === $snippet_details['code_type'] ) {
 <div id="wcf-code-loading" class="wcf-code-loading" style="display: none;">
 	<div class="spinner"></div>
 </div>
+
+<div id="aae-ai-modal-overlay" class="aae-ai-modal-overlay" style="display: none;">
+	<div class="aae-ai-modal" role="dialog" aria-modal="true" aria-label="<?php esc_attr_e( 'Describe it to AI', 'animation-addons-for-elementor' ); ?>">
+		<div class="aae-ai-modal__header">
+			<h3><?php esc_html_e( 'Describe it to AI', 'animation-addons-for-elementor' ); ?></h3>
+			<button type="button" class="aae-ai-modal__close" id="aae-ai-modal-close" aria-label="<?php esc_attr_e( 'Close', 'animation-addons-for-elementor' ); ?>">&times;</button>
+		</div>
+		<div class="aae-ai-modal__body">
+			<p class="aae-ai-modal__hint"><?php esc_html_e( 'Describe the snippet, and the code, type and location will be proposed. Nothing is written until you review it below and press Save Snippet yourself.', 'animation-addons-for-elementor' ); ?></p>
+
+			<div id="aae-ai-unavailable" style="display: none;" class="aae-ai-modal__notice"></div>
+
+			<div id="aae-ai-form">
+				<textarea id="aae-ai-description" rows="3" class="aae-csp-aside__input" placeholder="<?php esc_attr_e( 'e.g. A CSS snippet that hides the WordPress admin bar on the front end.', 'animation-addons-for-elementor' ); ?>"></textarea>
+				<button type="button" class="aae-csp-editor__insertBtn" id="aae-ai-generate" style="margin-top: 10px;">
+					<?php esc_html_e( 'Generate', 'animation-addons-for-elementor' ); ?>
+				</button>
+				<p id="aae-ai-error" class="aae-ai-modal__error" style="display: none;"></p>
+
+				<div id="aae-ai-preview" style="display: none;" class="aae-ai-modal__preview">
+					<div class="aae-ai-modal__preview-row"><strong><?php esc_html_e( 'Title', 'animation-addons-for-elementor' ); ?>:</strong> <span id="aae-ai-p-title"></span></div>
+					<div class="aae-ai-modal__preview-row"><strong><?php esc_html_e( 'Type', 'animation-addons-for-elementor' ); ?>:</strong> <span id="aae-ai-p-type"></span></div>
+					<div class="aae-ai-modal__preview-row"><strong><?php esc_html_e( 'Location', 'animation-addons-for-elementor' ); ?>:</strong> <span id="aae-ai-p-location"></span></div>
+					<div class="aae-ai-modal__preview-row"><strong><?php esc_html_e( 'Visibility', 'animation-addons-for-elementor' ); ?>:</strong> <span id="aae-ai-p-visibility"></span></div>
+					<pre id="aae-ai-p-code" class="aae-ai-modal__code"></pre>
+					<p id="aae-ai-p-rationale" class="aae-ai-modal__rationale"></p>
+					<button type="button" class="aae-csp-editor__insertBtn" id="aae-ai-apply">
+						<?php esc_html_e( 'Use this', 'animation-addons-for-elementor' ); ?>
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<style>
+.aae-ai-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 100000; display: flex; align-items: center; justify-content: center; }
+.aae-ai-modal { background: #fff; border-radius: 10px; width: 560px; max-width: 92vw; max-height: 86vh; overflow-y: auto; padding: 20px 22px; box-shadow: 0 10px 40px rgba(0,0,0,.2); }
+.aae-ai-modal__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.aae-ai-modal__header h3 { margin: 0; font-size: 16px; }
+.aae-ai-modal__close { background: none; border: 0; font-size: 22px; line-height: 1; cursor: pointer; color: #717784; }
+.aae-ai-modal__hint { font-size: 12.5px; color: #717784; margin: 0 0 12px; }
+.aae-ai-modal__notice, .aae-ai-modal__error { font-size: 12.5px; color: #B3261E; background: #FDECEA; border-radius: 6px; padding: 8px 10px; margin-top: 8px; }
+.aae-ai-modal__preview { margin-top: 14px; border: 1px solid #E5E7EB; border-radius: 8px; padding: 12px; }
+.aae-ai-modal__preview-row { font-size: 12.5px; margin-bottom: 4px; }
+.aae-ai-modal__code { background: #F5F5F7; border-radius: 6px; padding: 10px; max-height: 220px; overflow: auto; font-size: 12px; white-space: pre-wrap; word-break: break-word; }
+.aae-ai-modal__rationale { font-size: 12px; font-style: italic; color: #717784; }
+#aae-ai-description { width: 100%; box-sizing: border-box; }
+</style>

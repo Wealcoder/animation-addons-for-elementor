@@ -528,6 +528,11 @@ function initializeEditorFunctionality() {
         insertExampleBtn.addEventListener('click', insertExample);
     }
 
+    const describeToAiBtn = document.getElementById('describe-to-ai-btn');
+    if (describeToAiBtn) {
+        describeToAiBtn.addEventListener('click', openAiModal);
+    }
+
     // Enhanced keyboard shortcuts
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape' && isFullscreen) {
@@ -539,6 +544,221 @@ function initializeEditorFunctionality() {
             toggleTheme();
         }
     });
+}
+
+// ==========================================
+// "DESCRIBE IT TO AI" - proposes a snippet, never writes one.
+//
+// Posts to Pro's aaeaddon_code_snippet_ai_propose admin-ajax action, which
+// validates the model's answer through the SAME code the aae/create-snippet
+// MCP ability uses (Abilities::create_snippet(..., dry_run: true) - nothing
+// is written). "Use this" only fills the fields already on this screen
+// (title, code type, load location, visibility, priority) and the live
+// CodeMirror instance via changeLanguageMode()/editor.setValue() - the
+// person still presses the screen's own "Save Snippet" button, which still
+// goes through the unchanged admin_post_aaeaddon_add_code_snippet handler.
+// ==========================================
+
+let aaeAiLastProposal = null;
+
+function openAiModal() {
+    const overlay = document.getElementById('aae-ai-modal-overlay');
+    if (!overlay) {
+        return;
+    }
+    const ai = (window.WCFCustomCodeVars && window.WCFCustomCodeVars.ai) || { available: false, configured: false };
+    const unavailable = document.getElementById('aae-ai-unavailable');
+    const form = document.getElementById('aae-ai-form');
+    if (!ai.available) {
+        if (unavailable) {
+            unavailable.style.display = 'block';
+            unavailable.textContent = 'This needs Animation Addons Pro, active, with an AI provider configured.';
+        }
+        if (form) {
+            form.style.display = 'none';
+        }
+    } else if (!ai.configured) {
+        if (unavailable) {
+            unavailable.style.display = 'block';
+            unavailable.innerHTML = 'Add an API key first.' + (ai.settings ? ' <a href="' + ai.settings + '" target="_blank">Open AI &amp; Connections</a>' : '');
+        }
+        if (form) {
+            form.style.display = 'none';
+        }
+    } else {
+        if (unavailable) {
+            unavailable.style.display = 'none';
+        }
+        if (form) {
+            form.style.display = 'block';
+        }
+    }
+    overlay.style.display = 'flex';
+}
+
+function closeAiModal() {
+    const overlay = document.getElementById('aae-ai-modal-overlay');
+    if (overlay) {
+        overlay.style.display = 'none';
+    }
+}
+
+function aaeAiShowError(message) {
+    const el = document.getElementById('aae-ai-error');
+    if (!el) {
+        return;
+    }
+    if (message) {
+        el.textContent = message;
+        el.style.display = 'block';
+    } else {
+        el.style.display = 'none';
+    }
+}
+
+function generateAiProposal() {
+    const vars = window.WCFCustomCodeVars || {};
+    const descriptionEl = document.getElementById('aae-ai-description');
+    const description = descriptionEl ? descriptionEl.value.trim() : '';
+    const generateBtn = document.getElementById('aae-ai-generate');
+    const previewEl = document.getElementById('aae-ai-preview');
+
+    aaeAiShowError('');
+    if (previewEl) {
+        previewEl.style.display = 'none';
+    }
+    if (description.length < 8) {
+        aaeAiShowError('Describe the snippet in a sentence or two first.');
+        return;
+    }
+    if (generateBtn) {
+        generateBtn.disabled = true;
+        generateBtn.textContent = 'Thinking…';
+    }
+
+    const body = new URLSearchParams({
+        action: 'aaeaddon_code_snippet_ai_propose',
+        description: description,
+        nonce: vars.nonce || ''
+    });
+
+    fetch(vars.ajaxurl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json' },
+        body: body.toString()
+    })
+        .then(function(response) { return response.json(); })
+        .then(function(result) {
+            if (!result || !result.success) {
+                const message = (result && result.data && (result.data.message || result.data)) || 'The AI did not answer.';
+                aaeAiShowError(typeof message === 'string' ? message : 'The AI did not answer.');
+                return;
+            }
+            // Assistant::propose() returns {dry_run, action, snippet: {title, type, code, ...}, rationale} -
+            // flatten it once here so renderAiProposal()/applyAiProposal() can read plain fields.
+            aaeAiLastProposal = Object.assign({}, result.data.snippet, { rationale: result.data.rationale });
+            renderAiProposal(aaeAiLastProposal);
+        })
+        .catch(function() {
+            aaeAiShowError('Something went wrong talking to the AI.');
+        })
+        .finally(function() {
+            if (generateBtn) {
+                generateBtn.disabled = false;
+                generateBtn.textContent = 'Generate';
+            }
+        });
+}
+
+function renderAiProposal(p) {
+    const previewEl = document.getElementById('aae-ai-preview');
+    if (!previewEl) {
+        return;
+    }
+    const set = function(id, value) {
+        const el = document.getElementById(id);
+        if (el) {
+            el.textContent = value || '';
+        }
+    };
+    set('aae-ai-p-title', p.title);
+    set('aae-ai-p-type', p.type);
+    set('aae-ai-p-location', p.location || '—');
+    set('aae-ai-p-visibility', p.visibility_label || p.visibility);
+    set('aae-ai-p-code', p.code);
+    set('aae-ai-p-rationale', p.rationale);
+    previewEl.style.display = 'block';
+}
+
+function applyAiProposal() {
+    const p = aaeAiLastProposal;
+    if (!p) {
+        return;
+    }
+
+    const titleEl = document.getElementById('snippet-title');
+    if (titleEl) {
+        titleEl.value = p.title || '';
+    }
+
+    if (p.type) {
+        const codeTypeEl = document.getElementById('code-type');
+        if (codeTypeEl) {
+            codeTypeEl.value = p.type;
+        }
+        changeLanguageMode(p.type);
+    }
+
+    const loadLocationEl = document.getElementById('load-location');
+    if (loadLocationEl && p.location) {
+        loadLocationEl.value = p.location;
+    }
+
+    const visibilityEl = document.getElementById('visibility-page');
+    if (visibilityEl && p.visibility) {
+        visibilityEl.value = p.visibility;
+    }
+
+    if (p.priority) {
+        const prioritySlider = document.getElementById('priority-slider');
+        const priorityValue = document.getElementById('priority-value');
+        if (prioritySlider) {
+            prioritySlider.value = p.priority;
+        }
+        if (priorityValue) {
+            priorityValue.value = p.priority;
+        }
+    }
+
+    if (editor && typeof p.code === 'string') {
+        editor.setValue(p.code);
+    }
+
+    showNotification('Proposal applied - review it, then press Save Snippet.');
+    closeAiModal();
+}
+
+function initializeAiModal() {
+    const closeBtn = document.getElementById('aae-ai-modal-close');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeAiModal);
+    }
+    const overlay = document.getElementById('aae-ai-modal-overlay');
+    if (overlay) {
+        overlay.addEventListener('click', function(e) {
+            if (e.target === overlay) {
+                closeAiModal();
+            }
+        });
+    }
+    const generateBtn = document.getElementById('aae-ai-generate');
+    if (generateBtn) {
+        generateBtn.addEventListener('click', generateAiProposal);
+    }
+    const applyBtn = document.getElementById('aae-ai-apply');
+    if (applyBtn) {
+        applyBtn.addEventListener('click', applyAiProposal);
+    }
 }
 
 // Initialize PHP/Other code type location toggle
@@ -973,6 +1193,7 @@ function initializeActiveToggle() {
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize all modules
     initializeEditorFunctionality();
+    initializeAiModal();
     initializeLocationToggle();
     initializeVisibilityPageToggle();
     initializePrioritySlider();
@@ -992,3 +1213,4 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }, 500);
 });
+//# sourceMappingURL=code-snippet.js.map

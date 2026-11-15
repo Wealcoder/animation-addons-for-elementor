@@ -349,3 +349,5 @@
     });
 
 })();
+
+//# sourceMappingURL=animated-heading.js.map
