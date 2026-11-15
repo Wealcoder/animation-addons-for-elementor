@@ -397,7 +397,7 @@ Vendored libraries:
 * Added: CPT Builder: "Start from a template" with six ready-made post types (Event, FAQ, Portfolio, Service, Team Member, Testimonial). Pick one, then change anything in the edit screen. No taxonomy is created for you; each preset only suggests one.
 * Added: Timeline: Border control for the content wrapper.
 * Fixed: Deleting the plugin now also removes the seasonal offer banner records (dismiss and snooze settings and the per-user view counts).
-* Improved: Dashboard: the offer banner is now centered above the app, and the WordPress "Thank you for creating with WordPress" footer line is hidden on the Dashboard and CPT Builder screens.
+* Improved: Dashboard: the offer banner is now centered above the app, and the WordPress "Thank you for creating with WordPress" footer line is hidden on the Dashboard, CPT Builder and Page Import screens.
 * Improved: The plugin's core files now load through absolute paths, so they are found whichever folder WordPress or WP-CLI runs from.
 * Improved: Dashboard, Setup Wizard, Page Import and CPT Builder now use WordPress's own React JSX runtime instead of a bundled copy, which makes their scripts smaller. Requires WordPress 6.6 or newer, as the plugin already does.
 
