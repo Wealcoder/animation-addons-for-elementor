@@ -75,3 +75,9 @@
 .aae-promo-actions .aae-promo-ends {
   margin-inline-start: auto;
 }
+
+/* Dashboard (Animation Addon > Settings): centre the banner above the full-width app. */
+body.wcf-anim2024 .notice.aae-notice.aae-promo-notice {
+  margin-left: auto;
+  margin-right: auto;
+}

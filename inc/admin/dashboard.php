@@ -160,6 +160,22 @@ class Aaeaddon_Admin_Init
 		add_filter('wcf_addons_dashboard_config', array($this, 'dashboard_integrations_config'), 10);
 
 		add_action('admin_footer', array($this, 'admin_footer'));
+		add_action('current_screen', array($this, 'remove_admin_footer_text'));
+	}
+
+	/**
+	 * The dashboard is a full-screen app: hide WordPress's "Thank you for creating
+	 * with WordPress" line and the version number under it, on this screen only.
+	 *
+	 * @param \WP_Screen $screen Current screen.
+	 * @return void
+	 */
+	public function remove_admin_footer_text($screen)
+	{
+		if (is_object($screen) && ! empty($screen->id) && false !== strpos($screen->id, '_page_aaeaddon_settings')) {
+			add_filter('admin_footer_text', '__return_empty_string');
+			add_filter('update_footer', '__return_empty_string', 11);
+		}
 	}
 
 	/**
