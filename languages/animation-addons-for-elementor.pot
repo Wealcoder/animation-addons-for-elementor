@@ -2,14 +2,14 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Animation Addons 4.2.12\n"
+"Project-Id-Version: Animation Addons 4.2.13\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/animation-addons-for-elementor\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-14T11:18:32+00:00\n"
+"POT-Creation-Date: 2026-11-15T03:53:27+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: animation-addons-for-elementor\n"
@@ -35,40 +35,40 @@ msgstr ""
 msgid "Wealcoder"
 msgstr ""
 
-#: animation-addons-for-elementor.php:518
+#: animation-addons-for-elementor.php:540
 msgid "Activate Elementor"
 msgstr ""
 
-#: animation-addons-for-elementor.php:521
+#: animation-addons-for-elementor.php:543
 msgid "Find Elementor"
 msgstr ""
 
-#: animation-addons-for-elementor.php:525
+#: animation-addons-for-elementor.php:547
 msgid "requires <strong>Elementor</strong> to be activated."
 msgstr ""
 
-#: animation-addons-for-elementor.php:526
+#: animation-addons-for-elementor.php:548
 msgid "requires the <strong>Elementor</strong> plugin to be installed and activated."
 msgstr ""
 
 #. translators: 1: Plugin name 2: Elementor 3: Required Elementor version
 #. translators: 1: Plugin name 2: PHP 3: Required PHP version
-#: animation-addons-for-elementor.php:616
-#: animation-addons-for-elementor.php:640
+#: animation-addons-for-elementor.php:638
+#: animation-addons-for-elementor.php:662
 #, php-format
 msgid "\"%1$s\" requires \"%2$s\" version %3$s or greater."
 msgstr ""
 
-#: animation-addons-for-elementor.php:617
-#: animation-addons-for-elementor.php:641
+#: animation-addons-for-elementor.php:639
+#: animation-addons-for-elementor.php:663
 msgid "Animation Addons for Elementor"
 msgstr ""
 
-#: animation-addons-for-elementor.php:618
+#: animation-addons-for-elementor.php:640
 msgid "Elementor"
 msgstr ""
 
-#: animation-addons-for-elementor.php:642
+#: animation-addons-for-elementor.php:664
 msgid "PHP"
 msgstr ""
 
@@ -216,6 +216,7 @@ msgstr ""
 #: class-plugin.php:1504
 #: class-plugin.php:1632
 #: inc/admin/Notices/Notices.php:350
+#: inc/CodeSnippet/views/edit-code-snippet.php:258
 #: widgets/post-rating-form.php:882
 #: src/modules/dashboard/components/performance/PerformanceWizard.jsx:566
 msgid "Close"
@@ -433,8 +434,8 @@ msgstr ""
 #: widgets/team.php:304
 #: widgets/testimonial.php:134
 #: widgets/testimonial.php:377
-#: widgets/timeline.php:554
-#: widgets/timeline.php:962
+#: widgets/timeline.php:563
+#: widgets/timeline.php:971
 msgid "Default"
 msgstr ""
 
@@ -532,7 +533,7 @@ msgstr ""
 #: widgets/testimonial.php:747
 #: widgets/testimonial2.php:660
 #: widgets/testimonial3.php:693
-#: widgets/timeline.php:963
+#: widgets/timeline.php:972
 msgid "None"
 msgstr ""
 
@@ -1535,9 +1536,9 @@ msgstr ""
 #: widgets/testimonial.php:427
 #: widgets/testimonial.php:969
 #: widgets/testimonial2.php:372
-#: widgets/timeline.php:479
-#: widgets/timeline.php:604
-#: widgets/timeline.php:905
+#: widgets/timeline.php:488
+#: widgets/timeline.php:613
+#: widgets/timeline.php:914
 #: widgets/toggle-switcher.php:283
 #: widgets/toggle-switcher.php:363
 #: widgets/toggle-switcher.php:442
@@ -1704,7 +1705,7 @@ msgstr ""
 #: widgets/testimonial3.php:432
 #: widgets/testimonial3.php:483
 #: widgets/testimonial3.php:541
-#: widgets/timeline.php:878
+#: widgets/timeline.php:887
 #: widgets/toggle-switcher.php:263
 #: widgets/toggle-switcher.php:515
 #: widgets/video-posts-tab.php:775
@@ -2782,13 +2783,13 @@ msgstr ""
 #: widgets/testimonial3.php:256
 #: widgets/testimonial3.php:885
 #: widgets/testimonial3.php:932
-#: widgets/timeline.php:646
-#: widgets/timeline.php:696
-#: widgets/timeline.php:746
-#: widgets/timeline.php:796
-#: widgets/timeline.php:828
-#: widgets/timeline.php:997
-#: widgets/timeline.php:1019
+#: widgets/timeline.php:655
+#: widgets/timeline.php:705
+#: widgets/timeline.php:755
+#: widgets/timeline.php:805
+#: widgets/timeline.php:837
+#: widgets/timeline.php:1006
+#: widgets/timeline.php:1028
 #: widgets/video-posts-tab.php:531
 #: widgets/video-posts-tab.php:729
 #: widgets/video-posts-tab.php:760
@@ -3087,7 +3088,7 @@ msgstr ""
 #: widgets/search-form.php:1294
 #: widgets/search-form.php:1371
 #: widgets/search-form.php:1572
-#: widgets/timeline.php:1069
+#: widgets/timeline.php:1078
 #: widgets/toggle-switcher.php:197
 msgid "Gap"
 msgstr ""
@@ -3161,8 +3162,8 @@ msgstr ""
 #: widgets/testimonial.php:325
 #: widgets/testimonial.php:903
 #: widgets/text-hover-image.php:371
-#: widgets/timeline.php:501
-#: widgets/timeline.php:1031
+#: widgets/timeline.php:510
+#: widgets/timeline.php:1040
 #: widgets/toggle-switcher.php:307
 #: widgets/video-posts-tab.php:666
 #: widgets/weather.php:282
@@ -3309,7 +3310,7 @@ msgstr ""
 #: widgets/testimonial2.php:914
 #: widgets/testimonial3.php:861
 #: widgets/testimonial3.php:912
-#: widgets/timeline.php:859
+#: widgets/timeline.php:868
 msgid "Size"
 msgstr ""
 
@@ -3406,8 +3407,8 @@ msgstr ""
 #: widgets/team.php:276
 #: widgets/testimonial.php:348
 #: widgets/text-hover-image.php:393
-#: widgets/timeline.php:526
-#: widgets/timeline.php:1050
+#: widgets/timeline.php:535
+#: widgets/timeline.php:1059
 #: widgets/toggle-switcher.php:330
 #: widgets/video-posts-tab.php:486
 #: widgets/video-posts-tab.php:644
@@ -3734,7 +3735,7 @@ msgstr ""
 #: widgets/testimonial.php:317
 #: widgets/testimonial2.php:337
 #: widgets/text-hover-image.php:363
-#: widgets/timeline.php:492
+#: widgets/timeline.php:501
 #: widgets/weather.php:794
 #: widgets/weather.php:1044
 msgid "Image"
@@ -3791,7 +3792,7 @@ msgstr ""
 #: widgets/post-timeline.php:1926
 #: widgets/search-form.php:1502
 #: widgets/timeline.php:294
-#: widgets/timeline.php:637
+#: widgets/timeline.php:646
 #: widgets/video-posts-tab.php:937
 #: widgets/video-posts-tab.php:1459
 #: widgets/weather.php:1138
@@ -3864,6 +3865,7 @@ msgstr ""
 #: inc/AtomicWidgets/Widgets/Timeline/Parts/class-aae-a-timeline-title.php:78
 #: inc/AtomicWidgets/Widgets/ToggleSwitcher/Parts/class-aae-a-toggle-pane-title.php:83
 #: inc/CodeSnippet/listTables/CodeSnippetListTable.php:301
+#: inc/CodeSnippet/views/edit-code-snippet.php:273
 #: widgets/advance-accordion.php:167
 #: widgets/advance-accordion.php:458
 #: widgets/advance-pricing-table/advance-pricing-table.php:233
@@ -3934,7 +3936,7 @@ msgstr ""
 #: widgets/testimonial2.php:188
 #: widgets/testimonial2.php:438
 #: widgets/timeline.php:306
-#: widgets/timeline.php:687
+#: widgets/timeline.php:696
 #: widgets/toggle-switcher.php:129
 #: widgets/toggle-switcher.php:457
 #: widgets/video-posts-tab.php:691
@@ -5060,7 +5062,7 @@ msgstr ""
 #: widgets/team.php:897
 #: widgets/team.php:999
 #: widgets/team.php:1031
-#: widgets/timeline.php:839
+#: widgets/timeline.php:848
 msgid "Background Color"
 msgstr ""
 
@@ -5280,7 +5282,7 @@ msgstr ""
 #: widgets/site-logo.php:326
 #: widgets/team.php:329
 #: widgets/testimonial.php:402
-#: widgets/timeline.php:579
+#: widgets/timeline.php:588
 msgid "Bottom Left"
 msgstr ""
 
@@ -5293,7 +5295,7 @@ msgstr ""
 #: widgets/site-logo.php:327
 #: widgets/team.php:330
 #: widgets/testimonial.php:403
-#: widgets/timeline.php:580
+#: widgets/timeline.php:589
 msgid "Bottom Right"
 msgstr ""
 
@@ -6293,7 +6295,7 @@ msgstr ""
 #: widgets/team-slider.php:456
 #: widgets/team.php:523
 #: widgets/team.php:698
-#: widgets/timeline.php:787
+#: widgets/timeline.php:796
 #: widgets/weather.php:597
 msgid "Description"
 msgstr ""
@@ -6848,6 +6850,7 @@ msgstr ""
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-input.php:299
 #: inc/AtomicWidgets/Widgets/SearchForm/class-aae-a-search-submit.php:71
 #: inc/class-custom-icon-admin.php:134
+#: inc/CodeSnippet/views/edit-code-snippet.php:274
 #: inc/dynamic-tags/site/internal-url-tag.php:150
 #: inc/dynamic-tags/site/lightbox-tag.php:83
 #: inc/theme-builder/theme-builder-admin.php:145
@@ -7079,7 +7082,7 @@ msgstr ""
 
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-range.php:140
 #: inc/AtomicWidgets/Widgets/Form/class-aae-a-form-step.php:126
-#: widgets/timeline.php:820
+#: widgets/timeline.php:829
 msgid "Step"
 msgstr ""
 
@@ -7359,6 +7362,7 @@ msgid "Set your Google Maps API key in Elementor > Settings > Integrations. With
 msgstr ""
 
 #: inc/AtomicWidgets/Widgets/GoogleMaps/class-aae-a-google-maps.php:195
+#: inc/CodeSnippet/views/edit-code-snippet.php:275
 #: widgets/weather.php:361
 #: src/modules/dashboard/components/widgets/settings/WeatherSettings.jsx:267
 msgid "Location"
@@ -7781,22 +7785,22 @@ msgid "WP Menu"
 msgstr ""
 
 #: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:329
-#: widgets/timeline.php:964
+#: widgets/timeline.php:973
 msgid "Solid"
 msgstr ""
 
 #: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:330
-#: widgets/timeline.php:965
+#: widgets/timeline.php:974
 msgid "Dashed"
 msgstr ""
 
 #: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:331
-#: widgets/timeline.php:966
+#: widgets/timeline.php:975
 msgid "Dotted"
 msgstr ""
 
 #: inc/AtomicWidgets/Widgets/Menu/class-aae-a-menu.php:332
-#: widgets/timeline.php:967
+#: widgets/timeline.php:976
 msgid "Double"
 msgstr ""
 
@@ -8282,7 +8286,7 @@ msgstr ""
 #: widgets/site-logo.php:295
 #: widgets/team.php:298
 #: widgets/testimonial.php:371
-#: widgets/timeline.php:548
+#: widgets/timeline.php:557
 msgid "Object Fit"
 msgstr ""
 
@@ -8452,6 +8456,7 @@ msgid "Prefetch On Hover"
 msgstr ""
 
 #: inc/AtomicWidgets/Widgets/PostPagination/class-aae-a-post-pagination.php:340
+#: inc/CodeSnippet/views/edit-code-snippet.php:276
 msgid "Visibility"
 msgstr ""
 
@@ -9950,6 +9955,7 @@ msgstr ""
 #: widgets/nav-menu/nav-menu.php:493
 #: widgets/nav-menu/nav-menu.php:746
 #: widgets/one-page-nav.php:520
+#: src/modules/dashboard/pages/AiConfiguration.jsx:402
 msgid "Active"
 msgstr ""
 
@@ -10443,57 +10449,57 @@ msgstr ""
 msgid "An error occurred. Please try again."
 msgstr ""
 
-#: inc/CodeSnippet/CodeSnippet.php:356
+#: inc/CodeSnippet/CodeSnippet.php:364
 msgid "You are not allowed to do this."
 msgstr ""
 
-#: inc/CodeSnippet/CodeSnippet.php:365
+#: inc/CodeSnippet/CodeSnippet.php:373
 msgid "Invalid code snippet type selected."
 msgstr ""
 
-#: inc/CodeSnippet/CodeSnippet.php:366
+#: inc/CodeSnippet/CodeSnippet.php:374
 msgid "Invalid Type"
 msgstr ""
 
-#: inc/CodeSnippet/CodeSnippet.php:373
+#: inc/CodeSnippet/CodeSnippet.php:381
 msgid "PHP snippets are only available in Animation Addons Pro and require plugin editing capabilities."
 msgstr ""
 
-#: inc/CodeSnippet/CodeSnippet.php:374
-#: inc/CodeSnippet/CodeSnippet.php:387
+#: inc/CodeSnippet/CodeSnippet.php:382
+#: inc/CodeSnippet/CodeSnippet.php:395
 msgid "Permission denied"
 msgstr ""
 
-#: inc/CodeSnippet/CodeSnippet.php:386
+#: inc/CodeSnippet/CodeSnippet.php:394
 msgid "You are not allowed to save HTML, JavaScript or PHP snippets."
 msgstr ""
 
-#: inc/CodeSnippet/CodeSnippet.php:402
+#: inc/CodeSnippet/CodeSnippet.php:410
 msgid "Invalid code snippet."
 msgstr ""
 
-#: inc/CodeSnippet/CodeSnippet.php:403
+#: inc/CodeSnippet/CodeSnippet.php:411
 msgid "Invalid Snippet"
 msgstr ""
 
-#: inc/CodeSnippet/CodeSnippet.php:466
+#: inc/CodeSnippet/CodeSnippet.php:474
 msgid "Code Snippet Updated Successfully!"
 msgstr ""
 
-#: inc/CodeSnippet/CodeSnippet.php:471
+#: inc/CodeSnippet/CodeSnippet.php:479
 msgid "Code Snippet Added Successfully!"
 msgstr ""
 
-#: inc/CodeSnippet/CodeSnippet.php:492
+#: inc/CodeSnippet/CodeSnippet.php:500
 #: inc/CodeSnippet/CodeSnippetAjax.php:86
 msgid "You do not have permission to perform this action."
 msgstr ""
 
-#: inc/CodeSnippet/CodeSnippet.php:497
+#: inc/CodeSnippet/CodeSnippet.php:505
 msgid "Nonce Varification Failed!"
 msgstr ""
 
-#: inc/CodeSnippet/CodeSnippet.php:562
+#: inc/CodeSnippet/CodeSnippet.php:570
 msgid "Some thing is wrong!"
 msgstr ""
 
@@ -10679,6 +10685,7 @@ msgid "Deactivate"
 msgstr ""
 
 #: inc/CodeSnippet/listTables/CodeSnippetListTable.php:399
+#: src/modules/dashboard/pages/AiConfiguration.jsx:418
 msgid "Edit"
 msgstr ""
 
@@ -10770,8 +10777,30 @@ msgstr ""
 msgid "Dark Mode"
 msgstr ""
 
-#: inc/CodeSnippet/views/edit-code-snippet.php:234
+#: inc/CodeSnippet/views/edit-code-snippet.php:232
+#: inc/CodeSnippet/views/edit-code-snippet.php:255
+#: inc/CodeSnippet/views/edit-code-snippet.php:257
+msgid "Describe it to AI"
+msgstr ""
+
+#: inc/CodeSnippet/views/edit-code-snippet.php:240
 msgid "Insert Example"
+msgstr ""
+
+#: inc/CodeSnippet/views/edit-code-snippet.php:261
+msgid "Describe the snippet, and the code, type and location will be proposed. Nothing is written until you review it below and press Save Snippet yourself."
+msgstr ""
+
+#: inc/CodeSnippet/views/edit-code-snippet.php:266
+msgid "e.g. A CSS snippet that hides the WordPress admin bar on the front end."
+msgstr ""
+
+#: inc/CodeSnippet/views/edit-code-snippet.php:268
+msgid "Generate"
+msgstr ""
+
+#: inc/CodeSnippet/views/edit-code-snippet.php:280
+msgid "Use this"
 msgstr ""
 
 #: inc/Compat/Migration.php:451
@@ -14050,10 +14079,10 @@ msgstr ""
 #: widgets/team.php:675
 #: widgets/team.php:726
 #: widgets/team.php:1099
-#: widgets/timeline.php:616
-#: widgets/timeline.php:666
-#: widgets/timeline.php:716
-#: widgets/timeline.php:766
+#: widgets/timeline.php:625
+#: widgets/timeline.php:675
+#: widgets/timeline.php:725
+#: widgets/timeline.php:775
 #: widgets/video-posts-tab.php:822
 #: widgets/video-posts-tab.php:915
 #: widgets/video-posts-tab.php:1279
@@ -15284,7 +15313,7 @@ msgstr ""
 #: widgets/site-logo.php:302
 #: widgets/team.php:305
 #: widgets/testimonial.php:378
-#: widgets/timeline.php:555
+#: widgets/timeline.php:564
 msgid "Fill"
 msgstr ""
 
@@ -15297,7 +15326,7 @@ msgstr ""
 #: widgets/site-logo.php:304
 #: widgets/team.php:307
 #: widgets/testimonial.php:380
-#: widgets/timeline.php:557
+#: widgets/timeline.php:566
 msgid "Contain"
 msgstr ""
 
@@ -15310,7 +15339,7 @@ msgstr ""
 #: widgets/site-logo.php:303
 #: widgets/team.php:306
 #: widgets/testimonial.php:379
-#: widgets/timeline.php:556
+#: widgets/timeline.php:565
 msgid "Cover"
 msgstr ""
 
@@ -16127,7 +16156,7 @@ msgstr ""
 #: widgets/site-logo.php:316
 #: widgets/team.php:319
 #: widgets/testimonial.php:392
-#: widgets/timeline.php:569
+#: widgets/timeline.php:578
 msgid "Object Position"
 msgstr ""
 
@@ -16139,7 +16168,7 @@ msgstr ""
 #: widgets/site-logo.php:319
 #: widgets/team.php:322
 #: widgets/testimonial.php:395
-#: widgets/timeline.php:572
+#: widgets/timeline.php:581
 msgid "Center Center"
 msgstr ""
 
@@ -16151,7 +16180,7 @@ msgstr ""
 #: widgets/site-logo.php:320
 #: widgets/team.php:323
 #: widgets/testimonial.php:396
-#: widgets/timeline.php:573
+#: widgets/timeline.php:582
 msgid "Center Left"
 msgstr ""
 
@@ -16163,7 +16192,7 @@ msgstr ""
 #: widgets/site-logo.php:321
 #: widgets/team.php:324
 #: widgets/testimonial.php:397
-#: widgets/timeline.php:574
+#: widgets/timeline.php:583
 msgid "Center Right"
 msgstr ""
 
@@ -16175,7 +16204,7 @@ msgstr ""
 #: widgets/site-logo.php:322
 #: widgets/team.php:325
 #: widgets/testimonial.php:398
-#: widgets/timeline.php:575
+#: widgets/timeline.php:584
 msgid "Top Center"
 msgstr ""
 
@@ -16187,7 +16216,7 @@ msgstr ""
 #: widgets/site-logo.php:323
 #: widgets/team.php:326
 #: widgets/testimonial.php:399
-#: widgets/timeline.php:576
+#: widgets/timeline.php:585
 msgid "Top Left"
 msgstr ""
 
@@ -16199,7 +16228,7 @@ msgstr ""
 #: widgets/site-logo.php:324
 #: widgets/team.php:327
 #: widgets/testimonial.php:400
-#: widgets/timeline.php:577
+#: widgets/timeline.php:586
 msgid "Top Right"
 msgstr ""
 
@@ -16211,7 +16240,7 @@ msgstr ""
 #: widgets/site-logo.php:325
 #: widgets/team.php:328
 #: widgets/testimonial.php:401
-#: widgets/timeline.php:578
+#: widgets/timeline.php:587
 msgid "Bottom Center"
 msgstr ""
 
@@ -18644,7 +18673,7 @@ msgid "Image Position"
 msgstr ""
 
 #: widgets/timeline.php:212
-#: widgets/timeline.php:1009
+#: widgets/timeline.php:1018
 #: widgets/toggle-switcher.php:386
 msgid "Indicator"
 msgstr ""
@@ -18681,23 +18710,23 @@ msgstr ""
 msgid "Content padding"
 msgstr ""
 
-#: widgets/timeline.php:737
+#: widgets/timeline.php:746
 msgid "Subtitle"
 msgstr ""
 
-#: widgets/timeline.php:927
+#: widgets/timeline.php:936
 msgid "Step icon position-x"
 msgstr ""
 
-#: widgets/timeline.php:949
+#: widgets/timeline.php:958
 msgid "Step Line"
 msgstr ""
 
-#: widgets/timeline.php:958
+#: widgets/timeline.php:967
 msgid "Line Style"
 msgstr ""
 
-#: widgets/timeline.php:978
+#: widgets/timeline.php:987
 msgid "line Thickness"
 msgstr ""
 
@@ -19313,6 +19342,7 @@ msgstr ""
 
 #: src/modules/dashboard/components/animation-settings/FeaturePanel.jsx:429
 #: src/modules/dashboard/components/animation-settings/FeaturePanel.jsx:516
+#: src/modules/dashboard/pages/AiConfiguration.jsx:334
 msgid "Saving…"
 msgstr ""
 
@@ -20711,6 +20741,128 @@ msgstr ""
 
 #: src/modules/dashboard/config/data/freeProComparisonList.js:522
 msgid "Filterable Gallery"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:81
+msgid "AI Configuration"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:85
+msgid "This needs Animation Addons Pro, active, with the AI & Connections module on."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:151
+msgid "Connection saved"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:197
+msgid "AI assistant"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:200
+msgid "Connect your AI provider to power “Describe it to AI”, field suggestions and sample entries."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:210
+#, js-format
+msgid "Active: %s"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:213
+msgid "Not configured"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:219
+msgid "Your keys are encrypted on this server and never sent to the browser."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:230
+msgid "Connect a provider"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:233
+msgid "Choose a provider, add your API key, and select a model."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:242
+msgid "Provider"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:266
+msgid "API key"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:275
+msgid "Paste your API key"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:284
+msgid "Show or hide the key"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:291
+msgid "A key is already saved. Enter a new key to replace it."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:295
+msgid "Nothing saved yet for this provider."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:303
+msgid "Model"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:319
+msgid "Get an API key"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:330
+msgid "Test connection"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:335
+msgid "Save connection"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:351
+#, js-format
+msgid "%s answered (%s)."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:355
+msgid "No answer."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:360
+msgid "Asking…"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:370
+msgid "Connected providers"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:377
+msgid "Manage the providers connected to this workspace."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:410
+msgid "Set as active"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:424
+msgid "Remove key"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:433
+msgid "No providers connected yet — add a key above to get started."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:448
+msgid "Manage MCP connections & tokens"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:453
+msgid "Keys stay on your server"
 msgstr ""
 
 #: src/modules/dashboard/pages/AnimationSettings.jsx:65

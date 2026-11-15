@@ -5,7 +5,7 @@ Tags: elementor addons, elementor widgets, animation, elementor templates, eleme
 Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 4.2.12
+Stable tag: 4.2.13
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
  
@@ -393,6 +393,13 @@ Vendored libraries:
 
 == Changelog ==
 
+= 4.2.13 =
+* Added: CPT Builder: "Start from a template" with six ready-made post types (Event, FAQ, Portfolio, Service, Team Member, Testimonial). Pick one, then change anything in the edit screen. No taxonomy is created for you; each preset only suggests one.
+* Added: Timeline: Border control for the content wrapper.
+* Added: Dashboard, CPT Builder and Code Snippet: "Describe it to AI" and an AI Configuration tab, shown only when Animation Addons Pro's AI module is active and set up.
+* Fixed: Deleting the plugin now also removes the seasonal offer banner records (dismiss and snooze settings and the per-user view counts).
+* Improved: The plugin's core files now load through absolute paths, so they are found whichever folder WordPress or WP-CLI runs from.
+
 = 4.2.12 =
 * Changed: The Black Friday offer now shows on every visit to the Plugins screen until "Don't show again" is clicked. The WordPress Dashboard still shows it at most twice per administrator, at least 10 minutes apart.
 
@@ -483,6 +490,9 @@ Vendored libraries:
 Older versions: see [changelog.txt](https://plugins.svn.wordpress.org/animation-addons-for-elementor/trunk/changelog.txt) for the full changelog.
 
 == Upgrade Notice ==
+
+= 4.2.13 =
+CPT Builder gets ready-made post type templates, Timeline gets a content wrapper border, and uninstall now cleans up the offer banner records.
 
 = 4.2.12 =
 The Black Friday offer stays on the Plugins screen until you dismiss it.
