@@ -38,6 +38,15 @@ class Notices {
 	protected $promo_notice_id = '';
 
 	/**
+	 * Times each user sees a seasonal banner on the WordPress Dashboard
+	 * screen, the seconds between two of those views, and the user
+	 * meta that counts them (removed on uninstall by Aaeaddon_Plugin::plugin_unregister_hook()).
+	 */
+	const PROMO_MAX_VIEWS  = 2;
+	const PROMO_VIEW_GAP   = 600;
+	const PROMO_VIEWS_META = 'aaeaddon_notice_views';
+
+	/**
 	 * The plugin prefix.
 	 *
 	 * @var array|string|string[]
@@ -108,15 +117,13 @@ class Notices {
 	 * @since 2.4.16
 	 */
 	public function add_admin_notices() {
-		$forced = $this->is_campaign_forced();
+		$forced   = $this->is_campaign_forced();
+		$audience = $this->has_pro() ? 'pro' : 'free';
 
-		if ( ! $forced && $this->has_pro() ) {
-			return;
-		}
-
-		// One banner at a time: the first campaign whose date range covers today.
+		// One banner at a time: the first campaign for this site's audience
+		// (with or without Pro) whose date range covers today.
 		foreach ( $this->get_campaigns() as $id => $campaign ) {
-			if ( ! $this->is_campaign_live( $campaign, $forced ) ) {
+			if ( ( ! $forced && $campaign['audience'] !== $audience ) || ! $this->is_campaign_live( $campaign, $forced ) ) {
 				continue;
 			}
 
@@ -129,10 +136,110 @@ class Notices {
 					'notice_id'   => $this->promo_notice_id,
 					'class'       => 'aae-promo-notice',
 					'dismissible' => false,
+					'campaign'    => $campaign,
 				)
 			);
 			break;
 		}
+	}
+
+	/**
+	 * Is the current admin screen one of this plugin's own screens?
+	 *
+	 * 'aaeaddon' covers the dashboard, whose screen id is
+	 * animation-addon_page_aaeaddon_settings.
+	 *
+	 * @since 4.2.11
+	 * @return bool
+	 */
+	protected function is_plugin_screen() {
+		$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+		if ( ! $screen ) {
+			return false;
+		}
+		return false !== strpos( $screen->id, 'animation-addons' ) || false !== strpos( $screen->id, 'aaeaddon' ) || false !== strpos( $screen->id, 'wcf' );
+	}
+
+	/**
+	 * Where and how often the seasonal banner shows:
+	 * - on this plugin's own screens (the dashboard included) on every visit
+	 *   while the campaign runs, even after it was dismissed; its X only hides
+	 *   it until the next page load;
+	 * - on the WordPress Dashboard screen at most twice per user, at least 10
+	 *   minutes apart, and on the Plugins screen on every visit; on both its
+	 *   X hides it for 10 minutes and "Don't show again" for good.
+	 *
+	 * @param array $notice The promo notice.
+	 *
+	 * @since 4.2.11
+	 * @return bool
+	 */
+	protected function should_display_promo( $notice ) {
+		if ( $notice['capability'] && ! current_user_can( $notice['capability'] ) ) {
+			return false;
+		}
+		if ( $this->is_plugin_screen() ) {
+			return true;
+		}
+
+		$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+		if ( ! $screen || ! in_array( $screen->id, array( 'dashboard', 'plugins' ), true ) ) {
+			return false;
+		}
+		if ( $this->is_campaign_forced() ) {
+			return true;
+		}
+		if ( $this->is_dismissed( $notice['notice_id'] ) ) {
+			return false;
+		}
+		if ( 'plugins' === $screen->id ) {
+			return true;
+		}
+
+		$views = $this->get_promo_views( $notice['notice_id'] );
+		if ( $views['total'] >= self::PROMO_MAX_VIEWS ) {
+			return false;
+		}
+		return ! $views['last'] || time() - $views['last'] >= self::PROMO_VIEW_GAP;
+	}
+
+	/**
+	 * Times the current user saw a banner on the Dashboard screen,
+	 * and when they last did.
+	 *
+	 * @param string $id The notice id.
+	 *
+	 * @since 4.2.11
+	 * @return array{total:int,last:int}
+	 */
+	protected function get_promo_views( $id ) {
+		$views = get_user_meta( get_current_user_id(), self::PROMO_VIEWS_META, true );
+		$entry = is_array( $views ) && isset( $views[ $id ] ) ? (array) $views[ $id ] : array();
+		return array(
+			'total' => isset( $entry['total'] ) ? absint( $entry['total'] ) : 0,
+			'last'  => isset( $entry['last'] ) ? absint( $entry['last'] ) : 0,
+		);
+	}
+
+	/**
+	 * Count one view of a banner on the Dashboard screen.
+	 *
+	 * @param string $id The notice id.
+	 *
+	 * @since 4.2.11
+	 * @return void
+	 */
+	protected function count_promo_view( $id ) {
+		$user_id = get_current_user_id();
+		$views   = get_user_meta( $user_id, self::PROMO_VIEWS_META, true );
+		$views   = is_array( $views ) ? $views : array();
+		$current = $this->get_promo_views( $id );
+
+		$views[ $id ] = array(
+			'total' => $current['total'] + 1,
+			'last'  => time(),
+		);
+		update_user_meta( $user_id, self::PROMO_VIEWS_META, $views );
 	}
 
 	/**
@@ -148,25 +255,37 @@ class Notices {
 	}
 
 	/**
-	 * Seasonal upgrade banners for free users.
+	 * Seasonal offer banners.
 	 *
-	 * 'start' and 'end' are inclusive dates (Y-m-d) in the site's timezone; an
-	 * empty 'start' means "from the release onwards". 'image' is a 1100x150
-	 * file in assets/images/notice/ with the close button drawn at its top
-	 * right. A new campaign needs a new key: dismissing is stored under it.
+	 * 'audience' is 'free' (Pro not on the site) or 'pro' (Pro installed,
+	 * active or not). 'start' and 'end' are inclusive dates (Y-m-d) in the
+	 * site's timezone; an empty 'start' means "from the release onwards".
+	 * 'image' is a 1100x150 (@2x) file in assets/images/notice/ with the close
+	 * button drawn at its top right. A new campaign needs a new key:
+	 * dismissing is stored under it.
 	 *
 	 * @since 4.2.8
 	 * @return array
 	 */
 	protected function get_campaigns() {
 		return array(
-			'bfcm_2026'      => array(
-				'start'        => '2026-11-10',
-				'end'          => '2026-12-10',
-				'image'        => 'bfcm-2026.png',
-				'alt'          => __( 'Black Friday deal on Animation Addons Pro. Upgrade now', 'animation-addons-for-elementor' ),
-				'label'        => __( 'Upgrade to Pro - Black Friday deal', 'animation-addons-for-elementor' ),
-				'utm_campaign' => 'bfcm_2026',
+			'bfcm_2026_free' => array(
+				'audience' => 'free',
+				'start'    => '2026-11-14',
+				'end'      => '2026-12-10',
+				'image'    => 'bfcm-2026-free.png',
+				'alt'      => __( 'Black Friday: Animation Addons Pro lifetime plans from $51. Pay once, no renewals.', 'animation-addons-for-elementor' ),
+				'label'    => __( 'Get Animation Addons Pro lifetime - Black Friday deal', 'animation-addons-for-elementor' ),
+				'url'      => 'https://animation-addons.com/deals/?utm_source=plugin_dashboard&utm_medium=free_user_notice&utm_campaign=bfcm_2026&utm_content=get_lifetime_button',
+			),
+			'bfcm_2026_pro'  => array(
+				'audience' => 'pro',
+				'start'    => '2026-11-14',
+				'end'      => '2026-12-10',
+				'image'    => 'bfcm-2026-pro.png',
+				'alt'      => __( 'Agency Bundle lifetime at 70 percent off: Animation Addons Pro, MotionKit, BricksFly, Arolax and Axtra themes for $449.', 'animation-addons-for-elementor' ),
+				'label'    => __( 'Get the Agency Bundle - Black Friday deal', 'animation-addons-for-elementor' ),
+				'url'      => 'https://animation-addons.com/agency-bundle/?utm_source=plugin_dashboard&utm_medium=pro_user_notice&utm_campaign=bfcm_2026&utm_content=get_bundle_button',
 			),
 		);
 	}
@@ -212,37 +331,36 @@ class Notices {
 	 * Markup of a campaign banner: the artwork, a click-through over the whole
 	 * image and an invisible close button over the one drawn into it.
 	 *
-	 * @param array $campaign A get_campaigns() entry.
+	 * @param array $campaign       A get_campaigns() entry.
+	 * @param bool  $plugin_screen  On this plugin's own screens the X only hides
+	 *                              the banner until the next page load and there
+	 *                              is no "Don't show again".
 	 *
 	 * @since 4.2.8
 	 * @return string
 	 */
-	protected function get_campaign_message( $campaign ) {
-		$url = add_query_arg(
-			array(
-				'utm_source'   => 'plugin_dashboard',
-				'utm_medium'   => 'free_user_notice',
-				'utm_campaign' => $campaign['utm_campaign'],
-				'utm_content'  => 'upgrade_button',
-			),
-			'https://animation-addons.com/pricing/'
+	protected function get_campaign_message( $campaign, $plugin_screen = false ) {
+		$image = sprintf(
+			'<div class="aae-promo-banner"><img src="%1$s" alt="%2$s" width="1100" height="150" /><a class="aae-promo-link" href="%3$s" target="_blank" rel="noopener noreferrer"><span class="screen-reader-text">%4$s</span></a><button type="button" class="aae-promo-close" %5$s><span class="screen-reader-text">%6$s</span></button></div>',
+			esc_url( AAEADDON_URL . 'assets/images/notice/' . $campaign['image'] ),
+			esc_attr( $campaign['alt'] ),
+			esc_url( $campaign['url'] ),
+			esc_html( $campaign['label'] ),
+			$plugin_screen ? 'data-hide="1"' : 'data-snooze="' . absint( self::PROMO_VIEW_GAP ) . '"',
+			esc_html__( 'Close', 'animation-addons-for-elementor' )
 		);
+		if ( $plugin_screen ) {
+			return $image;
+		}
 
 		// The end date is a plain calendar day, so format it in UTC: going through
 		// the site's timezone could land on the neighbouring day.
 		$ends = wp_date( 'M j', strtotime( $campaign['end'] . ' 00:00:00 UTC' ), new \DateTimeZone( 'UTC' ) );
 
-		// The artwork's own X snoozes for a day (notice.js reads data-snooze);
-		// the row under it offers the other two answers.
-		return sprintf(
-			'<div class="aae-promo-banner"><img src="%1$s" alt="%2$s" width="1100" height="150" /><a class="aae-promo-link" href="%3$s" target="_blank" rel="noopener noreferrer"><span class="screen-reader-text">%4$s</span></a><button type="button" class="aae-promo-close" data-snooze="%5$d"><span class="screen-reader-text">%6$s</span></button></div><div class="aae-promo-actions"><a href="#" data-snooze="%5$d">%7$s</a><span aria-hidden="true">&middot;</span><a href="#" data-dismiss="1">%8$s</a><span class="aae-promo-ends">%9$s</span></div>',
-			esc_url( AAEADDON_URL . 'assets/images/notice/' . $campaign['image'] ),
-			esc_attr( $campaign['alt'] ),
-			esc_url( $url ),
-			esc_html( $campaign['label'] ),
-			DAY_IN_SECONDS,
-			esc_html__( 'Remind me tomorrow', 'animation-addons-for-elementor' ),
-			esc_html__( 'Remind me tomorrow', 'animation-addons-for-elementor' ),
+		// The artwork's own X snoozes for 10 minutes (notice.js reads
+		// data-snooze); the row under it dismisses for good.
+		return $image . sprintf(
+			'<div class="aae-promo-actions"><a href="#" data-dismiss="1">%1$s</a><span class="aae-promo-ends">%2$s</span></div>',
 			esc_html__( "Don't show again", 'animation-addons-for-elementor' ),
 			/* translators: %s: last day of the offer, e.g. "Nov 5". */
 			esc_html( sprintf( __( 'Offer ends %s', 'animation-addons-for-elementor' ), $ends ) )
@@ -311,6 +429,17 @@ class Notices {
 				$classes = array_unique( array_filter( wp_parse_list( $notice['class'] ) ) );
 				$style   = ! empty( $notice['style'] ) ? $notice['style'] : '';
 				$message = $notice['message'];
+
+				// The seasonal banner: built for the screen it is on, and counted
+				// on the WordPress Dashboard (see should_display_promo()).
+				if ( $this->promo_notice_id && $notice['notice_id'] === $this->promo_notice_id && ! empty( $notice['campaign'] ) ) {
+					$plugin_screen = $this->is_plugin_screen();
+					$message       = $this->get_campaign_message( $notice['campaign'], $plugin_screen );
+					$screen        = get_current_screen();
+					if ( $screen && 'dashboard' === $screen->id ) {
+						$this->count_promo_view( $notice['notice_id'] );
+					}
+				}
 				if ( str_ends_with( $message, '.php' ) ) {
 					wp_enqueue_style( 'aae-notice' );
 					$path = wp_normalize_path( $message );
@@ -449,6 +578,10 @@ class Notices {
 	 * @return bool
 	 */
 	public function should_display( $notice ) {
+		if ( $this->promo_notice_id && $notice['notice_id'] === $this->promo_notice_id ) {
+			return $this->should_display_promo( $notice );
+		}
+
 		// WordPress.org Guideline 11: Display notices only on plugin-related screens unless it is an error.
 		if ( function_exists( 'get_current_screen' ) ) {
 			$screen = get_current_screen();

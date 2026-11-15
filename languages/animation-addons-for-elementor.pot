@@ -2,14 +2,14 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Animation Addons 4.2.10\n"
+"Project-Id-Version: Animation Addons 4.2.12\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/animation-addons-for-elementor\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-05T06:37:41+00:00\n"
+"POT-Creation-Date: 2026-11-14T11:18:32+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: animation-addons-for-elementor\n"
@@ -215,6 +215,7 @@ msgstr ""
 #: class-plugin.php:471
 #: class-plugin.php:1504
 #: class-plugin.php:1632
+#: inc/admin/Notices/Notices.php:350
 #: widgets/post-rating-form.php:882
 #: src/modules/dashboard/components/performance/PerformanceWizard.jsx:566
 msgid "Close"
@@ -4465,13 +4466,13 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 
-#: inc/admin/dashboard.php:709
-#: inc/admin/dashboard.php:828
-#: inc/admin/dashboard.php:916
-#: inc/admin/dashboard.php:938
-#: inc/admin/dashboard.php:967
-#: inc/admin/dashboard.php:1130
-#: inc/admin/dashboard.php:1194
+#: inc/admin/dashboard.php:707
+#: inc/admin/dashboard.php:826
+#: inc/admin/dashboard.php:914
+#: inc/admin/dashboard.php:936
+#: inc/admin/dashboard.php:965
+#: inc/admin/dashboard.php:1128
+#: inc/admin/dashboard.php:1192
 #: inc/admin/template-importer.php:101
 #: inc/class-custom-fonts-admin.php:83
 #: inc/class-custom-fonts-admin.php:113
@@ -4482,22 +4483,22 @@ msgstr ""
 msgid "you are not allowed to do this action"
 msgstr ""
 
-#: inc/admin/dashboard.php:721
-#: inc/admin/dashboard.php:796
-#: inc/admin/dashboard.php:844
-#: inc/admin/dashboard.php:1142
+#: inc/admin/dashboard.php:719
+#: inc/admin/dashboard.php:794
+#: inc/admin/dashboard.php:842
+#: inc/admin/dashboard.php:1140
 #: inc/class-custom-icon-admin.php:298
 msgid "Invalid option name."
 msgstr ""
 
-#: inc/admin/dashboard.php:750
-#: inc/admin/dashboard.php:1177
-#: inc/admin/dashboard.php:1213
+#: inc/admin/dashboard.php:748
+#: inc/admin/dashboard.php:1175
+#: inc/admin/dashboard.php:1211
 msgid "Option name not found!"
 msgstr ""
 
-#: inc/admin/dashboard.php:772
-#: inc/admin/dashboard.php:871
+#: inc/admin/dashboard.php:770
+#: inc/admin/dashboard.php:869
 #: inc/ajax-handler.php:294
 #: inc/ajax-handler.php:328
 #: inc/AnimationSettings/class-animation-settings.php:2131
@@ -4512,7 +4513,7 @@ msgstr ""
 msgid "Permission denied."
 msgstr ""
 
-#: inc/admin/dashboard.php:785
+#: inc/admin/dashboard.php:783
 #: inc/admin/plugin-installer.php:52
 #: inc/admin/plugin-installer.php:71
 #: inc/admin/plugin-installer.php:97
@@ -4520,64 +4521,64 @@ msgstr ""
 msgid "You are not allowed to do this action"
 msgstr ""
 
-#: inc/admin/dashboard.php:789
+#: inc/admin/dashboard.php:787
 msgid "Missing setting name."
 msgstr ""
 
-#: inc/admin/dashboard.php:884
+#: inc/admin/dashboard.php:882
 msgid "The Loop Grid widget is not available."
 msgstr ""
 
 #. translators: %d: number of taxonomies forgotten.
-#: inc/admin/dashboard.php:893
+#: inc/admin/dashboard.php:891
 #, php-format
 msgid "Forgot %d unused taxonomy."
 msgid_plural "Forgot %d unused taxonomies."
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/admin/dashboard.php:895
+#: inc/admin/dashboard.php:893
 msgid "Nothing to forget — every remembered taxonomy is either registered or still used by a page."
 msgstr ""
 
 #. translators: %d: number of taxonomies kept because pages still use them.
-#: inc/admin/dashboard.php:900
+#: inc/admin/dashboard.php:898
 #, php-format
 msgid "%d was kept because a page still filters by it."
 msgid_plural "%d were kept because pages still filter by them."
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/admin/dashboard.php:978
+#: inc/admin/dashboard.php:976
 msgid "Please provide your name, a valid email address, and a feature description."
 msgstr ""
 
-#: inc/admin/dashboard.php:992
+#: inc/admin/dashboard.php:990
 msgid "You have just sent a request. Please wait a moment before sending another."
 msgstr ""
 
-#: inc/admin/dashboard.php:1017
+#: inc/admin/dashboard.php:1015
 msgid "Could not reach the feature request service. Please try again later."
 msgstr ""
 
-#: inc/admin/dashboard.php:1033
+#: inc/admin/dashboard.php:1031
 #: src/modules/dashboard/components/dashboard/RequestFeatureForm.jsx:63
 #: src/modules/dashboard/components/dashboard/RequestFeatureForm.jsx:72
 msgid "Something went wrong. Please try again."
 msgstr ""
 
-#: inc/admin/dashboard.php:1057
+#: inc/admin/dashboard.php:1055
 msgid "The service accepted the request but did not confirm it was saved. Nothing has been stored — please try again or contact support."
 msgstr ""
 
 #. translators: %d: stored feature request id.
-#: inc/admin/dashboard.php:1072
+#: inc/admin/dashboard.php:1070
 #, php-format
 msgid "You have already sent this request — it is on file as #%d."
 msgstr ""
 
 #. translators: %d: stored feature request id.
-#: inc/admin/dashboard.php:1081
+#: inc/admin/dashboard.php:1079
 #, php-format
 msgid "Thanks! Your feature request has been saved as #%d."
 msgstr ""
@@ -4587,31 +4588,33 @@ msgstr ""
 msgid "Content installing"
 msgstr ""
 
-#: inc/admin/Notices/Notices.php:167
-msgid "Black Friday deal on Animation Addons Pro. Upgrade now"
+#: inc/admin/Notices/Notices.php:277
+msgid "Black Friday: Animation Addons Pro lifetime plans from $51. Pay once, no renewals."
 msgstr ""
 
-#: inc/admin/Notices/Notices.php:168
-msgid "Upgrade to Pro - Black Friday deal"
+#: inc/admin/Notices/Notices.php:278
+msgid "Get Animation Addons Pro lifetime - Black Friday deal"
 msgstr ""
 
-#: inc/admin/Notices/Notices.php:244
-#: inc/admin/Notices/Notices.php:245
-#: inc/Compat/Migration.php:732
-msgid "Remind me tomorrow"
+#: inc/admin/Notices/Notices.php:286
+msgid "Agency Bundle lifetime at 70 percent off: Animation Addons Pro, MotionKit, BricksFly, Arolax and Axtra themes for $449."
 msgstr ""
 
-#: inc/admin/Notices/Notices.php:246
+#: inc/admin/Notices/Notices.php:287
+msgid "Get the Agency Bundle - Black Friday deal"
+msgstr ""
+
+#: inc/admin/Notices/Notices.php:364
 msgid "Don't show again"
 msgstr ""
 
 #. translators: %s: last day of the offer, e.g. "Nov 5".
-#: inc/admin/Notices/Notices.php:248
+#: inc/admin/Notices/Notices.php:366
 #, php-format
 msgid "Offer ends %s"
 msgstr ""
 
-#: inc/admin/Notices/Notices.php:354
+#: inc/admin/Notices/Notices.php:483
 msgid "Dismiss this notice"
 msgstr ""
 
@@ -10807,6 +10810,10 @@ msgstr ""
 #: inc/Compat/Migration.php:794
 #: src/modules/dashboard/components/shared/MigrationPendingNotice.jsx:59
 msgid "Open migration"
+msgstr ""
+
+#: inc/Compat/Migration.php:732
+msgid "Remind me tomorrow"
 msgstr ""
 
 #. translators: 1: installed Pro version, 2: required Pro version
@@ -19396,17 +19403,16 @@ msgstr ""
 msgid "Video player"
 msgstr ""
 
-#: src/modules/dashboard/components/dashboard/HeroBanner.jsx:64
-#: src/modules/dashboard/components/dashboard/HeroBanner.jsx:99
+#. translators: %s: plugin version number.
+#: src/modules/dashboard/components/dashboard/HeroBanner.jsx:39
+#, js-format
+msgid "Animation Addons for Elementor %s"
+msgstr ""
+
+#: src/modules/dashboard/components/dashboard/HeroBanner.jsx:61
 #: src/modules/dashboard/pages/Dashboard-old.jsx:78
 #: src/modules/dashboard/pages/Dashboard-old.jsx:94
 msgid "Ver."
-msgstr ""
-
-#. translators: %s: plugin version number.
-#: src/modules/dashboard/components/dashboard/HeroBanner.jsx:77
-#, js-format
-msgid "Animation Addons for Elementor %s"
 msgstr ""
 
 #: src/modules/dashboard/components/dashboard/LatestBlog-old.jsx:27

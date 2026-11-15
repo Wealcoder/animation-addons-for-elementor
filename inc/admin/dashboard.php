@@ -312,17 +312,17 @@ class Aaeaddon_Admin_Init
 	 */
 	public function include()
 	{
-		require_once 'row-actions.php';
-		require_once 'plugin-installer.php';
-		require_once 'base/Helpers.php';
-		require_once 'base/Downloader.php';
+		require_once __DIR__ . '/row-actions.php';
+		require_once __DIR__ . '/plugin-installer.php';
+		require_once __DIR__ . '/base/Helpers.php';
+		require_once __DIR__ . '/base/Downloader.php';
 		// Required, not autoloaded: PSR-4 maps Admin\Notices\Notices to
 		// inc/Admin/..., but this folder is inc/admin/, so on a case-sensitive
 		// (Linux) server the autoloader never finds it and
 		// plugin_dashboard_entry_page() fatals. On Windows it may already be
 		// autoloaded under the other spelling, hence the class check.
 		if ( ! class_exists( '\Wealcoder\AnimationAddons\Admin\Notices\Notices', false ) ) {
-			require_once 'Notices/Notices.php';
+			require_once __DIR__ . '/Notices/Notices.php';
 		}
 
 		// The import engine is NOT loaded here: Importer.php itself, plus
@@ -333,15 +333,15 @@ class Aaeaddon_Admin_Init
 		// is OneClickImport::setup_st_importer(), which runs during an
 		// import and nowhere else. It requires them itself; read its
 		// docblock before moving any of them back up here.
-		require_once 'atomic-attachment-remap.php';
-		require_once 'atomic-kit-import.php';
-		require_once 'atomic-v3-switch-off.php';
-		require_once 'atomic-image-localize.php';
+		require_once __DIR__ . '/atomic-attachment-remap.php';
+		require_once __DIR__ . '/atomic-kit-import.php';
+		require_once __DIR__ . '/atomic-v3-switch-off.php';
+		require_once __DIR__ . '/atomic-image-localize.php';
 		\Wealcoder\AnimationAddons\Admin\Base\Atomic_Attachment_Remap::init();
 		\Wealcoder\AnimationAddons\Admin\Base\Atomic_Kit_Import::init();
 		\Wealcoder\AnimationAddons\Admin\Base\Atomic_Image_Localize::init();
-		require_once 'st-init.php';
-		require_once 'template-importer.php';
+		require_once __DIR__ . '/st-init.php';
+		require_once __DIR__ . '/template-importer.php';
 		$oneimport = \Wealcoder\AnimationAddons\Admin\Base\OneClickImport::get_instance();
 	}
 
@@ -514,8 +514,6 @@ class Aaeaddon_Admin_Init
 			'hero'       => file_exists($this->plugin_file)
 				? AAEADDON_URL . 'assets/images/hero-banner.jpg'
 				: 'no',
-
-			'hero_offer' => AAEADDON_URL . 'assets/video/cyber-sale.mp4',
 
 			// Animation Settings screen. Shipped in the initial payload rather
 			// than fetched, so the panel paints filled in on first open.

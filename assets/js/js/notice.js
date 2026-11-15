@@ -1,11 +1,18 @@
 jQuery(document).ready(function ($) {
     "use strict";
 
-    $('.notice.aae-notice').on('click', '.notice-dismiss, [data-dismiss], [data-snooze]', function (event) {
+    $('.notice.aae-notice').on('click', '.notice-dismiss, [data-dismiss], [data-snooze], [data-hide]', function (event) {
         event.preventDefault();
 
         const $clickedButton = $(this);
         const $notice = $clickedButton.closest('.notice');
+
+        // Seasonal banner on the plugin's own screens: hide it for this page
+        // only, nothing is saved (it is back on the next visit).
+        if ($clickedButton.is('[data-hide]')) {
+            $notice.fadeOut();
+            return;
+        }
 
         const noticeData = $.extend({}, $notice.data());
 
