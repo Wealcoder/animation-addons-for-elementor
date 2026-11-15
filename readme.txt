@@ -5,7 +5,7 @@ Tags: elementor addons, elementor widgets, animation, elementor templates, eleme
 Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 4.2.13
+Stable tag: 4.2.14
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
  
@@ -393,6 +393,9 @@ Vendored libraries:
 
 == Changelog ==
 
+= 4.2.14 =
+* Changed: The "settings are ready to move to new storage names" line is no longer shown under the plugin on the Plugins screen. The notice on the plugin's own screens and the Migration tab are unchanged.
+
 = 4.2.13 =
 * Added: CPT Builder: "Start from a template" with six ready-made post types (Event, FAQ, Portfolio, Service, Team Member, Testimonial). Pick one, then change anything in the edit screen. No taxonomy is created for you; each preset only suggests one.
 * Added: Timeline: Border control for the content wrapper.
@@ -410,14 +413,12 @@ Vendored libraries:
 * Changed: On the Animation Addons screens the offer shows on every visit while it runs. Its close button hides it until the page is opened again.
 * Removed: The old Black Friday banner and the expired 2025 Cyber Sale video in the dashboard.
 
-= 4.2.10 =
-* Added: Loop Grid: a "Grid ID" field. Name a grid here, then use the same name in the Loop Grid ID field of any filter that should drive it. Only needed when a page holds more than one Loop Grid.
-* Changed: Loop Filter: the "Loop Grid ID" field is now a dropdown listing the Loop Grids on the page, instead of a text box. Filters that already hold a grid's element id keep working.
-* Fixed: Presets: Button presets such as Pro Ellipse lost their border radius when saved on some Elementor versions, which broke the layout after a reload. Border radius is now converted to the key the installed Elementor expects.
-
 Older versions: see the [full changelog](https://plugins.svn.wordpress.org/animation-addons-for-elementor/trunk/changelog.txt) (changelog.txt).
 
 == Upgrade Notice ==
+
+= 4.2.14 =
+The migration line is no longer shown under the plugin on the Plugins screen. Includes the 4.2.13 CPT Builder templates and Timeline border.
 
 = 4.2.13 =
 CPT Builder gets ready-made post type templates, Timeline gets a content wrapper border, and uninstall now cleans up the offer banner records.

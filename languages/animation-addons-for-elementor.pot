@@ -2,14 +2,14 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Animation Addons 4.2.13\n"
+"Project-Id-Version: Animation Addons 4.2.14\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/animation-addons-for-elementor\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-15T04:27:39+00:00\n"
+"POT-Creation-Date: 2026-11-15T06:59:39+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: animation-addons-for-elementor\n"
@@ -4448,7 +4448,7 @@ msgstr ""
 #: inc/class-blacklist.php:648
 #: inc/class-custom-fonts-admin.php:194
 #: inc/class-custom-icon-admin.php:687
-#: inc/Compat/Migration.php:450
+#: inc/Compat/Migration.php:451
 #: widgets/advanced-testimonial.php:330
 #: widgets/banner-posts.php:218
 #: widgets/feature-posts.php:169
@@ -4620,11 +4620,11 @@ msgstr ""
 msgid "Dismiss this notice"
 msgstr ""
 
-#: inc/admin/page-import.php:66
+#: inc/admin/page-import.php:67
 msgid "AAE Imported"
 msgstr ""
 
-#: inc/admin/page-import.php:182
+#: inc/admin/page-import.php:199
 msgid "Import Page"
 msgstr ""
 
@@ -4724,16 +4724,16 @@ msgid "You are not allowed to do this action."
 msgstr ""
 
 #: inc/admin/template-importer.php:66
-#: inc/class-custom-cpt-admin.php:175
-#: inc/class-custom-cpt-admin.php:215
-#: inc/class-custom-cpt-admin.php:238
-#: inc/class-custom-cpt-admin.php:249
-#: inc/class-custom-cpt-admin.php:267
-#: inc/class-custom-cpt-admin.php:280
-#: inc/class-custom-cpt-admin.php:320
-#: inc/class-custom-cpt-admin.php:341
-#: inc/class-custom-cpt-admin.php:351
-#: inc/class-custom-cpt-admin.php:370
+#: inc/class-custom-cpt-admin.php:191
+#: inc/class-custom-cpt-admin.php:231
+#: inc/class-custom-cpt-admin.php:254
+#: inc/class-custom-cpt-admin.php:265
+#: inc/class-custom-cpt-admin.php:283
+#: inc/class-custom-cpt-admin.php:296
+#: inc/class-custom-cpt-admin.php:336
+#: inc/class-custom-cpt-admin.php:357
+#: inc/class-custom-cpt-admin.php:367
+#: inc/class-custom-cpt-admin.php:386
 msgid "You are not allowed to perform this action."
 msgstr ""
 
@@ -9783,14 +9783,14 @@ msgstr ""
 msgid "Pin Markers"
 msgstr ""
 
-#: inc/class-custom-cpt-admin.php:146
-#: inc/class-custom-cpt-admin.php:147
+#: inc/class-custom-cpt-admin.php:162
+#: inc/class-custom-cpt-admin.php:163
 #: src/modules/dashboard/config/data/freeProComparisonList.js:258
 msgid "CPT Builder"
 msgstr ""
 
-#: inc/class-custom-cpt-admin.php:234
-#: inc/class-custom-cpt-admin.php:337
+#: inc/class-custom-cpt-admin.php:250
+#: inc/class-custom-cpt-admin.php:353
 msgid "Invalid nonce"
 msgstr ""
 
@@ -10803,84 +10803,84 @@ msgstr ""
 msgid "Use this"
 msgstr ""
 
-#: inc/Compat/Migration.php:451
+#: inc/Compat/Migration.php:452
 msgid "Pro settings"
 msgstr ""
 
-#: inc/Compat/Migration.php:452
+#: inc/Compat/Migration.php:453
 msgid "Menu settings and dismissed notices"
 msgstr ""
 
-#: inc/Compat/Migration.php:611
+#: inc/Compat/Migration.php:612
 msgid "That file is not an Animation Addons backup."
 msgstr ""
 
-#: inc/Compat/Migration.php:634
+#: inc/Compat/Migration.php:635
 msgid "You are not allowed to do that."
 msgstr ""
 
-#: inc/Compat/Migration.php:673
+#: inc/Compat/Migration.php:674
 msgid "The backup file is too large or unreadable."
 msgstr ""
 
-#: inc/Compat/Migration.php:725
+#: inc/Compat/Migration.php:726
 msgid "Animation Addons moved its settings to new storage names."
 msgstr ""
 
-#: inc/Compat/Migration.php:727
+#: inc/Compat/Migration.php:728
 msgid "Your site is working normally. One step needs your attention on the Migration screen."
 msgstr ""
 
-#: inc/Compat/Migration.php:728
+#: inc/Compat/Migration.php:729
 msgid "Your site is working normally. Nothing is copied until you start the migration; your current data is never changed or deleted."
 msgstr ""
 
-#: inc/Compat/Migration.php:730
-#: inc/Compat/Migration.php:794
+#: inc/Compat/Migration.php:731
+#: inc/Compat/Migration.php:795
 #: src/modules/dashboard/components/shared/MigrationPendingNotice.jsx:59
 msgid "Open migration"
 msgstr ""
 
-#: inc/Compat/Migration.php:732
+#: inc/Compat/Migration.php:733
 msgid "Remind me tomorrow"
 msgstr ""
 
 #. translators: 1: installed Pro version, 2: required Pro version
-#: inc/Compat/Migration.php:750
+#: inc/Compat/Migration.php:751
 #, php-format
 msgid "Animation Addons Pro %1$s is older than this version of Animation Addons expects (%2$s)."
 msgstr ""
 
-#: inc/Compat/Migration.php:755
+#: inc/Compat/Migration.php:756
 msgid "Your site works, but Pro is running through a compatibility layer. Update Pro to finish the move."
 msgstr ""
 
-#: inc/Compat/Migration.php:756
+#: inc/Compat/Migration.php:757
 msgid "Your site works, but Pro is running through a compatibility layer. Activate your Pro licence to receive the update."
 msgstr ""
 
-#: inc/Compat/Migration.php:758
+#: inc/Compat/Migration.php:759
 msgid "Update now"
 msgstr ""
 
-#: inc/Compat/Migration.php:758
+#: inc/Compat/Migration.php:759
 msgid "Open licence settings"
 msgstr ""
 
-#: inc/Compat/Migration.php:760
+#: inc/Compat/Migration.php:761
 msgid "Remind me in a week"
 msgstr ""
 
-#: inc/Compat/Migration.php:791
+#: inc/Compat/Migration.php:792
 msgid "Animation Addons: the storage-name migration needs your attention."
 msgstr ""
 
-#: inc/Compat/Migration.php:792
+#: inc/Compat/Migration.php:793
 msgid "Animation Addons: settings are ready to move to new storage names. Nothing changes until you start it."
 msgstr ""
 
 #. translators: %d: number of sites
-#: inc/Compat/Migration.php:823
+#: inc/Compat/Migration.php:824
 #, php-format
 msgid "Animation Addons: %d site still has its storage-name migration pending. It runs per site -- open that site's Animation Addons &rsaquo; Migration screen."
 msgid_plural "Animation Addons: %d sites still have their storage-name migration pending. It runs per site -- open each site's Animation Addons &rsaquo; Migration screen."
