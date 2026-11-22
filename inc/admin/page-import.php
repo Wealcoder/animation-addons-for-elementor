@@ -25,6 +25,7 @@ final class Aaeaddon_Admin_Page_Importer
 
         add_action('admin_print_scripts', [$this, 'clear_notices_for_importer']);
         add_filter('admin_body_class', array($this, 'admin_classes'), 100);
+        add_action('current_screen', [$this, 'remove_admin_footer_text']);
         add_filter('views_edit-page', [$this, 'custom_page_tab']);
         add_action('pre_get_posts', [$this, 'custom_page_filter']);
     }
@@ -107,6 +108,22 @@ final class Aaeaddon_Admin_Page_Importer
         }
 
         return $classes;
+    }
+
+    /**
+     * Page Import is a full-screen app: hide WordPress's "Thank you for
+     * creating with WordPress" line and the version number under it, on this
+     * screen only.
+     *
+     * @param \WP_Screen $screen Current screen.
+     * @return void
+     */
+    public function remove_admin_footer_text($screen)
+    {
+        if (is_object($screen) && ! empty($screen->id) && false !== strpos($screen->id, '_page_aaeaddon-page-importer')) {
+            add_filter('admin_footer_text', '__return_empty_string');
+            add_filter('update_footer', '__return_empty_string', 11);
+        }
     }
 
     /**
@@ -263,7 +280,7 @@ final class Aaeaddon_Admin_Page_Importer
             wp_enqueue_script(
                 'aaeaddon-page-importer-admin',
                 AAEADDON_URL . 'assets/build/modules/page-import/index.js',
-                array('wp-element', 'wp-i18n'),
+                array('react', 'react-dom', 'react-jsx-runtime', 'wp-element', 'wp-i18n'),
                 aaeaddon_asset_version(),
                 true
             );

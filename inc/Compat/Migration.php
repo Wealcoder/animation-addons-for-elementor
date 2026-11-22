@@ -92,10 +92,11 @@ final class Migration {
 		// while it is open.
 		add_filter( 'wcf_addons_dashboard_config', array( __CLASS__, 'inject_dashboard_config' ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 		add_action( 'admin_init', array( __CLASS__, 'register_notices' ), 11 );
-		add_action( 'after_plugin_row_' . AAEADDON_BASE, array( __CLASS__, 'plugin_row' ), 10, 1 );
-		if (aaeaddon_pro_defined( 'BASE' ) ) {
-			add_action( 'after_plugin_row_' . aaeaddon_pro_constant( 'BASE' ), array( __CLASS__, 'plugin_row' ), 10, 1 );
-		}
+		// The "settings are ready to move" line under the plugin on the Plugins
+		// screen is switched off on purpose: the notice on the plugin's own
+		// screens and the dashboard's Migration tab carry the same message.
+		// plugin_row() is kept so it can be hooked again:
+		//   add_action( 'after_plugin_row_' . AAEADDON_BASE, array( __CLASS__, 'plugin_row' ), 10, 1 );
 
 		foreach ( array( 'start', 'status', 'export', 'import', 'report' ) as $action ) {
 			add_action( 'wp_ajax_aaeaddon_migration_' . $action, array( __CLASS__, 'ajax_' . $action ) );

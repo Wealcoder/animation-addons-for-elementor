@@ -1,6 +1,19 @@
 
 == Changelog ==
 
+= 🌀 Animation Addons for Elementor v4.2.14 – 15th November 2026
+
+  - **Changed:** The "settings are ready to move to new storage names" line is no longer shown under the plugin on the Plugins screen. The notice on the plugin's own screens and the Migration tab are unchanged.
+
+= 🌀 Animation Addons for Elementor v4.2.13 – 15th November 2026
+
+  - **Added:** CPT Builder: "Start from a template" with six ready-made post types (Event, FAQ, Portfolio, Service, Team Member, Testimonial). Pick one, then change anything in the edit screen. No taxonomy is created for you; each preset only suggests one.
+  - **Added:** Timeline: Border control for the content wrapper.
+  - **Fixed:** Deleting the plugin now also removes the seasonal offer banner records (dismiss and snooze settings and the per-user view counts).
+  - **Improved:** Dashboard: the offer banner is now centered above the app, and the WordPress "Thank you for creating with WordPress" footer line is hidden on the Dashboard, CPT Builder and Page Import screens.
+  - **Improved:** The plugin's core files now load through absolute paths, so they are found whichever folder WordPress or WP-CLI runs from.
+  - **Improved:** Dashboard, Setup Wizard, Page Import and CPT Builder now use WordPress's own React JSX runtime instead of a bundled copy, which makes their scripts smaller. Requires WordPress 6.6 or newer, as the plugin already does.
+
 = 🌀 Animation Addons for Elementor v4.2.12 – 14th November 2026
 
   - **Changed:** The Black Friday offer now shows on every visit to the Plugins screen until "Don't show again" is clicked. The WordPress Dashboard still shows it at most twice per administrator, at least 10 minutes apart.

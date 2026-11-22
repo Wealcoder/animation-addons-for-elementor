@@ -5,7 +5,7 @@ Tags: elementor addons, elementor widgets, animation, elementor templates, eleme
 Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 4.2.12
+Stable tag: 4.2.14
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
  
@@ -393,6 +393,17 @@ Vendored libraries:
 
 == Changelog ==
 
+= 4.2.14 =
+* Changed: The "settings are ready to move to new storage names" line is no longer shown under the plugin on the Plugins screen. The notice on the plugin's own screens and the Migration tab are unchanged.
+
+= 4.2.13 =
+* Added: CPT Builder: "Start from a template" with six ready-made post types (Event, FAQ, Portfolio, Service, Team Member, Testimonial). Pick one, then change anything in the edit screen. No taxonomy is created for you; each preset only suggests one.
+* Added: Timeline: Border control for the content wrapper.
+* Fixed: Deleting the plugin now also removes the seasonal offer banner records (dismiss and snooze settings and the per-user view counts).
+* Improved: Dashboard: the offer banner is now centered above the app, and the WordPress "Thank you for creating with WordPress" footer line is hidden on the Dashboard, CPT Builder and Page Import screens.
+* Improved: The plugin's core files now load through absolute paths, so they are found whichever folder WordPress or WP-CLI runs from.
+* Improved: Dashboard, Setup Wizard, Page Import and CPT Builder now use WordPress's own React JSX runtime instead of a bundled copy, which makes their scripts smaller. Requires WordPress 6.6 or newer, as the plugin already does.
+
 = 4.2.12 =
 * Changed: The Black Friday offer now shows on every visit to the Plugins screen until "Don't show again" is clicked. The WordPress Dashboard still shows it at most twice per administrator, at least 10 minutes apart.
 
@@ -402,87 +413,15 @@ Vendored libraries:
 * Changed: On the Animation Addons screens the offer shows on every visit while it runs. Its close button hides it until the page is opened again.
 * Removed: The old Black Friday banner and the expired 2025 Cyber Sale video in the dashboard.
 
-= 4.2.10 =
-* Added: Loop Grid: a "Grid ID" field. Name a grid here, then use the same name in the Loop Grid ID field of any filter that should drive it. Only needed when a page holds more than one Loop Grid.
-* Changed: Loop Filter: the "Loop Grid ID" field is now a dropdown listing the Loop Grids on the page, instead of a text box. Filters that already hold a grid's element id keep working.
-* Fixed: Presets: Button presets such as Pro Ellipse lost their border radius when saved on some Elementor versions, which broke the layout after a reload. Border radius is now converted to the key the installed Elementor expects.
-
-= 4.2.9 =
-* Fixed: Toggle Switcher: the knob now travels the full width of the switch when the Track width is changed. Previously the distance was hardcoded for the default size.
-* Fixed: Toggle Switcher: the Track's left and right Padding now moves the knob. The knob is laid out inside the Track instead of being absolutely positioned. At zero padding the appearance is unchanged.
-* Fixed: Toggle Switcher: corrected the knob position inside the Elementor editor.
-* Changed: Toggle Switcher: the "Style Switch" preset now includes the fixes above, so new Toggle Switchers get them. Toggle Switchers already on your pages are not changed.
-* Fixed: Loop Grid / Loop Filter: Loop Filter (Taxonomy) now works when added from a preset. The taxonomy was not being saved with the page, so the filter showed nothing.
-* Added: WP Menu: "Active Color" control for menu items.
-* Added: WP Menu: separate "Active Color" control for dropdown items.
-* Fixed: WP Menu: the Mobile Drawer effect no longer shows an unwanted box shadow on the right side.
-* Fixed: WP Menu: saving a page failed with "drawer_logo: invalid_value" after choosing a Drawer Header logo.
-* Fixed: WP Menu: a newly added Menu could not be published unless a Drawer Header logo had been uploaded.
-* Fixed: WP Menu: the hamburger button no longer appears on desktop with Hello Elementor and other themes that style all buttons.
-* Changed: WP Menu: on such themes the mobile hamburger now follows the widget's own size, border, radius and hover settings instead of the theme's button style. It is 40×40 by default.
-* Fixed: Dashboard: PRO extensions are no longer switched on by default without a valid license. Extensions already enabled are not turned off.
-* Added: Atomic Widgets (all): default styling classes (e-default-<tag>) on Form, Nested Slider, Loop Grid, Timeline, Accordion, Advanced Heading and Button. Their built-in styles can now be overridden from the Style tab without writing CSS.
-
-= 4.2.8 =
-* Added: Nav presets. Two one-click looks, "Header Nav" and "Mega Menu (Pill)", applied from a new Presets section.
-* Added: A Nav dropped on the canvas now builds itself from your WordPress menu. Only a freshly dropped Nav is touched — a pasted, duplicated or already-edited menu is left alone, and nothing is imported if the site has no menu.
-* Added: Nav: "Auto-sync from WordPress", with an Update button that pulls fresh labels from a chosen menu while keeping your styling and any items you added by hand.
-* Added: Nav: a Dropdown Behavior section. "Open On" (Click or Hover) and a dropdown animation now apply to the whole menu, instead of being set on every item separately.
-* Added: Nav: a Mobile Menu Icons section for choosing your own hamburger, close, dropdown and back icons.
-* Added: Nav: a "pick a part to style" list in the Mobile Menu panel. One click selects the Hamburger, Drawer, Overlay, Header bar, Close button, Back button or Menu area and opens its Style tab, and the drawer appears on the canvas while you work on it.
-* Added: Nav: copy one menu item's styling to every item on the same level, from the menu item's row.
-* Added: Counter: Easing (five curves), Play once or every time it scrolls into view, a thousand separator, and decimal places.
-* Added: Advanced Heading: a Link option.
-* Added: Advanced Portfolio: a "Studio Grid" preset.
-* Improved: A newly dropped Counter sizes to its content instead of spanning the whole row. Counters already on a page are not changed.
-* Improved: A new mobile menu drawer starts at a 350px width and a neutral look, so it no longer picks up the theme's button styling. Both stay editable in the Style tab, and existing menus are untouched.
-* Improved: The inline text formatting toolbar has a cleaner look.
-* Improved: A starter page or template whose content file is not a WordPress export (XML) now fails with a message that says so, instead of "No page was imported". The failure screen highlights the cause, links to the support forum and shows the template's name and ID to quote.
-* Fixed: Nav: with "Open On: Click", a parent item that had a link followed that link instead of opening its dropdown, so the submenu could never be opened with a mouse. The first click now opens the dropdown and a second click follows the link. A parent with no link, or with "#", keeps its plain open and close toggle.
-* Fixed: Nav: in the mobile drawer, a submenu's items were laid out in a row, so only the first one was visible.
-* Fixed: Nav: Tab could move focus out of an open mobile drawer and onto the page behind it.
-* Fixed: Nav: on themes with a large line height, the mobile Back and Close icons were drawn below the drawer header instead of inside it.
-* Fixed: Nav: icons chosen under "Mobile Menu Icons" only reached the mobile menu while the Mobile Menu section was open, and an icon set directly on a menu part was overwritten again on the next edit.
-* Fixed: Nav: closing the drawer preview in the editor left the canvas showing the hamburger instead of the desktop menu.
-* Fixed: The Elementor 4.3 "Prop type is missing" SVG error also affected the Search Form's open and close buttons, the Form's Next and Previous buttons, and the Image Hotspot close button.
-* Fixed: Documentation links on the dashboard's Extensions tab.
-
-= 4.2.7 =
-* Added: Dynamic Tags are now free. Post, Author, Site, Archive, Taxonomy, Comments, and Contact & Social tags (53 in all) work in Elementor V3 and V4 widgets without Animation Addons Pro. Content already built with these tags keeps working, because tag names are unchanged. ACF, Post Meta, and Custom Fields tags stay in Animation Addons Pro.
-* Fixed: Saving a page as a non-administrator could end in a fatal error when it used an Author Info dynamic tag. The check that keeps email addresses out of non-admin edits now covers every dynamic control, not only the title.
-* Changed: The shortcode dynamic tag's "escape output" filter is now `aaeaddon/dynamic_tags/shortcode_should_escape`. The previous name is still honored.
-* Security: Fixed a stored XSS in the Countdown widget labels and expire text (CVE-2025-8444), and the same class of issue in Starter Animation, Category Showcase, Image Gallery lightbox, Progress Bar, Search, Animated Title, Loop Builder, Template Library, Atomic Nav, Atomic Slider and Atomic Social Share.
-* Security: Fixed a reflected XSS on the template import failure screens.
-* Security: Tightened permission checks in Loop Builder previews, Toggle Switcher, Loop Grid, Theme Builder, Forms, Mailchimp and Code Snippets. Only published templates render on the front end.
-* Security: Icon pack and kit uploads are extracted to a temporary folder and checked there before being moved into place. The XML importer no longer unserializes objects.
-* Security: CSV exports are protected against spreadsheet formula injection.
-* Security: The site-wide Mailchimp API key is no longer sent to the Elementor editor. Leave the widget's key empty to use the site key; it is applied on the server.
-* Security: The Popup widget renders a template only if it is published or the visitor may read it. The Atomic Loop Grid lists public post types only.
-* Security: SVG icons fetched for the Atomic Nav dropdown and the slider arrows are reduced to plain SVG shapes before they are inserted.
-* Security: Hardened the script-tag check in the HTML sanitizer and the XML importer's handling of serialized meta.
-* Fixed: Presets imported from another site now load Elementor's placeholder image and the slider's arrow icons from your own site instead of the authoring site.
-* Fixed: The Atomic Search Query heading tag is now the widget root, so Kit and theme heading styles no longer override it.
-* Improved: Atomic Timeline text parts use inline editing.
-* Improved: WPML configuration for more widgets.
-* Fixed: Asset version now matches the plugin version, so browsers load the updated scripts and styles after an update.
-
-= 4.2.6 =
-* Improved: Performance optimization in Theme Builder by removing redundant rewrite rule flushes on request initialization.
-* Fixed: Compatibility with Elementor 4.3 Svg_Control in Atomic Menu and Nav widgets to prevent "Prop type is missing" errors.
-* Improved: Enhanced WPML multilingual compatibility across widgets and theme builder.
-* Fixed: Template Library dependency dialog styling to seamlessly adapt to Elementor's Light and Dark themes.
-* Improved: Template Library V4 insert now honors Live Paste image choices.
-* Fixed: A brand-new install could show the "settings moved to new storage names" migration notice — when activated without the activation hook (installed by a template's dependency installer, or a network site created later) or reinstalled after being deleted.
-
-= 4.2.5 =
-* Fixed: Section template previews in the Template Library opened without the template, because the preview link reached the demo site as "amp;post" instead of "post".
-
-= 4.2.4 =
-* Fixed: Starter Template import now says "Theme ready" when the template's theme is already your active theme, instead of asking you to install it.
-
-Older versions: see [changelog.txt](https://plugins.svn.wordpress.org/animation-addons-for-elementor/trunk/changelog.txt) for the full changelog.
+Older versions: see the [full changelog](https://plugins.svn.wordpress.org/animation-addons-for-elementor/trunk/changelog.txt) (changelog.txt).
 
 == Upgrade Notice ==
+
+= 4.2.14 =
+The migration line is no longer shown under the plugin on the Plugins screen. Includes the 4.2.13 CPT Builder templates and Timeline border.
+
+= 4.2.13 =
+CPT Builder gets ready-made post type templates, Timeline gets a content wrapper border, and uninstall now cleans up the offer banner records.
 
 = 4.2.12 =
 The Black Friday offer stays on the Plugins screen until you dismiss it.

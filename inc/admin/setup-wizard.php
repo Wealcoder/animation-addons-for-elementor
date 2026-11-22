@@ -147,7 +147,7 @@ class Aaeaddon_Setup_Wizard_Init
 		wp_enqueue_script(
 			'wcf-admin',
 			AAEADDON_URL . 'assets/build/modules/dashboard/wizardSetup.js',
-			array('wp-data', 'react', 'react-dom', 'wp-element', 'wp-i18n'),
+			array('wp-data', 'react', 'react-dom', 'react-jsx-runtime', 'wp-element', 'wp-i18n'),
 			AAEADDON_VERSION,
 			true
 		);
