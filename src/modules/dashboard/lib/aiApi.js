@@ -40,4 +40,6 @@ async function request(path, { method = "GET", body } = {}) {
 export const aiApi = {
   save: (patch) => request("ai/settings", { method: "POST", body: patch }),
   test: () => request("ai/test", { method: "POST" }),
+  overview: () => request("connections"),
+  createToken: (name, scopes) => request("tokens", { method: "POST", body: { name, scopes } }),
 };
