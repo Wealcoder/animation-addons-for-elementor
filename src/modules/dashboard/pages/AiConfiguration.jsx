@@ -9,6 +9,7 @@ import {
   RiFileCopyLine,
   RiFlashlightLine,
   RiErrorWarningLine,
+  RiBookOpenLine,
 } from "react-icons/ri";
 import { aiApi } from "@/lib/aiApi";
 
@@ -354,6 +355,9 @@ function DevTab({ c }) {
   );
 }
 
+// The "Guide" button in the card header. Point it at the published doc.
+const GUIDE_URL = "https://animation-addons.com/docs/getting-started/connect-ai-app/";
+
 const NotAvailable = () => (
   <div className="border rounded-2xl p-6 shadow-common bg-background max-w-[560px]">
     <div className="flex gap-2 items-center">
@@ -415,6 +419,15 @@ const AiConfiguration = () => {
             </p>
           </div>
         </div>
+        <a
+          href={GUIDE_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-[13px] font-medium text-text hover:border-[#7C5CFC] hover:text-[#7C5CFC] transition-colors"
+        >
+          <RiBookOpenLine size={15} />
+          {__("Guide", "animation-addons-for-elementor")}
+        </a>
       </div>
 
       <div className="my-6 h-px bg-border" />
