@@ -45,14 +45,14 @@ async function copy(text, label) {
   toast.success(label || __("Copied", "animation-addons-for-elementor"));
 }
 
-function CopyBox({ value, label }) {
+function CopyBox({ value, label, testid }) {
   return (
-    <div className="flex items-stretch gap-1.5">
+    <div className="flex items-stretch gap-1.5" data-testid={testid}>
       <input
         readOnly
         value={value}
         onFocus={(e) => e.target.select()}
-        className="flex-1 h-9 rounded-lg border border-border bg-background-secondary px-3 font-mono text-[12.5px]"
+        className="min-w-0 flex-1 h-9 rounded-lg border border-border bg-background-secondary px-3 font-mono text-[12.5px]"
         aria-label={label}
       />
       <Button
@@ -110,6 +110,9 @@ function Steps({ steps }) {
   );
 }
 
+// What to call the connector in the AI app. Any name works; the field is required.
+const CONNECTOR_NAME = "Animation Addons";
+
 // Two ways in per app, shown as two tabs — same model as Pro's AI &
 // Connections page. "quick" mints a personal token (Claude: a fixed header
 // under "No sign in"; ChatGPT: inside the Server URL's path, since its form
@@ -117,17 +120,37 @@ function Steps({ steps }) {
 // default: it needs no /.well-known/ discovery, so it also works on hosts
 // that block that path, where ChatGPT's OAuth cannot (`oauthNeedsRoot`).
 // ChatGPT steps match its current UI (Plugins → Add → Add custom MCP server).
+// Every field of the app's own form, in its order, with what goes in it: the
+// screen has to be enough on its own. Claude's labels are from its docs
+// (claude.com/docs/connectors/custom/add-unlisted): header names are chosen
+// from a list, the value is sent exactly as entered ("Bearer " included), and
+// Request headers is a beta only some accounts have, so the OAuth tab is one
+// click away from there. `secret` is what the button made, or "".
 const HOSTED_CLIENTS = () => [
   {
     id: "claude",
     name: "Claude (web & Desktop)",
+    openUrl: "https://claude.ai/customize/connectors",
+    openLabel: __("Open Claude connectors", "animation-addons-for-elementor"),
+    notes: [
+      __("Team or Enterprise: an owner adds it under Organization settings → Connectors → Add → Custom. Then each member presses Connect.", "animation-addons-for-elementor"),
+      __("A connector cannot be edited later. To change something, remove it and add it again.", "animation-addons-for-elementor"),
+    ],
     quick: {
       action: "header",
       showUrl: true,
+      fallback: __("No Request headers in your form? Look under Advanced. Claude has it only in some accounts; without it, use the OAuth sign-in, which needs no header and no token.", "animation-addons-for-elementor"),
       steps: [
-        __("In Claude: Settings → Connectors → Add custom connector.", "animation-addons-for-elementor"),
-        __('Paste the MCP URL above. Authentication: "No sign in".', "animation-addons-for-elementor"),
-        __('Under Request headers add one: name "Authorization", value from the button below.', "animation-addons-for-elementor"),
+        __("In Claude: Customize → Connectors → Add → Add custom connector.", "animation-addons-for-elementor"),
+        __('Press the button below, then fill in the form: open "What to enter in each field".', "animation-addons-for-elementor"),
+        __("Press Add. Claude can work on this site now.", "animation-addons-for-elementor"),
+      ],
+      fields: (mcpUrl, secret) => [
+        { label: __("Name", "animation-addons-for-elementor"), value: CONNECTOR_NAME, copy: true },
+        { label: __("MCP server URL", "animation-addons-for-elementor"), value: mcpUrl, copy: true },
+        { label: __("Authentication", "animation-addons-for-elementor"), value: "No sign-in" },
+        { label: __("Request headers → name", "animation-addons-for-elementor"), value: "authorization", copy: true, testid: "header-name", note: __("Choose it from the list.", "animation-addons-for-elementor") },
+        { label: __("Request headers → value", "animation-addons-for-elementor"), value: secret, copy: true, testid: "header-value", empty: __("Press the button above to create it.", "animation-addons-for-elementor"), note: __('Paste all of it: the word "Bearer", a space, then the token.', "animation-addons-for-elementor") },
       ],
       button: __("Create token & copy header value", "animation-addons-for-elementor"),
       note: __("Everyone using this connector shares that one token — revoke it anytime under Personal tokens on the full Connections page.", "animation-addons-for-elementor"),
@@ -135,9 +158,15 @@ const HOSTED_CLIENTS = () => [
     oauth: {
       showUrl: true,
       steps: [
-        __("In Claude: Settings → Connectors → Add custom connector.", "animation-addons-for-elementor"),
-        __("Paste the MCP URL above. Leave the client ID and secret empty.", "animation-addons-for-elementor"),
+        __("In Claude: Customize → Connectors → Add → Add custom connector.", "animation-addons-for-elementor"),
+        __('Fill in the form (open "What to enter in each field"), then press Continue and Add.', "animation-addons-for-elementor"),
         __("Press Connect — you log in to this site and press Allow.", "animation-addons-for-elementor"),
+      ],
+      fields: (mcpUrl) => [
+        { label: __("Name", "animation-addons-for-elementor"), value: CONNECTOR_NAME, copy: true },
+        { label: __("MCP server URL", "animation-addons-for-elementor"), value: mcpUrl, copy: true },
+        { label: __("Authentication", "animation-addons-for-elementor"), value: __("Keep what Claude selects.", "animation-addons-for-elementor"), plain: true },
+        { label: __("OAuth client", "animation-addons-for-elementor"), value: __("Keep what Claude selects. Client ID and secret stay empty.", "animation-addons-for-elementor"), plain: true },
       ],
     },
   },
@@ -147,11 +176,15 @@ const HOSTED_CLIENTS = () => [
     oauthNeedsRoot: true,
     quick: {
       action: "url",
-      showUrl: false,
       steps: [
         __("In ChatGPT: Plugins → Add → Add custom MCP server.", "animation-addons-for-elementor"),
-        __("Press the button below and paste the copied URL into Server URL.", "animation-addons-for-elementor"),
-        __('Authentication: "No authentication" (not "OAuth or no authentication"). Tick "I understand", then Create as a plugin.', "animation-addons-for-elementor"),
+        __('Press the button below, then fill in the form: open "What to enter in each field".', "animation-addons-for-elementor"),
+        __('Tick "I understand", then Create as a plugin.', "animation-addons-for-elementor"),
+      ],
+      fields: (mcpUrl, secret) => [
+        { label: __("Name", "animation-addons-for-elementor"), value: CONNECTOR_NAME, copy: true },
+        { label: __("Server URL", "animation-addons-for-elementor"), value: secret, copy: true, testid: "server-url", empty: __("Press the button above to create it.", "animation-addons-for-elementor") },
+        { label: __("Authentication", "animation-addons-for-elementor"), value: "No authentication", note: __('Not "OAuth or no authentication".', "animation-addons-for-elementor") },
       ],
       button: __("Create token & copy ready URL", "animation-addons-for-elementor"),
       note: __("The token rides inside this URL, so treat the URL like a password — revoke it anytime under Personal tokens on the full Connections page.", "animation-addons-for-elementor"),
@@ -160,12 +193,37 @@ const HOSTED_CLIENTS = () => [
       showUrl: true,
       steps: [
         __("In ChatGPT: Plugins → Add → Add custom MCP server.", "animation-addons-for-elementor"),
-        __('Paste the MCP URL above. Authentication: "OAuth".', "animation-addons-for-elementor"),
+        __('Fill in the form: open "What to enter in each field".', "animation-addons-for-elementor"),
         __("Create as a plugin — you're sent here to log in and press Allow.", "animation-addons-for-elementor"),
+      ],
+      fields: (mcpUrl) => [
+        { label: __("Name", "animation-addons-for-elementor"), value: CONNECTOR_NAME, copy: true },
+        { label: __("Server URL", "animation-addons-for-elementor"), value: mcpUrl, copy: true },
+        { label: __("Authentication", "animation-addons-for-elementor"), value: "OAuth" },
       ],
     },
   },
 ];
+
+function FieldRows({ rows }) {
+  return (
+    <div className="mb-2 overflow-hidden rounded-lg border border-border bg-background" data-testid="connect-fields">
+      {rows.map((r) => (
+        <div key={r.label} className="grid gap-1 border-b border-border px-3 py-2.5 last:border-b-0 sm:grid-cols-[180px_minmax(0,1fr)] sm:items-center sm:gap-3">
+          <div className="text-[12.5px] font-medium">{r.label}</div>
+          <div className="min-w-0">
+            {r.copy && r.value ? (
+              <CopyBox value={r.value} label={r.label} testid={r.testid} />
+            ) : (
+              <span className={"text-[12.5px] " + (r.plain || !r.value ? "text-text-secondary" : "font-mono")}>{r.value || r.empty}</span>
+            )}
+            {r.note ? <div className="mt-1 text-[12px] text-text-secondary">{r.note}</div> : null}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 // These three genuinely edit a local file (or run a CLI command) themselves,
 // so a personal token + a ready-made prompt makes sense — config shapes
@@ -241,6 +299,7 @@ function HostedTab({ c, mcpUrl, blocked }) {
   const [mode, setMode] = useState("quick");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
+  const [secret, setSecret] = useState("");
   const m = c[mode];
   const mint = async () => {
     setBusy(true);
@@ -248,8 +307,10 @@ function HostedTab({ c, mcpUrl, blocked }) {
     try {
       const r = await aiApi.createToken(`${c.name} ${__("token", "animation-addons-for-elementor")}`, ["read", "write"]);
       if ("url" === c.quick.action) {
+        setSecret(`${mcpUrl}/${r.token}`);
         copy(`${mcpUrl}/${r.token}`, __("URL copied — paste it into Server URL", "animation-addons-for-elementor"));
       } else {
+        setSecret(`Bearer ${r.token}`);
         copy(`Bearer ${r.token}`, __("Header value copied — paste it as the Authorization header's value", "animation-addons-for-elementor"));
       }
     } catch (e) {
@@ -265,7 +326,7 @@ function HostedTab({ c, mcpUrl, blocked }) {
   ];
   return (
     <div className="mt-4 rounded-xl bg-background-secondary/60 p-4" data-hosted-mode={mode}>
-      <div className="inline-flex rounded-lg border border-border bg-background p-0.5" role="tablist">
+      <div className="inline-flex gap-1.5 rounded-lg border border-border bg-background p-1" role="tablist">
         {modes.map(([id, label]) => (
           <button
             key={id}
@@ -297,7 +358,7 @@ function HostedTab({ c, mcpUrl, blocked }) {
       {m.showUrl ? (
         <div className="mb-3">
           <div className="text-[13px] font-medium mb-1.5">{__("MCP server URL", "animation-addons-for-elementor")}</div>
-          <CopyBox value={mcpUrl} label={__("MCP URL", "animation-addons-for-elementor")} />
+          <CopyBox value={mcpUrl} label={__("MCP URL", "animation-addons-for-elementor")} testid="mcp-url" />
         </div>
       ) : null}
       <Steps steps={m.steps} />
@@ -313,6 +374,33 @@ function HostedTab({ c, mcpUrl, blocked }) {
           <p className="text-[12px] text-text-secondary mt-1.5">{c.quick.note}</p>
         </>
       ) : null}
+      <details className="mt-3 overflow-hidden rounded-lg border border-border bg-background" data-testid="connect-help">
+        <summary className="cursor-pointer px-3 py-2.5 text-[13px] font-medium text-text">{__("What to enter in each field", "animation-addons-for-elementor")}</summary>
+        <div className="px-3 pb-3">
+          {c.openUrl ? (
+            <p className="mb-2">
+              <a href={c.openUrl} target="_blank" rel="noopener noreferrer" className="text-[12.5px] text-[#7C5CFC] hover:underline">
+                {c.openLabel}
+              </a>
+            </p>
+          ) : null}
+          <FieldRows rows={m.fields(mcpUrl, secret)} />
+          {"quick" === mode && c.quick.fallback ? (
+            <p className="text-[12px] text-text-secondary flex items-start gap-1.5" data-testid="no-headers">
+              <RiErrorWarningLine size={14} className="mt-[1px] shrink-0 text-[#D97706]" />
+              <span>
+                {c.quick.fallback}{" "}
+                <button type="button" className="text-[#7C5CFC] underline" onClick={() => setMode("oauth")}>
+                  {__("Use the OAuth sign-in", "animation-addons-for-elementor")}
+                </button>
+              </span>
+            </p>
+          ) : null}
+          {(c.notes || []).map((n) => (
+            <p key={n} className="text-[12px] text-text-secondary mt-1.5">{n}</p>
+          ))}
+        </div>
+      </details>
     </div>
   );
 }

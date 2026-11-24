@@ -399,7 +399,7 @@ Vendored libraries:
 * Fixed: Code Snippet: a snippet set to "WooCommerce Shop Page" now runs on the shop page.
 * Fixed: Starter Templates: the notice about files that could not be imported now says what went wrong (no connection, or a file the site does not accept) and what to do, and it shows once per import.
 * Changed: The offer banner: its close button now hides it for good, on every screen.
-* Changed: Dashboard, AI Configuration: the screen now connects Claude, ChatGPT and other AI apps to the site, with the MCP URL and step-by-step instructions. AI provider keys are managed on the AI & Connections page of Animation Addons Pro.
+* Changed: Dashboard, AI Configuration: the screen now connects Claude, ChatGPT and other AI apps to the site, with every field to fill in (name, URL, authentication, request header) ready to copy. AI provider keys are managed on the AI & Connections page of Animation Addons Pro.
 * Changed: The "settings are ready to move to new storage names" line is no longer shown under the plugin on the Plugins screen. The notice on the plugin's own screens and the Migration tab are unchanged.
 
 = 4.2.13 =

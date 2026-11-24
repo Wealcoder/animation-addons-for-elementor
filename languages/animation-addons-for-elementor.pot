@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-24T06:57:39+00:00\n"
+"POT-Creation-Date: 2026-11-24T09:57:52+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: animation-addons-for-elementor\n"
@@ -6515,6 +6515,10 @@ msgstr ""
 #: widgets/testimonial3.php:396
 #: src/modules/atomic/element-controls/FormActionsControl.jsx:1279
 #: src/modules/dashboard/components/dashboard/RequestFeatureForm.jsx:92
+#: src/modules/dashboard/pages/AiConfiguration.jsx:149
+#: src/modules/dashboard/pages/AiConfiguration.jsx:166
+#: src/modules/dashboard/pages/AiConfiguration.jsx:185
+#: src/modules/dashboard/pages/AiConfiguration.jsx:200
 msgid "Name"
 msgstr ""
 
@@ -19089,7 +19093,7 @@ msgid "Contact list"
 msgstr ""
 
 #: src/modules/atomic/element-controls/FormActionsControl.jsx:1124
-#: src/modules/dashboard/pages/AiConfiguration.jsx:436
+#: src/modules/dashboard/pages/AiConfiguration.jsx:524
 #: src/modules/dashboard/pages/Migration.jsx:169
 msgid "Loading…"
 msgstr ""
@@ -20754,205 +20758,277 @@ msgstr ""
 msgid "Copied"
 msgstr ""
 
-#: src/modules/dashboard/pages/AiConfiguration.jsx:128
-#: src/modules/dashboard/pages/AiConfiguration.jsx:138
-msgid "In Claude: Settings → Connectors → Add custom connector."
+#: src/modules/dashboard/pages/AiConfiguration.jsx:134
+msgid "Open Claude connectors"
 msgstr ""
 
-#: src/modules/dashboard/pages/AiConfiguration.jsx:129
-msgid "Paste the MCP URL above. Authentication: \"No sign in\"."
+#: src/modules/dashboard/pages/AiConfiguration.jsx:136
+msgid "Team or Enterprise: an owner adds it under Organization settings → Connectors → Add → Custom. Then each member presses Connect."
 msgstr ""
 
-#: src/modules/dashboard/pages/AiConfiguration.jsx:130
-msgid "Under Request headers add one: name \"Authorization\", value from the button below."
+#: src/modules/dashboard/pages/AiConfiguration.jsx:137
+msgid "A connector cannot be edited later. To change something, remove it and add it again."
 msgstr ""
 
-#: src/modules/dashboard/pages/AiConfiguration.jsx:132
-msgid "Create token & copy header value"
+#: src/modules/dashboard/pages/AiConfiguration.jsx:142
+msgid "No Request headers in your form? Look under Advanced. Claude has it only in some accounts; without it, use the OAuth sign-in, which needs no header and no token."
 msgstr ""
 
-#: src/modules/dashboard/pages/AiConfiguration.jsx:133
-msgid "Everyone using this connector shares that one token — revoke it anytime under Personal tokens on the full Connections page."
+#: src/modules/dashboard/pages/AiConfiguration.jsx:144
+#: src/modules/dashboard/pages/AiConfiguration.jsx:161
+msgid "In Claude: Customize → Connectors → Add → Add custom connector."
 msgstr ""
 
-#: src/modules/dashboard/pages/AiConfiguration.jsx:139
-msgid "Paste the MCP URL above. Leave the client ID and secret empty."
+#: src/modules/dashboard/pages/AiConfiguration.jsx:145
+#: src/modules/dashboard/pages/AiConfiguration.jsx:181
+msgid "Press the button below, then fill in the form: open \"What to enter in each field\"."
 msgstr ""
 
-#: src/modules/dashboard/pages/AiConfiguration.jsx:140
-msgid "Press Connect — you log in to this site and press Allow."
+#: src/modules/dashboard/pages/AiConfiguration.jsx:146
+msgid "Press Add. Claude can work on this site now."
 msgstr ""
 
-#: src/modules/dashboard/pages/AiConfiguration.jsx:152
-#: src/modules/dashboard/pages/AiConfiguration.jsx:162
-msgid "In ChatGPT: Plugins → Add → Add custom MCP server."
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:153
-msgid "Press the button below and paste the copied URL into Server URL."
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:154
-msgid "Authentication: \"No authentication\" (not \"OAuth or no authentication\"). Tick \"I understand\", then Create as a plugin."
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:156
-msgid "Create token & copy ready URL"
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:157
-msgid "The token rides inside this URL, so treat the URL like a password — revoke it anytime under Personal tokens on the full Connections page."
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:163
-msgid "Paste the MCP URL above. Authentication: \"OAuth\"."
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:164
-msgid "Create as a plugin — you're sent here to log in and press Allow."
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:178
-#: src/modules/dashboard/pages/AiConfiguration.jsx:194
-#: src/modules/dashboard/pages/AiConfiguration.jsx:210
-msgid "Copy the prompt below — a real personal token is minted into it."
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:179
-msgid "Paste it into a Claude Code chat, in any project."
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:180
-msgid "It runs the command itself and confirms the connection."
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:182
-msgid "Terminal command"
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:195
-msgid "Paste it into Cursor's chat (Agent/Composer), in any project."
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:196
-msgid "It writes the file itself — restart Cursor (or reload MCP servers) once it says done."
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:198
-msgid "Config file — .cursor/mcp.json (or ~/.cursor/mcp.json)"
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:211
-msgid "Paste it into Codex's chat, in any project."
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:212
-msgid "It edits the file itself — restart Codex once it says done."
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:214
-msgid "Config file — ~/.codex/config.toml"
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:234
-msgid "Manage personal tokens →"
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:249
-#: src/modules/dashboard/pages/AiConfiguration.jsx:327
-msgid "token"
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:251
-msgid "URL copied — paste it into Server URL"
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:253
-msgid "Header value copied — paste it as the Authorization header's value"
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:263
-msgid "Quick connect"
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:264
-msgid "Sign in with OAuth"
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:288
-msgid "One paste, no login screen — uses a personal token."
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:289
-msgid "Each person logs in to this site and approves the app."
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:294
-msgid "This site's host blocks /.well-known/, which ChatGPT needs for OAuth — it will say it couldn't discover OAuth settings. Use Quick connect instead."
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:299
+#: src/modules/dashboard/pages/AiConfiguration.jsx:150
+#: src/modules/dashboard/pages/AiConfiguration.jsx:167
+#: src/modules/dashboard/pages/AiConfiguration.jsx:360
 msgid "MCP server URL"
 msgstr ""
 
-#: src/modules/dashboard/pages/AiConfiguration.jsx:300
+#: src/modules/dashboard/pages/AiConfiguration.jsx:151
+#: src/modules/dashboard/pages/AiConfiguration.jsx:168
+#: src/modules/dashboard/pages/AiConfiguration.jsx:187
+#: src/modules/dashboard/pages/AiConfiguration.jsx:202
+msgid "Authentication"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:152
+msgid "Request headers → name"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:152
+msgid "Choose it from the list."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:153
+msgid "Request headers → value"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:153
+#: src/modules/dashboard/pages/AiConfiguration.jsx:186
+msgid "Press the button above to create it."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:153
+msgid "Paste all of it: the word \"Bearer\", a space, then the token."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:155
+msgid "Create token & copy header value"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:156
+msgid "Everyone using this connector shares that one token — revoke it anytime under Personal tokens on the full Connections page."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:162
+msgid "Fill in the form (open \"What to enter in each field\"), then press Continue and Add."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:163
+msgid "Press Connect — you log in to this site and press Allow."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:168
+msgid "Keep what Claude selects."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:169
+msgid "OAuth client"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:169
+msgid "Keep what Claude selects. Client ID and secret stay empty."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:180
+#: src/modules/dashboard/pages/AiConfiguration.jsx:195
+msgid "In ChatGPT: Plugins → Add → Add custom MCP server."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:182
+msgid "Tick \"I understand\", then Create as a plugin."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:186
+#: src/modules/dashboard/pages/AiConfiguration.jsx:201
+msgid "Server URL"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:187
+msgid "Not \"OAuth or no authentication\"."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:189
+msgid "Create token & copy ready URL"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:190
+msgid "The token rides inside this URL, so treat the URL like a password — revoke it anytime under Personal tokens on the full Connections page."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:196
+msgid "Fill in the form: open \"What to enter in each field\"."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:197
+msgid "Create as a plugin — you're sent here to log in and press Allow."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:236
+#: src/modules/dashboard/pages/AiConfiguration.jsx:252
+#: src/modules/dashboard/pages/AiConfiguration.jsx:268
+msgid "Copy the prompt below — a real personal token is minted into it."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:237
+msgid "Paste it into a Claude Code chat, in any project."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:238
+msgid "It runs the command itself and confirms the connection."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:240
+msgid "Terminal command"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:253
+msgid "Paste it into Cursor's chat (Agent/Composer), in any project."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:254
+msgid "It writes the file itself — restart Cursor (or reload MCP servers) once it says done."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:256
+msgid "Config file — .cursor/mcp.json (or ~/.cursor/mcp.json)"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:269
+msgid "Paste it into Codex's chat, in any project."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:270
+msgid "It edits the file itself — restart Codex once it says done."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:272
+msgid "Config file — ~/.codex/config.toml"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:292
+msgid "Manage personal tokens →"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:308
+#: src/modules/dashboard/pages/AiConfiguration.jsx:415
+msgid "token"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:311
+msgid "URL copied — paste it into Server URL"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:314
+msgid "Header value copied — paste it as the Authorization header's value"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:324
+msgid "Quick connect"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:325
+msgid "Sign in with OAuth"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:349
+msgid "One paste, no login screen — uses a personal token."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:350
+msgid "Each person logs in to this site and approves the app."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:355
+msgid "This site's host blocks /.well-known/, which ChatGPT needs for OAuth — it will say it couldn't discover OAuth settings. Use Quick connect instead."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:361
 msgid "MCP URL"
 msgstr ""
 
-#: src/modules/dashboard/pages/AiConfiguration.jsx:309
-#: src/modules/dashboard/pages/AiConfiguration.jsx:342
+#: src/modules/dashboard/pages/AiConfiguration.jsx:370
+#: src/modules/dashboard/pages/AiConfiguration.jsx:430
 msgid "Creating…"
 msgstr ""
 
-#: src/modules/dashboard/pages/AiConfiguration.jsx:328
+#: src/modules/dashboard/pages/AiConfiguration.jsx:378
+msgid "What to enter in each field"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:394
+msgid "Use the OAuth sign-in"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:416
 msgid "Prompt copied — a real token is inside, ready to paste"
 msgstr ""
 
-#: src/modules/dashboard/pages/AiConfiguration.jsx:342
+#: src/modules/dashboard/pages/AiConfiguration.jsx:430
 msgid "Copy prompt (mints a token)"
 msgstr ""
 
-#: src/modules/dashboard/pages/AiConfiguration.jsx:344
+#: src/modules/dashboard/pages/AiConfiguration.jsx:432
 msgid "Template copied"
 msgstr ""
 
-#: src/modules/dashboard/pages/AiConfiguration.jsx:346
+#: src/modules/dashboard/pages/AiConfiguration.jsx:434
 msgid "Copy template only"
 msgstr ""
 
-#: src/modules/dashboard/pages/AiConfiguration.jsx:366
+#: src/modules/dashboard/pages/AiConfiguration.jsx:454
 msgid "AI Configuration"
 msgstr ""
 
-#: src/modules/dashboard/pages/AiConfiguration.jsx:370
+#: src/modules/dashboard/pages/AiConfiguration.jsx:458
 msgid "This needs Animation Addons Pro, active, with the AI & Connections module on."
 msgstr ""
 
-#: src/modules/dashboard/pages/AiConfiguration.jsx:412
+#: src/modules/dashboard/pages/AiConfiguration.jsx:500
 msgid "Connect an AI app"
 msgstr ""
 
-#: src/modules/dashboard/pages/AiConfiguration.jsx:415
+#: src/modules/dashboard/pages/AiConfiguration.jsx:503
 msgid "One URL for Claude, ChatGPT or a coding agent to work on this site. The login happens on this site, in your browser, and you choose what the app may do."
 msgstr ""
 
-#: src/modules/dashboard/pages/AiConfiguration.jsx:429
+#: src/modules/dashboard/pages/AiConfiguration.jsx:517
 msgid "Guide"
 msgstr ""
 
-#: src/modules/dashboard/pages/AiConfiguration.jsx:439
+#: src/modules/dashboard/pages/AiConfiguration.jsx:527
 msgid "Hosted chat apps"
 msgstr ""
 
-#: src/modules/dashboard/pages/AiConfiguration.jsx:455
+#: src/modules/dashboard/pages/AiConfiguration.jsx:543
 msgid "Developer tools"
 msgstr ""
 
-#: src/modules/dashboard/pages/AiConfiguration.jsx:484
+#: src/modules/dashboard/pages/AiConfiguration.jsx:572
 msgid "Need the full settings, personal tokens or your AI provider key? Manage them here"
 msgstr ""
 
-#: src/modules/dashboard/pages/AiConfiguration.jsx:493
+#: src/modules/dashboard/pages/AiConfiguration.jsx:581
 msgid "What is MCP?"
 msgstr ""
 
