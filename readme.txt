@@ -396,6 +396,8 @@ Vendored libraries:
 = 4.2.14 =
 * Fixed: Header / Footer: the "AllPages", "WooCommerce Shop Page" and custom post type "Singulars" (for example "Products Singulars") display choices were saved but the template never showed. They work now, without saving the template again. Popups set to the shop page also show.
 * Fixed: Custom Fonts: a regular and an italic file of the same weight were printed as one font face, so the italic file never loaded. Each style now gets its own.
+* Fixed: Code Snippet: a snippet set to "WooCommerce Shop Page" now runs on the shop page.
+* Changed: Dashboard, AI Configuration: the screen now connects Claude, ChatGPT and other AI apps to the site, with the MCP URL and step-by-step instructions. AI provider keys are managed on the AI & Connections page of Animation Addons Pro.
 * Changed: The "settings are ready to move to new storage names" line is no longer shown under the plugin on the Plugins screen. The notice on the plugin's own screens and the Migration tab are unchanged.
 
 = 4.2.13 =
@@ -420,7 +422,7 @@ Older versions: see the [full changelog](https://plugins.svn.wordpress.org/anima
 == Upgrade Notice ==
 
 = 4.2.14 =
-The migration line is no longer shown under the plugin on the Plugins screen. Includes the 4.2.13 CPT Builder templates and Timeline border.
+Fixes header/footer display choices, italic custom fonts and shop page snippets. A header or footer saved with a choice that did not work before shows after this update. Includes the 4.2.13 CPT Builder templates and Timeline border.
 
 = 4.2.13 =
 CPT Builder gets ready-made post type templates, Timeline gets a content wrapper border, and uninstall now cleans up the offer banner records.

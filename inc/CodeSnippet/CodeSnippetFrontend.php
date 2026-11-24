@@ -438,6 +438,9 @@ class CodeSnippetFrontend {
 			case 'author':
 				return is_author();
 
+			case 'woo-shop':
+				return function_exists( 'is_shop' ) && is_shop();
+
 			case 'post-archive':
 				return is_home() || is_archive();
 

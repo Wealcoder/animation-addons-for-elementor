@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-15T06:59:39+00:00\n"
+"POT-Creation-Date: 2026-11-24T06:01:28+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: animation-addons-for-elementor\n"
@@ -493,8 +493,8 @@ msgstr ""
 #: inc/class-blacklist.php:1116
 #: inc/class-starter-animations.php:754
 #: inc/class-starter-animations.php:972
-#: inc/theme-builder/theme-builder.php:1509
-#: inc/theme-builder/theme-builder.php:1589
+#: inc/theme-builder/theme-builder.php:1532
+#: inc/theme-builder/theme-builder.php:1612
 #: widgets/advance-pricing-table/advance-pricing-table.php:461
 #: widgets/brand-slider.php:422
 #: widgets/contact-form-7.php:651
@@ -5300,7 +5300,7 @@ msgid "Bottom Right"
 msgstr ""
 
 #: inc/AnimationSettings/class-animation-settings.php:1274
-#: inc/theme-builder/theme-builder.php:1510
+#: inc/theme-builder/theme-builder.php:1533
 msgid "Entire Website"
 msgstr ""
 
@@ -5694,7 +5694,7 @@ msgid "Header Icon"
 msgstr ""
 
 #: inc/AtomicWidgets/Widgets/Accordion/class-aae-a-accordion-item.php:453
-#: inc/theme-builder/theme-builder.php:1322
+#: inc/theme-builder/theme-builder.php:1345
 #: widgets/advance-pricing-table/advance-pricing-table.php:226
 #: widgets/advance-pricing-table/advance-pricing-table.php:276
 msgid "Header"
@@ -9826,118 +9826,118 @@ msgstr ""
 msgid "Custom Fonts"
 msgstr ""
 
-#: inc/class-custom-fonts.php:547
+#: inc/class-custom-fonts.php:546
 msgctxt "Post type general name"
 msgid "Fonts"
 msgstr ""
 
-#: inc/class-custom-fonts.php:548
+#: inc/class-custom-fonts.php:547
 msgctxt "Post type singular name"
 msgid "Font"
 msgstr ""
 
-#: inc/class-custom-fonts.php:549
+#: inc/class-custom-fonts.php:548
 msgctxt "Admin Menu text"
 msgid "Fonts"
 msgstr ""
 
-#: inc/class-custom-fonts.php:550
+#: inc/class-custom-fonts.php:549
 msgctxt "Add New on Toolbar"
 msgid "Font"
 msgstr ""
 
-#: inc/class-custom-fonts.php:551
+#: inc/class-custom-fonts.php:550
 #: inc/class-custom-icon.php:156
 #: inc/CodeSnippet/CodeSnippet.php:119
-#: inc/theme-builder/theme-builder.php:1722
+#: inc/theme-builder/theme-builder.php:1745
 msgid "Add New"
 msgstr ""
 
-#: inc/class-custom-fonts.php:552
+#: inc/class-custom-fonts.php:551
 msgid "Add New Font"
 msgstr ""
 
-#: inc/class-custom-fonts.php:553
+#: inc/class-custom-fonts.php:552
 msgid "New Font"
 msgstr ""
 
-#: inc/class-custom-fonts.php:554
+#: inc/class-custom-fonts.php:553
 msgid "Edit Font"
 msgstr ""
 
-#: inc/class-custom-fonts.php:555
+#: inc/class-custom-fonts.php:554
 msgid "View Font"
 msgstr ""
 
-#: inc/class-custom-fonts.php:556
+#: inc/class-custom-fonts.php:555
 msgid "All Fonts"
 msgstr ""
 
-#: inc/class-custom-fonts.php:557
+#: inc/class-custom-fonts.php:556
 msgid "Search Font"
 msgstr ""
 
-#: inc/class-custom-fonts.php:558
+#: inc/class-custom-fonts.php:557
 msgid "Parent Fonts:"
 msgstr ""
 
-#: inc/class-custom-fonts.php:559
+#: inc/class-custom-fonts.php:558
 msgid "No font found."
 msgstr ""
 
-#: inc/class-custom-fonts.php:560
+#: inc/class-custom-fonts.php:559
 msgid "No fonts found in Trash."
 msgstr ""
 
-#: inc/class-custom-fonts.php:561
+#: inc/class-custom-fonts.php:560
 msgctxt "Overrides the “Featured Image” phrase for this post type. Added in 4.3"
 msgid "Font Cover Image"
 msgstr ""
 
-#: inc/class-custom-fonts.php:562
+#: inc/class-custom-fonts.php:561
 #: inc/class-custom-icon.php:167
 msgctxt "Overrides the “Set featured image” phrase for this post type. Added in 4.3"
 msgid "Set cover image"
 msgstr ""
 
-#: inc/class-custom-fonts.php:563
+#: inc/class-custom-fonts.php:562
 #: inc/class-custom-icon.php:168
 msgctxt "Overrides the “Remove featured image” phrase for this post type. Added in 4.3"
 msgid "Remove cover image"
 msgstr ""
 
-#: inc/class-custom-fonts.php:564
+#: inc/class-custom-fonts.php:563
 #: inc/class-custom-icon.php:169
 msgctxt "Overrides the “Use as featured image” phrase for this post type. Added in 4.3"
 msgid "Use as cover image"
 msgstr ""
 
-#: inc/class-custom-fonts.php:565
+#: inc/class-custom-fonts.php:564
 msgctxt "The post type archive label used in nav menus. Default “Post Archives”. Added in 4.4"
 msgid "Font archives"
 msgstr ""
 
-#: inc/class-custom-fonts.php:566
+#: inc/class-custom-fonts.php:565
 msgctxt "Overrides the “Insert into post”/”Insert into page” phrase (used when inserting media into a post). Added in 4.4"
 msgid "Insert into Font"
 msgstr ""
 
-#: inc/class-custom-fonts.php:567
+#: inc/class-custom-fonts.php:566
 msgctxt "Overrides the “Uploaded to this post”/”Uploaded to this page” phrase (used when viewing media attached to a post). Added in 4.4"
 msgid "Uploaded to this Font"
 msgstr ""
 
-#: inc/class-custom-fonts.php:568
+#: inc/class-custom-fonts.php:567
 msgctxt "Screen reader text for the filter links heading on the post type listing screen. Default “Filter posts list”/”Filter pages list”. Added in 4.4"
 msgid "Filter Fonts list"
 msgstr ""
 
-#: inc/class-custom-fonts.php:569
+#: inc/class-custom-fonts.php:568
 msgctxt "Screen reader text for the pagination heading on the post type listing screen. Default “Posts list navigation”/”Pages list navigation”. Added in 4.4"
 msgid "Fonts list navigation"
 msgstr ""
 
-#: inc/class-custom-fonts.php:570
+#: inc/class-custom-fonts.php:569
 msgctxt "Screen reader text for the items list heading on the post type listing screen. Default “Posts list”/”Pages list”. Added in 4.4"
 msgid "Fonts list"
 msgstr ""
@@ -9955,7 +9955,6 @@ msgstr ""
 #: widgets/nav-menu/nav-menu.php:493
 #: widgets/nav-menu/nav-menu.php:746
 #: widgets/one-page-nav.php:520
-#: src/modules/dashboard/pages/AiConfiguration.jsx:402
 msgid "Active"
 msgstr ""
 
@@ -10337,7 +10336,7 @@ msgid "Code Snippet Attributes"
 msgstr ""
 
 #: inc/CodeSnippet/CodeSnippet.php:116
-#: inc/theme-builder/theme-builder.php:1719
+#: inc/theme-builder/theme-builder.php:1742
 msgid "Parent Item:"
 msgstr ""
 
@@ -10376,33 +10375,33 @@ msgid "Search Snippet"
 msgstr ""
 
 #: inc/CodeSnippet/CodeSnippet.php:126
-#: inc/theme-builder/theme-builder.php:1729
+#: inc/theme-builder/theme-builder.php:1752
 msgid "Not found"
 msgstr ""
 
 #: inc/CodeSnippet/CodeSnippet.php:127
-#: inc/theme-builder/theme-builder.php:1730
+#: inc/theme-builder/theme-builder.php:1753
 msgid "Not found in Trash"
 msgstr ""
 
 #: inc/CodeSnippet/CodeSnippet.php:128
 #: inc/dynamic-tags/post/post-featured-image-tag.php:42
-#: inc/theme-builder/theme-builder.php:1731
+#: inc/theme-builder/theme-builder.php:1754
 msgid "Featured Image"
 msgstr ""
 
 #: inc/CodeSnippet/CodeSnippet.php:129
-#: inc/theme-builder/theme-builder.php:1732
+#: inc/theme-builder/theme-builder.php:1755
 msgid "Set featured image"
 msgstr ""
 
 #: inc/CodeSnippet/CodeSnippet.php:130
-#: inc/theme-builder/theme-builder.php:1733
+#: inc/theme-builder/theme-builder.php:1756
 msgid "Remove featured image"
 msgstr ""
 
 #: inc/CodeSnippet/CodeSnippet.php:131
-#: inc/theme-builder/theme-builder.php:1734
+#: inc/theme-builder/theme-builder.php:1757
 msgid "Use as featured image"
 msgstr ""
 
@@ -10610,7 +10609,7 @@ msgid "Head Section"
 msgstr ""
 
 #: inc/CodeSnippet/Helpers.php:95
-#: inc/theme-builder/theme-builder.php:1326
+#: inc/theme-builder/theme-builder.php:1349
 msgid "Footer"
 msgstr ""
 
@@ -10685,7 +10684,6 @@ msgid "Deactivate"
 msgstr ""
 
 #: inc/CodeSnippet/listTables/CodeSnippetListTable.php:399
-#: src/modules/dashboard/pages/AiConfiguration.jsx:418
 msgid "Edit"
 msgstr ""
 
@@ -12971,55 +12969,55 @@ msgstr ""
 
 #: inc/theme-builder/theme-builder-admin.php:920
 #: inc/theme-builder/theme-builder-admin.php:921
-#: inc/theme-builder/theme-builder.php:1743
+#: inc/theme-builder/theme-builder.php:1766
 #: src/modules/dashboard/components/dashboard/QuickAccess.jsx:21
 msgid "Theme Builder"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1330
+#: inc/theme-builder/theme-builder.php:1353
 msgid "Archive/404/Search"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1334
+#: inc/theme-builder/theme-builder.php:1357
 msgid "Single"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1493
-#: inc/theme-builder/theme-builder.php:1578
+#: inc/theme-builder/theme-builder.php:1516
+#: inc/theme-builder/theme-builder.php:1601
 msgid "404 Page"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1494
-#: inc/theme-builder/theme-builder.php:1579
+#: inc/theme-builder/theme-builder.php:1517
+#: inc/theme-builder/theme-builder.php:1602
 msgid "Search Page"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1495
-#: inc/theme-builder/theme-builder.php:1580
+#: inc/theme-builder/theme-builder.php:1518
+#: inc/theme-builder/theme-builder.php:1603
 msgid "Blog / Posts Page"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1496
+#: inc/theme-builder/theme-builder.php:1519
 msgid "Front Page"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1497
-#: inc/theme-builder/theme-builder.php:1581
+#: inc/theme-builder/theme-builder.php:1520
+#: inc/theme-builder/theme-builder.php:1604
 msgid "Date Archive"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1498
-#: inc/theme-builder/theme-builder.php:1582
+#: inc/theme-builder/theme-builder.php:1521
+#: inc/theme-builder/theme-builder.php:1605
 msgid "Author Archive"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1502
+#: inc/theme-builder/theme-builder.php:1525
 msgid "WooCommerce Shop Page"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1507
-#: inc/theme-builder/theme-builder.php:1587
-#: inc/theme-builder/theme-builder.php:1646
+#: inc/theme-builder/theme-builder.php:1530
+#: inc/theme-builder/theme-builder.php:1610
+#: inc/theme-builder/theme-builder.php:1669
 #: src/modules/dashboard/config/data/freeProComparisonList.js:81
 #: src/modules/dashboard/config/data/freeProComparisonList.js:105
 #: src/modules/dashboard/config/data/freeProComparisonList.js:273
@@ -13032,114 +13030,114 @@ msgstr ""
 msgid "Basic"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1511
+#: inc/theme-builder/theme-builder.php:1534
 msgid "All Singulars"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1512
-#: inc/theme-builder/theme-builder.php:1590
+#: inc/theme-builder/theme-builder.php:1535
+#: inc/theme-builder/theme-builder.php:1613
 msgid "All Archives"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1517
-#: inc/theme-builder/theme-builder.php:1595
+#: inc/theme-builder/theme-builder.php:1540
+#: inc/theme-builder/theme-builder.php:1618
 msgid "Special Pages"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1542
-#: inc/theme-builder/theme-builder.php:1610
+#: inc/theme-builder/theme-builder.php:1565
+#: inc/theme-builder/theme-builder.php:1633
 msgid "Specific Target"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1544
+#: inc/theme-builder/theme-builder.php:1567
 msgid "Specific Pages / Posts."
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1612
+#: inc/theme-builder/theme-builder.php:1635
 msgid "Specific Category"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1648
+#: inc/theme-builder/theme-builder.php:1671
 msgid "All Singular"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1713
+#: inc/theme-builder/theme-builder.php:1736
 msgctxt "Post Type General Name"
 msgid "AAE Builder"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1714
+#: inc/theme-builder/theme-builder.php:1737
 msgctxt "Post Type Singular Name"
 msgid "AAE Builder"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1715
-#: inc/theme-builder/theme-builder.php:1716
+#: inc/theme-builder/theme-builder.php:1738
+#: inc/theme-builder/theme-builder.php:1739
 msgid "AAE Builder"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1717
+#: inc/theme-builder/theme-builder.php:1740
 msgid "Template Archives"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1718
+#: inc/theme-builder/theme-builder.php:1741
 msgid "Template Attributes"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1720
+#: inc/theme-builder/theme-builder.php:1743
 msgid "Templates"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1721
+#: inc/theme-builder/theme-builder.php:1744
 msgid "Add New Template"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1723
+#: inc/theme-builder/theme-builder.php:1746
 msgid "New Template"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1724
+#: inc/theme-builder/theme-builder.php:1747
 #: widgets/loop-builder/controls/class-template-query.php:79
 msgid "Edit Template"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1725
+#: inc/theme-builder/theme-builder.php:1748
 msgid "Update Template"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1726
+#: inc/theme-builder/theme-builder.php:1749
 msgid "View Template"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1727
+#: inc/theme-builder/theme-builder.php:1750
 msgid "View Templates"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1728
+#: inc/theme-builder/theme-builder.php:1751
 msgid "Search Templates"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1735
+#: inc/theme-builder/theme-builder.php:1758
 msgid "Insert into Template"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1736
+#: inc/theme-builder/theme-builder.php:1759
 msgid "Uploaded to this Template"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1737
+#: inc/theme-builder/theme-builder.php:1760
 msgid "Templates list"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1738
+#: inc/theme-builder/theme-builder.php:1761
 msgid "Templates list navigation"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1739
+#: inc/theme-builder/theme-builder.php:1762
 msgid "Filter from list"
 msgstr ""
 
-#: inc/theme-builder/theme-builder.php:1744
+#: inc/theme-builder/theme-builder.php:1767
 msgid "AAE Theme Builder"
 msgstr ""
 
@@ -19083,6 +19081,7 @@ msgid "Contact list"
 msgstr ""
 
 #: src/modules/atomic/element-controls/FormActionsControl.jsx:1124
+#: src/modules/dashboard/pages/AiConfiguration.jsx:436
 #: src/modules/dashboard/pages/Migration.jsx:169
 msgid "Loading…"
 msgstr ""
@@ -19342,7 +19341,6 @@ msgstr ""
 
 #: src/modules/dashboard/components/animation-settings/FeaturePanel.jsx:429
 #: src/modules/dashboard/components/animation-settings/FeaturePanel.jsx:516
-#: src/modules/dashboard/pages/AiConfiguration.jsx:334
 msgid "Saving…"
 msgstr ""
 
@@ -20743,126 +20741,211 @@ msgstr ""
 msgid "Filterable Gallery"
 msgstr ""
 
-#: src/modules/dashboard/pages/AiConfiguration.jsx:81
+#: src/modules/dashboard/pages/AiConfiguration.jsx:45
+#: src/modules/dashboard/pages/AiConfiguration.jsx:63
+msgid "Copied"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:128
+#: src/modules/dashboard/pages/AiConfiguration.jsx:138
+msgid "In Claude: Settings → Connectors → Add custom connector."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:129
+msgid "Paste the MCP URL above. Authentication: \"No sign in\"."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:130
+msgid "Under Request headers add one: name \"Authorization\", value from the button below."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:132
+msgid "Create token & copy header value"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:133
+msgid "Everyone using this connector shares that one token — revoke it anytime under Personal tokens on the full Connections page."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:139
+msgid "Paste the MCP URL above. Leave the client ID and secret empty."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:140
+msgid "Press Connect — you log in to this site and press Allow."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:152
+#: src/modules/dashboard/pages/AiConfiguration.jsx:162
+msgid "In ChatGPT: Plugins → Add → Add custom MCP server."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:153
+msgid "Press the button below and paste the copied URL into Server URL."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:154
+msgid "Authentication: \"No authentication\" (not \"OAuth or no authentication\"). Tick \"I understand\", then Create as a plugin."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:156
+msgid "Create token & copy ready URL"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:157
+msgid "The token rides inside this URL, so treat the URL like a password — revoke it anytime under Personal tokens on the full Connections page."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:163
+msgid "Paste the MCP URL above. Authentication: \"OAuth\"."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:164
+msgid "Create as a plugin — you're sent here to log in and press Allow."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:178
+#: src/modules/dashboard/pages/AiConfiguration.jsx:194
+#: src/modules/dashboard/pages/AiConfiguration.jsx:210
+msgid "Copy the prompt below — a real personal token is minted into it."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:179
+msgid "Paste it into a Claude Code chat, in any project."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:180
+msgid "It runs the command itself and confirms the connection."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:182
+msgid "Terminal command"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:195
+msgid "Paste it into Cursor's chat (Agent/Composer), in any project."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:196
+msgid "It writes the file itself — restart Cursor (or reload MCP servers) once it says done."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:198
+msgid "Config file — .cursor/mcp.json (or ~/.cursor/mcp.json)"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:211
+msgid "Paste it into Codex's chat, in any project."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:212
+msgid "It edits the file itself — restart Codex once it says done."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:214
+msgid "Config file — ~/.codex/config.toml"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:234
+msgid "Manage personal tokens →"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:249
+#: src/modules/dashboard/pages/AiConfiguration.jsx:327
+msgid "token"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:251
+msgid "URL copied — paste it into Server URL"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:253
+msgid "Header value copied — paste it as the Authorization header's value"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:263
+msgid "Quick connect"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:264
+msgid "Sign in with OAuth"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:288
+msgid "One paste, no login screen — uses a personal token."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:289
+msgid "Each person logs in to this site and approves the app."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:294
+msgid "This site's host blocks /.well-known/, which ChatGPT needs for OAuth — it will say it couldn't discover OAuth settings. Use Quick connect instead."
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:299
+msgid "MCP server URL"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:300
+msgid "MCP URL"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:309
+#: src/modules/dashboard/pages/AiConfiguration.jsx:342
+msgid "Creating…"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:328
+msgid "Prompt copied — a real token is inside, ready to paste"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:342
+msgid "Copy prompt (mints a token)"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:344
+msgid "Template copied"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:346
+msgid "Copy template only"
+msgstr ""
+
+#: src/modules/dashboard/pages/AiConfiguration.jsx:366
 msgid "AI Configuration"
 msgstr ""
 
-#: src/modules/dashboard/pages/AiConfiguration.jsx:85
+#: src/modules/dashboard/pages/AiConfiguration.jsx:370
 msgid "This needs Animation Addons Pro, active, with the AI & Connections module on."
 msgstr ""
 
-#: src/modules/dashboard/pages/AiConfiguration.jsx:151
-msgid "Connection saved"
+#: src/modules/dashboard/pages/AiConfiguration.jsx:412
+msgid "Connect an AI app"
 msgstr ""
 
-#: src/modules/dashboard/pages/AiConfiguration.jsx:197
-msgid "AI assistant"
+#: src/modules/dashboard/pages/AiConfiguration.jsx:415
+msgid "One URL for Claude, ChatGPT or a coding agent to work on this site. The login happens on this site, in your browser, and you choose what the app may do."
 msgstr ""
 
-#: src/modules/dashboard/pages/AiConfiguration.jsx:200
-msgid "Connect your AI provider to power “Describe it to AI”, field suggestions and sample entries."
+#: src/modules/dashboard/pages/AiConfiguration.jsx:429
+msgid "Guide"
 msgstr ""
 
-#: src/modules/dashboard/pages/AiConfiguration.jsx:210
-#, js-format
-msgid "Active: %s"
+#: src/modules/dashboard/pages/AiConfiguration.jsx:439
+msgid "Hosted chat apps"
 msgstr ""
 
-#: src/modules/dashboard/pages/AiConfiguration.jsx:213
-msgid "Not configured"
+#: src/modules/dashboard/pages/AiConfiguration.jsx:455
+msgid "Developer tools"
 msgstr ""
 
-#: src/modules/dashboard/pages/AiConfiguration.jsx:219
-msgid "Your keys are encrypted on this server and never sent to the browser."
+#: src/modules/dashboard/pages/AiConfiguration.jsx:484
+msgid "Need the full settings, personal tokens or your AI provider key? Manage them here"
 msgstr ""
 
-#: src/modules/dashboard/pages/AiConfiguration.jsx:230
-msgid "Connect a provider"
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:233
-msgid "Choose a provider, add your API key, and select a model."
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:242
-msgid "Provider"
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:266
-msgid "API key"
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:275
-msgid "Paste your API key"
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:284
-msgid "Show or hide the key"
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:291
-msgid "A key is already saved. Enter a new key to replace it."
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:295
-msgid "Nothing saved yet for this provider."
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:303
-msgid "Model"
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:319
-msgid "Get an API key"
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:330
-msgid "Test connection"
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:335
-msgid "Save connection"
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:351
-#, js-format
-msgid "%s answered (%s)."
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:355
-msgid "No answer."
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:360
-msgid "Asking…"
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:370
-msgid "Connected providers"
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:377
-msgid "Manage the providers connected to this workspace."
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:410
-msgid "Set as active"
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:424
-msgid "Remove key"
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:433
-msgid "No providers connected yet — add a key above to get started."
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:448
-msgid "Manage MCP connections & tokens"
-msgstr ""
-
-#: src/modules/dashboard/pages/AiConfiguration.jsx:453
-msgid "Keys stay on your server"
+#: src/modules/dashboard/pages/AiConfiguration.jsx:493
+msgid "What is MCP?"
 msgstr ""
 
 #: src/modules/dashboard/pages/AnimationSettings.jsx:65
