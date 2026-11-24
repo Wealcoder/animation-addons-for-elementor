@@ -768,8 +768,8 @@ class OneClickImport
 	 * host that answered 404 for every file, a 30-second execution limit that
 	 * killed a video download, a font type WordPress refused -- each of them
 	 * left a demo with holes in it and a line in a log file nobody reads.
-	 * One dismissible notice per import (its id carries the import time), so
-	 * dismissing it never hides the NEXT import's report.
+	 * One notice per import, shown once: the report is dropped as soon as it
+	 * has been printed (Helpers::forget_import_report()).
 	 *
 	 * @return void
 	 */
@@ -783,13 +783,12 @@ class OneClickImport
 			return;
 		}
 
-		$failed  = $report['failed_media'];
-		$blocked = false;
-		$items   = '';
+		$failed = $report['failed_media'];
+		$hints  = array();
+		$items  = '';
 		foreach ( $failed as $url => $why ) {
-			if ( false !== stripos( (string) $why, 'blocked requests through HTTP' ) ) {
-				$blocked = true;
-			}
+			$hints[ self::import_failure_kind( (string) $url, (string) $why ) ] = true;
+
 			$items .= sprintf(
 				'<li><code>%1$s</code>%2$s</li>',
 				esc_html( $url ),
@@ -800,23 +799,31 @@ class OneClickImport
 		$intro = sprintf(
 			/* translators: %d: number of files */
 			esc_html( _n(
-				'Animation Addons: %d file of the imported template could not be downloaded from the demo server. The pages still point at the demo server\'s copy, so they show it for now and will stop showing it if that server moves.',
-				'Animation Addons: %d files of the imported template could not be downloaded from the demo server. The pages still point at the demo server\'s copies, so they show them for now and will stop showing them if that server moves.',
+				'Animation Addons: %d file of the imported template could not be copied to your media library. A page that uses it may show the copy on the demo server for now, or nothing in its place.',
+				'Animation Addons: %d files of the imported template could not be copied to your media library. Pages that use them may show the copies on the demo server for now, or nothing in their place.',
 				count( $failed ),
 				'animation-addons-for-elementor'
 			) ),
 			count( $failed )
 		);
 
-		$hint = $blocked
-			? esc_html__( 'This site blocks outgoing HTTP requests (WP_HTTP_BLOCK_EXTERNAL). Add the demo host to WP_ACCESSIBLE_HOSTS in wp-config.php and import again.', 'animation-addons-for-elementor' )
-			: esc_html__( 'Check that the demo host is reachable from this server, then import the template again: files already in your media library are kept, the missing ones are retried.', 'animation-addons-for-elementor' );
+		// What to do depends on why it failed: importing again only helps when
+		// the file could not be reached.
+		$texts = array(
+			'blocked'   => esc_html__( 'This site blocks outgoing HTTP requests (WP_HTTP_BLOCK_EXTERNAL). Add the demo host to WP_ACCESSIBLE_HOSTS in wp-config.php and import again.', 'animation-addons-for-elementor' ),
+			'extension' => esc_html__( 'A file name in the template has no extension (such as .svg or .png), so WordPress does not accept it. Importing again will not help: save the file from the address below with its extension, upload it and choose it on the page.', 'animation-addons-for-elementor' ),
+			'type'      => esc_html__( 'This site does not accept uploads of a file type the template uses. Importing again will not help until that type is allowed; or upload the file in another format and choose it on the page.', 'animation-addons-for-elementor' ),
+			'download'  => esc_html__( 'Check that the demo host is reachable from this server, then import the template again: files already in your media library are kept, the missing ones are retried.', 'animation-addons-for-elementor' ),
+		);
+		$hint  = implode( '</p><p>', array_intersect_key( $texts, $hints ) );
 
 		\Wealcoder\AnimationAddons\Admin\Notices\Notices::instance()->add( array(
 			'notice_id'   => 'aaeaddon_import_report_' . (int) $report['time'],
 			'type'        => 'warning',
 			'dismissible' => true,
 			'capability'  => 'manage_options',
+			// Once per import: printing it is what ends it.
+			'shown'       => array( Helpers::class, 'forget_import_report' ),
 			'message'     => sprintf(
 				'<p><strong>%1$s</strong></p><p>%2$s</p><details><summary>%3$s</summary><ul style="margin-left:1.5em;list-style:disc">%4$s</ul></details>',
 				$intro,
@@ -825,6 +832,38 @@ class OneClickImport
 				$items
 			),
 		) );
+	}
+
+	/**
+	 * Why a file was lost, as far as the advice in the notice is concerned.
+	 *
+	 * The importer shows WordPress the file name BEFORE it downloads, and a
+	 * name whose type is not allowed is refused there, so for such a name the
+	 * host was never contacted. Decided from the name and not from the stored
+	 * reason, which is a core string in whatever language the import ran in.
+	 *
+	 * @param string $url The demo's file address.
+	 * @param string $why The stored reason.
+	 *
+	 * @return string blocked | extension | type | download
+	 */
+	private static function import_failure_kind( $url, $why ) {
+		if ( false !== stripos( $why, 'blocked requests through HTTP' ) ) {
+			return 'blocked';
+		}
+
+		if ( current_user_can( 'unfiltered_upload' ) ) {
+			return 'download';
+		}
+
+		$name = basename( (string) wp_parse_url( $url, PHP_URL_PATH ) );
+		if ( '' === pathinfo( $name, PATHINFO_EXTENSION ) ) {
+			return 'extension';
+		}
+
+		$type = wp_check_filetype( $name );
+
+		return $type['ext'] ? 'download' : 'type';
 	}
 
 	/**

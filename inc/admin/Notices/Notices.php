@@ -162,12 +162,11 @@ class Notices {
 
 	/**
 	 * Where and how often the seasonal banner shows:
-	 * - on this plugin's own screens (the dashboard included) on every visit
-	 *   while the campaign runs, even after it was dismissed; its X only hides
-	 *   it until the next page load;
+	 * - on this plugin's own screens (the dashboard included) and on the
+	 *   Plugins screen on every visit while the campaign runs;
 	 * - on the WordPress Dashboard screen at most twice per user, at least 10
-	 *   minutes apart, and on the Plugins screen on every visit; on both its
-	 *   X hides it for 10 minutes and "Don't show again" for good.
+	 *   minutes apart.
+	 * Its X (and "Don't show again") ends it for good, on every screen.
 	 *
 	 * @param array $notice The promo notice.
 	 *
@@ -178,12 +177,10 @@ class Notices {
 		if ( $notice['capability'] && ! current_user_can( $notice['capability'] ) ) {
 			return false;
 		}
-		if ( $this->is_plugin_screen() ) {
-			return true;
-		}
 
-		$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
-		if ( ! $screen || ! in_array( $screen->id, array( 'dashboard', 'plugins' ), true ) ) {
+		$plugin_screen = $this->is_plugin_screen();
+		$screen        = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+		if ( ! $plugin_screen && ( ! $screen || ! in_array( $screen->id, array( 'dashboard', 'plugins' ), true ) ) ) {
 			return false;
 		}
 		if ( $this->is_campaign_forced() ) {
@@ -192,7 +189,7 @@ class Notices {
 		if ( $this->is_dismissed( $notice['notice_id'] ) ) {
 			return false;
 		}
-		if ( 'plugins' === $screen->id ) {
+		if ( $plugin_screen || 'plugins' === $screen->id ) {
 			return true;
 		}
 
@@ -332,21 +329,19 @@ class Notices {
 	 * image and an invisible close button over the one drawn into it.
 	 *
 	 * @param array $campaign       A get_campaigns() entry.
-	 * @param bool  $plugin_screen  On this plugin's own screens the X only hides
-	 *                              the banner until the next page load and there
-	 *                              is no "Don't show again".
+	 * @param bool  $plugin_screen  On this plugin's own screens there is no
+	 *                              "Don't show again" row: the X does the same.
 	 *
 	 * @since 4.2.8
 	 * @return string
 	 */
 	protected function get_campaign_message( $campaign, $plugin_screen = false ) {
 		$image = sprintf(
-			'<div class="aae-promo-banner"><img src="%1$s" alt="%2$s" width="1100" height="150" /><a class="aae-promo-link" href="%3$s" target="_blank" rel="noopener noreferrer"><span class="screen-reader-text">%4$s</span></a><button type="button" class="aae-promo-close" %5$s><span class="screen-reader-text">%6$s</span></button></div>',
+			'<div class="aae-promo-banner"><img src="%1$s" alt="%2$s" width="1100" height="150" /><a class="aae-promo-link" href="%3$s" target="_blank" rel="noopener noreferrer"><span class="screen-reader-text">%4$s</span></a><button type="button" class="aae-promo-close" data-dismiss="1"><span class="screen-reader-text">%5$s</span></button></div>',
 			esc_url( AAEADDON_URL . 'assets/images/notice/' . $campaign['image'] ),
 			esc_attr( $campaign['alt'] ),
 			esc_url( $campaign['url'] ),
 			esc_html( $campaign['label'] ),
-			$plugin_screen ? 'data-hide="1"' : 'data-snooze="' . absint( self::PROMO_VIEW_GAP ) . '"',
 			esc_html__( 'Close', 'animation-addons-for-elementor' )
 		);
 		if ( $plugin_screen ) {
@@ -357,8 +352,7 @@ class Notices {
 		// the site's timezone could land on the neighbouring day.
 		$ends = wp_date( 'M j', strtotime( $campaign['end'] . ' 00:00:00 UTC' ), new \DateTimeZone( 'UTC' ) );
 
-		// The artwork's own X snoozes for 10 minutes (notice.js reads
-		// data-snooze); the row under it dismisses for good.
+		// The artwork's own X and the link in this row both dismiss for good.
 		return $image . sprintf(
 			'<div class="aae-promo-actions"><a href="#" data-dismiss="1">%1$s</a><span class="aae-promo-ends">%2$s</span></div>',
 			esc_html__( "Don't show again", 'animation-addons-for-elementor' ),
@@ -480,8 +474,13 @@ class Notices {
 					esc_attr( $this->plugin_prefix . '_dismiss_notice' ),
 					esc_attr( $style ),
 					wp_kses_post( wptexturize( $message ) ),
-					$notice['dismissible'] ? '<button type="button" class="notice-dismiss"><span class="screen-reader-text">' . esc_html__( 'Dismiss this notice', 'animation-addons-for-elementor' ) . '</span></button>' : ''
+					// A notice shown once has nothing left to store: its X only hides it.
+					$notice['dismissible'] ? '<button type="button" class="notice-dismiss"' . ( $notice['shown'] ? ' data-hide="1"' : '' ) . '><span class="screen-reader-text">' . esc_html__( 'Dismiss this notice', 'animation-addons-for-elementor' ) . '</span></button>' : ''
 				);
+
+				if ( is_callable( $notice['shown'] ) ) {
+					call_user_func( $notice['shown'] );
+				}
 			}
 		}
 	}
@@ -508,6 +507,8 @@ class Notices {
 				'notice_id'   => '',
 				'class'       => '',
 				'style'       => '',
+				// Called after the notice is printed; a notice with one is shown once.
+				'shown'       => null,
 			)
 		);
 

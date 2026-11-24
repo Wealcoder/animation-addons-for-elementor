@@ -7,8 +7,8 @@ jQuery(document).ready(function ($) {
         const $clickedButton = $(this);
         const $notice = $clickedButton.closest('.notice');
 
-        // Seasonal banner on the plugin's own screens: hide it for this page
-        // only, nothing is saved (it is back on the next visit).
+        // A notice that is shown once (the import report): hide it, nothing is
+        // left to save.
         if ($clickedButton.is('[data-hide]')) {
             $notice.fadeOut();
             return;

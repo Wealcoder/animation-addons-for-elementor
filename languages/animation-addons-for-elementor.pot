@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-24T06:01:28+00:00\n"
+"POT-Creation-Date: 2026-11-24T06:57:39+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: animation-addons-for-elementor\n"
@@ -215,7 +215,7 @@ msgstr ""
 #: class-plugin.php:471
 #: class-plugin.php:1504
 #: class-plugin.php:1632
-#: inc/admin/Notices/Notices.php:350
+#: inc/admin/Notices/Notices.php:345
 #: inc/CodeSnippet/views/edit-code-snippet.php:258
 #: widgets/post-rating-form.php:882
 #: src/modules/dashboard/components/performance/PerformanceWizard.jsx:566
@@ -4590,33 +4590,33 @@ msgstr ""
 msgid "Content installing"
 msgstr ""
 
-#: inc/admin/Notices/Notices.php:277
+#: inc/admin/Notices/Notices.php:274
 msgid "Black Friday: Animation Addons Pro lifetime plans from $51. Pay once, no renewals."
 msgstr ""
 
-#: inc/admin/Notices/Notices.php:278
+#: inc/admin/Notices/Notices.php:275
 msgid "Get Animation Addons Pro lifetime - Black Friday deal"
 msgstr ""
 
-#: inc/admin/Notices/Notices.php:286
+#: inc/admin/Notices/Notices.php:283
 msgid "Agency Bundle lifetime at 70 percent off: Animation Addons Pro, MotionKit, BricksFly, Arolax and Axtra themes for $449."
 msgstr ""
 
-#: inc/admin/Notices/Notices.php:287
+#: inc/admin/Notices/Notices.php:284
 msgid "Get the Agency Bundle - Black Friday deal"
 msgstr ""
 
-#: inc/admin/Notices/Notices.php:364
+#: inc/admin/Notices/Notices.php:358
 msgid "Don't show again"
 msgstr ""
 
 #. translators: %s: last day of the offer, e.g. "Nov 5".
-#: inc/admin/Notices/Notices.php:366
+#: inc/admin/Notices/Notices.php:360
 #, php-format
 msgid "Offer ends %s"
 msgstr ""
 
-#: inc/admin/Notices/Notices.php:483
+#: inc/admin/Notices/Notices.php:478
 msgid "Dismiss this notice"
 msgstr ""
 
@@ -4699,22 +4699,30 @@ msgid "No page was imported: the content file held nothing this site could impor
 msgstr ""
 
 #. translators: %d: number of files
-#: inc/admin/st-init.php:802
+#: inc/admin/st-init.php:801
 #, php-format
-msgid "Animation Addons: %d file of the imported template could not be downloaded from the demo server. The pages still point at the demo server's copy, so they show it for now and will stop showing it if that server moves."
-msgid_plural "Animation Addons: %d files of the imported template could not be downloaded from the demo server. The pages still point at the demo server's copies, so they show them for now and will stop showing them if that server moves."
+msgid "Animation Addons: %d file of the imported template could not be copied to your media library. A page that uses it may show the copy on the demo server for now, or nothing in its place."
+msgid_plural "Animation Addons: %d files of the imported template could not be copied to your media library. Pages that use them may show the copies on the demo server for now, or nothing in their place."
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/admin/st-init.php:812
+#: inc/admin/st-init.php:813
 msgid "This site blocks outgoing HTTP requests (WP_HTTP_BLOCK_EXTERNAL). Add the demo host to WP_ACCESSIBLE_HOSTS in wp-config.php and import again."
 msgstr ""
 
-#: inc/admin/st-init.php:813
+#: inc/admin/st-init.php:814
+msgid "A file name in the template has no extension (such as .svg or .png), so WordPress does not accept it. Importing again will not help: save the file from the address below with its extension, upload it and choose it on the page."
+msgstr ""
+
+#: inc/admin/st-init.php:815
+msgid "This site does not accept uploads of a file type the template uses. Importing again will not help until that type is allowed; or upload the file in another format and choose it on the page."
+msgstr ""
+
+#: inc/admin/st-init.php:816
 msgid "Check that the demo host is reachable from this server, then import the template again: files already in your media library are kept, the missing ones are retried."
 msgstr ""
 
-#: inc/admin/st-init.php:824
+#: inc/admin/st-init.php:831
 msgid "Show the files"
 msgstr ""
 

@@ -886,6 +886,15 @@ class Helpers {
 	}
 
 	/**
+	 * Drop the last import's report: its notice has been shown.
+	 *
+	 * @return void
+	 */
+	public static function forget_import_report() {
+		delete_option( self::LAST_IMPORT_REPORT_OPTION );
+	}
+
+	/**
 	 * Get the attachment imports that have been given up on.
 	 *
 	 * A URL that has failed fewer times than FAILED_ATTACHMENT_ATTEMPTS is
