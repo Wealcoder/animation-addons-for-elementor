@@ -334,8 +334,10 @@ Class CustomFonts_Lite{
                 continue;
             }
 
-            $urls  = [];
-            $style = 'normal';
+            // One face per style: the sources inside a single @font-face are
+            // alternatives of the SAME face, so an italic listed after a regular
+            // is never loaded, and the regular file would be used as the italic.
+            $by_style = [];
 
             foreach ( $font_sources as $font ) {
 
@@ -343,25 +345,22 @@ Class CustomFonts_Lite{
                     continue;
                 }
 
-                $urls[] = sprintf( "url('%s') %s", esc_url_raw( $font['src'] ), $font['format'] );
+                $style = preg_replace( '/[^a-z]/i', '', (string) ( $font['style'] ?? '' ) );
+                $style = '' === $style ? 'normal' : strtolower( $style );
 
-                if ( ! empty( $font['style'] ) ) {
-                    $style = $font['style'];
-                }
+                $by_style[ $style ][] = sprintf( "url('%s') %s", esc_url_raw( $font['src'] ), $font['format'] );
             }
 
-            if ( empty( $urls ) ) {
-                continue;
+            foreach ( $by_style as $style => $urls ) {
+                $css .= sprintf(
+                    '@font-face{font-family:"%s";src:%s;font-weight:%s;font-style:%s;font-display:swap;}%s',
+                    $font_family,
+                    implode( ',', $urls ),
+                    preg_replace( '/[^0-9a-z ]/i', '', (string) $weight ),
+                    $style,
+                    PHP_EOL
+                );
             }
-
-            $css .= sprintf(
-                '@font-face{font-family:"%s";src:%s;font-weight:%s;font-style:%s;font-display:swap;}%s',
-                $font_family,
-                implode( ',', $urls ),
-                preg_replace( '/[^0-9a-z ]/i', '', (string) $weight ),
-                preg_replace( '/[^a-z]/i', '', (string) $style ),
-                PHP_EOL
-            );
         }
 
         return $css;

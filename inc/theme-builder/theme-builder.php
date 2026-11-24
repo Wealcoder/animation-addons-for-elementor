@@ -847,8 +847,14 @@ class Aaeaddon_Theme_Builder
 		}
 
 		if (function_exists('is_shop') && is_shop()) {
+			// The shop page itself ("WooCommerce Shop Page") is narrower than all
+			// product archives, so it is asked first.
+			if (array_key_exists('woo-shop', $templates)) {
+				return $templates['woo-shop'];
+			}
+
 			// check for WooCommerce shop archive
-			if (function_exists('is_shop') && is_shop() && array_key_exists('product-archive', $templates)) {
+			if (array_key_exists('product-archive', $templates)) {
 				return $templates['product-archive'];
 			}
 		}
@@ -969,6 +975,19 @@ class Aaeaddon_Theme_Builder
 			if (array_key_exists($custom_single, $templates)) {
 				
 				return $templates[$custom_single];
+			}
+
+			// Header / footer store the same two choices under other names than
+			// single templates do: "allpage" for pages, "{type}-singulars" for the
+			// rest (see get_hf_location_selections()).
+			// The queried object is asked too: on a theme without WooCommerce
+			// support a product category answers is_page() as well.
+			if (is_page() && get_queried_object() instanceof \WP_Post && array_key_exists('allpage', $templates)) {
+				return $templates['allpage'];
+			}
+
+			if (array_key_exists($custom_single . 's', $templates)) {
+				return $templates[$custom_single . 's'];
 			}
 
 			// all singular
@@ -1114,8 +1133,12 @@ class Aaeaddon_Theme_Builder
 
 
 		if (function_exists('is_shop') && is_shop()) {
+			if (array_key_exists('woo-shop', $templates)) {
+				$return_ids = array_merge($return_ids, array_values($templates['woo-shop'] ?? []));
+			}
+
 			// check for WooCommerce shop archive
-			if (function_exists('is_shop') && is_shop() && array_key_exists('product-archive', $templates)) {
+			if (array_key_exists('product-archive', $templates)) {
 				$return_ids = array_merge($return_ids, array_values($templates['product-archive'] ?? []));
 			}
 		}
