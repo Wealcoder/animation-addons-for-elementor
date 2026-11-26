@@ -298,6 +298,21 @@ return [
 				'doc_url'      => 'https://animation-addons.com/docs/v4-extentions/image-overlay/',
 			],
 
+			'liquid-glass' => [
+				'label'        => 'Liquid Glass',
+				'usage_prop'   => array( 'aae_lg_enable', 'boolean' ),
+				'description'  => 'Frosted, refracting glass surface for Flexbox, Div Block and Grid containers.',
+				'icon'         => 'wcf-icon-Image',
+				'is_pro'       => false,
+				'is_extension' => true,
+				'is_upcoming'  => false,
+				'default'      => true,
+				'keywords'     => ['liquid glass', 'glass', 'glassmorphism', 'frosted', 'blur', 'backdrop'],
+				'category'     => 'utility',
+				'order'        => 17,
+				'doc_url'      => 'https://animation-addons.com/docs/v4-extentions/liquid-glass/',
+			],
+
 			/*
 			 * Pro AtomicV4 modules (animation-addons-for-elementor-pro/inc/AtomicV4/).
 			 * They used to load unconditionally from AtomicV4\Bootstrap, so they never

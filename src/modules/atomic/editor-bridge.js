@@ -26,6 +26,7 @@ import menuSections from './extensions/menu-sections/config';
 import navSections from './extensions/nav-sections/config';
 import { registerHookClassesProvider } from './editor-bridge/hook-classes-provider';
 import imageOverlaySection from './extensions/image-overlay/config';
+import liquidGlassSection from './extensions/liquid-glass/config';
 
 /* ---------------------------------------------------------------------------
  * Editor-only crash guard for Elementor v4's colour-picker (MUI Popover).
@@ -99,6 +100,7 @@ registerResponsiveSection( backgroundVideoSection );
 registerResponsiveSection( customCssSection );
 registerResponsiveSection( nestedSliderSection );
 registerResponsiveSection( imageOverlaySection );
+registerResponsiveSection( liquidGlassSection );
 // WP Menu widget sections (not extensions) — one per CSS-variable-driven
 // panel section, each attaching by anchor key to e-aae-a-menu only, the same
 // way the Nested Slider panel does.

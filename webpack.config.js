@@ -80,6 +80,7 @@ module.exports = {
     "modules/atomic/effects/custom-css": "./src/modules/atomic/effects/custom-css/index.js",
     "modules/atomic/effects/background-video": "./src/modules/atomic/effects/background-video/index.js",
     "modules/atomic/effects/image-overlay": "./src/modules/atomic/effects/image-overlay/index.js",
+    "modules/atomic/effects/liquid-glass": "./src/modules/atomic/effects/liquid-glass/index.js",
   },
   output: {
     path: path.resolve(__dirname, "assets/build"), // Custom output directory

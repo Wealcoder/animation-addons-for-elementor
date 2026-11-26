@@ -1064,6 +1064,49 @@ function buildImageOverlayConfig(settings) {
 }
 
 /* =====================================================================
+ * Liquid Glass feature — mirrors LiquidGlass/Render.php
+ * =================================================================== */
+
+const LIQUID_GLASS_RESPONSIVE = {
+	aae_lg_enable: { configKey: 'enabled', default: false },
+	aae_lg_preset: { configKey: 'preset', default: 'frosted' },
+	aae_lg_blur: { configKey: 'blur', default: 0 },
+	aae_lg_distortion: { configKey: 'distortion', default: 100 },
+	aae_lg_shadow: { configKey: 'shadow', default: 'soft-glow' },
+	aae_lg_border_width: { configKey: 'borderWidth', default: 1 },
+	aae_lg_border_color: { configKey: 'borderColor', default: 'rgba(255,255,255,0.35)' },
+	aae_lg_radius: { configKey: 'radius', default: 0 },
+};
+
+function buildLiquidGlassConfig(settings) {
+	const enabled = readAt(settings, 'aae_lg_enable', 'desktop', false);
+	const resolvedEnable = resolveAllBreakpoints(settings, 'aae_lg_enable', false);
+
+	const anyActive = enabled || BPS.some((bp) => resolvedEnable[bp]);
+	if (!anyActive) return null;
+
+	const cfg = {};
+	const disabledBps = new Set();
+	for (const bp of BPS) {
+		if (!resolvedEnable[bp]) {
+			disabledBps.add(bp);
+		}
+	}
+
+	emitResponsive(cfg, settings, LIQUID_GLASS_RESPONSIVE, disabledBps);
+
+	if (!('enabled' in cfg)) {
+		cfg.enabled = enabled;
+	}
+
+	if (plain(settings, 'aae_lg_enable_editor')) {
+		cfg.enableEditor = true;
+	}
+
+	return cfg;
+}
+
+/* =====================================================================
  * Registry
  * =================================================================== */
 
@@ -1550,6 +1593,15 @@ export const FEATURES = [
 		autoReplaySetting: 'aae_img_ovl_enable_editor',
 		mapName: 'AAE_INTERACTIONS_IMG_OVL',
 		buildConfig: buildImageOverlayConfig,
+		findTarget: findByInteractionId,
+	},
+	{
+		name: 'liquid-glass',
+		widgetTypes: ['e-flexbox', 'e-div-block', 'e-grid'],
+		enableSetting: 'aae_lg_enable',
+		autoReplaySetting: 'aae_lg_enable_editor',
+		mapName: 'AAE_INTERACTIONS_LG',
+		buildConfig: buildLiquidGlassConfig,
 		findTarget: findByInteractionId,
 	},
 	{

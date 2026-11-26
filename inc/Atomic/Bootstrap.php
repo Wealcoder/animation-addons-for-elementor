@@ -136,6 +136,14 @@ final class Bootstrap {
 			( new \Wealcoder\AnimationAddons\Atomic\ImageOverlay\Render() )->register();
 		}
 
+		// Liquid Glass — frosted/refracting glass surface for containers.
+		// Free, no GSAP: backdrop-filter + SVG displacement. See Render.php.
+		if ( $extensions->is_extension_active( 'liquid-glass' ) ) {
+			( new \Wealcoder\AnimationAddons\Atomic\LiquidGlass\Schema() )->register();
+			( new \Wealcoder\AnimationAddons\Atomic\LiquidGlass\Controls() )->register();
+			( new \Wealcoder\AnimationAddons\Atomic\LiquidGlass\Render() )->register();
+		}
+
 		// Mask — clips an element to a shape. Registered as real atomic STYLE
 		// props (`mask-image` & friends on the styles schema), NOT settings
 		// props, so responsive values, :hover variants and global classes come

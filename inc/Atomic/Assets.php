@@ -39,6 +39,9 @@ final class Assets
 		// No GSAP dependency either — a plain background + mix-blend-mode
 		// application, not an animation. See ImageOverlay/Render.php.
 		'aae-effect-image-overlay'    => 'effects/image-overlay.js',
+		// No GSAP either: backdrop-filter + an SVG displacement filter, plain
+		// styles. See LiquidGlass/Render.php.
+		'aae-effect-liquid-glass'     => 'effects/liquid-glass.js',
 	];
 
 	public function register(): void

@@ -86,6 +86,7 @@ function isFeatureInPlayGroup(featureName, playGroup) {
 	if (group === 'aae_custom_css_' && featureName === 'custom-css') return true;
 	if (group === 'aae_ns_' && featureName === 'nested-slider') return true;
 	if (group === 'aae_img_ovl_' && featureName === 'image-overlay') return true;
+	if (group === 'aae_lg_' && featureName === 'liquid-glass') return true;
 	return false;
 }
 
